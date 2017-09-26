@@ -1,0 +1,28 @@
+@charset "UTF-8";
+
+@import "../../../css/variables";
+@import "../../../css/mixins";
+
+.composum-pages-stage-edit-tools-site-unversioned {
+
+    &_tools-selectall {
+        position: absolute;
+        top: 5px;
+        left: 12px;
+    }
+
+    &_tools-panel {
+        position: absolute;
+        top: 50px;
+        left: 10px;
+        right: 10px;
+        bottom: 50px;
+        @include scrolldark;
+    }
+
+    &_list {
+        padding: 0;
+    }
+
+}
+

@@ -1,0 +1,30 @@
+<'nt'='http://www.jcp.org/jcr/nt/1.0'>
+<'mix'='http://www.jcp.org/jcr/mix/1.0'>
+<'jcr'='http://www.jcp.org/jcr/1.0'>
+<'sling'='http://sling.apache.org/jcr/sling/1.0'>
+<'cpp'='http://sling.composum.com/pages/1.0'>
+
+[cpp:Statistics] > sling:Resource, nt:unstructured
+
+[cpp:StatsData] > sling:Resource, nt:unstructured
+
+[cpp:Element] > sling:Resource, nt:unstructured
+
+[cpp:Container] > cpp:Element
+  orderable
+
+[cpp:PageContent] > nt:unstructured, mix:versionable, mix:lastModified
+
+[cpp:Page] > sling:OrderedFolder
+  orderable
+  + jcr:content (cpp:PageContent) = cpp:PageContent *
+
+[cpp:SiteConfiguration] > nt:unstructured
+
+[cpp:Site] > sling:Folder
+  + jcr:content (cpp:SiteConfiguration) = cpp:SiteConfiguration *
+
+[cpp:Component] > sling:Folder
+  - componentType (string) < 'nt:unstructured', 'cpp:Element', 'cpp:Container', 'cpp:Page'
+
+[cpp:Theme] > sling:Folder

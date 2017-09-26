@@ -1,0 +1,54 @@
+{
+  "jcr:primaryType": "{Name}nt:unstructured",
+  "cpp:PageContent": {
+    "jcr:primaryType": "{Name}nt:unstructured",
+    "include0": {
+      "jcr:primaryType": "{Name}nt:unstructured",
+      "path": "*"
+    },
+    "include1": {
+      "jcr:primaryType": "{Name}nt:unstructured",
+      "path": "*/*"
+    },
+    "include2": {
+      "jcr:primaryType": "{Name}nt:unstructured",
+      "path": "*/*/*"
+    },
+    "include3": {
+      "jcr:primaryType": "{Name}nt:unstructured",
+      "path": "*/*/*/*"
+    },
+    "include4": {
+      "jcr:primaryType": "{Name}nt:unstructured",
+      "path": "*/*/*/*/*"
+    },
+    "include5": {
+      "jcr:primaryType": "{Name}nt:unstructured",
+      "path": "*/*/*/*/*/*"
+    },
+    "include6": {
+      "jcr:primaryType": "{Name}nt:unstructured",
+      "path": "*/*/*/*/*/*/*"
+    },
+    "include7": {
+      "jcr:primaryType": "{Name}nt:unstructured",
+      "path": "*/*/*/*/*/*/*/*"
+    },
+    "include8": {
+      "jcr:primaryType": "{Name}nt:unstructured",
+      "path": "*/*/*/*/*/*/*/*/*"
+    },
+    "include9": {
+      "jcr:primaryType": "{Name}nt:unstructured",
+      "path": "*/*/*/*/*/*/*/*/*/*"
+    }
+  },
+  "nt:frozenNode": {
+    "jcr:primaryType": "{Name}nt:unstructured",
+    "reaggregateLimit": 9,
+    "include0": {
+      "jcr:primaryType": "{Name}nt:unstructured",
+      "path": "*"
+    }
+  }
+}

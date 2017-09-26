@@ -1,0 +1,156 @@
+@charset "UTF-8";
+
+@import "variables";
+@import "mixins";
+
+.composum-pages-edit-widget,
+.composum-pages-edit-multiwidget {
+
+    &_label {
+        width: 100%;
+        @include dialog-label-font;
+
+        .label-text {
+            display: block;
+            float: left;
+            margin-left: 0;
+            margin-right: 20px;
+        }
+    }
+
+    &_hint {
+        display: block;
+        margin-top: 1px;
+        @include edit-hint-font;
+        text-align: right;
+        color: $edit-hint-color;
+    }
+}
+
+.composum-pages-edit-widget {
+
+    &_input {
+        @include dialog-input-font;
+    }
+}
+
+.composum-pages-edit-multiwidget {
+    margin-bottom: 20px;
+
+    .action-bar {
+        padding-top: 0;
+
+        button {
+
+            .label {
+                display: none;
+            }
+        }
+    }
+
+    .composum-pages-edit-widget {
+
+        &_label {
+            display: inline-block;
+            width: auto;
+            @include dialog-font;
+        }
+    }
+
+    &.multiwidget-simple,
+    &.multiwidget-table {
+
+        &,
+        &_lg,
+        &_md,
+        &_sm,
+        &_xs {
+
+            .multi-form-item {
+
+                label.composum-pages-edit-widget_label {
+                    display: none;
+                }
+
+                .composum-pages-edit-widget {
+
+                    &_checkbox {
+
+                        label.composum-pages-edit-widget_label {
+                            display: inherit;
+                            width: 20px;
+                            overflow: hidden;
+                        }
+                    }
+                }
+            }
+
+            .item-select {
+                top: auto;
+                bottom: 5px;
+            }
+
+            .row {
+                margin-left: -7px;
+                margin-right: -7px;
+            }
+
+            .col-xs-1, .col-sm-1, .col-md-1, .col-lg-1,
+            .col-xs-2, .col-sm-2, .col-md-2, .col-lg-2,
+            .col-xs-3, .col-sm-3, .col-md-3, .col-lg-3,
+            .col-xs-4, .col-sm-4, .col-md-4, .col-lg-4,
+            .col-xs-5, .col-sm-5, .col-md-5, .col-lg-5,
+            .col-xs-6, .col-sm-6, .col-md-6, .col-lg-6,
+            .col-xs-7, .col-sm-7, .col-md-7, .col-lg-7,
+            .col-xs-8, .col-sm-8, .col-md-8, .col-lg-8,
+            .col-xs-9, .col-sm-9, .col-md-9, .col-lg-9,
+            .col-xs-10, .col-sm-10, .col-md-10, .col-lg-10,
+            .col-xs-11, .col-sm-11, .col-md-11, .col-lg-11,
+            .col-xs-12, .col-sm-12, .col-md-12, .col-lg-12 {
+                padding-right: 7px;
+                padding-left: 7px;
+            }
+
+            .form-group {
+                margin-bottom: 5px;
+            }
+        }
+    }
+
+    &.multiwidget-table {
+
+        &,
+        &_lg,
+        &_md,
+        &_sm,
+        &_xs {
+
+            .multi-form-item:first-child {
+
+                label.composum-pages-edit-widget_label {
+                    display: inline-block;
+                }
+
+                .composum-pages-edit-widget {
+
+                    &_checkbox {
+                        margin-top: 0;
+
+                        .composum-pages-edit-widget {
+
+                            &_label {
+                                width: auto;
+                                padding-left: 0;
+                            }
+
+                            &_input {
+                                top: 36px;
+                                margin-left: 0;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

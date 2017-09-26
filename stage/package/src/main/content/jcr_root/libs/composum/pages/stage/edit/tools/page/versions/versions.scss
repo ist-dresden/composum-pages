@@ -1,0 +1,178 @@
+@charset "UTF-8";
+
+@import "../../../css/variables";
+@import "../../../css/mixins";
+
+.composum-pages-stage-edit-tools-page-versions {
+
+    &_versions-head {
+        position: relative;
+        padding: 22px 0 22px 10%;
+        text-align: center;
+
+        .slider {
+            width: 40%;
+        }
+
+        .slider .slider-track,
+        .slider .slider-selection {
+            background-image: -webkit-linear-gradient(top, #656565 0%, #999999 100%);
+            background-image: -o-linear-gradient(top, #656565 0%, #999999 100%);
+            background-image: linear-gradient(to bottom, #656565 0%, #999999 100%);
+        }
+        .slider .slider-handle {
+            background-image: -webkit-linear-gradient(top, #dfdfdf 0%, #bebebe 100%);
+            background-image: -o-linear-gradient(top, #dfdfdf 0%, #bebebe 100%);
+            background-image: linear-gradient(to bottom, #dfdfdf 0%, #bebebe 100%);
+        }
+
+        .slider.slider-disabled .slider-track,
+        .slider.slider-disabled .slider-selection {
+            background-image: -webkit-linear-gradient(top, #454545 0%, #696969 100%);
+            background-image: -o-linear-gradient(top, #454545 0%, #696969 100%);
+            background-image: linear-gradient(to bottom, #454545 0%, #696969 100%);
+        }
+        .slider.slider-disabled .slider-handle {
+            background-image: -webkit-linear-gradient(top, #8f8f8f 0%, #6e6e6e 100%);
+            background-image: -o-linear-gradient(top, #8f8f8f 0%, #6e6e6e 100%);
+            background-image: linear-gradient(to bottom, #8f8f8f 0%, #6e6e6e 100%);
+        }
+
+        .composum-pages-stage-edit-tools-page-versions {
+
+            &_main-selection,
+            &_secondary-selection {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                @include default-font;
+            }
+
+            &_selection-icon {
+                position: absolute;
+                top: 14px;
+                left: 0;
+                font-size: 40px;
+                color: rgba(160, 160, 160, 0.5);
+            }
+
+            &_main-selection {
+                left: 10%;
+                text-align: left;
+            }
+
+            &_secondary-selection {
+                right: 0;
+                text-align: right;
+                opacity: 0.8;
+            }
+
+            &_selection-name {
+                margin: 0 0 20px;
+            }
+
+            &_selection-time {
+                font-size: $edit-hint-font-size;
+            }
+        }
+
+        .main-available & {
+
+            .composum-pages-stage-edit-tools-page-versions {
+
+                &_selection-icon {
+                    color: rgba(255, 255, 255, 0.75);
+                }
+            }
+        }
+    }
+
+    &_content {
+        position: absolute;
+        top: 65px;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        @include scrolldark;
+    }
+
+    &_version-list, &_version {
+        list-style: none;
+    }
+
+    &_version-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    &_version {
+        position: relative;
+        margin: 4px 0;
+        padding: 0 4px;
+        background-color: $tools-pane-tabs-background;
+
+        &.selected-main {
+
+            .composum-pages-stage-edit-tools-page-versions {
+
+                &_selection-main {
+                    background: rgba(255, 255, 255, 0.25);
+                }
+            }
+        }
+
+        &.selected-secondary {
+
+            .composum-pages-stage-edit-tools-page-versions {
+
+                &_selection-secondary {
+                    background: rgba(200, 200, 200, 0.25);
+                }
+            }
+        }
+    }
+
+    &_version-list, &_version, &_version-head {
+        width: 100%;
+    }
+
+    &_version-name, &_version-time, &_version-labels {
+        @include default-font;
+    }
+
+    &_version-name, &_version-time {
+        display: inline-block;
+    }
+
+    &_version-name {
+        float: left;
+    }
+
+    &_version-time {
+        float: right;
+    }
+
+    &_version-labels {
+        clear: both;
+    }
+
+    &_selection,
+    &_selection-main,
+    &_selection-secondary {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: none;
+    }
+
+    &_selection-main {
+        right: 45%;
+    }
+
+    &_selection-secondary {
+        left: 55%;
+    }
+}

@@ -1,0 +1,207 @@
+@charset "UTF-8";
+
+@mixin font($family, $size) {
+    font-family: $family, sans-serif;
+    font-size: $size;
+    font-weight: normal;
+    font-style: normal;
+    text-decoration: none;
+}
+
+@mixin default-font {
+    @include font('robotolight', $default-font-size);
+}
+
+@mixin dialog-font {
+    @include font('robotolight', $dialog-default-font-size);
+}
+
+@mixin dialog-label-font {
+    @include font('robotomedium', $dialog-label-font-size);
+}
+
+@mixin dialog-input-font {
+    @include font('robotolight', $dialog-input-font-size);
+}
+
+@mixin monospace {
+    font-family: monospace;
+    font-size: $edit-mono-font-size;
+}
+
+@mixin button {
+    width: $edit-actions-button-size;
+    height: $edit-actions-button-size;
+    font-size: $edit-actions-icon-font-size;
+    line-height: $edit-actions-button-size;
+    font-weight: normal;
+    text-shadow: none;
+    text-decoration: none;
+    text-align: center;
+}
+
+@mixin icon-button {
+    @include button;
+    font-family: "FontAwesome";
+}
+
+@mixin tools-button {
+    @include icon-button;
+    width: $edit-actions-button-size + 4;
+    height: $edit-actions-button-size;
+    font-size: $edit-actions-icon-font-size - 2;
+    line-height: $edit-actions-button-size - 2;
+    border-color: #888;
+    background-image: linear-gradient(to bottom, #888 0, #666 100%);
+    padding: 1px 1px 0;
+    color: #ddd;
+
+    &:hover,
+    &:focus {
+        background-color: #777;
+        color: #fff;
+    }
+}
+
+@mixin edit-label-font {
+    font-family: $edit-label-font-family;
+    font-size: $edit-label-font-size;
+}
+
+@mixin edit-hint-font {
+    font-family: $edit-label-font-family;
+    font-size: $edit-hint-font-size;
+}
+
+@mixin edit-handle-color {
+    background-color: $edit-handle-background;
+    color: $edit-handle-foreground;
+    mix-blend-mode: difference;
+}
+
+@mixin edit-select-color {
+    background-color: $edit-select-background;
+    color: $edit-select-foreground;
+    mix-blend-mode: difference;
+}
+
+@mixin clear-after {
+    &:after {
+        content: "";
+        display: block;
+        clear: both;
+    }
+}
+
+@mixin trapezoid-base {
+
+    &:before, &:after {
+        position: absolute;
+        width: 0;
+        height: 0;
+        border-style: solid;
+        content: '';
+    }
+}
+
+@mixin trapezoid-top($color, $width, $height) {
+    @include trapezoid-base;
+
+    &:before, &:after {
+        top: 0;
+        border-color: $color transparent transparent transparent;
+    }
+
+    &:before {
+        border-width: $height 0 0 $width;
+        left: -$width;
+    }
+
+    &:after {
+        border-width: $height $width 0 0;
+        right: -$width;
+    }
+}
+
+@mixin trapezoid-bottom($color, $width, $height) {
+    @include trapezoid-base;
+
+    &:before, &:after {
+        top: 0;
+        border-color: transparent transparent $color transparent;
+    }
+
+    &:before {
+        border-width: 0 0 $height $width;
+        left: -$width + 0.3;
+    }
+
+    &:after {
+        border-width: 0 $width $height 0;
+        right: -$width + 0.3;
+    }
+}
+
+@mixin trapezoid-left($color, $width, $height) {
+    @include trapezoid-base;
+
+    &:before, &:after {
+        left: 0;
+        border-color: transparent transparent transparent $color;
+    }
+
+    &:before {
+        border-width: $height 0 0 $width;
+        top: -$height;
+    }
+
+    &:after {
+        border-width: 0 0 $height $width;
+        bottom: -$height;
+    }
+}
+
+@mixin trapezoid-right($color, $width, $height) {
+    @include trapezoid-base;
+
+    &:before, &:after {
+        right: 0;
+        border-color: transparent $color transparent transparent;
+    }
+
+    &:before {
+        border-width: $height $width 0 0;
+        top: -$height;
+    }
+
+    &:after {
+        border-width: 0 $width $height 0;
+        bottom: -$height;
+    }
+}
+
+@mixin tab-base($color) {
+    list-style: none;
+    display: inline-block;
+    position: relative;
+    margin: 5px 5px 0;
+    height: $tabbed-widget-tab-height;
+    line-height: $tabbed-widget-tab-height;
+    background-color: $color;
+}
+
+@mixin tab-top($color) {
+    @include trapezoid-bottom($color, 12px, $tabbed-widget-tab-height);
+}
+
+@mixin scrolloption($color) {
+    overflow: auto;
+
+    &::-webkit-scrollbar-thumb {
+        background: $color;
+    }
+}
+
+@mixin scrolldark {
+    @include scrolloption($tools-pane-background);
+}

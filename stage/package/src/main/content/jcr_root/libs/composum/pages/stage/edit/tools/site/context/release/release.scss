@@ -1,0 +1,52 @@
+@charset "UTF-8";
+
+@import "../../../../css/variables";
+@import "../../../../css/mixins";
+
+.composum-pages-stage-edit-tools-site-context-release {
+
+    width: 100%;
+    position: relative;
+    margin: 4px 0;
+    padding: 0 4px;
+    list-style: none;
+    background-color: $tools-pane-tabs-background;
+
+    &_head {
+        width: 100%;
+    }
+
+    &_key {
+        float: left;
+    }
+
+    &_title {
+        float: right;
+    }
+
+    &_path {
+        clear: both;
+    }
+
+    &_entry {
+        cursor: pointer;
+        position: relative;
+    }
+
+    &_select {
+        position: absolute;
+        top: 0;
+        left: 10px;
+    }
+
+    &_listentry {
+        padding-left: 40px;
+    }
+
+    &_category {
+        float: left;
+        margin-top: 3px;
+        margin-left: 5px;
+    }
+
+}

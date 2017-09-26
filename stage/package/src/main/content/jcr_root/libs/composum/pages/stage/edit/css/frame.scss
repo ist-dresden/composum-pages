@@ -1,0 +1,75 @@
+@charset "UTF-8";
+
+@import "variables";
+@import "mixins";
+
+body {
+    margin: 0;
+    border: none;
+    padding: 0;
+
+    .composum-pages-stage-edit-frame {
+
+        &,
+        &_wrapper {
+            width: 100%;
+            height: 100%;
+        }
+
+        & {
+            margin: 0;
+            border: none;
+            padding: 0;
+            overflow: auto;
+        }
+    }
+
+    .composum-pages-stage-version-frame {
+
+        &,
+        &_wrapper,
+        &_main,
+        &_secondary {
+            width: 100%;
+            height: 100%;
+        }
+
+        & {
+            margin: 0;
+            border: none;
+            padding: 0;
+            overflow: auto;
+        }
+
+        &_main,
+        &_secondary {
+            position: fixed;
+            background: transparent;
+
+            &.hidden {
+                display: none;
+            }
+        }
+
+        &_wrapper {
+            display: none;
+        }
+    }
+
+    &.composum-pages-version-view {
+
+        .composum-pages-stage-edit-frame {
+
+            &_wrapper {
+                display: none;
+            }
+        }
+
+        .composum-pages-stage-version-frame {
+
+            &_wrapper {
+                display: block;
+            }
+        }
+    }
+}

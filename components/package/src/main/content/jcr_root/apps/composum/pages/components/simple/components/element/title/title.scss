@@ -1,0 +1,119 @@
+@charset "UTF-8";
+
+@import "../../../clientlibs/variables";
+@import "../../../clientlibs/mixins";
+
+/*
+ * default (bootstrap -sm,md-)
+ */
+.composum-pages-components-simple-page,
+.composum-pages-components-simple-page-home,
+.composum-pages-components-simple-page-subsite {
+
+    &_content {
+
+        .composum-pages-components-container-row {
+
+            &_column {
+
+                .composum-pages-components-element-title {
+
+                    &_text {
+                        @include inline-title;
+                        text-align: left;
+                        background: none;
+                    }
+
+                    &_title,
+                    &_subtitle {
+                        margin: 0;
+                    }
+
+                    &_title {
+                        font-size: $column-title-font-size;
+                    }
+
+                    &_subtitle {
+                        margin-top: $column-title-gap;
+                        font-size: $column-subtitle-font-size;
+                    }
+                }
+            }
+        }
+
+        &_top {
+
+            .composum-pages-components-element-title {
+                background-position: 30% 40%;
+                height: 100px;
+                padding: 12px 36px;
+
+                &_title {
+                    @include bright-font;
+                    color: $site-bright-text-color;
+                    font-size: $site-title-font-size;
+                }
+            }
+        }
+
+        &_main {
+
+            .composum-pages-components-element-title {
+
+                &_text {
+                    @include title-font;
+                    padding: $main-title-padding;
+                    background-color: $main-title-background-color;
+                    text-align: center;
+                    color: $main-title-text-color;
+                }
+
+                &_title,
+                &_subtitle {
+                    margin: 0;
+                }
+
+                &_title {
+                    font-size: $main-title-font-size;
+                }
+
+                &_subtitle {
+                    margin-top: $main-title-padding / 2;
+                    font-size: $main-subtitle-font-size;
+                }
+            }
+        }
+    }
+}
+
+/*
+ * bootstrap -xs-
+ */
+@media screen and (max-width: 767px) {
+
+    .composum-pages-components-simple-page,
+    .composum-pages-components-simple-page-home,
+    .composum-pages-components-simple-page-subsite {
+
+        &_content {
+
+            &_main {
+
+                .composum-pages-components-element-title {
+
+                    &_text {
+                        padding: $main-title-padding * (2/3);
+                    }
+
+                    &_title {
+                        font-size: $main-title-font-size * (2/3);
+                    }
+
+                    &_subtitle {
+                        font-size: $main-subtitle-font-size * (2/3);
+                    }
+                }
+            }
+        }
+    }
+}

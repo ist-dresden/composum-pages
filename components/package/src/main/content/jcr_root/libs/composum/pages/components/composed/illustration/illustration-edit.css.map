@@ -1,0 +1,7 @@
+{
+"version": 3,
+"mappings": "AAEA,uBAAuB;AAQvB,mBAAmB;ACEH,oJAAQ;EACJ,SAAS,EDDQ,IAAI;ECErB,UAAU,EDFO,IAAI;;ACOjC,sFAAa;EACT,QAAQ,EAAE,MAAM;EAChB,OAAO,EAAE,KAAK;EACd,MAAM,EAAE,CAAC;;AAET,4FAAQ;EACJ,OAAO,EAAE,IAAI;;AAGjB,8FAAU;EACN,QAAQ,EAAE,MAAM;EAChB,MAAM,EAAE,YAAY;EACpB,MAAM,EAAE,IAAI;EACZ,QAAQ,EAAE,MAAM;EAChB,gBAAgB,EAAE,OAAO;EACzB,KAAK,EAAE,OAAO",
+"sources": ["../../../../../../../../../src/main/content/jcr_root/libs/composum/pages/components/css/variables.scss","../../../../../../../../../src/main/content/jcr_root/libs/composum/pages/components/composed/illustration/illustration-edit.scss"],
+"names": [],
+"file": "illustration-edit.css"
+}

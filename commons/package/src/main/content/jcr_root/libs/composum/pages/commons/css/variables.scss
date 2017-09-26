@@ -1,0 +1,14 @@
+@charset "UTF-8";
+
+$default-font-family: 'robotolight', sans-serif;
+$default-font-size: 17px;
+$hint-font-size: $default-font-size - 3;
+
+$edit-label-font-family: $default-font-family;
+$edit-label-font-size: $default-font-size;
+$edit-hint-font-size: $default-font-size - 3;
+$edit-hint-color: #888;
+
+$dialog-default-font-size: $default-font-size - 2;
+$dialog-label-font-size: $dialog-default-font-size;
+$dialog-input-font-size: $dialog-default-font-size;

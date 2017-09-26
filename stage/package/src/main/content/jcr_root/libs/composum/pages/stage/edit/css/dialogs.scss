@@ -1,0 +1,185 @@
+@charset "UTF-8";
+
+@import "variables";
+@import "mixins";
+
+/**
+ * edit dialog
+ */
+
+.composum-pages-stage-edit-dialogs {
+
+    .composum-pages-stage-edit-dialog {
+        z-index: $dialogs-layer;
+
+        &_header, &_content, &_footer {
+            @include dialog-font;
+        }
+
+        &_header {
+            position: relative;
+            white-space: nowrap;
+        }
+
+        &_footer {
+            display: flex;
+            flex-wrap: nowrap;
+        }
+
+        &_dialog-title {
+            margin-right: $edit-actions-button-size;
+            overflow: hidden;
+        }
+
+        &_language {
+            position: absolute;
+            right: 50px;
+            top: 17px;
+            line-height: 18px;
+
+            .composum-pages-language {
+
+                &_label {
+                    color: $bootstrap-color-info;
+                }
+
+                &_key {
+                    display: inline-block;
+                    vertical-align: top;
+                    margin-top: 1px;
+                    margin-left: $edit-actions-spacing-h;
+                    @include monospace;
+                    color: $bootstrap-color-mute;
+                }
+            }
+        }
+
+        &_button-close {
+            position: absolute;
+            top: $bootstrap-spacing-v;
+            right: $bootstrap-spacing-h;
+            border: none;
+            background: none;
+            @include icon-button;
+            color: #aaa;
+        }
+
+        &_form {
+            margin: 0;
+        }
+
+        &_hints {
+            margin-top: -2px;
+            margin-right: 15px;
+            float: left;
+            display: inline-block;
+            flex-grow: 1;
+            overflow: auto;
+            white-space: nowrap;
+            font-size: $edit-hint-font-size;
+            text-align: left;
+
+            .composum-pages-stage-edit-dialog {
+
+                &_path-hint, &_name-hint {
+                    display: inline-block;
+                }
+
+                &_type-hint {
+                    display: block;
+                    margin-top: -1px;
+                }
+            }
+        }
+
+        &_button-delete {
+            float: left;
+            margin-right: $bootstrap-spacing-h;
+        }
+
+        &_tabs {
+            display: none;
+            margin-bottom: $bootstrap-spacing-v;
+            @include clear-after;
+        }
+
+        &_tabbed {
+
+            .composum-pages-stage-edit-dialog {
+
+                &_header {
+                    border: none;
+                    padding-bottom: 0;
+                }
+
+                &_tabs {
+                    display: block;
+                }
+            }
+        }
+
+        .alert {
+
+            &-hidden {
+                display: none;
+            }
+
+            .label {
+                color: inherit;
+                font-size: inherit;
+            }
+        }
+    }
+}
+
+.composum-pages-stage-widget-dialogs {
+
+    & > .dialog {
+        display: none;
+        z-index: $dialogs-layer + 2;
+
+        .modal-content {
+            @include dialog-input-font;
+
+            .modal-header {
+
+                h4 {
+                    margin-right: $edit-actions-button-size;
+                    overflow: hidden;
+                }
+
+                button.close {
+                    position: absolute;
+                    top: $bootstrap-spacing-v;
+                    right: $bootstrap-spacing-h;
+                    margin: 0;
+                    border: none;
+                    background: none;
+                    @include icon-button;
+                    color: #aaa;
+                    opacity: 0.75;
+
+                    &:before {
+                        content: "\f00d";
+                    }
+
+                    span {
+                        display: none;
+                    }
+                }
+            }
+
+            .alert-hidden {
+                display: none;
+            }
+
+            label {
+                @include dialog-label-font;
+            }
+
+            input {
+                @include dialog-input-font;
+            }
+        }
+    }
+}

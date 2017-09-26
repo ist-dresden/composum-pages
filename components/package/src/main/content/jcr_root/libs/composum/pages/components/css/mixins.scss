@@ -1,0 +1,48 @@
+@charset "UTF-8";
+
+@mixin arrow-base() {
+    position: absolute;
+    width: 0;
+    height: 0;
+    content: '';
+}
+
+@mixin arrow-up($color, $width, $height) {
+    @include arrow-base;
+    top: 0;
+    border-left: ($width / 2) solid transparent;
+    border-right: ($width / 2) solid transparent;
+    border-bottom: $height solid $color;
+    margin-top: (- $height);
+    margin-left: (- $width / 2);
+}
+
+@mixin arrow-down($color, $width, $height) {
+    @include arrow-base;
+    bottom: 0;
+    border-left: ($width / 2) solid transparent;
+    border-right: ($width / 2) solid transparent;
+    border-top: $height solid $color;
+    margin-bottom: (- $height);
+    margin-left: (- $width / 2);
+}
+
+@mixin arrow-left($color, $width, $height) {
+    @include arrow-base;
+    left: 0;
+    border-top: ($height / 2) solid transparent;
+    border-bottom: ($height / 2) solid transparent;
+    border-right: $width solid $color;
+    margin-left: (- $width);
+    margin-top: (- $height / 2);
+}
+
+@mixin arrow-right($color, $width, $height) {
+    @include arrow-base;
+    right: 0;
+    border-top: ($height / 2) solid transparent;
+    border-bottom: ($height / 2) solid transparent;
+    border-left: $width solid $color;
+    margin-right: (- $width);
+    margin-top: (- $height / 2);
+}

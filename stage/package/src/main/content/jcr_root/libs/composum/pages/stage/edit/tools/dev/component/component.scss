@@ -1,0 +1,50 @@
+@charset "UTF-8";
+
+@import "../../../css/variables";
+@import "../../../css/mixins";
+
+.composum-pages-stage-edit-tools-dev-component {
+    padding: $tools-pane-padding;
+
+    &_toolset {
+        position: relative;
+        width: 100%;
+        margin: 8px 0 4px;
+        padding: 5px;
+        background-color: $tools-pane-background;
+
+        .fa {
+            margin-left: 10px;
+        }
+    }
+
+    &_actions {
+        position: absolute;
+        top: 3px;
+        right: 5px;
+    }
+
+    &_component-panel {
+        margin-top: -13px;
+    }
+}
+
+.composum-pages-stage-edit-tools-dev-component-dialog_thumbnail {
+
+    .composum-pages-stage-edit-dialog {
+        position: static;
+        display: block;
+        opacity: 1;
+
+        .modal-dialog {
+            transform: none;
+        }
+    }
+}
+
+.composum-pages-stage-edit-dialogs {
+
+    .dialog.modal {
+        z-index: $dialogs-layer;
+    }
+}

@@ -1,0 +1,7 @@
+{
+"version": 3,
+"mappings": "AAEA,yCAA0C;EACtC,KAAK,EAAE,IAAI",
+"sources": ["../../../../../../../../../src/main/content/jcr_root/libs/composum/pages/components/composed/list/list.scss"],
+"names": [],
+"file": "list.css"
+}

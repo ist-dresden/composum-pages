@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+        jcr:primaryType="sling:OrderedFolder"
+        depends="[fonts/roboto/2014/roboto.css,composum/pages/components/clientlibs/page]"
+        embed="[composum/pages/components/simple/page/page.css]">
+    <components/>
+    <element/>
+    <composed/>
+</jcr:root>

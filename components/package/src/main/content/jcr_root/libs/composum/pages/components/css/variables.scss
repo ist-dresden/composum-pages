@@ -1,0 +1,24 @@
+@charset "UTF-8";
+
+/** general settings */
+
+$bootstrap-color-info: #337ab7;
+$bootstrap-color-mute: #777;
+
+$bootstrap-spacing-v: 10px;
+$bootstrap-spacing-h: 15px;
+
+/** illustration */
+
+$illustration-annotation-shape-size: 26px;
+
+$illustration-annotation-layer: 5;
+$illustration-annotation-handle-layer: $illustration-annotation-layer + 1;
+$illustration-annotation-content-layer: $illustration-annotation-handle-layer + 1;
+
+$illustration-annotation-background: rgba(160, 0, 0, 0.85);
+$illustration-annotation-foreground: #efefef;
+$illustration-annotation-hover-fg: #ffffff;
+
+$illustration-annotation-arrow-length: $illustration-annotation-shape-size;
+$illustration-annotation-arrow-size: $illustration-annotation-arrow-length * 1.5;

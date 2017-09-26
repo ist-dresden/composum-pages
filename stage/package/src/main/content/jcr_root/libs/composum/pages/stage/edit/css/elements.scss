@@ -1,0 +1,290 @@
+@charset "UTF-8";
+
+@import "variables";
+@import "mixins";
+
+.composum-pages-EDIT_body {
+
+    .composum-pages-element {
+        min-width: 30px;
+        min-height: 30px;
+    }
+
+    .composum-pages-container {
+
+        &_start, &_end {
+            width: 100%;
+            @include edit-label-font;
+            color: $edit-hint-color;
+
+            .composum-pages-container {
+
+                &_path-hint, &_type-hint {
+                    font-size: $edit-hint-font-size;
+                }
+
+                &_path-hint {
+                    margin-right: 0.2rem;
+                }
+            }
+        }
+
+        &_start {
+            padding: 12px 4px 4px;
+            border-bottom: 2px dashed $edit-hint-color;
+        }
+
+        &_end {
+            border-top: 2px dashed $edit-hint-color;
+            padding: 4px 4px 8px;
+        }
+    }
+
+    .composum-pages-stage-edit-dnd {
+
+        &_handle {
+            position: relative;
+            overflow: visible;
+        }
+
+        &_image,
+        &_content,
+        &_overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+
+        &_image {
+            display: none;
+            height: 100px;
+            overflow: hidden;
+
+            &.composum-pages-stage-edit-dnd {
+
+                &_visible {
+                    display: block;
+                }
+            }
+
+            .composum-pages-stage-edit-dnd {
+
+                &_content,
+                &_content > * {
+                    box-sizing: content-box;
+                }
+
+                &_content {
+                    opacity: 0.6;
+                }
+
+                &_overlay {
+                    background-color: rgba(255, 200, 0, 0.3);
+                }
+            }
+        }
+
+        &_insert {
+            display: none;
+            position: absolute;
+            width: 0;
+            height: 0;
+            z-index: $dnd-insert-layer;
+            box-sizing: content-box;
+            border: 3px solid $dnd-target-over-color;
+            mix-blend-mode: difference;
+            pointer-events: none;
+
+            &:before,
+            &:after {
+                position: absolute;
+                font-family: "FontAwesome";
+                font-size: 60px;
+                line-height: 60px;
+                color: $dnd-target-over-color;
+            }
+
+            &.composum-pages-stage-edit-dnd {
+
+                &_visible {
+                    display: block;
+                }
+
+                &_vertical {
+
+                    &:before,
+                    &:after {
+                        top: 0;
+                        left: 50%;
+                        margin-left: -33px;
+                    }
+
+                    &:before {
+                        content: '\f078';
+                        margin-top: -56px;
+                    }
+
+                    &:after {
+                        content: '\f077';
+                        margin-top: -11px;
+                    }
+                }
+
+                &_horizontal {
+
+                    &:before,
+                    &:after {
+                        top: 50%;
+                        left: 0;
+                        margin-top: -30px;
+                    }
+
+                    &:before {
+                        content: '\f054';
+                        margin-left: -42px;
+                    }
+
+                    &:after {
+                        content: '\f053';
+                        margin-left: -1px;
+                    }
+                }
+            }
+        }
+
+        &_source {
+
+            &:after {
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                box-sizing: border-box;
+                background-color: $dnd-source-content-background;
+            }
+        }
+
+        &_target {
+            position: relative;
+
+            &:after {
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                z-index: $dnd-target-layer;
+                box-sizing: border-box;
+                font-family: 'FontAwesome', sans-serif;
+                font-size: 40px;
+                line-height: 45px;
+                text-indent: 5px;
+                content: '\f140';
+                color: $dnd-target-frame-color;
+                border: 3px dashed $dnd-target-frame-color;
+                mix-blend-mode: difference;
+            }
+        }
+
+        &_target-over {
+
+            &:after {
+                content: '\f019';
+                color: $dnd-target-over-color;
+                border-color: $dnd-target-over-color;
+                background-color: $dnd-target-over-background;
+            }
+        }
+    }
+
+    .composum-pages-component-handle {
+        display: none;
+        position: absolute;
+        width: 0;
+        height: 0;
+        z-index: $edit-handle-layer;
+        pointer-events: none;
+
+        &_head, &_left, &_right, &_bottom {
+            position: absolute;
+            @include edit-handle-color;
+        }
+
+        &_head {
+            padding: 2px 0 3px;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        &_left, &_right, &_bottom {
+            z-index: $edit-handle-layer - 1;
+        }
+
+        &_path {
+            margin-right: 0.2rem;
+        }
+
+        &_name, &_path, &_type, &_size {
+            font-family: $edit-label-font-family;
+        }
+
+        &_name {
+            font-size: $edit-label-font-size;
+        }
+
+        &_path, &_type, &_size {
+            font-size: $edit-hint-font-size;
+        }
+
+        &_left, &_right {
+            width: $edit-handle-border;
+        }
+
+        &_bottom {
+            height: $edit-handle-border;
+        }
+
+        &_visible {
+            display: block;
+        }
+
+        &_selection {
+
+            .composum-pages-component-handle {
+                z-index: $edit-select-layer;
+
+                &_head, &_left, &_right, &_bottom {
+                    @include edit-select-color;
+                }
+
+                &_left, &_right, &_bottom {
+                    z-index: $edit-select-layer - 1;
+                }
+            }
+        }
+    }
+
+    .composum-pages-container {
+
+        > .composum-pages-component-handle_anchor {
+
+            > .composum-pages-component-handle_head {
+                padding: 10px 0 4px;
+            }
+
+            > .composum-pages-component-handle_bottom {
+                padding: 4px 0 6px;
+                min-height: 18px;
+            }
+        }
+    }
+
+    .composum-pages-stage-edit-handles {
+        position: relative;
+        width: 0;
+        height: 0;
+    }
+}

@@ -1,0 +1,63 @@
+@charset "UTF-8";
+
+.composum-pages-components-element-textimage {
+
+    &_image,
+    &_text-block {
+        width: 100%;
+    }
+
+    &_left,
+    &_right {
+
+        .composum-pages-components-element-textimage {
+
+            &_text-block {
+                width: 65%;
+            }
+
+            &_image {
+                width: 34%;
+            }
+        }
+    }
+
+    &_left {
+
+        .composum-pages-components-element-textimage {
+
+            &_text-block {
+                margin-left: 35%;
+            }
+
+            &_image {
+                float: left;
+            }
+        }
+    }
+
+    &_right {
+
+        .composum-pages-components-element-textimage {
+
+            &_text-block {
+                margin-right: 35%;
+            }
+
+            &_image {
+                float: right;
+            }
+        }
+    }
+
+    &_floating {
+
+        .composum-pages-components-element-textimage {
+
+            &_text-block {
+                width: 100%;
+                margin: 0;
+            }
+        }
+    }
+}

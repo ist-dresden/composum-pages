@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+        jcr:primaryType="sling:OrderedFolder"
+        embed="[
+            composum/pages/stage/edit/site/finishedobjects/createrelease/createrelease.css,
+            composum/pages/stage/edit/tools/site/site.css,
+            composum/pages/stage/edit/tools/site/context/context.css,
+            composum/pages/stage/edit/tools/site/context/language/language.css,
+            composum/pages/stage/edit/tools/site/context/release/release.css,
+            composum/pages/stage/edit/tools/site/unreleased/unreleased.css,
+            composum/pages/stage/edit/tools/site/unreleased/finishedobject/finishedobject.css,
+            composum/pages/stage/edit/tools/site/unversioned/unversioned.css,
+            composum/pages/stage/edit/tools/site/unversioned/openobject/openobject.css,
+            composum/pages/stage/edit/tools/page/versions/versions.css,
+            composum/pages/stage/edit/tools/dev/editor/editor.css,
+            composum/pages/stage/edit/tools/dev/component/component.css
+        ]"/>

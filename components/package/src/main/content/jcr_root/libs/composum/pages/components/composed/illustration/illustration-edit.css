@@ -1,0 +1,24 @@
+/** general settings */
+/** illustration */
+.composum-pages-EDIT_body .composum-pages-components-composed-illustration_image .composum-pages-components-composed-illustration-annotation_shape {
+  min-width: 26px;
+  min-height: 26px;
+}
+.composum-pages-EDIT_body .composum-pages-components-composed-illustration-annotation {
+  position: static;
+  display: block;
+  margin: 0;
+}
+.composum-pages-EDIT_body .composum-pages-components-composed-illustration-annotation_arrow {
+  display: none;
+}
+.composum-pages-EDIT_body .composum-pages-components-composed-illustration-annotation_content {
+  position: static;
+  margin: 0 !important;
+  height: 80px;
+  overflow: hidden;
+  background-color: inherit;
+  color: inherit;
+}
+
+/*# sourceMappingURL=illustration-edit.css.map */

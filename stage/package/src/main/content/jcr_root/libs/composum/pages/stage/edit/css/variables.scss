@@ -1,0 +1,79 @@
+@charset "UTF-8";
+
+$bootstrap-color-info: #337ab7;
+$bootstrap-color-mute: #777;
+
+$bootstrap-spacing-v: 10px;
+$bootstrap-spacing-h: 15px;
+
+$tabbed-widget-tab-height: 28px;
+
+$default-font-family: 'robotolight', sans-serif;
+$default-font-size: 17px;
+$hint-font-size: $default-font-size - 3;
+
+$edit-label-font-family: $default-font-family;
+$edit-label-font-size: $default-font-size;
+$edit-mono-font-size: $default-font-size - 1;
+$edit-hint-font-size: $default-font-size - 3;
+$edit-hint-color: #888;
+
+$edit-tools-layer: 2995;
+$dnd-target-layer: $edit-tools-layer - 8;
+$dnd-insert-layer: $edit-tools-layer - 2;
+
+/* mix-blend-mode: difference... */
+$dnd-source-content-background: rgba(50, 0, 255, 0.5);
+$dnd-target-frame-color: rgba(255, 155, 55, 0.5);
+$dnd-target-over-color: rgba(85, 55, 255, 0.8);
+$dnd-target-over-background: rgba(85, 55, 255, 0.1);
+
+$edit-handle-border: 6px;
+$edit-handle-layer: $edit-tools-layer - 4;
+$edit-handle-background: rgba(220, 200, 120, 0.8);
+$edit-handle-foreground: #44a;
+$edit-select-layer: $edit-handle-layer - 2;
+$edit-select-background: rgba(80, 60, 200, 0.8);
+$edit-select-foreground: #ed8;
+
+$tools-pane-foreground: #eee;
+$tools-pane-background: rgba(40, 40, 40, 0.9);
+$tools-tile-background: rgba(160, 160, 160, 0.3);
+
+$tools-pane-padding: 8px;
+
+$tools-pane-tabs-background: rgba(160, 160, 160, 0.3);
+$tools-pane-tabs-tab-color: rgba(140, 140, 140, 0.9);
+$tools-pane-tabs-tab-active: rgba(55, 55, 55, 0.9);
+$tools-pane-tabs-tab-label: $tools-pane-foreground;
+
+$edit-actions-layer: $edit-tools-layer + 2;
+$edit-actions-height: 36px;
+$edit-actions-spacing-v: 3px;
+$edit-actions-spacing-h: 4px;
+$edit-actions-corner-width: 22px;
+$edit-actions-background: $tools-pane-background;
+$edit-actions-foreground: #ffffff;
+$edit-actions-highlight: #ffda88;
+$edit-actions-button-size: 27px;
+$edit-actions-icon-font-size: 22px;
+$edit-actions-separator: 1px solid #ffffff;
+
+$surface-layer: $edit-actions-layer + 2;
+
+$sidebar-handle-icon-width: 30px;
+$sidebar-handle-icon-height: 49px;
+$sidebar-handle-closed-height: 29px;
+$sidebar-handle-icon-insets: -10px;
+$sidebar-handle-corner-width: 20px;
+$sidebar-handle-font-size: $edit-actions-icon-font-size;
+$sidebar-mode-icon-height: 24px;
+$sidebar-mode-font-size: $default-font-size;
+
+$dialog-default-font-size: $default-font-size - 2;
+$dialog-label-font-size: $dialog-default-font-size;
+$dialog-input-font-size: $dialog-default-font-size;
+
+$dialogs-layer: $surface-layer + 2;
+
+$dialog-close-icon-size: 25px;

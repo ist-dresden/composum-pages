@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+        jcr:primaryType="cpp:Site">
+    <jcr:content
+            jcr:primaryType="cpp:SiteConfiguration"
+            sling:resourceType="composum/pages/stage/edit/site">
+        <languages
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="composum/pages/stage/edit/site/languages">
+            <english
+                    jcr:primaryType="nt:unstructured"
+                    key="en" label="english" default="true"/>
+            <german
+                    jcr:primaryType="nt:unstructured"
+                    key="de" label="deutsch"/>
+        </languages>
+        <releases
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="composum/pages/stage/edit/site/releases">
+        </releases>
+    </jcr:content>
+</jcr:root>

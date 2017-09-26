@@ -1,0 +1,411 @@
+@charset "UTF-8";
+
+@import "variables";
+@import "mixins";
+
+.composum-pages-stage-edit-tools {
+
+    .fa {
+        font-family: FontAwesome;
+        text-rendering: auto;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    .tabbed-widget {
+
+        &_tabs {
+            list-style: none;
+            margin: 0;
+            padding: 0 10px;
+            white-space: nowrap;
+            @include scrolloption($tools-pane-tabs-background);
+            background-color: $tools-pane-tabs-background;
+
+            &.right {
+                text-align: right;
+            }
+
+            &.icons-only {
+
+                .tabbed-widget {
+
+                    &_icon {
+                        font-size: $sidebar-handle-font-size;
+                        line-height: $sidebar-handle-font-size;
+                        padding: 2px;
+                    }
+
+                    &_label {
+                        display: none;
+                    }
+                }
+            }
+        }
+
+        &_handle {
+            @include tab-base($tools-pane-tabs-tab-color);
+            @include tab-top($tools-pane-tabs-tab-color);
+
+            &.active {
+                background-color: $tools-pane-tabs-tab-active;
+                @include tab-top($tools-pane-tabs-tab-active);
+
+                .tabbed-widget {
+
+                    &_link {
+                        cursor: default;
+                    }
+
+                }
+            }
+        }
+
+        &_link,
+        &_link:hover,
+        &_link:active,
+        &_link:focus,
+        &_link:visited {
+            display: inline-block;
+            @include default-font;
+            text-decoration: none;
+            color: $tools-pane-tabs-tab-label;
+            padding: 1px 4px 0;
+            cursor: hand;
+        }
+
+        &.locked {
+
+            .tabbed-widget {
+
+                &_link {
+                    color: #aaa;
+                    cursor: not-allowed;
+                }
+
+                &_handle.active {
+
+                    .tabbed-widget {
+
+                        &_link {
+                            color: $tools-pane-tabs-tab-label;
+                            cursor: default;
+                        }
+                    }
+                }
+            }
+        }
+
+        .locked .active & {
+            color: $tools-pane-tabs-tab-label;
+        }
+
+        &_panel {
+            display: none;
+
+            &.active {
+                display: block;
+            }
+        }
+    }
+
+    textarea {
+
+        &.form-control {
+            height: auto;
+        }
+    }
+
+    .composum-pages-edit-widget {
+
+        &_codearea {
+
+            .composum-pages-edit-widget {
+
+                &_editor {
+                    min-height: 100px;
+                }
+            }
+        }
+    }
+}
+
+.composum-pages-stage-edit-sidebar-logo {
+
+    &_image {
+        position: absolute;
+        top: 2px;
+        left: 5px;
+    }
+
+    &_text {
+        position: absolute;
+        top: 1px;
+        left: 67px;
+        padding: 3px 5px;
+        line-height: 14px;
+        text-align: right;
+        color: #eee;
+    }
+
+    &_title {
+        font-family: 'robotothin_italic';
+        font-size: 14px;
+    }
+
+    &_subtitle {
+        font-family: 'robotoregular';
+        font-size: 13px;
+    }
+}
+
+.composum-pages-stage-edit-sidebar-navigation,
+.composum-pages-stage-edit-sidebar-context {
+    overflow: hidden;
+
+    &_tabs {
+
+        &.tabbed-widget_tabs {
+            padding-top: 7px;
+        }
+    }
+}
+
+.composum-pages-component-tile {
+    padding: $tools-pane-padding;
+    @include default-font;
+
+    &_icon,
+    &_title,
+    &_name {
+        line-height: $default-font-size + 6px;
+    }
+
+    &_icon,
+    &_title {
+        display: inline-block;
+    }
+
+    &_name {
+        display: block;
+        float: right;
+        margin-left: 10px;
+        opacity: 0.7;
+    }
+
+    &_name,
+    &_path,
+    &_type,
+    &_description {
+        font-size: $hint-font-size;
+    }
+
+    &_description {
+        font-style: italic;
+    }
+
+    &_icon {
+        width: 30px;
+    }
+}
+
+.composum-pages-stage-edit-sidebar {
+
+    .composum-pages-component-tile {
+        background: $tools-tile-background;
+        color: $tools-pane-foreground;
+    }
+
+    /**
+     * sidebar tree
+     */
+    .composum-pages-tools {
+        overflow: hidden;
+        @include default-font;
+
+        &,
+        &_panel,
+        &_actions,
+        &_search-panel {
+            position: absolute;
+            left: 0;
+            right: 0;
+            margin: 0;
+        }
+
+        & {
+            top: 45px;
+            bottom: 40px;
+        }
+
+        &_search-panel {
+            display: none;
+        }
+
+        &_actions {
+            display: none;
+        }
+
+        &_left-actions {
+            float: left;
+            margin-left: - $edit-actions-spacing-h;
+        }
+
+        &_right-actions {
+            float: right;
+            margin-right: - $edit-actions-spacing-h;
+
+            .composum-pages-tools {
+
+                &_menu {
+                    right: 0;
+                    left: auto;
+                }
+            }
+        }
+
+        &_panel,
+        &_search-panel {
+            top: $tools-pane-padding;
+            left: $tools-pane-padding;
+            right: $tools-pane-padding;
+            bottom: $tools-pane-padding + 40px;
+            @include scrolldark;
+        }
+
+        .composum-pages-EDIT_body & {
+
+            &_actions {
+                display: block;
+                top: 2px;
+                left: $tools-pane-padding;
+                right: $tools-pane-padding;
+                height: 42px;
+                border-bottom: 1px solid #888;
+            }
+
+            &_panel,
+            &_search-panel {
+                top: 40px + $tools-pane-padding;
+            }
+        }
+
+        &_search-open {
+
+            .composum-pages-tools {
+
+                &_panel {
+                    display: none;
+                }
+
+                &_search-panel {
+                    display: block;
+                }
+            }
+        }
+
+        &_button {
+            @include tools-button;
+
+            &.disabled,
+            &.disabled.active,
+            &.disabled.focus,
+            &.disabled:active,
+            &.disabled:focus,
+            &.disabled:hover,
+            &[disabled],
+            &[disabled].active,
+            &[disabled].focus,
+            &[disabled]:active,
+            &[disabled]:focus,
+            &[disabled]:hover {
+                background-color: #444;
+            }
+
+            &.hidden {
+                display: none;
+            }
+        }
+
+        &_button-label {
+            display: none;
+        }
+
+        &_menu,
+        &_search-input {
+            @include default-font;
+        }
+
+        &_button-group.btn-group {
+            margin: $edit-actions-spacing-h;
+        }
+
+        .alert {
+            padding: 5px;
+        }
+
+        .jstree-node,
+        .jstree-anchor,
+        .jstree-anchor:hover,
+        .jstree-anchor:focus,
+        .jstree-icon {
+            color: #fff;
+            text-decoration: none;
+            font-size: $default-font-size;
+        }
+
+        .jstree-node,
+        .jstree-node > .jstree-anchor {
+            @include default-font;
+        }
+
+        .jstree-node.intermediate,
+        .jstree-node.intermediate > .jstree-anchor {
+            font-family: 'robotolight_italic';
+        }
+
+        .jstree-icon {
+            margin: 1px 4px 4px 0;
+        }
+
+        .jstree-anchor {
+            margin: 2px 0 3px;
+        }
+
+        .jstree-wholerow {
+            height: 27px;
+        }
+    }
+}
+
+.composum-pages-stage-edit-sidebar-navigation {
+
+    .composum-pages-component-tile {
+        margin: $tools-pane-padding 0;
+    }
+}
+
+.composum-pages-stage-edit-sidebar-context {
+
+    .composum-pages-component-tile {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        margin: 0;
+        height: 80px;
+        overflow: hidden;
+    }
+}
+
+.composum-pages-stage-edit-tools-tree-pages {
+
+    &_site-context {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 40px;
+        background-color: $tools-pane-tabs-background;
+    }
+}

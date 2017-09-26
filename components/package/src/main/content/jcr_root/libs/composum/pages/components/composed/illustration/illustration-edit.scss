@@ -1,0 +1,39 @@
+@charset "UTF-8";
+
+@import "../../css/variables";
+
+.composum-pages-EDIT_body {
+
+    .composum-pages-components-composed-illustration {
+
+        &_image {
+
+            .composum-pages-components-composed-illustration-annotation {
+
+                &_shape {
+                    min-width: $illustration-annotation-shape-size;
+                    min-height: $illustration-annotation-shape-size;
+                }
+            }
+        }
+
+        &-annotation {
+            position: static;
+            display: block;
+            margin: 0;
+
+            &_arrow {
+                display: none;
+            }
+
+            &_content {
+                position: static;
+                margin: 0 !important;
+                height: 80px;
+                overflow: hidden;
+                background-color: inherit;
+                color: inherit;
+            }
+        }
+    }
+}

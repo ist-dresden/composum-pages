@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+        jcr:primaryType="sling:OrderedFolder"
+        embed="[composum/pages/stage/edit/js/pages.js,
+                composum/pages/stage/edit/js/surface.js,
+                composum/pages/stage/edit/js/tools.js,
+                composum/pages/stage/edit/js/toolbars.js,
+                composum/pages/stage/edit/js/dialogs.js,
+                composum/pages/stage/edit/js/actions.js]"/>

@@ -1,0 +1,196 @@
+@charset "UTF-8";
+
+@import "../../css/variables";
+@import "../../css/mixins";
+
+.composum-pages-components-composed-illustration {
+    position: relative;
+
+    &_image {
+        position: relative;
+
+        .composum-pages-components-composed-illustration-annotation {
+
+            &_shape {
+                position: absolute;
+                z-index: $illustration-annotation-handle-layer;
+                width: $illustration-annotation-shape-size;
+                height: $illustration-annotation-shape-size;
+                margin-top: (- $illustration-annotation-shape-size / 2);
+                margin-left: (- $illustration-annotation-shape-size / 2);
+                background-color: $illustration-annotation-background;
+                color: $illustration-annotation-foreground;
+                text-align: center;
+
+                &:before {
+                    content: '';
+                    display: block;
+                    padding-top: 100%;
+                }
+
+                &.type {
+
+                    &-circle {
+                        border-radius: $illustration-annotation-shape-size / 2;
+                    }
+
+                    &-roundrect {
+                        border-radius: $illustration-annotation-shape-size / 4;
+                    }
+                }
+
+                &.icon {
+
+                    &-number {
+
+                        &:before {
+                            display: none;
+                        }
+                    }
+                }
+
+                i {
+                    margin-top: -$illustration-annotation-shape-size;
+                    width: $illustration-annotation-shape-size;
+                    height: $illustration-annotation-shape-size;
+                    font-size: $illustration-annotation-shape-size - 4;
+                    line-height: $illustration-annotation-shape-size;
+                    font-style: normal;
+                }
+            }
+        }
+    }
+
+    &-annotation {
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        display: none;
+
+        &.visible {
+            display: block;
+        }
+
+        &_arrow,
+        &_content {
+            position: absolute;
+        }
+
+        &.align {
+
+            &-left {
+
+                .composum-pages-components-composed-illustration-annotation {
+
+                    &_arrow {
+                        margin-right: $illustration-annotation-shape-size / 2 + $illustration-annotation-arrow-length;
+
+                        &:before {
+                            @include arrow-right($illustration-annotation-background,
+                                    $illustration-annotation-arrow-length, $illustration-annotation-arrow-size);
+                        }
+                    }
+
+                    &_content {
+                        margin-right: $illustration-annotation-shape-size / 2 + $illustration-annotation-arrow-length;
+                    }
+                }
+            }
+
+            &-right {
+
+                .composum-pages-components-composed-illustration-annotation {
+
+                    &_arrow {
+                        margin-left: $illustration-annotation-shape-size / 2 + $illustration-annotation-arrow-length;
+
+                        &:before {
+                            @include arrow-left($illustration-annotation-background,
+                                    $illustration-annotation-arrow-length, $illustration-annotation-arrow-size);
+                        }
+                    }
+
+                    &_content {
+                        margin-left: $illustration-annotation-shape-size / 2 + $illustration-annotation-arrow-length;
+                    }
+                }
+            }
+
+            &-top {
+
+                .composum-pages-components-composed-illustration-annotation {
+
+                    &_arrow {
+                        margin-bottom: $illustration-annotation-shape-size / 2 + $illustration-annotation-arrow-length;
+
+                        &:before {
+                            @include arrow-down($illustration-annotation-background,
+                                    $illustration-annotation-arrow-size, $illustration-annotation-arrow-length);
+                        }
+                    }
+
+                    &_content {
+                        margin-bottom: $illustration-annotation-shape-size / 2 + $illustration-annotation-arrow-length;
+                    }
+                }
+            }
+
+            &-bottom {
+
+                .composum-pages-components-composed-illustration-annotation {
+
+                    &_arrow {
+                        margin-top: $illustration-annotation-shape-size / 2 + $illustration-annotation-arrow-length;
+
+                        &:before {
+                            @include arrow-up($illustration-annotation-background,
+                                    $illustration-annotation-arrow-size, $illustration-annotation-arrow-length);
+                        }
+                    }
+
+                    &_content {
+                        margin-top: $illustration-annotation-shape-size / 2 + $illustration-annotation-arrow-length;
+                    }
+                }
+            }
+        }
+
+        &_content {
+            z-index: $illustration-annotation-content-layer;
+            padding: $bootstrap-spacing-v $bootstrap-spacing-h;
+            background-color: $illustration-annotation-background;
+            color: $illustration-annotation-foreground;
+
+            & * {
+                margin: 0;
+            }
+        }
+
+        &_title {
+            margin-bottom: $bootstrap-spacing-v;
+        }
+
+        &_text {
+
+            p, ul, ol {
+                margin-top: $bootstrap-spacing-v / 2;
+            }
+        }
+
+        &_next {
+            display: block;
+            width: 100%;
+            padding-top: $bootstrap-spacing-v / 2;
+            text-align: right;
+            color: $illustration-annotation-foreground;
+            opacity: 0.9;
+
+            &:hover {
+                color: $illustration-annotation-hover-fg;
+                opacity: 1.0;
+            }
+        }
+    }
+}

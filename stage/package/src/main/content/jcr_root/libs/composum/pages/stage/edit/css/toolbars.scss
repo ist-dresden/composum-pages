@@ -1,0 +1,161 @@
+@charset "UTF-8";
+
+@import "variables";
+@import "mixins";
+
+body {
+
+    &.composum-pages-version-view {
+
+        .composum-pages-stage-edit-actions {
+            display: none;
+        }
+    }
+}
+
+/**
+ * edit toolbar
+ */
+
+.composum-pages-stage-edit-tools {
+
+    .composum-pages-stage-edit-actions {
+        position: fixed;
+        top: 0;
+        right: 25%;
+        z-index: $edit-actions-layer;
+        max-width: 60%;
+        display: inline-block;
+        white-space: nowrap;
+        padding: $edit-actions-spacing-v 0;
+        height: $edit-actions-height;
+        background: $edit-actions-background;
+        @include trapezoid-top($edit-actions-background, $edit-actions-corner-width, $edit-actions-height);
+
+        &_page-view {
+            float: right;
+
+            .composum-pages-stage-edit-toolbar {
+
+                &_edit {
+                    display: block;
+                }
+
+                &_preview {
+                    display: none;
+                }
+
+                &_hide {
+                    margin: 0;
+                }
+            }
+
+            .composum-pages-EDIT_body & {
+
+                .composum-pages-stage-edit-toolbar {
+
+                    &_edit {
+                        display: none;
+                    }
+
+                    &_preview {
+                        display: block;
+                    }
+                }
+            }
+        }
+
+        &_component {
+            float: left;
+
+            .composum-pages-stage-edit-toolbar {
+                display: inline-block;
+                margin-right: $edit-actions-spacing-h;
+                padding-right: $edit-actions-spacing-h;
+                border-right: $edit-actions-separator;
+            }
+        }
+    }
+}
+
+@media screen and (min-width: 480px) {
+
+    .composum-pages-stage-edit-tools {
+
+        .composum-pages-stage-edit-actions {
+            right: 30%;
+            max-width: 40%;
+        }
+    }
+}
+
+.composum-pages-stage-edit-tools {
+
+    .composum-pages-stage-edit-toolbar {
+        display: inline-block;
+        white-space: nowrap;;
+
+        &_label {
+            display: none;
+        }
+
+        &_button {
+            display: block;
+            float: left;
+            margin: 0 $edit-actions-spacing-h;
+            @include button;
+        }
+
+        &_button,
+        &_button:visited {
+            color: $edit-actions-foreground;
+        }
+
+        &_button:hover,
+        &_button:focus {
+            color: $edit-actions-highlight;
+            text-decoration: none;
+        }
+
+        &_edit {
+            text-align: right;
+            padding: 2px 0 0;
+        }
+
+        &_language {
+            width: auto;
+            margin-right: 0;
+            @include default-font;
+            line-height: $edit-actions-button-size + $edit-actions-spacing-v;
+        }
+
+        &_handle {
+            margin: 0;
+        }
+
+        .composum-pages-language-menu {
+
+            &_link {
+                position: relative;
+                @include default-font;
+            }
+
+            &_label, &_key {
+                display: inline-block;
+            }
+
+            &_label {
+                padding-right: 6rem;
+                color: $bootstrap-color-info;
+            }
+
+            &_key {
+                position: absolute;
+                top: 4px;
+                right: 18px;
+                @include monospace;
+                color: $bootstrap-color-mute;
+            }
+        }
+    }
+}

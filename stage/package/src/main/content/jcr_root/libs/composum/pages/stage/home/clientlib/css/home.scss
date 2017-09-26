@@ -1,0 +1,77 @@
+.composum-pages-stage-home {
+
+    h1, h2, h3, h4, h5, h6, li, td, p, div {
+        font-family: 'robotolight', sans-serif;
+        font-weight: normal;
+    }
+
+    &_top {
+        position: absolute;
+        left: 32px;
+        right: 32px;
+        color: #666;
+        opacity: 0.8;
+        margin: 0;
+        padding: 0;
+
+        .composum-pages-stage-home {
+
+            &_title {
+                font-size: 32px;
+                color: #aaa;
+            }
+
+            &_subtitle {
+                font-size: 20px;
+            }
+        }
+    }
+
+    &-sites {
+        width: 80%;
+        max-width: 600px;
+        margin: 140px auto;
+        padding: 20px;
+        background-color: rgba(120, 180, 100, 0.4);
+        font-size: 17px;
+
+        &_title {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        &_no-site {
+            padding: 20px 0;
+        }
+
+        .alert {
+            display: block;
+            max-width: 80%;
+            margin: 20px auto;
+            opacity: 0.9;
+            font-family: 'robotobold', sans-serif;
+            text-align: center;
+        }
+    }
+
+    &-tools {
+        position: relative;
+        bottom: 0;
+        margin-top: 3rem;
+        display: flex;
+        flex-wrap: wrap;
+
+        &_console-link {
+            flex-grow: 1;
+            opacity: 0.6;
+        }
+    }
+
+    &_wrapper {
+        position: relative;
+        background: #fff url(/libs/composum/platform/security/login/bg-ist-w-rg.png) 60% 50% no-repeat;
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 10px;
+    }
+}

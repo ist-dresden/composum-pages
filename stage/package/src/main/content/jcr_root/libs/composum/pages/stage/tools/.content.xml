@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="composum/pages/tools/collection">
+    <userView
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="composum/pages/stage/edit/tools/main/user"
+            categories="[navigation,browse,edit,develop]"
+            iconClass="user"
+            hint="Users Things"
+            title="User"
+            order="{Long}20"/>
+    <pagesTree
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="composum/pages/stage/edit/tools/tree/pages"
+            categories="[navigation,browse,edit,develop]"
+            iconClass="sitemap"
+            hint="Pages Tree"
+            title="Pages Tree"
+            order="{Long}60"/>
+    <assets
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="composum/pages/stage/edit/tools/main/assets"
+            categories="[navigation,edit,develop]"
+            iconClass="picture-o"
+            hint="Assets Selector"
+            title="Assets"
+            order="{Long}70"/>
+    <components
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="composum/pages/stage/edit/tools/main/components"
+            categories="[navigation,edit,develop]"
+            iconClass="cube"
+            hint="Component Selector"
+            title="Components"
+            order="{Long}80"/>
+    <developmentTree
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="composum/pages/stage/edit/tools/tree/develop"
+            categories="[navigation,develop]"
+            iconClass="wrench"
+            hint="Development Tree"
+            title="Development"
+            order="{Long}90"/>
+    <siteContext
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="composum/pages/stage/edit/tools/site/context"
+            categories="[context,edit,develop,site]"
+            iconClass="sitemap"
+            hint="Site Properties"
+            title="Site"
+            order="{Long}40"/>
+    <unreleased
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="composum/pages/stage/edit/tools/site/unreleased"
+            categories="[context,edit,develop,site]"
+            iconClass="thumbs-o-up"
+            hint="Pages to release"
+            title="Unreleased"
+            order="{Long}42"/>
+    <unversioned
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="composum/pages/stage/edit/tools/site/unversioned"
+            categories="[context,edit,develop,site]"
+            iconClass="check-square-o"
+            hint="Open Pages"
+            title="Unversioned"
+            order="{Long}44"/>
+    <pageContext
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="composum/pages/stage/edit/tools/page/context"
+            categories="[context,edit,develop,page]"
+            iconClass="globe"
+            hint="Page Properties"
+            title="Page"
+            order="{Long}42"/>
+    <pageVersions
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="composum/pages/stage/edit/tools/page/versions"
+            categories="[context,edit,develop,page]"
+            iconClass="history"
+            hint="Versions History"
+            title="Versions"
+            order="{Long}50"/>
+    <pageComments
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="composum/pages/stage/edit/tools/page/comments"
+            categories="[context,edit,develop,page]"
+            iconClass="commenting-o"
+            hint="Comments"
+            title="Comments"
+            order="{Long}60"/>
+    <pageStatistics
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="composum/pages/stage/edit/tools/page/statistics"
+            categories="[context,edit,develop,page]"
+            iconClass="bar-chart-o"
+            hint="Access Statistics"
+            title="Statistics"
+            order="{Long}70"/>
+    <containerContext
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="composum/pages/stage/edit/tools/container/context"
+            categories="[context,edit,develop,container]"
+            iconClass="cubes"
+            hint="Container Properties"
+            title="Container"
+            order="{Long}44"/>
+    <elementContext
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="composum/pages/stage/edit/tools/element/context"
+            categories="[context,edit,develop,element]"
+            iconClass="cube"
+            hint="Element Properties"
+            title="Element"
+            order="{Long}46"/>
+    <somethingContext
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="composum/pages/stage/edit/tools/something/context"
+            categories="[context,edit,develop,something]"
+            iconClass="puzzle-piece"
+            hint="Resource Properties"
+            title="Resource"
+            order="{Long}48"/>
+    <componentHelp
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="composum/pages/stage/edit/tools/main/support"
+            categories="[context,edit,develop,page,container,element]"
+            iconClass="question-circle-o"
+            hint="Component Help"
+            title="Help"
+            order="{Long}80"/>
+    <componentContext
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="composum/pages/stage/edit/tools/dev/component"
+            categories="[context,develop,page,container,element]"
+            iconClass="wrench"
+            hint="Component Implementation"
+            title="Component"
+            order="{Long}90"/>
+</jcr:root>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+        jcr:primaryType="cpp:Site">
+    <jcr:content jcr:primaryType="cpp:SiteConfiguration">
+        <languages jcr:primaryType="nt:unstructured">
+            <english jcr:primaryType="nt:unstructured"
+                    key="en" label="english" default="true"/>
+            <german jcr:primaryType="nt:unstructured"
+                    key="de" label="deutsch"/>
+            <spanish jcr:primaryType="nt:unstructured"
+                    key="es" label="español"/>
+            <french jcr:primaryType="nt:unstructured"
+                    key="fr" label="français"/>
+            <greek jcr:primaryType="nt:unstructured"
+                    key="el" label="ελληνικά"/>
+            <hebrew jcr:primaryType="nt:unstructured"
+                    key="he" label="עִבְרִית" direction="rtl"/>
+            <arabic jcr:primaryType="nt:unstructured"
+                    key="ar" label="العربية" direction="rtl"/>
+            <chinese jcr:primaryType="nt:unstructured"
+                    key="zh" label="普通话"/>
+        </languages>
+    </jcr:content>
+</jcr:root>

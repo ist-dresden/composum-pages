@@ -1,0 +1,190 @@
+@charset "UTF-8";
+
+@import "variables";
+@import "mixins";
+
+body {
+
+    &.composum-pages-version-view {
+
+        .composum-pages-stage-edit-tools {
+
+            &_navigation {
+                display: none;
+            }
+        }
+    }
+}
+
+.composum-pages-stage-edit-tools {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 100%;
+    z-index: $surface-layer;
+
+    .composum-pages-stage-edit-tools {
+
+        &_navigation,
+        &_context {
+            position: fixed;
+            top: 0;
+            width: 200px;
+            height: 100%;
+            z-index: $edit-tools-layer;
+            background-color: $tools-pane-background;
+            color: $tools-pane-foreground;
+        }
+
+        &_navigation {
+            left: 0;
+
+            .composum-pages-stage-edit-sidebar {
+
+                &_handle {
+                    right: -30px;
+                    @include trapezoid-left($edit-actions-background, $sidebar-handle-icon-width, $sidebar-handle-corner-width);
+                }
+
+                &_handle-icon {
+                    text-align: left;
+                }
+
+                &_mode-icon {
+                    padding-left: 2px;
+                    text-align: left;
+                }
+
+                &_closed {
+
+                    .composum-pages-stage-edit-sidebar {
+
+                        &_handle-icon {
+
+                            &:before {
+                                content: '\f054';
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        &_context {
+            right: 0;
+
+            .composum-pages-stage-edit-sidebar {
+
+                &_handle {
+                    left: - $sidebar-handle-icon-width;
+                    @include trapezoid-right($edit-actions-background, $sidebar-handle-icon-width, $sidebar-handle-corner-width);
+                }
+
+                &_handle-icon {
+                    text-align: right;
+                }
+
+                &_mode-icon {
+                    padding-right: 2px;
+                    text-align: right;
+                }
+
+                &_closed {
+
+                    .composum-pages-stage-edit-sidebar {
+
+                        &_handle-icon {
+
+                            &:before {
+                                content: '\f053';
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    .composum-pages-stage-edit-sidebar {
+
+        &,
+        &_content {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        &_handle {
+            position: absolute;
+            top: 30%;
+            width: $sidebar-handle-icon-width;
+            height: $sidebar-handle-icon-height + 4;
+            background-color: $tools-pane-background;
+            color: #eee;
+            font-size: $edit-actions-icon-font-size;
+
+            &:before, &:after {
+                position: absolute;
+                width: 0;
+                height: 0;
+                border-style: solid;
+                content: '';
+            }
+        }
+
+        &_handle-icon {
+            margin-top: $sidebar-handle-icon-insets;
+            width: $sidebar-handle-icon-width;
+            cursor: ew-resize;
+
+            &:before {
+                display: inline-block;
+                line-height: $sidebar-handle-icon-height;
+            }
+        }
+
+        &_mode-icon {
+            margin-top: -5px;
+            width: $sidebar-handle-icon-width;
+            font-size: $sidebar-mode-font-size;
+            cursor: col-resize;
+
+            &:before {
+                display: inline-block;
+                line-height: $sidebar-mode-icon-height;
+            }
+        }
+
+        &_overlap {
+
+            .composum-pages-stage-edit-sidebar {
+
+                &_mode-icon {
+
+                    &:before {
+                        content: '\f06e';
+                    }
+                }
+            }
+        }
+
+        &_closed {
+
+            .composum-pages-stage-edit-sidebar {
+
+                &_handle {
+                    height: $sidebar-handle-closed-height;
+                }
+
+                &_handle-icon {
+                    text-align: center;
+                }
+
+                &_mode-icon, &_content {
+                    display: none;
+                }
+            }
+        }
+    }
+}
