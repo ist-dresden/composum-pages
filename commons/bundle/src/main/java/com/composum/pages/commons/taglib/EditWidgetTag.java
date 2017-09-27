@@ -206,8 +206,7 @@ public class EditWidgetTag extends AbstractWidgetTag implements LoopTag {
     }
 
     @Override
-    protected void initialize(SlingBean component) {
-        super.initialize(component);
+    protected void additionalInitialization(SlingBean component) {
         if (component instanceof PropertyEditHandle) {
             PropertyEditHandle handle = (PropertyEditHandle) component;
             handle.setWidget(this);
