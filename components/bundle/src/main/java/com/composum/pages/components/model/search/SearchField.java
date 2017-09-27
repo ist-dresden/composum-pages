@@ -71,7 +71,7 @@ public class SearchField extends Element {
     /** The title (mouseover) for the search. */
     public String getHint() {
         if (hint == null) {
-            hint = getProperty(PROP_HINT, "");
+            hint = getInherited(PROP_HINT, "");
         }
         return hint;
     }
