@@ -1,0 +1,25 @@
+<sly data-sly-use.cpp="/libs/composum/platform/models/htl/cppl.html"
+     data-sly-use.cpn="/libs/composum/platform/models/htl/cpnl.html"/>
+
+<sly data-sly-call="${cpp.startEditDialog @ var='result', type='com.composum.pages.components.model.search.SearchResult',
+                title='Edit Search Result (HTL version)'}"/>
+
+<sly data-sly-call="${cpp.widget @ label='Selector',  property='selector',  type='text',  i18n='false',  rules='optional',
+    hint='Sling selector which renders a found resource as search result. Default &quot;searchItem&quot;.'}"/>
+
+<sly data-sly-call="${cpp.widget @ label='Template',  property='template',  type='text',  i18n='false',  rules='optional',
+    hint='Template for printing the search results. Takes precedence over selector.'}"/>
+
+<sly data-sly-call="${cpp.widget @ label='Search Root',  property='searchRoot',  type='path',  i18n='false',  rules='optional',
+    hint='Path where the search starts. Default: site-root.'}"/>
+
+<sly data-sly-call="${cpp.widget @ label='Page size',  property='pagesize',  type='text',  i18n='false',  rules='optional',
+    hint='Page size for the shown results.'}"/>
+
+<sly data-sly-call="${cpp.widget @ label='Headline',  property='headline',  type='textarea',  i18n='true',  rules='optional',
+    hint='The head for the search result (HTML) used as {@link MessageFormat} with the search expression used as argument {0}.'}"/>
+
+<sly data-sly-call="${cpp.widget @ label='Error text',  property='searchtermErrorText',  type='textarea',  i18n='true',  rules='optional',
+    hint='A text (HTML) to show when the user inputs faulty search terms. Describing the syntax is recommended.'}"/>
+
+<sly data-sly-call="${cpp.endEditDialog}"/>

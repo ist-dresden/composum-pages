@@ -1,0 +1,11 @@
+<sly data-sly-use.cpp="/libs/composum/platform/models/htl/cppl.html"
+     data-sly-use.cpn="/libs/composum/platform/models/htl/cpnl.html"/>
+<sly data-sly-use.searchresult="${'com.composum.pages.commons.service.SearchService.Result' @ fromScope='request',
+key='searchresult'}"/>
+<p>
+    <sly data-sly-call="${cpn.startLink @ href=searchresult.targetUrl, classes='title'}"/>
+    ${searchresult.title}
+    <sly data-sly-call="${cpn.endLink}"/>
+    <span class="score">(Score ${searchresult.score})</span><br/>
+    <span class="excerpt">${searchresult.excerpt}</span>
+</p>
