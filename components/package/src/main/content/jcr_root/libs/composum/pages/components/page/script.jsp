@@ -3,4 +3,4 @@
 --%><%@taglib prefix="cpn" uri="http://sling.composum.com/cpnl/1.0" %><%--
 --%><%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %><%--
 --%><cpp:defineObjects/>
-<cpn:clientlib type="js" path="composum/pages/components/clientlibs/page/body"/>
+<cpn:clientlib type="js" category="composum.pages.components.default"/>

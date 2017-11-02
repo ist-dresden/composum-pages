@@ -9,10 +9,7 @@
         <sling:call script="head.jsp"/>
     </cpp:head>
     <cpp:body>
-        <sling:call script="navbar.jsp"/>
-        <sling:call script="main.jsp"/>
-        <sling:call script="token.jsp"/>
-        <sling:call script="script.jsp"/>
+        <sling:call script="body.jsp"/>
     </cpp:body>
     </html>
 </cpp:model>
