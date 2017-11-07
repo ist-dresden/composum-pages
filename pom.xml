@@ -728,17 +728,17 @@
                 <version>1.10</version>
                 <scope>provided</scope>
             </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient-osgi</artifactId>
+                <version>4.4.1</version>
+                <scope>provided</scope>
+            </dependency>
 
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <version>15.0</version>
                 <artifactId>guava</artifactId>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.httpcomponents</groupId>
-                <artifactId>httpclient-osgi</artifactId>
-                <version>4.4.1</version>
                 <scope>provided</scope>
             </dependency>
 

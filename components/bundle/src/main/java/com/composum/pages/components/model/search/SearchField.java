@@ -1,8 +1,8 @@
 package com.composum.pages.components.model.search;
 
 import com.composum.pages.commons.model.Element;
+import com.composum.sling.core.util.LinkUtil;
 
-import java.net.URI;
 import java.net.URISyntaxException;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -104,11 +104,16 @@ public class SearchField extends Element {
      * Constructs the URL for the search result page from {@link #getSearchResultPath()} and {@link
      * #getSearchResultAnchor()}.
      */
-    public URI getSearchResultLink() throws URISyntaxException {
+    public String getSearchResultLink() throws URISyntaxException {
         StringBuilder buf = new StringBuilder();
-        if (isNotBlank(getSearchResultPath())) buf.append(getSearchResultPath()).append(".html");
-        if (isNotBlank(getSearchResultAnchor())) buf.append("#").append(getSearchResultAnchor());
-        return new URI(buf.toString());
+        String value;
+        if (isNotBlank(value = getSearchResultPath())) {
+            buf.append(LinkUtil.getUrl(context.getRequest(), value));
+        }
+        if (isNotBlank(value = getSearchResultAnchor())) {
+            buf.append("#").append(value);
+        }
+        return buf.toString();
 
     }
 
