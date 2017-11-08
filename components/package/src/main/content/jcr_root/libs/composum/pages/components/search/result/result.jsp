@@ -7,7 +7,7 @@
 <cpp:element var="model" type="com.composum.pages.components.model.search.SearchResult">
     ${model.headFormatted}
     <c:if test="${model.hasError}">
-        <div class="alert alert-danger" role="alert">${model.searchtermErrorText}</div>
+        <div class="alert alert-danger" role="alert">${cpn:rich(model.searchtermErrorText)}</div>
     </c:if>
     <c:forEach items="${model.results}" var="result">
         <%-- Transfer detail information (com.composum.pages.commons.service.SearchService.Result) to renderers. --%>

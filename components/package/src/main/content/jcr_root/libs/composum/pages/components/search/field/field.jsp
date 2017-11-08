@@ -6,16 +6,13 @@
 <cpp:element var="field" type="com.composum.pages.components.model.search.SearchField">
     <cpn:form role="search" action="${field.searchResultLink}" method="GET">
         <div class="${fieldCssBase}_group input-group" title="${cpn:text(field.hint)}">
-            <input type="text" name="search.text" class="${fieldCssBase}_input form-control" placeholder="${cpn:text(field.placeholderText)}"
+            <input type="text" name="search.term" class="${fieldCssBase}_input form-control"
+                   placeholder="${cpn:text(field.placeholderText)}" value="${cpn:text(field.searchTerm)}"
                    aria-labelledby="searchbutton" role="searchbox">
             <span class="${fieldCssBase}_button input-group-btn">
-                <button type="submit" class="btn btn-default ${cpn:text(field.buttonSymbol)}"
-                        id="searchbutton" aria-label="Search">
-                    <c:choose>
-                        <c:when test="${not empty field.buttonImage}"><cpn:image src="${field.buttonImage}"/></c:when>
-                        <c:otherwise>${cpn:text(field.buttonText)}</c:otherwise>
-                    </c:choose>
-                </button>
+                <button type="submit" class="btn btn-default fa fa-${cpn:text(field.buttonSymbol)}"
+                        id="searchbutton" aria-label="${cpn:i18n(slingRequest,'Search')}"><span
+                        class="button-text">${cpn:text(field.buttonText)}</span></button>
             </span>
         </div>
     </cpn:form>
