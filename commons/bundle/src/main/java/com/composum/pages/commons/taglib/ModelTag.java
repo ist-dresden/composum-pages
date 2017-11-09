@@ -178,11 +178,6 @@ public class ModelTag extends ComponentTag implements DynamicAttributes {
         return type;
     }
 
-    @Override
-    protected void initialize(SlingBean component) {
-        component.initialize(context, getModelResource(context));
-    }
-
     public Resource getModelResource(BeanContext context) {
         return context.getResource();
     }

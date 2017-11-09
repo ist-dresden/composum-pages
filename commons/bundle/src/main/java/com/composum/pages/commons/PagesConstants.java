@@ -45,6 +45,12 @@ public class PagesConstants {
 
     public static final String PROP_SLING_TARGET = "sling:target";
 
+    public static final String SUBNODE_STYLE = "style/";
+    public static final String PROP_VIEW_CATEGORY = SUBNODE_STYLE + "category.view";
+    public static final String PROP_EDIT_CATEGORY = SUBNODE_STYLE + "category.edit";
+    public static final String DEFAULT_VIEW_CATEGORY = "composum.pages.content.view";
+    public static final String DEFAULT_EDIT_CATEGORY = "composum.pages.content.edit";
+
     public static final String SEARCH_PROPS = "search/";
     /** Property of a page that, if true, hides the page in search results. */
     public static final String PROP_IGNORE_IN_SEARCH = SEARCH_PROPS + "ignoreInSearch";

@@ -76,9 +76,6 @@
 
                     <filters>
                         <filter>
-                            <root>/content/shared/composum/pages</root>
-                        </filter>
-                        <filter>
                             <root>/apps/composum/pages/components</root>
                         </filter>
                         <filter>

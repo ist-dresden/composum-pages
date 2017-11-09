@@ -1,0 +1,20 @@
+@charset "UTF-8";
+
+@import "../../../css/variables";
+
+.composum-pages-components-navigation-navbar {
+
+    &_search {
+        width: 180px;
+    }
+}
+
+@media screen and (max-width: $bootstrap-screen-xs-max) {
+
+    .composum-pages-components-navigation-navbar {
+
+        &_search {
+            display: none;
+        }
+    }
+}

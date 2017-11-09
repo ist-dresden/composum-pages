@@ -1,9 +1,14 @@
 @charset "UTF-8";
 
-/** general settings */
+/** bootstrap settings */
 
-$bootstrap-color-info: #337ab7;
-$bootstrap-color-mute: #777;
+$bootstrap-screen-sm-min: 768px !default;
+$bootstrap-screen-md-min: 992px !default;
+$bootstrap-screen-lg-min: 1200px !default;
+
+$bootstrap-screen-xs-max: ($bootstrap-screen-sm-min - 1) !default;
+$bootstrap-screen-sm-max: ($bootstrap-screen-md-min - 1) !default;
+$bootstrap-screen-md-max: ($bootstrap-screen-lg-min - 1) !default;
 
 $bootstrap-spacing-v: 10px;
 $bootstrap-spacing-h: 15px;

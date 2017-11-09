@@ -4,7 +4,8 @@
 --%><%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%><%--
 --%><cpp:defineObjects />
 <cpp:element var="menu" type="com.composum.pages.components.model.navigation.Menu" mode="none"
-             cssAdd="navbar navbar-default navbar-fixed-top" role="navigation">
+             cssBase="composum-pages-components-navigation-navbar" role="navigation"
+             cssAdd="navbar navbar-default navbar-fixed-top">
     <div class="${menuCssBase}_container container-fluid">
         <div class="${menuCssBase}_header navbar-header">
             <button type="button" class="${menuCssBase}_navbar-toggle navbar-toggle" data-toggle="collapse"

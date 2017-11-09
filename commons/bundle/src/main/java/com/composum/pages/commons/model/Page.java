@@ -20,10 +20,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.composum.pages.commons.PagesConstants.DEFAULT_EDIT_CATEGORY;
+import static com.composum.pages.commons.PagesConstants.DEFAULT_VIEW_CATEGORY;
 import static com.composum.pages.commons.PagesConstants.LANGUAGE_KEY;
 import static com.composum.pages.commons.PagesConstants.NODE_TYPE_PAGE;
 import static com.composum.pages.commons.PagesConstants.NODE_TYPE_PAGE_CONTENT;
+import static com.composum.pages.commons.PagesConstants.PROP_EDIT_CATEGORY;
 import static com.composum.pages.commons.PagesConstants.PROP_SLING_TARGET;
+import static com.composum.pages.commons.PagesConstants.PROP_VIEW_CATEGORY;
 
 public class Page extends ContentDriven<PageContent> {
 
@@ -182,6 +186,14 @@ public class Page extends ContentDriven<PageContent> {
             classes.add(LANGUAGE_KEY + "_" + languageKey);
         }
         return classes;
+    }
+
+    public String getViewClientlibCategory() {
+        return getInherited(PROP_VIEW_CATEGORY, DEFAULT_VIEW_CATEGORY);
+    }
+
+    public String getEditClientlibCategory() {
+        return getInherited(PROP_EDIT_CATEGORY, DEFAULT_EDIT_CATEGORY);
     }
 
     // forward / redirect

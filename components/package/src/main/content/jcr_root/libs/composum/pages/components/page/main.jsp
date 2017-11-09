@@ -3,6 +3,5 @@
 --%><%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %><%--
 --%><cpp:defineObjects/>
 <div class="composum-pages-components-page_body container-fluid">
-    <sling:call script="sidebar.jsp"/>
     <sling:call script="content.jsp"/>
 </div>

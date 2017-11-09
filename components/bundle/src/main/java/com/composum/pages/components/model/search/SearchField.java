@@ -1,11 +1,10 @@
 package com.composum.pages.components.model.search;
 
 import com.composum.pages.commons.model.Element;
+import com.composum.sling.core.util.LinkUtil;
 
-import java.net.URI;
 import java.net.URISyntaxException;
 
-import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 /**
@@ -17,8 +16,7 @@ public class SearchField extends Element {
     public static final String PROP_BUTTON_TEXT = "buttonText";
     /** Property name for {@link #getButtonSymbol()}. */
     public static final String PROP_BUTTON_SYMBOL = "buttonSymbol";
-    /** Property name for {@link #getButtonImage()}. */
-    public static final String PROP_BUTTON_IMAGE = "buttonImage";
+    public static final String DEFAULT_BUTTON_SYMBOL = "search";
     /** Property name for {@link #getHint()}. */
     public static final String PROP_HINT = "hint";
     /** Property name for {@link #getPlaceholderText()}. */
@@ -33,8 +31,8 @@ public class SearchField extends Element {
     private transient String buttonSymbol;
     /** @see #getPlaceholderText() */
     private transient String placeholderText;
-    /** @see #getButtonImage() */
-    private transient String buttonImage;
+    /** @see #getSearchTerm() */
+    private transient String searchTerm;
     /** @see #getHint() */
     private transient String hint;
     /** @see #getSearchResultPath() */
@@ -47,31 +45,21 @@ public class SearchField extends Element {
         if (buttonText == null) {
             buttonText = getInherited(PROP_BUTTON_TEXT, "");
         }
-        if (isBlank(getButtonImage()) && isBlank(getButtonSymbol())) return buttonText;
-        return "";
+        return buttonText;
     }
 
     /** Symbol for the search button - string:CSS. */
     public String getButtonSymbol() {
         if (buttonSymbol == null) {
-            if (isNotBlank(getButtonImage())) buttonSymbol = "";
-            else buttonSymbol = getInherited(PROP_BUTTON_SYMBOL, "");
+            buttonSymbol = getInherited(PROP_BUTTON_SYMBOL, DEFAULT_BUTTON_SYMBOL);
         }
         return buttonSymbol;
-    }
-
-    /** Image for the search button, overrides {@link #buttonSymbol} if present. */
-    public String getButtonImage() {
-        if (buttonImage == null) {
-            buttonImage = getInherited(PROP_BUTTON_IMAGE, "");
-        }
-        return buttonImage;
     }
 
     /** The title (mouseover) for the search. */
     public String getHint() {
         if (hint == null) {
-            hint = getProperty(PROP_HINT, "");
+            hint = getInherited(PROP_HINT, "");
         }
         return hint;
     }
@@ -82,6 +70,17 @@ public class SearchField extends Element {
             placeholderText = getInherited(PROP_PLACEHOLDER_TEXT, "");
         }
         return placeholderText;
+    }
+
+    /** The fulltext search expression, from the request parameter 'search.term'. */
+    public String getSearchTerm() {
+        if (searchTerm == null) {
+            searchTerm = getContext().getRequest().getParameter(SearchResult.PARAMETER_TERM);
+            if (searchTerm == null) {
+                searchTerm = "";
+            }
+        }
+        return searchTerm;
     }
 
     /** Page in which the search result is shown. path:Page, default current page. */
@@ -104,12 +103,15 @@ public class SearchField extends Element {
      * Constructs the URL for the search result page from {@link #getSearchResultPath()} and {@link
      * #getSearchResultAnchor()}.
      */
-    public URI getSearchResultLink() throws URISyntaxException {
+    public String getSearchResultLink() throws URISyntaxException {
         StringBuilder buf = new StringBuilder();
-        if (isNotBlank(getSearchResultPath())) buf.append(getSearchResultPath()).append(".html");
-        if (isNotBlank(getSearchResultAnchor())) buf.append("#").append(getSearchResultAnchor());
-        return new URI(buf.toString());
-
+        String value;
+        if (isNotBlank(value = getSearchResultPath())) {
+            buf.append(LinkUtil.getUrl(context.getRequest(), value));
+        }
+        if (isNotBlank(value = getSearchResultAnchor())) {
+            buf.append("#").append(value);
+        }
+        return buf.toString();
     }
-
 }
