@@ -8,7 +8,7 @@
     <cpp:head>
         <sling:call script="head.jsp"/>
     </cpp:head>
-    <cpp:body>
+    <cpp:body cssAdd="composum-pages-components-page">
         <sling:call script="body.jsp"/>
     </cpp:body>
     </html>
