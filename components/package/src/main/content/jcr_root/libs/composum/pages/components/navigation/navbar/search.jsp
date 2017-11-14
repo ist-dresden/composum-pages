@@ -3,9 +3,7 @@
 --%><%@taglib prefix="cpn" uri="http://sling.composum.com/cpnl/1.0"%><%--
 --%><cpp:defineObjects />
 <cpp:element var="menu" type="com.composum.pages.components.model.navigation.Menu" mode="none"
-             tagName="none">
-    <div class="${menuCssBase}_search navbar-form navbar-right">
-        <cpp:include resourceType="composum/pages/components/search/field" path="jcr:content/search"
-                     mode="request" />
-    </div>
+             tagName="li" cssBase="composum-pages-components-navigation-navbar_search" cssAdd="navbar-form">
+    <cpp:include resourceType="composum/pages/components/search/field" path="jcr:content/search"
+                 mode="request"/>
 </cpp:element>

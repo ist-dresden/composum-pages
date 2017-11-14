@@ -17,7 +17,6 @@
             </button>
             <sling:call script="branding.jsp"/>
         </div>
-        <sling:call script="search.jsp"/>
         <nav class="${menuCssBase}_navbar-right navbar-collapse collapse navbar-right">
             <ul class="${menuCssBase}_navbar-nav nav navbar-nav">
                 <c:forEach items="${menu.menuItems}" var="item">
@@ -25,6 +24,7 @@
                                  resourceType="composum/pages/components/navigation/menuitem"
                                  replaceSelectors="dropdown"/>
                 </c:forEach>
+                <sling:call script="search.jsp"/>
             </ul>
         </nav>
     </div>
