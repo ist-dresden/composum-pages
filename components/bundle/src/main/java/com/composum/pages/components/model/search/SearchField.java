@@ -1,8 +1,13 @@
 package com.composum.pages.components.model.search;
 
+import com.composum.pages.commons.PagesConstants;
 import com.composum.pages.commons.model.Element;
 import com.composum.sling.core.util.LinkUtil;
+import org.apache.sling.api.request.RequestParameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -11,6 +16,8 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
  * Models the possible configurations for a search field.
  */
 public class SearchField extends Element {
+
+    private static final Logger LOG = LoggerFactory.getLogger(SearchField.class);
 
     /** Property name for {@link #getButtonText()}. */
     public static final String PROP_BUTTON_TEXT = "buttonText";
@@ -75,7 +82,14 @@ public class SearchField extends Element {
     /** The fulltext search expression, from the request parameter 'search.term'. */
     public String getSearchTerm() {
         if (searchTerm == null) {
-            searchTerm = getContext().getRequest().getParameter(SearchResult.PARAMETER_TERM);
+            RequestParameter parameter = getContext().getRequest().getRequestParameter(SearchResult.PARAMETER_TERM);
+            if (parameter != null) {
+                try {
+                    searchTerm = parameter.getString(PagesConstants.ENCODING);
+                } catch (UnsupportedEncodingException ex) {
+                    LOG.error(ex.getMessage(), ex);
+                }
+            }
             if (searchTerm == null) {
                 searchTerm = "";
             }

@@ -10,6 +10,8 @@ import org.apache.sling.api.resource.ResourceResolver;
 
 public class PagesConstants {
 
+    public static final String ENCODING = "UTF-8";
+
     public static final String CPP_NAMESPACE = "cpp";
     public static final String CPP_PREFIX = CPP_NAMESPACE + ":";
     public static final String COMPOSUM_PREFIX = "composum-";

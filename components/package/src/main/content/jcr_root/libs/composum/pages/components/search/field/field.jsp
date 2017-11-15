@@ -5,6 +5,7 @@
 --%><cpp:defineObjects />
 <cpp:element var="field" type="com.composum.pages.components.model.search.SearchField">
     <cpn:form role="search" action="${field.searchResultLink}" method="GET">
+        <input name="_charset_" type="hidden" value="UTF-8" class="${fieldCssBase}_hidden"/>
         <div class="${fieldCssBase}_group input-group" title="${cpn:text(field.hint)}">
             <input type="text" name="search.term" class="${fieldCssBase}_input form-control"
                    placeholder="${cpn:text(field.placeholderText)}" value="${cpn:text(field.searchTerm)}"
