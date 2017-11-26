@@ -1,9 +1,9 @@
-.composum-pages-stage-home {
+@charset "UTF-8";
 
-    h1, h2, h3, h4, h5, h6, li, td, p, div {
-        font-family: 'robotolight', sans-serif;
-        font-weight: normal;
-    }
+@import "../../../edit/css/variables";
+@import "../../../edit/css/mixins";
+
+.composum-pages-stage-home {
 
     &_top {
         position: absolute;
@@ -17,12 +17,12 @@
         .composum-pages-stage-home {
 
             &_title {
-                font-size: 32px;
+                @include font('robotolight', 32px);
                 color: #aaa;
             }
 
             &_subtitle {
-                font-size: 20px;
+                @include font('robotolight', 20px);
             }
         }
     }
@@ -33,11 +33,11 @@
         margin: 140px auto;
         padding: 20px;
         background-color: rgba(120, 180, 100, 0.4);
-        font-size: 17px;
+        @include font('robotolight', 17px);
 
         &_title {
-            margin: 0;
-            font-size: 24px;
+            margin: 0 0 20px;
+            @include font('robotolight', 24px);
         }
 
         &_no-site {
@@ -49,8 +49,14 @@
             max-width: 80%;
             margin: 20px auto;
             opacity: 0.9;
-            font-family: 'robotobold', sans-serif;
+            @include font('robotobold', 17px);
             text-align: center;
+        }
+
+        &_site {
+            margin: 5px 0;
+            padding: 0;
+            background-color: rgba(255, 255, 255, 0.4);
         }
     }
 

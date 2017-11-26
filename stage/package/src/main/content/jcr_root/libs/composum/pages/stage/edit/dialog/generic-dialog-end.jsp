@@ -7,6 +7,8 @@
                     </div>
                 </div>
                 <div class="modal-footer ${dialogCssBase}_footer">
+                    <div class="${dialogCssBase}_hints">
+                    </div>
                     <button type="button" class="${dialogCssBase}_button-cancel ${dialogCssBase}_button btn btn-default" data-dismiss="modal">${cpn:i18n(slingRequest,'Cancel')}</button>
                     <button type="submit" class="${dialogCssBase}_button-submit ${dialogCssBase}_button btn btn-primary">${cpn:i18n(slingRequest,dialog.submitLabel)}</button>
                 </div>

@@ -48,11 +48,7 @@
             </div>
         </div>
     </div>
-    <div class="composum-pages-stage-edit-dialogs composum-widget">
-    </div>
-    <div class="composum-pages-stage-widget-dialogs composum-widget">
-        <sling:call script="dialogs.jsp"/>
-    </div>
+    <sling:call script="dialogs.jsp"/>
     <cpn:clientlib type="js" category="composum.pages.edit.frame"/>
     </body>
     </html>

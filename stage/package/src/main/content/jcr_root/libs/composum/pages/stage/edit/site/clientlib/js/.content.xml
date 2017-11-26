@@ -4,6 +4,5 @@
         depends="[category:composum.pages.widgets]"
         embed="[composum/pages/stage/edit/js/pages.js,
                 composum/pages/stage/edit/js/dialogs.js,
-                composum/pages/stage/edit/js/actions.js,
-                composum/pages/stage/edit/site/clientlib]">
+                composum/pages/stage/edit/js/actions.js]">
 </jcr:root>

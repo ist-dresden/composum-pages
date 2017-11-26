@@ -5,13 +5,12 @@
 --%><cpp:defineFrameObjects/>
 <cpp:editDialog var="site" type="com.composum.pages.commons.model.Site"
                 title="Create a new Site" selector="generic" submitLabel="Create" languageContext="false">
-    <cpp:editDialogTab tabId="template" label="Template">
-        <label class="control-label composum-pages-site-create_template"><cpn:text tagClass="label-text" value="Select a template" i18n="true"/></label>
-        <sling:include resourceType="composum/pages/stage/edit/site/templates"/>
-    </cpp:editDialogTab>
     <cpp:editDialogTab tabId="site" label="Site">
-        <cpp:widget label="Tenant" name="tenant" value="sites" type="text" disabled="true"/>
-        <cpp:widget label="Site Name" name="name" placeholder="the repository name (resource name)" type="text" rules="mandatory"/>
+        <cpp:widget label="Tenant" name="tenant" value="sites" type="text"/>
+        <cpp:widget label="Site Name" name="name" placeholder="the repository name (resource name)" type="text"/>
         <cpp:widget label="Site Title" name="title" placeholder="the more readable title of the site" type="text"/>
+    </cpp:editDialogTab>
+    <cpp:editDialogTab tabId="languages" label="Languages">
+        <sling:call script="/libs/composum/pages/stage/edit/site/languages/edit/dialog/languages.jsp"/>
     </cpp:editDialogTab>
 </cpp:editDialog>

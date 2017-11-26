@@ -3,8 +3,5 @@
 --%><%@taglib prefix="cpn" uri="http://sling.composum.com/cpnl/1.0" %><%--
 --%><%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %><%--
 --%><cpp:defineFrameObjects/>
-<div class="composum-pages-stage-edit-dialogs composum-widget">
-</div>
-<div class="composum-pages-stage-widget-dialogs composum-widget">
-    <sling:call script="widgets-dialogs.jsp"/>
-</div>
+<sling:call script="/libs/composum/nodes/commons/components/dialogs/path-select.jsp"/>
+<sling:call script="/libs/composum/nodes/commons/components/dialogs/alert.jsp"/>

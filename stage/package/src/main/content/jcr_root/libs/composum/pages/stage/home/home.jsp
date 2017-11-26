@@ -8,18 +8,25 @@
     <head>
         <meta name="viewport" content="width=device-width, minimum-scale=1, maximum-scale=1, user-scalable=no"/>
         <meta name="format-detection" content="telephone=no">
-        <title>Composum Platform - Sites</title>
-        <cpn:clientlib type="css" path="composum/pages/stage/home/clientlib"/>
+        <cpn:text tagName="title" value="${home.properties.pageHeadline}"/>
+        <cpn:clientlib type="css" category="composum.pages.stage.home"/>
     </head>
     <body class="composum-pages-stage-home">
     <div class="composum-pages-stage-home_wrapper">
         <div class="composum-pages-stage-home_top">
-            <h1 class="composum-pages-stage-home_title">Composum Platform</h1>
-            <h4 class="composum-pages-stage-home_subtitle">an Apache Sling Application Platform</h4>
+            <cpn:text tagName="h1" tagClass="composum-pages-stage-home_title"
+                      value="${home.properties.pageHeadline}"/>
+            <cpn:text tagName="h4" tagClass="composum-pages-stage-home_subtitle"
+                      value="${home.properties.pageSubheadline}"/>
         </div>
-        <sling:include resourceType="composum/pages/stage/home/sites"/>
+        <div class="composum-pages-stage-home-sites">
+            <cpn:text tagName="h2" tagClass="composum-pages-stage-home-sites_title" value="${home.title}"/>
+            <cpp:include resourceType="composum/pages/stage/edit/site/list"/>
+            <cpp:include resourceType="composum/pages/stage/home/tools"/>
+        </div>
     </div>
-    <cpn:clientlib type="js" path="composum/pages/stage/home/clientlib"/>
+    <sling:include resourceType="composum/pages/stage/edit/frame" replaceSelectors="dialogs"/>
+    <cpn:clientlib type="js" category="composum.pages.stage.home"/>
     </body>
     </html>
 </cpp:model>

@@ -5,10 +5,10 @@ import com.composum.pages.commons.model.Element;
 import com.composum.pages.commons.model.Page;
 import com.composum.pages.commons.model.Site;
 import com.composum.sling.core.filter.ResourceFilter;
-import org.apache.commons.collections.map.HashedMap;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class ResourceTypeUtil {
@@ -17,6 +17,7 @@ public class ResourceTypeUtil {
 
     public static final String EDIT_DIALOG_PATH = EDIT_PATH + "/dialog";
     public static final String EDIT_TILE_PATH = EDIT_PATH + "/tile";
+    public static final String EDIT_THUMBNAIL_PATH = EDIT_PATH + "/thumbnail";
     public static final String EDIT_TOOLBAR_PATH = EDIT_PATH + "/toolbar";
     public static final String TREE_ACTIONS_PATH = EDIT_PATH + "/tree";
 
@@ -38,6 +39,11 @@ public class ResourceTypeUtil {
     public static final String DEFAULT_CONTAINER_TILE = EDIT_DEFAULT_ROOT + "container/tile";
     public static final String DEFAULT_PAGE_TILE = EDIT_DEFAULT_ROOT + "page/tile";
     public static final String DEFAULT_SITE_TILE = EDIT_DEFAULT_ROOT + "site/tile";
+
+    public static final String DEFAULT_ELEMENT_THUMBNAIL = EDIT_DEFAULT_ROOT + "element/thumbnail";
+    public static final String DEFAULT_CONTAINER_THUMBNAIL = EDIT_DEFAULT_ROOT + "container/thumbnail";
+    public static final String DEFAULT_PAGE_THUMBNAIL = EDIT_DEFAULT_ROOT + "page/thumbnail";
+    public static final String DEFAULT_SITE_THUMBNAIL = EDIT_DEFAULT_ROOT + "site/thumbnail";
 
     public static final String DEFAULT_ACTIONS_ROOT = "composum/pages/stage/edit/actions/";
 
@@ -70,6 +76,17 @@ public class ResourceTypeUtil {
                     : (Container.isContainer(resolver, resource, type)
                     ? DEFAULT_CONTAINER_TILE
                     : DEFAULT_ELEMENT_TILE));
+        }
+    }
+
+    public static class ComponentThumbnailStrategy implements SubtypeStrategy {
+
+        public String getDefaultResourcePath(ResourceResolver resolver, Resource resource, String type) {
+            return Site.isSite(resource) || Site.isSiteConfiguration(resource) ? DEFAULT_SITE_THUMBNAIL
+                    : (Page.isPage(resource) || Page.isPageContent(resource) ? DEFAULT_PAGE_THUMBNAIL
+                    : (Container.isContainer(resolver, resource, type)
+                    ? DEFAULT_CONTAINER_THUMBNAIL
+                    : DEFAULT_ELEMENT_THUMBNAIL));
         }
     }
 
@@ -120,8 +137,9 @@ public class ResourceTypeUtil {
     public static final Map<String, SubtypeStrategy> SUBTYPES;
 
     static {
-        SUBTYPES = new HashedMap();
+        SUBTYPES = new HashMap<>();
         SUBTYPES.put(EDIT_TILE_PATH, new ComponentTileStrategy());
+        SUBTYPES.put(EDIT_THUMBNAIL_PATH, new ComponentThumbnailStrategy());
         SUBTYPES.put(EDIT_DIALOG_PATH, new EditDialogStrategy());
         SUBTYPES.put(NEW_DIALOG_PATH, new NewDialogStrategy());
         SUBTYPES.put(DELETE_DIALOG_PATH, new DeleteDialogStrategy());

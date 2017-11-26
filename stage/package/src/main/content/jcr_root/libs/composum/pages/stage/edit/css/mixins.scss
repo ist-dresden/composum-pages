@@ -93,6 +93,26 @@
     }
 }
 
+@mixin aspect-ratio-wrapper($width, $height) {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+
+    &:before {
+        content: "";
+        display: block;
+        padding-top: $height / $width * 100%;
+    }
+}
+
+@mixin aspect-ratio-element {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
 @mixin trapezoid-base {
 
     &:before, &:after {

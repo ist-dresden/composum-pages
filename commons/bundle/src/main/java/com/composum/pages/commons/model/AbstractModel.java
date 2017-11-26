@@ -33,8 +33,10 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import static com.composum.pages.commons.taglib.DefineObjectsTag.CURRENT_PAGE;
 import static com.composum.sling.platform.security.PlatformAccessFilter.ACCESS_MODE_KEY;
@@ -72,7 +74,8 @@ public abstract class AbstractModel implements SlingBean, Model {
     }
 
     /** the instance of the scripting context for the model (initialized) */
-    @Inject @Self
+    @Inject
+    @Self
     protected BeanContext context;
     protected transient SiteManager siteManager;
     protected transient PageManager pageManager;
@@ -83,6 +86,9 @@ public abstract class AbstractModel implements SlingBean, Model {
     protected ValueMap properties;
     /** inherited properties are initialized lazy */
     private transient InheritedValues inheritedValues;
+
+    private transient Map<String, Object> propertiesMap;
+    private transient Map<String, Object> inheritedMap;
 
     /** current access mode (author/public) od the contexts request */
     private transient PlatformAccessFilter.AccessMode accessMode;
@@ -486,6 +492,17 @@ public abstract class AbstractModel implements SlingBean, Model {
         return null;
     }
 
+    /**
+     * the generic map for direct use in templates
+
+     */
+    public Map<String, Object> getProperties() {
+        if (propertiesMap == null) {
+            propertiesMap = new GenericProperties();
+        }
+        return propertiesMap;
+    }
+
     // inherited properties
 
     public <T> T getInherited(String key, T defaultValue) {
@@ -544,10 +561,60 @@ public abstract class AbstractModel implements SlingBean, Model {
     }
 
     /**
+     * the generic map for direct use in templates
+     */
+    public Map<String, Object> getInherited() {
+        if (inheritedMap == null) {
+            inheritedMap = new GenericInherited();
+        }
+        return inheritedMap;
+    }
+
+    /**
      * create the inherited properties strategy (extension hook, defaults to an instance of InheritedValues)
      */
     protected InheritedValues createInheritedValues(Resource resource) {
         return new InheritedValues(resource);
+    }
+
+    // generic property access via generic Map for direct use in templates
+
+    public abstract class GenericMap extends HashMap<String, Object> {
+
+        public static final String UNDEFINED = "<undefined>";
+
+        /**
+         * delegates each 'get' to the localized methods and caches the result
+         */
+        @Override
+        public Object get(Object key) {
+            Object value = super.get(key);
+            if (value == null) {
+                value = getValue((String) key);
+                super.put((String) key, value != null ? value : UNDEFINED);
+            }
+            return value != UNDEFINED ? value : null;
+        }
+
+        protected abstract Object getValue(String key);
+    }
+
+    public class GenericProperties extends GenericMap {
+
+        @Override
+        public Object getValue(String key) {
+            return getProperty(key, Object.class);
+        }
+
+    }
+
+    public class GenericInherited extends GenericMap {
+
+        @Override
+        public Object getValue(String key) {
+            return getInherited(key, Object.class);
+        }
+
     }
 
     // Sites & Pages

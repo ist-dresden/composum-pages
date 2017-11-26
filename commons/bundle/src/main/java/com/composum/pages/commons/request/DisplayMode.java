@@ -14,6 +14,30 @@ public class DisplayMode extends RequestAspect<Stack<DisplayMode.Value>> {
     public static final String PARAMETER_NAME = "pages.mode";
     public static final String ATTRIBUTE_KEY = PAGES_PREFIX + "display-mode";
 
+    public static boolean isEditMode(BeanContext context) {
+        return isEditMode(current(context));
+    }
+
+    public static boolean isEditMode(Value value) {
+        return value == Value.EDIT || value == Value.DEVELOP;
+    }
+
+    public static boolean isPreviewMode(BeanContext context) {
+        return isPreviewMode(current(context));
+    }
+
+    public static boolean isPreviewMode(Value value) {
+        return value == Value.PREVIEW || value == Value.BROWSE;
+    }
+
+    public static boolean isLiveMode(BeanContext context) {
+        return isLiveMode(current(context));
+    }
+
+    public static boolean isLiveMode(Value value) {
+        return value == Value.NONE;
+    }
+
     public static DisplayMode instance = new DisplayMode();
 
     /**

@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ValueMap;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -17,7 +18,7 @@ import static com.composum.pages.commons.PagesConstants.NODE_TYPE_SITE;
 import static com.composum.pages.commons.PagesConstants.NODE_TYPE_SITE_CONFIGURATION;
 import static com.composum.pages.commons.PagesConstants.PROP_HOMEPAGE;
 
-public class Site extends ContentDriven<SiteConfiguration> {
+public class Site extends ContentDriven<SiteConfiguration> implements Comparable<Site> {
 
     public enum PublicMode {LIVE, PUBLIC, PREVIEW}
 
@@ -59,6 +60,11 @@ public class Site extends ContentDriven<SiteConfiguration> {
         initialize(context, resource);
     }
 
+    @Override
+    public int compareTo(@Nonnull Site site) {
+        return getName().compareTo(site.getName());
+    }
+
     // initializer extensions
 
     @Override
@@ -69,6 +75,14 @@ public class Site extends ContentDriven<SiteConfiguration> {
     @Override
     protected SiteConfiguration createContentModel(BeanContext context, Resource contentResource) {
         return new SiteConfiguration(context, contentResource);
+    }
+
+    // Site properties
+
+    @Override
+    public String getTitle() {
+        String title = super.getTitle();
+        return StringUtils.isNotBlank(title) ? title : getName();
     }
 
     // site hierarchy

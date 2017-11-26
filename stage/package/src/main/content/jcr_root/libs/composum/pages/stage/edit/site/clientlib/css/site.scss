@@ -1,0 +1,197 @@
+@charset "UTF-8";
+
+@import "../../../css/variables";
+@import "../../../css/mixins";
+
+.composum-pages-stage-site {
+
+    &_thumbnail {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 160px;
+
+        &_wrapper {
+            @include aspect-ratio-wrapper(4, 3);
+        }
+
+        &_picture {
+            @include aspect-ratio-element();
+        }
+
+        &_image {
+            width: 100%;
+        }
+
+        &_placeholder {
+            width: 100%;
+            height: 100%;
+            padding: 7px 14px;
+            background: rgba(255, 255, 255, 0.4);
+            color: #ddd;
+            font-size: 72px;
+        }
+    }
+
+    &_tile {
+        position: relative;
+        display: block;
+        width: 100%;
+        margin: 0;
+        padding: 5px;
+        min-height: 120px;
+        color: #444;
+
+        &,
+        &:hover,
+        &:focus,
+        &:visited {
+            text-decoration: none;
+        }
+
+        &:hover {
+            background: rgba(0, 0, 0, 0.2);
+            color: #822;
+        }
+
+        &_text {
+            margin-left: 170px;
+            @include font('robotolight', 17px);
+        }
+
+        &_title,
+        &_description,
+        &_path {
+            position: absolute;
+            left: 170px;
+            right: 40px;
+            margin: 0;
+            padding: 0;
+            overflow: scroll;
+        }
+
+        &_title {
+            top: 9px;
+            @include font('robotolight', 20px);
+        }
+
+        &_description {
+            top: 37px;
+            bottom: 24px;
+            @include font('robotolight', 14px);
+            line-height: 1.3em;
+
+            p {
+                margin: 0;
+            }
+        }
+
+        &_path {
+            bottom: 6px;
+            @include font('robotolight', 14px);
+        }
+    }
+}
+
+.composum-pages-stage-sites {
+    width: 100%;
+    @include font('robotolight', 17px);
+
+    &_title {
+        margin: 0 0 20px;
+        @include font('robotolight', 24px);
+    }
+
+    &_no-site {
+        padding: 20px 0;
+    }
+
+    .alert {
+        display: block;
+        max-width: 80%;
+        margin: 20px auto;
+        opacity: 0.9;
+        @include font('robotobold', 17px);
+        text-align: center;
+    }
+
+    &_list {
+        list-style: none;
+        padding: 0;
+        max-height: 300px;
+        overflow: scroll;
+    }
+
+    &_site {
+        position: relative;
+        margin: 5px 0;
+        padding: 0;
+        background-color: rgba(255, 255, 255, 0.4);
+    }
+
+    &_templates {
+
+        .composum-pages-stage-site {
+
+            &_tile {
+                padding-left: 30px;
+                background: #eee;
+
+                &_text {
+                    margin-left: 200px;
+                }
+
+                &_title,
+                &_description,
+                &_path {
+                    margin-left: 30px;
+                }
+            }
+
+            &_thumbnail {
+                left: 30px;
+            }
+        }
+
+        .composum-pages-stage-sites {
+
+            &_list {
+                max-height: 300px;
+                margin-bottom: 0;
+            }
+
+            &_no-template {
+                //margin: 0;
+
+                .composum-pages-stage-site {
+
+                    &_tile {
+                        min-height: 80px;
+                        background: #ddd;
+                    }
+
+                    &_thumbnail {
+
+                        &_wrapper {
+                            @include aspect-ratio-wrapper(4, 2);
+                        }
+                    }
+                }
+
+                .composum-pages-stage-sites {
+
+                    &_radio {
+                        top: 27px;
+                    }
+                }
+            }
+        }
+    }
+
+    &_radio {
+        z-index: 1;
+        position: absolute;
+        top: 45px;
+        left: 8px;
+    }
+}

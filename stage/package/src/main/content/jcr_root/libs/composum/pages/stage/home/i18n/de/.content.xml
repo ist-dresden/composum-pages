@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+        jcr:primaryType="nt:unstructured"
+        title="Ihre Sites"
+        pageSubheadline="ein CMS auf Apache Sling Basis"
+        createSiteLabel="Neue Site erzeugen"
+        noSitesMessage="Es ist noch keine Site verfügbar für Sie auf dieser Platfform."
+        noSitesCreateLinkLabel="Erzeugen Sie Ihre erste Site jetzt..."/>

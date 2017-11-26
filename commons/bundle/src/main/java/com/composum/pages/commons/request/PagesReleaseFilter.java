@@ -53,6 +53,8 @@ public class PagesReleaseFilter implements Filter {
 
     private static final Logger LOG = LoggerFactory.getLogger(PagesReleaseFilter.class);
 
+    public static final String ATTR_CACHE_DISABLED = "com.composum.platform.cache.component.ComponentCacheService#cacheDisabled";
+
     public static final String FILTER_ENABLED = "release.filter.enabled";
     @Property(
             name = FILTER_ENABLED,
@@ -170,8 +172,15 @@ public class PagesReleaseFilter implements Filter {
             }
 
             if (StringUtils.isNotBlank(release)) {
+                LOG.debug ("LIVE mode, release '{}' selected", release);
                 request.setAttribute(ResourceResolverChangeFilter.ATTRIBUTE_NAME, release);
                 request.setAttribute(DisplayMode.ATTRIBUTE_KEY, DisplayMode.create(DisplayMode.Value.NONE));
+            }
+
+            // disable component caching if in edit mode
+            if (DisplayMode.isEditMode(context)) {
+                LOG.debug ("EDIT mode, no cache for '{}'", resource.getPath());
+                slingRequest.setAttribute(ATTR_CACHE_DISABLED, Boolean.TRUE);
             }
         }
 
@@ -216,7 +225,8 @@ public class PagesReleaseFilter implements Filter {
 
     @Activate
     @Modified
-    public void activate(ComponentContext context) {bundleContext = context.getBundleContext();
+    public void activate(ComponentContext context) {
+        bundleContext = context.getBundleContext();
         ignoredHostPatterns = new ArrayList<>();
         ignoredUriPatterns = new ArrayList<>();
         ignoredPathPatterns = new ArrayList<>();

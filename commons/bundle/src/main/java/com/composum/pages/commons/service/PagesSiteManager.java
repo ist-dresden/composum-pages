@@ -5,6 +5,8 @@ import com.composum.pages.commons.model.Model;
 import com.composum.pages.commons.model.Site;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.util.ResourceUtil;
+import com.composum.sling.platform.staging.query.Query;
+import com.composum.sling.platform.staging.query.QueryBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Reference;
@@ -15,8 +17,14 @@ import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 
 import javax.jcr.RepositoryException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import static com.composum.pages.commons.PagesConstants.NODE_TYPE_SITE;
+import static org.apache.jackrabbit.JcrConstants.JCR_NAME;
 
 @Component(immediate = true)
 @Service
@@ -33,7 +41,7 @@ public class PagesSiteManager extends ResourceManager<Site> implements SiteManag
         SITE_ROOT_PROPERTIES = new HashMap<>();
         SITE_ROOT_PROPERTIES.put(JcrConstants.JCR_PRIMARYTYPE, "sling:Folder");
         SITE_PROPERTIES = new HashMap<>();
-        SITE_PROPERTIES.put(JcrConstants.JCR_PRIMARYTYPE, PagesConstants.NODE_TYPE_SITE);
+        SITE_PROPERTIES.put(JcrConstants.JCR_PRIMARYTYPE, NODE_TYPE_SITE);
         SITE_CONTENT_PROPERTIES = new HashMap<>();
         SITE_CONTENT_PROPERTIES.put(JcrConstants.JCR_PRIMARYTYPE, PagesConstants.NODE_TYPE_SITE_CONFIGURATION);
         SITE_CONTENT_PROPERTIES.put(ResourceUtil.PROP_RESOURCE_TYPE, SITE_RESOURCE_TYPE);
@@ -78,11 +86,52 @@ public class PagesSiteManager extends ResourceManager<Site> implements SiteManag
             throws PersistenceException {
         ResourceResolver resolver = context.getResolver();
         Resource tenantsContent = resolver.getResource("/content");
-        Resource siteBase = resolver.getResource(tenantsContent, tenant);
+        Resource siteBase = StringUtils.isNotBlank(tenant)
+                ? resolver.getResource(tenantsContent, tenant)
+                : tenantsContent;
         if (siteBase == null) {
             siteBase = resolver.create(tenantsContent, tenant, SITE_ROOT_PROPERTIES);
         }
         return siteBase;
+    }
+
+    public List<Site> getSites(BeanContext context, Resource siteBase) {
+        List<Site> result = new ArrayList<>();
+        try {
+            ResourceResolver resolver = context.getResolver();
+            String queryRoot = siteBase != null ? siteBase.getPath() : "/";
+            Query query = resolver.adaptTo(QueryBuilder.class).createQuery();
+            query.path(queryRoot).type(NODE_TYPE_SITE).orderBy(JCR_NAME);
+            Iterable<Resource> found = query.execute();
+            for (Resource siteRes : found) {
+                result.add(createBean(context, siteRes));
+            }
+        } catch (RepositoryException ex) {
+            LOG.error(ex.getMessage(), ex);
+        }
+        return result;
+    }
+
+    public List<Site> getSites(BeanContext context, String tenant) {
+        try {
+            Resource siteBase = getSiteBase(context, tenant);
+            return getSites(context, siteBase);
+        } catch (PersistenceException ex) {
+            LOG.error(ex.getMessage(), ex);
+            return Collections.emptyList();
+        }
+    }
+
+    public List<Site> getSiteTemplates(BeanContext context, String tenant) {
+        UniqueSiteList result = new UniqueSiteList();
+        ResourceResolver resolver = context.getResolver();
+        for (String root : resolver.getSearchPath()) {
+            Resource siteBase = resolver.getResource(StringUtils.isNotBlank(tenant) ? root + tenant : root);
+            List<Site> templates = getSites(context, siteBase);
+            result.addAll(templates);
+        }
+        result.sort();
+        return result;
     }
 
     public Site createSite(BeanContext context, String tenant, String siteName, String homepageType)
