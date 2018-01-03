@@ -1,0 +1,85 @@
+@charset "UTF-8";
+
+@import "../../../edit/css/variables";
+@import "../../../edit/css/mixins";
+
+.composum-pages-edit-widget {
+
+    &_site-template {
+        width: 100%;
+        @include font('robotolight', 17px);
+
+        .composum-pages-stage-site {
+
+            &_tile {
+                padding-left: 30px;
+                background: #eee;
+
+                &_text {
+                    margin-left: 200px;
+                }
+
+                &_title,
+                &_description,
+                &_path {
+                    margin-left: 30px;
+                }
+            }
+
+            &_thumbnail {
+                left: 30px;
+            }
+        }
+
+        .composum-pages-edit-widget {
+
+            &_list {
+                list-style: none;
+                max-height: 300px;
+                padding: 0;
+                margin-bottom: 0;
+                overflow: scroll;
+            }
+
+            &_site {
+                position: relative;
+                margin: 5px 0;
+                padding: 0;
+                background-color: rgba(255, 255, 255, 0.4);
+            }
+
+            &_no-template {
+                //margin: 0;
+
+                .composum-pages-stage-site {
+
+                    &_tile {
+                        min-height: 80px;
+                        background: #ddd;
+                    }
+
+                    &_thumbnail {
+
+                        &_wrapper {
+                            @include aspect-ratio-wrapper(4, 2);
+                        }
+                    }
+                }
+
+                .composum-pages-edit-widget {
+
+                    &_radio {
+                        top: 27px;
+                    }
+                }
+            }
+
+            &_radio {
+                z-index: 1;
+                position: absolute;
+                top: 45px;
+                left: 8px;
+            }
+        }
+    }
+}

@@ -1,7 +1,5 @@
 package com.composum.pages.commons.model;
 
-import com.composum.pages.commons.model.AbstractModel;
-import com.composum.pages.commons.model.Site;
 import com.composum.sling.core.BeanContext;
 import org.apache.sling.api.resource.Resource;
 
@@ -10,6 +8,7 @@ import java.util.List;
 public class Sites extends AbstractModel {
 
     private transient List<Site> sites;
+    private transient List<Site> templates;
 
     public Sites() {
     }
@@ -26,9 +25,9 @@ public class Sites extends AbstractModel {
     }
 
     public List<Site> getTemplates() {
-        if (sites == null) {
-            sites = getSiteManager().getSiteTemplates(context, "");
+        if (templates == null) {
+            templates = getSiteManager().getSiteTemplates(context, "");
         }
-        return sites;
+        return templates;
     }
 }
