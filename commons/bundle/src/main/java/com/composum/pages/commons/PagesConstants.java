@@ -64,6 +64,11 @@ public class PagesConstants {
     public static final String PROP_HOMEPAGE = "homepage";
     public static final String DEFAULT_HOMEPAGE_PATH = "home";
 
+    /** Widget */
+
+    public static final String NODE_TYPE_WIDGET = CPP_PREFIX + "Widget";
+    public static final String PROP_WIDGET_TYPE = "widgetType";
+
     /** general properties */
 
     public static final String PROP_CREATION_DATE = "jcr:created";

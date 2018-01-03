@@ -20,8 +20,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import static com.composum.pages.commons.taglib.EditWidgetTag.COMMONS_WIDGET_PATH;
-
 /**
  * the EditMultiWidget is rendering the form content for a structured mutli value node set
  */
@@ -105,7 +103,7 @@ public class EditMultiWidgetTag extends AbstractWidgetTag implements LoopTag {
     }
 
     protected String getSnippetResourceType() {
-        return COMMONS_WIDGET_PATH + MULTIWIDGET_TYPE;
+        return getWidgetResourceType(MULTIWIDGET_TYPE);
     }
 
     @Override

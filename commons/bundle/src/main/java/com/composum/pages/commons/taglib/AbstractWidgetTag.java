@@ -1,5 +1,6 @@
 package com.composum.pages.commons.taglib;
 
+import com.composum.pages.commons.service.WidgetManager;
 import com.composum.sling.core.BeanContext;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
@@ -69,6 +70,13 @@ public abstract class AbstractWidgetTag extends AbstractWrappingTag {
 
     public void setName(String key) {
         name = key;
+    }
+
+    /**
+     * returns the resource type (the path to the component) for a widget type
+     */
+    protected String getWidgetResourceType(String widgetType) {
+        return context.getService(WidgetManager.class).getWidgetTypeResourcePath(context, widgetType);
     }
 
     /**

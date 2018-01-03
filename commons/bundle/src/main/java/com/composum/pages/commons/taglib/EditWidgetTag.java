@@ -1,6 +1,7 @@
 package com.composum.pages.commons.taglib;
 
 import com.composum.pages.commons.model.properties.ValueSet;
+import com.composum.pages.commons.service.WidgetManager;
 import com.composum.pages.commons.util.ResolverUtil;
 import com.composum.pages.commons.widget.WidgetModel;
 import com.composum.sling.core.SlingBean;
@@ -18,7 +19,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import static com.composum.pages.commons.taglib.AbstractPageTag.COMMONS_COMPONENT_BASE;
 import static com.composum.pages.commons.taglib.EditMultiWidgetTag.MULTIWIDGET_TYPE;
 
 /**
@@ -38,8 +38,6 @@ public class EditWidgetTag extends AbstractWidgetTag implements LoopTag {
 
     public static final String MODEL_CLASS = "modelClass";
     public static final String DEFAULT_MODEL_CLASS = "";
-
-    public static final String COMMONS_WIDGET_PATH = COMMONS_COMPONENT_BASE + "widget/";
 
     protected String widgetType;
     protected Object value;
@@ -226,11 +224,11 @@ public class EditWidgetTag extends AbstractWidgetTag implements LoopTag {
     }
 
     protected String getSnippetResourceType() {
-        return COMMONS_WIDGET_PATH + getWidgetType();
+        return getWidgetResourceType(getWidgetType());
     }
 
     protected String getMultiResourceType() {
-        return COMMONS_WIDGET_PATH + MULTIWIDGET_TYPE;
+        return getWidgetResourceType(MULTIWIDGET_TYPE);
     }
 
     @Override
