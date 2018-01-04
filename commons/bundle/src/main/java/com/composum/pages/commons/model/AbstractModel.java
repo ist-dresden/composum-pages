@@ -32,11 +32,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 import static com.composum.pages.commons.taglib.DefineObjectsTag.CURRENT_PAGE;
 import static com.composum.sling.platform.security.PlatformAccessFilter.ACCESS_MODE_KEY;
@@ -162,9 +158,9 @@ public abstract class AbstractModel implements SlingBean, Model {
         initialize(context, resource);
     }
 
-    /** Initialization if called from Sling Models. Do not call otherwise. */
+    /** Initialization called during construction by Sling Models. Do not call otherwise. */
     @PostConstruct
-    public void initialize() {
+    protected void initialize() {
         Validate.notNull(context);
         initialize(context);
     }
