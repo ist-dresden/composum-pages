@@ -3,6 +3,8 @@ package com.composum.pages.commons.model;
 import com.composum.pages.commons.model.properties.Language;
 import com.composum.pages.commons.request.DisplayMode;
 import com.composum.pages.commons.service.PageManager;
+import com.composum.platform.models.annotations.DetermineResourceStategy;
+import com.composum.platform.models.annotations.PropertyDetermineResourceStrategy;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.util.LinkUtil;
@@ -29,6 +31,7 @@ import static com.composum.pages.commons.PagesConstants.PROP_EDIT_CATEGORY;
 import static com.composum.pages.commons.PagesConstants.PROP_SLING_TARGET;
 import static com.composum.pages.commons.PagesConstants.PROP_VIEW_CATEGORY;
 
+@PropertyDetermineResourceStrategy(Page.ContainingPageResourceStrategy.class)
 public class Page extends ContentDriven<PageContent> {
 
     // static resource type determination
@@ -65,6 +68,14 @@ public class Page extends ContentDriven<PageContent> {
     }
 
     // initializer extensions
+
+    /** Compatible to Page{@link #determineResource(Resource)}. */
+    public static class ContainingPageResourceStrategy implements DetermineResourceStategy {
+        @Override
+        public Resource determineResource(BeanContext beanContext, Resource requestResource) {
+            return beanContext.getService(PageManager.class).getContainingPageResource(requestResource);
+        }
+    }
 
     @Override
     protected Resource determineResource(Resource initialResource) {

@@ -2,6 +2,8 @@ package com.composum.pages.commons.model;
 
 import com.composum.pages.commons.service.PageManager;
 import com.composum.pages.commons.service.SiteManager;
+import com.composum.platform.models.annotations.DetermineResourceStategy;
+import com.composum.platform.models.annotations.PropertyDetermineResourceStrategy;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.util.ResourceUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -13,11 +15,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.composum.pages.commons.PagesConstants.DEFAULT_HOMEPAGE_PATH;
-import static com.composum.pages.commons.PagesConstants.NODE_TYPE_SITE;
-import static com.composum.pages.commons.PagesConstants.NODE_TYPE_SITE_CONFIGURATION;
-import static com.composum.pages.commons.PagesConstants.PROP_HOMEPAGE;
+import static com.composum.pages.commons.PagesConstants.*;
 
+@PropertyDetermineResourceStrategy(Site.ContainingSiteResourceStrategy.class)
 public class Site extends ContentDriven<SiteConfiguration> implements Comparable<Site> {
 
     public enum PublicMode {LIVE, PUBLIC, PREVIEW}
@@ -66,6 +66,14 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
     }
 
     // initializer extensions
+
+    /** Compatible to {@link Site#determineResource(Resource)}. */
+    public static class ContainingSiteResourceStrategy implements DetermineResourceStategy {
+        @Override
+        public Resource determineResource(BeanContext beanContext, Resource requestResource) {
+            return beanContext.getService(SiteManager.class).getContainingSiteResource(requestResource);
+        }
+    }
 
     @Override
     protected Resource determineResource(Resource initialResource) {
