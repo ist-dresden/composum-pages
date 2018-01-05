@@ -10,7 +10,7 @@
             site: {
                 css: {
                     tile: "composum-pages-stage-site_tile",
-                    site: "composum-pages-stage-sites_site"
+                    site: "composum-pages-edit-widget_site"
                 }
             }
         });
@@ -19,7 +19,7 @@
 
             initialize: function (options) {
                 core.components.RadioGroupWidget.prototype.initialize.apply(this, [options]);
-                this.$('a.' + widgets.const.site.css.tile).click(function(){alert('click');});
+                this.$('a.' + widgets.const.site.css.tile).click(_.bind(this.selectTemplate, this));
             },
 
             selectTemplate: function (event) {
