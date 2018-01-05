@@ -3,10 +3,10 @@ package com.composum.pages.commons.service;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.platform.staging.query.Query;
 import com.composum.sling.platform.staging.query.QueryBuilder;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
+import org.osgi.framework.Constants;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,12 +18,11 @@ import java.util.Map;
 import static com.composum.pages.commons.PagesConstants.NODE_TYPE_WIDGET;
 import static com.composum.pages.commons.PagesConstants.PROP_WIDGET_TYPE;
 
-
 @Component(
-        label = "Composum Pages Widget Manager",
-        immediate = true
+        property = {
+                Constants.SERVICE_DESCRIPTION + "=Composum Pages Widget Manager"
+        }
 )
-@Service
 public class PagesWidgetManager implements WidgetManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(PagesWidgetManager.class);
