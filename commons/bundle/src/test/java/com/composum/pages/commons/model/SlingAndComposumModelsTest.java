@@ -50,6 +50,7 @@ public class SlingAndComposumModelsTest {
         GenericModel model = bc.adaptTo(GenericModel.class);
         assertNotNull(model);
         assertSame(resource, model.getResource());
+        assertTrue(model.model instanceof Element);
     }
 
     @Test
