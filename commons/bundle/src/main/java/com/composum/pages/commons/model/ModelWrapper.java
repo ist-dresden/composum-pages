@@ -18,12 +18,16 @@ public class ModelWrapper implements Model {
     protected ModelWrapper() {
     }
 
+    /** @deprecated the normal instantiation mechanism is by using the constructor. */
     @Override
+    @Deprecated
     public void initialize(BeanContext context, Resource resource) {
         model.initialize(context, resource);
     }
 
+    /** @deprecated the normal instantiation mechanism is by using the constructor. */
     @Override
+    @Deprecated
     public void initialize(BeanContext context) {
         model.initialize(context);
     }
