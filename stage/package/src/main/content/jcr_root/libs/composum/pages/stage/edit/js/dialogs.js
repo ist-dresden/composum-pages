@@ -7,25 +7,31 @@
         'use strict';
 
         dialogs.const = _.extend(dialogs.const || {}, {
-            editDialogLoadUrl: '/bin/cpm/pages/edit.editDialog.html',
-            editDialogFormClass: 'composum-pages-stage-edit-dialog_form',
-            editDialogTabbedClass: 'composum-pages-stage-edit-dialog_tabbed',
-            editDialogTabListCass: 'composum-pages-stage-edit-dialog_tabs',
-            editDialogTabbedContentClass: 'composum-pages-stage-edit-dialog_tabbed-content',
-            editDialogTabClass: 'composum-pages-stage-edit-dialog_tab',
-            editDialogPathFieldClass: 'composum-pages-stage-edit-dialog_path',
-            editDialogButtonDeleteClass: 'composum-pages-stage-edit-dialog_button-delete',
             edit: {
                 url: {
-                    newDialog: '/bin/cpm/pages/edit.newDialog.html',
-                    createDialog: '/bin/cpm/pages/edit.editDialog.create.html',
-                    deleteDialog: '/bin/cpm/pages/edit.deleteDialog.html',
-                    insert: '/bin/cpm/pages/edit.insertComponent.html'
-                }
-            },
-            site: {
-                url: {
-                    createDialog: '/libs/composum/pages/stage/edit/site/createsite.html'
+                    base: '/bin/cpm/pages/edit',
+                    _insert: '.insertComponent.html',
+                    _dialog: {
+                        load: '.editDialog.html',
+                        new: '.newDialog.html',
+                        create: '.editDialog.create.html',
+                        delete: '.editDialog.delete.html'
+                    }
+                },
+                css: {
+                    base: 'composum-pages-stage-edit-dialog',
+                    _form: '_form',
+                    _tab: '_tab',
+                    _tabbed: '_tabbed',
+                    _tabList: '_tabs',
+                    _tabContent: '_tabbed-content',
+                    _pathField: '_path',
+                    _deleteButton: '_button-delete',
+                    _submitButton: '_button-submit'
+                },
+                type: {
+                    site: 'cpp:Site',
+                    page: 'cpp:Page'
                 }
             }
         });
@@ -36,12 +42,13 @@
                 core.components.Dialog.prototype.initialize.apply(this, [options]);
                 this.form = core.getWidget(this.el, "form", core.components.FormWidget);
                 this.initView();
-                this.$('.' + dialogs.const.editDialogFormClass).on('submit', _.bind(this.onSubmit, this));
+                this.initSubmit();
                 this.$el.on('hidden.bs.modal', _.bind(this.onClose, this));
             },
 
-            setUpWidgets: function (root) {
-                window.widgets.setUp(root);
+            initSubmit: function () {
+                var c = dialogs.const.edit.css;
+                this.$('.' + c.base + c._form).on('submit', _.bind(this.onSubmit, this));
             },
 
             initView: function () {
@@ -92,14 +99,16 @@
         dialogs.EditDialog = dialogs.ElementDialog.extend({
 
             initView: function () {
+                var c = dialogs.const.edit.css;
                 this.initTabs();
-                this.$('.' + dialogs.const.editDialogButtonDeleteClass).click(_.bind(this.doDelete, this));
+                this.$('.' + c.base + c._deleteButton).click(_.bind(this.doDelete, this));
             },
 
             initTabs: function () {
+                var c = dialogs.const.edit.css;
                 var tabsFound = false;
-                var $tabList = this.$tabList = this.$('.' + dialogs.const.editDialogTabListCass);
-                this.$('.' + dialogs.const.editDialogTabClass).each(function () {
+                var $tabList = this.$tabList = this.$('.' + c.base + c._tabList);
+                this.$('.' + c.base + c._tab).each(function () {
                     var $tab = $(this);
                     $tabList.append('<li' + (tabsFound ? '' : ' class="active"')
                         + '><a data-toggle="tab" href="#' + $tab.attr('id') + '">'
@@ -110,8 +119,8 @@
                     }
                 });
                 if (tabsFound) {
-                    this.$('.' + dialogs.const.editDialogTabbedContentClass).addClass('tab-content');
-                    this.$el.addClass(dialogs.const.editDialogTabbedClass);
+                    this.$('.' + c.base + c._tabContent).addClass('tab-content');
+                    this.$el.addClass(c.base + c._tabbed);
                 }
             },
 
@@ -122,7 +131,8 @@
             },
 
             doDelete: function () {
-                this.$('.' + dialogs.const.editDialogPathFieldClass)
+                var c = dialogs.const.edit.css;
+                this.$('.' + c.base + c._pathField)
                     .before('<input name=":operation" type="hidden" value="delete"/>');
                 this.submitForm(undefined, undefined, _.bind(function () {
                     $(document).trigger('component:selected', []);
@@ -132,9 +142,31 @@
         });
 
         dialogs.openEditDialog = function (name, path, type, url) {
-            pages.dialogHandler.openEditDialog(url ? url : dialogs.const.editDialogLoadUrl,
+            var c = dialogs.const.edit.url;
+            pages.dialogHandler.openEditDialog(url ? url : c.base + c._dialog.load,
                 dialogs.EditDialog, name, path, type);
         };
+
+        /**
+         * Edit with redirect support (form.submit without AJAX)
+         */
+        dialogs.FormSubmitEditDialog = dialogs.EditDialog.extend({
+
+            /**
+             * click on submit button instead of form.submit to support redirect responses
+             */
+            initSubmit: function () {
+                var c = dialogs.const.edit.css;
+                this.$('.' + c.base + c._submitButton).on('click', _.bind(this.onSubmit, this));
+            },
+
+            /**
+             * use normal form submit, prevent from AJAX requests to support redirect answers
+             */
+            doSubmit: function () {
+                this.form.$el.submit();
+            }
+        });
 
         //
         // Create elements
@@ -153,7 +185,8 @@
         });
 
         dialogs.openCreateDialog = function (name, path, type, url, onNotFound) {
-            pages.dialogHandler.openEditDialog(url ? url : dialogs.const.edit.url.createDialog,
+            var c = dialogs.const.edit.url;
+            pages.dialogHandler.openEditDialog(url ? url : c.base + c._dialog.create,
                 dialogs.CreateDialog, name, path, type, onNotFound);
         };
 
@@ -167,6 +200,7 @@
             },
 
             doSubmit: function (type) {
+                var c = dialogs.const.edit.url;
                 if (!type) {
                     type = this.elementType.getValue();
                     this.hide();
@@ -175,7 +209,7 @@
                     dialogs.openCreateDialog('*', this.data.path, type, undefined,
                         // if no create dialog exists (not found) create a new instance directly
                         _.bind(function (name, path, type) {
-                            core.ajaxPost(dialogs.const.edit.url.insert, {
+                            core.ajaxPost(c.base + c._insert, {
                                 resourceType: type,
                                 targetPath: path,
                                 targetType: this.data.type
@@ -189,7 +223,8 @@
         });
 
         dialogs.openNewElementDialog = function (name, path, type) {
-            pages.dialogHandler.openEditDialog(dialogs.const.edit.url.newDialog,
+            var c = dialogs.const.edit.url;
+            pages.dialogHandler.openEditDialog(c.base + c._dialog.new,
                 dialogs.NewElementDialog, name, path, type);
         };
 
@@ -208,24 +243,35 @@
         });
 
         dialogs.openDeleteElementDialog = function (name, path, type) {
-            pages.dialogHandler.openEditDialog(dialogs.const.edit.url.deleteDialog,
+            var c = dialogs.const.edit.url;
+            pages.dialogHandler.openEditDialog(c.base + c._dialog.delete,
                 dialogs.DeleteElementDialog, name, path, type);
         };
 
         //
-        // Create Site
+        // Sites...
         //
 
-        dialogs.CreateSiteDialog = dialogs.EditDialog.extend({
-
-            doSubmit: function () {
-                alert('site.create.dialog.submit... ' + JSON.stringify(this.form.getValues()));
-            }
-        });
+        /**
+         * Create Site
+         */
+        dialogs.CreateSiteDialog = dialogs.FormSubmitEditDialog.extend({});
 
         dialogs.openCreateSiteDialog = function () {
-            pages.dialogHandler.openEditDialog(dialogs.const.site.url.createDialog,
-                dialogs.CreateSiteDialog);
+            var c = dialogs.const.edit;
+            pages.dialogHandler.openEditDialog(c.url.base + c.url._dialog.create,
+                dialogs.CreateSiteDialog, undefined, undefined, c.type.site);
+        };
+
+        /**
+         * Delete Site
+         */
+        dialogs.DeleteSiteDialog = dialogs.FormSubmitEditDialog.extend({});
+
+        dialogs.openDeleteSiteDialog = function (name, path, type) {
+            var c = dialogs.const.edit.url;
+            pages.dialogHandler.openEditDialog(c.base + c._dialog.delete,
+                dialogs.DeleteSiteDialog, name, path, type);
         };
 
     })(window.composum.pages.dialogs, window.composum.pages, window.core);

@@ -5,6 +5,7 @@ import com.composum.pages.commons.model.Element;
 import com.composum.pages.commons.model.Page;
 import com.composum.pages.commons.model.Site;
 import com.composum.sling.core.util.ResourceUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 
@@ -82,14 +83,16 @@ public class PagesConstants {
         site, page, container, element, something;
 
         public static ComponentType typeOf(String string) {
-            if (string.startsWith(CPP_PREFIX)) {
-                string = string.substring(4);
-            }
-            ComponentType type;
-            try {
-                type = valueOf(ComponentType.class, string.toLowerCase());
-            } catch (IllegalArgumentException ex) {
-                type = something;
+            ComponentType type = something;
+            if (StringUtils.isNotBlank(string)) {
+                if (string.startsWith(CPP_PREFIX)) {
+                    string = string.substring(4);
+                }
+                try {
+                    type = valueOf(ComponentType.class, string.toLowerCase());
+                } catch (IllegalArgumentException ex) {
+                    // ok, something
+                }
             }
             return type;
         }

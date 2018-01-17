@@ -18,7 +18,7 @@
             componentActions: 'composum-pages-stage-edit-actions_component',
             editToolbarClass: 'composum-pages-stage-edit-toolbar',
             toolbarHandleClass: 'composum-pages-stage-edit-toolbar_handle',
-            editToolbarLoadUri: '/bin/cpm/pages/edit.editToolbar'
+            editToolbarLoadUri: '/bin/cpm/pages/edit.editToolbar.html'
         });
 
         toolbars.EditAction = Backbone.View.extend({
@@ -197,7 +197,7 @@
 
             loadComponentToolbar: function (path, type) {
                 if (path) {
-                    core.ajaxGet(toolbars.const.editToolbarLoadUri + '.' + pages.current.mode + '.html' + path, {
+                    core.ajaxGet(toolbars.const.editToolbarLoadUri + path, {
                             data: {
                                 type: type
                             }

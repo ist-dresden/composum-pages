@@ -109,7 +109,7 @@ public class IncludeTag extends IncludeTagHandler {
             final ResourceResolver resolver = request.getResourceResolver();
             String subtypePath = ResourceTypeUtil.getSubtypePath(resolver,
                     resource != null ? resource : resolver.getResource(path),
-                    resourceType, subtype);
+                    resourceType, subtype, null);
             if (StringUtils.isNotBlank(subtypePath)) {
                 super.setResourceType(subtypePath);
             }

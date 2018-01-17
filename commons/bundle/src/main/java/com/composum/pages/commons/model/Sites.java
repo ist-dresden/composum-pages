@@ -3,12 +3,12 @@ package com.composum.pages.commons.model;
 import com.composum.sling.core.BeanContext;
 import org.apache.sling.api.resource.Resource;
 
-import java.util.List;
+import java.util.Collection;
 
 public class Sites extends AbstractModel {
 
-    private transient List<Site> sites;
-    private transient List<Site> templates;
+    private transient Collection<Site> sites;
+    private transient Collection<Site> templates;
 
     public Sites() {
     }
@@ -17,14 +17,14 @@ public class Sites extends AbstractModel {
         initialize(context, resource);
     }
 
-    public List<Site> getSites() {
+    public Collection<Site> getSites() {
         if (sites == null) {
             sites = getSiteManager().getSites(context, "");
         }
         return sites;
     }
 
-    public List<Site> getTemplates() {
+    public Collection<Site> getTemplates() {
         if (templates == null) {
             templates = getSiteManager().getSiteTemplates(context, "");
         }

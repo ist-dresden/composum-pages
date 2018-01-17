@@ -105,7 +105,7 @@
             },
 
             delete: function (event, name, path, type) {
-                alert('site.delete... ' + name + ',' + path + ',' + type);
+                pages.dialogs.openDeleteSiteDialog(name, path, type);
             },
 
             rename: function (event, name, path, type) {

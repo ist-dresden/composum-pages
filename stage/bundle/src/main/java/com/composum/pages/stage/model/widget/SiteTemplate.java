@@ -4,11 +4,11 @@ import com.composum.pages.commons.model.Site;
 import com.composum.pages.commons.taglib.PropertyEditHandle;
 import com.composum.pages.commons.widget.WidgetModel;
 
-import java.util.List;
+import java.util.Collection;
 
 public class SiteTemplate extends PropertyEditHandle<String> implements WidgetModel {
 
-    private transient List<Site> templates;
+    private transient Collection<Site> templates;
 
     public SiteTemplate() {
         super(String.class);
@@ -19,7 +19,7 @@ public class SiteTemplate extends PropertyEditHandle<String> implements WidgetMo
         return attributeKey;
     }
 
-    public List<Site> getTemplates() {
+    public Collection<Site> getTemplates() {
         if (templates == null) {
             templates = getSiteManager().getSiteTemplates(context, "");
         }

@@ -16,9 +16,9 @@ public interface PageManager {
 
     Resource getContainingPageResource(Resource resource);
 
-    Page createPage(BeanContext context, Resource parent, String pageName, String pageType)
+    Page createPage(BeanContext context, Resource parent, String pageName, String pageType, boolean commit)
             throws RepositoryException, PersistenceException;
 
-    Page createPage(BeanContext context, Resource parent, String pageName, Resource pageTemplate)
+    Page createPage(BeanContext context, Resource parent, String pageName, Resource pageTemplate, boolean commit)
             throws RepositoryException, PersistenceException;
 }

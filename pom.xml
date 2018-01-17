@@ -383,12 +383,6 @@
                 <version>${project.version}</version>
                 <scope>provided</scope>
             </dependency>
-            <dependency>
-                <groupId>com.composum.sling.platform</groupId>
-                <artifactId>composum-sling-platform-staging</artifactId>
-                <version>1.0.0-SNAPSHOT</version>
-                <scope>provided</scope>
-            </dependency>
 
             <!-- Composum Assets -->
             <dependency>

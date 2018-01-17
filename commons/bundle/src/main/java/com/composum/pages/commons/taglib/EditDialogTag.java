@@ -23,8 +23,7 @@ import static com.composum.pages.commons.taglib.ElementTag.PAGES_EDIT_DATA_PATH;
 import static com.composum.pages.commons.taglib.ElementTag.PAGES_EDIT_DATA_TYPE;
 
 /**
- * the PageBodyTag creates the HTML body tag and the
- * EDIT elements around the page content
+ * the EditDialogTag creates the HTML code for an edit dialog of a component
  */
 public class EditDialogTag extends AbstractWrappingTag {
 
@@ -41,6 +40,7 @@ public class EditDialogTag extends AbstractWrappingTag {
     public static final String DEFAULT_SELECTOR = "edit";
 
     public static final String SLING_POST_SERVLET_ACTION = "Sling-POST";
+    public static final String CUSTOM_POST_SERVLET_ACTION = "Custom-POST";
 
     private transient String dialogId;
     protected String tagId;
@@ -60,8 +60,13 @@ public class EditDialogTag extends AbstractWrappingTag {
     protected String submit;
     private transient EditDialogAction action;
 
+    protected String alertKey;
+    protected String alertText;
+
     @Override
     protected void clear() {
+        alertText = null;
+        alertKey = null;
         action = null;
         submit = null;
         defaultPrimaryType = null;
@@ -246,6 +251,37 @@ public class EditDialogTag extends AbstractWrappingTag {
         }
     }
 
+    /**
+     * filter dynamic attributes for special purposes
+     * <ul>
+     *     <li>initial 'alert' settings for initial hints</li>
+     * </ul>
+     */
+    @Override
+    protected boolean acceptDynamicAttribute(String key, Object value) throws JspException {
+        if (key.startsWith("alert-")) {
+            if (value instanceof String) {
+                alertKey = key;
+                alertText = (String) value;
+            }
+            return false;
+        } else {
+            return super.acceptDynamicAttribute(key, value);
+        }
+    }
+
+    public boolean isAlertSet() {
+        return StringUtils.isNotBlank(alertKey);
+    }
+
+    public String getAlertKey() {
+        return isAlertSet() ? alertKey : "alert-warning alert-hidden";
+    }
+
+    public String getAlertText() {
+        return isAlertSet() ? i18n(alertText) : "";
+    }
+
     @Override
     public int doStartTag() throws JspException {
         if (StringUtils.isBlank(cssBase)) {
@@ -280,8 +316,12 @@ public class EditDialogTag extends AbstractWrappingTag {
         submit = actionKey;
         switch (actionKey) {
             case "SlingPostServlet":
-            default:
+            case SLING_POST_SERVLET_ACTION:
                 action = new SlingPostServletAction();
+                break;
+            default:
+                action = new CustomPostAction(actionKey);
+                break;
         }
     }
 
@@ -325,6 +365,35 @@ public class EditDialogTag extends AbstractWrappingTag {
                 }
             }
             return url;
+        }
+
+        public String getMethod() {
+            return "POST";
+        }
+
+        public String getEncType() {
+            return "multipart/form-data";
+        }
+
+        public String getPropertyPath(String name) {
+            return getI18nPath(name);
+        }
+    }
+
+    public class CustomPostAction implements EditDialogAction {
+
+        protected final String uri;
+
+        public CustomPostAction(String uri) {
+            this.uri = uri;
+        }
+
+        public String getName() {
+            return CUSTOM_POST_SERVLET_ACTION;
+        }
+
+        public String getUrl() {
+            return request.getContextPath() + eval(uri, "/");
         }
 
         public String getMethod() {
