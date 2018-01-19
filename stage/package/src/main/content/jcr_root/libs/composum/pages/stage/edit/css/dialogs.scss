@@ -101,6 +101,14 @@
             display: none;
             margin-bottom: $bootstrap-spacing-v;
             @include clear-after;
+
+            .has-error {
+
+                a {
+                    @include dialog-label-font;
+                    color: $bootstrap-color-danger;
+                }
+            }
         }
 
         &_tabbed {

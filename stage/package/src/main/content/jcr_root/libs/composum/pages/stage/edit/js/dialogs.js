@@ -66,13 +66,14 @@
                 this.form.validationReset();
             },
 
-            alert: function (type, label, message, hint) {
+            onValidationFault: function () {
+            },
+
+            message: function (type, label, message, hint) {
                 if (message) {
-                    this.$alert.append('<div class="text-' +
-                        type + '"><span class="label">' +
-                        label + '</span><span class="message">' +
-                        message + (hint ? " (" + hint + ")" : '') + '</span></div>');
-                    this.$alert.removeClass('alert-hidden');
+                    this.alert(type, '<div class="text-danger"><span class="label">' + label
+                        + '</span><span class="message">'
+                        + message + (hint ? " (" + hint + ")" : '') + '</span></div>');
                 }
             },
 
@@ -82,10 +83,12 @@
                 }
                 this.form.prepare();
                 this.validationReset();
-                if (this.form.validate(_.bind(this.alert, this))) {
+                if (this.form.validate(_.bind(function (type, label, message, hint) {
+                        this.message('warning', label, message, hint)
+                    }, this))) {
                     this.doSubmit();
                 } else {
-
+                    this.onValidationFault();
                 }
                 return false;
             },
@@ -101,6 +104,7 @@
         dialogs.EditDialog = dialogs.ElementDialog.extend({
 
             initView: function () {
+                dialogs.ElementDialog.prototype.initView.apply(this);
                 var c = dialogs.const.edit.css;
                 this.$submitButton = this.$('.' + c.base + c._submitButton);
                 this.initTabs();
@@ -110,12 +114,12 @@
             initTabs: function () {
                 var c = dialogs.const.edit.css;
                 var $tabList = this.$tabList = this.$('.' + c.base + c._tabList);
-                var $tabs = this.$tabs = [];
+                var tabs = this.tabs = [];
                 this.$('.' + c.base + c._tab).each(function () {
                     var $tab = $(this);
                     $tabList.append('<li><a data-toggle="tab" href="#' + $tab.attr('id') + '">'
                         + $tab.data('label') + '</a></li>');
-                    $tabs.push($tab);
+                    tabs.push($tab);
                 });
                 // in case of a wizard set up button and tab control
                 if (this.$el.is('.' + c.base + c._wizard)) {
@@ -125,7 +129,7 @@
                     this.$nextButton.click(_.bind(this.nextStep, this));
                     this.$tabList.find('a').on('shown.bs.tab', _.bind(this.tabChanged, this));
                 }
-                if (this.$tabs.length > 0) {
+                if (this.tabs.length > 0) {
                     this.$('.' + c.base + c._tabContent).addClass('tab-content');
                     this.$el.addClass(c.base + c._tabbed);
                     $(this.$tabList.find('li a')[0]).tab('show');
@@ -176,10 +180,32 @@
                 var c = dialogs.const.edit.css;
                 this.$('.' + c.base + c._pathField)
                     .before('<input name=":operation" type="hidden" value="delete"/>');
-                this.submitForm(undefined, undefined, _.bind(function () {
+                this.submitForm(_.bind(function () {
                     $(document).trigger('component:selected', []);
                     $(document).trigger('component:deleted', [this.data.path]);
                 }, this));
+            },
+
+            validationReset: function () {
+                dialogs.ElementDialog.prototype.validationReset.apply(this);
+                this.$tabList.find('li').removeClass('has-error');
+            },
+
+            onValidationFault: function () {
+                dialogs.ElementDialog.prototype.onValidationFault.apply(this);
+                var dialog = this;
+                var $first = undefined;
+                this.tabs.forEach(function (item) {
+                    var $tab = $(item);
+                    if ($tab.find('.has-error').length > 0) {
+                        var $tabLink = dialog.$tabList.find('[href="#' + $tab[0].id + '"]');
+                        $tabLink.parent().addClass('has-error');
+                        if (!$first) {
+                            $first = $tabLink;
+                            $first.tab('show');
+                        }
+                    }
+                });
             }
         });
 
