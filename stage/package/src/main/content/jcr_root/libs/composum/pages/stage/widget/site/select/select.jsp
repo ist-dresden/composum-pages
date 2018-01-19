@@ -21,7 +21,7 @@
             <c:forEach items="${widget.model.sites}" var="site">
                 <li class="${widgetCssBase}_site">
                     <input type="radio" name="${widget.name}" value="${site.path}" class="${widgetCssBase}_radio"/>
-                    <cpp:include resource="${site.resource}" subtype="edit/tile" replaceSelectors="list"/>
+                    <cpp:include resource="${site.resource}" subtype="edit/tile" replaceSelectors="select"/>
                 </li>
             </c:forEach>
         </ul>

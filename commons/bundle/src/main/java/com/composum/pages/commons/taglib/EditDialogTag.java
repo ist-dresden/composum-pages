@@ -10,6 +10,7 @@ import org.apache.sling.api.resource.Resource;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import static com.composum.pages.commons.model.AbstractModel.I18N_PROPERTY_PATH;
@@ -25,6 +26,7 @@ import static com.composum.pages.commons.taglib.ElementTag.PAGES_EDIT_DATA_TYPE;
 /**
  * the EditDialogTag creates the HTML code for an edit dialog of a component
  */
+@SuppressWarnings("JavaDoc")
 public class EditDialogTag extends AbstractWrappingTag {
 
     public static final String DIALOG_VAR = "dialog";
@@ -42,6 +44,11 @@ public class EditDialogTag extends AbstractWrappingTag {
     public static final String SLING_POST_SERVLET_ACTION = "Sling-POST";
     public static final String CUSTOM_POST_SERVLET_ACTION = "Custom-POST";
 
+    public static final String ATTR_SUBMIT_LABEL = "submitLabel";
+    public static final String DEFAULT_SUBMIT_LABEL = "Submit";
+
+    public static final String ATTR_INITIAL_ALERT = "alert-";
+
     private transient String dialogId;
     protected String tagId;
 
@@ -58,6 +65,7 @@ public class EditDialogTag extends AbstractWrappingTag {
     private transient String defaultPrimaryType;
 
     protected String submit;
+    protected String submitLabel;
     private transient EditDialogAction action;
 
     protected String alertKey;
@@ -69,6 +77,7 @@ public class EditDialogTag extends AbstractWrappingTag {
         alertKey = null;
         action = null;
         submit = null;
+        submitLabel = null;
         defaultPrimaryType = null;
         primaryType = null;
         resourceType = null;
@@ -81,6 +90,14 @@ public class EditDialogTag extends AbstractWrappingTag {
         super.clear();
     }
 
+    /**
+     * Determines the resource to edit by the form of the dialog to create by this tag. This resource is mainly
+     * determined by a 'EDIT_RESOURCE_KEY' reuqest attribute which is declared by the edit servlet during the dialog
+     * load request.
+     *
+     * @param context the current request context
+     * @return the resource to edit
+     */
     @Override
     public Resource getModelResource(BeanContext context) {
         if (editResource == null) {
@@ -89,6 +106,9 @@ public class EditDialogTag extends AbstractWrappingTag {
         return editResource instanceof Resource ? ((Resource) editResource) : super.getModelResource(context);
     }
 
+    /**
+     * @return the result of 'getModelResource()' as the resource to drive this tag
+     */
     @Override
     public Resource getResource() {
         return getModelResource(context);
@@ -113,16 +133,17 @@ public class EditDialogTag extends AbstractWrappingTag {
         title = text;
     }
 
+    /**
+     * tag attribute - switch the language context hint on/off
+     *
+     * @param languageContext boolean; show the hint (default: true)
+     */
     public void setLanguageContext(boolean languageContext) {
         this.languageContext = languageContext;
     }
 
     public boolean isHasLanguageContext() {
         return languageContext;
-    }
-
-    public String getSubmitLabel() {
-        return dynamicAttributes.getAttribute("submitLabel", "Submit");
     }
 
     public String getCreateNameHint() {
@@ -179,6 +200,16 @@ public class EditDialogTag extends AbstractWrappingTag {
                 && !TYPE_NONE.equalsIgnoreCase(primaryType);
     }
 
+    /**
+     * returns the first not empty value of the cascade, as key to select the right dialog snippets:
+     * <ul>
+     * <li>the eval() result of the declared selector</li>
+     * <li>the selector string of the request</li>
+     * <li>the default 'edit' selector (main snippet)</li>
+     * </ul>
+     *
+     * @see /libs/composum/pages/stage/edit/dialog/...
+     */
     public String getSelector() {
         if (selectorValue == null) {
             selectorValue = eval(selector, "");
@@ -192,6 +223,13 @@ public class EditDialogTag extends AbstractWrappingTag {
         return selectorValue;
     }
 
+    /**
+     * tag attribute - defines the optional selector for the rendering of the dialog component;
+     * this selector string is mainly used to select the right dialog 'start' and 'end' snippets
+     *
+     * @param selector the selector key
+     * @see /libs/composum/pages/stage/edit/dialog/...
+     */
     public void setSelector(String selector) {
         this.selector = selector;
     }
@@ -221,13 +259,14 @@ public class EditDialogTag extends AbstractWrappingTag {
         return dialogId;
     }
 
-    protected String getSnippetResourceType() {
-        return STAGE_COMPONENT_BASE + DIALOG_PATH;
-    }
-
     @Override
-    protected void collectCssClasses(java.util.List collection) {
+    protected void collectCssClasses(List<String> collection) {
         super.collectCssClasses(collection);
+        addCssClass(collection, getCssBase() + "_action_" + getAction().getName().toLowerCase());
+        String selector = getSelector();
+        if (StringUtils.isNotBlank(selector)) {
+            addCssClass(collection, getCssBase() + "_selector_" + selector);
+        }
         addCssClass(collection, getCssBase() + "_action_" + getAction().getName().toLowerCase());
         addCssClass(collection, "dialog");
         addCssClass(collection, "modal");
@@ -252,23 +291,27 @@ public class EditDialogTag extends AbstractWrappingTag {
     }
 
     /**
-     * filter dynamic attributes for special purposes
+     * filters dynamic attributes for special purposes:
      * <ul>
-     *     <li>initial 'alert' settings for initial hints</li>
+     * <li>initial 'alert' settings for initial hints</li>
+     * <li>'submit' button label for the 'generic' dialog</li>
      * </ul>
      */
     @Override
     protected boolean acceptDynamicAttribute(String key, Object value) throws JspException {
-        if (key.startsWith("alert-")) {
-            if (value instanceof String) {
-                alertKey = key;
-                alertText = (String) value;
-            }
+        if (key.startsWith(ATTR_INITIAL_ALERT)) {
+            alertKey = key;
+            alertText = (String) value;
+            return false;
+        } else if (ATTR_SUBMIT_LABEL.equals(key)) {
+            submitLabel = (String) value;
             return false;
         } else {
             return super.acceptDynamicAttribute(key, value);
         }
     }
+
+    // initial alert message
 
     public boolean isAlertSet() {
         return StringUtils.isNotBlank(alertKey);
@@ -280,6 +323,12 @@ public class EditDialogTag extends AbstractWrappingTag {
 
     public String getAlertText() {
         return isAlertSet() ? i18n(alertText) : "";
+    }
+
+    // tag rendering
+
+    protected String getSnippetResourceType() {
+        return STAGE_COMPONENT_BASE + DIALOG_PATH;
     }
 
     @Override
@@ -310,6 +359,15 @@ public class EditDialogTag extends AbstractWrappingTag {
 
     @Override
     protected void finishTagEnd() {
+    }
+
+    // dialog submit action ...
+
+    /**
+     * @return the localized submit button label mainly for the generic dialog type (selector)
+     */
+    public String getSubmitLabel() {
+        return i18n(StringUtils.isNotBlank(submitLabel) ? submitLabel : DEFAULT_SUBMIT_LABEL);
     }
 
     public void setSubmit(String actionKey) {

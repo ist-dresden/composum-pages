@@ -192,6 +192,7 @@ public class ResourceTypeUtil {
 
     public static String getDefaultResourcePath(ResourceResolver resolver, Resource resource, String type,
                                                 String subtype) {
-        return SUBTYPES.get(subtype).getDefaultResourcePath(resolver, resource, type);
+        SubtypeStrategy strategy = SUBTYPES.get(subtype);
+        return strategy != null ? strategy.getDefaultResourcePath(resolver, resource, type) : null;
     }
 }

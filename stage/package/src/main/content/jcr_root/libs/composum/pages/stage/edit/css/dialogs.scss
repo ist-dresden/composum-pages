@@ -129,6 +129,28 @@
                 font-size: inherit;
             }
         }
+
+        &_selector {
+
+            &_wizard {
+
+                .composum-pages-stage-edit-dialog {
+
+                    &_button-cancel {
+                        float: left;
+                        margin-right: $bootstrap-spacing-h;
+                    }
+
+                    &_button-prev, &_button-next {
+                        min-width: 70px;
+                    }
+
+                    &_button-submit {
+                        margin-left: $bootstrap-spacing-h;
+                    }
+                }
+            }
+        }
     }
 }
 

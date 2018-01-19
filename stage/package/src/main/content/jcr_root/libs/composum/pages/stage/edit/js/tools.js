@@ -238,7 +238,7 @@
                         path = pages.current.page;
                     }
                     if (path) {
-                        core.ajaxGet(tools.const.contextLoadUrl + path, {
+                        core.ajaxGet(tools.const.contextLoadUrl + path + '?pages.mode=' + pages.current.mode, {
                                 data: {
                                     type: type
                                 }

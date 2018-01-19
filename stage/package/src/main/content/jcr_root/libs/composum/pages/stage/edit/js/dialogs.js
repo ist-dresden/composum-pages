@@ -20,6 +20,7 @@
                 },
                 css: {
                     base: 'composum-pages-stage-edit-dialog',
+                    _wizard: '_selector_wizard',
                     _form: '_form',
                     _tab: '_tab',
                     _tabbed: '_tabbed',
@@ -27,7 +28,9 @@
                     _tabContent: '_tabbed-content',
                     _pathField: '_path',
                     _deleteButton: '_button-delete',
-                    _submitButton: '_button-submit'
+                    _submitButton: '_button-submit',
+                    _prevButton: '_button-prev',
+                    _nextButton: '_button-next'
                 },
                 type: {
                     site: 'cpp:Site',
@@ -92,36 +95,75 @@
             }
         });
 
-        //
-        // Edit Dialog
-        //
-
+        /**
+         * the EditDialog adds tabs and wizard control to an element dialog
+         */
         dialogs.EditDialog = dialogs.ElementDialog.extend({
 
             initView: function () {
                 var c = dialogs.const.edit.css;
+                this.$submitButton = this.$('.' + c.base + c._submitButton);
                 this.initTabs();
                 this.$('.' + c.base + c._deleteButton).click(_.bind(this.doDelete, this));
             },
 
             initTabs: function () {
                 var c = dialogs.const.edit.css;
-                var tabsFound = false;
                 var $tabList = this.$tabList = this.$('.' + c.base + c._tabList);
+                var $tabs = this.$tabs = [];
                 this.$('.' + c.base + c._tab).each(function () {
                     var $tab = $(this);
-                    $tabList.append('<li' + (tabsFound ? '' : ' class="active"')
-                        + '><a data-toggle="tab" href="#' + $tab.attr('id') + '">'
+                    $tabList.append('<li><a data-toggle="tab" href="#' + $tab.attr('id') + '">'
                         + $tab.data('label') + '</a></li>');
-                    if (!tabsFound) {
-                        tabsFound = true;
-                        $tab.addClass('fade in active');
-                    }
+                    $tabs.push($tab);
                 });
-                if (tabsFound) {
+                // in case of a wizard set up button and tab control
+                if (this.$el.is('.' + c.base + c._wizard)) {
+                    this.$prevButton = this.$('.' + c.base + c._prevButton);
+                    this.$nextButton = this.$('.' + c.base + c._nextButton);
+                    this.$prevButton.click(_.bind(this.prevStep, this));
+                    this.$nextButton.click(_.bind(this.nextStep, this));
+                    this.$tabList.find('a').on('shown.bs.tab', _.bind(this.tabChanged, this));
+                }
+                if (this.$tabs.length > 0) {
                     this.$('.' + c.base + c._tabContent).addClass('tab-content');
                     this.$el.addClass(c.base + c._tabbed);
+                    $(this.$tabList.find('li a')[0]).tab('show');
                 }
+            },
+
+            /**
+             * adjust the wizard state on tab change
+             */
+            tabChanged: function () {
+                var $links = this.$tabList.find('li');
+                var index = $links.index(this.$tabList.find('li.active'));
+                if (index < $links.length - 1) {
+                    this.$nextButton.removeClass('btn-default').addClass('btn-primary');
+                    this.$submitButton.removeClass('btn-primary').addClass('btn-default');
+                    this.$submitButton.prop('disabled', true);
+                    this.$nextButton.prop('disabled', false);
+                } else {
+                    this.$nextButton.removeClass('btn-primary').addClass('btn-default');
+                    this.$submitButton.removeClass('btn-default').addClass('btn-primary');
+                    this.$submitButton.prop('disabled', false);
+                    this.$nextButton.prop('disabled', true);
+                }
+                this.$prevButton.prop('disabled', index === 0);
+            },
+
+            /**
+             * trigger the switch to the previous tab if 'prev' button is clicked
+             */
+            prevStep: function () {
+                this.$tabList.find('li.active').prev().find('a').tab('show');
+            },
+
+            /**
+             * trigger the switch to the next tab if 'next' button is clicked
+             */
+            nextStep: function () {
+                this.$tabList.find('li.active').next().find('a').tab('show');
             },
 
             doSubmit: function () {
@@ -147,31 +189,13 @@
                 dialogs.EditDialog, name, path, type);
         };
 
+        //
+        // elements in containers...
+        //
+
         /**
-         * Edit with redirect support (form.submit without AJAX)
+         * the dialog to edit the initial properties of a new element
          */
-        dialogs.FormSubmitEditDialog = dialogs.EditDialog.extend({
-
-            /**
-             * click on submit button instead of form.submit to support redirect responses
-             */
-            initSubmit: function () {
-                var c = dialogs.const.edit.css;
-                this.$('.' + c.base + c._submitButton).on('click', _.bind(this.onSubmit, this));
-            },
-
-            /**
-             * use normal form submit, prevent from AJAX requests to support redirect answers
-             */
-            doSubmit: function () {
-                this.form.$el.submit();
-            }
-        });
-
-        //
-        // Create elements
-        //
-
         dialogs.CreateDialog = dialogs.EditDialog.extend({
 
             initView: function () {
@@ -190,6 +214,9 @@
                 dialogs.CreateDialog, name, path, type, onNotFound);
         };
 
+        /**
+         * the dialog to select the element type of a new element to insert in a container
+         */
         dialogs.NewElementDialog = dialogs.ElementDialog.extend({
 
             initView: function () {
@@ -228,14 +255,13 @@
                 dialogs.NewElementDialog, name, path, type);
         };
 
-        //
-        // Delete elements
-        //
-
+        /**
+         * the dialog to delete an element
+         */
         dialogs.DeleteElementDialog = dialogs.ElementDialog.extend({
 
             doSubmit: function () {
-                this.submitForm(undefined, undefined, _.bind(function () {
+                this.submitForm(_.bind(function () {
                     $(document).trigger('component:selected', []);
                     $(document).trigger('component:deleted', [this.data.path]);
                 }, this));
@@ -255,7 +281,14 @@
         /**
          * Create Site
          */
-        dialogs.CreateSiteDialog = dialogs.FormSubmitEditDialog.extend({});
+        dialogs.CreateSiteDialog = dialogs.EditDialog.extend({
+
+            doSubmit: function () {
+                this.submitForm(_.bind(function (result) {
+                    window.location.href = result.editUrl;
+                }, this));
+            }
+        });
 
         dialogs.openCreateSiteDialog = function () {
             var c = dialogs.const.edit;
@@ -266,7 +299,15 @@
         /**
          * Delete Site
          */
-        dialogs.DeleteSiteDialog = dialogs.FormSubmitEditDialog.extend({});
+        dialogs.DeleteSiteDialog = dialogs.EditDialog.extend({
+
+            doSubmit: function () {
+                this.submitForm(_.bind(function () {
+                    $(document).trigger('component:selected', []);
+                    $(document).trigger('component:deleted', [this.data.path]);
+                }, this));
+            }
+        });
 
         dialogs.openDeleteSiteDialog = function (name, path, type) {
             var c = dialogs.const.edit.url;

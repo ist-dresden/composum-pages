@@ -5,6 +5,6 @@
 <cpp:model var="site" type="com.composum.pages.commons.model.Site" mode="none"
            cssBase="composum-pages-stage-site_tile">
     <div class="${siteCssBase}">
-        <sling:call script="content.jsp"/>
+        <sling:call script="_site.jsp"/>
     </div>
 </cpp:model>

@@ -162,9 +162,9 @@ public class EditServlet extends NodeTreeServlet {
                 Operation.insertComponent, new InsertComponent());
         operations.setOperation(ServletOperationSet.Method.POST, Extension.json,
                 Operation.moveComponent, new MoveComponent());
-        operations.setOperation(ServletOperationSet.Method.POST, Extension.html,
+        operations.setOperation(ServletOperationSet.Method.POST, Extension.json,
                 Operation.createSite, new CreateSite());
-        operations.setOperation(ServletOperationSet.Method.POST, Extension.html,
+        operations.setOperation(ServletOperationSet.Method.POST, Extension.json,
                 Operation.deleteSite, new DeleteSite());
 
         // PUT
@@ -332,7 +332,6 @@ public class EditServlet extends NodeTreeServlet {
             if (StringUtils.isBlank(selectors)) {
                 selectors = getDefaultSelectors();
             }
-
             String paramType = request.getParameter(PARAM_TYPE);
             Resource editResource =
                     ResourceTypeUtil.getSubtype(resolver, contentResource, paramType, getResourcePath(), selectors);
@@ -345,7 +344,6 @@ public class EditServlet extends NodeTreeServlet {
                 RequestDispatcherOptions options = new RequestDispatcherOptions();
                 options.setForceResourceType(editResource.getPath());
                 options.setReplaceSelectors(selectors);
-
                 forward(request, response, contentResource, paramType, options);
 
             } else {
@@ -563,7 +561,15 @@ public class EditServlet extends NodeTreeServlet {
                 String name = request.getParameter("name");
                 String title = request.getParameter("title");
                 Site site = siteManager.createSite(context, tenant, name, title, template, true);
-                response.sendRedirect(site.getEditUrl());
+
+                JsonWriter jsonWriter = ResponseUtil.getJsonWriter(response);
+                response.setStatus(HttpServletResponse.SC_OK);
+                jsonWriter.beginObject();
+                jsonWriter.name("name").value(site.getName());
+                jsonWriter.name("path").value(site.getPath());
+                jsonWriter.name("url").value(site.getUrl());
+                jsonWriter.name("editUrl").value(site.getEditUrl());
+                jsonWriter.endObject();
 
             } catch (RepositoryException | PersistenceException ex) {
                 LOG.error(ex.getMessage(), ex);
@@ -587,7 +593,13 @@ public class EditServlet extends NodeTreeServlet {
 
                     BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
                     siteManager.deleteSite(context, resource, true);
-                    response.sendRedirect("/");
+
+                    JsonWriter jsonWriter = ResponseUtil.getJsonWriter(response);
+                    response.setStatus(HttpServletResponse.SC_OK);
+                    jsonWriter.beginObject();
+                    jsonWriter.name("name").value(resource.getName());
+                    jsonWriter.name("path").value(resource.getPath());
+                    jsonWriter.endObject();
 
                 } else {
                     response.sendError(HttpServletResponse.SC_BAD_REQUEST, "resource is not a site");

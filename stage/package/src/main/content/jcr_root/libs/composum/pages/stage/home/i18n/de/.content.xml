@@ -4,5 +4,5 @@
         title="Ihre Sites"
         pageSubheadline="ein CMS auf Apache Sling Basis"
         createSiteLabel="Neue Site erzeugen"
-        noSitesMessage="Es ist noch keine Site verfügbar für Sie auf dieser Platfform."
+        noSitesMessage="Es ist noch keine Site verfügbar für Sie auf dieser Plattform."
         noSitesCreateLinkLabel="Erzeugen Sie Ihre erste Site jetzt..."/>
