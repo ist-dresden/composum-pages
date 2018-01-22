@@ -127,11 +127,11 @@ public interface SiteManager {
                     String homepageType, boolean commit)
             throws RepositoryException, PersistenceException;
 
-    Site createSite(BeanContext context, String tenant, String siteName, String siteTitle,
+    Site createSite(BeanContext context, String tenant, String siteName, String siteTitle, String description,
                     Resource siteTemplate, boolean commit)
             throws RepositoryException, PersistenceException;
 
-    Site createSite(BeanContext context, Resource siteBase, String siteName, String siteTitle,
+    Site createSite(BeanContext context, Resource siteBase, String siteName, String siteTitle, String description,
                     Resource siteTemplate, boolean commit)
             throws RepositoryException, PersistenceException;
 

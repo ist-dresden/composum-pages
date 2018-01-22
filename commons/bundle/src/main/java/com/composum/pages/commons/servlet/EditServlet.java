@@ -560,7 +560,8 @@ public class EditServlet extends NodeTreeServlet {
                 String tenant = request.getParameter("tenant");
                 String name = request.getParameter("name");
                 String title = request.getParameter("title");
-                Site site = siteManager.createSite(context, tenant, name, title, template, true);
+                String description = request.getParameter("description");
+                Site site = siteManager.createSite(context, tenant, name, title, description, template, true);
 
                 JsonWriter jsonWriter = ResponseUtil.getJsonWriter(response);
                 response.setStatus(HttpServletResponse.SC_OK);

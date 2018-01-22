@@ -6,7 +6,11 @@ import com.composum.sling.platform.staging.query.QueryBuilder;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.framework.Constants;
+import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Modified;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +31,7 @@ public class PagesWidgetManager implements WidgetManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(PagesWidgetManager.class);
 
-    protected Map<String, String> widgetTypes = new HashMap<>();
+    protected Map<String, String> widgetTypes;
 
     public synchronized String getWidgetTypeResourcePath(BeanContext context, String widgetType) {
         String typePath = widgetTypes.get(widgetType);
@@ -72,5 +76,17 @@ public class PagesWidgetManager implements WidgetManager {
             return found.next();
         }
         return null;
+    }
+
+
+    @Activate
+    @Modified
+    protected void activate(ComponentContext context) {
+        widgetTypes = new HashMap<>();
+    }
+
+    @Deactivate
+    protected void deactivate(ComponentContext context) {
+        widgetTypes = null;
     }
 }

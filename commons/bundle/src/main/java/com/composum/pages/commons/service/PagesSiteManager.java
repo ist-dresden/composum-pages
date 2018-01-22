@@ -180,14 +180,17 @@ public class PagesSiteManager extends ResourceManager<Site> implements SiteManag
     }
 
     @Override
-    public Site createSite(BeanContext context, String tenant, String siteName, String siteTitle,
+    public Site createSite(BeanContext context, String tenant,
+                           String siteName, String siteTitle, String description,
                            Resource siteTemplate, boolean commit)
             throws RepositoryException, PersistenceException {
-        return createSite(context, getSiteBase(context, tenant), siteName, siteTitle, siteTemplate, commit);
+        return createSite(context, getSiteBase(context, tenant),
+                siteName, siteTitle, description, siteTemplate, commit);
     }
 
     @Override
-    public Site createSite(BeanContext context, Resource siteBase, String siteName, String siteTitle,
+    public Site createSite(BeanContext context, Resource siteBase,
+                           String siteName, String siteTitle, String description,
                            Resource siteTemplate, boolean commit)
             throws RepositoryException, PersistenceException {
 
@@ -215,6 +218,9 @@ public class PagesSiteManager extends ResourceManager<Site> implements SiteManag
         ModifiableValueMap values = siteResource.adaptTo(ModifiableValueMap.class);
         if (StringUtils.isNotBlank(siteTitle)) {
             values.put(ResourceUtil.PROP_TITLE, siteTitle);
+        }
+        if (StringUtils.isNotBlank(description)) {
+            values.put(ResourceUtil.PROP_DESCRIPTION, description);
         }
 
         if (commit) {

@@ -58,6 +58,8 @@
             sling:key="Hide in Navigation" sling:message="in der Navigation verbergen"/>
     <ignore-in-search jcr:primaryType="sling:MessageEntry"
                  sling:key="Ignore in Search" sling:message="in der Suche ignorieren"/>
+    <description jcr:primaryType="sling:MessageEntry"
+            sling:key="Description" sling:message="Beschreibung"/>
     <languages jcr:primaryType="sling:MessageEntry"
             sling:key="Languages" sling:message="Sprachen"/>
     <language jcr:primaryType="sling:MessageEntry"
