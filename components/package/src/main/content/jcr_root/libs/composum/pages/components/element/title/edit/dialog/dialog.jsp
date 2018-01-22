@@ -4,8 +4,8 @@
 --%><cpp:defineFrameObjects/>
 <cpp:editDialog var="text" type="com.composum.pages.components.model.title.Title"
                 title="@{dialog.selector=='create'?'Create a Title':'Edit Title'}">
-    <cpp:widget label="Title" property="title" type="text" i18n="true"/>
-    <cpp:widget label="Subtitle" property="subtitle" type="text" i18n="true"/>
+    <cpp:widget label="Title" property="title" type="textfield" i18n="true"/>
+    <cpp:widget label="Subtitle" property="subtitle" type="textfield" i18n="true"/>
     <sling:include path="image" replaceSelectors="imageOnly"
                    resourceType="composum/pages/components/element/image/edit/dialog"/>
 </cpp:editDialog>

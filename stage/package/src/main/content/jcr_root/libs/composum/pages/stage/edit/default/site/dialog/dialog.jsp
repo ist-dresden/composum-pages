@@ -7,7 +7,7 @@
     <cpp:editDialogTab tabId="site" label="Site">
         <div class="row">
             <div class="col-xs-8">
-                <cpp:widget label="Title" property="jcr:title" type="text"/>
+                <cpp:widget label="Title" property="jcr:title" type="textfield"/>
             </div>
             <div class="col-xs-4">
                 <cpp:widget label="Publish Policy" name="publicMode" type="select" options=",PUBLIC,PREVIEW,LIVE"/>

@@ -3,9 +3,9 @@
 --%><cpp:defineFrameObjects/>
 <cpp:editDialog var="code" type="com.composum.pages.components.model.codeblock.CodeBlock"
                 title="@{dialog.selector=='create'?'Create a Code Example':'Edit Code Example'}">
-    <cpp:widget label="title" property="title" type="text" />
+    <cpp:widget label="title" property="title" type="textfield" />
     <cpp:widget label="code" property="code" type="codearea" />
-    <cpp:widget label="copyright" property="copyright" type="text" />
+    <cpp:widget label="copyright" property="copyright" type="textfield" />
     <div class="row">
         <div class="col-xs-4">
             <cpp:widget label="Language" property="language" type="select" options=",cpp,css,groovy,html,java,javascript,jsp,php,python,ruby,scss,shell,swift,xml"/>

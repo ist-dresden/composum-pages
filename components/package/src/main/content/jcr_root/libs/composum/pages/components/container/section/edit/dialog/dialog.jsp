@@ -18,7 +18,7 @@
     </div>
     <div class="row">
         <div class="col-xs-4">
-            <cpp:widget label="Interval" property="interval" type="text"/>
+            <cpp:widget label="Interval" property="interval" type="textfield"/>
         </div>
         <div class="col-xs-8">
             <cpp:widget label="Mouse enter doesn't stop" property="noPause" type="checkbox"/>

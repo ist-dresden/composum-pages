@@ -5,11 +5,11 @@
                 title="Edit Search Result">
     <div class="row">
         <div class="col-xs-8">
-            <cpp:widget label="Selector" property="selector" type="text" i18n="false" rules="optional"
+            <cpp:widget label="Selector" property="selector" type="textfield" i18n="false" rules="optional"
                         hint="Sling selector which renders a found resource as search result. Default &quot;searchItem&quot;."/>
         </div>
         <div class="col-xs-4">
-            <cpp:widget label="Page size" property="pagesize" type="text" i18n="false" rules="optional"
+            <cpp:widget label="Page size" property="pagesize" type="textfield" i18n="false" rules="optional"
                         hint="Page size for the shown results."/>
         </div>
     </div>
@@ -17,7 +17,7 @@
         <div class="col-xs-12">
             <cpp:widget label="Search Root" property="searchRoot" type="path" i18n="false" rules="optional"
                         hint="Path where the search starts. Default: site-root."/>
-            <cpp:widget label="Template" property="template" type="text" i18n="false" rules="optional"
+            <cpp:widget label="Template" property="template" type="textfield" i18n="false" rules="optional"
                         hint="Template for printing the search results. Takes precedence over selector."/>
         </div>
     </div>

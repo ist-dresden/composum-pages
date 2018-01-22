@@ -5,7 +5,7 @@
 --%><cpp:defineFrameObjects/>
 <cpp:editDialog var="language" type="com.composum.pages.stage.model.edit.site.Languages"
                 title="Delete Site Language" selector="delete">
-    <cpp:widget label="Name" name=":name" value="${language.name}" type="text" disabled="true"/>
-    <cpp:widget label="Key" property="key" type="text" disabled="true"/>
-    <cpp:widget label="Label" property="label" type="text" disabled="true"/>
+    <cpp:widget label="Name" name=":name" value="${language.name}" type="textfield" disabled="true"/>
+    <cpp:widget label="Key" property="key" type="textfield" disabled="true"/>
+    <cpp:widget label="Label" property="label" type="textfield" disabled="true"/>
 </cpp:editDialog>

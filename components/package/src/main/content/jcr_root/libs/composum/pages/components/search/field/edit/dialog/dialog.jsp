@@ -11,15 +11,15 @@
                             hint="Symbol for the search button; optional, default: 'search'."/>
             </div>
             <div class="col-xs-6">
-                <cpp:widget label="Button Text" property="buttonText" type="text" i18n="true" rules="optional"
+                <cpp:widget label="Button Text" property="buttonText" type="textfield" i18n="true" rules="optional"
                             hint="Text for the search button (normally not visible); optional."/>
             </div>
         </div>
         <div class="row">
             <div class="col-xs-12">
-                <cpp:widget label="Button Title" property="hint" type="text" i18n="true" rules="optional"
+                <cpp:widget label="Button Title" property="hint" type="textfield" i18n="true" rules="optional"
                             hint="Title (i.e., mouseover text) for the button; optional."/>
-                <cpp:widget label="Placeholder Text" property="placeholderText" type="text" i18n="true" rules="optional"
+                <cpp:widget label="Placeholder Text" property="placeholderText" type="textfield" i18n="true" rules="optional"
                             hint="Text for the placeholder that is shown in the search field before any text is put in; optional."/>
             </div>
         </div>
@@ -29,7 +29,7 @@
             <div class="col-xs-12">
                 <cpp:widget label="Search Result Path" property="searchResultPath" type="path" i18n="false" rules="optional"
                             hint="Page in which the search result is shown; optional, default: containing page."/>
-                <cpp:widget label="Search Result Anchor" property="searchResultAnchor" type="text" i18n="false" rules="optional"
+                <cpp:widget label="Search Result Anchor" property="searchResultAnchor" type="textfield" i18n="false" rules="optional"
                             hint="Anchor in the search result page to jump to for displaying the search result; optional."/>
             </div>
         </div>

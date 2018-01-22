@@ -7,8 +7,9 @@
         <cpp:widget label="Select a template" name="template" type="site-template"/>
     </cpp:editDialogTab>
     <cpp:editDialogTab tabId="site" label="Site">
-        <cpp:widget label="Tenant" name="tenant" value="sites" type="text" disabled="true"/>
-        <cpp:widget label="Site Name" name="name" placeholder="the repository name (resource name)" type="text" rules="mandatory"/>
-        <cpp:widget label="Site Title" name="title" placeholder="the more readable title of the site" type="text"/>
+        <cpp:widget label="Tenant" name="tenant" value="sites" type="textfield" disabled="true"/>
+        <cpp:widget label="Site Name" name="name" placeholder="the repository name (resource name)" type="textfield" rules="mandatory"/>
+        <cpp:widget label="Site Title" name="title" placeholder="the more readable title of the site" type="textfield"/>
+        <cpp:widget label="Description" name="description" type="textarea"/>
     </cpp:editDialogTab>
 </cpp:editDialog>

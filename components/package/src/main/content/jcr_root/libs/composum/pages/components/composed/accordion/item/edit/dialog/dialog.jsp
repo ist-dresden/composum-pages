@@ -5,7 +5,7 @@
 --%><cpp:defineFrameObjects/>
 <cpp:editDialog var="item" type="com.composum.pages.commons.model.Element"
                 title="@{dialog.selector=='create'?'Create an Item':'Accordion Item'}">
-    <cpp:widget type="text" label="Title" property="jcr:title" mandatory="true"/>
+    <cpp:widget type="textfield" label="Title" property="jcr:title" mandatory="true"/>
     <div class="col-xs-4">
         <cpp:widget type="checkbox" label="Open" property="initialOpen"/>
     </div>

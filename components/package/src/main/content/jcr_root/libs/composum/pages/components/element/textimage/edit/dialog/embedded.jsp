@@ -1,7 +1,7 @@
 <%@page session="false" pageEncoding="utf-8" %><%--
 --%><%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %><%--
 --%><cpp:defineFrameObjects/>
-<cpp:widget label="Title" property="title" type="text" i18n="true"/>
+<cpp:widget label="Title" property="title" type="textfield" i18n="true"/>
 <cpp:widget label="Text" property="text" type="richtext" height="260px" i18n="true"/>
 <div class="row">
     <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">

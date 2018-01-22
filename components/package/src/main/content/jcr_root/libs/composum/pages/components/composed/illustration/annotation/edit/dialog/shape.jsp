@@ -24,7 +24,7 @@
             <cpp:widget label="Alignment" property="shape/align" type="select" options="top,left,right,bottom"/>
         </div>
         <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-            <cpp:widget label="Offset" property="shape/offset" type="text"/>
+            <cpp:widget label="Offset" property="shape/offset" type="textfield"/>
         </div>
     </div>
     <div class="row">

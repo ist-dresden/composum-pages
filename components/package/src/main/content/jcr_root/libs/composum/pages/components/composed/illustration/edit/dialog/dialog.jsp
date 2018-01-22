@@ -6,7 +6,7 @@
                 title="@{dialog.selector=='create'?'Create an Illustration':'Edit Illustration'}">
     <cpp:editDialogTab tabId="content" label="Content">
         <cpp:widget label="Image" property="image/imageRef" type="image" mandatory="true"/>
-        <cpp:widget label="Alt Text" property="image/alt" type="text" i18n="true"/>
+        <cpp:widget label="Alt Text" property="image/alt" type="textfield" i18n="true"/>
     </cpp:editDialogTab>
     <cpp:editDialogTab tabId="shape" label="Shape">
         <cpp:widget label="Behavior" property="shape/behavior" type="select" options="accordion,independent"/>
