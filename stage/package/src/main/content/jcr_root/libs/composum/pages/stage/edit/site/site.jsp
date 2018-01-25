@@ -4,11 +4,11 @@
 --%><%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%><%--
 --%><cpp:defineObjects/>
 <html data-context-path="${slingRequest.contextPath}">
-<cpp:head>
+<head>
     <sling:call script="head.jsp"/>
-</cpp:head>
-<cpp:body var="site" type="com.composum.pages.commons.model.Site" scope="request">
-    <sling:call script="content.jsp"/>
-    <sling:call script="script.jsp"/>
-</cpp:body>
+</head>
+<body>
+<sling:call script="content.jsp"/>
+<sling:call script="script.jsp"/>
+</body>
 </html>

@@ -27,7 +27,8 @@
                 componentSelected: 'component:selected',
                 pathSelected: 'path:selected',
                 insertComponent: 'component:insert',
-                moveComponent: 'component:move'
+                moveComponent: 'component:move',
+                openEditDialog: 'dialog:edit'
             },
             url: {
                 get: {
@@ -260,6 +261,13 @@
                             }, function (xhr) {
                                 core.alert('error', 'Error', 'Error on moving component', xhr);
                             });
+                        }
+                        break;
+                    case pages.const.event.openEditDialog:
+                        // apply move action messages from the edited page
+                        console.log('pages.event.openEditDialog(' + message[2] + ')');
+                        if (args.target) {
+                            pages.dialogs.openEditDialog(args.target.name, args.target.path, args.target.type);
                         }
                         break;
                 }

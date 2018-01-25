@@ -6,7 +6,7 @@
 <div class="container">
     <div class="row">
         <cpp:element var="site" type="com.composum.pages.commons.model.Site" mode="none"
-                       cssClasses="col-md-12">
+                     cssClasses="col-md-12">
             <h2>${site.title} <span class="${siteCssBase}_title-type">(Site)</span></h2>
             <ul class="nav nav-tabs" role="tablist">
                 <li role="presentation" class="active"><a href="#releases-tab" aria-controls="releases" role="tab"
@@ -35,6 +35,11 @@
                                     Languages
                                 </a>
                             </h4>
+                            <div class="btn-group" role="group" aria-label="edit languages">
+                                <cpp:invoke action="openEditDialog"
+                                            resourceType="composum/pages/stage/edit/site/languages"
+                                            tagName="button" cssAdd="btn btn-default fa fa-pencil"/>
+                            </div>
                         </div>
                         <div id="languagesPanel" class="panel-collapse collapse in" role="tabpanel"
                              aria-labelledby="languagesHead">

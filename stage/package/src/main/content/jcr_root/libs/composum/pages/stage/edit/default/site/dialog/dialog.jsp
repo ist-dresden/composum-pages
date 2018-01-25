@@ -3,7 +3,7 @@
 --%><%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %><%--
 --%><cpp:defineFrameObjects/>
 <cpp:editDialog var="site" type="com.composum.pages.commons.model.Site" selector="generic" languageContext="false"
-                title="Site Properties">
+                title="Site Properties" submitLabel="Save">
     <cpp:editDialogTab tabId="site" label="Site">
         <div class="row">
             <div class="col-xs-8">

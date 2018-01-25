@@ -5,16 +5,14 @@ import com.composum.pages.commons.model.Element;
 import com.composum.pages.commons.model.Model;
 import com.composum.pages.commons.model.Page;
 import com.composum.pages.commons.request.DisplayMode;
+import com.composum.pages.commons.util.TagCssClasses;
 import com.composum.sling.core.request.DomIdentifiers;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ValueMap;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
-
-import static com.composum.pages.commons.model.AbstractModel.addCssClass;
 
 /**
  * the tag to render a Pages Sling component
@@ -96,15 +94,15 @@ public class ElementTag extends AbstractWrappingTag {
     /**
      * builds the list of CSS classes for the wrapping tag
      */
-    protected void collectCssClasses(List<String> collection) {
+    protected void collectCssClasses( TagCssClasses.CssSet collection) {
         ValueMap values = resource.adaptTo(ValueMap.class);
         if (values != null) {
-            addCssClass(collection, values.get(STYLE_PROPERTY, ""));
+            collection.add(values.get(STYLE_PROPERTY, ""));
         }
         super.collectCssClasses(collection);
         if (isEditMode()) {
-            addCssClass(collection, COMPONENT_EDIT_BODY_CLASSES);
-            addCssClass(collection, getElementCssClass());
+            collection.add(COMPONENT_EDIT_BODY_CLASSES);
+            collection.add(getElementCssClass());
         }
     }
 

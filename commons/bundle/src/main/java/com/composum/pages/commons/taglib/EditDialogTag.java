@@ -3,6 +3,7 @@ package com.composum.pages.commons.taglib;
 import com.composum.pages.commons.PagesConstants;
 import com.composum.pages.commons.model.properties.Language;
 import com.composum.pages.commons.model.properties.Languages;
+import com.composum.pages.commons.util.TagCssClasses;
 import com.composum.sling.core.BeanContext;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
@@ -10,18 +11,16 @@ import org.apache.sling.api.resource.Resource;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 
 import static com.composum.pages.commons.model.AbstractModel.I18N_PROPERTY_PATH;
-import static com.composum.pages.commons.model.AbstractModel.addCssClass;
-import static com.composum.pages.commons.model.AbstractModel.cssOfType;
 import static com.composum.pages.commons.servlet.EditServlet.EDIT_RESOURCE_KEY;
 import static com.composum.pages.commons.servlet.EditServlet.EDIT_RESOURCE_TYPE_KEY;
 import static com.composum.pages.commons.taglib.AbstractPageTag.STAGE_COMPONENT_BASE;
 import static com.composum.pages.commons.taglib.ElementTag.PAGES_EDIT_DATA_NAME;
 import static com.composum.pages.commons.taglib.ElementTag.PAGES_EDIT_DATA_PATH;
 import static com.composum.pages.commons.taglib.ElementTag.PAGES_EDIT_DATA_TYPE;
+import static com.composum.pages.commons.util.TagCssClasses.cssOfType;
 
 /**
  * the EditDialogTag creates the HTML code for an edit dialog of a component
@@ -260,17 +259,17 @@ public class EditDialogTag extends AbstractWrappingTag {
     }
 
     @Override
-    protected void collectCssClasses(List<String> collection) {
+    protected void collectCssClasses(TagCssClasses.CssSet collection) {
         super.collectCssClasses(collection);
-        addCssClass(collection, getCssBase() + "_action_" + getAction().getName().toLowerCase());
+        collection.add(getCssBase() + "_action_" + getAction().getName().toLowerCase());
         String selector = getSelector();
         if (StringUtils.isNotBlank(selector)) {
-            addCssClass(collection, getCssBase() + "_selector_" + selector);
+            collection.add(getCssBase() + "_selector_" + selector);
         }
-        addCssClass(collection, getCssBase() + "_action_" + getAction().getName().toLowerCase());
-        addCssClass(collection, "dialog");
-        addCssClass(collection, "modal");
-        addCssClass(collection, "fade");
+        collection.add(getCssBase() + "_action_" + getAction().getName().toLowerCase());
+        collection.add("dialog");
+        collection.add("modal");
+        collection.add("fade");
     }
 
     @Override

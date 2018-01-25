@@ -7,6 +7,7 @@ import com.composum.pages.commons.request.DisplayMode;
 import com.composum.pages.commons.request.RequestLocale;
 import com.composum.pages.commons.service.PageManager;
 import com.composum.pages.commons.service.SiteManager;
+import com.composum.pages.commons.util.TagCssClasses;
 import com.composum.pages.commons.util.ValueHashMap;
 import com.composum.platform.models.annotations.PropertyDefaults;
 import com.composum.sling.core.BeanContext;
@@ -226,7 +227,7 @@ public abstract class AbstractModel implements SlingBean, Model {
     }
 
     /**
-     * This is used by the 'component' tag to determins the CSS class base name for the component.
+     * This is used by the 'component' tag to determine the CSS class base name for the component.
      */
     public String getCssBase() {
         if (cssBase == null) {
@@ -240,7 +241,7 @@ public abstract class AbstractModel implements SlingBean, Model {
      */
     protected String buildCssBase() {
         String type = getCssBaseType();
-        return StringUtils.isNotBlank(type) ? cssOfType(type) : null;
+        return StringUtils.isNotBlank(type) ? TagCssClasses.cssOfType(type) : null;
     }
 
     /**
@@ -248,26 +249,6 @@ public abstract class AbstractModel implements SlingBean, Model {
      */
     protected String getCssBaseType() {
         return CSS_BASE_TYPE_RESTRICTION.accept(resource) ? resource.getResourceType() : null;
-    }
-
-    /**
-     * Transforms a resource type into a CSS class name; replaces all '/' by '-'.
-     */
-    public static String cssOfType(String type) {
-        if (StringUtils.isNotBlank(type)) {
-            type = type.replaceAll("^/((apps|libs)/)?", "");
-            type = type.replace('/', '-').replace(':', '-');
-        }
-        return type;
-    }
-
-    /**
-     * Collects a CSS class if not 'blank' and not always present in the collection.
-     */
-    public static void addCssClass(List<String> collection, String cssClass) {
-        if (StringUtils.isNotBlank(cssClass) && !collection.contains(cssClass)) {
-            collection.add(cssClass);
-        }
     }
 
     //

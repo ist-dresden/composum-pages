@@ -16,7 +16,7 @@
             <button type="button" class="btn btn-default preview" data-path="${resource.path}">Preview</button>
         </div>
         <div class="btn-group" role="group" aria-label="...">
-            <button type="button" class="btn btn-default delete">Delete</button>
+            <button type="button" class="btn btn-danger delete">Delete</button>
         </div>
     </div>
     <div id="releasesPanel" class="panel-collapse collapse in" role="tabpanel"

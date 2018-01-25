@@ -7,7 +7,6 @@ import com.composum.pages.commons.request.DisplayMode;
 import com.composum.pages.commons.servlet.EditServlet;
 import com.composum.pages.commons.util.AttributeSet;
 import com.composum.sling.core.BeanContext;
-import com.composum.sling.core.SlingBean;
 import com.composum.sling.cpnl.ComponentTag;
 import com.composum.sling.cpnl.CpnlElFunctions;
 import org.apache.commons.lang3.StringUtils;
@@ -17,7 +16,7 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.DynamicAttributes;
 import java.util.Map;
 
-import static com.composum.pages.commons.model.AbstractModel.cssOfType;
+import static com.composum.pages.commons.util.TagCssClasses.cssOfType;
 
 /**
  * a tag to instantiate a model object
@@ -92,7 +91,7 @@ public class ModelTag extends ComponentTag implements DynamicAttributes {
     /**
      * generates the default 'cssBase' by delegation to the model or transforming the resource type
      */
-    protected String buildCssBase() {
+    public String buildCssBase() {
         String cssBase = null;
         if (component instanceof Model) {
             cssBase = ((Model) component).getCssBase();

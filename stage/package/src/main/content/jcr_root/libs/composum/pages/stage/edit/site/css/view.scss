@@ -1,0 +1,32 @@
+@charset "UTF-8";
+
+@import "../../css/variables";
+@import "../../css/mixins";
+
+.composum-pages-stage-edit-site {
+
+    .panel {
+
+        .panel-heading {
+            height: 37px;
+
+            .panel-title {
+                float: left;
+            }
+
+            .btn-group {
+                float: right;
+                margin-top: -6px;
+
+                .btn {
+                    padding-top: 3px;
+                    padding-bottom: 3px;
+
+                    &.delete {
+                        margin-right: 10px;
+                    }
+                }
+            }
+        }
+    }
+}

@@ -3,6 +3,7 @@ package com.composum.pages.commons.taglib;
 import com.composum.pages.commons.model.properties.GenericNode;
 import com.composum.pages.commons.model.properties.PropertyNode;
 import com.composum.pages.commons.model.properties.PropertyNodeSet;
+import com.composum.pages.commons.util.TagCssClasses;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.util.ResourceUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -84,7 +85,7 @@ public class EditMultiWidgetTag extends AbstractWidgetTag implements LoopTag {
         return StringUtils.isNotBlank(modelClass) ? modelClass : PropertyNodeSet.class.getName();
     }
 
-    protected void collectCssClasses(List<String> collection) {
+    protected void collectCssClasses(TagCssClasses.CssSet collection) {
         super.collectCssClasses(collection);
         collection.addAll(FORM_CSS_CLASES);
     }
