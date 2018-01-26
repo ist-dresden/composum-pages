@@ -379,11 +379,10 @@
             <rtexprvalue>true</rtexprvalue>
         </attribute>
         <!-- common:include Extensions -->
-        <!-- Dynamic contents -->
         <attribute>
             <description>
                 Whether to force dynamic include as a separate request depending on the server settings.
-                Handle with care: on SSI include, some parameters are not effective anymore
+                Handle with care: on SSI include, some parameters are not effective anymore.
             </description>
             <name>dynamic</name>
             <required>false</required>
@@ -408,6 +407,9 @@
             <rtexprvalue>true</rtexprvalue>
         </attribute>
         <attribute>
+            <description>
+                include only if the result of this test expression is 'true' (boolean)
+            </description>
             <name>test</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -880,6 +882,12 @@
         <attribute>
             <name>action</name>
             <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <name>actionUrl</name>
+            <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>

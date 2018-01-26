@@ -13,9 +13,19 @@ import org.apache.sling.api.resource.ResourceResolver;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * the utility to determine resource types for the rendering of editing subtypes of a component
+ * (e.g. to find the dialogs, actions, tiles, ... of a component tu render this pieces of a component in the edit frame)
+ */
 public class ResourceTypeUtil {
 
-    public static final String EDIT_PATH = "edit";
+    public static final String EDIT_PATH = "edit"; // the base 'edit' folder name in a component implementation
+
+    // the component type base path to find the default implementations for the various edit sybtypes
+
+    public static final String EDIT_DEFAULT_ROOT = "composum/pages/stage/edit/default/";
+
+    // the subtype paths of a component for the various editing subtypes
 
     public static final String EDIT_DIALOG_PATH = EDIT_PATH + "/dialog";
     public static final String NEW_DIALOG_PATH = EDIT_DIALOG_PATH + "/new";
@@ -26,7 +36,7 @@ public class ResourceTypeUtil {
     public static final String EDIT_TOOLBAR_PATH = EDIT_PATH + "/toolbar";
     public static final String TREE_ACTIONS_PATH = EDIT_PATH + "/tree";
 
-    public static final String EDIT_DEFAULT_ROOT = "composum/pages/stage/edit/default/";
+    // the default component types used if a component doesn't have its own subtype implementation...
 
     public static final String DEFAULT_ELEMENT_DIALOG = EDIT_DEFAULT_ROOT + "element/dialog";
     public static final String DEFAULT_CREATE_DIALOG = DEFAULT_ELEMENT_DIALOG + "/create";
@@ -65,10 +75,17 @@ public class ResourceTypeUtil {
     public static final String DEFAULT_FOLDER_ACTIONS = EDIT_DEFAULT_ROOT + "folder/tree";
     public static final String DEFAULT_NONE_ACTIONS = EDIT_DEFAULT_ROOT + "none/tree";
 
+    /**
+     * the check to support folders as intermediate nodes in the content tree
+     */
     public static boolean isFolder(Resource resource) {
         return ResourceFilter.FOLDER.accept(resource);
     }
 
+    /**
+     * the strategy interface to find the right default subtype component for a resource to edit; for
+     * each know edit subtype such a strategy must be available to find the right implementation
+     */
     public interface SubtypeStrategy {
 
         String getDefaultResourcePath(ResourceResolver resolver, Resource resource, String type);
@@ -153,6 +170,9 @@ public class ResourceTypeUtil {
         }
     }
 
+    /**
+     * the set of declared subtypes to implement edit components for a component type
+     */
     public static final Map<String, SubtypeStrategy> SUBTYPES;
 
     static {
@@ -167,31 +187,68 @@ public class ResourceTypeUtil {
         SUBTYPES.put(TREE_ACTIONS_PATH, new TreeActionsStrategy());
     }
 
-    public static String getSubtypePath(ResourceResolver resolver, Resource resource, String type, String subtype, String selectors) {
+    /**
+     * Retrieves the path to an existing component (resource)
+     * perform the rendering for a subtype of a component driven resource.
+     *
+     * @param resolver  the resolver to use (with the session context)
+     * @param resource  the resource which type has to be rendered (maybe <code>null</code> - synthetic)
+     * @param type      the component (main) resource type (maybe <code>null</code> - use resource)
+     * @param subtype   the mandatory subtype of the component type to find the useful implementation
+     * @param selectors the optional selectors of the rendering request to switch to subtypes of the subtype
+     * @return the resource path which can be used to render the requested subtype of a component;
+     * maybe <code>null</code> if no such resource can be found (should not happens)
+     */
+    public static String getSubtypePath(ResourceResolver resolver, Resource resource,
+                                        String type, String subtype, String selectors) {
         Resource typeResource = getSubtype(resolver, resource, type, subtype, selectors);
         return typeResource != null ? typeResource.getPath() : null;
     }
 
-    public static Resource getSubtype(ResourceResolver resolver, Resource resource, String type, String subtype, String selectors) {
-        Resource typeResource = resource != null
-                ? ResolverUtil.getResourceType(resource, type, subtype)
-                : ResolverUtil.getResourceType(resolver, type, subtype);
-        if (typeResource == null) {
-            if (StringUtils.isNotBlank(selectors)) {
-                typeResource = ResolverUtil.getResourceType(resolver,
-                        ResourceTypeUtil.getDefaultResourcePath(resolver, resource, type,
-                                subtype + "/" + selectors.replace('.', '/')));
-            }
+    /**
+     * Retrieves an existing component (resource) perform the rendering for a subtype of a component driven resource.
+     *
+     * @param resolver  the resolver to use (with the session context)
+     * @param resource  the resource which type has to be rendered (maybe <code>null</code> - synthetic)
+     * @param type      the component (main) resource type (maybe <code>null</code> - use resource)
+     * @param subtype   the mandatory subtype of the component type to find the useful implementation
+     * @param selectors the optional selectors of the rendering request to switch to subtypes of the subtype
+     * @return the existing resource which can be used to render the requested subtype of a component;
+     * maybe <code>null</code> if no such resource can be found (should not happens)
+     */
+    public static Resource getSubtype(ResourceResolver resolver, Resource resource,
+                                      String type, String subtype, String selectors) {
+        Resource typeResource = null;
+        if (StringUtils.isNotBlank(selectors)) {
+            // try to find sector driven subtype of the subtype
+            // (e.g. .../edit/dialog/delete for 'edit/dialog' with selector 'delete')
+            typeResource = getSubtype(resolver, resource, type,
+                    subtype + "/" + selectors.replace('.', '/'), null);
+        }
+        if (typeResource == null) { // no selector or selector was not helpful...
+            typeResource = resource != null
+                    ? ResolverUtil.getResourceType(resource, type, subtype)
+                    : ResolverUtil.getResourceType(resolver, type, subtype);
             if (typeResource == null) {
                 typeResource = ResolverUtil.getResourceType(resolver,
-                        ResourceTypeUtil.getDefaultResourcePath(resolver, resource, type, subtype));
+                        ResourceTypeUtil.getDefaultSubtypePath(resolver, resource, type, subtype));
             }
         }
         return typeResource;
     }
 
-    public static String getDefaultResourcePath(ResourceResolver resolver, Resource resource, String type,
-                                                String subtype) {
+    /**
+     * Returns the resource path of the default resource type (from 'composum/pages/stage/edit/default/...')
+     * for a components subtype.
+     *
+     * @param resolver the resolver to use (with the session context)
+     * @param resource the resource which type has to be used if not type is given (maybe <code>null</code>)
+     * @param type     the component (main) resource type (maybe <code>null</code>)
+     * @param subtype  the mandatory subtype of the component type
+     * @return the path to the default subtype component
+     */
+    public static String getDefaultSubtypePath(ResourceResolver resolver,
+                                               Resource resource, String type, String subtype) {
         SubtypeStrategy strategy = SUBTYPES.get(subtype);
         return strategy != null ? strategy.getDefaultResourcePath(resolver, resource, type) : null;
     }

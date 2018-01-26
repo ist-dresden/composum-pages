@@ -136,6 +136,16 @@
                 }
             },
 
+            applyData: function (data) {
+                if (data) {
+                    for (var name in data) {
+                        if (data.hasOwnProperty(name)) {
+                            this.$('input[name="' + name + '"]').val(data[name]);
+                        }
+                    }
+                }
+            },
+
             /**
              * adjust the wizard state on tab change
              */
@@ -209,10 +219,10 @@
             }
         });
 
-        dialogs.openEditDialog = function (name, path, type, url) {
+        dialogs.openEditDialog = function (name, path, type, url, setupDialog) {
             var c = dialogs.const.edit.url;
             pages.dialogHandler.openEditDialog(url ? url : c.base + c._dialog.load,
-                dialogs.EditDialog, name, path, type);
+                dialogs.EditDialog, name, path, type, setupDialog);
         };
 
         //
@@ -234,10 +244,10 @@
             }
         });
 
-        dialogs.openCreateDialog = function (name, path, type, url, onNotFound) {
+        dialogs.openCreateDialog = function (name, path, type, url, setupDialog, onNotFound) {
             var c = dialogs.const.edit.url;
             pages.dialogHandler.openEditDialog(url ? url : c.base + c._dialog.create,
-                dialogs.CreateDialog, name, path, type, onNotFound);
+                dialogs.CreateDialog, name, path, type, setupDialog, onNotFound);
         };
 
         /**
@@ -259,7 +269,7 @@
                     this.hide();
                 }
                 if (type) {
-                    dialogs.openCreateDialog('*', this.data.path, type, undefined,
+                    dialogs.openCreateDialog('*', this.data.path, type, undefined, undefined,
                         // if no create dialog exists (not found) create a new instance directly
                         _.bind(function (name, path, type) {
                             core.ajaxPost(c.base + c._insert, {

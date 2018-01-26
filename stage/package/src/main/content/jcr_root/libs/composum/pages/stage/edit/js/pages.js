@@ -28,7 +28,8 @@
                 pathSelected: 'path:selected',
                 insertComponent: 'component:insert',
                 moveComponent: 'component:move',
-                openEditDialog: 'dialog:edit'
+                openEditDialog: 'dialog:edit',
+                alertMessage: 'dialog:alert'
             },
             url: {
                 get: {
@@ -138,7 +139,7 @@
 
         pages.DialogHandler = Backbone.View.extend({
 
-            openEditDialog: function (url, viewType, name, path, type, onNotFound) {
+            openEditDialog: function (url, viewType, name, path, type, setupDialog, onNotFound) {
                 core.ajaxGet(url + (path ? path : ''), {
                         data: {
                             name: name ? name : '',
@@ -157,6 +158,9 @@
                             };
                             if (_.isFunction(dialog.afterLoad)) {
                                 dialog.afterLoad(name, path, type);
+                            }
+                            if (_.isFunction(setupDialog)) {
+                                setupDialog(dialog);
                             }
                             if (dialog.useDefault) {
                                 dialog.doSubmit(dialog.useDefault);
@@ -264,11 +268,25 @@
                         }
                         break;
                     case pages.const.event.openEditDialog:
-                        // apply move action messages from the edited page
+                        // opens an edit dialog to perform editing of the content of the path transmitted
                         console.log('pages.event.openEditDialog(' + message[2] + ')');
                         if (args.target) {
-                            pages.dialogs.openEditDialog(args.target.name, args.target.path, args.target.type);
+                            var url = undefined;
+                            if (args.dialog) {
+                                url = args.dialog.url;
+                            }
+                            pages.dialogs.openEditDialog(args.target.name, args.target.path, args.target.type, url,
+                                function (dialog) {
+                                    if (args.values) {
+                                        dialog.applyData(args.values);
+                                    }
+                                });
                         }
+                        break;
+                    case pages.const.event.alertMessage:
+                        // displays an alert message by opening an alert dialog
+                        console.log('pages.event.alertMessage(' + message[2] + ')');
+                        core.alert(args.type, args.title, args.message, args.data);
                         break;
                 }
             }

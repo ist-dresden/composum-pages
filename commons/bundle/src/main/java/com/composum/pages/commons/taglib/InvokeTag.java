@@ -28,10 +28,12 @@ public class InvokeTag extends CpnlBodyTagSupport {
     public static final String INVOKE_ACTION_CSS_CLASS = "composum-pages-action";
 
     public static final String PAGES_ACTION_DATA_ATTR = PAGES_EDIT_DATA + "-action";
+    public static final String PAGES_ACTION_URL_DATA_TYPE = PAGES_EDIT_DATA + "-url";
 
     protected String tagName;
 
     protected String action;
+    protected String actionUrl;
 
     protected Resource tagResource;
     protected String path;
@@ -49,6 +51,7 @@ public class InvokeTag extends CpnlBodyTagSupport {
         resourceType = null;
         path = null;
         tagResource = null;
+        actionUrl = null;
         action = null;
         tagName = null;
     }
@@ -65,6 +68,13 @@ public class InvokeTag extends CpnlBodyTagSupport {
      */
     public void setAction(String value) {
         action = value;
+    }
+
+    /**
+     * the target path
+     */
+    public void setActionUrl(String value) {
+        actionUrl = value;
     }
 
     /**
@@ -161,6 +171,9 @@ public class InvokeTag extends CpnlBodyTagSupport {
                     out.append("<").append(StringUtils.isNotBlank(tagName) ? tagName : DEFAULT_TAG);
                     out.append(" class=\"").append(cssClasses.toString()).append("\"");
                     out.append(" ").append(PAGES_ACTION_DATA_ATTR).append("=\"").append(action).append("\"");
+                    if (StringUtils.isNotBlank(actionUrl)) {
+                        out.append(" ").append(PAGES_ACTION_URL_DATA_TYPE).append("=\"").append(actionUrl).append("\"");
+                    }
                     out.append(" ").append(PAGES_EDIT_DATA_PATH).append("=\"").append(path).append("\"");
                     if (StringUtils.isNotBlank(resourceType)) {
                         out.append(" ").append(PAGES_EDIT_DATA_TYPE).append("=\"").append(resourceType).append("\"");

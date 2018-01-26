@@ -13,7 +13,7 @@
                     height="200px"/>
     </cpp:editDialogTab>
     <cpp:editDialogTab tabId="image" label="Image">
-        <sling:include path="image" replaceSelectors="embedded"
+        <sling:include path="image" replaceSelectors="optional"
                        resourceType="composum/pages/components/element/image/edit/dialog"/>
     </cpp:editDialogTab>
 </cpp:editDialog>

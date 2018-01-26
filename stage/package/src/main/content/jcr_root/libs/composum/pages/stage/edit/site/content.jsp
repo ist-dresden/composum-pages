@@ -19,9 +19,9 @@
             <div class="tab-content">
                 <div role="tabpanel" class="tab-pane fade in active" id="releases-tab">
 
-                    <sling:include resourceType="composum/pages/stage/edit/site/openobjects"/>
+                    <sling:include resourceType="composum/pages/stage/edit/site/page/modified"/>
 
-                    <sling:include resourceType="composum/pages/stage/edit/site/finishedobjects"/>
+                    <sling:include resourceType="composum/pages/stage/edit/site/page/finished"/>
 
                     <sling:include path="releases" resourceType="composum/pages/stage/edit/site/releases"/>
 

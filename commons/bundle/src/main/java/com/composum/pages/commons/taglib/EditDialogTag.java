@@ -63,6 +63,8 @@ public class EditDialogTag extends AbstractWrappingTag {
     protected String primaryType;
     private transient String defaultPrimaryType;
 
+    private transient String editPath;
+
     protected String submit;
     protected String submitLabel;
     private transient EditDialogAction action;
@@ -77,6 +79,7 @@ public class EditDialogTag extends AbstractWrappingTag {
         action = null;
         submit = null;
         submitLabel = null;
+        editPath = null;
         defaultPrimaryType = null;
         primaryType = null;
         resourceType = null;
@@ -92,7 +95,7 @@ public class EditDialogTag extends AbstractWrappingTag {
     /**
      * Determines the resource to edit by the form of the dialog to create by this tag. This resource is mainly
      * determined by a 'EDIT_RESOURCE_KEY' reuqest attribute which is declared by the edit servlet during the dialog
-     * load request.
+     * load request; if the dialog is loaded by a dialog component URL the edit resource is expected as the URLs suffix.
      *
      * @param context the current request context
      * @return the resource to edit
@@ -102,7 +105,21 @@ public class EditDialogTag extends AbstractWrappingTag {
         if (editResource == null) {
             editResource = request.getAttribute(EDIT_RESOURCE_KEY);
         }
+        if (editResource == null) {
+            String suffix = request.getRequestPathInfo().getSuffix();
+            if (StringUtils.isNotBlank(suffix) && !"/".equals(suffix)) {
+                editResource = request.getResourceResolver().getResource(suffix);
+            }
+        }
         return editResource instanceof Resource ? ((Resource) editResource) : super.getModelResource(context);
+    }
+
+    public String getEditPath() {
+        if (editPath == null) {
+            Resource editResource = getModelResource(context);
+            editPath = editResource != resource ? editResource.getPath() : "";
+        }
+        return editPath;
     }
 
     /**

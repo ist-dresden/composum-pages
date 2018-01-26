@@ -11,6 +11,7 @@
                 name: 'pages-edit-name',
                 path: 'pages-edit-path',
                 type: 'pages-edit-type',
+                url: 'pages-edit-url',
                 action: 'pages-edit-action'
             },
             class: { // general edit UI CSS classes
@@ -27,9 +28,31 @@
                 componentSelected: 'component:selected',
                 insertComponent: 'component:insert',
                 moveComponent: 'component:move',
-                openEditDialog: 'dialog:edit'
+                openEditDialog: 'dialog:edit',
+                alertMessage: 'dialog:alert'
             }
         });
+
+        elements.alertMessage = function (type, title, message, data) {
+            // call the action in the 'edit' layer of the UI
+            parent.postMessage(elements.const.event.alertMessage
+                + JSON.stringify({
+                    type: type,
+                    title: title,
+                    message: message,
+                    data: data
+                }), '*');
+        };
+
+        elements.openEditDialog = function (target, dialog, values) {
+            // call the action in the 'edit' layer of the UI
+            parent.postMessage(elements.const.event.openEditDialog
+                + JSON.stringify({
+                    target: target,
+                    dialog: dialog,
+                    values: values
+                }), '*');
+        };
 
         /**
          * the action view to open an edit dialog
@@ -40,7 +63,8 @@
                 // collect the component reference data
                 this.data = {
                     path: this.$el.data(elements.const.data.path),
-                    type: this.$el.data(elements.const.data.type)
+                    type: this.$el.data(elements.const.data.type),
+                    url: this.$el.data(elements.const.data.url)
                 };
                 this.$el.click(_.bind(this.onClick, this));
             },
@@ -49,14 +73,12 @@
                 if (event) {
                     event.preventDefault();
                 }
-                // call the action in the 'edit' layer of the UI
-                parent.postMessage(elements.const.event.openEditDialog
-                    + JSON.stringify({
-                        target: {
-                            path: this.data.path,
-                            type: this.data.type
-                        }
-                    }), '*');
+                elements.openEditDialog({
+                    path: this.data.path,
+                    type: this.data.type
+                }, this.data.url ? {
+                    url: url
+                } : undefined);
                 return false;
             }
         });

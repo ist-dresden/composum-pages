@@ -9,16 +9,25 @@ import com.composum.sling.core.util.ResourceUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ValueMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
+import javax.jcr.RepositoryException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
-import static com.composum.pages.commons.PagesConstants.*;
+import static com.composum.pages.commons.PagesConstants.DEFAULT_HOMEPAGE_PATH;
+import static com.composum.pages.commons.PagesConstants.NODE_TYPE_SITE;
+import static com.composum.pages.commons.PagesConstants.NODE_TYPE_SITE_CONFIGURATION;
+import static com.composum.pages.commons.PagesConstants.PROP_HOMEPAGE;
 
 @PropertyDetermineResourceStrategy(Site.ContainingSiteResourceStrategy.class)
 public class Site extends ContentDriven<SiteConfiguration> implements Comparable<Site> {
+
+    private static final Logger LOG = LoggerFactory.getLogger(Site.class);
 
     public enum PublicMode {LIVE, PUBLIC, PREVIEW}
 
@@ -163,4 +172,24 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
         return result;
     }
 
+    public Collection<Page> getModifiedPages() {
+        return getVersionsService().findModifiedPages(getContext(), getResource());
+    }
+
+    public Collection<Page> getUnreleasedPages() {
+        final List<Release> releases = getReleases();
+        final Release release = releases.isEmpty() ? null : releases.get(releases.size() - 1);
+        return getUnreleasedPages(release);
+    }
+
+    public Collection<Page> getUnreleasedPages(Release releaseToCheck) {
+        Collection<Page> result;
+        try {
+            result = getVersionsService().findUnreleasedPages(getContext(), getResource(), releaseToCheck);
+        } catch (RepositoryException ex) {
+            LOG.error(ex.getMessage(), ex);
+            result = new ArrayList<>();
+        }
+        return result;
+    }
 }

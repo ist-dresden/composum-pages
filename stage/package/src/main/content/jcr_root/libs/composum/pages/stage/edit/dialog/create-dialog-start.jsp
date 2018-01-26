@@ -15,9 +15,11 @@
                     <h4 class="modal-title ${dialogCssBase}_dialog-title">
                         ${cpn:text(dialog.title)}
                     </h4>
-                    <div class="${dialogCssBase}_language">
-                        <sling:include resourceType="composum/pages/stage/edit/tools/language/label"/>
-                    </div>
+                    <c:if test="${dialog.hasLanguageContext}">
+                        <div class="${dialogCssBase}_language">
+                            <sling:include resourceType="composum/pages/stage/edit/tools/language/label"/>
+                        </div>
+                    </c:if>
                 </div>
                 <div class="modal-body ${dialogCssBase}_content">
                     <div class="${dialogCssBase}_messages messages">

@@ -100,9 +100,7 @@ public class IncludeTag extends IncludeTagHandler {
 
     protected void configure() {
         /*
-        TODO PagesConfiguration
-        ConfigService configService = sling.getService(ConfigService.class);
-        ssiEnabled = configService.getSSIEnabled();
+        TODO PagesConfiguration to overlay resource types on include
         */
         if (StringUtils.isNotBlank(subtype)) {
             final SlingHttpServletRequest request = TagUtil.getRequest(pageContext);
@@ -163,7 +161,7 @@ public class IncludeTag extends IncludeTagHandler {
         }
     }
 
-    /** Returns or creates the expressionUtil . Not null. */
+    /** Returns or creates the expressionUtil. Not null. */
     protected com.composum.sling.core.util.ExpressionUtil getExpressionUtil() {
         if (expressionUtil == null) {
             expressionUtil = new ExpressionUtil(pageContext);
@@ -181,7 +179,7 @@ public class IncludeTag extends IncludeTagHandler {
         return testResult;
     }
 
-    // Tag Implementation ...
+    // dynamic include implementation ...
 
     /**
      * Renders an include tag for Apache (needs Apache SSI module) instead of the actual include.

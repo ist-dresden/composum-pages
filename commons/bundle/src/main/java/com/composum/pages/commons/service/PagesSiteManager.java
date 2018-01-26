@@ -14,6 +14,7 @@ import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.framework.Constants;
+import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 import javax.jcr.RepositoryException;
@@ -28,7 +29,7 @@ import java.util.Map;
 import static com.composum.pages.commons.PagesConstants.NODE_TYPE_SITE;
 import static org.apache.jackrabbit.JcrConstants.JCR_NAME;
 
-@org.osgi.service.component.annotations.Component(
+@Component(
         property = {
                 Constants.SERVICE_DESCRIPTION + "=Composum Pages Site Manager"
         }

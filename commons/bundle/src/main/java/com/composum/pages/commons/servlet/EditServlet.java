@@ -701,7 +701,8 @@ public class EditServlet extends NodeTreeServlet {
             }
 
             try {
-                versionsService.restoreVersion(request.getResourceResolver(), params.path, params.version);
+                BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
+                versionsService.restoreVersion(context, params.path, params.version);
                 ResponseUtil.writeEmptyArray(response);
 
             } catch (RepositoryException ex) {
@@ -728,8 +729,8 @@ public class EditServlet extends NodeTreeServlet {
             }
 
             try {
-                versionsService.setVersionLabel(request.getResourceResolver(),
-                        params.path, params.version, params.label);
+                BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
+                versionsService.setVersionLabel(context, params.path, params.version, params.label);
                 ResponseUtil.writeEmptyArray(response);
 
             } catch (RepositoryException ex) {

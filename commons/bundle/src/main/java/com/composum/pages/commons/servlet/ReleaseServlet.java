@@ -24,15 +24,16 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import static com.composum.pages.commons.servlet.ReleaseServlet.Extension.*;
+import static com.composum.pages.commons.servlet.ReleaseServlet.Extension.http;
 
 /**
  * @author Mirko Zeibig
@@ -42,6 +43,8 @@ import static com.composum.pages.commons.servlet.ReleaseServlet.Extension.*;
 public class ReleaseServlet extends AbstractServiceServlet {
 
     private static final Logger LOG = LoggerFactory.getLogger(ReleaseServlet.class);
+
+    public static final Pattern RELEASE_PATH_PATTERN = Pattern.compile("^(/.*)/jcr:content/releases/(.+)$");
 
     @Reference
     private ReleaseManager releaseManager;
@@ -95,18 +98,17 @@ public class ReleaseServlet extends AbstractServiceServlet {
                 final String path = getStringParameter(request, response, "path", "site path is required");
                 if (path == null) return;
 
-                final String releaseName = getStringParameter(request, response, "releaseName", "release name is required");
+                String releaseName = getStringParameter(request, response, "releaseName","release name is required");
                 if (releaseName == null) return;
 
                 final ResourceResolver resourceResolver = request.getResourceResolver();
-                final Resource site = resourceResolver.getResource(path);
-                final Resource releases = resourceResolver.getResource(site, "jcr:content/releases");
-                for (Resource r: releases.getChildren()) {
-                    final ValueMap valueMap = r.adaptTo(ModifiableValueMap.class);
+                final Resource releases = resourceResolver.getResource(resource, "jcr:content/releases");
+                for (Resource releaseResource: releases.getChildren()) {
+                    final ValueMap valueMap = releaseResource.adaptTo(ModifiableValueMap.class);
                     final String[] categories = valueMap.get("categories", new String[0]);
                     final List<String> cs = new ArrayList<>();
                     cs.addAll(Arrays.asList(categories));
-                    if (r.getName().equals("release-" + releaseName)) {
+                    if (releaseResource.getName().equals(releaseName)) {
                         // set categories to release
                         if (!cs.contains(getCategoryString())) {
                             cs.add(getCategoryString());
@@ -151,23 +153,24 @@ public class ReleaseServlet extends AbstractServiceServlet {
             try {
                 final String path = getStringParameter(request, response, "path", "site path is required");
                 if (path == null) return;
-                final String sitePath = path.endsWith("/jcr:content") ? path.substring(0, path.lastIndexOf('/')) : path;
+                final Matcher pathMatcher = RELEASE_PATH_PATTERN.matcher(path);
+                if (!pathMatcher.matches()) {
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "the path must be the path of a release node");
+                    return;
+                }
+                final String sitePath = pathMatcher.group(1);
 
-                final String releaseName = getStringParameter(request, response, "releaseName", "release name is required");
-                if (releaseName == null) return;
+                String releaseName = request.getParameter("releaseName");
+                if (releaseName == null) {
+                    releaseName = pathMatcher.group(2);
+                }
 
                 List<String> rootPaths = new ArrayList<>();
                 rootPaths.add(sitePath);
 
                 final ResourceResolver resourceResolver = request.getResourceResolver();
                 releaseManager.removeRelease(resourceResolver, rootPaths, releaseName, false);
-
-                final Resource site = resourceResolver.getResource(sitePath);
-                final Resource releases = resourceResolver.getResource(site, "jcr:content/releases");
-                final Resource release = releases.getChild("release-" + releaseName);
-                if (release != null) {
-                    resourceResolver.delete(release);
-                }
+                resourceResolver.delete(resource);
                 resourceResolver.commit();
             } catch (Exception e) {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());

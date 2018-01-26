@@ -7,6 +7,7 @@ import com.composum.pages.commons.request.DisplayMode;
 import com.composum.pages.commons.request.RequestLocale;
 import com.composum.pages.commons.service.PageManager;
 import com.composum.pages.commons.service.SiteManager;
+import com.composum.pages.commons.service.VersionsService;
 import com.composum.pages.commons.util.TagCssClasses;
 import com.composum.pages.commons.util.ValueHashMap;
 import com.composum.platform.models.annotations.PropertyDefaults;
@@ -76,6 +77,7 @@ public abstract class AbstractModel implements SlingBean, Model {
     protected BeanContext context;
     protected transient SiteManager siteManager;
     protected transient PageManager pageManager;
+    private transient VersionsService versionsService;
 
     /** the resource an related properties represented by this model (initialized) */
     protected Resource resource;
@@ -625,5 +627,12 @@ public abstract class AbstractModel implements SlingBean, Model {
             siteManager = context.getService(SiteManager.class);
         }
         return siteManager;
+    }
+
+    public VersionsService getVersionsService() {
+        if (versionsService == null) {
+            versionsService = context.getService(VersionsService.class);
+        }
+        return versionsService;
     }
 }

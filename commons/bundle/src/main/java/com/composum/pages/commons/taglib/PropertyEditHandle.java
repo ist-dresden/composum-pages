@@ -117,7 +117,7 @@ public class PropertyEditHandle<T> extends AbstractModel {
      */
     public ValueSet<T> getDefaultValues() {
         if (defaultValues == null) {
-            defaultValues = propertyName.equals(propertyPath) ? null : retrieveValue(propertyName);
+            defaultValues = propertyName == null || propertyName.equals(propertyPath) ? null : retrieveValue(propertyName);
         }
         return defaultValues;
     }
