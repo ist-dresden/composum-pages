@@ -1,0 +1,71 @@
+@charset "UTF-8";
+
+@import "../../../../css/variables";
+@import "../../../../css/mixins";
+
+.composum-pages-stage-edit-tools-site-releases {
+
+    &_tools-panel {
+        position: absolute;
+        top: 50px;
+        left: 10px;
+        right: 10px;
+        bottom: 50px;
+        @include scrolldark;
+    }
+
+    .composum-pages-stage-edit-site-releases {
+
+        &_list {
+            padding: 8px 0 0;
+        }
+
+        &-release {
+
+            width: 100%;
+            position: relative;
+            margin: 4px 0;
+            padding: 0 4px;
+            list-style: none;
+            background-color: $tools-pane-tabs-background;
+
+            &_head {
+                width: 100%;
+            }
+
+            &_key {
+                float: left;
+            }
+
+            &_title {
+                float: right;
+            }
+
+            &_path {
+                clear: both;
+            }
+
+            &_entry {
+                cursor: pointer;
+                position: relative;
+            }
+
+            &_select {
+                position: absolute;
+                top: 0;
+                left: 10px;
+            }
+
+            &_listentry {
+                padding-left: 40px;
+            }
+
+            &_category {
+                float: left;
+                margin-top: 3px;
+                margin-left: 5px;
+            }
+        }
+    }
+}
+

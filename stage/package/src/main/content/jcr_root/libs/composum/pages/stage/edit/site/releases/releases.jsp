@@ -14,11 +14,11 @@
             </h4>
             <c:if test="${site.editMode}">
                 <div class="btn-group" role="group" aria-label="...">
-                    <button type="button" class="btn btn-default public">Public</button>
-                    <button type="button" class="btn btn-default preview">Preview</button>
+                    <button type="button" class="btn btn-default release-public">Public</button>
+                    <button type="button" class="btn btn-default release-preview">Preview</button>
                 </div>
                 <div class="btn-group" role="group" aria-label="...">
-                    <button type="button" class="btn btn-danger delete">Delete</button>
+                    <button type="button" class="btn btn-danger release-delete">Delete</button>
                 </div>
             </c:if>
         </div>

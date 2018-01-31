@@ -42,29 +42,29 @@
             hint="Development Tree"
             title="Development"
             order="{Long}90"/>
-    <siteContext
+    <siteReleases
             jcr:primaryType="nt:unstructured"
-            sling:resourceType="composum/pages/stage/edit/tools/site/context"
+            sling:resourceType="composum/pages/stage/edit/tools/site/releases"
             categories="[context,edit,develop,site]"
             iconClass="sitemap"
-            hint="Site Properties"
-            title="Site"
+            hint="Site Releases to manage"
+            title="Site Releases"
             order="{Long}40"/>
-    <unreleased
+    <siteFinished
             jcr:primaryType="nt:unstructured"
-            sling:resourceType="composum/pages/stage/edit/tools/site/unreleased"
+            sling:resourceType="composum/pages/stage/edit/tools/site/finished"
             categories="[context,edit,develop,site]"
             iconClass="thumbs-o-up"
-            hint="Pages to release"
-            title="Unreleased"
+            hint="Finished Pages to releasde"
+            title="Finished"
             order="{Long}42"/>
-    <unversioned
+    <siteModified
             jcr:primaryType="nt:unstructured"
-            sling:resourceType="composum/pages/stage/edit/tools/site/unversioned"
+            sling:resourceType="composum/pages/stage/edit/tools/site/modified"
             categories="[context,edit,develop,site]"
             iconClass="check-square-o"
-            hint="Open Pages"
-            title="Unversioned"
+            hint="Modified Pages to finalize"
+            title="Modified"
             order="{Long}44"/>
     <pageContext
             jcr:primaryType="nt:unstructured"

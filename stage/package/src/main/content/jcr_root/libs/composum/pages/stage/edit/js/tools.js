@@ -220,8 +220,13 @@
         tools.ContextTabsHook = Backbone.View.extend({
 
             initialize: function (options) {
+                $(document).on('page:selected.Context', _.bind(this.onPageSelected, this));
                 $(document).on('component:selected.Context', _.bind(this.onComponentSelected, this));
-                this.suppressReplace = false;
+            },
+
+            onPageSelected: function (event, name, path, type) {
+                console.log('tools.Context.onPageSelected(' + path + ')');
+                this.changeTools(name, path, type);
             },
 
             onComponentSelected: function (event, name, path, type) {
@@ -230,35 +235,31 @@
             },
 
             changeTools: function (name, path, type) {
-                if (this.suppressReplace) {
-                    this.suppressReplace = false;
+                if (!path) {
+                    // default view...
+                    path = pages.current.page;
+                }
+                if (path) {
+                    core.ajaxGet(tools.const.contextLoadUrl + path + '?pages.mode=' + pages.current.mode, {
+                            data: {
+                                type: type
+                            }
+                        },
+                        _.bind(function (data) {
+                            this.$el.html(data);
+                            this.contextTabs = core.getWidget(this.el,
+                                '.' + tools.const.contextTabs, tools.ContextTabs);
+                            this.contextTabs.data = {
+                                name: name,
+                                path: path,
+                                type: type
+                            };
+                            this.contextTabs.initTools();
+                        }, this));
                 } else {
-                    if (!path) {
-                        // default view...
-                        path = pages.current.page;
-                    }
-                    if (path) {
-                        core.ajaxGet(tools.const.contextLoadUrl + path + '?pages.mode=' + pages.current.mode, {
-                                data: {
-                                    type: type
-                                }
-                            },
-                            _.bind(function (data) {
-                                this.$el.html(data);
-                                this.contextTabs = core.getWidget(this.el,
-                                    '.' + tools.const.contextTabs, tools.ContextTabs);
-                                this.contextTabs.data = {
-                                    name: name,
-                                    path: path,
-                                    type: type
-                                };
-                                this.contextTabs.initTools();
-                            }, this));
-                    } else {
-                        // nothing selected (!?)...
-                        this.$el.html('');
-                        this.contextTabs = undefined;
-                    }
+                    // nothing selected (!?)...
+                    this.$el.html('');
+                    this.contextTabs = undefined;
                 }
             }
         });
