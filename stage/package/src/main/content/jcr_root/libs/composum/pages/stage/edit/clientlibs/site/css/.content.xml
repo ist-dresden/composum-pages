@@ -4,7 +4,5 @@
         depends="[fonts/awesome/(4*:4.7.0)/css/font-awesome.css,
                   fonts/roboto/2014/roboto.css]"
         embed="[category:composum.components.core,
-                composum/pages/stage/edit/site/css/view.css,
-                composum/pages/stage/edit/site/finishedobjects/createrelease/createrelease.css,
-                composum/pages/stage/edit/site/releases/deleterelease/deleterelease.css]">
+                composum/pages/stage/edit/site/css/view.css]">
 </jcr:root>

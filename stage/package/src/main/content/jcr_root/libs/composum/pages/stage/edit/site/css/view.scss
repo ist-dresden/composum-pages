@@ -29,4 +29,19 @@
             }
         }
     }
+
+
+    .composum-pages-stage-edit-site {
+
+        &-page-modified,
+        &-page-finished {
+
+            &_page {
+
+                &-select-all {
+                    margin: 0 0 4px;
+                }
+            }
+        }
+    }
 }

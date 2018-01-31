@@ -117,7 +117,7 @@
             .composum-pages-stage-edit-tools-page-versions {
 
                 &_selection-main {
-                    background: rgba(255, 255, 255, 0.25);
+                    background: $tools-pane-main-selection-bg;
                 }
             }
         }
@@ -127,7 +127,7 @@
             .composum-pages-stage-edit-tools-page-versions {
 
                 &_selection-secondary {
-                    background: rgba(200, 200, 200, 0.25);
+                    background: $tools-pane-sec-selection-bg;
                 }
             }
         }

@@ -13,7 +13,7 @@
         <div class="composum-pages-tools_right-actions">
             <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
                 <button type="button"
-                        class="fa fa-circle-o release composum-pages-tools_button btn btn-default"
+                        class="fa fa-flag-checkered release composum-pages-tools_button btn btn-default"
                         title="Do Release...">
                     <span class="composum-pages-tools_button-label">Release</span></button>
             </div>

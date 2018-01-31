@@ -48,6 +48,9 @@ $tools-pane-tabs-tab-color: rgba(140, 140, 140, 0.9);
 $tools-pane-tabs-tab-active: rgba(55, 55, 55, 0.9);
 $tools-pane-tabs-tab-label: $tools-pane-foreground;
 
+$tools-pane-main-selection-bg: rgba(255, 255, 255, 0.25);
+$tools-pane-sec-selection-bg: rgba(200, 200, 200, 0.25);
+
 $edit-actions-layer: $edit-tools-layer + 2;
 $edit-actions-height: 36px;
 $edit-actions-spacing-v: 3px;

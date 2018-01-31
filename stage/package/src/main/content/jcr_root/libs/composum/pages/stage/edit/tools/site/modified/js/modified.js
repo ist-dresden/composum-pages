@@ -10,6 +10,7 @@
             modified: {
                 page: {
                     base: 'composum-pages-stage-edit-site-page-modified',
+                    _listentry: '_listentry',
                     _entry: '_page-entry'
                 },
                 tools: {
@@ -28,11 +29,27 @@
                 var c = tools.const.modified.page;
                 pages.releases.ModifiedPages.prototype.initialize.apply(this);
                 this.sitePath = this.$('.' + c.base).data('path');
-                this.$('.' + c.base + c._entry).click(_.bind(function (event) {
-                    var entry = event.currentTarget;
-                    var path = entry.dataset.path;
+                this.$previewEntry = [];
+                this.$('.' + c.base + c._entry).click(_.bind(this.pagePreview, this));
+            },
+
+            pagePreview: function (event) {
+                var c = tools.const.modified.page;
+                var $entry = $(event.currentTarget);
+                var path = $entry.data('path');
+                var $listEntry = $entry.closest('.' + c.base + c._listentry);
+                if (this.$previewEntry.length > 0 && this.$previewEntry[0] === $listEntry[0]) {
+                    this.$previewEntry = [];
+                    $listEntry.removeClass('selected');
+                    $(document).trigger("page:view", [null, {}]);
+                } else {
+                    if (this.$previewEntry.length > 0) {
+                        this.$previewEntry.removeClass('selected');
+                    }
+                    this.$previewEntry = $listEntry;
+                    $listEntry.addClass('selected');
                     $(document).trigger("page:view", [path, {'pages.mode': 'preview'}]);
-                }, this));
+                }
             },
 
             onTabSelected: function () {

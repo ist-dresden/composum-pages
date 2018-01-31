@@ -57,27 +57,18 @@
             onFrameLoad: function (event) {
                 if (!this.busy) {
                     this.busy = true;
-                    var url = new RegExp('^https?://([^/]+)(/[^?]*)(\\?(.*))?$')
-                        .exec(event.currentTarget.contentDocument.URL);
+                    var frameUrl = event.currentTarget.contentDocument.URL;
                     core.ajaxGet('/bin/cpm/nodes/node.resolve.json', {
                             data: {
-                                url: url[0]
+                                url: frameUrl
                             }
                         }, _.bind(function (data) {
                             if (this.currentPath !== data.path) {
-                                console.log('pages.EditFrame.onFrameLoad(' + url[0] + '): ' + data.path);
-                                var args = {};
-                                var params = url[4] ? url[4].split("&") : undefined;
-                                if (params) {
-                                    for (var i = 0; i < params.length; i++) {
-                                        var pair = params[i].split('=');
-                                        args[decodeURIComponent(pair[0])] = pair.length > 1
-                                            ? decodeURIComponent(pair[1]) : null;
-                                    }
-                                }
-                                if (args['pages.mode'] !== 'preview') {
+                                console.log('pages.EditFrame.onFrameLoad(' + frameUrl + '): ' + data.path);
+                                var url = new core.SlingUrl(frameUrl);
+                                if (!url.parameters || url.parameters['pages.mode'] !== 'preview') {
                                     pages.current.page = data.path;
-                                    $(document).trigger("page:selected", [data.path, args]);
+                                    $(document).trigger("page:selected", [data.path, url.parameters]);
                                 }
                             } else {
                                 var select = this.selectOnLoad;
@@ -121,22 +112,19 @@
             reloadPage: function (parameters, path) {
                 var pagePath = path || pages.current.page;
                 if (pagePath) {
-                    if (!parameters) {
-                        parameters = {};
+                    var frameUrl = new core.SlingUrl(core.getContextUrl(pagePath + '.html'));
+                    if (parameters) {
+                        frameUrl.parameters = parameters;
                     }
-                    if (!parameters['pages.mode']) {
-                        parameters ['pages.mode'] = pages.current.mode.toLowerCase();
+                    if (!frameUrl.parameters['pages.mode']) {
+                        frameUrl.parameters['pages.mode'] = pages.current.mode.toLowerCase();
                     }
-                    if (!parameters['pages.locale']) {
-                        parameters ['pages.locale'] = pages.current.locale;
+                    if (!frameUrl.parameters['pages.locale']) {
+                        frameUrl.parameters['pages.locale'] = pages.current.locale;
                     }
-                    var parameterString = '';
-                    _.each(_.keys(parameters), function (key) {
-                        parameterString += parameterString.length === 0 ? '?' : '&';
-                        parameterString += encodeURIComponent(key) + '=' + encodeURIComponent(parameters[key]);
-                    });
-                    console.log('pages.EditFrame.reloadPage(): ' + pages.current.page);
-                    this.$frame.attr('src', core.getContextUrl(pagePath + '.html' + parameterString));
+                    frameUrl.build();
+                    console.log('pages.EditFrame.reloadPage(): ' + frameUrl.url);
+                    this.$frame.attr('src', frameUrl.url);
                 }
             },
 
