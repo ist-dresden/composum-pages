@@ -45,6 +45,4 @@
         <div class="composum-pages-tools_search-result">
         </div>
     </div>
-    <div class="${treeCssBase}_site-releases">
-    </div>
 </cpp:element>

@@ -41,6 +41,4 @@
         <div class="composum-pages-tools_search-result">
         </div>
     </div>
-    <div class="${treeCssBase}_site-context">
-    </div>
 </cpp:element>

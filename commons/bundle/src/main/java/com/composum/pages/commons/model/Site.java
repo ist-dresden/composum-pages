@@ -57,6 +57,9 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
     private transient PublicMode publicMode;
     private transient Homepage homepage;
 
+    private transient Collection<Page> modifiedPages;
+    private transient Collection<Page> unreleasedPages;
+
     public Site() {
     }
 
@@ -95,6 +98,16 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
     }
 
     // Site properties
+
+    public boolean isSiteTemplate() {
+        String path = getPath();
+        for (String root : resolver.getSearchPath()) {
+            if (path.startsWith(root)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     @Override
     public String getTitle() {
@@ -173,13 +186,19 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
     }
 
     public Collection<Page> getModifiedPages() {
-        return getVersionsService().findModifiedPages(getContext(), getResource());
+        if (modifiedPages == null) {
+            modifiedPages = getVersionsService().findModifiedPages(getContext(), getResource());
+        }
+        return modifiedPages;
     }
 
     public Collection<Page> getUnreleasedPages() {
-        final List<Release> releases = getReleases();
-        final Release release = releases.isEmpty() ? null : releases.get(releases.size() - 1);
-        return getUnreleasedPages(release);
+        if (unreleasedPages == null) {
+            final List<Release> releases = getReleases();
+            final Release release = releases.isEmpty() ? null : releases.get(releases.size() - 1);
+            unreleasedPages = getUnreleasedPages(release);
+        }
+        return unreleasedPages;
     }
 
     public Collection<Page> getUnreleasedPages(Release releaseToCheck) {

@@ -48,6 +48,12 @@
                 if (this.currentPath !== path) {
                     console.log('pages.EditFrame.onPageSelected(' + path + ')');
                     this.currentPath = path;
+                    pages.getPageData(path, _.bind(function (data) {
+                        if (data.meta && data.meta.site !== pages.current.site) {
+                            pages.current.site = data.meta.site;
+                            $(document).trigger("site:selected", [data.meta.site]);
+                        }
+                    }, this));
                     if (history.replaceState) {
                         history.replaceState(path, 'pages', core.getContextUrl('/bin/pages.html' + path));
                     }

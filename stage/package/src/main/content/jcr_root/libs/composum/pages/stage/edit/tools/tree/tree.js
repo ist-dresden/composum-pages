@@ -24,7 +24,7 @@
 
             onPathSelectedFailed: function (path) {
                 var node = this.getSelectedTreeNode();
-                while (!node && (path = core.getParentPath(path)) && path != '/') {
+                while (!node && (path = core.getParentPath(path)) && path !== '/') {
                     var busy = this.busy;
                     this.busy = true;
                     this.selectNode(path);
@@ -47,7 +47,7 @@
 
             initialize: function (options) {
                 this.initialSelect = this.$el.attr('data-selected');
-                if (!this.initialSelect || this.initialSelect == '/') {
+                if (!this.initialSelect || this.initialSelect === '/') {
                     this.initialSelect = pages.profile.get('tree', 'current', "/");
                 }
                 tree.ToolsTree.prototype.initialize.apply(this, [options]);
@@ -64,7 +64,7 @@
 
             initialize: function (options) {
                 this.initialSelect = this.$el.attr('data-selected');
-                if (!this.initialSelect || this.initialSelect == '/') {
+                if (!this.initialSelect || this.initialSelect === '/') {
                     this.initialSelect = pages.profile.get('tree', 'current', "/");
                 }
                 tree.ToolsTree.prototype.initialize.apply(this, [options]);
@@ -81,27 +81,33 @@
                 this.$actions = this.$('.' + tree.const.contextActionsClass);
                 $(document).on('path:selected.' + this.tree.nodeIdPrefix + 'ToolsTree',
                     _.bind(this.onPathSelected, this));
+                $(document).on('page:selected.' + this.tree.nodeIdPrefix + 'ToolsTree',
+                    _.bind(this.onPathSelected, this));
+                $(document).on('site:selected.' + this.tree.nodeIdPrefix + 'ToolsTree',
+                    _.bind(this.onPathSelected, this));
             },
 
             onPathSelected: function (event, path) {
                 var treePath = this.tree.getSelectedPath();
                 if (this.actions) {
-                    if (treePath && this.actions.data.path == treePath && treePath == path) {
+                    if (treePath && this.actions.data.path === treePath && treePath === path) {
                         return;
                     }
                 }
                 console.log(this.tree.nodeIdPrefix + 'ToolsTree.onPathSelected(' + path + '): ' + treePath);
                 if (!path) {
                     this.doSelectDefaultNode();
-                } else if (path == treePath) {
+                } else if (path === treePath) {
                     this.setNodeActions(path);
                 } else {
-                    var node = this.tree.getSelectedTreeNode();
-                    if (node) {
-                        this.setNodeActions();
-                    } else {
-                        this.doSelectDefaultNode();
-                    }
+                    this.tree.selectNode(path, _.bind(function () {
+                        var node = this.tree.getSelectedTreeNode();
+                        if (node) {
+                            this.setNodeActions();
+                        } else {
+                            this.doSelectDefaultNode();
+                        }
+                    }, this));
                 }
             },
 

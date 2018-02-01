@@ -34,9 +34,14 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import static com.composum.pages.commons.taglib.DefineObjectsTag.CURRENT_PAGE;
+import static com.composum.platform.models.annotations.InternationalizationStrategy.I18NFOLDER;
 import static com.composum.sling.platform.security.PlatformAccessFilter.ACCESS_MODE_KEY;
 
 /**
@@ -59,9 +64,6 @@ public abstract class AbstractModel implements SlingBean, Model {
     /** resource type to CSS: don't use basic types */
     public static final ResourceFilter CSS_BASE_TYPE_RESTRICTION =
             new ResourceFilter.ResourceTypeFilter(new StringFilter.BlackList("^(nt|sling):.*$"));
-
-    /** the subpath to store I18N translations of the element properties */
-    public static final String I18N_PROPERTY_PATH = "i18n/";
 
     /** the list paths to use as I18N access path if I18N should be ignored */
     public static final List<String> IGNORE_I18N;
@@ -405,26 +407,8 @@ public abstract class AbstractModel implements SlingBean, Model {
 
     protected List<String> getI18nPaths() {
         if (i18nPaths == null) {
-            i18nPaths = getI18nPaths(getLocale());
+            i18nPaths = I18NFOLDER.getI18nPaths(getLocale());
         }
-        return i18nPaths;
-    }
-
-    public static List<String> getI18nPaths(Locale locale) {
-        List<String> i18nPaths = new ArrayList<>();
-        if (locale != null) {
-            String variant = locale.getVariant();
-            String country = locale.getCountry();
-            String language = locale.getLanguage();
-            if (StringUtils.isNotBlank(variant)) {
-                i18nPaths.add(I18N_PROPERTY_PATH + language + "_" + country + "_" + variant);
-            }
-            if (StringUtils.isNotBlank(country)) {
-                i18nPaths.add(I18N_PROPERTY_PATH + language + "_" + country);
-            }
-            i18nPaths.add(I18N_PROPERTY_PATH + language);
-        }
-        i18nPaths.add(".");
         return i18nPaths;
     }
 
@@ -473,7 +457,6 @@ public abstract class AbstractModel implements SlingBean, Model {
 
     /**
      * the generic map for direct use in templates
-
      */
     public Map<String, Object> getProperties() {
         if (propertiesMap == null) {

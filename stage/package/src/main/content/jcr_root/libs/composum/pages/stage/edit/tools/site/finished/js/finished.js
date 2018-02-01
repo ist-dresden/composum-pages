@@ -39,9 +39,7 @@
                 var path = $entry.data('path');
                 var $listEntry = $entry.closest('.' + c.base + c._listentry);
                 if (this.$previewEntry.length > 0 && this.$previewEntry[0] === $listEntry[0]) {
-                    this.$previewEntry = [];
-                    $listEntry.removeClass('selected');
-                    $(document).trigger("page:view", [null, {}]);
+                    this.closePreview();
                 } else {
                     if (this.$previewEntry.length > 0) {
                         this.$previewEntry.removeClass('selected');
@@ -50,6 +48,22 @@
                     $listEntry.addClass('selected');
                     $(document).trigger("page:view", [path, {'pages.mode': 'preview'}]);
                 }
+            },
+
+            closePreview: function () {
+                if (this.$previewEntry.length > 0) {
+                    this.$previewEntry.removeClass('selected');
+                    this.$previewEntry = [];
+                    $(document).trigger("page:view", [null, {}]);
+                }
+            },
+
+            beforeClose: function () {
+                this.beforeHideTab();
+            },
+
+            beforeHideTab: function () {
+                this.closePreview();
             },
 
             onTabSelected: function () {

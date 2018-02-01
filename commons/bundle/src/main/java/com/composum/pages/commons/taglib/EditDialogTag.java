@@ -13,7 +13,6 @@ import javax.servlet.jsp.PageContext;
 import java.io.IOException;
 import java.util.Map;
 
-import static com.composum.pages.commons.model.AbstractModel.I18N_PROPERTY_PATH;
 import static com.composum.pages.commons.servlet.EditServlet.EDIT_RESOURCE_KEY;
 import static com.composum.pages.commons.servlet.EditServlet.EDIT_RESOURCE_TYPE_KEY;
 import static com.composum.pages.commons.taglib.AbstractPageTag.STAGE_COMPONENT_BASE;
@@ -21,6 +20,7 @@ import static com.composum.pages.commons.taglib.ElementTag.PAGES_EDIT_DATA_NAME;
 import static com.composum.pages.commons.taglib.ElementTag.PAGES_EDIT_DATA_PATH;
 import static com.composum.pages.commons.taglib.ElementTag.PAGES_EDIT_DATA_TYPE;
 import static com.composum.pages.commons.util.TagCssClasses.cssOfType;
+import static com.composum.platform.models.annotations.InternationalizationStrategy.I18NFOLDER.I18N_PROPERTY_PATH;
 
 /**
  * the EditDialogTag creates the HTML code for an edit dialog of a component
@@ -364,12 +364,12 @@ public class EditDialogTag extends AbstractWrappingTag {
     }
 
     @Override
-    protected void renderTagStart() throws JspException, IOException {
+    protected void renderTagStart() throws IOException {
         includeSnippet(getSnippetResourceType(), getSelector() + "-dialog-start");
     }
 
     @Override
-    protected void renderTagEnd() throws JspException, IOException {
+    protected void renderTagEnd() throws IOException {
         includeSnippet(getSnippetResourceType(), getSelector() + "-dialog-end");
     }
 

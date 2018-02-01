@@ -1,7 +1,6 @@
 package com.composum.pages.commons.taglib;
 
 import com.composum.pages.commons.model.properties.ValueSet;
-import com.composum.pages.commons.service.WidgetManager;
 import com.composum.pages.commons.util.ResolverUtil;
 import com.composum.pages.commons.widget.WidgetModel;
 import com.composum.sling.core.SlingBean;
@@ -9,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ValueMap;
 
+import javax.annotation.Nonnull;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.jstl.core.LoopTag;
@@ -300,7 +300,7 @@ public class EditWidgetTag extends AbstractWidgetTag implements LoopTag {
 
         protected PropertyEditHandle propertyHandle;
 
-        public MultiValueStatus(PropertyEditHandle editHandle) {
+        public MultiValueStatus(@Nonnull PropertyEditHandle editHandle) {
             propertyHandle = editHandle;
         }
 

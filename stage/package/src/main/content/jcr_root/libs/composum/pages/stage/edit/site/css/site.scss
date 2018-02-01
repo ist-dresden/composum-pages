@@ -56,13 +56,19 @@
 
         &_title,
         &_description,
+        &_status,
         &_path {
             position: absolute;
-            left: 170px;
-            right: 40px;
             margin: 0;
             padding: 0;
             overflow: scroll;
+        }
+
+        &_title,
+        &_description,
+        &_path {
+            left: 170px;
+            right: 40px;
         }
 
         &_title {

@@ -22,8 +22,6 @@ import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.sling.api.resource.PersistenceException;
-import org.osgi.service.component.annotations.Activate;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.sling.SlingServlet;
 import org.apache.jackrabbit.api.JackrabbitSession;
@@ -31,9 +29,11 @@ import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.request.RequestDispatcherOptions;
 import org.apache.sling.api.request.RequestParameter;
+import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.framework.BundleContext;
+import org.osgi.service.component.annotations.Activate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,6 +47,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 import static com.composum.pages.commons.util.ResourceTypeUtil.EDIT_DIALOG_PATH;
 import static com.composum.pages.commons.util.ResourceTypeUtil.EDIT_TILE_PATH;
@@ -189,7 +190,8 @@ public class EditServlet extends NodeTreeServlet {
     private static class CheckpointOperation implements ServletOperation {
 
         @Override
-        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response, ResourceHandle resource) throws RepositoryException, IOException, ServletException {
+        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response, ResourceHandle resource)
+                throws IOException {
             try {
                 final ResourceResolver resolver = request.getResourceResolver();
                 final JackrabbitSession session = (JackrabbitSession) resolver.adaptTo(Session.class);
@@ -218,22 +220,23 @@ public class EditServlet extends NodeTreeServlet {
         @Override
         public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
                          ResourceHandle resource)
-                throws ServletException, IOException {
+                throws IOException {
 
-            ResourceHandle pageResource = null;
+            BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
+            Page page = null;
             if (resource.isValid()) {
-                pageResource = ResourceHandle.use(pageManager.getContainingPageResource(resource));
+                page = pageManager.createBean(context, pageManager.getContainingPageResource(resource));
             }
 
             if (LOG.isDebugEnabled()) {
-                LOG.debug("GetPageData(" + resource + "," + pageResource + ")...");
+                LOG.debug("GetPageData(" + resource + "," + page + ")...");
             }
 
-            if (pageResource != null && pageResource.isValid()) {
+            if (page != null && page.isValid()) {
 
                 response.setStatus(HttpServletResponse.SC_OK);
                 JsonWriter jsonWriter = ResponseUtil.getJsonWriter(response);
-                writeJsonPage(jsonWriter, pagesConfiguration.getPageNodeFilter(), pageResource);
+                writeJsonPage(jsonWriter, pagesConfiguration.getPageNodeFilter(), page);
 
             } else {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -246,15 +249,19 @@ public class EditServlet extends NodeTreeServlet {
     //
 
     public void writeJsonPage(JsonWriter writer, ResourceFilter filter,
-                              ResourceHandle resource)
+                              Page page)
             throws IOException {
         writer.beginObject();
         TreeNodeStrategy nodeStrategy = new DefaultTreeNodeStrategy(filter);
-        writeJsonNodeData(writer, nodeStrategy, resource, LabelType.name, false);
-        Resource contentResource = resource.getChild("jcr:content");
-        if (contentResource != null) {
+        writeJsonNodeData(writer, nodeStrategy, ResourceHandle.use(page.getResource()), LabelType.name, false);
+        if (page.isValid()) {
+            Resource contentResource = page.getContent().getResource();
             writer.name("jcrContent");
             writeJsonNode(writer, nodeStrategy, ResourceHandle.use(contentResource), LabelType.name, false);
+            writer.name("meta").beginObject();
+            Site site = page.getSite();
+            writer.name("site").value(site != null ? site.getPath() : null);
+            writer.endObject();
         }
         writer.endObject();
     }
@@ -296,7 +303,7 @@ public class EditServlet extends NodeTreeServlet {
      * sort children of orderable nodes
      */
     @Override
-    protected java.util.List prepareTreeItems(ResourceHandle resource, java.util.List items) {
+    protected List<Resource> prepareTreeItems(ResourceHandle resource, List<Resource> items) {
         if (!pagesConfiguration.getOrderableNodesFilter().accept(resource)) {
             Collections.sort(items, new Comparator<Resource>() {
                 @Override
@@ -447,7 +454,7 @@ public class EditServlet extends NodeTreeServlet {
         @Override
         public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
                          ResourceHandle resource)
-                throws ServletException, IOException {
+                throws IOException {
             final ResourceResolver resolver = request.getResourceResolver();
 
             ResourceReference.List targetList =
@@ -475,7 +482,7 @@ public class EditServlet extends NodeTreeServlet {
         @Override
         public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
                          ResourceHandle resource)
-                throws ServletException, IOException {
+                throws IOException {
 
             String resourceType = request.getParameter("resourceType");
             String targetPath = request.getParameter("targetPath");
@@ -507,7 +514,7 @@ public class EditServlet extends NodeTreeServlet {
         @Override
         public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
                          ResourceHandle resource)
-                throws ServletException, IOException {
+                throws IOException {
 
             String targetPath = request.getParameter("targetPath");
             String targetType = request.getParameter("targetType");
@@ -689,7 +696,7 @@ public class EditServlet extends NodeTreeServlet {
         @Override
         public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
                          ResourceHandle resource)
-                throws ServletException, IOException {
+                throws IOException {
 
             final Gson gson = new Gson();
             final VersionPutParameters params = gson.fromJson(
@@ -717,7 +724,7 @@ public class EditServlet extends NodeTreeServlet {
         @Override
         public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
                          ResourceHandle resource)
-                throws ServletException, IOException {
+                throws IOException {
 
             final Gson gson = new Gson();
             final VersionPutParameters params = gson.fromJson(

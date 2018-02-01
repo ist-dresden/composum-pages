@@ -76,7 +76,11 @@ public abstract class AbstractWidgetTag extends AbstractWrappingTag {
      * returns the resource type (the path to the component) for a widget type
      */
     protected String getWidgetResourceType(String widgetType) {
-        return context.getService(WidgetManager.class).getWidgetTypeResourcePath(context, widgetType);
+        String path = context.getService(WidgetManager.class).getWidgetTypeResourcePath(context, widgetType);
+        if (StringUtils.isBlank(path)) {
+            throw new IllegalArgumentException("unknown widget type '" + widgetType + "'");
+        }
+        return path;
     }
 
     /**
