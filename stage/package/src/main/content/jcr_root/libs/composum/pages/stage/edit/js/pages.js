@@ -29,6 +29,7 @@
                 insertComponent: 'component:insert',
                 moveComponent: 'component:move',
                 openEditDialog: 'dialog:edit',
+                triggerEvent: 'event:trigger',
                 alertMessage: 'dialog:alert'
             },
             url: {
@@ -106,8 +107,7 @@
         pages.authorize = function (retryThisFailedCall) {
             var currentUrl = new RegExp('https?://[^/]+/bin/pages.html(/[^?]*).*').exec(window.location.href);
             var pagesUrl = '/bin/pages.html' + (currentUrl ? currentUrl[1] : '/');
-            var loginUrl = "/libs/composum/platform/security/login.html?resource=" + encodeURIComponent(pagesUrl);
-            window.location.href = loginUrl;
+            return '/libs/composum/platform/security/login.html?resource=' + encodeURIComponent(pagesUrl);
         };
 
         pages.getPageData = function (path, callback) {
@@ -169,7 +169,7 @@
                             }
                         }
                     }, this), _.bind(function (xhr) {
-                        if (xhr.status == 404) {
+                        if (xhr.status === 404) {
                             if (_.isFunction(onNotFound)) {
                                 onNotFound(name, path, type);
                             }
@@ -282,6 +282,11 @@
                                     }
                                 });
                         }
+                        break;
+                    case pages.const.event.triggerEvent:
+                        // triggers an event in the frame document context
+                        console.log('pages.event.triggerEvent(' + message[2] + ')');
+                        $(document).trigger(args.event, args.data);
                         break;
                     case pages.const.event.alertMessage:
                         // displays an alert message by opening an alert dialog

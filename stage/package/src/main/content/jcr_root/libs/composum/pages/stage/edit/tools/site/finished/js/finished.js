@@ -25,7 +25,12 @@
 
         tools.FinishedPages = pages.releases.FinishedPages.extend({
 
-            initialize: function () {
+            initialize: function (options) {
+                this.initContent();
+                $(document).on('site:changed.FinishedPages', _.bind(this.reload, this));
+            },
+
+            initContent: function (options) {
                 var c = tools.const.finished.page;
                 pages.releases.FinishedPages.prototype.initialize.apply(this);
                 this.sitePath = this.$('.' + c.base).data('path');
@@ -79,7 +84,7 @@
                         } else {
                             this.$el.html("");
                         }
-                        this.initialize();
+                        this.initContent();
                     }, this));
             }
         });
@@ -95,7 +100,6 @@
             }
             return panel;
         });
-
 
     })(window.composum.pages.tools, window.composum.pages, window.core);
 })(window);

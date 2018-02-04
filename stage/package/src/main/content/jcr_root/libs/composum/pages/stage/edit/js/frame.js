@@ -35,6 +35,7 @@
                 $(document).on('page:select.EditFrame', _.bind(this.selectPage, this));
                 $(document).on('page:view.EditFrame', _.bind(this.onViewPage, this));
                 $(document).on('site:select.EditFrame', _.bind(this.selectSite, this));
+                $(document).on('site:changed.EditFrame', _.bind(this.onSiteChanged, this));
                 pages.PageView.prototype.registerEventHandlers.apply(this);
                 var initialPath = this.$el.data('path');
                 if (initialPath) {
@@ -129,7 +130,7 @@
                         frameUrl.parameters['pages.locale'] = pages.current.locale;
                     }
                     frameUrl.build();
-                    console.log('pages.EditFrame.reloadPage(): ' + frameUrl.url);
+                    console.log('pages.EditFrame.reloadPage(' + path + '): ' + frameUrl.url);
                     this.$frame.attr('src', frameUrl.url);
                 }
             },
@@ -147,6 +148,12 @@
                 } else {
                     this.$frame[0].contentWindow.postMessage('component:select'
                         + JSON.stringify({}), '*');
+                }
+            },
+
+            onSiteChanged: function (event, path) {
+                if (pages.current.page === path) {
+                    this.reloadPage();
                 }
             },
 

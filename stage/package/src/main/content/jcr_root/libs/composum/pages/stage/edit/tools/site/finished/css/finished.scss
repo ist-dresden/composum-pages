@@ -30,11 +30,15 @@
         &_listentry {
             position: relative;
             margin-bottom: 3px;
-            padding: 0 4px 0 36px;
+            padding: 2px 4px 2px 36px;
             background-color: $tools-pane-tabs-background;
 
             &.selected {
-                background-color: $tools-pane-main-selection-bg;
+                @include secondary-selection-background();
+
+                body.context-driven-view & {
+                    @include main-selection-background();
+                }
             }
         }
 
@@ -44,16 +48,24 @@
                 width: 100%;
             }
 
+            &-title, &-time, &-path {
+                white-space: nowrap;
+                overflow: auto;
+            }
+
             &-title {
-                width: 100%;
+                float: left;
             }
 
             &-time {
+                float: right;
+                margin: 3px 2px 0 10px;
                 text-align: right;
                 font-size: $hint-font-size;
             }
 
             &-path {
+                clear: both;
                 font-size: $hint-font-size;
             }
 

@@ -31,7 +31,7 @@
             </div>
         </div>
     </div>
-    <div class="composum-pages-tools_panel">
+    <div class="composum-pages-tools_panel tree-panel">
         <div class="composum-pages-tools_tree" data-selected="${tree.pagePath}">
         </div>
     </div>

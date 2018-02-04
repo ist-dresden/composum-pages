@@ -2,3 +2,22 @@
 
 @import "../../css/variables";
 @import "../../css/mixins";
+
+body.context-driven-view {
+
+    .jstree {
+
+        &-proton {
+
+            .jstree {
+
+                &-wholerow {
+
+                    &-clicked {
+                        @include secondary-selection-background();
+                    }
+                }
+            }
+        }
+    }
+}

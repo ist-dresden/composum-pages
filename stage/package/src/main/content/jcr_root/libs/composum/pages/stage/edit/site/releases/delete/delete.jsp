@@ -2,7 +2,7 @@
 --%><%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %><%--
 --%><cpp:defineFrameObjects/>
 <cpp:editDialog var="release" type="com.composum.pages.commons.model.Release" selector="delete" languageContext="false"
-                title="Delete Release" submit="/bin/cpm/pages/release.delete.html"
+                title="Delete Release" submit="/bin/cpm/pages/release.delete.html" successEvent="site:changed"
                 alert-danger="Do you really want to delete this release?">
     <div class="row">
         <div class="col-xs-8">

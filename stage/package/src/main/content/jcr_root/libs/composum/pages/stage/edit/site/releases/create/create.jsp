@@ -1,8 +1,9 @@
-<%@page session="false" pageEncoding="utf-8" %><%--
---%><%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %><%--
---%><cpp:defineFrameObjects/>
+<%@page session="false" pageEncoding="utf-8" %>
+<%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
+<cpp:defineFrameObjects/>
 <cpp:editDialog var="site" type="com.composum.pages.commons.model.Site" selector="generic" languageContext="false"
-                title="Create Release" submitLabel="Create" submit="/bin/cpm/pages/release.create.html">
+                title="Create Release" submitLabel="Create" submit="/bin/cpm/pages/release.create.html"
+                successEvent="site:changed">
     <input name="path" type="hidden" value="${site.path}" class="${siteCssBase}_path"/>
     <input name="objects" type="hidden" value="" class="${siteCssBase}_objects"/>
     <div class="row">
@@ -15,7 +16,7 @@
     </div>
     <div class="row">
         <div class="col-xs-12">
-            <cpp:widget name="description" label="Descriotion" type="textarea"/>
+            <cpp:widget name="description" label="Description" type="textarea"/>
         </div>
     </div>
 </cpp:editDialog>

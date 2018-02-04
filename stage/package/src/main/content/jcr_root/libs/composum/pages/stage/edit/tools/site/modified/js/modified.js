@@ -26,6 +26,11 @@
         tools.ModifiedPages = pages.releases.ModifiedPages.extend({
 
             initialize: function (options) {
+                this.initContent();
+                $(document).on('site:changed.ModifiedPages', _.bind(this.reload, this));
+            },
+
+            initContent: function (options) {
                 var c = tools.const.modified.page;
                 pages.releases.ModifiedPages.prototype.initialize.apply(this);
                 this.sitePath = this.$('.' + c.base).data('path');
@@ -45,6 +50,7 @@
                         this.$previewEntry.removeClass('selected');
                     }
                     this.$previewEntry = $listEntry;
+                    $('body').addClass('context-driven-view');
                     $listEntry.addClass('selected');
                     $(document).trigger("page:view", [path, {'pages.mode': 'preview'}]);
                 }
@@ -52,6 +58,7 @@
 
             closePreview: function () {
                 if (this.$previewEntry.length > 0) {
+                    $('body').removeClass('context-driven-view');
                     this.$previewEntry.removeClass('selected');
                     this.$previewEntry = [];
                     $(document).trigger("page:view", [null, {}]);
@@ -79,7 +86,7 @@
                         } else {
                             this.$el.html("");
                         }
-                        this.initialize();
+                        this.initContent();
                     }, this));
             }
         });
@@ -95,7 +102,6 @@
             }
             return panel;
         });
-
 
     })(window.composum.pages.tools, window.composum.pages, window.core);
 })(window);

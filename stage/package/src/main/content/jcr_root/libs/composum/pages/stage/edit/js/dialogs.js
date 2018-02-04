@@ -181,8 +181,8 @@
             },
 
             doSubmit: function () {
-                this.submitForm(_.bind(function () {
-                    $(document).trigger('component:changed', [this.data.path]);
+                this.submitForm(_.bind(function (result) {
+                    $(document).trigger(this.$el.data('pages-edit-success') || 'component:changed', [this.data.path]);
                 }, this));
             },
 
@@ -257,7 +257,7 @@
 
             initView: function () {
                 this.elementType = core.getWidget(this.el, '.radio-group-widget', core.components.RadioGroupWidget);
-                if (this.elementType.getCount() == 1) {
+                if (this.elementType.getCount() === 1) {
                     this.useDefault = this.elementType.getOnlyOne();
                 }
             },
@@ -321,7 +321,7 @@
 
             doSubmit: function () {
                 this.submitForm(_.bind(function (result) {
-                    window.location.href = result.editUrl;
+                    $(document).trigger('site:changed', [result.path]);
                 }, this));
             }
         });

@@ -23,6 +23,11 @@
         tools.SiteReleases = pages.releases.SiteReleases.extend({
 
             initialize: function () {
+                this.initContent();
+                $(document).on('site:changed.SiteReleases', _.bind(this.reload, this));
+            },
+
+            initContent: function () {
                 var c = tools.const.releases.page;
                 pages.releases.SiteReleases.prototype.initialize.apply(this);
                 this.sitePath = this.$('.' + c.base).data('path');
@@ -36,12 +41,12 @@
                 var c = tools.const.releases.uri;
                 core.getHtml(c.load + this.contextTabs.data.path,
                     undefined, undefined, _.bind(function (data) {
-                        if (data.status == 200) {
+                        if (data.status === 200) {
                             this.$el.html(data.responseText);
                         } else {
                             this.$el.html("");
                         }
-                        this.initialize();
+                        this.initContent();
                     }, this));
             }
         });
@@ -57,7 +62,6 @@
             }
             return panel;
         });
-
 
     })(window.composum.pages.tools, window.composum.pages, window.core);
 })(window);

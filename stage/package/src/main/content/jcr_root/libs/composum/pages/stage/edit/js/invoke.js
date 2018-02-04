@@ -29,6 +29,7 @@
                 insertComponent: 'component:insert',
                 moveComponent: 'component:move',
                 openEditDialog: 'dialog:edit',
+                triggerEvent: 'event:trigger',
                 alertMessage: 'dialog:alert'
             }
         });
@@ -40,6 +41,15 @@
                     type: type,
                     title: title,
                     message: message,
+                    data: data
+                }), '*');
+        };
+
+        elements.triggerEvent = function (event, data) {
+            // trigger the event in the 'edit' layer of the UI
+            parent.postMessage(elements.const.event.triggerEvent
+                + JSON.stringify({
+                    event: event,
                     data: data
                 }), '*');
         };

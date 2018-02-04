@@ -72,7 +72,11 @@
                             paths: objects
                         }, {},
                         _.bind(function () {
-                            window.location.reload();
+                            if (pages.elements) {
+                                pages.elements.triggerEvent('site:changed', [this.sitePath]);
+                            } else {
+                                $(document).trigger('site:changed', [this.sitePath]);
+                            }
                         }, this), _.bind(function (result) {
                             var fn = pages.elements ? pages.elements.alertMessage : core.alert;
                             fn.call(this, 'danger', 'Error', 'Error on creating checkpoint', result);

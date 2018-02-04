@@ -187,8 +187,10 @@
                                 }
                             }, this));
                             break;
+                        default:
+                            $(document).trigger("path:selected", [path]);
+                            break;
                     }
-                    $(document).trigger("path:selected", [path]);
                 }
             }
         });

@@ -46,11 +46,14 @@
             nodeIdPrefix: 'PP_',
 
             initialize: function (options) {
+                var id = this.nodeIdPrefix + 'Tree';
                 this.initialSelect = this.$el.attr('data-selected');
                 if (!this.initialSelect || this.initialSelect === '/') {
                     this.initialSelect = pages.profile.get('tree', 'current', "/");
                 }
                 tree.ToolsTree.prototype.initialize.apply(this, [options]);
+                $(document).on('component:selected.' + id, _.bind(this.onPathSelected, this));
+                $(document).on('page:selected.' + id, _.bind(this.onPathSelected, this));
             },
 
             dataUrlForPath: function (path) {
@@ -79,12 +82,7 @@
 
             initialize: function (options) {
                 this.$actions = this.$('.' + tree.const.contextActionsClass);
-                $(document).on('path:selected.' + this.tree.nodeIdPrefix + 'ToolsTree',
-                    _.bind(this.onPathSelected, this));
-                $(document).on('page:selected.' + this.tree.nodeIdPrefix + 'ToolsTree',
-                    _.bind(this.onPathSelected, this));
-                $(document).on('site:selected.' + this.tree.nodeIdPrefix + 'ToolsTree',
-                    _.bind(this.onPathSelected, this));
+                this.treePanelId = this.tree.nodeIdPrefix + 'treePanel';
             },
 
             onPathSelected: function (event, path) {
@@ -94,7 +92,7 @@
                         return;
                     }
                 }
-                console.log(this.tree.nodeIdPrefix + 'ToolsTree.onPathSelected(' + path + '): ' + treePath);
+                console.log(this.treePanelId + '.onPathSelected(' + path + ') <- ' + treePath);
                 if (!path) {
                     this.doSelectDefaultNode();
                 } else if (path === treePath) {
@@ -152,6 +150,9 @@
                 this.tree = core.getWidget(this.el, '.' + tree.const.treeClass, tree.PageTree);
                 this.tree.panel = this;
                 tree.ToolsTreePanel.prototype.initialize.apply(this, [options]);
+                $(document).on('path:selected.' + this.treePanelId, _.bind(this.onPathSelected, this));
+                $(document).on('component:selected.' + this.treePanelId, _.bind(this.onPathSelected, this));
+                $(document).on('page:selected.' + this.treePanelId, _.bind(this.onPathSelected, this));
             },
 
             selectDefaultNode: function () {

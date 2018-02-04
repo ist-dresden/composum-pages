@@ -16,6 +16,7 @@ import java.util.Map;
 import static com.composum.pages.commons.servlet.EditServlet.EDIT_RESOURCE_KEY;
 import static com.composum.pages.commons.servlet.EditServlet.EDIT_RESOURCE_TYPE_KEY;
 import static com.composum.pages.commons.taglib.AbstractPageTag.STAGE_COMPONENT_BASE;
+import static com.composum.pages.commons.taglib.ElementTag.PAGES_EDIT_DATA;
 import static com.composum.pages.commons.taglib.ElementTag.PAGES_EDIT_DATA_NAME;
 import static com.composum.pages.commons.taglib.ElementTag.PAGES_EDIT_DATA_PATH;
 import static com.composum.pages.commons.taglib.ElementTag.PAGES_EDIT_DATA_TYPE;
@@ -48,6 +49,8 @@ public class EditDialogTag extends AbstractWrappingTag {
 
     public static final String ATTR_INITIAL_ALERT = "alert-";
 
+    public static final String PAGES_EDIT_SUCCESS_EVENT = PAGES_EDIT_DATA + "-success";
+
     private transient String dialogId;
     protected String tagId;
 
@@ -69,6 +72,8 @@ public class EditDialogTag extends AbstractWrappingTag {
     protected String submitLabel;
     private transient EditDialogAction action;
 
+    protected String successEvent;
+
     protected String alertKey;
     protected String alertText;
 
@@ -76,6 +81,7 @@ public class EditDialogTag extends AbstractWrappingTag {
     protected void clear() {
         alertText = null;
         alertKey = null;
+        successEvent = null;
         action = null;
         submit = null;
         submitLabel = null;
@@ -130,6 +136,8 @@ public class EditDialogTag extends AbstractWrappingTag {
         return getModelResource(context);
     }
 
+    // tag attributes
+
     public String getTagId() {
         return tagId;
     }
@@ -140,9 +148,9 @@ public class EditDialogTag extends AbstractWrappingTag {
 
     public String getTitle() {
         if (titleValue == null) {
-            titleValue = eval(title, "Edit Element");
+            titleValue = i18n(eval(title, "Edit Element"));
         }
-        return i18n(titleValue);
+        return titleValue;
     }
 
     public void setTitle(String text) {
@@ -177,6 +185,11 @@ public class EditDialogTag extends AbstractWrappingTag {
         return StringUtils.isNotBlank(hint) ? hint : "element";
     }
 
+    // create: 'sling:resourceType'
+
+    /**
+     * the resource type of a new element created by a dialog (hidden 'sling:resourceType' property value)
+     */
     public String getResourceType() {
         return StringUtils.isNotBlank(resourceType) ? resourceType : getDefaultResourceType();
     }
@@ -190,11 +203,19 @@ public class EditDialogTag extends AbstractWrappingTag {
         return requestedType != null ? requestedType : "";
     }
 
+    /**
+     * if this returns 'true' the hidden resource type property value must be inserted in the form
+     */
     public boolean isUseResourceType() {
         return (SELECTOR_CREATE.equalsIgnoreCase(getSelector()) || resourceType != null)
                 && !TYPE_NONE.equalsIgnoreCase(resourceType);
     }
 
+    // create: 'jcr:primaryType'
+
+    /**
+     * the primary type of a new element created by a dialog (hidden 'jcr:primaryType' property value)
+     */
     public String getPrimaryType() {
         return StringUtils.isNotBlank(primaryType) ? primaryType : getDefaultPrimaryType();
     }
@@ -211,10 +232,15 @@ public class EditDialogTag extends AbstractWrappingTag {
         return defaultPrimaryType;
     }
 
+    /**
+     * if this returns 'true' the hidden primary type property value must be inserted in the form
+     */
     public boolean isUsePrimaryType() {
         return (SELECTOR_CREATE.equalsIgnoreCase(getSelector()) || primaryType != null)
                 && !TYPE_NONE.equalsIgnoreCase(primaryType);
     }
+
+    // the dialog variation selector
 
     /**
      * returns the first not empty value of the cascade, as key to select the right dialog snippets:
@@ -239,6 +265,41 @@ public class EditDialogTag extends AbstractWrappingTag {
         return selectorValue;
     }
 
+    // initial alert message
+
+    public boolean isAlertSet() {
+        return StringUtils.isNotBlank(alertKey);
+    }
+
+    public String getAlertKey() {
+        return isAlertSet() ? alertKey : "alert-warning alert-hidden";
+    }
+
+    public String getAlertText() {
+        return isAlertSet() ? i18n(alertText) : "";
+    }
+
+    /**
+     * filters dynamic attributes for special purposes:
+     * <ul>
+     * <li>initial 'alert' settings for initial hints</li>
+     * <li>'submit' button label for the 'generic' dialog</li>
+     * </ul>
+     */
+    @Override
+    protected boolean acceptDynamicAttribute(String key, Object value) throws JspException {
+        if (key.startsWith(ATTR_INITIAL_ALERT)) {
+            alertKey = key;
+            alertText = (String) value;
+            return false;
+        } else if (ATTR_SUBMIT_LABEL.equals(key)) {
+            submitLabel = (String) value;
+            return false;
+        } else {
+            return super.acceptDynamicAttribute(key, value);
+        }
+    }
+
     /**
      * tag attribute - defines the optional selector for the rendering of the dialog component;
      * this selector string is mainly used to select the right dialog 'start' and 'end' snippets
@@ -249,6 +310,42 @@ public class EditDialogTag extends AbstractWrappingTag {
     public void setSelector(String selector) {
         this.selector = selector;
     }
+
+    // dialog submit action ...
+
+    /**
+     * @return the localized submit button label mainly for the generic dialog type (selector)
+     */
+    public String getSubmitLabel() {
+        return i18n(StringUtils.isNotBlank(submitLabel) ? submitLabel : DEFAULT_SUBMIT_LABEL);
+    }
+
+    public void setSubmit(String actionKey) {
+        submit = actionKey;
+        switch (actionKey) {
+            case "SlingPostServlet":
+            case SLING_POST_SERVLET_ACTION:
+                action = new SlingPostServletAction();
+                break;
+            default:
+                action = new CustomPostAction(actionKey);
+                break;
+        }
+    }
+
+    // post dialog event
+
+    public String getSuccessEvent() {
+        return successEvent;
+    }
+
+    public void setSuccessEvent(String eventKey) {
+        this.successEvent = eventKey;
+    }
+
+    //
+    //
+    //
 
     public String getPropertyPath(String name) {
         return getAction().getPropertyPath(name);
@@ -304,41 +401,9 @@ public class EditDialogTag extends AbstractWrappingTag {
             attributeSet.put(PAGES_EDIT_DATA_PATH, resourceToEdit.getPath());
             attributeSet.put(PAGES_EDIT_DATA_TYPE, getResourceType());
         }
-    }
-
-    /**
-     * filters dynamic attributes for special purposes:
-     * <ul>
-     * <li>initial 'alert' settings for initial hints</li>
-     * <li>'submit' button label for the 'generic' dialog</li>
-     * </ul>
-     */
-    @Override
-    protected boolean acceptDynamicAttribute(String key, Object value) throws JspException {
-        if (key.startsWith(ATTR_INITIAL_ALERT)) {
-            alertKey = key;
-            alertText = (String) value;
-            return false;
-        } else if (ATTR_SUBMIT_LABEL.equals(key)) {
-            submitLabel = (String) value;
-            return false;
-        } else {
-            return super.acceptDynamicAttribute(key, value);
+        if (StringUtils.isNotBlank(value = getSuccessEvent())) {
+            attributeSet.put(PAGES_EDIT_SUCCESS_EVENT, value);
         }
-    }
-
-    // initial alert message
-
-    public boolean isAlertSet() {
-        return StringUtils.isNotBlank(alertKey);
-    }
-
-    public String getAlertKey() {
-        return isAlertSet() ? alertKey : "alert-warning alert-hidden";
-    }
-
-    public String getAlertText() {
-        return isAlertSet() ? i18n(alertText) : "";
     }
 
     // tag rendering
@@ -378,26 +443,6 @@ public class EditDialogTag extends AbstractWrappingTag {
     }
 
     // dialog submit action ...
-
-    /**
-     * @return the localized submit button label mainly for the generic dialog type (selector)
-     */
-    public String getSubmitLabel() {
-        return i18n(StringUtils.isNotBlank(submitLabel) ? submitLabel : DEFAULT_SUBMIT_LABEL);
-    }
-
-    public void setSubmit(String actionKey) {
-        submit = actionKey;
-        switch (actionKey) {
-            case "SlingPostServlet":
-            case SLING_POST_SERVLET_ACTION:
-                action = new SlingPostServletAction();
-                break;
-            default:
-                action = new CustomPostAction(actionKey);
-                break;
-        }
-    }
 
     public EditDialogAction getDefaultAction() {
         return new SlingPostServletAction();
