@@ -75,15 +75,17 @@
                     event.preventDefault();
                 }
                 var $menuItem = $(event.currentTarget);
-                var href = $menuItem.attr('href');
-                var pattern = new RegExp('.*pages\.locale=([^&]*).*').exec(href);
+                var key = $menuItem.data('value');
                 if (pages.editFrame) {
-                    var key = pattern[1].toLowerCase();
                     var label = key.replace(/_/g, '.');
-                    pages.editFrame.reloadPage({'pages.locale': key});
+                    var parameters = {'pages.locale': key};
+                    if (this.currentPage && pages.current.page !== this.currentPage) {
+                        parameters['pages.mode'] = 'preview'
+                    }
+                    pages.editFrame.reloadPage(parameters, this.currentPage);
                     this.$menuLabel.text(label);
                 } else {
-                    location.href = href;
+                    location.href = (this.currentPage ? this.currentPage : ".") + "?pages.locale=" + key;
                 }
             }
         });
@@ -152,6 +154,7 @@
                     '?pages.mode=' + pages.profile.get('mode', 'edit', 'edit'));
                 this.$('.' + c.tbar.base + c.tbar._open).click(_.bind(this.openPage, this));
                 toolbars.localeSelector = core.getView('.' + toolbars.const.languageMenu, toolbars.LocaleSelector);
+                toolbars.localeSelector.currentPage = this.currentPage;
             },
 
             profileAspect: function () {

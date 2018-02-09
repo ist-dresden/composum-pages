@@ -7,8 +7,8 @@
            cssBase="composum-pages-language-menu">
     <ul class="${languagesCssBase} dropdown-menu dropdown-menu-right" data-default="${languages.defaultLanguage}">
         <c:forEach items="${languages.languageList}" var="language">
-            <li class="${languagesCssBase}_item" data-value="${language.key}"><a class="${languagesCssBase}_link"
-                                                                                 href="?pages.locale=${language.key}"><span
+            <li class="${languagesCssBase}_item"><a class="${languagesCssBase}_link" href="#"
+                                                    data-value="${language.key}"><span
                     class="${languagesCssBase}_label">${language.label}</span>
                 <span class="${languagesCssBase}_key">[${language.key}]</span></a></li>
         </c:forEach>
