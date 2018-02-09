@@ -33,7 +33,9 @@
                 $(document).on('component:deleted.EditFrame', _.bind(this.onComponentDeleted, this));
                 $(document).on('page:selected.EditFrame', _.bind(this.onPageSelected, this));
                 $(document).on('page:select.EditFrame', _.bind(this.selectPage, this));
+                $(document).on('page:view.EditFrame', _.bind(this.onViewPage, this));
                 $(document).on('site:select.EditFrame', _.bind(this.selectSite, this));
+                $(document).on('site:changed.EditFrame', _.bind(this.onSiteChanged, this));
                 pages.PageView.prototype.registerEventHandlers.apply(this);
                 var initialPath = this.$el.data('path');
                 if (initialPath) {
@@ -44,9 +46,15 @@
             },
 
             onPageSelected: function (event, path) {
-                if (this.currentPath != path) {
+                if (this.currentPath !== path) {
                     console.log('pages.EditFrame.onPageSelected(' + path + ')');
                     this.currentPath = path;
+                    pages.getPageData(path, _.bind(function (data) {
+                        if (data.meta && data.meta.site !== pages.current.site) {
+                            pages.current.site = data.meta.site;
+                            $(document).trigger("site:selected", [data.meta.site]);
+                        }
+                    }, this));
                     if (history.replaceState) {
                         history.replaceState(path, 'pages', core.getContextUrl('/bin/pages.html' + path));
                     }
@@ -56,16 +64,19 @@
             onFrameLoad: function (event) {
                 if (!this.busy) {
                     this.busy = true;
-                    var url = event.currentTarget.contentDocument.URL;
+                    var frameUrl = event.currentTarget.contentDocument.URL;
                     core.ajaxGet('/bin/cpm/nodes/node.resolve.json', {
                             data: {
-                                url: url
+                                url: frameUrl
                             }
                         }, _.bind(function (data) {
-                            if (this.currentPath != data.path) {
-                                console.log('pages.EditFrame.onFrameLoad(' + url + '): ' + data.path);
-                                pages.current.page = data.path;
-                                $(document).trigger("page:selected", [data.path]);
+                            if (this.currentPath !== data.path) {
+                                console.log('pages.EditFrame.onFrameLoad(' + frameUrl + '): ' + data.path);
+                                var url = new core.SlingUrl(frameUrl);
+                                if (!url.parameters || url.parameters['pages.mode'] !== 'preview') {
+                                    pages.current.page = data.path;
+                                    $(document).trigger("page:selected", [data.path, url.parameters]);
+                                }
                             } else {
                                 var select = this.selectOnLoad;
                                 if (!select) {
@@ -86,7 +97,7 @@
             },
 
             selectSite: function (event, path) {
-                if (pages.current.site != path) {
+                if (pages.current.site !== path) {
                     console.log('pages.EditFrame.selectSite(' + path + ')');
                     pages.current.site = path;
                     $(document).trigger("site:selected", [path]);
@@ -95,7 +106,7 @@
             },
 
             selectPage: function (event, path, parameters) {
-                if (pages.current.page != path) {
+                if (pages.current.page !== path) {
                     console.log('pages.EditFrame.selectPage(' + path + ')');
                     pages.current.page = path;
                     this.reloadPage(parameters);
@@ -105,26 +116,28 @@
                 }
             },
 
-            reloadPage: function (parameters) {
-                if (pages.current.page) {
-                    if (!parameters) {
-                        parameters = {};
+            reloadPage: function (parameters, path) {
+                var pagePath = path || pages.current.page;
+                if (pagePath) {
+                    var frameUrl = new core.SlingUrl(core.getContextUrl(pagePath + '.html'));
+                    if (parameters) {
+                        frameUrl.parameters = parameters;
                     }
-                    if (!parameters['pages.mode']) {
-                        parameters ['pages.mode'] = pages.current.mode.toLowerCase();
+                    if (!frameUrl.parameters['pages.mode']) {
+                        frameUrl.parameters['pages.mode'] = pages.current.mode.toLowerCase();
                     }
-                    if (!parameters['pages.locale']) {
-                        parameters ['pages.locale'] = pages.current.locale;
+                    if (!frameUrl.parameters['pages.locale']) {
+                        frameUrl.parameters['pages.locale'] = pages.current.locale;
                     }
-                    var parameterString = '';
-                    _.each(_.keys(parameters), function (key) {
-                        parameterString += parameterString.length == 0 ? '?' : '&';
-                        parameterString += encodeURIComponent(key) + '=' + encodeURIComponent(parameters[key]);
-                    });
-                    console.log('pages.EditFrame.reloadPage(): ' + pages.current.page);
-                    this.$frame.attr('src',
-                        core.getContextUrl(pages.current.page + '.html' + parameterString));
+                    frameUrl.build();
+                    console.log('pages.EditFrame.reloadPage(' + path + '): ' + frameUrl.url);
+                    this.$frame.attr('src', frameUrl.url);
                 }
+            },
+
+            reloadFrame: function () {
+                console.log('pages.EditFrame.reloadFrame()');
+                window.location.reload();
             },
 
             selectComponent: function (event, name, path, type) {
@@ -136,6 +149,16 @@
                     this.$frame[0].contentWindow.postMessage('component:select'
                         + JSON.stringify({}), '*');
                 }
+            },
+
+            onSiteChanged: function (event, path) {
+                if (pages.current.page === path) {
+                    this.reloadPage();
+                }
+            },
+
+            onViewPage: function (event, path, parameters) {
+                this.reloadPage(parameters, path);
             },
 
             onComponentSelected: function (event, name, path, type) {
@@ -150,16 +173,24 @@
             },
 
             onComponentChanged: function (event, path) {
-                if (path && path.indexOf(pages.current.page) == 0) {
+                if (path) {
                     console.log('pages.EditFrame.onComponentChanged(' + path + ')');
-                    this.reloadPage();
+                    if (path === pages.current.site) {
+                        this.reloadFrame();
+                    } else if (path.indexOf(pages.current.page) === 0) {
+                        this.reloadPage();
+                    }
                 }
             },
 
             onComponentDeleted: function (event, path) {
-                if (path && path.indexOf(pages.current.page) == 0) {
+                if (path) {
                     console.log('pages.EditFrame.onComponentDeleted(' + path + ')');
-                    this.reloadPage();
+                    if (path === pages.current.site || path === pages.current.page) {
+                        this.reloadFrame();
+                    } else if (path.indexOf(pages.current.page) === 0) {
+                        this.reloadPage();
+                    }
                 }
             }
         });

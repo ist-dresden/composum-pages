@@ -10,7 +10,6 @@ import javax.jcr.RepositoryException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 public interface SiteManager {
 
@@ -47,29 +46,98 @@ public interface SiteManager {
         }
     }
 
+    /**
+     * Adapts an appropriate site resource into a Site bean.
+     *
+     * @param context  the current request context
+     * @param resource the site resource
+     * @return the bean/model object
+     */
     Site createBean(BeanContext context, Resource resource);
 
+    /**
+     * Adapts any model instance into the bean of the containing site.
+     *
+     * @param element the element bean which containing site has to be used
+     * @return the bean/model object; maybe &gt;null&lt; if no parent resource represents a site
+     */
     Site getContainingSite(Model element);
 
+    /**
+     * Adapts any resource into the bean of the containing site.
+     *
+     * @param resource the resource which containing site has to be used
+     * @return the bean/model object; maybe &gt;null&lt; if no parent resource represents a site
+     */
     Site getContainingSite(BeanContext context, Resource resource);
 
+    /**
+     * Determines the resource of the containing site of any resource
+     *
+     * @param resource the resource which containing site is searched
+     * @return the resource of the site if found; maybe &gt;null&lt; if no parent resource represents a site
+     */
     Resource getContainingSiteResource(Resource resource);
 
+    /**
+     * Returns the sites root resource to place new sites for a specific tenant.
+     *
+     * @param context the current request context
+     * @param tenant  the tenants name (key); maybe &gt;null&lt; if tenants are not supported
+     * @return the root resource to create site child resources
+     * @throws PersistenceException if the root has to be created and an error has occurred during creation
+     */
     Resource getSiteBase(BeanContext context, String tenant)
             throws PersistenceException;
 
-    List<Site> getSites(BeanContext context, Resource siteBase);
+    /**
+     * Determines all sites of a specific tenant.
+     *
+     * @param context the current request context
+     * @param tenant  the tenants name (key); maybe &gt;null&lt; if tenants are not supported
+     * @return the collection of all sites found (not &gt;null&lt;)
+     */
+    Collection<Site> getSites(BeanContext context, String tenant);
 
-    List<Site> getSites(BeanContext context, String tenant);
+    /**
+     * Determines all usable site templates in the context of a specific tenant.
+     * This implementation uses the resolvers search path to find all site resources in a tenants application context
+     * Overlayed site resources are not in the result.
+     *
+     * @param context the current request context
+     * @param tenant  the tenants name (key); maybe &gt;null&lt; if tenants are not supported
+     * @return the collection of all site templates found (not &gt;null&lt;)
+     */
+    Collection<Site> getSiteTemplates(BeanContext context, String tenant);
 
-    List<Site> getSiteTemplates(BeanContext context, String tenant);
+    /**
+     * Determines all Sites which a children of a search root in any depth of the hierarchy.
+     *
+     * @param context    the current request context
+     * @param searchRoot the search root path
+     * @return the collection of all sites found (not &gt;null&lt;)
+     */
+    Collection<Site> getSites(BeanContext context, Resource searchRoot);
 
-    Site createSite(BeanContext context, String tenant, String siteName, String homepageType)
+    Site createSite(BeanContext context, String tenant, String siteName,
+                    String homepageType, boolean commit)
             throws RepositoryException, PersistenceException;
 
-    Site createSite(BeanContext context, Resource siteBase, String siteName, String homepageType)
+    Site createSite(BeanContext context, Resource siteBase, String siteName,
+                    String homepageType, boolean commit)
             throws RepositoryException, PersistenceException;
 
-    Site createSite(BeanContext context, Resource siteBase, String siteName, Resource siteTemplate)
+    Site createSite(BeanContext context, String tenant, String siteName, String siteTitle, String description,
+                    Resource siteTemplate, boolean commit)
+            throws RepositoryException, PersistenceException;
+
+    Site createSite(BeanContext context, Resource siteBase, String siteName, String siteTitle, String description,
+                    Resource siteTemplate, boolean commit)
+            throws RepositoryException, PersistenceException;
+
+    Site deleteSite(BeanContext context, String sitePath, boolean commit)
+            throws RepositoryException, PersistenceException;
+
+    Site deleteSite(BeanContext context, Resource siteResource, boolean commit)
             throws RepositoryException, PersistenceException;
 }

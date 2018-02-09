@@ -18,7 +18,15 @@
             componentActions: 'composum-pages-stage-edit-actions_component',
             editToolbarClass: 'composum-pages-stage-edit-toolbar',
             toolbarHandleClass: 'composum-pages-stage-edit-toolbar_handle',
-            editToolbarLoadUri: '/bin/cpm/pages/edit.editToolbar'
+            editToolbarLoadUri: '/bin/cpm/pages/edit.editToolbar.html',
+            page: {
+                css: {
+                    tbar: {
+                        base: 'composum-pages-stage-edit-toolbar',
+                        _open: '_open-page'
+                    }
+                }
+            }
         });
 
         toolbars.EditAction = Backbone.View.extend({
@@ -67,15 +75,17 @@
                     event.preventDefault();
                 }
                 var $menuItem = $(event.currentTarget);
-                var href = $menuItem.attr('href');
-                var pattern = new RegExp('.*pages\.locale=([^&]*).*').exec(href);
+                var key = $menuItem.data('value');
                 if (pages.editFrame) {
-                    var key = pattern[1].toLowerCase();
                     var label = key.replace(/_/g, '.');
-                    pages.editFrame.reloadPage({'pages.locale': key});
+                    var parameters = {'pages.locale': key};
+                    if (this.currentPage && pages.current.page !== this.currentPage) {
+                        parameters['pages.mode'] = 'preview'
+                    }
+                    pages.editFrame.reloadPage(parameters, this.currentPage);
                     this.$menuLabel.text(label);
                 } else {
-                    location.href = href;
+                    location.href = (this.currentPage ? this.currentPage : ".") + "?pages.locale=" + key;
                 }
             }
         });
@@ -122,17 +132,19 @@
                 this.$view = this.$('.' + toolbars.const.pageViewActions);
                 this.$component = this.$('.' + toolbars.const.componentActions);
                 this.initPageView();
+                $(document).on('page:view.PageToolbar', _.bind(this.onPageSelected, this));
                 $(document).on('page:selected.PageToolbar', _.bind(this.onPageSelected, this));
                 $(document).on('component:selected.PageToolbar', _.bind(this.onComponentSelected, this));
                 this.loadProfile();
                 this.$el.css('right', this.profile.position + '%');
-                if (pages.current.mode == pages.const.modes.edit ||
-                    pages.current.mode == pages.const.modes.develop) {
+                if (pages.current.mode === pages.const.modes.edit ||
+                    pages.current.mode === pages.const.modes.develop) {
                     this.onComponentSelected();
                 }
             },
 
             initPageView: function (path) {
+                var c = toolbars.const.page.css;
                 this.currentPage = path;
                 this.handle = core.getWidget(this.el, '.' + toolbars.const.toolbarHandleClass, toolbars.ToolbarHandle);
                 this.handle.toolbar = this;
@@ -140,7 +152,9 @@
                     '?pages.mode=' + pages.profile.get('mode', 'preview', 'preview'));
                 this.$('.' + toolbars.const.editAction).attr('href',
                     '?pages.mode=' + pages.profile.get('mode', 'edit', 'edit'));
+                this.$('.' + c.tbar.base + c.tbar._open).click(_.bind(this.openPage, this));
                 toolbars.localeSelector = core.getView('.' + toolbars.const.languageMenu, toolbars.LocaleSelector);
+                toolbars.localeSelector.currentPage = this.currentPage;
             },
 
             profileAspect: function () {
@@ -159,18 +173,26 @@
                 }
             },
 
+            openPage: function (event) {
+                if (this.currentPage) {
+                    pages.editFrame.selectPage(event, this.currentPage);
+                }
+            },
+
             onPageSelected: function (event, path) {
-                if (this.currentPage != path) {
-                    console.log('toolbars.PageToolbar.onPageSelected(' + path + ')');
-                    core.ajaxGet(toolbars.const.pageViewActionsUri + path, {},
-                        _.bind(function (data) {
-                            this.$view.html(data);
-                            this.initPageView(path);
-                            if (pages.current.mode == pages.const.modes.edit ||
-                                pages.current.mode == pages.const.modes.develop) {
-                                this.loadComponentToolbar(path);
-                            }
-                        }, this));
+                if (path) {
+                    if (this.currentPage !== path) {
+                        console.log('toolbars.PageToolbar.onPageSelected(' + path + ')');
+                        core.ajaxGet(toolbars.const.pageViewActionsUri + path, {},
+                            _.bind(function (data) {
+                                this.$view.html(data);
+                                this.initPageView(path);
+                                if (pages.current.mode === pages.const.modes.edit ||
+                                    pages.current.mode === pages.const.modes.develop) {
+                                    this.loadComponentToolbar(path);
+                                }
+                            }, this));
+                    }
                 }
             },
 
@@ -180,7 +202,7 @@
 
             onComponentSelected: function (event, name, path, type) {
                 if (this.componentToolbar) {
-                    if (this.componentToolbar.data.path == path) {
+                    if (this.componentToolbar.data.path === path) {
                         return;
                     }
                     this.componentToolbar.dispose();
@@ -197,7 +219,7 @@
 
             loadComponentToolbar: function (path, type) {
                 if (path) {
-                    core.ajaxGet(toolbars.const.editToolbarLoadUri + '.' + pages.current.mode + '.html' + path, {
+                    core.ajaxGet(toolbars.const.editToolbarLoadUri + path, {
                             data: {
                                 type: type
                             }

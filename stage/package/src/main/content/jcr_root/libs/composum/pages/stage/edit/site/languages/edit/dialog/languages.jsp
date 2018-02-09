@@ -8,13 +8,13 @@
                  var="language" cssAdd="multiwidget-table">
     <div class="row">
         <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
-            <cpp:widget label="Name" name=":name" value="${language.name}" type="text"/>
+            <cpp:widget label="Name" name=":name" value="${language.name}" type="textfield"/>
         </div>
         <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
-            <cpp:widget label="Key" property="key" type="text"/>
+            <cpp:widget label="Key" property="key" type="textfield"/>
         </div>
         <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
-            <cpp:widget label="Label" property="label" type="text"/>
+            <cpp:widget label="Label" property="label" type="textfield"/>
         </div>
         <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
             <cpp:widget label="Dir" name="direction" value="${language.direction}" type="select" options=",ltr,rtl"/>

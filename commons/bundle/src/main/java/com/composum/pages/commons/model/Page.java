@@ -104,7 +104,7 @@ public class Page extends ContentDriven<PageContent> {
     }
 
     /**
-     * returns 'true' it this page is the homepage
+     * returns 'true' it this page is the homepage ('isHomepage' would overlap with 'getHomepage' in a template)
      */
     public boolean isHome() {
         return getHomepage().getPath().equals(getPath());
@@ -234,7 +234,7 @@ public class Page extends ContentDriven<PageContent> {
         return false;
     }
 
-    public boolean redirect() throws ServletException, IOException {
+    public boolean redirect() throws IOException {
         String targetUrl = getSlingTargetUrl();
         if (StringUtils.isNotBlank(targetUrl)) {
             SlingHttpServletResponse response = context.getResponse();

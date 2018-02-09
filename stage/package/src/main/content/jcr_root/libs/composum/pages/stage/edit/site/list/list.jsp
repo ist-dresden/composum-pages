@@ -11,7 +11,7 @@
                 <ul class="${sitesCssBase}_list">
                     <c:forEach items="${sites.sites}" var="site">
                         <li class="${sitesCssBase}_site">
-                            <cpp:include resource="${site.resource}" subtype="edit/tile" replaceSelectors="list"/>
+                            <cpp:include resource="${site.resource}" subtype="edit/tile" replaceSelectors="select"/>
                         </li>
                     </c:forEach>
                 </ul>

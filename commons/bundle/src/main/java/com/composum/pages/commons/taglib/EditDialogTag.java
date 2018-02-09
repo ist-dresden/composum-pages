@@ -3,6 +3,7 @@ package com.composum.pages.commons.taglib;
 import com.composum.pages.commons.PagesConstants;
 import com.composum.pages.commons.model.properties.Language;
 import com.composum.pages.commons.model.properties.Languages;
+import com.composum.pages.commons.util.TagCssClasses;
 import com.composum.sling.core.BeanContext;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
@@ -12,20 +13,20 @@ import javax.servlet.jsp.PageContext;
 import java.io.IOException;
 import java.util.Map;
 
-import static com.composum.pages.commons.model.AbstractModel.I18N_PROPERTY_PATH;
-import static com.composum.pages.commons.model.AbstractModel.addCssClass;
-import static com.composum.pages.commons.model.AbstractModel.cssOfType;
 import static com.composum.pages.commons.servlet.EditServlet.EDIT_RESOURCE_KEY;
 import static com.composum.pages.commons.servlet.EditServlet.EDIT_RESOURCE_TYPE_KEY;
 import static com.composum.pages.commons.taglib.AbstractPageTag.STAGE_COMPONENT_BASE;
+import static com.composum.pages.commons.taglib.ElementTag.PAGES_EDIT_DATA;
 import static com.composum.pages.commons.taglib.ElementTag.PAGES_EDIT_DATA_NAME;
 import static com.composum.pages.commons.taglib.ElementTag.PAGES_EDIT_DATA_PATH;
 import static com.composum.pages.commons.taglib.ElementTag.PAGES_EDIT_DATA_TYPE;
+import static com.composum.pages.commons.util.TagCssClasses.cssOfType;
+import static com.composum.platform.models.annotations.InternationalizationStrategy.I18NFOLDER.I18N_PROPERTY_PATH;
 
 /**
- * the PageBodyTag creates the HTML body tag and the
- * EDIT elements around the page content
+ * the EditDialogTag creates the HTML code for an edit dialog of a component
  */
+@SuppressWarnings("JavaDoc")
 public class EditDialogTag extends AbstractWrappingTag {
 
     public static final String DIALOG_VAR = "dialog";
@@ -41,6 +42,14 @@ public class EditDialogTag extends AbstractWrappingTag {
     public static final String DEFAULT_SELECTOR = "edit";
 
     public static final String SLING_POST_SERVLET_ACTION = "Sling-POST";
+    public static final String CUSTOM_POST_SERVLET_ACTION = "Custom-POST";
+
+    public static final String ATTR_SUBMIT_LABEL = "submitLabel";
+    public static final String DEFAULT_SUBMIT_LABEL = "Submit";
+
+    public static final String ATTR_INITIAL_ALERT = "alert-";
+
+    public static final String PAGES_EDIT_SUCCESS_EVENT = PAGES_EDIT_DATA + "-success";
 
     private transient String dialogId;
     protected String tagId;
@@ -57,13 +66,26 @@ public class EditDialogTag extends AbstractWrappingTag {
     protected String primaryType;
     private transient String defaultPrimaryType;
 
+    private transient String editPath;
+
     protected String submit;
+    protected String submitLabel;
     private transient EditDialogAction action;
+
+    protected String successEvent;
+
+    protected String alertKey;
+    protected String alertText;
 
     @Override
     protected void clear() {
+        alertText = null;
+        alertKey = null;
+        successEvent = null;
         action = null;
         submit = null;
+        submitLabel = null;
+        editPath = null;
         defaultPrimaryType = null;
         primaryType = null;
         resourceType = null;
@@ -76,18 +98,45 @@ public class EditDialogTag extends AbstractWrappingTag {
         super.clear();
     }
 
+    /**
+     * Determines the resource to edit by the form of the dialog to create by this tag. This resource is mainly
+     * determined by a 'EDIT_RESOURCE_KEY' reuqest attribute which is declared by the edit servlet during the dialog
+     * load request; if the dialog is loaded by a dialog component URL the edit resource is expected as the URLs suffix.
+     *
+     * @param context the current request context
+     * @return the resource to edit
+     */
     @Override
     public Resource getModelResource(BeanContext context) {
         if (editResource == null) {
             editResource = request.getAttribute(EDIT_RESOURCE_KEY);
         }
+        if (editResource == null) {
+            String suffix = request.getRequestPathInfo().getSuffix();
+            if (StringUtils.isNotBlank(suffix) && !"/".equals(suffix)) {
+                editResource = request.getResourceResolver().getResource(suffix);
+            }
+        }
         return editResource instanceof Resource ? ((Resource) editResource) : super.getModelResource(context);
     }
 
+    public String getEditPath() {
+        if (editPath == null) {
+            Resource editResource = getModelResource(context);
+            editPath = editResource != resource ? editResource.getPath() : "";
+        }
+        return editPath;
+    }
+
+    /**
+     * @return the result of 'getModelResource()' as the resource to drive this tag
+     */
     @Override
     public Resource getResource() {
         return getModelResource(context);
     }
+
+    // tag attributes
 
     public String getTagId() {
         return tagId;
@@ -99,25 +148,26 @@ public class EditDialogTag extends AbstractWrappingTag {
 
     public String getTitle() {
         if (titleValue == null) {
-            titleValue = eval(title, "Edit Element");
+            titleValue = i18n(eval(title, "Edit Element"));
         }
-        return i18n(titleValue);
+        return titleValue;
     }
 
     public void setTitle(String text) {
         title = text;
     }
 
+    /**
+     * tag attribute - switch the language context hint on/off
+     *
+     * @param languageContext boolean; show the hint (default: true)
+     */
     public void setLanguageContext(boolean languageContext) {
         this.languageContext = languageContext;
     }
 
     public boolean isHasLanguageContext() {
         return languageContext;
-    }
-
-    public String getSubmitLabel() {
-        return dynamicAttributes.getAttribute("submitLabel", "Submit");
     }
 
     public String getCreateNameHint() {
@@ -135,6 +185,11 @@ public class EditDialogTag extends AbstractWrappingTag {
         return StringUtils.isNotBlank(hint) ? hint : "element";
     }
 
+    // create: 'sling:resourceType'
+
+    /**
+     * the resource type of a new element created by a dialog (hidden 'sling:resourceType' property value)
+     */
     public String getResourceType() {
         return StringUtils.isNotBlank(resourceType) ? resourceType : getDefaultResourceType();
     }
@@ -148,11 +203,19 @@ public class EditDialogTag extends AbstractWrappingTag {
         return requestedType != null ? requestedType : "";
     }
 
+    /**
+     * if this returns 'true' the hidden resource type property value must be inserted in the form
+     */
     public boolean isUseResourceType() {
         return (SELECTOR_CREATE.equalsIgnoreCase(getSelector()) || resourceType != null)
                 && !TYPE_NONE.equalsIgnoreCase(resourceType);
     }
 
+    // create: 'jcr:primaryType'
+
+    /**
+     * the primary type of a new element created by a dialog (hidden 'jcr:primaryType' property value)
+     */
     public String getPrimaryType() {
         return StringUtils.isNotBlank(primaryType) ? primaryType : getDefaultPrimaryType();
     }
@@ -169,11 +232,26 @@ public class EditDialogTag extends AbstractWrappingTag {
         return defaultPrimaryType;
     }
 
+    /**
+     * if this returns 'true' the hidden primary type property value must be inserted in the form
+     */
     public boolean isUsePrimaryType() {
         return (SELECTOR_CREATE.equalsIgnoreCase(getSelector()) || primaryType != null)
                 && !TYPE_NONE.equalsIgnoreCase(primaryType);
     }
 
+    // the dialog variation selector
+
+    /**
+     * returns the first not empty value of the cascade, as key to select the right dialog snippets:
+     * <ul>
+     * <li>the eval() result of the declared selector</li>
+     * <li>the selector string of the request</li>
+     * <li>the default 'edit' selector (main snippet)</li>
+     * </ul>
+     *
+     * @see /libs/composum/pages/stage/edit/dialog/...
+     */
     public String getSelector() {
         if (selectorValue == null) {
             selectorValue = eval(selector, "");
@@ -187,9 +265,87 @@ public class EditDialogTag extends AbstractWrappingTag {
         return selectorValue;
     }
 
+    // initial alert message
+
+    public boolean isAlertSet() {
+        return StringUtils.isNotBlank(alertKey);
+    }
+
+    public String getAlertKey() {
+        return isAlertSet() ? alertKey : "alert-warning alert-hidden";
+    }
+
+    public String getAlertText() {
+        return isAlertSet() ? i18n(alertText) : "";
+    }
+
+    /**
+     * filters dynamic attributes for special purposes:
+     * <ul>
+     * <li>initial 'alert' settings for initial hints</li>
+     * <li>'submit' button label for the 'generic' dialog</li>
+     * </ul>
+     */
+    @Override
+    protected boolean acceptDynamicAttribute(String key, Object value) throws JspException {
+        if (key.startsWith(ATTR_INITIAL_ALERT)) {
+            alertKey = key;
+            alertText = (String) value;
+            return false;
+        } else if (ATTR_SUBMIT_LABEL.equals(key)) {
+            submitLabel = (String) value;
+            return false;
+        } else {
+            return super.acceptDynamicAttribute(key, value);
+        }
+    }
+
+    /**
+     * tag attribute - defines the optional selector for the rendering of the dialog component;
+     * this selector string is mainly used to select the right dialog 'start' and 'end' snippets
+     *
+     * @param selector the selector key
+     * @see /libs/composum/pages/stage/edit/dialog/...
+     */
     public void setSelector(String selector) {
         this.selector = selector;
     }
+
+    // dialog submit action ...
+
+    /**
+     * @return the localized submit button label mainly for the generic dialog type (selector)
+     */
+    public String getSubmitLabel() {
+        return i18n(StringUtils.isNotBlank(submitLabel) ? submitLabel : DEFAULT_SUBMIT_LABEL);
+    }
+
+    public void setSubmit(String actionKey) {
+        submit = actionKey;
+        switch (actionKey) {
+            case "SlingPostServlet":
+            case SLING_POST_SERVLET_ACTION:
+                action = new SlingPostServletAction();
+                break;
+            default:
+                action = new CustomPostAction(actionKey);
+                break;
+        }
+    }
+
+    // post dialog event
+
+    public String getSuccessEvent() {
+        return successEvent;
+    }
+
+    public void setSuccessEvent(String eventKey) {
+        this.successEvent = eventKey;
+    }
+
+    //
+    //
+    //
 
     public String getPropertyPath(String name) {
         return getAction().getPropertyPath(name);
@@ -216,17 +372,18 @@ public class EditDialogTag extends AbstractWrappingTag {
         return dialogId;
     }
 
-    protected String getSnippetResourceType() {
-        return STAGE_COMPONENT_BASE + DIALOG_PATH;
-    }
-
     @Override
-    protected void collectCssClasses(java.util.List collection) {
+    protected void collectCssClasses(TagCssClasses.CssSet collection) {
         super.collectCssClasses(collection);
-        addCssClass(collection, getCssBase() + "_action_" + getAction().getName().toLowerCase());
-        addCssClass(collection, "dialog");
-        addCssClass(collection, "modal");
-        addCssClass(collection, "fade");
+        collection.add(getCssBase() + "_action_" + getAction().getName().toLowerCase());
+        String selector = getSelector();
+        if (StringUtils.isNotBlank(selector)) {
+            collection.add(getCssBase() + "_selector_" + selector);
+        }
+        collection.add(getCssBase() + "_action_" + getAction().getName().toLowerCase());
+        collection.add("dialog");
+        collection.add("modal");
+        collection.add("fade");
     }
 
     @Override
@@ -244,6 +401,15 @@ public class EditDialogTag extends AbstractWrappingTag {
             attributeSet.put(PAGES_EDIT_DATA_PATH, resourceToEdit.getPath());
             attributeSet.put(PAGES_EDIT_DATA_TYPE, getResourceType());
         }
+        if (StringUtils.isNotBlank(value = getSuccessEvent())) {
+            attributeSet.put(PAGES_EDIT_SUCCESS_EVENT, value);
+        }
+    }
+
+    // tag rendering
+
+    protected String getSnippetResourceType() {
+        return STAGE_COMPONENT_BASE + DIALOG_PATH;
     }
 
     @Override
@@ -263,12 +429,12 @@ public class EditDialogTag extends AbstractWrappingTag {
     }
 
     @Override
-    protected void renderTagStart() throws JspException, IOException {
+    protected void renderTagStart() throws IOException {
         includeSnippet(getSnippetResourceType(), getSelector() + "-dialog-start");
     }
 
     @Override
-    protected void renderTagEnd() throws JspException, IOException {
+    protected void renderTagEnd() throws IOException {
         includeSnippet(getSnippetResourceType(), getSelector() + "-dialog-end");
     }
 
@@ -276,14 +442,7 @@ public class EditDialogTag extends AbstractWrappingTag {
     protected void finishTagEnd() {
     }
 
-    public void setSubmit(String actionKey) {
-        submit = actionKey;
-        switch (actionKey) {
-            case "SlingPostServlet":
-            default:
-                action = new SlingPostServletAction();
-        }
-    }
+    // dialog submit action ...
 
     public EditDialogAction getDefaultAction() {
         return new SlingPostServletAction();
@@ -325,6 +484,35 @@ public class EditDialogTag extends AbstractWrappingTag {
                 }
             }
             return url;
+        }
+
+        public String getMethod() {
+            return "POST";
+        }
+
+        public String getEncType() {
+            return "multipart/form-data";
+        }
+
+        public String getPropertyPath(String name) {
+            return getI18nPath(name);
+        }
+    }
+
+    public class CustomPostAction implements EditDialogAction {
+
+        protected final String uri;
+
+        public CustomPostAction(String uri) {
+            this.uri = uri;
+        }
+
+        public String getName() {
+            return CUSTOM_POST_SERVLET_ACTION;
+        }
+
+        public String getUrl() {
+            return request.getContextPath() + eval(uri, "/");
         }
 
         public String getMethod() {

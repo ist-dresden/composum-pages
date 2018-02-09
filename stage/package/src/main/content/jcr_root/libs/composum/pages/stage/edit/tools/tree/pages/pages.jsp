@@ -24,18 +24,19 @@
                                title="Shoe all components">Components</a></li>
                     </ul>
                 </div>
-                <!--
+                <%--
                 <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
                     <button type="button"
                             class="fa fa-search ${treeCssBase}_search composum-pages-tools_button btn btn-default"
                             title="Search a page"><span
                             class="composum-pages-tools_button-label">Search</span></button>
                 </div>
-                -->
+                --%>
             </div>
         </div>
     </c:if>
-    <div class="composum-pages-tools_panel">
+    <%-- the '.tree-panel' around the tree is important for the 'auto-scroll to selected node' tree feature --%>
+    <div class="composum-pages-tools_panel tree-panel">
         <div class="composum-pages-tools_tree" data-selected="${tree.pagePath}">
         </div>
     </div>
@@ -44,7 +45,5 @@
         </input>
         <div class="composum-pages-tools_search-result">
         </div>
-    </div>
-    <div class="${treeCssBase}_site-context">
     </div>
 </cpp:element>

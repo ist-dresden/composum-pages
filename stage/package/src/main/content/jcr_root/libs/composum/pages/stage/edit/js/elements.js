@@ -3,21 +3,10 @@
     window.composum.pages = window.composum.pages || {};
     window.composum.pages.elements = window.composum.pages.elements || {};
 
-    (function (elements, core) {
+    (function (elements, core) { // strong dependency to: 'invoke.js'
         'use strict';
 
         elements.const = _.extend(elements.const || {}, {
-            data: { // the data attribute names of a component
-                name: 'pages-edit-name',
-                path: 'pages-edit-path',
-                type: 'pages-edit-type'
-            },
-            class: { // general edit UI CSS classes
-                editBody: 'composum-pages-EDIT_body',
-                component: 'composum-pages-component',
-                container: 'composum-pages-container',
-                element: 'composum-pages-element'
-            },
             handle: { // selection handle CSS classes
                 handles: 'composum-pages-stage-edit-handles',
                 pointer: 'composum-pages-component-handle_pointer',
@@ -44,15 +33,6 @@
                 url: {
                     targets: '/bin/cpm/pages/edit.targetContainers.json'
                 }
-            },
-            event: { // event handling rules and keys (inter frame communication)
-                messagePattern: new RegExp('^([^\\{\\[]+)([\\{\\[].*[\\}\\]])$'),
-                pageContainerRefs: 'page:containerRefs',
-                componentSelect: 'component:select',
-                componentSelected: 'component:selected',
-                insertComponent: 'component:insert',
-                moveComponent: 'component:move',
-                openDialog: 'doalog:open'
             },
             log: { // logging switches (for debugging only)
                 operation: true,
@@ -955,15 +935,6 @@
         });
 
         elements.pageBody = core.getView('body.' + elements.const.class.editBody, elements.PageBody);
-
-        elements.openEditDialog = function () {
-            parent.postMessage(elements.const.event.openDialog
-                + JSON.stringify({
-                    type: type,
-                    target: {path: target.path, type: target.type},
-                    before: before ? before.path : null
-                }), '*');
-        };
 
     })(window.composum.pages.elements, window.core);
 })(window);

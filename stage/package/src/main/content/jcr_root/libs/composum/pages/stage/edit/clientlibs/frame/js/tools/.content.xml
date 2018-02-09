@@ -2,12 +2,9 @@
 <jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
         jcr:primaryType="sling:OrderedFolder"
         embed="[
-            composum/pages/stage/edit/site/releases/deleterelease/deleterelease.js,
-            composum/pages/stage/edit/tools/site/context/context.js,
-            composum/pages/stage/edit/site/finishedobjects/createrelease/createrelease.js,
-            composum/pages/stage/edit/tools/site/unreleased/unreleased.js,
-            composum/pages/stage/edit/tools/site/unversioned/unversioned.js,
-            composum/pages/stage/edit/tools/site/site.js,
+            composum/pages/stage/edit/tools/site/releases/js/releases.js,
+            composum/pages/stage/edit/tools/site/finished/js/finished.js,
+            composum/pages/stage/edit/tools/site/modified/js/modified.js,
             composum/pages/stage/edit/tools/page/versions/versions.js,
             composum/pages/stage/edit/tools/page/versions/versionView.js,
             composum/pages/stage/edit/tools/dev/component/component.js

@@ -5,4 +5,4 @@
 --%><cpp:defineObjects/>
 <meta name="viewport" content="width=device-width, minimum-scale=1, maximum-scale=1, user-scalable=no"/>
 <meta name="format-detection" content="telephone=no">
-<cpn:clientlib type="css" path="composum/pages/stage/edit/clientlibs/site"/>
+<cpn:clientlib type="css" category="composum.pages.edit.site"/>

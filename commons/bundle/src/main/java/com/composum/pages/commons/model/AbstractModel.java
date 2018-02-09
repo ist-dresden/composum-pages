@@ -7,6 +7,8 @@ import com.composum.pages.commons.request.DisplayMode;
 import com.composum.pages.commons.request.RequestLocale;
 import com.composum.pages.commons.service.PageManager;
 import com.composum.pages.commons.service.SiteManager;
+import com.composum.pages.commons.service.VersionsService;
+import com.composum.pages.commons.util.TagCssClasses;
 import com.composum.pages.commons.util.ValueHashMap;
 import com.composum.platform.models.annotations.PropertyDefaults;
 import com.composum.sling.core.BeanContext;
@@ -32,9 +34,14 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import static com.composum.pages.commons.taglib.DefineObjectsTag.CURRENT_PAGE;
+import static com.composum.platform.models.annotations.InternationalizationStrategy.I18NFOLDER;
 import static com.composum.sling.platform.security.PlatformAccessFilter.ACCESS_MODE_KEY;
 
 /**
@@ -58,9 +65,6 @@ public abstract class AbstractModel implements SlingBean, Model {
     public static final ResourceFilter CSS_BASE_TYPE_RESTRICTION =
             new ResourceFilter.ResourceTypeFilter(new StringFilter.BlackList("^(nt|sling):.*$"));
 
-    /** the subpath to store I18N translations of the element properties */
-    public static final String I18N_PROPERTY_PATH = "i18n/";
-
     /** the list paths to use as I18N access path if I18N should be ignored */
     public static final List<String> IGNORE_I18N;
 
@@ -75,6 +79,7 @@ public abstract class AbstractModel implements SlingBean, Model {
     protected BeanContext context;
     protected transient SiteManager siteManager;
     protected transient PageManager pageManager;
+    private transient VersionsService versionsService;
 
     /** the resource an related properties represented by this model (initialized) */
     protected Resource resource;
@@ -226,7 +231,7 @@ public abstract class AbstractModel implements SlingBean, Model {
     }
 
     /**
-     * This is used by the 'component' tag to determins the CSS class base name for the component.
+     * This is used by the 'component' tag to determine the CSS class base name for the component.
      */
     public String getCssBase() {
         if (cssBase == null) {
@@ -240,7 +245,7 @@ public abstract class AbstractModel implements SlingBean, Model {
      */
     protected String buildCssBase() {
         String type = getCssBaseType();
-        return StringUtils.isNotBlank(type) ? cssOfType(type) : null;
+        return StringUtils.isNotBlank(type) ? TagCssClasses.cssOfType(type) : null;
     }
 
     /**
@@ -248,26 +253,6 @@ public abstract class AbstractModel implements SlingBean, Model {
      */
     protected String getCssBaseType() {
         return CSS_BASE_TYPE_RESTRICTION.accept(resource) ? resource.getResourceType() : null;
-    }
-
-    /**
-     * Transforms a resource type into a CSS class name; replaces all '/' by '-'.
-     */
-    public static String cssOfType(String type) {
-        if (StringUtils.isNotBlank(type)) {
-            type = type.replaceAll("^/((apps|libs)/)?", "");
-            type = type.replace('/', '-').replace(':', '-');
-        }
-        return type;
-    }
-
-    /**
-     * Collects a CSS class if not 'blank' and not always present in the collection.
-     */
-    public static void addCssClass(List<String> collection, String cssClass) {
-        if (StringUtils.isNotBlank(cssClass) && !collection.contains(cssClass)) {
-            collection.add(cssClass);
-        }
     }
 
     //
@@ -422,26 +407,8 @@ public abstract class AbstractModel implements SlingBean, Model {
 
     protected List<String> getI18nPaths() {
         if (i18nPaths == null) {
-            i18nPaths = getI18nPaths(getLocale());
+            i18nPaths = I18NFOLDER.getI18nPaths(getLocale());
         }
-        return i18nPaths;
-    }
-
-    public static List<String> getI18nPaths(Locale locale) {
-        List<String> i18nPaths = new ArrayList<>();
-        if (locale != null) {
-            String variant = locale.getVariant();
-            String country = locale.getCountry();
-            String language = locale.getLanguage();
-            if (StringUtils.isNotBlank(variant)) {
-                i18nPaths.add(I18N_PROPERTY_PATH + language + "_" + country + "_" + variant);
-            }
-            if (StringUtils.isNotBlank(country)) {
-                i18nPaths.add(I18N_PROPERTY_PATH + language + "_" + country);
-            }
-            i18nPaths.add(I18N_PROPERTY_PATH + language);
-        }
-        i18nPaths.add(".");
         return i18nPaths;
     }
 
@@ -490,7 +457,6 @@ public abstract class AbstractModel implements SlingBean, Model {
 
     /**
      * the generic map for direct use in templates
-
      */
     public Map<String, Object> getProperties() {
         if (propertiesMap == null) {
@@ -644,5 +610,12 @@ public abstract class AbstractModel implements SlingBean, Model {
             siteManager = context.getService(SiteManager.class);
         }
         return siteManager;
+    }
+
+    public VersionsService getVersionsService() {
+        if (versionsService == null) {
+            versionsService = context.getService(VersionsService.class);
+        }
+        return versionsService;
     }
 }

@@ -4,5 +4,6 @@
 --%><%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %><%--
 --%><cpp:defineFrameObjects/>
 <cpp:model var="element" type="com.composum.pages.stage.model.edit.FrameElement">
-    <cpp:include path="${element.elementPath}" resourceType="${element.elementTypePath}" subtype="edit/tile"/>
+    <cpp:include path="${element.elementPath}" resourceType="${element.elementTypePath}"
+                 subtype="edit/tile" replaceSelectors="context"/>
 </cpp:model>

@@ -42,7 +42,7 @@ public class Component extends AbstractModel {
         public EditDialog() {
             super();
             Resource subtypeResource = ResourceTypeUtil.getSubtype(Component.this.resolver,
-                    null, Component.this.getPath(), ResourceTypeUtil.EDIT_DIALOG_PATH);
+                    null, Component.this.getPath(), ResourceTypeUtil.EDIT_DIALOG_PATH, null);
             // a component mustn't have a dialog implementation...
             initialize(Component.this.context, subtypeResource != null
                     ? subtypeResource
@@ -84,7 +84,7 @@ public class Component extends AbstractModel {
         public EditTile() {
             super();
             Resource subtypeResource = ResourceTypeUtil.getSubtype(Component.this.resolver,
-                    null, Component.this.getPath(), ResourceTypeUtil.EDIT_TILE_PATH);
+                    null, Component.this.getPath(), ResourceTypeUtil.EDIT_TILE_PATH, null);
             initialize(Component.this.context, subtypeResource);
         }
     }

@@ -5,6 +5,7 @@ import com.composum.pages.commons.model.Element;
 import com.composum.pages.commons.model.Page;
 import com.composum.pages.commons.model.Site;
 import com.composum.sling.core.util.ResourceUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 
@@ -50,8 +51,8 @@ public class PagesConstants {
     public static final String SUBNODE_STYLE = "style/";
     public static final String PROP_VIEW_CATEGORY = SUBNODE_STYLE + "category.view";
     public static final String PROP_EDIT_CATEGORY = SUBNODE_STYLE + "category.edit";
-    public static final String DEFAULT_VIEW_CATEGORY = "composum.pages.content.view";
-    public static final String DEFAULT_EDIT_CATEGORY = "composum.pages.content.edit";
+    public static final String DEFAULT_VIEW_CATEGORY = "composum.pages.components.view";
+    public static final String DEFAULT_EDIT_CATEGORY = "composum.pages.components.edit";
 
     public static final String SEARCH_PROPS = "search/";
     /** Property of a page that, if true, hides the page in search results. */
@@ -63,6 +64,11 @@ public class PagesConstants {
     public static final String NODE_TYPE_SITE_CONFIGURATION = CPP_PREFIX + "SiteConfiguration";
     public static final String PROP_HOMEPAGE = "homepage";
     public static final String DEFAULT_HOMEPAGE_PATH = "home";
+
+    /** Widget */
+
+    public static final String NODE_TYPE_WIDGET = CPP_PREFIX + "Widget";
+    public static final String PROP_WIDGET_TYPE = "widgetType";
 
     /** general properties */
 
@@ -77,14 +83,16 @@ public class PagesConstants {
         site, page, container, element, something;
 
         public static ComponentType typeOf(String string) {
-            if (string.startsWith(CPP_PREFIX)) {
-                string = string.substring(4);
-            }
-            ComponentType type;
-            try {
-                type = valueOf(ComponentType.class, string.toLowerCase());
-            } catch (IllegalArgumentException ex) {
-                type = something;
+            ComponentType type = something;
+            if (StringUtils.isNotBlank(string)) {
+                if (string.startsWith(CPP_PREFIX)) {
+                    string = string.substring(4);
+                }
+                try {
+                    type = valueOf(ComponentType.class, string.toLowerCase());
+                } catch (IllegalArgumentException ex) {
+                    // ok, something
+                }
             }
             return type;
         }

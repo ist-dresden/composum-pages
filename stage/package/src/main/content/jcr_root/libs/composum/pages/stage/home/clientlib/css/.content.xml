@@ -4,8 +4,7 @@
         depends="[category:composum.pages.widgets,
                   fonts/awesome/4.7.0/css/font-awesome.css,
                   fonts/roboto/2014/roboto.css]"
-        embed="[composum/pages/stage/edit/css/dialogs.css,
-                composum/pages/stage/edit/site/clientlib]">
+        embed="[composum/pages/stage/edit/css/dialogs.css]">
     <site.css/>
     <home.css/>
 </jcr:root>

@@ -3,11 +3,14 @@ package com.composum.pages.commons.servlet;
 import com.composum.pages.commons.PagesConfiguration;
 import com.composum.pages.commons.model.Page;
 import com.composum.pages.commons.model.ResourceReference;
+import com.composum.pages.commons.model.Site;
 import com.composum.pages.commons.service.EditService;
 import com.composum.pages.commons.service.PageManager;
+import com.composum.pages.commons.service.SiteManager;
 import com.composum.pages.commons.service.VersionsService;
 import com.composum.pages.commons.util.RequestUtil;
 import com.composum.pages.commons.util.ResourceTypeUtil;
+import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.ResourceHandle;
 import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.mapping.MappingRules;
@@ -26,8 +29,11 @@ import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.request.RequestDispatcherOptions;
 import org.apache.sling.api.request.RequestParameter;
+import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
+import org.osgi.framework.BundleContext;
+import org.osgi.service.component.annotations.Activate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,8 +47,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
-import static com.composum.pages.commons.util.ResourceTypeUtil.DELETE_DIALOG_PATH;
 import static com.composum.pages.commons.util.ResourceTypeUtil.EDIT_DIALOG_PATH;
 import static com.composum.pages.commons.util.ResourceTypeUtil.EDIT_TILE_PATH;
 import static com.composum.pages.commons.util.ResourceTypeUtil.EDIT_TOOLBAR_PATH;
@@ -74,16 +80,20 @@ public class EditServlet extends NodeTreeServlet {
     public enum Operation {
         pageData,
         siteTree, pageTree, developTree,
-        editDialog, newDialog, deleteDialog,
+        editDialog, newDialog,
         editTile, editToolbar, treeActions,
         pageComponents, targetContainers,
         insertComponent, moveComponent,
+        createSite, deleteSite,
         contextTools,
         versions, restoreVersion, checkpoint, setVersionLabel
     }
 
     @Reference
     protected EditService editService;
+
+    @Reference
+    protected SiteManager siteManager;
 
     @Reference
     protected VersionsService versionsService;
@@ -93,6 +103,13 @@ public class EditServlet extends NodeTreeServlet {
 
     @Reference
     protected PagesConfiguration pagesConfiguration;
+
+    protected BundleContext bundleContext;
+
+    @Activate
+    private void activate(final BundleContext bundleContext) {
+        this.bundleContext = bundleContext;
+    }
 
     protected PagesEditOperationSet operations = new PagesEditOperationSet();
 
@@ -125,8 +142,6 @@ public class EditServlet extends NodeTreeServlet {
         operations.setOperation(ServletOperationSet.Method.GET, Extension.html,
                 Operation.newDialog, new GetNewDialog());
         operations.setOperation(ServletOperationSet.Method.GET, Extension.html,
-                Operation.deleteDialog, new GetDeleteDialog());
-        operations.setOperation(ServletOperationSet.Method.GET, Extension.html,
                 Operation.editTile, new GetEditTile());
         operations.setOperation(ServletOperationSet.Method.GET, Extension.html,
                 Operation.editToolbar, new GetEditToolbar());
@@ -148,6 +163,10 @@ public class EditServlet extends NodeTreeServlet {
                 Operation.insertComponent, new InsertComponent());
         operations.setOperation(ServletOperationSet.Method.POST, Extension.json,
                 Operation.moveComponent, new MoveComponent());
+        operations.setOperation(ServletOperationSet.Method.POST, Extension.json,
+                Operation.createSite, new CreateSite());
+        operations.setOperation(ServletOperationSet.Method.POST, Extension.json,
+                Operation.deleteSite, new DeleteSite());
 
         // PUT
         operations.setOperation(ServletOperationSet.Method.PUT, Extension.html,
@@ -171,7 +190,8 @@ public class EditServlet extends NodeTreeServlet {
     private static class CheckpointOperation implements ServletOperation {
 
         @Override
-        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response, ResourceHandle resource) throws RepositoryException, IOException, ServletException {
+        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response, ResourceHandle resource)
+                throws IOException {
             try {
                 final ResourceResolver resolver = request.getResourceResolver();
                 final JackrabbitSession session = (JackrabbitSession) resolver.adaptTo(Session.class);
@@ -200,22 +220,23 @@ public class EditServlet extends NodeTreeServlet {
         @Override
         public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
                          ResourceHandle resource)
-                throws ServletException, IOException {
+                throws IOException {
 
-            ResourceHandle pageResource = null;
+            BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
+            Page page = null;
             if (resource.isValid()) {
-                pageResource = ResourceHandle.use(pageManager.getContainingPageResource(resource));
+                page = pageManager.createBean(context, pageManager.getContainingPageResource(resource));
             }
 
             if (LOG.isDebugEnabled()) {
-                LOG.debug("GetPageData(" + resource + "," + pageResource + ")...");
+                LOG.debug("GetPageData(" + resource + "," + page + ")...");
             }
 
-            if (pageResource != null && pageResource.isValid()) {
+            if (page != null && page.isValid()) {
 
                 response.setStatus(HttpServletResponse.SC_OK);
                 JsonWriter jsonWriter = ResponseUtil.getJsonWriter(response);
-                writeJsonPage(jsonWriter, pagesConfiguration.getPageNodeFilter(), pageResource);
+                writeJsonPage(jsonWriter, pagesConfiguration.getPageNodeFilter(), page);
 
             } else {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -228,15 +249,19 @@ public class EditServlet extends NodeTreeServlet {
     //
 
     public void writeJsonPage(JsonWriter writer, ResourceFilter filter,
-                              ResourceHandle resource)
+                              Page page)
             throws IOException {
         writer.beginObject();
         TreeNodeStrategy nodeStrategy = new DefaultTreeNodeStrategy(filter);
-        writeJsonNodeData(writer, nodeStrategy, resource, LabelType.name, false);
-        Resource contentResource = resource.getChild("jcr:content");
-        if (contentResource != null) {
+        writeJsonNodeData(writer, nodeStrategy, ResourceHandle.use(page.getResource()), LabelType.name, false);
+        if (page.isValid()) {
+            Resource contentResource = page.getContent().getResource();
             writer.name("jcrContent");
             writeJsonNode(writer, nodeStrategy, ResourceHandle.use(contentResource), LabelType.name, false);
+            writer.name("meta").beginObject();
+            Site site = page.getSite();
+            writer.name("site").value(site != null ? site.getPath() : null);
+            writer.endObject();
         }
         writer.endObject();
     }
@@ -278,7 +303,7 @@ public class EditServlet extends NodeTreeServlet {
      * sort children of orderable nodes
      */
     @Override
-    protected java.util.List prepareTreeItems(ResourceHandle resource, java.util.List items) {
+    protected List<Resource> prepareTreeItems(ResourceHandle resource, List<Resource> items) {
         if (!pagesConfiguration.getOrderableNodesFilter().accept(resource)) {
             Collections.sort(items, new Comparator<Resource>() {
                 @Override
@@ -303,16 +328,20 @@ public class EditServlet extends NodeTreeServlet {
             ResourceResolver resolver = request.getResourceResolver();
 
             Resource contentResource = resource;
-            if (Page.isPage(contentResource)) {
+            if (Page.isPage(contentResource) || Site.isSite(contentResource)) {
                 contentResource = contentResource.getChild("jcr:content");
                 if (contentResource == null) {
                     contentResource = resource;
                 }
             }
 
+            String selectors = RequestUtil.getSelectorString(request, null, 1);
+            if (StringUtils.isBlank(selectors)) {
+                selectors = getDefaultSelectors();
+            }
             String paramType = request.getParameter(PARAM_TYPE);
             Resource editResource =
-                    ResourceTypeUtil.getSubtype(resolver, contentResource, paramType, getResourcePath());
+                    ResourceTypeUtil.getSubtype(resolver, contentResource, paramType, getResourcePath(), selectors);
 
             if (LOG.isDebugEnabled()) {
                 LOG.debug("GetEditResource(" + contentResource.getPath() + "," + editResource.getPath() + ")...");
@@ -321,12 +350,7 @@ public class EditServlet extends NodeTreeServlet {
             if (editResource != null) {
                 RequestDispatcherOptions options = new RequestDispatcherOptions();
                 options.setForceResourceType(editResource.getPath());
-                String selectors = RequestUtil.getSelectorString(request, null, 1);
-                if (StringUtils.isBlank(selectors)) {
-                    selectors = getDefaultSelectors();
-                }
                 options.setReplaceSelectors(selectors);
-
                 forward(request, response, contentResource, paramType, options);
 
             } else {
@@ -354,14 +378,6 @@ public class EditServlet extends NodeTreeServlet {
         @Override
         protected String getResourcePath() {
             return NEW_DIALOG_PATH;
-        }
-    }
-
-    protected class GetDeleteDialog extends GetEditDialog {
-
-        @Override
-        protected String getResourcePath() {
-            return DELETE_DIALOG_PATH;
         }
     }
 
@@ -438,7 +454,7 @@ public class EditServlet extends NodeTreeServlet {
         @Override
         public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
                          ResourceHandle resource)
-                throws ServletException, IOException {
+                throws IOException {
             final ResourceResolver resolver = request.getResourceResolver();
 
             ResourceReference.List targetList =
@@ -466,7 +482,7 @@ public class EditServlet extends NodeTreeServlet {
         @Override
         public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
                          ResourceHandle resource)
-                throws ServletException, IOException {
+                throws IOException {
 
             String resourceType = request.getParameter("resourceType");
             String targetPath = request.getParameter("targetPath");
@@ -498,7 +514,7 @@ public class EditServlet extends NodeTreeServlet {
         @Override
         public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
                          ResourceHandle resource)
-                throws ServletException, IOException {
+                throws IOException {
 
             String targetPath = request.getParameter("targetPath");
             String targetType = request.getParameter("targetType");
@@ -523,6 +539,81 @@ public class EditServlet extends NodeTreeServlet {
                 jsonWriter.endObject();
 
             } catch (RepositoryException ex) {
+                LOG.error(ex.getMessage(), ex);
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ex.getMessage());
+            }
+        }
+    }
+
+    //
+    // Site Management
+    //
+
+    protected class CreateSite implements ServletOperation {
+
+        @Override
+        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
+                         ResourceHandle resource)
+                throws IOException {
+
+            BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
+            try {
+                Resource template = null;
+                String value;
+                if (StringUtils.isNotBlank(value = request.getParameter("template"))) {
+                    ResourceResolver resolver = context.getResolver();
+                    template = resolver.getResource(value);
+                }
+                String tenant = request.getParameter("tenant");
+                String name = request.getParameter("name");
+                String title = request.getParameter("title");
+                String description = request.getParameter("description");
+                Site site = siteManager.createSite(context, tenant, name, title, description, template, true);
+
+                JsonWriter jsonWriter = ResponseUtil.getJsonWriter(response);
+                response.setStatus(HttpServletResponse.SC_OK);
+                jsonWriter.beginObject();
+                jsonWriter.name("name").value(site.getName());
+                jsonWriter.name("path").value(site.getPath());
+                jsonWriter.name("url").value(site.getUrl());
+                jsonWriter.name("editUrl").value(site.getEditUrl());
+                jsonWriter.endObject();
+
+            } catch (RepositoryException | PersistenceException ex) {
+                LOG.error(ex.getMessage(), ex);
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ex.getMessage());
+            }
+        }
+    }
+
+    protected class DeleteSite implements ServletOperation {
+
+        @Override
+        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
+                         ResourceHandle resource)
+                throws IOException {
+
+            try {
+                if (Site.isSiteConfiguration(resource)) {
+                    resource = resource.getParent();
+                }
+                if (Site.isSite(resource)) {
+
+                    BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
+                    siteManager.deleteSite(context, resource, true);
+
+                    JsonWriter jsonWriter = ResponseUtil.getJsonWriter(response);
+                    response.setStatus(HttpServletResponse.SC_OK);
+                    jsonWriter.beginObject();
+                    jsonWriter.name("name").value(resource.getName());
+                    jsonWriter.name("path").value(resource.getPath());
+                    jsonWriter.endObject();
+
+                } else {
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "resource is not a site");
+                }
+
+            } catch (RepositoryException | PersistenceException ex) {
                 LOG.error(ex.getMessage(), ex);
                 response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ex.getMessage());
             }
@@ -605,7 +696,7 @@ public class EditServlet extends NodeTreeServlet {
         @Override
         public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
                          ResourceHandle resource)
-                throws ServletException, IOException {
+                throws IOException {
 
             final Gson gson = new Gson();
             final VersionPutParameters params = gson.fromJson(
@@ -617,7 +708,8 @@ public class EditServlet extends NodeTreeServlet {
             }
 
             try {
-                versionsService.restoreVersion(request.getResourceResolver(), params.path, params.version);
+                BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
+                versionsService.restoreVersion(context, params.path, params.version);
                 ResponseUtil.writeEmptyArray(response);
 
             } catch (RepositoryException ex) {
@@ -632,7 +724,7 @@ public class EditServlet extends NodeTreeServlet {
         @Override
         public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
                          ResourceHandle resource)
-                throws ServletException, IOException {
+                throws IOException {
 
             final Gson gson = new Gson();
             final VersionPutParameters params = gson.fromJson(
@@ -644,8 +736,8 @@ public class EditServlet extends NodeTreeServlet {
             }
 
             try {
-                versionsService.setVersionLabel(request.getResourceResolver(),
-                        params.path, params.version, params.label);
+                BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
+                versionsService.setVersionLabel(context, params.path, params.version, params.label);
                 ResponseUtil.writeEmptyArray(response);
 
             } catch (RepositoryException ex) {

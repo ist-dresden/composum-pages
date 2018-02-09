@@ -5,12 +5,11 @@ import com.composum.pages.commons.model.Model;
 import com.composum.pages.commons.model.Page;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.util.ResourceUtil;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Service;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
+import org.osgi.framework.Constants;
 
 import javax.jcr.RepositoryException;
 import java.util.HashMap;
@@ -18,8 +17,11 @@ import java.util.Map;
 
 import static com.composum.pages.commons.model.Page.isPage;
 
-@Component(immediate = true)
-@Service
+@org.osgi.service.component.annotations.Component(
+        property = {
+                Constants.SERVICE_DESCRIPTION + "=Composum Pages Page Manager"
+        }
+)
 public class PagesPageManager extends ResourceManager<Page> implements PageManager {
 
     public static final Map<String, Object> PAGE_PROPERTIES;
@@ -63,31 +65,35 @@ public class PagesPageManager extends ResourceManager<Page> implements PageManag
         return null;
     }
 
-    public Page createPage(BeanContext context, Resource parent, String pageName, String pageType)
+    public Page createPage(BeanContext context, Resource parent, String pageName, String pageType, boolean commit)
             throws RepositoryException, PersistenceException {
 
         Resource pageResource;
-        try (ResourceResolver resolver = context.getResolver()) {
-            checkExistence(resolver, parent, pageName);
+        ResourceResolver resolver = context.getResolver();
+        checkExistence(resolver, parent, pageName);
 
-            pageResource = resolver.create(parent, pageName, PAGE_PROPERTIES);
-            Map<String, Object> contentProperties = new HashMap<>(PAGE_CONTENT_PROPERTIES);
-            contentProperties.put(ResourceUtil.PROP_RESOURCE_TYPE, pageType);
-            resolver.create(pageResource, JcrConstants.JCR_CONTENT, contentProperties);
+        pageResource = resolver.create(parent, pageName, PAGE_PROPERTIES);
+        Map<String, Object> contentProperties = new HashMap<>(PAGE_CONTENT_PROPERTIES);
+        contentProperties.put(ResourceUtil.PROP_RESOURCE_TYPE, pageType);
+        resolver.create(pageResource, JcrConstants.JCR_CONTENT, contentProperties);
+
+        if (commit) {
             resolver.commit();
         }
 
         return instanceCreated(context, pageResource);
     }
 
-    public Page createPage(BeanContext context, Resource parent, String pageName, Resource pageTemplate)
+    public Page createPage(BeanContext context, Resource parent, String pageName, Resource pageTemplate, boolean commit)
             throws RepositoryException, PersistenceException {
 
         Resource pageResource;
-        try (ResourceResolver resolver = context.getResolver()) {
-            checkExistence(resolver, parent, pageName);
+        ResourceResolver resolver = context.getResolver();
+        checkExistence(resolver, parent, pageName);
 
-            pageResource = resolver.copy(pageTemplate.getPath(), parent.getPath() + "/" + pageName);
+        pageResource = resolver.copy(pageTemplate.getPath(), parent.getPath() + "/" + pageName);
+
+        if (commit) {
             resolver.commit();
         }
 

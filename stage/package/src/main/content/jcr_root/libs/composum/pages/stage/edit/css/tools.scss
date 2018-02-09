@@ -169,16 +169,30 @@
             padding-top: 7px;
         }
     }
+
+    .tabbed-widget {
+
+        &_content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 80px;
+        }
+    }
 }
 
 .composum-pages-component-tile {
     padding: $tools-pane-padding;
     @include default-font;
 
-    &_icon,
     &_title,
-    &_name {
-        line-height: $default-font-size + 6px;
+    &_name,
+    &_path,
+    &_type,
+    &_description {
+        white-space: nowrap;
+        overflow: auto;
     }
 
     &_icon,
@@ -205,6 +219,8 @@
     }
 
     &_icon {
+        vertical-align: top;
+        margin-top: 3px;
         width: 30px;
     }
 }
@@ -235,7 +251,7 @@
 
         & {
             top: 45px;
-            bottom: 40px;
+            bottom: 0;
         }
 
         &_search-panel {
@@ -249,6 +265,12 @@
         &_left-actions {
             float: left;
             margin-left: - $edit-actions-spacing-h;
+
+            label {
+                margin-top: 6px;
+                margin-left: 9px;
+                color: $tools-pane-tabs-tab-color;
+            }
         }
 
         &_right-actions {
@@ -269,7 +291,7 @@
             top: $tools-pane-padding;
             left: $tools-pane-padding;
             right: $tools-pane-padding;
-            bottom: $tools-pane-padding + 40px;
+            bottom: $tools-pane-padding;
             @include scrolldark;
         }
 
@@ -383,6 +405,78 @@
     .composum-pages-component-tile {
         margin: $tools-pane-padding 0;
     }
+
+    &-context {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 80px;
+        background-color: $tools-pane-tabs-background;
+
+        &_actions {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            z-index: 1;
+        }
+
+        .composum-pages-stage-site {
+
+            &_thumbnail {
+                position: absolute;
+                top: 4px;
+                left: 4px;
+                width: 96px;
+
+                &_placeholder {
+                    font-size: 48px;
+                }
+            }
+
+            &_tile {
+                min-height: 80px;
+
+                &_text {
+                    color: $tools-pane-foreground;
+                }
+
+                &_title, &_path {
+                    left: 108px;
+                    right: 4px;
+                    white-space: nowrap;
+                }
+
+                &_title {
+                    top: auto;
+                    bottom: 26px;
+                    font-size: $default-font-size;
+                }
+
+                &_status {
+                    left: 104px;
+                    top: 6px;
+
+                    .badge {
+                        margin: 0 4px;
+                        min-width: 31px;
+
+                        &.modified {
+                            background-color: $tools-pane-sec-selection-bg;
+                        }
+
+                        &.unreleased {
+                            background-color: $tools-pane-main-selection-bg;
+                        }
+                    }
+                }
+
+                &_path {
+                    font-size: $hint-font-size;
+                }
+            }
+        }
+    }
 }
 
 .composum-pages-stage-edit-sidebar-context {
@@ -395,17 +489,5 @@
         margin: 0;
         height: 80px;
         overflow: hidden;
-    }
-}
-
-.composum-pages-stage-edit-tools-tree-pages {
-
-    &_site-context {
-        position: absolute;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        height: 40px;
-        background-color: $tools-pane-tabs-background;
     }
 }

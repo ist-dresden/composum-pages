@@ -1,5 +1,6 @@
 package com.composum.pages.commons.taglib;
 
+import com.composum.pages.commons.util.TagCssClasses;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.request.RequestDispatcherOptions;
 import org.slf4j.Logger;
@@ -9,15 +10,11 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.jsp.JspException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
-import static com.composum.pages.commons.model.AbstractModel.addCssClass;
-import static com.composum.pages.commons.model.AbstractModel.cssOfType;
 import static com.composum.pages.commons.servlet.EditServlet.EDIT_RESOURCE_KEY;
+import static com.composum.pages.commons.util.TagCssClasses.cssOfType;
 
 /**
  * the base class for all content wrapping tags: prepare - start tag - end tag - finish
@@ -28,45 +25,38 @@ public abstract class AbstractWrappingTag extends ModelTag {
 
     public static final String TAG_ID = "id";
 
-    protected String cssSet;
-    protected String cssAdd;
-
     protected Object editResource;
 
-    private transient List<String> cssClassesList;
+    private transient TagCssClasses tagCssClasses;
     private transient String attributes;
 
     @Override
     protected void clear() {
         attributes = null;
-        cssClassesList = null;
+        tagCssClasses = null;
         editResource = null;
-        cssAdd = null;
-        cssSet = null;
         super.clear();
+    }
+
+    protected TagCssClasses getTagCssClasses() {
+        if (tagCssClasses == null) {
+            tagCssClasses = new TagCssClasses();
+        }
+        return tagCssClasses;
     }
 
     /**
      * a string with the complete set of CSS classes (prevents from the generation of the default classes)
      */
     public void setCssSet(String classes) {
-        cssSet = classes;
+        getTagCssClasses().setCssSet(classes);
     }
 
     /**
      * a string with additional css classes (optional)
      */
-    public String getCssAdd() {
-        return cssAdd;
-    }
-
     public void setCssAdd(String classes) {
-        cssAdd = classes;
-    }
-
-    @Deprecated
-    public String getCssClasses() {
-        return getCssAdd();
+        getTagCssClasses().setCssAdd(classes);
     }
 
     @Deprecated
@@ -75,39 +65,22 @@ public abstract class AbstractWrappingTag extends ModelTag {
     }
 
     /**
-     * transforms the 'cssAdd' atribute into a list of classes as base for the CSS class collection
-     */
-    protected List<String> getCssClassesList() {
-        if (cssClassesList == null) {
-            if (StringUtils.isNotBlank(cssSet)) {
-                cssClassesList = new ArrayList<>(Arrays.asList(cssSet.split(" +")));
-            } else {
-                cssClassesList = new ArrayList<>();
-            }
-        }
-        return cssClassesList;
-    }
-
-    /**
      * builds the complete CSS classes string with the given classes and all collected classes
      */
-    protected String buildCssClasses() {
-        List<String> cssClassList = getCssClassesList();
-        collectCssClasses(cssClassList);
-        return StringUtils.join(cssClassList, " ");
+    public String buildCssClasses() {
+        TagCssClasses.CssSet collection = getTagCssClasses().getCssClasses();
+        collectCssClasses(collection);
+        return getTagCssClasses().toString();
     }
 
     /**
      * collects the set of CSS classes (extension hook)
      * adds the 'cssBase' itself as CSS class and the transformed resource super type if available
      */
-    protected void collectCssClasses(List<String> collection) {
-        if (StringUtils.isBlank(cssSet)) {
-            addCssClass(collection, StringUtils.isNotBlank(cssBase) ? cssBase : buildCssBase());
-            addCssClass(collection, cssOfType(resource.getResourceSuperType()));
-        }
-        if (StringUtils.isNotBlank(cssAdd)) {
-            collection.addAll(Arrays.asList(cssAdd.split(" +")));
+    protected void collectCssClasses(TagCssClasses.CssSet collection) {
+        if (StringUtils.isBlank(getTagCssClasses().getCssSet())) {
+            collection.add(getCssBase());
+            collection.add(cssOfType(resource.getResourceSuperType()));
         }
     }
 
@@ -170,14 +143,18 @@ public abstract class AbstractWrappingTag extends ModelTag {
     public int doStartTag() throws JspException {
         super.doStartTag(); // necessary to initialize the tag for the following 'render test'
         if (renderTag()) {
+            /* FIXME remove?!
             if (request.getAttribute(EDIT_RESOURCE_KEY) == null) {
                 request.setAttribute(EDIT_RESOURCE_KEY, editResource = resource);
             }
-            if (StringUtils.isNotBlank(cssSet)) {
-                cssSet = eval(cssSet, cssSet);
+            */
+            TagCssClasses cssClasses = getTagCssClasses();
+            String value;
+            if (StringUtils.isNotBlank(value = cssClasses.getCssSet())) {
+                cssClasses.setCssSet(eval(value, value));
             }
-            if (StringUtils.isNotBlank(cssAdd)) {
-                cssAdd = eval(cssAdd, cssAdd);
+            if (StringUtils.isNotBlank(value = cssClasses.getCssAdd())) {
+                cssClasses.setCssAdd(eval(value, value));
             }
             prepareTagStart();
             try {
@@ -222,7 +199,7 @@ public abstract class AbstractWrappingTag extends ModelTag {
     // helpers
     //
 
-    protected boolean includeSnippet(String resourceType, String selector) throws JspException, IOException {
+    protected boolean includeSnippet(String resourceType, String selector) throws IOException {
         out.flush();
         if (StringUtils.isNotBlank(resourceType)) {
 

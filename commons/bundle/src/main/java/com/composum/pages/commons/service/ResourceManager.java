@@ -26,7 +26,7 @@ public abstract class ResourceManager<ModelType extends AbstractModel> {
     protected ModelType instanceCreated(BeanContext context, Resource resource) {
         ModelType bean = createBean(context, resource);
         if (LOG.isInfoEnabled()) {
-            LOG.info("new instance created '" + bean.getPath() + "'");
+            LOG.info("new {} created: '{}'", bean.getClass().getSimpleName(), bean.getPath());
         }
         return bean;
     }

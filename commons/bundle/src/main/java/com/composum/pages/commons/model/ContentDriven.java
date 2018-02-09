@@ -1,19 +1,24 @@
 package com.composum.pages.commons.model;
 
 import com.composum.sling.core.BeanContext;
+import com.composum.sling.core.util.LinkUtil;
 import com.composum.sling.core.util.ResourceUtil;
+import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
 
 import java.util.Locale;
 
 /**
  * the abstract base class for all resource with a 'jcr:content' child which contains the resource properties
+ *
  * @param <ContentType> the concrete model type of the content child
  */
 public abstract class ContentDriven<ContentType extends ContentModel> extends AbstractModel {
 
     protected Boolean valid;
     protected ContentType content;
+
+    private transient String editUrl;
 
     // initializer extensions
 
@@ -43,6 +48,21 @@ public abstract class ContentDriven<ContentType extends ContentModel> extends Ab
 
     protected String getCssBaseType() {
         return content.getCssBaseType();
+    }
+
+    // editing
+
+    /**
+     * Returns the URL to the edit frame (/bin/pages.html) to edit the content of this bean.
+     *
+     * @see LinkUtil#getUrl(SlingHttpServletRequest, String)
+     */
+    public String getEditUrl() {
+        if (editUrl == null) {
+            SlingHttpServletRequest request = context.getRequest();
+            editUrl = LinkUtil.getUrl(request, "/bin/pages.html" + getPath(), null, null);
+        }
+        return editUrl;
     }
 
     // get properties from model with fallback to the content child

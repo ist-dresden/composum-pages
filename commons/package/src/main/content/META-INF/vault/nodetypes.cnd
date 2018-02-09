@@ -27,3 +27,5 @@
   - componentType (string) < 'nt:unstructured', 'cpp:Element', 'cpp:Container', 'cpp:Page'
 
 [cpp:Theme] > sling:Folder
+
+[cpp:Widget] > sling:Resource, nt:unstructured

@@ -27,7 +27,10 @@
                 componentSelected: 'component:selected',
                 pathSelected: 'path:selected',
                 insertComponent: 'component:insert',
-                moveComponent: 'component:move'
+                moveComponent: 'component:move',
+                openEditDialog: 'dialog:edit',
+                triggerEvent: 'event:trigger',
+                alertMessage: 'dialog:alert'
             },
             url: {
                 get: {
@@ -104,8 +107,7 @@
         pages.authorize = function (retryThisFailedCall) {
             var currentUrl = new RegExp('https?://[^/]+/bin/pages.html(/[^?]*).*').exec(window.location.href);
             var pagesUrl = '/bin/pages.html' + (currentUrl ? currentUrl[1] : '/');
-            var loginUrl = "/libs/composum/platform/security/login.html?resource=" + encodeURIComponent(pagesUrl);
-            window.location.href = loginUrl;
+            return '/libs/composum/platform/security/login.html?resource=' + encodeURIComponent(pagesUrl);
         };
 
         pages.getPageData = function (path, callback) {
@@ -137,7 +139,7 @@
 
         pages.DialogHandler = Backbone.View.extend({
 
-            openEditDialog: function (url, viewType, name, path, type, onNotFound) {
+            openEditDialog: function (url, viewType, name, path, type, setupDialog, onNotFound) {
                 core.ajaxGet(url + (path ? path : ''), {
                         data: {
                             name: name ? name : '',
@@ -157,6 +159,9 @@
                             if (_.isFunction(dialog.afterLoad)) {
                                 dialog.afterLoad(name, path, type);
                             }
+                            if (_.isFunction(setupDialog)) {
+                                setupDialog(dialog);
+                            }
                             if (dialog.useDefault) {
                                 dialog.doSubmit(dialog.useDefault);
                             } else {
@@ -164,7 +169,7 @@
                             }
                         }
                     }, this), _.bind(function (xhr) {
-                        if (xhr.status == 404) {
+                        if (xhr.status === 404) {
                             if (_.isFunction(onNotFound)) {
                                 onNotFound(name, path, type);
                             }
@@ -261,6 +266,32 @@
                                 core.alert('error', 'Error', 'Error on moving component', xhr);
                             });
                         }
+                        break;
+                    case pages.const.event.openEditDialog:
+                        // opens an edit dialog to perform editing of the content of the path transmitted
+                        console.log('pages.event.openEditDialog(' + message[2] + ')');
+                        if (args.target) {
+                            var url = undefined;
+                            if (args.dialog) {
+                                url = args.dialog.url;
+                            }
+                            pages.dialogs.openEditDialog(args.target.name, args.target.path, args.target.type, url,
+                                function (dialog) {
+                                    if (args.values) {
+                                        dialog.applyData(args.values);
+                                    }
+                                });
+                        }
+                        break;
+                    case pages.const.event.triggerEvent:
+                        // triggers an event in the frame document context
+                        console.log('pages.event.triggerEvent(' + message[2] + ')');
+                        $(document).trigger(args.event, args.data);
+                        break;
+                    case pages.const.event.alertMessage:
+                        // displays an alert message by opening an alert dialog
+                        console.log('pages.event.alertMessage(' + message[2] + ')');
+                        core.alert(args.type, args.title, args.message, args.data);
                         break;
                 }
             }
