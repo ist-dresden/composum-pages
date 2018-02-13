@@ -11,6 +11,8 @@ import org.apache.sling.api.resource.Resource;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import static com.composum.pages.commons.servlet.EditServlet.EDIT_RESOURCE_KEY;
@@ -32,14 +34,22 @@ public class EditDialogTag extends AbstractWrappingTag {
     public static final String DIALOG_VAR = "dialog";
     public static final String DIALOG_CSS_VAR = DIALOG_VAR + "CssBase";
 
+    public static final String DEFAULT_SELECTOR = "edit";
     public static final String SELECTOR_CREATE = "create";
+    public static final List<String> KNOWN_SELECTORS = Arrays.asList(
+            DEFAULT_SELECTOR,
+            SELECTOR_CREATE,
+            "new",
+            "delete",
+            "generic",
+            "wizard"
+    );
 
     public static final String TYPE_NONE = "none";
 
     public static final String DEFAULT_CSS_BASE = "composum-pages-stage-edit-dialog";
 
     public static final String DIALOG_PATH = "/edit/dialog";
-    public static final String DEFAULT_SELECTOR = "edit";
 
     public static final String SLING_POST_SERVLET_ACTION = "Sling-POST";
     public static final String CUSTOM_POST_SERVLET_ACTION = "Custom-POST";
@@ -257,6 +267,9 @@ public class EditDialogTag extends AbstractWrappingTag {
             selectorValue = eval(selector, "");
             if (StringUtils.isBlank(selectorValue)) {
                 selectorValue = request.getRequestPathInfo().getSelectorString();
+                if (StringUtils.isNotBlank(selectorValue) && !KNOWN_SELECTORS.contains(selectorValue)) {
+                    selectorValue = null;
+                }
                 if (StringUtils.isBlank(selectorValue)) {
                     selectorValue = DEFAULT_SELECTOR;
                 }
@@ -272,7 +285,7 @@ public class EditDialogTag extends AbstractWrappingTag {
     }
 
     public String getAlertKey() {
-        return isAlertSet() ? alertKey : "alert-warning alert-hidden";
+        return isAlertSet() ? alertKey : "warning hidden";
     }
 
     public String getAlertText() {
@@ -289,7 +302,7 @@ public class EditDialogTag extends AbstractWrappingTag {
     @Override
     protected boolean acceptDynamicAttribute(String key, Object value) throws JspException {
         if (key.startsWith(ATTR_INITIAL_ALERT)) {
-            alertKey = key;
+            alertKey = key.substring(ATTR_INITIAL_ALERT.length());
             alertText = (String) value;
             return false;
         } else if (ATTR_SUBMIT_LABEL.equals(key)) {

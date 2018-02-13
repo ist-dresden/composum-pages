@@ -10,6 +10,7 @@ import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.framework.Constants;
+import org.osgi.service.component.annotations.Component;
 
 import javax.jcr.RepositoryException;
 import java.util.HashMap;
@@ -17,7 +18,7 @@ import java.util.Map;
 
 import static com.composum.pages.commons.model.Page.isPage;
 
-@org.osgi.service.component.annotations.Component(
+@Component(
         property = {
                 Constants.SERVICE_DESCRIPTION + "=Composum Pages Page Manager"
         }

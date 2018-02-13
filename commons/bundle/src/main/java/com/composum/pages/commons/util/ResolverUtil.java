@@ -1,5 +1,6 @@
 package com.composum.pages.commons.util;
 
+import com.composum.sling.core.util.ResourceUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -91,12 +92,14 @@ public class ResolverUtil {
                 Resource baseResource = resolver.getResource(base);
                 typeResource = resolver.getResource(baseResource, resourceType);
                 if (typeResource != null) {
-                    break;
+                    if (ResourceUtil.isSyntheticResource(typeResource)) {
+                        typeResource = null;
+                    }
                 } else {
                     typeResource = resolver.getResource(resourceType);
-                    if (typeResource != null) {
-                        break;
-                    }
+                }
+                if (typeResource != null) {
+                    break;
                 }
             }
         }

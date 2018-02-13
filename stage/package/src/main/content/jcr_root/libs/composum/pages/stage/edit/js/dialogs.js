@@ -12,10 +12,10 @@
                     base: '/bin/cpm/pages/edit',
                     _insert: '.insertComponent.html',
                     _dialog: {
-                        load: '.editDialog.html',
-                        new: '.newDialog.html',
-                        create: '.editDialog.create.html',
-                        delete: '.editDialog.delete.html'
+                        load: '.editDialog',
+                        new: '.newDialog',
+                        create: '.editDialog.create',
+                        delete: '.editDialog.delete'
                     }
                 },
                 css: {
@@ -77,6 +77,9 @@
                 }
             },
 
+            /**
+             * triggered if the submit button is clicked or activated somewhere else
+             */
             onSubmit: function (event) {
                 if (event) {
                     event.preventDefault();
@@ -180,9 +183,26 @@
                 this.$tabList.find('li.active').next().find('a').tab('show');
             },
 
+            /**
+             * the submit handler called after a successful validation
+             */
             doSubmit: function () {
                 this.submitForm(_.bind(function (result) {
-                    $(document).trigger(this.$el.data('pages-edit-success') || 'component:changed', [this.data.path]);
+                    var event = (this.$el.data('pages-edit-success') || 'component:changed').split(';');
+                    for (var i=0; i < event.length; i++) {
+                        switch (event[i]) {
+                            case 'messages':
+                                if (_.isObject(result) && _.isObject(result.response)) {
+                                    var response = result.response;
+                                    var messages = result.messages;
+                                    core.messages(response.level, response.text, messages);
+                                }
+                                break;
+                            default:
+                                $(document).trigger(event[i], [this.data.path]);
+                                break;
+                        }
+                    }
                 }, this));
             },
 
@@ -219,9 +239,17 @@
             }
         });
 
-        dialogs.openEditDialog = function (name, path, type, url, setupDialog) {
+        dialogs.getEditDialogUrl = function (type, selectors) {
             var c = dialogs.const.edit.url;
-            pages.dialogHandler.openEditDialog(url ? url : c.base + c._dialog.load,
+            var url = c.base + c._dialog[type ? type : 'load'];
+            if (selectors) {
+                url += '.' + selectors;
+            }
+            return url + ".html";
+        };
+
+        dialogs.openEditDialog = function (name, path, type, url, setupDialog) {
+            pages.dialogHandler.openEditDialog(url ? url : dialogs.getEditDialogUrl(),
                 dialogs.EditDialog, name, path, type, setupDialog);
         };
 
@@ -245,8 +273,7 @@
         });
 
         dialogs.openCreateDialog = function (name, path, type, url, setupDialog, onNotFound) {
-            var c = dialogs.const.edit.url;
-            pages.dialogHandler.openEditDialog(url ? url : c.base + c._dialog.create,
+            pages.dialogHandler.openEditDialog(url ? url : dialogs.getEditDialogUrl('create'),
                 dialogs.CreateDialog, name, path, type, setupDialog, onNotFound);
         };
 
@@ -286,8 +313,7 @@
         });
 
         dialogs.openNewElementDialog = function (name, path, type) {
-            var c = dialogs.const.edit.url;
-            pages.dialogHandler.openEditDialog(c.base + c._dialog.new,
+            pages.dialogHandler.openEditDialog(dialogs.getEditDialogUrl('new'),
                 dialogs.NewElementDialog, name, path, type);
         };
 
@@ -305,8 +331,7 @@
         });
 
         dialogs.openDeleteElementDialog = function (name, path, type) {
-            var c = dialogs.const.edit.url;
-            pages.dialogHandler.openEditDialog(c.base + c._dialog.delete,
+            pages.dialogHandler.openEditDialog(dialogs.getEditDialogUrl('delete'),
                 dialogs.DeleteElementDialog, name, path, type);
         };
 
@@ -328,7 +353,7 @@
 
         dialogs.openCreateSiteDialog = function () {
             var c = dialogs.const.edit;
-            pages.dialogHandler.openEditDialog(c.url.base + c.url._dialog.create,
+            pages.dialogHandler.openEditDialog(dialogs.getEditDialogUrl('create'),
                 dialogs.CreateSiteDialog, undefined, undefined, c.type.site);
         };
 
@@ -347,7 +372,7 @@
 
         dialogs.openDeleteSiteDialog = function (name, path, type) {
             var c = dialogs.const.edit.url;
-            pages.dialogHandler.openEditDialog(c.base + c._dialog.delete,
+            pages.dialogHandler.openEditDialog(dialogs.getEditDialogUrl('delete'),
                 dialogs.DeleteSiteDialog, name, path, type);
         };
 

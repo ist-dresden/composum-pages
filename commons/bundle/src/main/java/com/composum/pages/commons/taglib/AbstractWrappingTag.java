@@ -143,11 +143,9 @@ public abstract class AbstractWrappingTag extends ModelTag {
     public int doStartTag() throws JspException {
         super.doStartTag(); // necessary to initialize the tag for the following 'render test'
         if (renderTag()) {
-            /* FIXME remove?!
             if (request.getAttribute(EDIT_RESOURCE_KEY) == null) {
                 request.setAttribute(EDIT_RESOURCE_KEY, editResource = resource);
             }
-            */
             TagCssClasses cssClasses = getTagCssClasses();
             String value;
             if (StringUtils.isNotBlank(value = cssClasses.getCssSet())) {

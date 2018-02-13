@@ -6,9 +6,31 @@
     (function (actions, pages, core) {
         'use strict';
 
-        actions.const = _.extend(actions.const || {}, {
+        /**
+         * the set of actions usable in the 'action' attribute of a toolbar action tag or somewhere else
+         *
+         * general parameters:
+         * @param event the event object in the UI
+         * @param name the name of the content element
+         * @param path the path of the content element
+         * @param type the resource type of the content element
+         */
 
-        });
+        actions.const = _.extend(actions.const || {}, {});
+
+        actions.dialog = {
+
+            /**
+             * opens an edit dialog (additional custom dialog) selected by the 'selectors' attribute of the event
+             * (e.g. an action of a toolbar with an appropriate 'selectors' attribute)
+             */
+            open: function (event, name, path, type) {
+                var $action = $(event.currentTarget);
+                var selectors = $action.data('selectors');
+                var dialogUrl = pages.dialogs.getEditDialogUrl('load', selectors);
+                pages.dialogs.openEditDialog(name, path, type, dialogUrl);
+            }
+        };
 
         actions.element = {
 
