@@ -2,7 +2,6 @@ package com.composum.pages.commons.taglib;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
-
 import java.io.IOException;
 
 import static com.composum.pages.commons.taglib.AbstractPageTag.STAGE_COMPONENT_BASE;
@@ -64,6 +63,14 @@ public class EditActionTag extends AbstractWrappingTag {
 
     protected String getSnippetResourceType() {
         return ACTION_TAG_PATH;
+    }
+
+    /**
+     * ensure that each additional attribute starts with 'data-'
+     */
+    @Override
+    protected void setDynamicAttribute(String key, Object value) throws JspException {
+        super.setDynamicAttribute(key.startsWith("data-") ? key : "data-" + key, value);
     }
 
     @Override

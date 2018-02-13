@@ -23,11 +23,13 @@
                 </div>
                 <div class="modal-body ${dialogCssBase}_content">
                     <div class="${dialogCssBase}_messages messages">
-                        <div class="${dialogCssBase}_alert alert ${dialog.alertKey}">${dialog.alertText}</div>
+                        <div class="panel panel-${dialog.alertKey}">
+                            <div class="panel-heading">${dialog.alertText}</div>
+                            <div class="panel-body hidden"></div>
+                        </div>
                     </div>
                     <ul class="${dialogCssBase}_tabs nav nav-tabs">
                     </ul>
                     <input name="_charset_" type="hidden" value="UTF-8" class="${dialogCssBase}_hidden"/>
-                    <input name="path" type="hidden" value="${dialog.editPath}" class="${dialogCssBase}_hidden ${dialogCssBase}_path"/>
                     <div class="${dialogCssBase}_tabbed-content">
 <!-- start of dialog content -->
