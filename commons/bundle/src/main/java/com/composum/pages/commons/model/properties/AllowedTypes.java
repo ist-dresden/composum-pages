@@ -4,6 +4,7 @@ import com.composum.pages.commons.model.ResourceReference;
 import com.composum.pages.commons.util.ResolverUtil;
 import org.apache.sling.api.resource.ResourceResolver;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -15,23 +16,21 @@ public class AllowedTypes {
 
     protected List<Pattern> patternList = null;
 
-    public AllowedTypes(ResourceReference reference, String propertyName) {
-        String[] defaultValue = new String[0];
-        String[] typeRules = reference.getProperty(propertyName, defaultValue);
-        if (typeRules != defaultValue) {
+    public AllowedTypes(@Nonnull ResourceReference reference, @Nonnull String propertyName) {
+        this(reference.getProperty(propertyName, (String[]) null));
+    }
+
+    public AllowedTypes(@Nonnull ResourceResolver resolver, @Nonnull String resourceType, @Nonnull String propertyName) {
+        this(ResolverUtil.getTypeProperty(resolver, resourceType, propertyName, (String[]) null));
+    }
+
+    public AllowedTypes(String[] typeRules) {
+        if (typeRules != null) {
             buildPatterns(typeRules);
         }
     }
 
-    public AllowedTypes(ResourceResolver resolver, String resourceType, String propertyName) {
-        String[] defaultValue = new String[0];
-        String[] typeRules = ResolverUtil.getTypeProperty(resolver, resourceType, propertyName, defaultValue);
-        if (typeRules != defaultValue) {
-            buildPatterns(typeRules);
-        }
-    }
-
-    protected void buildPatterns(String[] typeRules) {
+    protected void buildPatterns(@Nonnull String[] typeRules) {
         patternList = new ArrayList<>();
         for (String rule : typeRules) {
             rule = rule.trim();

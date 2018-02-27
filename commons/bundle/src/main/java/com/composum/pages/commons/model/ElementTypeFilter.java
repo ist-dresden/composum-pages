@@ -9,7 +9,7 @@ import java.util.Map;
 /**
  * a filter to determine the allowed elements for a set of containers (all containers of a page)
  */
-public class HierarchyFilter {
+public class ElementTypeFilter {
 
     /** the set of containers to use for allowed element check */
     protected final ResourceReference.List containerList;
@@ -23,8 +23,8 @@ public class HierarchyFilter {
 
     protected final ResourceResolver resolver;
 
-    public HierarchyFilter(final ResourceResolver resolver, final ResourceReference.List containerList,
-                           String allowedParentsPropertyName, String allowedChildrenPropertyName) {
+    public ElementTypeFilter(final ResourceResolver resolver, final ResourceReference.List containerList,
+                             String allowedParentsPropertyName, String allowedChildrenPropertyName) {
         this.resolver = resolver;
         this.containerList = containerList;
         this.allowedParentsPropertyName = allowedParentsPropertyName;

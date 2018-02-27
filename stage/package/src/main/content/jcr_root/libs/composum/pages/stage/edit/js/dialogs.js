@@ -268,7 +268,7 @@
 
             afterLoad: function (name, path, type) {
                 // set resource Type if such a hidden field is available
-                //this.$('[name="' + dialogs.const.pages.const.sling.resourceType + '"]').attr('value',type);
+                //this.$('[name="' + dialogs.const.pages.const.sling.resourceType + '"]').attr('value',type); ??? FIXME
             }
         });
 
@@ -333,6 +333,46 @@
         dialogs.openDeleteElementDialog = function (name, path, type) {
             pages.dialogHandler.openEditDialog(dialogs.getEditDialogUrl('delete'),
                 dialogs.DeleteElementDialog, name, path, type);
+        };
+        
+        //
+        // Content...
+        //
+
+        /**
+         * the dialog to select the content type of new content to insert in the tree
+         */
+        dialogs.NewContentDialog = dialogs.ElementDialog.extend({
+
+            initView: function () {
+                this.contentType = core.getWidget(this.el, '.radio-group-widget', core.components.RadioGroupWidget);
+                if (this.contentType.getCount() === 1) {
+                    this.useDefault = this.contentType.getOnlyOne();
+                }
+            },
+
+            doSubmit: function (type) {
+                var c = dialogs.const.edit.url;
+                if (!type) {
+                    type = this.contentType.getValue();
+                    this.hide();
+                }
+                if (type) {
+                            core.ajaxPost(c.base + c._insert, {
+                                resourceType: type,
+                                targetPath: path,
+                                targetType: this.data.type
+                            }, {}, _.bind(function () {
+                                $(document).trigger('component:changed', [path]);
+                            }, this));
+                }
+                return false;
+            }
+        });
+
+        dialogs.openNewContentDialog = function (name, path, type) {
+            pages.dialogHandler.openEditDialog(dialogs.getEditDialogUrl('new'),
+                dialogs.NewContentDialog, name, path, type);
         };
 
         //

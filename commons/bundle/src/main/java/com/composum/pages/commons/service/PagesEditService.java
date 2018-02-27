@@ -1,7 +1,7 @@
 package com.composum.pages.commons.service;
 
 import com.composum.pages.commons.PagesConstants;
-import com.composum.pages.commons.model.HierarchyFilter;
+import com.composum.pages.commons.model.ElementTypeFilter;
 import com.composum.pages.commons.model.ResourceReference;
 import com.composum.pages.commons.util.ResolverUtil;
 import com.composum.sling.core.filter.ResourceFilter;
@@ -46,6 +46,44 @@ public class PagesEditService implements EditService {
     public static final String PROP_COLLECTION_NAME = "collection/name";
     public static final String PROP_COLLECTION_TYPE = "collection/resourceType";
 
+    //
+    // hierarchy management for the content tree
+    //
+
+    /**
+     * Determines the list of resource types (nodes of type 'cpp:Component') which are accepted by the filter.
+     *
+     * @param resolver   the requests resolver (session)
+     * @param containers the set of designated container references
+     * @param filter     the filter instance (resource type pattern filter)
+     * @return the result of a component type query filtered by the filter object
+     */
+    public List getAllowedContentTypes(ResourceResolver resolver,
+                                       ResourceReference.List containers,
+                                       ElementTypeFilter filter,
+                                       boolean resourceTypePath) {
+        List<String> allowedTypes = new ArrayList<>();
+        QueryBuilder queryBuilder = resolver.adaptTo(QueryBuilder.class);
+        for (String path : resolver.getSearchPath()) {
+            Query query = queryBuilder.createQuery().path(path).type("cpp:Component");
+            try {
+                for (Resource component : query.execute()) {
+                    String type = component.getPath().substring(path.length());
+                    if (!allowedTypes.contains(type) && filter.isAllowedType(type)) {
+                        allowedTypes.add(resourceTypePath ? path + type : type);
+                    }
+                }
+            } catch (RepositoryException ex) {
+                LOG.error(ex.getMessage(), ex);
+            }
+        }
+        return allowedTypes;
+    }
+
+    //
+    // hierarchy management for the page content
+    //
+
     /**
      * Determines the list of potential target containers for a page content element.
      *
@@ -58,7 +96,7 @@ public class PagesEditService implements EditService {
                                                          ResourceReference.List candidates,
                                                          ResourceReference element) {
         ResourceReference.List result = new ResourceReference.List();
-        HierarchyFilter filter = new HierarchyFilter(resolver, candidates,
+        ElementTypeFilter filter = new ElementTypeFilter(resolver, candidates,
                 PROP_ALLOWED_CONTAINERS, PROP_ALLOWED_ELEMENTS);
         for (ResourceReference candidate : candidates) {
             if (filter.isAllowedElement(element, candidate)) {
@@ -78,7 +116,7 @@ public class PagesEditService implements EditService {
     public List getAllowedElementTypes(ResourceResolver resolver,
                                        ResourceReference.List containers,
                                        boolean resourceTypePath) {
-        HierarchyFilter filter = new HierarchyFilter(resolver, containers,
+        ElementTypeFilter filter = new ElementTypeFilter(resolver, containers,
                 PROP_ALLOWED_CONTAINERS, PROP_ALLOWED_ELEMENTS);
         return getAllowedElementTypes(resolver, containers, filter, resourceTypePath);
     }
@@ -93,7 +131,7 @@ public class PagesEditService implements EditService {
      */
     public List getAllowedElementTypes(ResourceResolver resolver,
                                        ResourceReference.List containers,
-                                       HierarchyFilter filter,
+                                       ElementTypeFilter filter,
                                        boolean resourceTypePath) {
         List<String> allowedTypes = new ArrayList<>();
         QueryBuilder queryBuilder = resolver.adaptTo(QueryBuilder.class);
@@ -255,6 +293,10 @@ public class PagesEditService implements EditService {
 
         return collection;
     }
+
+    //
+    //
+    //
 
     /**
      * Changes the 'oldPath' references in each property of a tree to the 'newPath'.

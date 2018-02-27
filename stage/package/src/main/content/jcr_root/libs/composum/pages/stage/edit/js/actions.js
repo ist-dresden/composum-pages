@@ -75,8 +75,8 @@
                 actions.element.edit(event, name, path, type);
             },
 
-            create: function (event, name, path, type) {
-                alert('page.create... ' + name + ',' + path + ',' + type);
+            insert: function (event, name, path, type) {
+                alert('page.insert... ' + name + ',' + path + ',' + type);
             },
 
             copy: function (event, name, path, type) {
@@ -122,6 +122,10 @@
                 actions.element.edit(event, name, path, type);
             },
 
+            insert: function (event, name, path, type) {
+                pages.dialogs.openNewContentDialog();
+            },
+
             create: function (event, name, path, type) {
                 pages.dialogs.openCreateSiteDialog();
             },
@@ -141,8 +145,8 @@
 
         actions.folder = {
 
-            create: function (event, name, path, type) {
-                alert('folder.create... ' + name + ',' + path + ',' + type);
+            insert: function (event, name, path, type) {
+                alert('folder.insert... ' + name + ',' + path + ',' + type);
             },
 
             rename: function (event, name, path, type) {

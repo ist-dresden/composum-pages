@@ -1,6 +1,7 @@
 package com.composum.pages.commons.taglib;
 
 import com.composum.pages.commons.model.Element;
+import com.composum.pages.commons.model.GenericModel;
 import com.composum.pages.commons.model.Model;
 import com.composum.pages.commons.model.properties.Languages;
 import com.composum.pages.commons.request.DisplayMode;
@@ -22,6 +23,8 @@ import static com.composum.pages.commons.util.TagCssClasses.cssOfType;
  * a tag to instantiate a model object
  */
 public class ModelTag extends ComponentTag implements DynamicAttributes {
+
+    public static final String DEFAULT_VAR_NAME = "target";
 
     protected String cssBase;
     protected Object test;
@@ -169,10 +172,19 @@ public class ModelTag extends ComponentTag implements DynamicAttributes {
     //
 
     @Override
+    public String getVar() {
+        String varName = super.getVar();
+        if (StringUtils.isBlank(varName)) {
+            varName = DEFAULT_VAR_NAME;
+        }
+        return varName;
+    }
+
+    @Override
     public String getType() {
         String type = super.getType();
         if (StringUtils.isBlank(type)) {
-            type = Element.class.getName();
+            type = GenericModel.class.getName();
         }
         return type;
     }
