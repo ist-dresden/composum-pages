@@ -5,7 +5,7 @@
 --%><cpp:defineFrameObjects/>
 <div class="${widgetCssBase}_${widget.widgetType}_wrapper widget slider-widget" ${widget.attributes}
      data-label="${widget.label}" data-i18n="${widget.i18n}">
-    <input name="${widget.name}" class="${widgetCssBase}_input slider-widget_input form-control" type="text"
+    <input name="${widget.name}" class="${widgetCssBase}_input slider-widget_input form-control widget-name_${widget.name}" type="text"
            data-slider-min="${widget.model.options.min}" data-slider-max="${widget.model.options.max}"
            data-slider-step="${widget.model.options.step}" value="${widget.model.value}"
            <c:if test="${widget.disabled}">disabled</c:if> />

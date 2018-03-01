@@ -2,6 +2,7 @@ package com.composum.pages.commons.model.properties;
 
 import com.composum.pages.commons.model.ResourceReference;
 import com.composum.pages.commons.util.ResolverUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.ResourceResolver;
 
 import javax.annotation.Nonnull;
@@ -17,32 +18,34 @@ public class AllowedTypes {
     protected List<Pattern> patternList = null;
 
     public AllowedTypes(@Nonnull ResourceReference reference, @Nonnull String propertyName) {
-        this(reference.getProperty(propertyName, (String[]) null));
+        this((String) reference.getProperty(propertyName, null));
     }
 
     public AllowedTypes(@Nonnull ResourceResolver resolver, @Nonnull String resourceType, @Nonnull String propertyName) {
-        this(ResolverUtil.getTypeProperty(resolver, resourceType, propertyName, (String[]) null));
+        this((String) ResolverUtil.getTypeProperty(resolver, resourceType, propertyName, null));
     }
 
-    public AllowedTypes(String[] typeRules) {
-        if (typeRules != null) {
+    public AllowedTypes(String... typeRules) {
+        if (typeRules != null && (typeRules.length == 0 || typeRules[0] != null)) {
             buildPatterns(typeRules);
         }
     }
 
-    protected void buildPatterns(@Nonnull String[] typeRules) {
+    protected void buildPatterns(@Nonnull String... typeRules) {
         patternList = new ArrayList<>();
         for (String rule : typeRules) {
-            rule = rule.trim();
-            if (rule.length() > 2 && // complete a regex if not always a regex
-                    "^.[(".indexOf(rule.charAt(0)) < 0 &&
-                    ".*+])?$".indexOf(rule.charAt(rule.length() - 1)) < 0) {
-                if (!rule.startsWith("/")) {
-                    rule = ".*" + rule;
+            if (StringUtils.isNotBlank(rule)) {
+                rule = rule.trim();
+                if (rule.length() > 2 && // complete a regex if not always a regex
+                        "^.[(".indexOf(rule.charAt(0)) < 0 &&
+                        ".*+])?$".indexOf(rule.charAt(rule.length() - 1)) < 0) {
+                    if (!rule.startsWith("/")) {
+                        rule = ".*" + rule;
+                    }
+                    rule = "^" + rule + "$";
                 }
-                rule = "^" + rule + "$";
+                patternList.add(Pattern.compile(rule));
             }
-            patternList.add(Pattern.compile(rule));
         }
     }
 

@@ -7,7 +7,7 @@
 <div class="${widgetCssBase}_${widget.widgetType} ${widgetCssBase}_${widget.cssName} form-group">
     <sling:call script="label.jsp"/>
     <input name="${widget.name}" data-label="${widget.label}" data-i18n="${widget.i18n}" ${widget.attributes}
-           class="${widgetCssBase}_input ${widgetCssBase}_text-field widget text-field-widget form-control"
+           class="${widgetCssBase}_input ${widgetCssBase}_text-field widget text-field-widget form-control widget-name_${widget.name}"
            type="text" value="${cpn:text(widget.model.text)}" placeholder="${cpn:text(widget.placeholder)}"
            <c:if test="${widget.disabled}">disabled</c:if> />
 </div>

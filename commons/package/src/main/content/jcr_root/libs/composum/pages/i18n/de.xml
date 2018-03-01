@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
-        jcr:language="en"
+        jcr:language="de"
         jcr:mixinTypes="[mix:language]"
         jcr:primaryType="sling:Folder"
         sling:basename="composum-pages">
@@ -28,6 +28,27 @@
             sling:key="Delete" sling:message="Löschen"/>
     <cancel jcr:primaryType="sling:MessageEntry"
             sling:key="Cancel" sling:message="Abbrechen"/>
+    <browse jcr:primaryType="sling:MessageEntry"
+            sling:key="Browse" sling:message="Durchsuchen"/>
+
+    <tenant jcr:primaryType="sling:MessageEntry"
+            sling:key="Tenant" sling:message="Mandant"/>
+    <site jcr:primaryType="sling:MessageEntry"
+            sling:key="Site" sling:message="Website"/>
+    <page jcr:primaryType="sling:MessageEntry"
+            sling:key="Page" sling:message="Seite"/>
+    <folder jcr:primaryType="sling:MessageEntry"
+            sling:key="Folder" sling:message="Verzeichnis"/>
+    <file jcr:primaryType="sling:MessageEntry"
+            sling:key="File" sling:message="Datei"/>
+    <template jcr:primaryType="sling:MessageEntry"
+            sling:key="Template" sling:message="Vorlage"/>
+
+    <name-placeholder jcr:primaryType="sling:MessageEntry"
+            sling:key="the repository name" sling:message="der Name im Repository"/>
+    <title-placeholder jcr:primaryType="sling:MessageEntry"
+            sling:key="the more readable title" sling:message="der Titel (Prosa)"/>
+
     <new-element jcr:primaryType="sling:MessageEntry"
             sling:key="Add a new Element" sling:message="Neues Element hinzufügen"/>
     <select-type jcr:primaryType="sling:MessageEntry"
@@ -143,18 +164,32 @@
     <delete-page jcr:primaryType="sling:MessageEntry"
             sling:key="Delete the selected page" sling:message="Die ausgewählte Seite löschen"/>
 
-    <tenant jcr:primaryType="sling:MessageEntry"
-            sling:key="Tenant" sling:message="Mandant"/>
-    <site jcr:primaryType="sling:MessageEntry"
-            sling:key="Site" sling:message="Website"/>
+    <insert-folder jcr:primaryType="sling:MessageEntry"
+            sling:key="Insert a new Folder" sling:message="Eine neues Verzeichnis einfügen"/>
+    <insert-file jcr:primaryType="sling:MessageEntry"
+            sling:key="Insert a new File" sling:message="Eine neue Datei einfügen"/>
+
+    <page-template jcr:primaryType="sling:MessageEntry"
+            sling:key="Page Template" sling:message="Seitenvorlage"/>
+    <page-properties jcr:primaryType="sling:MessageEntry"
+            sling:key="Page Properties" sling:message="Seiteneigenschaften"/>
+    <edit-page-properties jcr:primaryType="sling:MessageEntry"
+            sling:key="Edit Page Properties" sling:message="Seiteneigenschaften bearbeiten"/>
+    <insert-page jcr:primaryType="sling:MessageEntry"
+            sling:key="Insert a new Page" sling:message="Eine neue Seite einfügen"/>
+    <select-page-template jcr:primaryType="sling:MessageEntry"
+            sling:key="select a template or type" sling:message="eine Vorlage oder den Typ auswählen"/>
+
     <site-name jcr:primaryType="sling:MessageEntry"
             sling:key="Site Name" sling:message="Site-Name"/>
     <site-title jcr:primaryType="sling:MessageEntry"
             sling:key="Site Title" sling:message="Site-Titel"/>
-    <site-name-placeholder jcr:primaryType="sling:MessageEntry"
-            sling:key="the repository name (resource name)" sling:message="der Name der Site im Repository"/>
-    <site-title-placeholder jcr:primaryType="sling:MessageEntry"
-            sling:key="the more readable title of the site" sling:message="der Titel zur Site (Prosa)"/>
+    <site-properties jcr:primaryType="sling:MessageEntry"
+            sling:key="Site Properties" sling:message="Site-Einstellungen"/>
+    <edit-site-properties jcr:primaryType="sling:MessageEntry"
+            sling:key="Edit Site Properties" sling:message="Site-Einstellungen bearbeiten"/>
+    <public-policy jcr:primaryType="sling:MessageEntry"
+            sling:key="Publish Policy" sling:message="Publikationsregel"/>
     <create-site jcr:primaryType="sling:MessageEntry"
             sling:key="Create a new Site" sling:message="Eine neue Website anlegen"/>
     <delete-site jcr:primaryType="sling:MessageEntry"
@@ -164,8 +199,4 @@
     <delete-site-question jcr:primaryType="sling:MessageEntry"
             sling:key="Do you really want to delete the entire site?" sling:message="Wollen Sie wirklich die komplette Website löschen?"/>
 
-    <site-properties jcr:primaryType="sling:MessageEntry"
-            sling:key="Site Properties" sling:message="Site-Einstellungen"/>
-    <public-policy jcr:primaryType="sling:MessageEntry"
-            sling:key="Publish Policy" sling:message="Publikationsregel"/>
 </jcr:root>

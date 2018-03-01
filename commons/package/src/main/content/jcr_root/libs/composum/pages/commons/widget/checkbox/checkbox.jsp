@@ -5,6 +5,6 @@
 <div class="${widgetCssBase}_${widget.widgetType} ${widgetCssBase}_${widget.cssName} checkbox">
     <label class="${widgetCssBase}_label">
         <input name="${widget.name}" data-i18n="${widget.i18n}" ${widget.attributes}
-               class="${widgetCssBase}_input widget checkbox-widget"
+               class="${widgetCssBase}_input widget checkbox-widget widget-name_${widget.name}"
                type="checkbox" value="true" ${widget.model.checkedValue}/>${widget.label}<sling:call script="hint.jsp"/></label>
 </div>

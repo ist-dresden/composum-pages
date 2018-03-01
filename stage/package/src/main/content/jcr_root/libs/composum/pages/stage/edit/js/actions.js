@@ -75,8 +75,16 @@
                 actions.element.edit(event, name, path, type);
             },
 
-            insert: function (event, name, path, type) {
-                alert('page.insert... ' + name + ',' + path + ',' + type);
+            insertPage: function (event, name, path, type) {
+                pages.dialogs.openNewPageDialog('page', name, path, type);
+            },
+
+            insertFolder: function (event, name, path, type) {
+                pages.dialogs.openNewFolderDialog('page', name, path, type);
+            },
+
+            insertFile: function (event, name, path, type) {
+                pages.dialogs.openNewFileDialog('page', name, path, type);
             },
 
             copy: function (event, name, path, type) {
@@ -122,8 +130,16 @@
                 actions.element.edit(event, name, path, type);
             },
 
-            insert: function (event, name, path, type) {
-                pages.dialogs.openNewContentDialog();
+            insertPage: function (event, name, path, type) {
+                pages.dialogs.openNewPageDialog('site', name, path, type);
+            },
+
+            insertFolder: function (event, name, path, type) {
+                pages.dialogs.openNewFolderDialog('site', name, path, type);
+            },
+
+            insertFile: function (event, name, path, type) {
+                pages.dialogs.openNewFileDialog('site', name, path, type);
             },
 
             create: function (event, name, path, type) {
@@ -145,8 +161,16 @@
 
         actions.folder = {
 
-            insert: function (event, name, path, type) {
-                alert('folder.insert... ' + name + ',' + path + ',' + type);
+            insertPage: function (event, name, path, type) {
+                pages.dialogs.openNewPageDialog('folder', name, path, type);
+            },
+
+            insertFolder: function (event, name, path, type) {
+                pages.dialogs.openNewFolderDialog('folder', name, path, type);
+            },
+
+            insertFile: function (event, name, path, type) {
+                pages.dialogs.openNewFileDialog('folder', name, path, type);
             },
 
             rename: function (event, name, path, type) {

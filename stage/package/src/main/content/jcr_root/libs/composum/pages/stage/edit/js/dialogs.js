@@ -10,6 +10,13 @@
             edit: {
                 url: {
                     base: '/bin/cpm/pages/edit',
+                    path: '/libs/composum/pages/stage/edit/default',
+                    _add: {
+                        path: '/content/dialog/add',
+                        _page: '.page.html',
+                        _folder: '.folder.html',
+                        _file: '.file.html'
+                    },
                     _insert: '.insertComponent.html',
                     _dialog: {
                         load: '.editDialog',
@@ -63,6 +70,7 @@
             validationReset: function () {
                 this.$alert.addClass('alert-hidden');
                 this.$alert.html('');
+                this.validationHints = [];
                 this.form.validationReset();
             },
 
@@ -77,6 +85,12 @@
                 }
             },
 
+            validationHint: function (type, label, message, hint) {
+                if (message) {
+                    this.validationHints.push({level: type, label: label, text: message, hint: hint});
+                }
+            },
+
             /**
              * triggered if the submit button is clicked or activated somewhere else
              */
@@ -87,10 +101,12 @@
                 this.form.prepare();
                 this.validationReset();
                 if (this.form.validate(_.bind(function (type, label, message, hint) {
-                        this.message('warning', label, message, hint)
+                        this.validationHint(type, label, message, hint)
                     }, this))) {
                     this.doSubmit();
                 } else {
+                    this.messages('warning', this.validationHints.length < 1 ? 'validation error' : undefined,
+                        this.validationHints);
                     this.onValidationFault();
                 }
                 return false;
@@ -189,7 +205,7 @@
             doSubmit: function () {
                 this.submitForm(_.bind(function (result) {
                     var event = (this.$el.data('pages-edit-success') || 'component:changed').split(';');
-                    for (var i=0; i < event.length; i++) {
+                    for (var i = 0; i < event.length; i++) {
                         switch (event[i]) {
                             case 'messages':
                                 if (_.isObject(result) && _.isObject(result.response)) {
@@ -334,7 +350,7 @@
             pages.dialogHandler.openEditDialog(dialogs.getEditDialogUrl('delete'),
                 dialogs.DeleteElementDialog, name, path, type);
         };
-        
+
         //
         // Content...
         //
@@ -342,13 +358,64 @@
         /**
          * the dialog to select the content type of new content to insert in the tree
          */
-        dialogs.NewContentDialog = dialogs.ElementDialog.extend({
+        dialogs.NewPageDialog = dialogs.EditDialog.extend({
 
             initView: function () {
-                this.contentType = core.getWidget(this.el, '.radio-group-widget', core.components.RadioGroupWidget);
-                if (this.contentType.getCount() === 1) {
-                    this.useDefault = this.contentType.getOnlyOne();
+                dialogs.EditDialog.prototype.initView.apply(this);
+                this.pageName = core.getWidget(this.el, '.widget-name_name', core.components.TextFieldWidget);
+                this.pageTemplate = core.getWidget(this.el, '.widget-name_template', pages.widgets.PageTemplateWidget);
+                if (this.pageTemplate.getCount() === 1) {
+                    this.useDefault = this.pageTemplate.getOnlyOne();
                 }
+            },
+
+            doSubmit: function (template) {
+                var c = dialogs.const.edit.url;
+                if (!template) {
+                    template = this.pageTemplate.getValue();
+                    this.hide();
+                }
+                if (template) {
+                    if (isTemplate) {
+                        // create page as a copy of the template
+                        core.ajaxPost(c.base + c._insert, {
+                            resourceType: type,
+                            targetPath: path,
+                            targetType: this.data.type
+                        }, {}, _.bind(function () {
+                            $(document).trigger('component:changed', [path]);
+                        }, this));
+                    } else {
+                        // create page using resource type by opening the page create dialog of the designated type
+                        dialogs.openCreateDialog(this.pageName.getValue() || '*', this.data.path, template, undefined, undefined,
+                            // if no create dialog exists (not found) create a new instance directly
+                            _.bind(function (name, path, type) {
+                                core.ajaxPost(c.base + c._insert, {
+                                    resourceType: type,
+                                    targetPath: path,
+                                    targetType: this.data.type
+                                }, {}, _.bind(function () {
+                                    $(document).trigger('component:changed', [path]);
+                                }, this));
+                            }, this));
+                    }
+                }
+                return false;
+            }
+        });
+
+        dialogs.openNewPageDialog = function (name, path, type) {
+            var c = dialogs.const.edit.url;
+            pages.dialogHandler.openEditDialog(c.path + c._add.path + c._add._page,
+                dialogs.NewPageDialog, name, path, type);
+        };
+
+        /**
+         * the dialog to select the content type of new content to insert in the tree
+         */
+        dialogs.NewFolderDialog = dialogs.ElementDialog.extend({
+
+            initView: function () {
             },
 
             doSubmit: function (type) {
@@ -358,21 +425,55 @@
                     this.hide();
                 }
                 if (type) {
-                            core.ajaxPost(c.base + c._insert, {
-                                resourceType: type,
-                                targetPath: path,
-                                targetType: this.data.type
-                            }, {}, _.bind(function () {
-                                $(document).trigger('component:changed', [path]);
-                            }, this));
+                    core.ajaxPost(c.base + c._insert, {
+                        resourceType: type,
+                        targetPath: path,
+                        targetType: this.data.type
+                    }, {}, _.bind(function () {
+                        $(document).trigger('component:changed', [path]);
+                    }, this));
                 }
                 return false;
             }
         });
 
-        dialogs.openNewContentDialog = function (name, path, type) {
-            pages.dialogHandler.openEditDialog(dialogs.getEditDialogUrl('new'),
-                dialogs.NewContentDialog, name, path, type);
+        dialogs.openNewFolderDialog = function (name, path, type) {
+            var c = dialogs.const.edit.url;
+            pages.dialogHandler.openEditDialog(c.path + c._add.path + c._add._folder,
+                dialogs.NewFolderDialog, name, path, type);
+        };
+
+        /**
+         * the dialog to select the content type of new content to insert in the tree
+         */
+        dialogs.NewFileDialog = dialogs.ElementDialog.extend({
+
+            initView: function () {
+            },
+
+            doSubmit: function (type) {
+                var c = dialogs.const.edit.url;
+                if (!type) {
+                    type = this.contentType.getValue();
+                    this.hide();
+                }
+                if (type) {
+                    core.ajaxPost(c.base + c._insert, {
+                        resourceType: type,
+                        targetPath: path,
+                        targetType: this.data.type
+                    }, {}, _.bind(function () {
+                        $(document).trigger('component:changed', [path]);
+                    }, this));
+                }
+                return false;
+            }
+        });
+
+        dialogs.openNewFileDialog = function (name, path, type) {
+            var c = dialogs.const.edit.url;
+            pages.dialogHandler.openEditDialog(c.path + c._add.path + c._add._file,
+                dialogs.NewFileDialog, name, path, type);
         };
 
         //

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+        jcr:language="de"
+        jcr:mixinTypes="[mix:language]"
+        jcr:primaryType="sling:Folder"
+        sling:basename="composum-pages-options-microsite">
+
+    <zip-file jcr:primaryType="sling:MessageEntry"
+            sling:key="ZIP file" sling:message="ZIP-Datei"/>
+
+    <upload-microsite jcr:primaryType="sling:MessageEntry"
+            sling:key="Upload Microsite Content" sling:message="Microsite-Inhalte hochladen"/>
+    <edit-microsite-hint jcr:primaryType="sling:MessageEntry"
+            sling:key="Edit the microsite properties" sling:message="die Microsite-Eigenschaften bearbeiten"/>
+    <upload-microsite-hint jcr:primaryType="sling:MessageEntry"
+            sling:key="Upload the microsite content" sling:message="die Microsite-Inhalte hochladen"/>
+    <copy-microsite-hint jcr:primaryType="sling:MessageEntry"
+            sling:key="Copy this microsite page and its content" sling:message="die Microsite mit allen Inhalten kopieren"/>
+    <delete-microsite-hint jcr:primaryType="sling:MessageEntry"
+            sling:key="Delete the entire microsite" sling:message="die gesamte Microsite löschen"/>
+
+</jcr:root>

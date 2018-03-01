@@ -16,6 +16,7 @@ import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.request.RequestDispatcherOptions;
 import org.apache.sling.api.resource.Resource;
 
+import javax.annotation.Nonnull;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import java.io.IOException;
@@ -32,7 +33,7 @@ import static com.composum.pages.commons.PagesConstants.PROP_SLING_TARGET;
 import static com.composum.pages.commons.PagesConstants.PROP_VIEW_CATEGORY;
 
 @PropertyDetermineResourceStrategy(Page.ContainingPageResourceStrategy.class)
-public class Page extends ContentDriven<PageContent> {
+public class Page extends ContentDriven<PageContent> implements Comparable<Page> {
 
     // static resource type determination
 
@@ -65,6 +66,11 @@ public class Page extends ContentDriven<PageContent> {
     public Page(PageManager manager, BeanContext context, Resource resource) {
         this.pageManager = manager;
         initialize(context, resource);
+    }
+
+    @Override
+    public int compareTo(@Nonnull Page page) {
+        return getName().compareTo(page.getName());
     }
 
     // initializer extensions

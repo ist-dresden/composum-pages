@@ -5,8 +5,6 @@ import com.composum.pages.commons.model.Model;
 import com.composum.pages.commons.model.Site;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.util.ResourceUtil;
-import com.composum.sling.platform.staging.query.Query;
-import com.composum.sling.platform.staging.query.QueryBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.resource.ModifiableValueMap;
@@ -17,17 +15,17 @@ import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.Workspace;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import static com.composum.pages.commons.PagesConstants.NODE_TYPE_SITE;
-import static org.apache.jackrabbit.JcrConstants.JCR_NAME;
 
 @Component(
         property = {
@@ -92,7 +90,8 @@ public class PagesSiteManager extends ResourceManager<Site> implements SiteManag
     }
 
     @Override
-    public Resource getSiteBase(BeanContext context, String tenant)
+    @Nonnull
+    public Resource getSiteBase(@Nonnull BeanContext context, String tenant)
             throws PersistenceException {
         ResourceResolver resolver = context.getResolver();
         Resource tenantsContent = resolver.getResource("/content");
@@ -106,7 +105,7 @@ public class PagesSiteManager extends ResourceManager<Site> implements SiteManag
     }
 
     @Override
-    public Collection<Site> getSites(BeanContext context, String tenant) {
+    public Collection<Site> getSites(@Nonnull BeanContext context, String tenant) {
         try {
             return getSites(context, getSiteBase(context, tenant));
         } catch (PersistenceException ex) {
@@ -116,7 +115,7 @@ public class PagesSiteManager extends ResourceManager<Site> implements SiteManag
     }
 
     @Override
-    public Collection<Site> getSiteTemplates(BeanContext context, String tenant) {
+    public Collection<Site> getSiteTemplates(@Nonnull BeanContext context, String tenant) {
         UniqueSiteList result = new UniqueSiteList();
         ResourceResolver resolver = context.getResolver();
         for (String root : resolver.getSearchPath()) {
@@ -129,33 +128,20 @@ public class PagesSiteManager extends ResourceManager<Site> implements SiteManag
     }
 
     @Override
-    public Collection<Site> getSites(BeanContext context, Resource searchRoot) {
-        Collection<Site> result = new ArrayList<>();
-        try {
-            ResourceResolver resolver = context.getResolver();
-            String queryRoot = searchRoot != null ? searchRoot.getPath() : "/";
-            Query query = resolver.adaptTo(QueryBuilder.class).createQuery();
-            query.path(queryRoot).type(NODE_TYPE_SITE).orderBy(JCR_NAME);
-            Iterable<Resource> found = query.execute();
-            for (Resource siteRes : found) {
-                result.add(createBean(context, siteRes));
-            }
-        } catch (RepositoryException ex) {
-            LOG.error(ex.getMessage(), ex);
-        }
-        return result;
+    public Collection<Site> getSites(@Nonnull BeanContext context, @Nullable Resource searchRoot) {
+        return getModels(context, NODE_TYPE_SITE, searchRoot);
     }
 
     @Override
-    public Site createSite(BeanContext context, String tenant, String siteName,
-                           String homepageType, boolean commit)
+    public Site createSite(@Nonnull BeanContext context, String tenant, @Nonnull String siteName,
+                           @Nullable String homepageType, boolean commit)
             throws RepositoryException, PersistenceException {
         return createSite(context, getSiteBase(context, tenant), siteName, homepageType, commit);
     }
 
     @Override
-    public Site createSite(BeanContext context, Resource siteBase, String siteName,
-                           String homepageType, boolean commit)
+    public Site createSite(@Nonnull BeanContext context, @Nonnull Resource siteBase, @Nonnull String siteName,
+                           @Nullable String homepageType, boolean commit)
             throws RepositoryException, PersistenceException {
 
         Resource siteResource;
@@ -181,18 +167,18 @@ public class PagesSiteManager extends ResourceManager<Site> implements SiteManag
     }
 
     @Override
-    public Site createSite(BeanContext context, String tenant,
-                           String siteName, String siteTitle, String description,
-                           Resource siteTemplate, boolean commit)
+    public Site createSite(@Nonnull BeanContext context, @Nullable String tenant, @Nonnull String siteName,
+                           @Nullable String siteTitle, @Nullable String description,
+                           @Nullable Resource siteTemplate, boolean commit)
             throws RepositoryException, PersistenceException {
         return createSite(context, getSiteBase(context, tenant),
                 siteName, siteTitle, description, siteTemplate, commit);
     }
 
     @Override
-    public Site createSite(BeanContext context, Resource siteBase,
-                           String siteName, String siteTitle, String description,
-                           Resource siteTemplate, boolean commit)
+    public Site createSite(@Nonnull BeanContext context, @Nonnull Resource siteBase, @Nonnull String siteName,
+                           @Nullable String siteTitle, @Nullable String description,
+                           @Nullable Resource siteTemplate, boolean commit)
             throws RepositoryException, PersistenceException {
 
         Resource siteResource;
@@ -231,25 +217,28 @@ public class PagesSiteManager extends ResourceManager<Site> implements SiteManag
     }
 
     @Override
-    public Site deleteSite(BeanContext context, String sitePath, boolean commit)
+    public boolean deleteSite(@Nonnull BeanContext context, @Nonnull String sitePath, boolean commit)
             throws PersistenceException {
         return deleteSite(context, context.getResolver().getResource(sitePath), commit);
     }
 
     @Override
-    public Site deleteSite(BeanContext context, Resource siteResource, boolean commit)
+    public boolean deleteSite(@Nonnull BeanContext context, @Nullable Resource siteResource, boolean commit)
             throws PersistenceException {
 
-        ResourceResolver resolver = context.getResolver();
-        if (LOG.isInfoEnabled()) {
-            LOG.info("deleteSite({})", siteResource.getPath());
-        }
+        if (siteResource != null) {
+            ResourceResolver resolver = context.getResolver();
+            if (LOG.isInfoEnabled()) {
+                LOG.info("deleteSite({})", siteResource.getPath());
+            }
 
-        resolver.delete(siteResource);
+            resolver.delete(siteResource);
 
-        if (commit) {
-            resolver.commit();
+            if (commit) {
+                resolver.commit();
+            }
+            return true;
         }
-        return instanceCreated(context, siteResource);
+        return false;
     }
 }

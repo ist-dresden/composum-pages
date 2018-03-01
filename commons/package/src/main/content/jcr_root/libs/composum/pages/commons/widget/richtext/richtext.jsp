@@ -6,7 +6,7 @@
 --%><cpp:defineFrameObjects/>
 <div class="${widgetCssBase}_${widget.widgetType} ${widgetCssBase}_${widget.cssName} form-group">
     <sling:call script="label.jsp"/>
-    <div class="${widgetCssBase}_wrapper composum-widgets-richtext richtext-widget widget form-control"
+    <div class="${widgetCssBase}_wrapper composum-widgets-richtext richtext-widget widget form-control widget-name_${widget.name}"
          data-style="height:${widget.model.height}"
          data-label="${widget.label}" data-i18n="${widget.i18n}" ${widget.attributes}>
         <textarea class="${widgetCssBase}_value richtext-widget widget rich-editor"

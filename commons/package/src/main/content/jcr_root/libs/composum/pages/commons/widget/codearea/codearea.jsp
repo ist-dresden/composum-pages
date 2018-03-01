@@ -5,7 +5,7 @@
 --%><cpp:defineFrameObjects/>
 <div class="${widgetCssBase}_${widget.widgetType} ${widgetCssBase}_${widget.cssName} form-group">
     <sling:call script="label.jsp"/>
-    <div class="${widgetCssBase}_editor codearea-widget widget code-editor form-control"
+    <div class="${widgetCssBase}_editor codearea-widget widget code-editor form-control widget-name_${widget.name}"
          data-name="${widget.name}" data-height="${widget.model.height}"
          data-label="${widget.label}" data-i18n="${widget.i18n}" ${widget.attributes}>${cpn:text(widget.model.text)}</div>
 </div>

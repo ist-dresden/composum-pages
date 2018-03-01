@@ -3,4 +3,5 @@
         jcr:primaryType="cpp:Widget"
         sling:resourceType="composum/pages/stage/widget/page/template"
         sling:resourceSuperType="composum/pages/commons/widget"
-        modelClass="com.composum.pages.stage.model.widget.PageTemplate"/>
+        modelClass="com.composum.pages.stage.model.widget.PageTemplate"
+        widgetType="page-template"/>

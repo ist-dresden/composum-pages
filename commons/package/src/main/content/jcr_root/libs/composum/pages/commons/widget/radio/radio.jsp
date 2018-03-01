@@ -6,7 +6,7 @@
 --%><cpp:defineFrameObjects/>
 <div class="${widgetCssBase}_${widget.widgetType} ${widgetCssBase}_${widget.cssName} form-group">
     <sling:call script="label.jsp"/>
-    <div class="widget radio-group-widget form-control">
+    <div class="widget radio-group-widget form-control widget-name_${widget.name}" data-i18n="${widget.i18n}" ${widget.attributes}>
         <c:forEach var="option" items="${widget.model.options}">
             <div class="radio-inline"><label><input type="radio" name="${widget.name}" value="${option.value}" <c:if
                     test="${option.selected}"> selected</c:if> />${option.label}</label></div>
