@@ -23,6 +23,10 @@ public class GenericModel extends ModelWrapper implements SlingBean {
             model = new Site(context, resource);
         } else if (Page.isPage(resource)) {
             model = new Page(context, resource);
+        } else if (Folder.isFolder(resource)) {
+            model = new Folder(context, resource);
+        } else if (File.isFile(resource)) {
+            model = new File(context, resource);
         } else if (Container.isContainer(context.getResource().getResourceResolver(), resource, null)) {
             model = new Container(context, resource);
         } else {

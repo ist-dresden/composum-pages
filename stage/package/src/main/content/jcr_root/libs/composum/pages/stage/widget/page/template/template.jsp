@@ -6,7 +6,7 @@
 <cpp:defineFrameObjects/>
 <div class="${widgetCssBase}_${widget.widgetType} ${widgetCssBase}_${widget.cssName} form-group">
     <sling:call script="label.jsp"/>
-    <div class="${widgetCssBase}_wrapper widget page-templates-widget widget-name_${widget.name}"
+    <div class="${widgetCssBase}_wrapper widget page-templates-widget widget-name_${widget.cssName}"
          data-label="${widget.label}" data-i18n="${widget.i18n}" ${widget.attributes}>
         <div class="${widgetCssBase}_toolbar">
             <div class="${widgetCssBase}_search">

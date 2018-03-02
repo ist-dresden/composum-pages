@@ -61,6 +61,10 @@ public abstract class AbstractWidgetTag extends AbstractWrappingTag {
         modelClass = className;
     }
 
+    public boolean isFormWidget () {
+        return !name.startsWith("#");
+    }
+
     /**
      * @return the name of the form input element probably with a prepended relative path and the i18n path
      */

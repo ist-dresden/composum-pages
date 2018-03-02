@@ -5,7 +5,7 @@
 --%><cpp:defineFrameObjects/>
 <div class="${widgetCssBase}_${widget.widgetType} ${widgetCssBase}_${widget.cssName} form-group">
     <sling:call script="label.jsp"/>
-    <div class="${widgetCssBase}_link-field input-group widget link-widget widget-name_${widget.name}" ${widget.attributes}
+    <div class="${widgetCssBase}_link-field input-group widget link-widget widget-name_${widget.cssName}" ${widget.attributes}
          title="Select Link" data-label="Link or select(ed) path">
         <input name="${widget.name}" class="${widgetCssBase}_input form-control" type="text"
                data-label="${widget.label}" data-i18n="${widget.i18n}"

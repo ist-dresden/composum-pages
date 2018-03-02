@@ -76,15 +76,15 @@
             },
 
             insertPage: function (event, name, path, type) {
-                pages.dialogs.openNewPageDialog('page', name, path, type);
+                pages.dialogs.openNewPageDialog(name, path, type);
             },
 
             insertFolder: function (event, name, path, type) {
-                pages.dialogs.openNewFolderDialog('page', name, path, type);
+                pages.dialogs.openNewFolderDialog(name, path, type);
             },
 
             insertFile: function (event, name, path, type) {
-                pages.dialogs.openNewFileDialog('page', name, path, type);
+                pages.dialogs.openNewFileDialog(name, path, type);
             },
 
             copy: function (event, name, path, type) {
@@ -131,15 +131,15 @@
             },
 
             insertPage: function (event, name, path, type) {
-                pages.dialogs.openNewPageDialog('site', name, path, type);
+                pages.dialogs.openNewPageDialog(name, path, type);
             },
 
             insertFolder: function (event, name, path, type) {
-                pages.dialogs.openNewFolderDialog('site', name, path, type);
+                pages.dialogs.openNewFolderDialog(name, path, type);
             },
 
             insertFile: function (event, name, path, type) {
-                pages.dialogs.openNewFileDialog('site', name, path, type);
+                pages.dialogs.openNewFileDialog(name, path, type);
             },
 
             create: function (event, name, path, type) {
@@ -162,15 +162,15 @@
         actions.folder = {
 
             insertPage: function (event, name, path, type) {
-                pages.dialogs.openNewPageDialog('folder', name, path, type);
+                pages.dialogs.openNewPageDialog(name, path, type);
             },
 
             insertFolder: function (event, name, path, type) {
-                pages.dialogs.openNewFolderDialog('folder', name, path, type);
+                pages.dialogs.openNewFolderDialog(name, path, type);
             },
 
             insertFile: function (event, name, path, type) {
-                pages.dialogs.openNewFileDialog('folder', name, path, type);
+                pages.dialogs.openNewFileDialog(name, path, type);
             },
 
             rename: function (event, name, path, type) {

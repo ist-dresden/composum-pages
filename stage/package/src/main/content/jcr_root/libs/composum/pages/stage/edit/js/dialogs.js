@@ -203,23 +203,7 @@
              * the submit handler called after a successful validation
              */
             doSubmit: function () {
-                this.submitForm(_.bind(function (result) {
-                    var event = (this.$el.data('pages-edit-success') || 'component:changed').split(';');
-                    for (var i = 0; i < event.length; i++) {
-                        switch (event[i]) {
-                            case 'messages':
-                                if (_.isObject(result) && _.isObject(result.response)) {
-                                    var response = result.response;
-                                    var messages = result.messages;
-                                    core.messages(response.level, response.text, messages);
-                                }
-                                break;
-                            default:
-                                $(document).trigger(event[i], [this.data.path]);
-                                break;
-                        }
-                    }
-                }, this));
+                this.submitForm(_.bind(this.triggerEvents, this));
             },
 
             doDelete: function () {
@@ -230,6 +214,24 @@
                     $(document).trigger('component:selected', []);
                     $(document).trigger('component:deleted', [this.data.path]);
                 }, this));
+            },
+
+            triggerEvents: function (result) {
+                var event = (this.$el.data('pages-edit-success') || 'component:changed').split(';');
+                for (var i = 0; i < event.length; i++) {
+                    switch (event[i]) {
+                        case 'messages':
+                            if (_.isObject(result) && _.isObject(result.response)) {
+                                var response = result.response;
+                                var messages = result.messages;
+                                core.messages(response.level, response.text, messages);
+                            }
+                            break;
+                        default:
+                            $(document).trigger(event[i], [this.data.path]);
+                            break;
+                    }
+                }
             },
 
             validationReset: function () {
@@ -411,29 +413,19 @@
         };
 
         /**
-         * the dialog to select the content type of new content to insert in the tree
+         * the dialog to add a new folder as child of the current selection
          */
-        dialogs.NewFolderDialog = dialogs.ElementDialog.extend({
+        dialogs.NewFolderDialog = dialogs.EditDialog.extend({
 
             initView: function () {
+                dialogs.EditDialog.prototype.initView.apply(this);
+                this.$primaryType = this.$('.widget-name_jcr_primaryType');
+                this.ordered = core.getWidget(this.el, '.widget-name_ordered', core.components.CheckboxWidget);
             },
 
-            doSubmit: function (type) {
-                var c = dialogs.const.edit.url;
-                if (!type) {
-                    type = this.contentType.getValue();
-                    this.hide();
-                }
-                if (type) {
-                    core.ajaxPost(c.base + c._insert, {
-                        resourceType: type,
-                        targetPath: path,
-                        targetType: this.data.type
-                    }, {}, _.bind(function () {
-                        $(document).trigger('component:changed', [path]);
-                    }, this));
-                }
-                return false;
+            doSubmit: function () {
+                this.$primaryType.attr('value', this.ordered.getValue() ? 'sling:OrderedFolder' : 'sling:Folder');
+                dialogs.EditDialog.prototype.doSubmit.apply(this);
             }
         });
 
@@ -444,29 +436,26 @@
         };
 
         /**
-         * the dialog to select the content type of new content to insert in the tree
+         * the dialog to upload a file as child of the current selection
          */
-        dialogs.NewFileDialog = dialogs.ElementDialog.extend({
+        dialogs.NewFileDialog = dialogs.EditDialog.extend({
 
             initView: function () {
+                dialogs.EditDialog.prototype.initView.apply(this);
+                this.file = core.getWidget(this.el, '.widget-name_STAR', core.components.FileUploadWidget);
+                this.name = core.getWidget(this.el, '.widget-name_name', core.components.TextFieldWidget);
             },
 
-            doSubmit: function (type) {
-                var c = dialogs.const.edit.url;
-                if (!type) {
-                    type = this.contentType.getValue();
-                    this.hide();
+            doSubmit: function () {
+                var name = this.name.getValue();
+                if (!name) {
+                    name = this.file.getFileName();
                 }
-                if (type) {
-                    core.ajaxPost(c.base + c._insert, {
-                        resourceType: type,
-                        targetPath: path,
-                        targetType: this.data.type
-                    }, {}, _.bind(function () {
-                        $(document).trigger('component:changed', [path]);
-                    }, this));
+                if (name) {
+                    name = name.replace(/[ /]+/g, '_').replace(/[:#@]+/g, '-');
+                    this.file.setName(name);
                 }
-                return false;
+                dialogs.EditDialog.prototype.doSubmit.apply(this);
             }
         });
 
