@@ -4,8 +4,33 @@
 
 .composum-pages-components-navigation-navbar {
 
+    &_brand {
+        position: absolute;
+    }
+
     &_search {
         width: 180px;
+        padding-right: 0;
+    }
+
+    &_navbar-nav {
+
+        .composum-pages-components-navigation-menuitem {
+
+            a {
+                background-color: $bootstrap-navbar-background;
+            }
+        }
+    }
+
+    .dropdown-menu {
+
+        .composum-pages-components-navigation-menuitem {
+
+            &_link{
+                color: $bootstrap-color-mute;
+            }
+        }
     }
 }
 
@@ -14,7 +39,11 @@
     .composum-pages-components-navigation-navbar {
 
         &_search {
-            display: none;
+            width: 100%;
+            margin: 0;
+            padding: 10px 15px;
+            height: 46px;
+            border: none;
         }
     }
 }

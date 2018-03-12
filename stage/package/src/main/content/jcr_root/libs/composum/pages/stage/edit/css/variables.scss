@@ -3,6 +3,7 @@
 $bootstrap-color-danger: #a94442;
 $bootstrap-color-info: #337ab7;
 $bootstrap-color-mute: #777;
+$bootstrap-btn-menu-active-bg: #e6e6e6;
 
 $bootstrap-spacing-v: 10px;
 $bootstrap-spacing-h: 15px;
@@ -57,6 +58,7 @@ $edit-actions-spacing-v: 3px;
 $edit-actions-spacing-h: 4px;
 $edit-actions-corner-width: 22px;
 $edit-actions-background: $tools-pane-background;
+$edit-actions-menu-bg: $bootstrap-btn-menu-active-bg;
 $edit-actions-foreground: #ffffff;
 $edit-actions-highlight: #ffda88;
 $edit-actions-button-size: 27px;

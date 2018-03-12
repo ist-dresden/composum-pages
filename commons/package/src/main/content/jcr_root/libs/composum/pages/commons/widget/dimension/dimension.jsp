@@ -4,7 +4,7 @@
 --%><%@taglib prefix="cpn" uri="http://sling.composum.com/cpnl/1.0" %><%--
 --%><%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%><%--
 --%><cpp:defineFrameObjects/>
-<div class="${widgetCssBase}_${widget.widgetType} ${widgetCssBase}_${widget.cssName} form-group">
+<div class="${widgetCssBase}_${widget.widgetType} ${widgetCssBase}_${widget.cssName} form-group widget-name_${widget.cssName}">
     <sling:call script="label.jsp"/>
     <div class="form-inline">
         <input name="${widget.name}.width" data-i18n="${widget.i18n}" size="7"

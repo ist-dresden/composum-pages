@@ -1,7 +1,7 @@
 package com.composum.pages.commons.model;
 
 import com.composum.pages.commons.PagesConstants;
-import com.composum.pages.commons.model.properties.AllowedTypes;
+import com.composum.pages.commons.model.properties.PathPatternSet;
 import com.composum.pages.commons.service.EditService;
 import com.composum.pages.commons.util.ResolverUtil;
 import com.composum.sling.core.BeanContext;
@@ -57,7 +57,7 @@ public class Container extends Element {
     private transient List<Element> elementList;
     private transient Boolean withSpacing;
 
-    private transient AllowedTypes allowedElements;
+    private transient PathPatternSet allowedElements;
 
     private transient List<String> elementTypes;
 
@@ -134,9 +134,9 @@ public class Container extends Element {
     /**
      * returns the 'allowedElements' rule for this container (from the configuration)
      */
-    public AllowedTypes getAllowedElements() {
+    public PathPatternSet getAllowedElements() {
         if (allowedElements == null) {
-            allowedElements = new AllowedTypes(new ResourceReference(this), PROP_ALLOWED_ELEMENTS);
+            allowedElements = new PathPatternSet(new ResourceReference(this), PROP_ALLOWED_ELEMENTS);
         }
         return allowedElements;
     }

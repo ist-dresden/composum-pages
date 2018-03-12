@@ -4,8 +4,9 @@
 --%><%@taglib prefix="cpn" uri="http://sling.composum.com/cpnl/1.0" %><%--
 --%><%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %><%--
 --%><cpp:defineFrameObjects/>
-<select name="${widget.name}" data-label="${widget.label}" data-i18n="${widget.i18n}" ${widget.attributes}
-        class="${widgetCssBase}_select widget select-widget form-control">
+<select <c:if test="${widget.formWidget}">name="${widget.name}"</c:if> data-label="${widget.label}"
+        data-i18n="${widget.i18n}" ${widget.attributes}
+        class="${widgetCssBase}_select widget select-widget form-control widget-name_${widget.cssName}">
     <c:forEach var="option" items="${widget.model.options}">
         <option value="${option.value}"<c:if test="${option.selected}"> selected</c:if>>${option.label}</option>
     </c:forEach>

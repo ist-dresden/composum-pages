@@ -99,14 +99,8 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
 
     // Site properties
 
-    public boolean isSiteTemplate() {
-        String path = getPath();
-        for (String root : resolver.getSearchPath()) {
-            if (path.startsWith(root)) {
-                return true;
-            }
-        }
-        return false;
+    public boolean isTemplate() {
+        return getSiteManager().isTemplate(this);
     }
 
     @Override

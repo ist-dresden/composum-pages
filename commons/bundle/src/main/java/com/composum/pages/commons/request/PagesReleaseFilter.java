@@ -177,8 +177,8 @@ public class PagesReleaseFilter implements Filter {
                 request.setAttribute(DisplayMode.ATTRIBUTE_KEY, DisplayMode.create(DisplayMode.Value.NONE));
             }
 
-            // disable component caching if in edit mode
-            if (DisplayMode.isEditMode(context)) {
+            // disable component caching if in edit or preview mode
+            if (DisplayMode.isEditMode(context) || DisplayMode.isPreviewMode(context)) {
                 LOG.debug ("EDIT mode, no cache for '{}'", resource.getPath());
                 slingRequest.setAttribute(ATTR_CACHE_DISABLED, Boolean.TRUE);
             }

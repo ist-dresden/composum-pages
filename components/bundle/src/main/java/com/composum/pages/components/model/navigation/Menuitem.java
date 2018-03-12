@@ -35,6 +35,12 @@ public class Menuitem extends Page {
     }
 
     @Override
+    public String getTitle() {
+        String title = super.getTitle();
+        return StringUtils.isNotBlank(title) ? title : getName();
+    }
+
+    @Override
     protected String getCssBaseType() {
         return MENU_ITEM_CSS_BASE_TYPE;
     }
@@ -56,8 +62,7 @@ public class Menuitem extends Page {
         String currentPagePath = getCurrentPage().getPath();
         String menuitemPath = resource.getPath();
         String homepagePath = getHomepage().getPath();
-        return currentPagePath.startsWith(menuitemPath)
-                && (!homepagePath.equals(menuitemPath) || menuitemPath.equals(currentPagePath));
+        return menuitemPath.equals(currentPagePath) || currentPagePath.startsWith(menuitemPath + "/");
     }
 
     public boolean isMenuOnly() {

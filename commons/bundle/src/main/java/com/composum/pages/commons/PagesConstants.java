@@ -9,76 +9,90 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 
-public class PagesConstants {
+public interface PagesConstants {
 
-    public static final String ENCODING = "UTF-8";
+    String ENCODING = "UTF-8";
 
-    public static final String CPP_NAMESPACE = "cpp";
-    public static final String CPP_PREFIX = CPP_NAMESPACE + ":";
-    public static final String COMPOSUM_PREFIX = "composum-";
-    public static final String PAGES_PREFIX = COMPOSUM_PREFIX + "pages-";
+    String CPP_NAMESPACE = "cpp";
+    String CPP_PREFIX = CPP_NAMESPACE + ":";
+    String COMPOSUM_PREFIX = "composum-";
+    String PAGES_PREFIX = COMPOSUM_PREFIX + "pages-";
 
-    public static final String LANGUAGE_KEY = PAGES_PREFIX + "language";
+    String LANGUAGE_KEY = PAGES_PREFIX + "language";
 
     /** Component declarations */
 
-    public static final String NODE_TYPE_COMPONENT = CPP_PREFIX + "Component";
-    public static final String PROP_COMPONENT_TYPE = "componentType";
+    String NODE_TYPE_COMPONENT = CPP_PREFIX + "Component";
+    String PROP_COMPONENT_TYPE = "componentType";
 
     /** Content elements */
 
-    public static final String NODE_TYPE_SOMETHING = "nt:unstructured";
-    public static final String NODE_TYPE_ELEMENT = CPP_PREFIX + "Element";
-    public static final String NODE_TYPE_CONTAINER = CPP_PREFIX + "Container";
+    String NODE_TYPE_SOMETHING = "nt:unstructured";
+    String NODE_TYPE_ELEMENT = CPP_PREFIX + "Element";
+    String NODE_TYPE_CONTAINER = CPP_PREFIX + "Container";
 
-    public static final String PROP_ALLOWED_CONTAINERS = "allowedContainers";
-    public static final String PROP_ALLOWED_ELEMENTS = "allowedElements";
+    String PROP_ALLOWED_CONTAINERS = "allowedContainers";
+    String PROP_ALLOWED_ELEMENTS = "allowedElements";
 
     /** Page */
 
-    public static final String NODE_TYPE_PAGE = CPP_PREFIX + "Page";
-    public static final String NODE_TYPE_PAGE_CONTENT = CPP_PREFIX + "PageContent";
+    String NODE_TYPE_PAGE = CPP_PREFIX + "Page";
+    String NODE_TYPE_PAGE_CONTENT = CPP_PREFIX + "PageContent";
 
-    public static final String PROP_ALLOWED_PARENTS = "allowedParents";
-    public static final String PROP_ALLOWED_CHILDREN = "allowedChildren";
+    String PROP_ALLOWED_PARENTS = "allowedParents";
+    String PROP_ALLOWED_CHILDREN = "allowedChildren";
 
-    public static final String NAVIGATION_PROPS = "navigation/";
-    public static final String PROP_HIDE_IN_NAV = NAVIGATION_PROPS + "hideInNav";
-    public static final String PROP_NAV_TITLE = NAVIGATION_PROPS + "title";
+    String NAVIGATION_PROPS = "navigation/";
+    String PROP_HIDE_IN_NAV = NAVIGATION_PROPS + "hideInNav";
+    String PROP_NAV_TITLE = NAVIGATION_PROPS + "title";
 
-    public static final String PROP_SLING_TARGET = "sling:target";
+    String PROP_SLING_TARGET = "sling:target";
 
-    public static final String SUBNODE_STYLE = "style/";
-    public static final String PROP_VIEW_CATEGORY = SUBNODE_STYLE + "category.view";
-    public static final String PROP_EDIT_CATEGORY = SUBNODE_STYLE + "category.edit";
-    public static final String DEFAULT_VIEW_CATEGORY = "composum.pages.components.view";
-    public static final String DEFAULT_EDIT_CATEGORY = "composum.pages.components.edit";
+    String SUBNODE_STYLE = "style/";
+    String PROP_VIEW_CATEGORY = SUBNODE_STYLE + "category.view";
+    String PROP_EDIT_CATEGORY = SUBNODE_STYLE + "category.edit";
+    String DEFAULT_VIEW_CATEGORY = "composum.pages.components.view";
+    String DEFAULT_EDIT_CATEGORY = "composum.pages.components.edit";
 
-    public static final String SEARCH_PROPS = "search/";
+    String SEARCH_PROPS = "search/";
     /** Property of a page that, if true, hides the page in search results. */
-    public static final String PROP_IGNORE_IN_SEARCH = SEARCH_PROPS + "ignoreInSearch";
+    String PROP_IGNORE_IN_SEARCH = SEARCH_PROPS + "ignoreInSearch";
 
     /** Site */
 
-    public static final String NODE_TYPE_SITE = CPP_PREFIX + "Site";
-    public static final String NODE_TYPE_SITE_CONFIGURATION = CPP_PREFIX + "SiteConfiguration";
-    public static final String PROP_HOMEPAGE = "homepage";
-    public static final String DEFAULT_HOMEPAGE_PATH = "home";
+    String NODE_TYPE_SITE = CPP_PREFIX + "Site";
+    String NODE_TYPE_SITE_CONFIGURATION = CPP_PREFIX + "SiteConfiguration";
+    String PROP_HOMEPAGE = "homepage";
+    String DEFAULT_HOMEPAGE_PATH = "home";
+
+    /** Template */
+
+    String PROP_TEMPLATE = "template";
+    String PROP_IS_TEMPLATE = "isTemplate";
+
+    String PROP_ALLOWED_PARENT_TEMPLATES = "allowedParentTemplates";
+    String PROP_FORBIDDEN_PARENT_TEMPLATES = "forbiddenParentTemplates";
+    String PROP_ALLOWED_CHILD_TEMPLATES = "allowedChildTemplates";
+    String PROP_FORBIDDEN_CHILD_TEMPLATES = "forbiddenChildTemplates";
+    String PROP_ALLOWED_PARENT_TYPES = "allowedParentTypes";
+    String PROP_FORBIDDEN_PARENT_TYPES = "forbiddenParentTypes";
+    String PROP_ALLOWED_CHILD_TYPES = "allowedChildTypes";
+    String PROP_FORBIDDEN_CHILD_TYPES = "forbiddenChildTypes";
 
     /** Widget */
 
-    public static final String NODE_TYPE_WIDGET = CPP_PREFIX + "Widget";
-    public static final String PROP_WIDGET_TYPE = "widgetType";
+    String NODE_TYPE_WIDGET = CPP_PREFIX + "Widget";
+    String PROP_WIDGET_TYPE = "widgetType";
 
     /** general properties */
 
-    public static final String PROP_CREATION_DATE = "jcr:created";
-    public static final String PROP_LAST_MODIFIED = ResourceUtil.PROP_LAST_MODIFIED;
-    public static final String TIMESTAMP_FORMAT = "yyyy-MM-dd HH:mm:ss";
+    String PROP_CREATION_DATE = "jcr:created";
+    String PROP_LAST_MODIFIED = ResourceUtil.PROP_LAST_MODIFIED;
+    String TIMESTAMP_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
     /** */
 
-    public enum ComponentType {
+    enum ComponentType {
 
         site, page, container, element, something;
 

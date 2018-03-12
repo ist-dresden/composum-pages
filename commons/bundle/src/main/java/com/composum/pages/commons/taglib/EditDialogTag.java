@@ -125,6 +125,9 @@ public class EditDialogTag extends AbstractWrappingTag {
             String suffix = request.getRequestPathInfo().getSuffix();
             if (StringUtils.isNotBlank(suffix) && !"/".equals(suffix)) {
                 editResource = request.getResourceResolver().getResource(suffix);
+                if (editResource != null) {
+                    request.setAttribute(EDIT_RESOURCE_KEY, editResource);
+                }
             }
         }
         return editResource instanceof Resource ? ((Resource) editResource) : super.getModelResource(context);

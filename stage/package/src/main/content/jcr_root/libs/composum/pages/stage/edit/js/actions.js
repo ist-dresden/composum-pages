@@ -75,8 +75,16 @@
                 actions.element.edit(event, name, path, type);
             },
 
-            create: function (event, name, path, type) {
-                alert('page.create... ' + name + ',' + path + ',' + type);
+            insertPage: function (event, name, path, type) {
+                pages.dialogs.openNewPageDialog(name, path, type);
+            },
+
+            insertFolder: function (event, name, path, type) {
+                pages.dialogs.openNewFolderDialog(name, path, type);
+            },
+
+            insertFile: function (event, name, path, type) {
+                pages.dialogs.openNewFileDialog(name, path, type);
             },
 
             copy: function (event, name, path, type) {
@@ -122,6 +130,18 @@
                 actions.element.edit(event, name, path, type);
             },
 
+            insertPage: function (event, name, path, type) {
+                pages.dialogs.openNewPageDialog(name, path, type);
+            },
+
+            insertFolder: function (event, name, path, type) {
+                pages.dialogs.openNewFolderDialog(name, path, type);
+            },
+
+            insertFile: function (event, name, path, type) {
+                pages.dialogs.openNewFileDialog(name, path, type);
+            },
+
             create: function (event, name, path, type) {
                 pages.dialogs.openCreateSiteDialog();
             },
@@ -141,8 +161,16 @@
 
         actions.folder = {
 
-            create: function (event, name, path, type) {
-                alert('folder.create... ' + name + ',' + path + ',' + type);
+            insertPage: function (event, name, path, type) {
+                pages.dialogs.openNewPageDialog(name, path, type);
+            },
+
+            insertFolder: function (event, name, path, type) {
+                pages.dialogs.openNewFolderDialog(name, path, type);
+            },
+
+            insertFile: function (event, name, path, type) {
+                pages.dialogs.openNewFileDialog(name, path, type);
             },
 
             rename: function (event, name, path, type) {

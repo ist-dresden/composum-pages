@@ -4,7 +4,7 @@
 --%><%@taglib prefix="cpn" uri="http://sling.composum.com/cpnl/1.0" %><%--
 --%><%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %><%--
 --%><cpp:defineFrameObjects/>
-<div class="${widgetCssBase}_${widget.widgetType} ${widgetCssBase}_${widget.cssName} form-group">
+<div class="${widgetCssBase}_${widget.widgetType} ${widgetCssBase}_${widget.cssName} form-group>
     <sling:call script="label.jsp"/>
     <sling:call script="embedded.jsp"/>
 </div>

@@ -6,7 +6,7 @@
 <cpp:editToolbar var="frame" type="com.composum.pages.stage.model.edit.FramePage"
                  cssClasses="composum-pages-stage-edit-toolbar">
     <a class="${toolbarCssBase}_language ${toolbarCssBase}_button dropdown-toggle"
-       data-toggle="dropdown"href="#"><span class="${toolbarCssBase}_language-label">${frame.languageHint}</span><span class="caret"></span></a>
+       data-toggle="dropdown" href="#"><span class="${toolbarCssBase}_language-label">${frame.languageHint}</span><span class="caret"></span></a>
     <sling:include path="${frame.pagePath}" resourceType="composum/pages/stage/edit/tools/language/menu"/>
     <a class="fa fa-bullseye ${toolbarCssBase}_open-page ${toolbarCssBase}_button" href="#"
        title="${cpn:i18n(slingRequest,'Open Page')}"><span class="${toolbarCssBase}_label">${cpn:i18n(slingRequest,'Open Page')}</span></a>

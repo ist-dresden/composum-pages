@@ -12,6 +12,8 @@ import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -46,14 +48,14 @@ public class ResourceReference {
     }
 
     /** a resource and a probably overlayed type (type can be 'null') */
-    public ResourceReference(Resource resource, String type) {
+    public ResourceReference(@Nonnull Resource resource, @Nullable String type) {
         this.resolver = resource.getResourceResolver();
         this.path = resource.getPath();
         this.type = StringUtils.isNotBlank(type) ? type : resource.getResourceType();
     }
 
     /** a reference simply created by the values */
-    public ResourceReference(ResourceResolver resolver, String path, String type) {
+    public ResourceReference(@Nonnull ResourceResolver resolver, @Nonnull String path, @Nonnull String type) {
         this.resolver = resolver;
         this.path = path;
         this.type = type;
@@ -65,10 +67,12 @@ public class ResourceReference {
         fromJson(reader);
     }
 
+    @Nonnull
     public String getPath() {
         return path;
     }
 
+    @Nonnull
     public String getType() {
         return type;
     }

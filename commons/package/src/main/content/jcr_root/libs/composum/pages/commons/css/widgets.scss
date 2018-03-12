@@ -3,6 +3,27 @@
 @import "variables";
 @import "mixins";
 
+.composum-pages-edit-widget {
+
+    &_input {
+        @include dialog-input-font;
+    }
+
+    &_checkbox {
+
+        .row > .col > & {
+
+            .composum-pages-edit-widget {
+
+                &_hint {
+                    margin-top: -10px;
+                    margin-bottom: 12px;
+                }
+            }
+        }
+    }
+}
+
 .composum-pages-edit-widget,
 .composum-pages-edit-multiwidget {
 
@@ -24,13 +45,6 @@
         @include edit-hint-font;
         text-align: right;
         color: $edit-hint-color;
-    }
-}
-
-.composum-pages-edit-widget {
-
-    &_input {
-        @include dialog-input-font;
     }
 }
 

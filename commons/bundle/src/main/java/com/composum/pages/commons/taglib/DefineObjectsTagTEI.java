@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.composum.pages.commons.taglib.DefineObjectsTag.CONTEXT_PATH;
 import static com.composum.pages.commons.taglib.DefineObjectsTag.CURRENT_PAGE;
 import static com.composum.pages.commons.taglib.DefineObjectsTag.PAGES_AUTHOR;
 import static com.composum.pages.commons.taglib.DefineObjectsTag.PAGES_MODE_DEVELOP;
@@ -25,6 +26,7 @@ public class DefineObjectsTagTEI extends org.apache.sling.scripting.jsp.taglib.D
     }
 
     protected void collectVariables(TagData data, List<VariableInfo> variables) {
+        variables.add(new VariableInfo(CONTEXT_PATH, String.class.getName(), true, VariableInfo.AT_END));
         variables.add(new VariableInfo(CURRENT_PAGE, Page.class.getName(), true, VariableInfo.AT_END));
         variables.add(new VariableInfo(PAGES_AUTHOR, Boolean.class.getName(), true, VariableInfo.AT_END));
         variables.add(new VariableInfo(PAGES_PUBLIC, Boolean.class.getName(), true, VariableInfo.AT_END));

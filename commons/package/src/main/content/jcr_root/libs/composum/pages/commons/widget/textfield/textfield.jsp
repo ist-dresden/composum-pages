@@ -6,9 +6,10 @@
 <cpp:defineFrameObjects/>
 <div class="${widgetCssBase}_${widget.widgetType} ${widgetCssBase}_${widget.cssName} form-group">
     <sling:call script="label.jsp"/>
-    <input name="${widget.name}" data-label="${widget.label}" data-i18n="${widget.i18n}" ${widget.attributes}
-           class="${widgetCssBase}_input ${widgetCssBase}_text-field widget text-field-widget form-control"
-           type="text" value="${cpn:text(widget.model.text)}" placeholder="${cpn:text(widget.placeholder)}"
+    <input <c:if test="${widget.formWidget}">name="${widget.name}"</c:if> data-label="${widget.label}"
+           class="${widgetCssBase}_input ${widgetCssBase}_text-field widget text-field-widget form-control widget-name_${widget.cssName}"
+           data-i18n="${widget.i18n}" ${widget.attributes} type="text"
+           value="${cpn:text(widget.model.text)}" placeholder="${cpn:text(widget.placeholder)}"
            <c:if test="${widget.disabled}">disabled</c:if> />
 </div>
 

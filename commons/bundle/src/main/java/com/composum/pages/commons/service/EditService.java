@@ -1,6 +1,6 @@
 package com.composum.pages.commons.service;
 
-import com.composum.pages.commons.model.HierarchyFilter;
+import com.composum.pages.commons.model.ElementTypeFilter;
 import com.composum.pages.commons.model.ResourceReference;
 import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.filter.StringFilter;
@@ -43,7 +43,7 @@ public interface EditService {
      */
     java.util.List getAllowedElementTypes(ResourceResolver resolver,
                                           ResourceReference.List containers,
-                                          HierarchyFilter filter,
+                                          ElementTypeFilter filter,
                                           boolean resourceTypePath);
 
     /**

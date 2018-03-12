@@ -73,7 +73,10 @@ public class EditWidgetTag extends AbstractWidgetTag implements LoopTag {
     }
 
     public String getCssName() {
-        return getName().replace('/', '-');
+        return getName().replace('/', '-')
+                .replace(':','_')
+                .replace("*","STAR")
+                .replace("#", "");
     }
 
     public Object getValue() {

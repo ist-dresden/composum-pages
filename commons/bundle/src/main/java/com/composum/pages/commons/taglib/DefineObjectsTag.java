@@ -26,6 +26,7 @@ public class DefineObjectsTag extends org.apache.sling.scripting.jsp.taglib.Defi
     public static final String PAGES_MODE_DEVELOP = PAGES_MODE_PREFIX + "Develop";
 
     public static final String CURRENT_PAGE = "currentPage";
+    public static final String CONTEXT_PATH = "contextPath";
 
     protected BeanContext context;
 
@@ -34,6 +35,7 @@ public class DefineObjectsTag extends org.apache.sling.scripting.jsp.taglib.Defi
         int result = super.doEndTag();
         context = createContext(pageContext);
 
+        context.setAttribute(CONTEXT_PATH, context.getRequest().getContextPath(), BeanContext.Scope.request);
         PlatformAccessFilter.AccessMode accessMode = AccessMode.get(context);
         context.setAttribute(PAGES_AUTHOR, accessMode == PlatformAccessFilter.AccessMode.AUTHOR
                 ? Boolean.TRUE : Boolean.FALSE, BeanContext.Scope.request);

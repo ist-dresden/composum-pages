@@ -10,7 +10,21 @@
             edit: {
                 url: {
                     base: '/bin/cpm/pages/edit',
+                    path: '/libs/composum/pages/stage/edit/default',
+                    _add: {
+                        path: '/content/dialog/add',
+                        _page: '.page.html',
+                        _folder: '.folder.html',
+                        _file: '.file.html'
+                    },
+                    _create: {
+                        page: '.createPage.json'
+                    },
+                    _delete: {
+                        page: '.deletePage.json'
+                    },
                     _insert: '.insertComponent.html',
+                    _isTemplate: '.isTemplate.json',
                     _dialog: {
                         load: '.editDialog',
                         new: '.newDialog',
@@ -63,6 +77,7 @@
             validationReset: function () {
                 this.$alert.addClass('alert-hidden');
                 this.$alert.html('');
+                this.validationHints = [];
                 this.form.validationReset();
             },
 
@@ -77,6 +92,12 @@
                 }
             },
 
+            validationHint: function (type, label, message, hint) {
+                if (message) {
+                    this.validationHints.push({level: type, label: label, text: message, hint: hint});
+                }
+            },
+
             /**
              * triggered if the submit button is clicked or activated somewhere else
              */
@@ -87,10 +108,12 @@
                 this.form.prepare();
                 this.validationReset();
                 if (this.form.validate(_.bind(function (type, label, message, hint) {
-                        this.message('warning', label, message, hint)
+                        this.validationHint(type, label, message, hint)
                     }, this))) {
                     this.doSubmit();
                 } else {
+                    this.messages('warning', this.validationHints.length < 1 ? 'validation error' : undefined,
+                        this.validationHints);
                     this.onValidationFault();
                 }
                 return false;
@@ -187,23 +210,7 @@
              * the submit handler called after a successful validation
              */
             doSubmit: function () {
-                this.submitForm(_.bind(function (result) {
-                    var event = (this.$el.data('pages-edit-success') || 'component:changed').split(';');
-                    for (var i=0; i < event.length; i++) {
-                        switch (event[i]) {
-                            case 'messages':
-                                if (_.isObject(result) && _.isObject(result.response)) {
-                                    var response = result.response;
-                                    var messages = result.messages;
-                                    core.messages(response.level, response.text, messages);
-                                }
-                                break;
-                            default:
-                                $(document).trigger(event[i], [this.data.path]);
-                                break;
-                        }
-                    }
-                }, this));
+                this.submitForm(_.bind(this.triggerEvents, this));
             },
 
             doDelete: function () {
@@ -214,6 +221,24 @@
                     $(document).trigger('component:selected', []);
                     $(document).trigger('component:deleted', [this.data.path]);
                 }, this));
+            },
+
+            triggerEvents: function (result) {
+                var event = (this.$el.data('pages-edit-success') || 'component:changed').split(';');
+                for (var i = 0; i < event.length; i++) {
+                    switch (event[i]) {
+                        case 'messages':
+                            if (_.isObject(result) && _.isObject(result.response)) {
+                                var response = result.response;
+                                var messages = result.messages;
+                                core.messages(response.level, response.text, messages);
+                            }
+                            break;
+                        default:
+                            $(document).trigger(event[i], [this.data.path]);
+                            break;
+                    }
+                }
             },
 
             validationReset: function () {
@@ -268,7 +293,7 @@
 
             afterLoad: function (name, path, type) {
                 // set resource Type if such a hidden field is available
-                //this.$('[name="' + dialogs.const.pages.const.sling.resourceType + '"]').attr('value',type);
+                //this.$('[name="' + dialogs.const.pages.const.sling.resourceType + '"]').attr('value',type); ??? FIXME
             }
         });
 
@@ -333,6 +358,121 @@
         dialogs.openDeleteElementDialog = function (name, path, type) {
             pages.dialogHandler.openEditDialog(dialogs.getEditDialogUrl('delete'),
                 dialogs.DeleteElementDialog, name, path, type);
+        };
+
+        //
+        // Content...
+        //
+
+        /**
+         * the dialog to select the content type of new content to insert in the tree
+         */
+        dialogs.NewPageDialog = dialogs.EditDialog.extend({
+
+            initView: function () {
+                dialogs.EditDialog.prototype.initView.apply(this);
+                this.pageTemplate = core.getWidget(this.el, '.widget-name_template', pages.widgets.PageTemplateWidget);
+                this.pageName = core.getWidget(this.el, '.widget-name_name', core.components.TextFieldWidget);
+                this.pageTitle = core.getWidget(this.el, '.widget-name_title', core.components.TextFieldWidget);
+                this.description = core.getWidget(this.el, '.widget-name_description', core.components.TextFieldWidget);
+            },
+
+            doSubmit: function () {
+                var c = dialogs.const.edit.url;
+                var template = this.pageTemplate.getValue();
+                var name = this.pageName.getValue();
+                var title = this.pageTitle.getValue();
+                var description = this.description.getValue();
+                this.hide(); // this is resetting the dialog
+                if (template) {
+                    core.ajaxGet(c.base + c._isTemplate + template, {}, _.bind(function (result) {
+                        if (result.isTemplate) {
+                            // create page as a copy of the template
+                            core.ajaxPost(c.base + c._create.page + this.data.path, {
+                                template: template,
+                                name: name,
+                                title: title,
+                                description: description
+                            }, {}, _.bind(function () {
+                                $(document).trigger('component:changed', [this.data.path]);
+                            }, this));
+                        } else {
+                            // create page using resource type by opening the page create dialog of the designated type
+                            dialogs.openCreateDialog(this.pageName.getValue() || '*', this.data.path, template, undefined, undefined,
+                                // if no create dialog exists (not found) create a new instance directly
+                                _.bind(function (name, path, type) {
+                                    core.ajaxPost(c.base + c._create.page + path, {
+                                        resourceType: type,
+                                        name: name,
+                                        title: title,
+                                        description: description
+                                    }, {}, _.bind(function () {
+                                        $(document).trigger('component:changed', [this.data.path]);
+                                    }, this));
+                                }, this));
+                        }
+                    }, this));
+                }
+                return false;
+            }
+        });
+
+        dialogs.openNewPageDialog = function (name, path, type) {
+            var c = dialogs.const.edit.url;
+            pages.dialogHandler.openEditDialog(c.path + c._add.path + c._add._page,
+                dialogs.NewPageDialog, name, path, type);
+        };
+
+        /**
+         * the dialog to add a new folder as child of the current selection
+         */
+        dialogs.NewFolderDialog = dialogs.EditDialog.extend({
+
+            initView: function () {
+                dialogs.EditDialog.prototype.initView.apply(this);
+                this.$primaryType = this.$('.widget-name_jcr_primaryType');
+                this.ordered = core.getWidget(this.el, '.widget-name_ordered', core.components.CheckboxWidget);
+            },
+
+            doSubmit: function () {
+                this.$primaryType.attr('value', this.ordered.getValue() ? 'sling:OrderedFolder' : 'sling:Folder');
+                dialogs.EditDialog.prototype.doSubmit.apply(this);
+            }
+        });
+
+        dialogs.openNewFolderDialog = function (name, path, type) {
+            var c = dialogs.const.edit.url;
+            pages.dialogHandler.openEditDialog(c.path + c._add.path + c._add._folder,
+                dialogs.NewFolderDialog, name, path, type);
+        };
+
+        /**
+         * the dialog to upload a file as child of the current selection
+         */
+        dialogs.NewFileDialog = dialogs.EditDialog.extend({
+
+            initView: function () {
+                dialogs.EditDialog.prototype.initView.apply(this);
+                this.file = core.getWidget(this.el, '.widget-name_STAR', core.components.FileUploadWidget);
+                this.name = core.getWidget(this.el, '.widget-name_name', core.components.TextFieldWidget);
+            },
+
+            doSubmit: function () {
+                var name = this.name.getValue();
+                if (!name) {
+                    name = this.file.getFileName();
+                }
+                if (name && (name = core.mangleNameValue(name))) {
+                    this.file.setName(name);
+                }
+                dialogs.EditDialog.prototype.doSubmit.apply(this);
+            }
+        });
+
+        dialogs.openNewFileDialog = function (name, path, type) {
+            var c = dialogs.const.edit.url;
+            pages.dialogHandler.openEditDialog(c.path + c._add.path + c._add._file,
+                dialogs.NewFileDialog, name, path, type);
         };
 
         //

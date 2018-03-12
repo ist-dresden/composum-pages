@@ -2,6 +2,7 @@ package com.composum.pages.commons.taglib;
 
 import com.composum.pages.commons.model.AbstractModel;
 import com.composum.pages.commons.model.properties.ValueSet;
+import org.apache.sling.api.resource.Resource;
 
 import java.lang.reflect.Array;
 
@@ -31,6 +32,10 @@ public class PropertyEditHandle<T> extends AbstractModel {
 
     public void setWidget(EditWidgetTag tag) {
         widget = tag;
+    }
+
+    public Resource getEditResource() {
+        return widget.getDialog().getModelResource(getContext());
     }
 
     /**

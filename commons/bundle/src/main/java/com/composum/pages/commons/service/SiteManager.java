@@ -6,12 +6,14 @@ import com.composum.sling.core.BeanContext;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.jcr.RepositoryException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
-public interface SiteManager {
+public interface SiteManager extends ResourceManager<Site> {
 
     /**
      * A list of Sites with unique names to collect all templates available in the resolvers search paths.
@@ -87,7 +89,8 @@ public interface SiteManager {
      * @return the root resource to create site child resources
      * @throws PersistenceException if the root has to be created and an error has occurred during creation
      */
-    Resource getSiteBase(BeanContext context, String tenant)
+    @Nonnull
+    Resource getSiteBase(@Nonnull BeanContext context, @Nullable String tenant)
             throws PersistenceException;
 
     /**
@@ -97,18 +100,18 @@ public interface SiteManager {
      * @param tenant  the tenants name (key); maybe &gt;null&lt; if tenants are not supported
      * @return the collection of all sites found (not &gt;null&lt;)
      */
-    Collection<Site> getSites(BeanContext context, String tenant);
+    Collection<Site> getSites(@Nonnull BeanContext context, @Nullable String tenant);
 
     /**
      * Determines all usable site templates in the context of a specific tenant.
-     * This implementation uses the resolvers search path to find all site resources in a tenants application context
+     * This implementation uses the resolvers search path to find all site resources in a tenants application context.
      * Overlayed site resources are not in the result.
      *
      * @param context the current request context
      * @param tenant  the tenants name (key); maybe &gt;null&lt; if tenants are not supported
      * @return the collection of all site templates found (not &gt;null&lt;)
      */
-    Collection<Site> getSiteTemplates(BeanContext context, String tenant);
+    Collection<Site> getSiteTemplates(@Nonnull BeanContext context, @Nullable String tenant);
 
     /**
      * Determines all Sites which a children of a search root in any depth of the hierarchy.
@@ -117,27 +120,29 @@ public interface SiteManager {
      * @param searchRoot the search root path
      * @return the collection of all sites found (not &gt;null&lt;)
      */
-    Collection<Site> getSites(BeanContext context, Resource searchRoot);
+    Collection<Site> getSites(@Nonnull BeanContext context, @Nullable Resource searchRoot);
 
-    Site createSite(BeanContext context, String tenant, String siteName,
-                    String homepageType, boolean commit)
+    Site createSite(@Nonnull BeanContext context, @Nullable String tenant, @Nonnull String siteName,
+                    @Nullable String homepageType, boolean commit)
             throws RepositoryException, PersistenceException;
 
-    Site createSite(BeanContext context, Resource siteBase, String siteName,
-                    String homepageType, boolean commit)
+    Site createSite(@Nonnull BeanContext context, @Nonnull Resource siteBase, @Nonnull String siteName,
+                    @Nullable String homepageType, boolean commit)
             throws RepositoryException, PersistenceException;
 
-    Site createSite(BeanContext context, String tenant, String siteName, String siteTitle, String description,
-                    Resource siteTemplate, boolean commit)
+    Site createSite(@Nonnull BeanContext context, @Nullable String tenant, @Nonnull String siteName,
+                    @Nullable String siteTitle, @Nullable String description,
+                    @Nullable Resource siteTemplate, boolean commit)
             throws RepositoryException, PersistenceException;
 
-    Site createSite(BeanContext context, Resource siteBase, String siteName, String siteTitle, String description,
-                    Resource siteTemplate, boolean commit)
+    Site createSite(@Nonnull BeanContext context, @Nonnull Resource siteBase, @Nonnull String siteName,
+                    @Nullable String siteTitle, @Nullable String description,
+                    @Nullable Resource siteTemplate, boolean commit)
             throws RepositoryException, PersistenceException;
 
-    Site deleteSite(BeanContext context, String sitePath, boolean commit)
+    boolean deleteSite(@Nonnull BeanContext context, @Nonnull String sitePath, boolean commit)
             throws RepositoryException, PersistenceException;
 
-    Site deleteSite(BeanContext context, Resource siteResource, boolean commit)
-            throws RepositoryException, PersistenceException;
+    boolean deleteSite(@Nonnull BeanContext context, @Nullable Resource siteResource, boolean commit)
+            throws PersistenceException;
 }

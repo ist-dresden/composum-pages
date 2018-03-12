@@ -1,7 +1,7 @@
 package com.composum.pages.commons.model;
 
 import com.composum.pages.commons.PagesConstants;
-import com.composum.pages.commons.model.properties.AllowedTypes;
+import com.composum.pages.commons.model.properties.PathPatternSet;
 import com.composum.pages.commons.util.ResolverUtil;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.util.ResourceUtil;
@@ -36,7 +36,7 @@ public class Element extends AbstractModel {
 
     // transient attributes
 
-    private transient AllowedTypes allowedContainers;
+    private transient PathPatternSet allowedContainers;
 
     public Element() {
     }
@@ -86,9 +86,9 @@ public class Element extends AbstractModel {
     /**
      * returns the 'allowedContainers' rule for this element (from the configuration)
      */
-    public AllowedTypes getAllowedContainers() {
+    public PathPatternSet getAllowedContainers() {
         if (allowedContainers == null) {
-            allowedContainers = new AllowedTypes(new ResourceReference(this), PROP_ALLOWED_CONTAINERS);
+            allowedContainers = new PathPatternSet(new ResourceReference(this), PROP_ALLOWED_CONTAINERS);
         }
         return allowedContainers;
     }
