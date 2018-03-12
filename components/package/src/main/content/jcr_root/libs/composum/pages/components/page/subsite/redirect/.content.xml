@@ -5,6 +5,9 @@
         allowedParentTypes="[
             ^(.*/)?components/page/subsite(/.*)?$
         ]"
+        allowedChildTypes="[
+            ^(.*/)?components/page/subsite(/.*)?$
+        ]"
         forbiddenChildTypes="[
             ^(.*/)?components/page/subsite/root?$
         ]"/>

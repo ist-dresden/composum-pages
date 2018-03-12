@@ -9,7 +9,7 @@ import static com.composum.pages.commons.model.Homepage.LOGO_PATH;
 
 public class SubsiteRoot extends Page {
 
-    public static final String SUBSITE_ROOT_RESOURCE_TYPE = "composum/pages/components/simple/page/subsite/root";
+    public static final String SUBSITE_ROOT_RESOURCE_TYPE = "composum/pages/components/page/subsite/root";
 
     private transient Image logo;
     private transient String logoUrl;
