@@ -1,7 +1,8 @@
 package com.composum.pages.commons.model;
 
 import com.composum.pages.commons.PagesConstants;
-import com.composum.pages.commons.model.properties.AllowedTypes;
+import com.composum.pages.commons.model.properties.PathPatternSet;
+import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 
@@ -19,14 +20,22 @@ public class ContentTypeFilter {
 
     protected final ResourceResolver resolver;
 
-    private transient AllowedTypes allowedChildTemplates;
-    private transient AllowedTypes allowedChildTypes;
+    private transient PathPatternSet forbiddenChildTemplates;
+    private transient PathPatternSet allowedChildTemplates;
+    private transient PathPatternSet forbiddenChildTypes;
+    private transient PathPatternSet allowedChildTypes;
 
     public ContentTypeFilter(@Nonnull final Resource designatedTarget) {
         this.designatedTarget = new ResourceReference(designatedTarget, null);
         this.targetTemplate = Template.getTemplateOf(designatedTarget);
-        this.resourceType = designatedTarget.getResourceType();
+        Resource targetContent = designatedTarget.getChild(JcrConstants.JCR_CONTENT);
+        this.resourceType = targetContent != null
+                ? targetContent.getResourceType() : designatedTarget.getResourceType();
         this.resolver = designatedTarget.getResourceResolver();
+    }
+
+    public String getPath() {
+        return designatedTarget.getPath();
     }
 
     /**
@@ -48,24 +57,47 @@ public class ContentTypeFilter {
      * @return true if the referenced resource could be a child of the filters designated target
      */
     public boolean isAllowedChild(@Nullable Template template, @Nonnull ResourceReference resourceReference) {
-        AllowedTypes parentTypes = getAllowedParentTemplates(template, resourceReference);
-        AllowedTypes childTypes = getAllowedParentTemplates(template, resourceReference);
-        boolean checkTemplatesOnly = parentTypes.isValid() || childTypes.isValid();
-        return  // check template matching first
-                ((targetTemplate != null && (!parentTypes.isValid() || parentTypes.matches(targetTemplate.getPath())))
-                        && (template != null && (!childTypes.isValid() || childTypes.matches(template.getPath()))))
-                        || (!checkTemplatesOnly && // check resource type matching if no useful template rule found
-                        ((!(parentTypes = getAllowedParentTypes(template, resourceReference)).isValid() || parentTypes.matches(resourceType))
-                                && (!(parentTypes = getAllowedChildTypes()).isValid() || parentTypes.matches(resourceReference.getType()))));
+        return isAllowedChildByTemplate(template, resourceReference) && isAllowedChildByType(template, resourceReference);
+    }
+
+    public boolean isAllowedChildByTemplate(@Nullable Template template, @Nonnull ResourceReference resourceReference) {
+        PathPatternSet allowedParents = getAllowedParentTemplates(template, resourceReference);
+        PathPatternSet forbiddenParents = getForbiddenParentTemplates(template, resourceReference);
+        PathPatternSet allowedChildren = getAllowedChildTemplates();
+        PathPatternSet forbiddenChildren = getForbiddenChildTemplates();
+        return (targetTemplate != null
+                && (!allowedParents.isValid() || allowedParents.matches(targetTemplate.getPath()))
+                && (!forbiddenParents.isValid() || !forbiddenParents.matches(targetTemplate.getPath())))
+                && (template != null
+                && (!allowedChildren.isValid() || allowedChildren.matches(template.getPath()))
+                && (!forbiddenChildren.isValid() || !forbiddenChildren.matches(template.getPath())));
+    }
+
+    public boolean isAllowedChildByType(@Nullable Template template, @Nonnull ResourceReference resourceReference) {
+        PathPatternSet allowedParents = getAllowedParentTypes(template, resourceReference);
+        PathPatternSet forbiddenParents = getForbiddenParentTypes(template, resourceReference);
+        PathPatternSet allowedChildren = getAllowedChildTypes();
+        PathPatternSet forbiddenChildren = getForbiddenChildTypes();
+        return (targetTemplate != null
+                && (!allowedParents.isValid() || allowedParents.matches(resourceType))
+                && (!forbiddenParents.isValid() || !forbiddenParents.matches(resourceType)))
+                && (template != null
+                && (!allowedChildren.isValid() || allowedChildren.matches(resourceReference.getType()))
+                && (!forbiddenChildren.isValid() || !forbiddenChildren.matches(resourceReference.getType())));
     }
 
     @Nonnull
-    protected AllowedTypes getAllowedParentTemplates(@Nullable Template template, @Nonnull ResourceReference resourceReference) {
+    protected PathPatternSet getAllowedParentTemplates(@Nullable Template template, @Nonnull ResourceReference resourceReference) {
         return getAllowedTypes(template, resourceReference, PagesConstants.PROP_ALLOWED_PARENT_TEMPLATES);
     }
 
     @Nonnull
-    protected AllowedTypes getAllowedChildTemplates() {
+    protected PathPatternSet getForbiddenParentTemplates(@Nullable Template template, @Nonnull ResourceReference resourceReference) {
+        return getAllowedTypes(template, resourceReference, PagesConstants.PROP_FORBIDDEN_PARENT_TEMPLATES);
+    }
+
+    @Nonnull
+    protected PathPatternSet getAllowedChildTemplates() {
         if (allowedChildTemplates == null) {
             allowedChildTemplates = getAllowedTypes(targetTemplate, designatedTarget, PagesConstants.PROP_ALLOWED_CHILD_TEMPLATES);
         }
@@ -73,12 +105,25 @@ public class ContentTypeFilter {
     }
 
     @Nonnull
-    protected AllowedTypes getAllowedParentTypes(@Nullable Template template, @Nonnull ResourceReference resourceReference) {
+    protected PathPatternSet getForbiddenChildTemplates() {
+        if (forbiddenChildTemplates == null) {
+            forbiddenChildTemplates = getAllowedTypes(targetTemplate, designatedTarget, PagesConstants.PROP_FORBIDDEN_CHILD_TEMPLATES);
+        }
+        return forbiddenChildTemplates;
+    }
+
+    @Nonnull
+    protected PathPatternSet getAllowedParentTypes(@Nullable Template template, @Nonnull ResourceReference resourceReference) {
         return getAllowedTypes(template, resourceReference, PagesConstants.PROP_ALLOWED_PARENT_TYPES);
     }
 
     @Nonnull
-    protected AllowedTypes getAllowedChildTypes() {
+    protected PathPatternSet getForbiddenParentTypes(@Nullable Template template, @Nonnull ResourceReference resourceReference) {
+        return getAllowedTypes(template, resourceReference, PagesConstants.PROP_FORBIDDEN_PARENT_TYPES);
+    }
+
+    @Nonnull
+    protected PathPatternSet getAllowedChildTypes() {
         if (allowedChildTypes == null) {
             allowedChildTypes = getAllowedTypes(targetTemplate, designatedTarget, PagesConstants.PROP_ALLOWED_CHILD_TYPES);
         }
@@ -86,19 +131,27 @@ public class ContentTypeFilter {
     }
 
     @Nonnull
-    protected AllowedTypes getAllowedTypes(@Nullable Template template, @Nonnull ResourceReference resourceReference,
-                                           @Nonnull String propertyName) {
-        AllowedTypes allowedTypes = null;
+    protected PathPatternSet getForbiddenChildTypes() {
+        if (forbiddenChildTypes == null) {
+            forbiddenChildTypes = getAllowedTypes(targetTemplate, designatedTarget, PagesConstants.PROP_FORBIDDEN_CHILD_TYPES);
+        }
+        return forbiddenChildTypes;
+    }
+
+    @Nonnull
+    protected PathPatternSet getAllowedTypes(@Nullable Template template, @Nonnull ResourceReference resourceReference,
+                                             @Nonnull String propertyName) {
+        PathPatternSet allowedTypes = null;
         if (resourceReference.isExisting()) {
-            allowedTypes = new AllowedTypes(resourceReference.getResource().getValueMap().get(propertyName, String[].class));
+            allowedTypes = new PathPatternSet(resourceReference.getResource().getValueMap().get(propertyName, String[].class));
         }
         if (allowedTypes == null || !allowedTypes.isValid()) {
             if (template != null) {
-                allowedTypes = template.getAllowedParentTypes();
+                allowedTypes = template.getAllowedTypes(propertyName);
             }
         }
         if (allowedTypes == null || !allowedTypes.isValid()) {
-            allowedTypes = new AllowedTypes(resourceReference, propertyName);
+            allowedTypes = new PathPatternSet(resourceReference, propertyName);
         }
         return allowedTypes;
     }

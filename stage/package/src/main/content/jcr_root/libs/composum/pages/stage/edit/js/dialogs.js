@@ -17,7 +17,14 @@
                         _folder: '.folder.html',
                         _file: '.file.html'
                     },
+                    _create: {
+                        page: '.createPage.json'
+                    },
+                    _delete: {
+                        page: '.deletePage.json'
+                    },
                     _insert: '.insertComponent.html',
+                    _isTemplate: '.isTemplate.json',
                     _dialog: {
                         load: '.editDialog',
                         new: '.newDialog',
@@ -364,43 +371,47 @@
 
             initView: function () {
                 dialogs.EditDialog.prototype.initView.apply(this);
-                this.pageName = core.getWidget(this.el, '.widget-name_name', core.components.TextFieldWidget);
                 this.pageTemplate = core.getWidget(this.el, '.widget-name_template', pages.widgets.PageTemplateWidget);
-                if (this.pageTemplate.getCount() === 1) {
-                    this.useDefault = this.pageTemplate.getOnlyOne();
-                }
+                this.pageName = core.getWidget(this.el, '.widget-name_name', core.components.TextFieldWidget);
+                this.pageTitle = core.getWidget(this.el, '.widget-name_title', core.components.TextFieldWidget);
+                this.description = core.getWidget(this.el, '.widget-name_description', core.components.TextFieldWidget);
             },
 
-            doSubmit: function (template) {
+            doSubmit: function () {
                 var c = dialogs.const.edit.url;
-                if (!template) {
-                    template = this.pageTemplate.getValue();
-                    this.hide();
-                }
+                var template = this.pageTemplate.getValue();
+                var name = this.pageName.getValue();
+                var title = this.pageTitle.getValue();
+                var description = this.description.getValue();
+                this.hide(); // this is resetting the dialog
                 if (template) {
-                    if (isTemplate) {
-                        // create page as a copy of the template
-                        core.ajaxPost(c.base + c._insert, {
-                            resourceType: type,
-                            targetPath: path,
-                            targetType: this.data.type
-                        }, {}, _.bind(function () {
-                            $(document).trigger('component:changed', [path]);
-                        }, this));
-                    } else {
-                        // create page using resource type by opening the page create dialog of the designated type
-                        dialogs.openCreateDialog(this.pageName.getValue() || '*', this.data.path, template, undefined, undefined,
-                            // if no create dialog exists (not found) create a new instance directly
-                            _.bind(function (name, path, type) {
-                                core.ajaxPost(c.base + c._insert, {
-                                    resourceType: type,
-                                    targetPath: path,
-                                    targetType: this.data.type
-                                }, {}, _.bind(function () {
-                                    $(document).trigger('component:changed', [path]);
-                                }, this));
+                    core.ajaxGet(c.base + c._isTemplate + template, {}, _.bind(function (result) {
+                        if (result.isTemplate) {
+                            // create page as a copy of the template
+                            core.ajaxPost(c.base + c._create.page + this.data.path, {
+                                template: template,
+                                name: name,
+                                title: title,
+                                description: description
+                            }, {}, _.bind(function () {
+                                $(document).trigger('component:changed', [this.data.path]);
                             }, this));
-                    }
+                        } else {
+                            // create page using resource type by opening the page create dialog of the designated type
+                            dialogs.openCreateDialog(this.pageName.getValue() || '*', this.data.path, template, undefined, undefined,
+                                // if no create dialog exists (not found) create a new instance directly
+                                _.bind(function (name, path, type) {
+                                    core.ajaxPost(c.base + c._create.page + path, {
+                                        resourceType: type,
+                                        name: name,
+                                        title: title,
+                                        description: description
+                                    }, {}, _.bind(function () {
+                                        $(document).trigger('component:changed', [this.data.path]);
+                                    }, this));
+                                }, this));
+                        }
+                    }, this));
                 }
                 return false;
             }
@@ -451,8 +462,7 @@
                 if (!name) {
                     name = this.file.getFileName();
                 }
-                if (name) {
-                    name = name.replace(/[ /]+/g, '_').replace(/[:#@]+/g, '-');
+                if (name && (name = core.mangleNameValue(name))) {
                     this.file.setName(name);
                 }
                 dialogs.EditDialog.prototype.doSubmit.apply(this);

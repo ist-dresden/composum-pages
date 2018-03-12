@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
-public interface SiteManager {
+public interface SiteManager extends ResourceManager<Site> {
 
     /**
      * A list of Sites with unique names to collect all templates available in the resolvers search paths.
@@ -144,5 +144,5 @@ public interface SiteManager {
             throws RepositoryException, PersistenceException;
 
     boolean deleteSite(@Nonnull BeanContext context, @Nullable Resource siteResource, boolean commit)
-            throws RepositoryException, PersistenceException;
+            throws PersistenceException;
 }

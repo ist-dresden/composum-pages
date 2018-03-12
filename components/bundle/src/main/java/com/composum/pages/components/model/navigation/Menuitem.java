@@ -35,6 +35,12 @@ public class Menuitem extends Page {
     }
 
     @Override
+    public String getTitle() {
+        String title = super.getTitle();
+        return StringUtils.isNotBlank(title) ? title : getName();
+    }
+
+    @Override
     protected String getCssBaseType() {
         return MENU_ITEM_CSS_BASE_TYPE;
     }

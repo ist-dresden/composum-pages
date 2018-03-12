@@ -1,6 +1,6 @@
 package com.composum.pages.commons.model;
 
-import com.composum.pages.commons.model.properties.AllowedTypes;
+import com.composum.pages.commons.model.properties.PathPatternSet;
 import org.apache.sling.api.resource.ResourceResolver;
 
 import java.util.HashMap;
@@ -18,8 +18,8 @@ public class ElementTypeFilter {
     protected final String allowedChildrenPropertyName;
 
     /** caches for the 'allowed...' properties */
-    protected Map<String, AllowedTypes> allowedElements = new HashMap<>();
-    protected Map<String, AllowedTypes> allowedContainers = new HashMap<>();
+    protected Map<String, PathPatternSet> allowedElements = new HashMap<>();
+    protected Map<String, PathPatternSet> allowedContainers = new HashMap<>();
 
     protected final ResourceResolver resolver;
 
@@ -37,9 +37,9 @@ public class ElementTypeFilter {
      * returns 'true' if the element can be inserted into the specified container
      */
     public boolean isAllowedElement(final ResourceReference element, final ResourceReference container) {
-        final AllowedTypes allowedEl = getAllowedTypes(allowedElements, allowedChildrenPropertyName, container);
+        final PathPatternSet allowedEl = getAllowedTypes(allowedElements, allowedChildrenPropertyName, container);
         if (allowedEl.matches(element.getType())) {
-            final AllowedTypes allowedCont = getAllowedTypes(allowedContainers, allowedParentsPropertyName, element);
+            final PathPatternSet allowedCont = getAllowedTypes(allowedContainers, allowedParentsPropertyName, element);
             if (allowedCont.matches(container.getType())) {
                 return true;
             }
@@ -65,9 +65,9 @@ public class ElementTypeFilter {
      * returns 'true' if an element of the type can be inserted into the specified container
      */
     public boolean isAllowedType(String type, final ResourceReference container) {
-        final AllowedTypes allowedEl = getAllowedTypes(allowedElements, allowedChildrenPropertyName, container);
+        final PathPatternSet allowedEl = getAllowedTypes(allowedElements, allowedChildrenPropertyName, container);
         if (allowedEl.matches(type)) {
-            final AllowedTypes allowedCont = getAllowedTypes(allowedContainers, allowedParentsPropertyName, type);
+            final PathPatternSet allowedCont = getAllowedTypes(allowedContainers, allowedParentsPropertyName, type);
             if (allowedCont.matches(container.getType())) {
                 return true;
             }
@@ -87,7 +87,7 @@ public class ElementTypeFilter {
         return false;
     }
 
-    // AllowedTypes cache
+    // PathPatternSet cache
 
     /**
      * gets the allowed types property from the map using the reference path as key (can be a property of the instance)
@@ -96,12 +96,12 @@ public class ElementTypeFilter {
      * @param propertyName the property name
      * @param reference    the resource whose property should be retrieved
      */
-    protected AllowedTypes getAllowedTypes(Map<String, AllowedTypes> map,
-                                           String propertyName, final ResourceReference reference) {
+    protected PathPatternSet getAllowedTypes(Map<String, PathPatternSet> map,
+                                             String propertyName, final ResourceReference reference) {
         String path = reference.getPath();
-        AllowedTypes allowedTypes = map.get(path);
+        PathPatternSet allowedTypes = map.get(path);
         if (allowedTypes == null) {
-            allowedTypes = new AllowedTypes(reference, propertyName);
+            allowedTypes = new PathPatternSet(reference, propertyName);
             map.put(path, allowedTypes);
         }
         return allowedTypes;
@@ -114,11 +114,11 @@ public class ElementTypeFilter {
      * @param propertyName the property name
      * @param resourceType the resource type whose property should be retrieved
      */
-    protected AllowedTypes getAllowedTypes(Map<String, AllowedTypes> map,
-                                           String propertyName, String resourceType) {
-        AllowedTypes allowedTypes = map.get(resourceType);
+    protected PathPatternSet getAllowedTypes(Map<String, PathPatternSet> map,
+                                             String propertyName, String resourceType) {
+        PathPatternSet allowedTypes = map.get(resourceType);
         if (allowedTypes == null) {
-            allowedTypes = new AllowedTypes(resolver, resourceType, propertyName);
+            allowedTypes = new PathPatternSet(resolver, resourceType, propertyName);
             map.put(resourceType, allowedTypes);
         }
         return allowedTypes;

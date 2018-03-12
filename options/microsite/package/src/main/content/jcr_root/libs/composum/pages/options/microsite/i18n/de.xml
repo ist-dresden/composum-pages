@@ -8,8 +8,11 @@
     <zip-file jcr:primaryType="sling:MessageEntry"
             sling:key="ZIP file" sling:message="ZIP-Datei"/>
 
+    <import-success jcr:primaryType="sling:MessageEntry"
+            sling:key="Import sucessful" sling:message="Import erfolgreich"/>
     <upload-microsite jcr:primaryType="sling:MessageEntry"
             sling:key="Upload Microsite Content" sling:message="Microsite-Inhalte hochladen"/>
+
     <edit-microsite-hint jcr:primaryType="sling:MessageEntry"
             sling:key="Edit the microsite properties" sling:message="die Microsite-Eigenschaften bearbeiten"/>
     <upload-microsite-hint jcr:primaryType="sling:MessageEntry"

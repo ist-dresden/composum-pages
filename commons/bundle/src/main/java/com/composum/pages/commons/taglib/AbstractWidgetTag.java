@@ -62,7 +62,7 @@ public abstract class AbstractWidgetTag extends AbstractWrappingTag {
     }
 
     public boolean isFormWidget () {
-        return !name.startsWith("#");
+        return name == null || !name.startsWith("#");
     }
 
     /**

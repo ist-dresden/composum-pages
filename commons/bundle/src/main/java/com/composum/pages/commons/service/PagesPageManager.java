@@ -1,8 +1,12 @@
 package com.composum.pages.commons.service;
 
 import com.composum.pages.commons.PagesConstants;
+import com.composum.pages.commons.filter.TemplateFilter;
+import com.composum.pages.commons.model.ContentTypeFilter;
 import com.composum.pages.commons.model.Model;
 import com.composum.pages.commons.model.Page;
+import com.composum.pages.commons.model.ResourceReference;
+import com.composum.pages.commons.model.Template;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.util.ResourceUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -29,7 +33,7 @@ import static com.composum.pages.commons.model.Page.isPage;
                 Constants.SERVICE_DESCRIPTION + "=Composum Pages Page Manager"
         }
 )
-public class PagesPageManager extends ResourceManager<Page> implements PageManager {
+public class PagesPageManager extends PagesResourceManager<Page> implements PageManager {
 
     public static final Map<String, Object> PAGE_PROPERTIES;
     public static final Map<String, Object> PAGE_CONTENT_PROPERTIES;
@@ -73,20 +77,34 @@ public class PagesPageManager extends ResourceManager<Page> implements PageManag
     }
 
     @Override
-    public Collection<Page> getPageTemplates(@Nonnull BeanContext context, @Nullable String tenant) {
-        UniquePageList result = new UniquePageList();
+    public Collection<Page> getPageTemplates(@Nonnull BeanContext context, @Nonnull Resource parent) {
         ResourceResolver resolver = context.getResolver();
+        PageTemplateList result = new PageTemplateList(resolver);
+        String tenant = null; // TODO tenant support
         for (String root : resolver.getSearchPath()) {
             Resource searchRoot = resolver.getResource(StringUtils.isNotBlank(tenant) ? root + tenant : root);
-            Collection<Page> templates = getModels(context, NODE_TYPE_PAGE, searchRoot);
+            Collection<Page> templates = getModels(context, NODE_TYPE_PAGE, searchRoot, TemplateFilter.INSTANCE);
             result.addAll(templates);
+        }
+        ContentTypeFilter filter = new ContentTypeFilter(parent);
+        String candidatePath = parent.getPath();
+        for (int i = result.size(); --i >= 0; ) {
+            Page templatePage = result.get(i);
+            Template template = new Template(templatePage.getResource());
+            if (!filter.isAllowedChild(template,
+                    new ResourceReference(resolver, candidatePath, template.getResourceType()))) {
+                result.remove(i);
+            }
         }
         result.sort();
         return result;
     }
 
     @Override
-    public Page createPage(BeanContext context, Resource parent, String pageName, String pageType, boolean commit)
+    @Nonnull
+    public Page createPage(@Nonnull BeanContext context, @Nonnull Resource parent, @Nonnull String pageType,
+                           @Nonnull String pageName, @Nullable String pageTitle, @Nullable String description,
+                           boolean commit)
             throws RepositoryException, PersistenceException {
 
         Resource pageResource;
@@ -96,6 +114,12 @@ public class PagesPageManager extends ResourceManager<Page> implements PageManag
         pageResource = resolver.create(parent, pageName, PAGE_PROPERTIES);
         Map<String, Object> contentProperties = new HashMap<>(PAGE_CONTENT_PROPERTIES);
         contentProperties.put(ResourceUtil.PROP_RESOURCE_TYPE, pageType);
+        if (StringUtils.isNotBlank(pageTitle)) {
+            contentProperties.put(ResourceUtil.PROP_TITLE, pageTitle);
+        }
+        if (StringUtils.isNotBlank(description)) {
+            contentProperties.put(ResourceUtil.PROP_DESCRIPTION, description);
+        }
         resolver.create(pageResource, JcrConstants.JCR_CONTENT, contentProperties);
 
         if (commit) {
@@ -106,18 +130,19 @@ public class PagesPageManager extends ResourceManager<Page> implements PageManag
     }
 
     @Override
-    public Page createPage(@Nonnull BeanContext context, @Nonnull Resource parent, @Nonnull String pageName,
-                           @Nullable String pageTitle, @Nullable String description,
-                           @Nonnull Resource pageTemplate, boolean commit)
+    @Nonnull
+    public Page createPage(@Nonnull BeanContext context, @Nonnull Resource parent, @Nonnull Resource pageTemplate,
+                           @Nonnull String pageName, @Nullable String pageTitle, @Nullable String description,
+                           boolean commit)
             throws RepositoryException, PersistenceException {
 
         Resource pageResource;
         ResourceResolver resolver = context.getResolver();
         checkExistence(resolver, parent, pageName);
 
-        pageResource = resolver.copy(pageTemplate.getPath(), parent.getPath() + "/" + pageName);
+        pageResource = createFromTemplate(resolver, parent, pageName, pageTemplate);
 
-        ModifiableValueMap values = pageResource.adaptTo(ModifiableValueMap.class);
+        ModifiableValueMap values = pageResource.getChild(JcrConstants.JCR_CONTENT).adaptTo(ModifiableValueMap.class);
         if (StringUtils.isNotBlank(pageTitle)) {
             values.put(ResourceUtil.PROP_TITLE, pageTitle);
         }
@@ -128,7 +153,6 @@ public class PagesPageManager extends ResourceManager<Page> implements PageManag
         if (commit) {
             resolver.commit();
         }
-
         return instanceCreated(context, pageResource);
     }
 

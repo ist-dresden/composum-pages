@@ -1,6 +1,8 @@
 package com.composum.pages.commons.servlet;
 
 import com.composum.pages.commons.PagesConfiguration;
+import com.composum.pages.commons.model.GenericModel;
+import com.composum.pages.commons.model.Model;
 import com.composum.pages.commons.model.Page;
 import com.composum.pages.commons.model.ResourceReference;
 import com.composum.pages.commons.model.Site;
@@ -78,12 +80,13 @@ public class EditServlet extends NodeTreeServlet {
     }
 
     public enum Operation {
-        pageData,
+        pageData, isTemplate,
         siteTree, pageTree, developTree,
         editDialog, newDialog,
         editTile, editToolbar, treeActions,
         pageComponents, targetContainers,
         insertComponent, moveComponent,
+        createPage, deletePage,
         createSite, deleteSite,
         contextTools,
         versions, restoreVersion, checkpoint, setVersionLabel
@@ -137,6 +140,8 @@ public class EditServlet extends NodeTreeServlet {
                 Operation.developTree, new DevTreeOperation());
         operations.setOperation(ServletOperationSet.Method.GET, Extension.json,
                 Operation.pageData, new GetPageData());
+        operations.setOperation(ServletOperationSet.Method.GET, Extension.json,
+                Operation.isTemplate, new CheckIsTemplate());
         operations.setOperation(ServletOperationSet.Method.GET, Extension.html,
                 Operation.editDialog, new GetEditDialog());
         operations.setOperation(ServletOperationSet.Method.GET, Extension.html,
@@ -163,6 +168,10 @@ public class EditServlet extends NodeTreeServlet {
                 Operation.insertComponent, new InsertComponent());
         operations.setOperation(ServletOperationSet.Method.POST, Extension.json,
                 Operation.moveComponent, new MoveComponent());
+        operations.setOperation(ServletOperationSet.Method.POST, Extension.json,
+                Operation.createPage, new CreatePage());
+        operations.setOperation(ServletOperationSet.Method.POST, Extension.json,
+                Operation.deletePage, new DeletePage());
         operations.setOperation(ServletOperationSet.Method.POST, Extension.json,
                 Operation.createSite, new CreateSite());
         operations.setOperation(ServletOperationSet.Method.POST, Extension.json,
@@ -244,6 +253,56 @@ public class EditServlet extends NodeTreeServlet {
         }
     }
 
+    protected class CheckIsTemplate implements ServletOperation {
+
+        @Override
+        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
+                         ResourceHandle resource)
+                throws IOException {
+
+            Model model = null;
+            String template = null;
+            boolean isTemplate = false;
+
+            if (resource != null) {
+
+                BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
+                if (Page.isPage(resource)) {
+                    Page page = pageManager.createBean(context, resource);
+                    template = page.getTemplatePath();
+                    isTemplate = page.isTemplate();
+                    model = page;
+                } else if (Site.isSite(resource)) {
+                    Site site = siteManager.createBean(context, resource);
+                    template = site.getTemplatePath();
+                    isTemplate = site.isTemplate();
+                    model = site;
+                } else {
+                    model = new GenericModel(context, resource);
+                }
+            }
+
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("CheckIsTemplate(" + resource + "," + model + "): " + isTemplate + " (" + template + ")");
+            }
+            if (model != null) {
+
+                response.setStatus(HttpServletResponse.SC_OK);
+                JsonWriter jsonWriter = ResponseUtil.getJsonWriter(response);
+                jsonWriter.beginObject();
+                jsonWriter.name("name").value(resource.getName());
+                jsonWriter.name("path").value(resource.getPath());
+                jsonWriter.name("model").value(model.getClass().getSimpleName());
+                jsonWriter.name("template").value(template);
+                jsonWriter.name("isTemplate").value(isTemplate);
+                jsonWriter.endObject();
+
+            } else {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            }
+        }
+    }
+
     //
     // JSON helpers
     //
@@ -261,6 +320,8 @@ public class EditServlet extends NodeTreeServlet {
             writer.name("meta").beginObject();
             Site site = page.getSite();
             writer.name("site").value(site != null ? site.getPath() : null);
+            writer.name("template").value(page.getTemplatePath());
+            writer.name("isTemplate").value(pageManager.isTemplate(page));
             writer.endObject();
         }
         writer.endObject();
@@ -546,6 +607,96 @@ public class EditServlet extends NodeTreeServlet {
     }
 
     //
+    // Page Management
+    //
+
+    protected class CreatePage implements ServletOperation {
+
+        @Override
+        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
+                         ResourceHandle resource)
+                throws IOException {
+
+            BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
+            try {
+                Page page;
+                String name = request.getParameter("name");
+                String title = request.getParameter("title");
+                String description = request.getParameter("description");
+
+                Resource template = null;
+                String templatePath;
+                if (StringUtils.isNotBlank(templatePath = request.getParameter("template"))) {
+                    ResourceResolver resolver = context.getResolver();
+                    template = resolver.getResource(templatePath);
+                }
+
+                if (template != null) {
+                    page = pageManager.createPage(context, resource, template, name, title, description, true);
+
+                } else {
+                    String resourceType = request.getParameter("resourceType");
+                    if (StringUtils.isNotBlank(resourceType)) {
+                        page = pageManager.createPage(context, resource, resourceType, name, title, description, true);
+
+                    } else {
+                        response.sendError(HttpServletResponse.SC_BAD_REQUEST,
+                                "no valid template / type: '" + templatePath + "/" + resourceType + "'");
+                        return;
+                    }
+                }
+
+                JsonWriter jsonWriter = ResponseUtil.getJsonWriter(response);
+                response.setStatus(HttpServletResponse.SC_OK);
+                jsonWriter.beginObject();
+                jsonWriter.name("name").value(page.getName());
+                jsonWriter.name("path").value(page.getPath());
+                jsonWriter.name("url").value(page.getUrl());
+                jsonWriter.name("editUrl").value(page.getEditUrl());
+                jsonWriter.endObject();
+
+            } catch (RepositoryException | PersistenceException ex) {
+                LOG.error(ex.getMessage(), ex);
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ex.getMessage());
+            }
+        }
+    }
+
+    protected class DeletePage implements ServletOperation {
+
+        @Override
+        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
+                         ResourceHandle resource)
+                throws IOException {
+
+            try {
+                if (Page.isPageContent(resource)) {
+                    resource = resource.getParent();
+                }
+                if (Page.isPage(resource)) {
+
+                    BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
+                    pageManager.deletePage(context, resource, true);
+
+                    JsonWriter jsonWriter = ResponseUtil.getJsonWriter(response);
+                    response.setStatus(HttpServletResponse.SC_OK);
+                    jsonWriter.beginObject();
+                    jsonWriter.name("name").value(resource.getName());
+                    jsonWriter.name("path").value(resource.getPath());
+                    jsonWriter.endObject();
+
+                } else {
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "resource is not a site");
+                }
+
+            } catch (PersistenceException ex) {
+                LOG.error(ex.getMessage(), ex);
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ex.getMessage());
+            }
+        }
+    }
+
+    //
     // Site Management
     //
 
@@ -613,7 +764,7 @@ public class EditServlet extends NodeTreeServlet {
                     response.sendError(HttpServletResponse.SC_BAD_REQUEST, "resource is not a site");
                 }
 
-            } catch (RepositoryException | PersistenceException ex) {
+            } catch (PersistenceException ex) {
                 LOG.error(ex.getMessage(), ex);
                 response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ex.getMessage());
             }

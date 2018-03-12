@@ -8,6 +8,8 @@ import org.apache.sling.api.resource.Resource;
 
 import java.util.Locale;
 
+import static com.composum.pages.commons.PagesConstants.PROP_TEMPLATE;
+
 /**
  * the abstract base class for all resource with a 'jcr:content' child which contains the resource properties
  *
@@ -18,6 +20,7 @@ public abstract class ContentDriven<ContentType extends ContentModel> extends Ab
     protected Boolean valid;
     protected ContentType content;
 
+    private transient String template;
     private transient String editUrl;
 
     // initializer extensions
@@ -44,6 +47,13 @@ public abstract class ContentDriven<ContentType extends ContentModel> extends Ab
             valid = resource != null && !ResourceUtil.isNonExistingResource(resource);
         }
         return valid;
+    }
+
+    public String getTemplatePath() {
+        if (template == null) {
+            content.getProperty(PROP_TEMPLATE, null,"");
+        }
+        return template;
     }
 
     protected String getCssBaseType() {

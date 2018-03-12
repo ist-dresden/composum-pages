@@ -21,7 +21,7 @@ public class PageTemplate extends PropertyEditHandle<String> implements WidgetMo
 
     public Collection<Page> getTemplates() {
         if (templates == null) {
-            templates = getPageManager().getPageTemplates(context, "");
+            templates = getPageManager().getPageTemplates(context, getEditResource());
         }
         return templates;
     }

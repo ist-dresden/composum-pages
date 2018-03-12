@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+        jcr:language="de"
+        jcr:mixinTypes="[mix:language]"
+        jcr:primaryType="sling:Folder"
+        sling:basename="composum-pages-stage">
+
+    <!--
+      - stage dialogs...
+    -->
+    <file-upload-name-hint jcr:primaryType="sling:MessageEntry"
+            sling:key="add a name if the file name is not the right choice" sling:message="der Name, falls der Dateiname nicht genutzt werden soll"/>
+
+</jcr:root>

@@ -68,11 +68,16 @@ public interface PagesConstants {
     /** Template */
 
     String PROP_TEMPLATE = "template";
+    String PROP_IS_TEMPLATE = "isTemplate";
 
     String PROP_ALLOWED_PARENT_TEMPLATES = "allowedParentTemplates";
+    String PROP_FORBIDDEN_PARENT_TEMPLATES = "forbiddenParentTemplates";
     String PROP_ALLOWED_CHILD_TEMPLATES = "allowedChildTemplates";
+    String PROP_FORBIDDEN_CHILD_TEMPLATES = "forbiddenChildTemplates";
     String PROP_ALLOWED_PARENT_TYPES = "allowedParentTypes";
+    String PROP_FORBIDDEN_PARENT_TYPES = "forbiddenParentTypes";
     String PROP_ALLOWED_CHILD_TYPES = "allowedChildTypes";
+    String PROP_FORBIDDEN_CHILD_TYPES = "forbiddenChildTypes";
 
     /** Widget */
 

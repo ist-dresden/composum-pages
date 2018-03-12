@@ -6,8 +6,15 @@
         jcr:primaryType="cpp:Page">
     <jcr:content
             jcr:primaryType="cpp:PageContent"
-            jcr:title="My new Homepage"
-            sling:resourceType="composum/pages/components/page/home">
+            jcr:title="Pages Components Homepage"
+            jcr:description="A sites root page with a carousel on top of the page and a container to arrange content of all general element types including rows and columns."
+            sling:resourceType="composum/pages/components/page/home"
+            allowedParentTemplates="[
+                (.*/)?pages/components/templates/site/.*$
+            ]"
+            allowedChildTemplates="[
+                (.*/)?pages/components/templates/page/.*$
+            ]">
         <stage
                 jcr:primaryType="cpp:Container"
                 sling:resourceType="composum/pages/components/composed/carousel"

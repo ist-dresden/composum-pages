@@ -13,19 +13,19 @@ import java.util.regex.Pattern;
 /**
  * a multi value string property 'allowed...' with a set of resource type patterns
  */
-public class AllowedTypes {
+public class PathPatternSet {
 
     protected List<Pattern> patternList = null;
 
-    public AllowedTypes(@Nonnull ResourceReference reference, @Nonnull String propertyName) {
+    public PathPatternSet(@Nonnull ResourceReference reference, @Nonnull String propertyName) {
         this((String) reference.getProperty(propertyName, null));
     }
 
-    public AllowedTypes(@Nonnull ResourceResolver resolver, @Nonnull String resourceType, @Nonnull String propertyName) {
+    public PathPatternSet(@Nonnull ResourceResolver resolver, @Nonnull String resourceType, @Nonnull String propertyName) {
         this((String) ResolverUtil.getTypeProperty(resolver, resourceType, propertyName, null));
     }
 
-    public AllowedTypes(String... typeRules) {
+    public PathPatternSet(String... typeRules) {
         if (typeRules != null && (typeRules.length == 0 || typeRules[0] != null)) {
             buildPatterns(typeRules);
         }

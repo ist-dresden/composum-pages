@@ -1,7 +1,7 @@
 package com.composum.pages.commons.model;
 
 import com.composum.pages.commons.PagesConstants;
-import com.composum.pages.commons.model.properties.AllowedTypes;
+import com.composum.pages.commons.model.properties.PathPatternSet;
 import com.composum.sling.core.util.ResourceUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.vault.util.JcrConstants;
@@ -9,6 +9,8 @@ import org.apache.sling.api.resource.Resource;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class Template {
 
@@ -34,53 +36,50 @@ public class Template {
     }
 
     protected final Resource templateResource;
+    protected final Resource contentResource;
+    protected final Map<String,PathPatternSet> allowedTypes;
 
-    private transient AllowedTypes allowedParentTemplates;
-    private transient AllowedTypes allowedChildTemplates;
-    private transient AllowedTypes allowedParentTypes;
-    private transient AllowedTypes allowedChildTypes;
-
-    public Template(@Nonnull Resource templateResource) {
-        this.templateResource = templateResource;
+    public Template(@Nonnull Resource templatePageResource) {
+        this.templateResource = templatePageResource;
+        this.contentResource = templatePageResource.getChild(JcrConstants.JCR_CONTENT);
+        this.allowedTypes = new LinkedHashMap<>();
     }
 
     public String getPath() {
         return templateResource.getPath();
     }
 
-    @Nonnull
-    public AllowedTypes getAllowedParentTemplates() {
-        if (allowedParentTemplates == null) {
-            allowedParentTemplates = new AllowedTypes(
-                    new ResourceReference(templateResource, null), PagesConstants.PROP_ALLOWED_PARENT_TEMPLATES);
-        }
-        return allowedParentTemplates;
+    public String getResourceType() {
+        return contentResource.getResourceType();
     }
 
     @Nonnull
-    public AllowedTypes getAllowedChildTemplates() {
-        if (allowedChildTemplates == null) {
-            allowedChildTemplates = new AllowedTypes(
-                    new ResourceReference(templateResource, null), PagesConstants.PROP_ALLOWED_CHILD_TEMPLATES);
-        }
-        return allowedChildTemplates;
+    public PathPatternSet getAllowedParentTemplates() {
+        return getAllowedTypes(PagesConstants.PROP_ALLOWED_PARENT_TEMPLATES);
     }
 
     @Nonnull
-    public AllowedTypes getAllowedParentTypes() {
-        if (allowedParentTypes == null) {
-            allowedParentTypes = new AllowedTypes(
-                    new ResourceReference(templateResource, null), PagesConstants.PROP_ALLOWED_PARENT_TYPES);
-        }
-        return allowedParentTypes;
+    public PathPatternSet getAllowedChildTemplates() {
+        return getAllowedTypes(PagesConstants.PROP_ALLOWED_CHILD_TEMPLATES);
     }
 
     @Nonnull
-    public AllowedTypes getAllowedChildTypes() {
-        if (allowedChildTypes == null) {
-            allowedChildTypes = new AllowedTypes(
-                    new ResourceReference(templateResource, null), PagesConstants.PROP_ALLOWED_CHILD_TYPES);
+    public PathPatternSet getAllowedParentTypes() {
+        return getAllowedTypes(PagesConstants.PROP_ALLOWED_PARENT_TYPES);
+    }
+
+    @Nonnull
+    public PathPatternSet getAllowedChildTypes() {
+        return getAllowedTypes(PagesConstants.PROP_ALLOWED_CHILD_TYPES);
+    }
+
+    @Nonnull
+    public PathPatternSet getAllowedTypes(@Nonnull String propertyName) {
+        PathPatternSet types = allowedTypes.get(propertyName);
+        if (types == null) {
+            types = new PathPatternSet(new ResourceReference(contentResource, null), propertyName);
+            allowedTypes.put(propertyName, types);
         }
-        return allowedChildTypes;
+        return types;
     }
 }

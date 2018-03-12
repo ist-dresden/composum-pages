@@ -21,8 +21,7 @@
             if (!name) {
                 name = this.file.getFileName();
             }
-            if (name) {
-                name = name.replace(/[ /]+/g, '_').replace(/[:#@]+/g, '-');
+            if (name && (name = core.mangleNameValue(name))) {
                 this.file.setName(name);
             }
             dialogs.EditDialog.prototype.doSubmit.apply(this);
@@ -40,5 +39,5 @@
     <%-- the name field is only used by the dialog (not submitted; starts with '#') --%>
     <cpp:widget label="Name" name="#name" placeholder="the repository name" type="textfield"
                 rules="blank" pattern="^[A-Za-z_][- \\w]*(\\.\\w+)?$"
-                hint="add a name hint if different from the file name"/>
+                hint="add a name if the file name is not the right choice"/>
 </cpp:editDialog>

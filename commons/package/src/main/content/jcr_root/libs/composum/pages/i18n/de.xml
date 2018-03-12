@@ -6,48 +6,12 @@
         sling:basename="composum-pages">
 
     <!--
-      - general entities
-    -->
-    <folder jcr:primaryType="sling:MessageEntry"
-            sling:key="Folder" sling:message="Verzeichnis"/>
-    <file jcr:primaryType="sling:MessageEntry"
-            sling:key="File" sling:message="Datei"/>
-    <image jcr:primaryType="sling:MessageEntry"
-            sling:key="Image" sling:message="Bild"/>
-
-    <!--
       - widget and dialog buttons, labels and titles
     -->
-    <edit jcr:primaryType="sling:MessageEntry"
-            sling:key="Edit" sling:message="Bearbeiten"/>
-    <save jcr:primaryType="sling:MessageEntry"
-            sling:key="Save" sling:message="Speichern"/>
-    <create jcr:primaryType="sling:MessageEntry"
-            sling:key="Create" sling:message="Erzeugen"/>
-    <delete jcr:primaryType="sling:MessageEntry"
-            sling:key="Delete" sling:message="Löschen"/>
-    <cancel jcr:primaryType="sling:MessageEntry"
-            sling:key="Cancel" sling:message="Abbrechen"/>
-    <remove jcr:primaryType="sling:MessageEntry"
-            sling:key="Remove" sling:message="Entfernen"/>
-    <upload jcr:primaryType="sling:MessageEntry"
-            sling:key="Upload" sling:message="Hochladen"/>
-    <browse jcr:primaryType="sling:MessageEntry"
-            sling:key="Browse" sling:message="Durchsuchen"/>
-
     <name-placeholder jcr:primaryType="sling:MessageEntry"
             sling:key="the repository name" sling:message="der Name im Repository"/>
     <title-placeholder jcr:primaryType="sling:MessageEntry"
             sling:key="the more readable title" sling:message="der 'lesbare' Titel"/>
-
-    <title-remove-file jcr:primaryType="sling:MessageEntry"
-            sling:key="remove the chosen file" sling:message="gewählte Date entfernen"/>
-    <title-upload-file jcr:primaryType="sling:MessageEntry"
-            sling:key="upload the chosen file" sling:message="die gewählte Datei hochladen"/>
-    <title-browse-file jcr:primaryType="sling:MessageEntry"
-            sling:key="browse file system to find a file" sling:message="Auswahl einer Datei aus dem Dateisystem"/>
-    <file-upload-name-hint jcr:primaryType="sling:MessageEntry"
-            sling:key="add a name hint if different from the file name" sling:message="Repository-Name, falls abweichend vom Dateinamen"/>
 
     <orderable jcr:primaryType="sling:MessageEntry"
             sling:key="arrange manually" sling:message="manuell anordnen"/>
@@ -109,7 +73,7 @@
     <hide-in-nav jcr:primaryType="sling:MessageEntry"
             sling:key="Hide in Navigation" sling:message="in der Navigation verbergen"/>
     <ignore-in-search jcr:primaryType="sling:MessageEntry"
-                 sling:key="Ignore in Search" sling:message="in der Suche ignorieren"/>
+            sling:key="Ignore in Search" sling:message="in der Suche ignorieren"/>
     <description jcr:primaryType="sling:MessageEntry"
             sling:key="Description" sling:message="Beschreibung"/>
     <languages jcr:primaryType="sling:MessageEntry"
@@ -228,6 +192,7 @@
     <delete-site-selected jcr:primaryType="sling:MessageEntry"
             sling:key="Delete the selected site" sling:message="Die ausgewählte Website löschen"/>
     <delete-site-question jcr:primaryType="sling:MessageEntry"
-            sling:key="Do you really want to delete the entire site?" sling:message="Wollen Sie wirklich die komplette Website löschen?"/>
+            sling:key="Do you really want to delete the entire site?"
+            sling:message="Wollen Sie wirklich die komplette Website löschen?"/>
 
 </jcr:root>

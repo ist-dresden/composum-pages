@@ -109,6 +109,10 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
         return path.replace(sitePath, ".");
     }
 
+    public boolean isTemplate() {
+        return getPageManager().isTemplate(this);
+    }
+
     /**
      * returns 'true' it this page is the homepage ('isHomepage' would overlap with 'getHomepage' in a template)
      */

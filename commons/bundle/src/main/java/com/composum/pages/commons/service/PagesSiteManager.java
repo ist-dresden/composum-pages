@@ -1,6 +1,7 @@
 package com.composum.pages.commons.service;
 
 import com.composum.pages.commons.PagesConstants;
+import com.composum.pages.commons.filter.TemplateFilter;
 import com.composum.pages.commons.model.Model;
 import com.composum.pages.commons.model.Site;
 import com.composum.sling.core.BeanContext;
@@ -18,8 +19,6 @@ import org.osgi.service.component.annotations.Reference;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-import javax.jcr.Workspace;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -32,7 +31,7 @@ import static com.composum.pages.commons.PagesConstants.NODE_TYPE_SITE;
                 Constants.SERVICE_DESCRIPTION + "=Composum Pages Site Manager"
         }
 )
-public class PagesSiteManager extends ResourceManager<Site> implements SiteManager {
+public class PagesSiteManager extends PagesResourceManager<Site> implements SiteManager {
 
     public static final String SITE_RESOURCE_TYPE = "composum/pages/stage/edit/site";
 
@@ -129,7 +128,7 @@ public class PagesSiteManager extends ResourceManager<Site> implements SiteManag
 
     @Override
     public Collection<Site> getSites(@Nonnull BeanContext context, @Nullable Resource searchRoot) {
-        return getModels(context, NODE_TYPE_SITE, searchRoot);
+        return getModels(context, NODE_TYPE_SITE, searchRoot, TemplateFilter.INSTANCE);
     }
 
     @Override
@@ -157,7 +156,7 @@ public class PagesSiteManager extends ResourceManager<Site> implements SiteManag
         resolver.create(siteResource, "assets", SITE_ASSETS_PROPERTIES);
 
         if (StringUtils.isNotBlank(homepageType)) {
-            pageManager.createPage(context, siteResource, "home", homepageType, commit);
+            pageManager.createPage(context, siteResource, homepageType, "home", null, null, commit);
         }
 
         if (commit) {
@@ -192,17 +191,13 @@ public class PagesSiteManager extends ResourceManager<Site> implements SiteManag
         checkExistence(resolver, siteBase, siteName);
 
         if (siteTemplate != null) {
-            Session session = resolver.adaptTo(Session.class);
-            Workspace workspace = session.getWorkspace();
-            workspace.copy(siteTemplate.getPath(), sitePath);
-            resolver.refresh();
-            siteResource = resolver.getResource(sitePath);
+            siteResource = createFromTemplate(resolver, siteBase, siteName, siteTemplate);
         } else {
             Site site = createSite(context, siteBase, siteName, null, commit);
             siteResource = site.getResource();
         }
 
-        ModifiableValueMap values = siteResource.adaptTo(ModifiableValueMap.class);
+        ModifiableValueMap values = siteResource.getChild(JcrConstants.JCR_CONTENT).adaptTo(ModifiableValueMap.class);
         if (StringUtils.isNotBlank(siteTitle)) {
             values.put(ResourceUtil.PROP_TITLE, siteTitle);
         }

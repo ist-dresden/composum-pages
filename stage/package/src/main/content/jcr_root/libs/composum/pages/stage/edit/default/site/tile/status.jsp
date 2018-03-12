@@ -8,7 +8,7 @@
     <div class="${siteCssBase}">
         <cpp:include resourceType="composum/pages/stage/edit/default/site/thumbnail"/>
         <div class="${siteCssBase}_text">
-            <h3 class="${siteCssBase}_title">${cpn:text(site.title)}<c:if test="${site.siteTemplate}"><span
+            <h3 class="${siteCssBase}_title">${cpn:text(site.title)}<c:if test="${site.templatePath}"><span
                     class="${siteCssBase}_template">*</span></c:if></h3>
             <div class="${siteCssBase}_status">
                 <a href="#"

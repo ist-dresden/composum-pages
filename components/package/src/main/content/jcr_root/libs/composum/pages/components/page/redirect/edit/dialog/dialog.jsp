@@ -4,7 +4,7 @@
 --%><cpp:defineFrameObjects/>
 <cpp:editDialog var="pageProps" type="com.composum.pages.commons.model.Page"
                 title="Edit Page">
+    <sling:call script="redirect.jsp"/>
     <sling:call script="general.jsp"/>
     <sling:call script="navigation.jsp"/>
-    <sling:call script="redirect.jsp"/>
 </cpp:editDialog>
