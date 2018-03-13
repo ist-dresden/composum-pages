@@ -11,18 +11,18 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 /**
- * a multi value string property 'allowed...' with a set of resource type patterns
+ * a multi value string property with a set of resource type or path patterns
  */
 public class PathPatternSet {
 
     protected List<Pattern> patternList = null;
 
     public PathPatternSet(@Nonnull ResourceReference reference, @Nonnull String propertyName) {
-        this((String) reference.getProperty(propertyName, null));
+        this(reference.getProperty(propertyName, String[].class));
     }
 
     public PathPatternSet(@Nonnull ResourceResolver resolver, @Nonnull String resourceType, @Nonnull String propertyName) {
-        this((String) ResolverUtil.getTypeProperty(resolver, resourceType, propertyName, null));
+        this(ResolverUtil.getTypeProperty(resolver, resourceType, propertyName, String[].class));
     }
 
     public PathPatternSet(String... typeRules) {

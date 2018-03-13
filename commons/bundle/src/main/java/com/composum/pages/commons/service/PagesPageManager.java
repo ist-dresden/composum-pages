@@ -137,10 +137,31 @@ public class PagesPageManager extends PagesResourceManager<Page> implements Page
             throws RepositoryException, PersistenceException {
 
         Resource pageResource;
-        ResourceResolver resolver = context.getResolver();
+        final ResourceResolver resolver = context.getResolver();
         checkExistence(resolver, parent, pageName);
+        final SiteManager siteManager = context.getService(SiteManager.class);
 
-        pageResource = createFromTemplate(resolver, parent, pageName, pageTemplate);
+        pageResource = createFromTemplate(new TemplateContext() {
+
+            @Override
+            public ResourceResolver getResolver() {
+                return resolver;
+            }
+
+            @Override
+            public String applyTemplatePlaceholders(@Nonnull final Resource target, @Nonnull final String value) {
+                Resource siteResource = siteManager.getContainingSiteResource(target);
+                Resource pageResource = getContainingPageResource(target);
+                String result = value.replaceAll("\\$\\{path}", target.getPath());
+                result = result.replaceAll("\\$\\{page}", pageResource.getPath());
+                result = result.replaceAll("\\$\\{site}", siteResource.getPath());
+                if (!value.equals(result)) {
+                    result = result.replaceAll("/[^/]+/\\.\\./", "/");
+                }
+                return result;
+            }
+
+        }, parent, pageName, pageTemplate);
 
         ModifiableValueMap values = pageResource.getChild(JcrConstants.JCR_CONTENT).adaptTo(ModifiableValueMap.class);
         if (StringUtils.isNotBlank(pageTitle)) {

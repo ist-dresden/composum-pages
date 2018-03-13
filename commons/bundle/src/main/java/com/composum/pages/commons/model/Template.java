@@ -29,6 +29,14 @@ public class Template {
                     if (templateResource != null && !ResourceUtil.isNonExistingResource(templateResource)) {
                         template = new Template(templateResource);
                     }
+                } else {
+                    if (!JcrConstants.JCR_CONTENT.equals(resource.getName())) {
+                        Template parentTemplate = getTemplateOf(resource.getParent());
+                        if (parentTemplate != null) {
+                            Resource templateChild = parentTemplate.templateResource.getChild(resource.getName());
+                            template = templateChild != null ? new Template(templateChild) : parentTemplate;
+                        }
+                    }
                 }
             }
         }
@@ -37,11 +45,16 @@ public class Template {
 
     protected final Resource templateResource;
     protected final Resource contentResource;
-    protected final Map<String,PathPatternSet> allowedTypes;
+    protected final Map<String, PathPatternSet> allowedTypes;
 
-    public Template(@Nonnull Resource templatePageResource) {
-        this.templateResource = templatePageResource;
-        this.contentResource = templatePageResource.getChild(JcrConstants.JCR_CONTENT);
+    /**
+     * A template can be a Site or Page template with a 'jcr:content' child resourece containing the template rules
+     * but it can also be a simple resource with the template rules properties (e.g. for folder rules).
+     */
+    public Template(@Nonnull Resource templateResource) {
+        this.templateResource = templateResource;
+        Resource contentChild = templateResource.getChild(JcrConstants.JCR_CONTENT);
+        this.contentResource = contentChild != null ? contentChild : templateResource;
         this.allowedTypes = new LinkedHashMap<>();
     }
 
@@ -54,8 +67,23 @@ public class Template {
     }
 
     @Nonnull
+    public PathPatternSet getAllowedPaths() {
+        return getAllowedTypes(PagesConstants.PROP_ALLOWED_PATHS);
+    }
+
+    @Nonnull
+    public PathPatternSet getForbiddenPaths() {
+        return getAllowedTypes(PagesConstants.PROP_FORBIDDEN_PATHS);
+    }
+
+    @Nonnull
     public PathPatternSet getAllowedParentTemplates() {
         return getAllowedTypes(PagesConstants.PROP_ALLOWED_PARENT_TEMPLATES);
+    }
+
+    @Nonnull
+    public PathPatternSet getForbiddenParentTemplates() {
+        return getAllowedTypes(PagesConstants.PROP_FORBIDDEN_PARENT_TEMPLATES);
     }
 
     @Nonnull
@@ -64,13 +92,28 @@ public class Template {
     }
 
     @Nonnull
+    public PathPatternSet getForbiddenChildTemplates() {
+        return getAllowedTypes(PagesConstants.PROP_FORBIDDEN_CHILD_TEMPLATES);
+    }
+
+    @Nonnull
     public PathPatternSet getAllowedParentTypes() {
         return getAllowedTypes(PagesConstants.PROP_ALLOWED_PARENT_TYPES);
     }
 
     @Nonnull
+    public PathPatternSet getForbiddenParentTypes() {
+        return getAllowedTypes(PagesConstants.PROP_FORBIDDEN_PARENT_TYPES);
+    }
+
+    @Nonnull
     public PathPatternSet getAllowedChildTypes() {
         return getAllowedTypes(PagesConstants.PROP_ALLOWED_CHILD_TYPES);
+    }
+
+    @Nonnull
+    public PathPatternSet getForbiddenChildTypes() {
+        return getAllowedTypes(PagesConstants.PROP_FORBIDDEN_CHILD_TYPES);
     }
 
     @Nonnull

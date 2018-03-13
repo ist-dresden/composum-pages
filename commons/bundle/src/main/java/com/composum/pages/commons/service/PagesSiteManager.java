@@ -182,16 +182,35 @@ public class PagesSiteManager extends PagesResourceManager<Site> implements Site
 
         Resource siteResource;
         String siteParentPath = siteBase.getPath();
-        String sitePath = siteParentPath + "/" + siteName;
+        final String sitePath = siteParentPath + "/" + siteName;
 
-        ResourceResolver resolver = context.getResolver();
+        final ResourceResolver resolver = context.getResolver();
         if (LOG.isInfoEnabled()) {
             LOG.info("createSite({},{})", sitePath, siteTemplate != null ? siteTemplate.getPath() : "<null>");
         }
         checkExistence(resolver, siteBase, siteName);
 
         if (siteTemplate != null) {
-            siteResource = createFromTemplate(resolver, siteBase, siteName, siteTemplate);
+            siteResource = createFromTemplate(new TemplateContext() {
+
+                @Override
+                public ResourceResolver getResolver() {
+                    return resolver;
+                }
+
+                @Override
+                public String applyTemplatePlaceholders(@Nonnull final Resource target, @Nonnull final String value) {
+                    Resource pageResource = pageManager.getContainingPageResource(target);
+                    String result = value.replaceAll("\\$\\{path}", target.getPath());
+                    result = result.replaceAll("\\$\\{page}", pageResource.getPath());
+                    result = result.replaceAll("\\$\\{site}", sitePath);
+                    if (!value.equals(result)) {
+                        result = result.replaceAll("/[^/]+/\\.\\./", "/");
+                    }
+                    return result;
+                }
+
+            }, siteBase, siteName, siteTemplate);
         } else {
             Site site = createSite(context, siteBase, siteName, null, commit);
             siteResource = site.getResource();

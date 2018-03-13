@@ -93,6 +93,13 @@ public abstract class PagesResourceManager<ModelType extends ContentDriven> impl
         return false;
     }
 
+    public interface TemplateContext {
+
+        ResourceResolver getResolver();
+
+        String applyTemplatePlaceholders(@Nonnull Resource target, @Nonnull String value);
+    }
+
     /**
      * only properties of a template accepted by this filter are copied (filter out template settings)
      */
@@ -100,6 +107,7 @@ public abstract class PagesResourceManager<ModelType extends ContentDriven> impl
             "^jcr:(primaryType|created.*|uuid)$",
             "^jcr:(baseVersion|predecessors|versionHistory|isCheckedOut)$",
             "^(allowed|forbidden)(Child|Parent)(Templates|Types)$",
+            "^(allowed|forbidden)(Paths)$",
             "^isTemplate$",
             "^jcr:(title|description)$"
     );
@@ -118,15 +126,16 @@ public abstract class PagesResourceManager<ModelType extends ContentDriven> impl
      * other templates by a 'template' property the content of these referenced templates is copied
      * (used in site templates to reference the normal page templates of the site inside of a site template).
      *
-     * @param resolver the resolver to use for CRUD operations
+     * @param context  the resolver to use for CRUD operations
      * @param parent   the parent resource for the new resource
      * @param name     the name of the new resource
      * @param template the template content resource
      * @return the resource created
      * @throws PersistenceException if an error is occurring
      */
-    protected Resource createFromTemplate(ResourceResolver resolver, Resource parent, String name, Resource template)
+    protected Resource createFromTemplate(TemplateContext context, Resource parent, String name, Resource template)
             throws PersistenceException {
+        ResourceResolver resolver = context.getResolver();
         ValueMap templateValues = template.getValueMap();
         Resource target = resolver.create(parent, name, Collections.singletonMap(
                 JcrConstants.JCR_PRIMARYTYPE, templateValues.get(JcrConstants.JCR_PRIMARYTYPE)));
@@ -151,16 +160,16 @@ public abstract class PagesResourceManager<ModelType extends ContentDriven> impl
             Resource targetContent = resolver.create(target, JcrConstants.JCR_CONTENT, Collections.singletonMap(
                     JcrConstants.JCR_PRIMARYTYPE, contentValues.get(JcrConstants.JCR_PRIMARYTYPE)));
             ModifiableValueMap targetValues = targetContent.adaptTo(ModifiableValueMap.class);
-            applyContentTemplate(resolver, templateContent, targetContent, false);
+            applyContentTemplate(context, templateContent, targetContent, false);
             targetValues.put(PROP_TEMPLATE, templateContent.getParent().getPath());
         } else {
-            applyContentTemplate(resolver, template, target, false);
+            applyContentTemplate(context, template, target, false);
         }
         // create a full struture copy of the template
         for (Resource child : template.getChildren()) {
             String childName = child.getName();
             if (!JcrConstants.JCR_CONTENT.equals(childName)) {
-                createFromTemplate(resolver, target, childName, child);
+                createFromTemplate(context, target, childName, child);
             }
         }
         return target;
@@ -169,14 +178,15 @@ public abstract class PagesResourceManager<ModelType extends ContentDriven> impl
     /**
      * Applies the content resource data from a template content resource to a target content resource.
      *
-     * @param resolver the resolver to use for CRUD operations
+     * @param context  the resolver to use for CRUD operations
      * @param template the template content resource
-     * @param target   the traget content resource
+     * @param target   the target content resource
      * @param merge    if 'true' the target properties will be unmodified and all new aspects from the template will be added
      * @throws PersistenceException if an error is occurring
      */
-    protected void applyContentTemplate(ResourceResolver resolver, Resource template, Resource target, boolean merge)
+    protected void applyContentTemplate(TemplateContext context, Resource template, Resource target, boolean merge)
             throws PersistenceException {
+        ResourceResolver resolver = context.getResolver();
         if (!merge) {
             // in case of a 'reset' remove all children from the target resource
             for (Resource child : target.getChildren()) {
@@ -198,7 +208,13 @@ public abstract class PagesResourceManager<ModelType extends ContentDriven> impl
             if (TEMPLATE_PROPERTY_FILTER.accept(key)) {
                 // copy template properties if not always present or a 'reset' is requested
                 if (values.get(key) == null || (!merge && !TEMPLATE_TARGET_KEEP.accept(key))) {
-                    values.put(key, entry.getValue());
+                    Object value = entry.getValue();
+                    if (value instanceof String) {
+                        value = context.applyTemplatePlaceholders(target, (String) value);
+                    }
+                    if (value != null) {
+                        values.put(key, value);
+                    }
                 }
             }
         }
@@ -214,7 +230,7 @@ public abstract class PagesResourceManager<ModelType extends ContentDriven> impl
                 targetChild = resolver.create(target, name, Collections.singletonMap(
                         JcrConstants.JCR_PRIMARYTYPE, childValues.get(JcrConstants.JCR_PRIMARYTYPE)));
             }
-            applyContentTemplate(resolver, child, targetChild, merge);
+            applyContentTemplate(context, child, targetChild, merge);
         }
     }
 }

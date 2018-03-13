@@ -81,21 +81,28 @@ public class ResourceReference {
         return !ResourceUtil.isNonExistingResource(getResource());
     }
 
+    @Nonnull
+    public <T> T getProperty(@Nonnull String name, @Nonnull T defaultValue) {
+        Class<T> type = PropertyUtil.getType(defaultValue);
+        T value = getProperty(name, type);
+        return value != null ? value : defaultValue;
+    }
+
     /**
      * returns the property value using the cascade: resource - configuration - resource type
      * no 18n support for this property value retrieval
      * TODO: configuration support (theme / design)
      */
-    public <T> T getProperty(String name, T defaultValue) {
-        Class<T> type = PropertyUtil.getType(defaultValue);
+    @Nullable
+    public <T> T getProperty(@Nonnull String name, @Nonnull Class<T> type) {
         T value = getResourceValues().get(name, type);
         if (value == null) {
             // TODO: retrieve configuration
             // ...
             // fallback to the last instance: the resource type
-            value = ResolverUtil.getTypeProperty(resolver, getType(), name, defaultValue);
+            value = ResolverUtil.getTypeProperty(resolver, getType(), name, type);
         }
-        return value != null ? value : defaultValue;
+        return value;
     }
 
     protected ValueMap getResourceValues() {
