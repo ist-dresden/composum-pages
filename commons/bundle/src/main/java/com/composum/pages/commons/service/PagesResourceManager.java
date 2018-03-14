@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.Map;
 
 import static com.composum.pages.commons.PagesConstants.PROP_TEMPLATE;
+import static com.composum.pages.commons.PagesConstants.PROP_TEMPLATE_REF;
 import static org.apache.jackrabbit.JcrConstants.JCR_NAME;
 
 public abstract class PagesResourceManager<ModelType extends ContentDriven> implements ResourceManager<ModelType> {
@@ -140,14 +141,15 @@ public abstract class PagesResourceManager<ModelType extends ContentDriven> impl
         Resource target = resolver.create(parent, name, Collections.singletonMap(
                 JcrConstants.JCR_PRIMARYTYPE, templateValues.get(JcrConstants.JCR_PRIMARYTYPE)));
         Resource templateContent = template.getChild(JcrConstants.JCR_CONTENT);
+        Resource referencedTemplate = null;
         if (templateContent != null) {
             // create the 'jcr:content' child if the template contains such a child
             ValueMap contentValues = templateContent.getValueMap();
-            String templatePath = contentValues.get(PROP_TEMPLATE, "");
-            if (StringUtils.isNotBlank(templatePath)) {
+            String templateRef = contentValues.get(PROP_TEMPLATE_REF, "");
+            if (StringUtils.isNotBlank(templateRef)) {
                 // if the templates 'jcr:content' resource has a property 'template'
                 // use the template referenced by this property instead if this template exists
-                Resource referencedTemplate = resolver.getResource(templatePath);
+                referencedTemplate = resolver.getResource(templateRef);
                 if (referencedTemplate != null) {
                     Resource referencedContent = referencedTemplate.getChild(JcrConstants.JCR_CONTENT);
                     if (referencedContent != null) {
@@ -157,18 +159,32 @@ public abstract class PagesResourceManager<ModelType extends ContentDriven> impl
                 }
             }
             // create the 'jcr:content' child and mark this resource with the path of the used template
+            String primaryContentType = (String) contentValues.get(JcrConstants.JCR_PRIMARYTYPE);
             Resource targetContent = resolver.create(target, JcrConstants.JCR_CONTENT, Collections.singletonMap(
-                    JcrConstants.JCR_PRIMARYTYPE, contentValues.get(JcrConstants.JCR_PRIMARYTYPE)));
+                    JcrConstants.JCR_PRIMARYTYPE, (Object) primaryContentType));
             ModifiableValueMap targetValues = targetContent.adaptTo(ModifiableValueMap.class);
             applyContentTemplate(context, templateContent, targetContent, false);
-            targetValues.put(PROP_TEMPLATE, templateContent.getParent().getPath());
+            if (!primaryContentType.startsWith("nt:")) {
+                // prevent from unwanted properties in raw node types
+                targetValues.put(PROP_TEMPLATE, templateContent.getParent().getPath());
+            }
         } else {
-            applyContentTemplate(context, template, target, false);
+            applyTemplateProperties(context, template, target, false);
         }
-        // create a full struture copy of the template
+        if (referencedTemplate != null) {
+            // create a full structure copy of the referenced template
+            for (Resource child : template.getChildren()) {
+                String childName = child.getName();
+                if (!JcrConstants.JCR_CONTENT.equals(childName)) {
+                    createFromTemplate(context, target, childName, child);
+                }
+            }
+        }
+        // create a full structure copy of the template
         for (Resource child : template.getChildren()) {
             String childName = child.getName();
-            if (!JcrConstants.JCR_CONTENT.equals(childName)) {
+            // maybe the child is always created by the referenced template
+            if (!JcrConstants.JCR_CONTENT.equals(childName) && target.getChild(childName) == null) {
                 createFromTemplate(context, target, childName, child);
             }
         }
@@ -193,6 +209,35 @@ public abstract class PagesResourceManager<ModelType extends ContentDriven> impl
                 resolver.delete(child);
             }
         }
+        applyTemplateProperties(context, template, target, merge);
+        for (Resource child : template.getChildren()) {
+            // apply the template recursive...
+            String name = child.getName();
+            Resource targetChild = null;
+            if (merge) {
+                targetChild = target.getChild(name);
+            }
+            if (targetChild == null) {
+                ValueMap childValues = child.getValueMap();
+                targetChild = resolver.create(target, name, Collections.singletonMap(
+                        JcrConstants.JCR_PRIMARYTYPE, childValues.get(JcrConstants.JCR_PRIMARYTYPE)));
+            }
+            applyContentTemplate(context, child, targetChild, merge);
+        }
+    }
+
+    /**
+     * Applies the resource properties from a template resource to a target resource.
+     *
+     * @param context  the resolver to use for CRUD operations
+     * @param template the template content resource
+     * @param target   the target content resource
+     * @param merge    if 'true' the target properties will be unmodified and all new aspects from the template will be added
+     * @throws PersistenceException if an error is occurring
+     */
+    protected void applyTemplateProperties(TemplateContext context, Resource template, Resource target, boolean merge)
+            throws PersistenceException {
+        ResourceResolver resolver = context.getResolver();
         ModifiableValueMap values = target.adaptTo(ModifiableValueMap.class);
         ValueMap templateValues = template.getValueMap();
         if (!merge) {
@@ -217,20 +262,6 @@ public abstract class PagesResourceManager<ModelType extends ContentDriven> impl
                     }
                 }
             }
-        }
-        for (Resource child : template.getChildren()) {
-            // apply the template recursive...
-            String name = child.getName();
-            Resource targetChild = null;
-            if (merge) {
-                targetChild = target.getChild(name);
-            }
-            if (targetChild == null) {
-                ValueMap childValues = child.getValueMap();
-                targetChild = resolver.create(target, name, Collections.singletonMap(
-                        JcrConstants.JCR_PRIMARYTYPE, childValues.get(JcrConstants.JCR_PRIMARYTYPE)));
-            }
-            applyContentTemplate(context, child, targetChild, merge);
         }
     }
 }

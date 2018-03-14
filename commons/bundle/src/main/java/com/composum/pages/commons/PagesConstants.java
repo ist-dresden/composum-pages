@@ -69,6 +69,7 @@ public interface PagesConstants {
 
     String PROP_TEMPLATE = "template";
     String PROP_IS_TEMPLATE = "isTemplate";
+    String PROP_TEMPLATE_REF = "templateRef";
 
     String PROP_ALLOWED_PARENT_TEMPLATES = "allowedParentTemplates";
     String PROP_FORBIDDEN_PARENT_TEMPLATES = "forbiddenParentTemplates";
