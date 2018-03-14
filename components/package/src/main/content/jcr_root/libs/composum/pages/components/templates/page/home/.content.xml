@@ -15,6 +15,19 @@
             allowedChildTemplates="[
                 ^(.*/)?pages/components/templates/page/.*$
             ]">
+        <logo
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="composum/pages/components/element/image"
+                imageRef="/content/shared/composum/pages/assets/logo/Composum-color.svg"/>
+        <search
+                jcr:primaryType="nt:unstructured">
+            <field
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="composum/pages/components/search/field"
+                    buttonSymbol="search"
+                    searchResultPath="${site}/home/meta/search">
+            </field>
+        </search>
         <stage
                 jcr:primaryType="cpp:Container"
                 sling:resourceType="composum/pages/components/composed/carousel"
@@ -23,15 +36,10 @@
                 showIndicators="{Boolean}true"
                 useControls="{Boolean}true">
         </stage>
-        <logo
-                jcr:primaryType="nt:unstructured"
-                sling:resourceType="composum/pages/components/element/image"
-                imageRef="/content/shared/composum/pages/assets/logo/Composum-color.svg"/>
-        <navigation
-                jcr:primaryType="nt:unstructured"/>
         <main
                 jcr:primaryType="cpp:Container"
                 sling:resourceType="composum/pages/components/container/parsys">
         </main>
     </jcr:content>
+    <meta/>
 </jcr:root>

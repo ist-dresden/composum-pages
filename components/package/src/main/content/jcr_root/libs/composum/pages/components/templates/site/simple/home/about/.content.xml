@@ -6,22 +6,19 @@
         jcr:primaryType="cpp:Page">
     <jcr:content
             jcr:primaryType="cpp:PageContent"
-            jcr:title="Pages Components Subsite Root"
-            jcr:description="A subsite root navigation point with a redirect to a page of the subsite as the entrty point."
-            sling:resourceType="composum/pages/components/page/subsite/root">
+            sling:resourceType="composum/pages/components/page/subsite/root"
+            sling:target="${site}/home/about/home"
+            template="/apps/sites/ist/composum/templates/page/subsite/root">
         <search
                 jcr:primaryType="nt:unstructured">
             <field
                     jcr:primaryType="nt:unstructured"
+                    sling:resourceType="composum/pages/components/search/field"
                     buttonSymbol="search"
                     searchResultPath="${site}/home/about/meta/search">
-                <i18n
-                        jcr:primaryType="nt:unstructured">
-                    <de
-                            jcr:primaryType="nt:unstructured"/>
-                </i18n>
             </field>
         </search>
     </jcr:content>
     <meta/>
+    <home/>
 </jcr:root>
