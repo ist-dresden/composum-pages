@@ -75,6 +75,7 @@
                             if (pages.elements) {
                                 pages.elements.triggerEvent('site:changed', [this.sitePath]);
                             } else {
+                                console.log('site.trigger.site:changed(' + this.sitePath + ')');
                                 $(document).trigger('site:changed', [this.sitePath]);
                             }
                         }, this), _.bind(function (result) {

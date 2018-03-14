@@ -25,8 +25,8 @@
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <cpp:defineFrameObjects/>
 <cpp:editDialog var="model" type="com.composum.pages.commons.model.GenericModel" languageContext="false"
-                title="Insert a new Folder" selector="generic"
-                submitLabel="Create" submit="@{model.path}/*">
+                title="Insert a new Folder" selector="generic" submitLabel="Create" submit="@{model.path}/*"
+                successEvent="content:inserted">
     <%-- the jcr:primaryType depends on the 'ordered' checkbox value and is set before submit by JS --%>
     <cpp:widget name="jcr:primaryType" type="hidden"/>
     <div class="row">

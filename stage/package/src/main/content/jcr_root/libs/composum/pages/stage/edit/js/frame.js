@@ -31,14 +31,23 @@
                 $(document).on('component:selected.EditFrame', _.bind(this.onComponentSelected, this));
                 $(document).on('component:changed.EditFrame', _.bind(this.onComponentChanged, this));
                 $(document).on('component:deleted.EditFrame', _.bind(this.onComponentDeleted, this));
+                $(document).on('content:inserted.EditFrame', _.bind(this.onComponentChanged, this));
+                $(document).on('content:changed.EditFrame', _.bind(this.onComponentChanged, this));
+                $(document).on('content:deleted.EditFrame', _.bind(this.onComponentDeleted, this));
                 $(document).on('page:selected.EditFrame', _.bind(this.onPageSelected, this));
                 $(document).on('page:select.EditFrame', _.bind(this.selectPage, this));
                 $(document).on('page:view.EditFrame', _.bind(this.onViewPage, this));
+                $(document).on('page:inserted.EditFrame', _.bind(this.onComponentChanged, this));
+                $(document).on('page:changed.EditFrame', _.bind(this.onComponentChanged, this));
+                $(document).on('page:deleted.EditFrame', _.bind(this.onComponentDeleted, this));
                 $(document).on('site:select.EditFrame', _.bind(this.selectSite, this));
+                $(document).on('site:created.EditFrame', _.bind(this.onSiteChanged, this));
                 $(document).on('site:changed.EditFrame', _.bind(this.onSiteChanged, this));
+                $(document).on('site:deleted.EditFrame', _.bind(this.onComponentDeleted, this));
                 pages.PageView.prototype.registerEventHandlers.apply(this);
                 var initialPath = this.$el.data('path');
                 if (initialPath) {
+                    console.log('frame.trigger.page:select(' + initialPath + ')');
                     $(document).trigger("page:select", [initialPath]);
                 }
                 this.$frame.on('load.EditFrame', _.bind(this.onFrameLoad, this));
@@ -52,6 +61,7 @@
                     pages.getPageData(path, _.bind(function (data) {
                         if (data.meta && data.meta.site !== pages.current.site) {
                             pages.current.site = data.meta.site;
+                            console.log('frame.trigger.page:selected(' + data.meta.site + ')');
                             $(document).trigger("site:selected", [data.meta.site]);
                         }
                     }, this));
@@ -75,7 +85,9 @@
                                 var url = new core.SlingUrl(frameUrl);
                                 if (!url.parameters || url.parameters['pages.mode'] !== 'preview') {
                                     pages.current.page = data.path;
-                                    $(document).trigger("page:selected", [data.path, url.parameters]);
+                                    var eventData = [data.path, url.parameters];
+                                    console.log('frame.trigger.page:selected(' + data.path + ')');
+                                    $(document).trigger("page:selected", eventData);
                                 }
                             } else {
                                 var select = this.selectOnLoad;
@@ -100,6 +112,7 @@
                 if (pages.current.site !== path) {
                     console.log('pages.EditFrame.selectSite(' + path + ')');
                     pages.current.site = path;
+                    console.log('frame.trigger.site:selected(' + path + ')');
                     $(document).trigger("site:selected", [path]);
                 }
                 this.selectPage(event, path);
@@ -110,8 +123,10 @@
                     console.log('pages.EditFrame.selectPage(' + path + ')');
                     pages.current.page = path;
                     this.reloadPage(parameters);
+                    console.log('frame.trigger.page:selected(' + path + ')');
                     $(document).trigger("page:selected", [path]);
                 } else {
+                    console.log('frame.trigger.path:selected(' + path + ')');
                     $(document).trigger("path:selected", [path]);
                 }
             },
@@ -176,7 +191,7 @@
                 if (path) {
                     console.log('pages.EditFrame.onComponentChanged(' + path + ')');
                     if (path === pages.current.site) {
-                        this.reloadFrame();
+                        // FIXME this.reloadFrame();
                     } else if (path.indexOf(pages.current.page) === 0) {
                         this.reloadPage();
                     }
@@ -187,7 +202,7 @@
                 if (path) {
                     console.log('pages.EditFrame.onComponentDeleted(' + path + ')');
                     if (path === pages.current.site || path === pages.current.page) {
-                        this.reloadFrame();
+                        // FIXME this.reloadFrame();
                     } else if (path.indexOf(pages.current.page) === 0) {
                         this.reloadPage();
                     }

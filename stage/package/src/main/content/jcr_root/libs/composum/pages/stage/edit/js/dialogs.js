@@ -17,6 +17,12 @@
                         _folder: '.folder.html',
                         _file: '.file.html'
                     },
+                    _remove: {
+                        path: '/content/dialog/remove',
+                        _page: '.page.html',
+                        _folder: '.folder.html',
+                        _file: '.file.html'
+                    },
                     _create: {
                         page: '.createPage.json'
                     },
@@ -218,13 +224,14 @@
                 this.$('.' + c.base + c._pathField)
                     .before('<input name=":operation" type="hidden" value="delete"/>');
                 this.submitForm(_.bind(function () {
-                    $(document).trigger('component:selected', []);
+                    console.log('pages.trigger.component:deleted(' + this.data.path + ')');
                     $(document).trigger('component:deleted', [this.data.path]);
                 }, this));
             },
 
-            triggerEvents: function (result) {
-                var event = (this.$el.data('pages-edit-success') || 'component:changed').split(';');
+            triggerEvents: function (result, defaultEvents) {
+                var event = (this.$el.data('pages-edit-success') || defaultEvents
+                    || this.getDefaultSuccessEvents()).split(';');
                 for (var i = 0; i < event.length; i++) {
                     switch (event[i]) {
                         case 'messages':
@@ -235,10 +242,15 @@
                             }
                             break;
                         default:
+                            console.log('pages.trigger.' + event[i] + '(' + this.data.path + ')');
                             $(document).trigger(event[i], [this.data.path]);
                             break;
                     }
                 }
+            },
+
+            getDefaultSuccessEvents: function () {
+                return 'component:changed';
             },
 
             validationReset: function () {
@@ -329,6 +341,7 @@
                                 targetPath: path,
                                 targetType: this.data.type
                             }, {}, _.bind(function () {
+                                console.log('pages.trigger.component:changed' + path + ')');
                                 $(document).trigger('component:changed', [path]);
                             }, this));
                         }, this));
@@ -349,7 +362,7 @@
 
             doSubmit: function () {
                 this.submitForm(_.bind(function () {
-                    $(document).trigger('component:selected', []);
+                    console.log('pages.trigger.component:deleted(' + this.data.path + ')');
                     $(document).trigger('component:deleted', [this.data.path]);
                 }, this));
             }
@@ -377,6 +390,10 @@
                 this.description = core.getWidget(this.el, '.widget-name_description', core.components.TextFieldWidget);
             },
 
+            getDefaultSuccessEvents: function () {
+                return 'content:inserted';
+            },
+
             doSubmit: function () {
                 var c = dialogs.const.edit.url;
                 var template = this.pageTemplate.getValue();
@@ -394,6 +411,7 @@
                                 title: title,
                                 description: description
                             }, {}, _.bind(function () {
+                                console.log('pages.trigger.component:changed(' + this.data.path + ')');
                                 $(document).trigger('component:changed', [this.data.path]);
                             }, this));
                         } else {
@@ -407,6 +425,7 @@
                                         title: title,
                                         description: description
                                     }, {}, _.bind(function () {
+                                        console.log('pages.trigger.component:changed(' + this.data.path + ')');
                                         $(document).trigger('component:changed', [this.data.path]);
                                     }, this));
                                 }, this));
@@ -434,6 +453,10 @@
                 this.ordered = core.getWidget(this.el, '.widget-name_ordered', core.components.CheckboxWidget);
             },
 
+            getDefaultSuccessEvents: function () {
+                return 'content:inserted';
+            },
+
             doSubmit: function () {
                 this.$primaryType.attr('value', this.ordered.getValue() ? 'sling:OrderedFolder' : 'sling:Folder');
                 dialogs.EditDialog.prototype.doSubmit.apply(this);
@@ -457,6 +480,10 @@
                 this.name = core.getWidget(this.el, '.widget-name_name', core.components.TextFieldWidget);
             },
 
+            getDefaultSuccessEvents: function () {
+                return 'content:inserted';
+            },
+
             doSubmit: function () {
                 var name = this.name.getValue();
                 if (!name) {
@@ -475,6 +502,22 @@
                 dialogs.NewFileDialog, name, path, type);
         };
 
+        /**
+         * the dialog to delete a content resource (page, folder, file) from the repository
+         */
+        dialogs.DeleteContentDialog = dialogs.EditDialog.extend({
+
+            getDefaultSuccessEvents: function () {
+                return 'content:deleted';
+            }
+        });
+
+        dialogs.openDeleteContentDialog = function (contentType, name, path, type) {
+            var c = dialogs.const.edit.url;
+            pages.dialogHandler.openEditDialog(c.path + c._remove.path + c._remove['_' + contentType],
+                dialogs.DeleteContentDialog, name, path, type);
+        };
+
         //
         // Sites...
         //
@@ -486,15 +529,17 @@
 
             doSubmit: function () {
                 this.submitForm(_.bind(function (result) {
-                    $(document).trigger('site:changed', [result.path]);
+                    this.data.name = result.name;
+                    this.data.path = result.path;
+                    this.triggerEvents(result, 'site:created');
                 }, this));
             }
         });
 
-        dialogs.openCreateSiteDialog = function () {
+        dialogs.openCreateSiteDialog = function (name, path, type) {
             var c = dialogs.const.edit;
             pages.dialogHandler.openEditDialog(dialogs.getEditDialogUrl('create'),
-                dialogs.CreateSiteDialog, undefined, undefined, c.type.site);
+                dialogs.CreateSiteDialog, undefined, path, c.type.site);
         };
 
         /**
@@ -503,15 +548,13 @@
         dialogs.DeleteSiteDialog = dialogs.EditDialog.extend({
 
             doSubmit: function () {
-                this.submitForm(_.bind(function () {
-                    $(document).trigger('component:selected', []);
-                    $(document).trigger('component:deleted', [this.data.path]);
+                this.submitForm(_.bind(function (result) {
+                    this.triggerEvents(result, 'site:deleted');
                 }, this));
             }
         });
 
         dialogs.openDeleteSiteDialog = function (name, path, type) {
-            var c = dialogs.const.edit.url;
             pages.dialogHandler.openEditDialog(dialogs.getEditDialogUrl('delete'),
                 dialogs.DeleteSiteDialog, name, path, type);
         };

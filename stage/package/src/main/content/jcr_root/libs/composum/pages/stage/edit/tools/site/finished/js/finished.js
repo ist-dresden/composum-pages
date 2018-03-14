@@ -51,6 +51,7 @@
                     }
                     this.$previewEntry = $listEntry;
                     $listEntry.addClass('selected');
+                    console.log('site.trigger.page:view(' + path + ',preview)');
                     $(document).trigger("page:view", [path, {'pages.mode': 'preview'}]);
                 }
             },
@@ -59,6 +60,7 @@
                 if (this.$previewEntry.length > 0) {
                     this.$previewEntry.removeClass('selected');
                     this.$previewEntry = [];
+                    console.log('site.trigger.page:view()');
                     $(document).trigger("page:view", [null, {}]);
                 }
             },

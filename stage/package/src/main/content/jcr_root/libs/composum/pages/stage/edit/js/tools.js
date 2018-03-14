@@ -160,14 +160,17 @@
                         case 'siteconfiguration':
                             path = core.getParentPath(path);
                         case 'site':
+                            console.log('tools.trigger.site:select(' + path + ')');
                             $(document).trigger("site:select", [path]);
                             break;
                         case 'pagecontent':
                             path = core.getParentPath(path);
                         case 'page':
                             if (path === pages.current.page) {
+                                console.log('tools.trigger.component:select()');
                                 $(document).trigger("component:select", []);
                             } else {
+                                console.log('tools.trigger.page:select(' + path + ')');
                                 $(document).trigger("page:select", [path]);
                             }
                             break;
@@ -180,14 +183,17 @@
                                         path: path,
                                         type: node.original.type
                                     };
+                                    console.log('tools.trigger.page:select(' + data.path + ')');
                                     $(document).trigger("page:select", [data.path]);
                                 } else {
+                                    console.log('tools.trigger.component:select(' + path + ')');
                                     $(document).trigger("component:select",
                                         [node.original.name, path, node.original.type]);
                                 }
                             }, this));
                             break;
                         default:
+                            console.log('tools.trigger.path:selected(' + path + ')');
                             $(document).trigger("path:selected", [path]);
                             break;
                     }
@@ -226,6 +232,7 @@
 
             selectSite: function (event) {
                 if (this.sitePath) {
+                    console.log('tools.trigger.site:select(' + this.sitePath + ')');
                     $(document).trigger("site:select", [this.sitePath]);
                 }
             },

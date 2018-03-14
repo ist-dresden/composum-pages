@@ -221,14 +221,19 @@
                     case pages.const.event.componentSelected:
                         // transform selection messages into the corresponding event for the edit frame components
                         if (args.path) {
+                            console.log('pages.trigger.' + pages.const.event.pathSelected + '(' + args.path + ')');
                             $(document).trigger(pages.const.event.pathSelected, [args.path]);
-                            $(document).trigger(pages.const.event.componentSelected, [
+                            var eventData = [
                                 args.name,
                                 args.path,
                                 args.type
-                            ]);
+                            ];
+                            console.log('pages.trigger.' + pages.const.event.componentSelected + '(' + args.path + ')');
+                            $(document).trigger(pages.const.event.componentSelected, eventData);
                         } else {
+                            console.log('pages.trigger.' + pages.const.event.pathSelected + '()');
                             $(document).trigger(pages.const.event.pathSelected, []);
+                            console.log('pages.trigger.' + pages.const.event.componentSelected + '()');
                             $(document).trigger(pages.const.event.componentSelected, []);
                         }
                         break;
@@ -285,7 +290,7 @@
                         break;
                     case pages.const.event.triggerEvent:
                         // triggers an event in the frame document context
-                        console.log('pages.event.triggerEvent(' + message[2] + ')');
+                        console.log('pages.event.' + args.event + '(' + message[2] + ')');
                         $(document).trigger(args.event, args.data);
                         break;
                     case pages.const.event.alertMessage:

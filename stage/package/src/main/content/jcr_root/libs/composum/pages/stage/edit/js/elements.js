@@ -718,15 +718,17 @@
 
             setSelection: function (component, force) {
                 console.log('pages.elements.setSelection(' + component + ',' + force + ')');
-                if (elements.pageBody.selection.component != component || force) {
+                if (elements.pageBody.selection.component !== component || force) {
                     if (component) {
                         this.dnd.reset();
                         elements.pageBody.selection.setComponent(component);
-                        $(document).trigger('component:selected', [
+                        var eventData = [
                             component.data.name,
                             component.data.path,
                             component.data.type
-                        ]);
+                        ];
+                        console.log('elements.trigger.component:selected(' + component.data.path + ')');
+                        $(document).trigger('component:selected', eventData);
                     } else {
                         this.clearSelection();
                     }
@@ -740,6 +742,7 @@
                 if (elements.pageBody.selection.component) {
                     console.log('pages.elements.clearSelection(' + elements.pageBody.selection.component + ')');
                     elements.pageBody.selection.setComponent(undefined);
+                    console.log('elements.trigger.component:selected([])');
                     $(document).trigger('component:selected', []);
                 }
             },
@@ -758,6 +761,7 @@
                         }
                     }
                     if (!found) {
+                        console.log('elements.trigger.component:selected([])');
                         $(document).trigger('component:selected', []);
                     }
                 } else {
@@ -784,12 +788,15 @@
                     switch (message[1]) {
                         case elements.const.event.componentSelect:
                             if (args.path) {
-                                $(document).trigger(elements.const.event.componentSelect, [
+                                var eventData = [
                                     args.name,
                                     args.path,
                                     args.type
-                                ]);
+                                ];
+                                console.log('elements.trigger.component:selected(' + args.path + ')');
+                                $(document).trigger(elements.const.event.componentSelect, eventData);
                             } else {
+                                console.log('elements.trigger.' + elements.const.event.componentSelect + '([])');
                                 $(document).trigger(elements.const.event.componentSelect, []);
                             }
                             break;
