@@ -43,6 +43,10 @@
             },
             sling: {
                 resourceType: 'sling:resourceType'
+            },
+            login: {
+                id: 'composum-platform-commons-login-dialog',
+                url: '/libs/composum/platform/security/login/dialog.html'
             }
         });
 
@@ -94,6 +98,7 @@
             site: undefined,
             page: undefined
         };
+
         switch (pages.current.mode) {
             case 'PREVIEW':
             case 'BROWSE':
@@ -104,11 +109,6 @@
                 pages.profile.set('mode', 'edit', pages.current.mode.toLowerCase());
                 break;
         }
-        pages.authorize = function (retryThisFailedCall) {
-            var currentUrl = new RegExp('https?://[^/]+/bin/pages.html(/[^?]*).*').exec(window.location.href);
-            var pagesUrl = '/bin/pages.html' + (currentUrl ? currentUrl[1] : '/');
-            return '/libs/composum/platform/security/login.html?resource=' + encodeURIComponent(pagesUrl);
-        };
 
         pages.getPageData = function (path, callback) {
             core.ajaxGet(pages.const.url.get.pageData + path, {}, callback);
@@ -178,22 +178,19 @@
             },
 
             openDialog: function (id, url, viewType, initView, callback) {
-                this.getDialog(id, url, viewType, _.bind(function (dialog) {
+                this.getDialog(id, url, {}, viewType, _.bind(function (dialog) {
                     dialog.show(initView, callback);
                 }, this));
             },
 
-            getDialog: function (id, url, viewType, callback) {
+            getDialog: function (id, url, config, viewType, callback) {
                 var dialog = core.getWidget(this.el, '#' + id, viewType);
                 if (!dialog) {
-                    core.getHtml(url,
+                    core.ajaxGet(url, _.extend({dataType: 'html'}, config),
                         _.bind(function (data) {
                             this.$el.append(data);
                             dialog = core.getWidget(this.el, '#' + id, viewType);
                             if (dialog) {
-                                if (_.isFunction(dialog.afterLoad)) {
-                                    dialog.afterLoad(name, path, type);
-                                }
                                 if (_.isFunction(callback)) {
                                     callback(dialog);
                                 }
@@ -204,6 +201,7 @@
                         callback(dialog);
                     }
                 }
+                return dialog;
             }
         });
 
@@ -221,14 +219,19 @@
                     case pages.const.event.componentSelected:
                         // transform selection messages into the corresponding event for the edit frame components
                         if (args.path) {
+                            console.log('pages.trigger.' + pages.const.event.pathSelected + '(' + args.path + ')');
                             $(document).trigger(pages.const.event.pathSelected, [args.path]);
-                            $(document).trigger(pages.const.event.componentSelected, [
+                            var eventData = [
                                 args.name,
                                 args.path,
                                 args.type
-                            ]);
+                            ];
+                            console.log('pages.trigger.' + pages.const.event.componentSelected + '(' + args.path + ')');
+                            $(document).trigger(pages.const.event.componentSelected, eventData);
                         } else {
+                            console.log('pages.trigger.' + pages.const.event.pathSelected + '()');
                             $(document).trigger(pages.const.event.pathSelected, []);
+                            console.log('pages.trigger.' + pages.const.event.componentSelected + '()');
                             $(document).trigger(pages.const.event.componentSelected, []);
                         }
                         break;
@@ -285,7 +288,7 @@
                         break;
                     case pages.const.event.triggerEvent:
                         // triggers an event in the frame document context
-                        console.log('pages.event.triggerEvent(' + message[2] + ')');
+                        console.log('pages.event.' + args.event + '(' + message[2] + ')');
                         $(document).trigger(args.event, args.data);
                         break;
                     case pages.const.event.alertMessage:
@@ -296,6 +299,84 @@
                 }
             }
         }, false);
+
+        //
+        // login dialog and session expired (unauthorized) fallback
+        //
+
+        pages.LoginDialog = core.components.Dialog.extend({
+
+            initialize: function (options) {
+                core.components.Dialog.prototype.initialize.apply(this, [options]);
+                this.form = core.getWidget(this.el, "form", core.components.FormWidget);
+                this.form.$el.on('submit', _.bind(this.onSubmit, this));
+                this.callsToRetry = [];
+                this.showing = false;
+            },
+
+            resetOnShown: function () {
+                core.components.Dialog.prototype.resetOnShown.apply(this);
+                this.alert('warning', this.$el.data('message'));
+            },
+
+            onSubmit: function (event) {
+                if (event) {
+                    event.preventDefault();
+                }
+                this.submitForm();
+                return false;
+            },
+
+            /**
+             * collect all failed request calls to retry after successful login
+             * @param retryThisFailedCall the call to retry after login
+             */
+            handleUnauthorized: function (retryThisFailedCall) {
+                if (this.showing) {
+                    // collect all failed calls during login
+                    this.callsToRetry.push(retryThisFailedCall);
+                } else {
+                    // show login dialog and collect failed calls...
+                    this.showing = true;
+                    this.callsToRetry = [retryThisFailedCall];
+                    this.show(undefined, _.bind(function () {
+                        // retry after login all collected calls
+                        this.callsToRetry.forEach(function (retryThisFailedCall) {
+                            retryThisFailedCall();
+                        });
+                        this.showing = false;
+                        this.callsToRetry = [];
+                    }, this));
+                }
+            }
+        });
+
+        /**
+         * the Pages Stage handler to resolve unauthorized request calls
+         * @param retryThisFailedCall the call to retry after login
+         * @see core.unauthorizedDelegate
+         * @see core.ajaxCall
+         */
+        pages.handleUnauthorized = function (retryThisFailedCall) {
+            var c = pages.const.login;
+            pages.dialogHandler.getDialog(c.id, c.url, {}, pages.LoginDialog,
+                _.bind(function (dialog) {
+                    dialog.handleUnauthorized(retryThisFailedCall);
+                }, this));
+        };
+
+        /**
+         * check accessibility of the url as condition to execute a function
+         * @param functionToCall the function to execute if url is accessible
+         * @param urlToCheck the url to use as indicator
+         */
+        pages.retryIfUnauthorized = function (functionToCall, urlToCheck) {
+            core.ajaxHead(urlToCheck, {}, _.bind(function () {
+                functionToCall();
+            }, this), _.bind(function () {
+                pages.handleUnauthorized(functionToCall);
+            }, this));
+        };
 
     })(window.composum.pages, window.core);
 })(window);

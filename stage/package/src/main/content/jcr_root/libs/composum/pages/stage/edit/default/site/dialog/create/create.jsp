@@ -1,9 +1,9 @@
-<%@page session="false" pageEncoding="utf-8" %><%--
---%><%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %><%--
---%><cpp:defineFrameObjects/>
+<%@page session="false" pageEncoding="utf-8" %>
+<%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
+<cpp:defineFrameObjects/>
 <cpp:editDialog var="site" type="com.composum.pages.commons.model.Site" selector="wizard" languageContext="false"
-                title="Create a new Site" submitLabel="Create"
-                submit="/bin/cpm/pages/edit.createSite.json">
+                title="Create a new Site" submitLabel="Create" submit="/bin/cpm/pages/edit.createSite.json"
+                successEvent="site:created">
     <cpp:editDialogTab tabId="template" label="Template">
         <cpp:widget label="Select a template" name="template" type="site-template"/>
     </cpp:editDialogTab>

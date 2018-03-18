@@ -5,6 +5,7 @@ import com.composum.pages.commons.model.properties.Language;
 import com.composum.pages.commons.model.properties.Languages;
 import com.composum.pages.commons.util.TagCssClasses;
 import com.composum.sling.core.BeanContext;
+import com.composum.sling.core.util.ResourceUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 
@@ -220,8 +221,9 @@ public class EditDialogTag extends AbstractWrappingTag {
      * if this returns 'true' the hidden resource type property value must be inserted in the form
      */
     public boolean isUseResourceType() {
-        return (SELECTOR_CREATE.equalsIgnoreCase(getSelector()) || resourceType != null)
-                && !TYPE_NONE.equalsIgnoreCase(resourceType);
+        return (!TYPE_NONE.equalsIgnoreCase(resourceType)
+                && (StringUtils.isNotBlank(resourceType) || SELECTOR_CREATE.equalsIgnoreCase(getSelector())
+                || ResourceUtil.isNonExistingResource(getModelResource(context))));
     }
 
     // create: 'jcr:primaryType'

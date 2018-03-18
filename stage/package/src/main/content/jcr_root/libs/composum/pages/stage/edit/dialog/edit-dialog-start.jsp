@@ -1,13 +1,14 @@
-<%@page session="false" pageEncoding="UTF-8" %><%--
---%><%@taglib prefix="sling" uri="http://sling.apache.org/taglibs/sling/1.2" %><%--
---%><%@taglib prefix="cpn" uri="http://sling.composum.com/cpnl/1.0" %><%--
---%><%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %><%--
---%><%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%><%--
---%><cpp:defineFrameObjects/>
+<%@page session="false" pageEncoding="UTF-8" %>
+<%@taglib prefix="sling" uri="http://sling.apache.org/taglibs/sling/1.2" %>
+<%@taglib prefix="cpn" uri="http://sling.composum.com/cpnl/1.0" %>
+<%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<cpp:defineFrameObjects/>
 <div${dialog.attributes}>
     <div class="modal-dialog">
         <div class="modal-content form-panel">
-            <form class="widget-form ${dialogCssBase}_form form-action_${dialog.action.name}" method="${dialog.action.method}"
+            <form class="widget-form ${dialogCssBase}_form form-action_${dialog.action.name}"
+                  method="${dialog.action.method}"
                   action="${dialog.action.url}" enctype="${dialog.action.encType}">
                 <div class="modal-header ${dialogCssBase}_header">
                     <button type="button" class="${dialogCssBase}_button-close fa fa-close"
@@ -31,5 +32,10 @@
                     <ul class="${dialogCssBase}_tabs nav nav-tabs">
                     </ul>
                     <input name="_charset_" type="hidden" value="UTF-8" class="${dialogCssBase}_hidden"/>
+                    <c:if test="${dialog.useResourceType}">
+                        <!-- the resource type is set according to the rendered type (for static includes) -->
+                        <input name="sling:resourceType" type="hidden" value="${dialog.resourceType}"
+                               class="${dialogCssBase}_hidden ${dialogCssBase}_resource-type"/>
+                    </c:if>
                     <div class="${dialogCssBase}_tabbed-content">
-<!-- start of dialog content -->
+                        <!-- start of dialog content -->

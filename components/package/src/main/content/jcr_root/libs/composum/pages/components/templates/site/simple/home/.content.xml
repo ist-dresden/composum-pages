@@ -1,10 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jcr:root xmlns:cpp="http://sling.composum.com/pages/1.0"
-        xmlns:jcr="http://www.jcp.org/jcr/1.0"
-        xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
-        xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+<jcr:root xmlns:cpp="http://sling.composum.com/pages/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
         jcr:primaryType="cpp:Page">
+    <!--
+        This homepage template of the site template is referencing the normal homepage template.
+        The embedded homepage is replaced automatically by the referenced template on applying the site template.
+        The use of a template reference prevents also from use of this embedded homepage itself as a template.
+        Alternatively the homepage content can be embedded here in the site template.
+        In this case the embedded homepage will also be used as an independent homepage template if the
+        embedded homepage is not marked with the property 'isTemplate={Boolean}false'.
+    -->
     <jcr:content
             jcr:primaryType="cpp:PageContent"
-            template="/libs/composum/pages/components/templates/page/home"/>
+            templateRef="/libs/composum/pages/components/templates/page/home"/>
+    <content/>
+    <about/>
 </jcr:root>

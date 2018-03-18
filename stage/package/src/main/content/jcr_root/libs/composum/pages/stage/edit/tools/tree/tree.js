@@ -34,10 +34,9 @@
                 this.onPathSelected(undefined, path);
             },
 
-            onPathSelected: function (event, path) {
-                if (path) {
-                    core.components.Tree.prototype.onPathSelected.apply(this, [event, path]);
-                }
+            onContentInserted: function (event, path) {
+                var parentAndName = core.getParentAndName(path);
+                this.onPathInserted(event, parentAndName.path, parentAndName.name);
             }
         });
 
@@ -53,7 +52,18 @@
                 }
                 tree.ToolsTree.prototype.initialize.apply(this, [options]);
                 $(document).on('component:selected.' + id, _.bind(this.onPathSelected, this));
+                $(document).on('component:changed.' + id, _.bind(this.onPathChanged, this));
+                $(document).on('content:selected.' + id, _.bind(this.onPathSelected, this));
+                $(document).on('content:inserted.' + id, _.bind(this.onContentInserted, this));
+                $(document).on('content:changed.' + id, _.bind(this.onPathChanged, this));
+                $(document).on('content:deleted.' + id, _.bind(this.onPathDeleted, this));
                 $(document).on('page:selected.' + id, _.bind(this.onPathSelected, this));
+                $(document).on('page:inserted.' + id, _.bind(this.onContentInserted, this));
+                $(document).on('page:changed.' + id, _.bind(this.onPathChanged, this));
+                $(document).on('page:deleted.' + id, _.bind(this.onPathDeleted, this));
+                $(document).on('site:created.' + id, _.bind(this.onContentInserted, this));
+                $(document).on('site:changed.' + id, _.bind(this.onPathChanged, this));
+                $(document).on('site:deleted.' + id, _.bind(this.onPathDeleted, this));
             },
 
             dataUrlForPath: function (path) {

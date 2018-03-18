@@ -8,6 +8,7 @@ import com.composum.sling.core.BeanContext;
 import org.apache.felix.scr.annotations.Activate;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.sling.SlingServlet;
+import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.resource.Resource;
@@ -42,7 +43,7 @@ public class SiteServlet extends SlingSafeMethodsServlet {
             IOException {
 
         Resource resource = request.getResource();
-        Resource content = resource.getChild("jcr:content");
+        Resource content = resource.getChild(JcrConstants.JCR_CONTENT);
 
         if (content != null) {
 

@@ -10,7 +10,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * a filter implementation to determine a set of potential children of a target resource
+ * a filter implementation to determine a set of potential children types or templates of a target resource
  */
 public class ContentTypeFilter {
 

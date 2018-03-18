@@ -58,7 +58,7 @@
                 var path = this.$el.data('path');
                 var type = this.$el.data('type');
                 pages.dialogs.getDialog('text-edit-dialog',
-                    '/libs/composum/nodes/console/components/codeeditor/editdialog.html',
+                    '/libs/composum/nodes/console/components/codeeditor/editdialog.html', {},
                     core.components.CodeEditorDialog, _.bind(function (dialog) {
                         dialog.editFile(path + '/jcr:content', type);
                     }, this));

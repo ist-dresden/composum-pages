@@ -72,7 +72,6 @@ public class DefineObjectsTag extends org.apache.sling.scripting.jsp.taglib.Defi
             SlingHttpServletRequest request = context.getRequest();
             Resource resource = determineResource(request);
             PageManager pageManager = context.getService(PageManager.class);
-            ;
             Resource pageResource = pageManager.getContainingPageResource(resource);
 
             if (pageResource != null) {

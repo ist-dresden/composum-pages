@@ -10,7 +10,7 @@
             jcr:description="A multi purpose content page with only one 'main' container to arrange content of all general element types including rows and columns."
             sling:resourceType="composum/pages/components/page"
             allowedChildTemplates="[
-                ^(.*/)?pages/components/templates/page/.*$
+                ^(.*/)?pages/components/templates/page/([^/]+|subsite/root)$
             ]">
         <main
                 jcr:primaryType="cpp:Container"

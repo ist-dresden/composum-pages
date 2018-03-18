@@ -8,4 +8,5 @@
         allowedContainers="[composum/pages/components/container/row]"
         allowedElements="[composum/pages/components/element/.*,
                           composum/pages/components/composed/.*,
+                          composum/pages/components/search/(field|result),
                           .*/pages/components/demo/.*]"/>

@@ -104,7 +104,7 @@
             },
 
             delete: function (event, name, path, type) {
-                alert('page.delete... ' + name + ',' + path + ',' + type);
+                pages.dialogs.openDeleteContentDialog('page', name, path, type);
             },
 
             checkout: function (event, name, path, type) {
@@ -143,7 +143,7 @@
             },
 
             create: function (event, name, path, type) {
-                pages.dialogs.openCreateSiteDialog();
+                pages.dialogs.openCreateSiteDialog(name, path, type);
             },
 
             delete: function (event, name, path, type) {
@@ -190,7 +190,42 @@
             },
 
             delete: function (event, name, path, type) {
-                alert('folder.delete... ' + name + ',' + path + ',' + type);
+                pages.dialogs.openDeleteContentDialog('folder', name, path, type);
+            }
+        };
+
+        actions.file = {
+
+            insertPage: function (event, name, path, type) {
+                pages.dialogs.openNewPageDialog(name, path, type);
+            },
+
+            insertFolder: function (event, name, path, type) {
+                pages.dialogs.openNewFolderDialog(name, path, type);
+            },
+
+            insertFile: function (event, name, path, type) {
+                pages.dialogs.openNewFileDialog(name, path, type);
+            },
+
+            rename: function (event, name, path, type) {
+                alert('file.rename... ' + name + ',' + path + ',' + type);
+            },
+
+            move: function (event, name, path, type) {
+                alert('file.move... ' + name + ',' + path + ',' + type);
+            },
+
+            copy: function (event, name, path, type) {
+                alert('file.copy... ' + name + ',' + path + ',' + type);
+            },
+
+            paste: function (event, name, path, type) {
+                alert('file.paste... ' + name + ',' + path + ',' + type);
+            },
+
+            delete: function (event, name, path, type) {
+                pages.dialogs.openDeleteContentDialog('file', name, path, type);
             }
         };
 

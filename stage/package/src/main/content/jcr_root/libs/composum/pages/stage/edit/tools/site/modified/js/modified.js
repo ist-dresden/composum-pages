@@ -52,6 +52,7 @@
                     this.$previewEntry = $listEntry;
                     $('body').addClass('context-driven-view');
                     $listEntry.addClass('selected');
+                    console.log('site.trigger.page:view(' + path + ',preview)');
                     $(document).trigger("page:view", [path, {'pages.mode': 'preview'}]);
                 }
             },
@@ -61,6 +62,7 @@
                     $('body').removeClass('context-driven-view');
                     this.$previewEntry.removeClass('selected');
                     this.$previewEntry = [];
+                    console.log('site.trigger.page:view()');
                     $(document).trigger("page:view", [null, {}]);
                 }
             },

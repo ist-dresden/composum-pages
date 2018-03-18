@@ -3,7 +3,8 @@
         jcr:primaryType="cpp:Component"
         sling:resourceSuperType="composum/pages/components/page"
         allowedParentTypes="[
-            ^(.*/)?components/page/subsite(/.*)?$
+            ^(.*/)?components/page/subsite(/.*)?$,
+            ^sling:(Ordered)?Folder$
         ]"
         allowedChildTypes="[
             ^(.*/)?components/page/subsite(/.*)?$
