@@ -21,4 +21,7 @@
                 sling:resourceType="composum/pages/stage/edit/site/releases">
         </releases>
     </jcr:content>
+    <meta/>
+    <home/>
+    <assets/>
 </jcr:root>

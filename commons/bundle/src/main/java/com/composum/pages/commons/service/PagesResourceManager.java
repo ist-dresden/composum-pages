@@ -142,10 +142,12 @@ public abstract class PagesResourceManager<ModelType extends ContentDriven> impl
                 JcrConstants.JCR_PRIMARYTYPE, templateValues.get(JcrConstants.JCR_PRIMARYTYPE)));
         Resource templateContent = template.getChild(JcrConstants.JCR_CONTENT);
         Resource referencedTemplate = null;
+
         if (templateContent != null) {
             // create the 'jcr:content' child if the template contains such a child
             ValueMap contentValues = templateContent.getValueMap();
             String templateRef = contentValues.get(PROP_TEMPLATE_REF, "");
+
             if (StringUtils.isNotBlank(templateRef)) {
                 // if the templates 'jcr:content' resource has a property 'template'
                 // use the template referenced by this property instead if this template exists
@@ -164,9 +166,13 @@ public abstract class PagesResourceManager<ModelType extends ContentDriven> impl
                     JcrConstants.JCR_PRIMARYTYPE, (Object) primaryContentType));
             ModifiableValueMap targetValues = targetContent.adaptTo(ModifiableValueMap.class);
             applyContentTemplate(context, templateContent, targetContent, false);
+
+            // prevent from unwanted properties in raw node types...
             if (!primaryContentType.startsWith("nt:")) {
-                // prevent from unwanted properties in raw node types
-                targetValues.put(PROP_TEMPLATE, templateContent.getParent().getPath());
+                if (targetValues.get(PROP_TEMPLATE) == null) {
+                    // write template only if not always set by the template properties
+                    targetValues.put(PROP_TEMPLATE, templateContent.getParent().getPath());
+                }
             }
         } else {
             applyTemplateProperties(context, template, target, false);

@@ -51,7 +51,7 @@
                     $(document).trigger("page:select", [initialPath]);
                 }
                 this.$frame.on('load.EditFrame', _.bind(this.onFrameLoad, this));
-                core.unauthorizedDelegate = pages.authorize;
+                core.unauthorizedDelegate = pages.handleUnauthorized;
             },
 
             onPageSelected: function (event, path) {
@@ -146,7 +146,9 @@
                     }
                     frameUrl.build();
                     console.log('pages.EditFrame.reloadPage(' + path + '): ' + frameUrl.url);
-                    this.$frame.attr('src', frameUrl.url);
+                    pages.retryIfUnauthorized(_.bind(function () {
+                        this.$frame.attr('src', frameUrl.url);
+                    }, this), frameUrl.url);
                 }
             },
 

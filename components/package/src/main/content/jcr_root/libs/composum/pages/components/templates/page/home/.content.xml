@@ -25,7 +25,7 @@
                     jcr:primaryType="nt:unstructured"
                     sling:resourceType="composum/pages/components/search/field"
                     buttonSymbol="search"
-                    searchResultPath="${site}/home/meta/search">
+                    searchResultPath="${site}/meta/search">
             </field>
         </search>
         <stage
@@ -41,5 +41,4 @@
                 sling:resourceType="composum/pages/components/container/parsys">
         </main>
     </jcr:content>
-    <meta/>
 </jcr:root>

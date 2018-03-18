@@ -3,6 +3,7 @@ package com.composum.pages.commons.service;
 import com.composum.pages.commons.model.Model;
 import com.composum.pages.commons.model.Site;
 import com.composum.sling.core.BeanContext;
+import com.composum.sling.core.filter.ResourceFilter;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 
@@ -118,9 +119,10 @@ public interface SiteManager extends ResourceManager<Site> {
      *
      * @param context    the current request context
      * @param searchRoot the search root path
+     * @param filter     the filter applied to the result set
      * @return the collection of all sites found (not &gt;null&lt;)
      */
-    Collection<Site> getSites(@Nonnull BeanContext context, @Nullable Resource searchRoot);
+    Collection<Site> getSites(@Nonnull BeanContext context, @Nullable Resource searchRoot, @Nonnull ResourceFilter filter);
 
     Site createSite(@Nonnull BeanContext context, @Nullable String tenant, @Nonnull String siteName,
                     @Nullable String homepageType, boolean commit)

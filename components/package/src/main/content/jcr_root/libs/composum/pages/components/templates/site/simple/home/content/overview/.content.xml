@@ -5,10 +5,7 @@
         jcr:primaryType="cpp:Page">
     <jcr:content
             jcr:primaryType="cpp:PageContent"
-            sling:resourceType="composum/pages/components/page"
-            template="/apps/sites/ist/composum/templates/page/content">
-        <main
-                jcr:primaryType="cpp:Container"
-                sling:resourceType="composum/pages/components/container/parsys"/>
-    </jcr:content>
+            sling:resourceType="composum/pages/components/page/redirect"
+            sling:target="${site}/home/content"
+            template="/libs/composum/pages/components/templates/page/redirect"/>
 </jcr:root>

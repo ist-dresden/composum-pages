@@ -108,9 +108,13 @@
                             <root>/libs/composum/pages/i18n</root>
                         </filter>
                         <filter>
+                            <root>/oak:index/lucene/composum.pages</root>
+                        </filter>
+                        <filter>
                             <root>/libs/composum/pages/install</root>
                             <includes>
                                 <include>.*/composum-sling-pages-commons-bundle.*\.jar</include>
+                                <include>.*/com.composum.platform.commons.sling.PlatformErrorHandler.config</include>
                                 <include>.*/org.apache.sling.serviceusermapping.impl.ServiceUserMapperImpl.amended-pages.config</include>
                             </includes>
                         </filter>

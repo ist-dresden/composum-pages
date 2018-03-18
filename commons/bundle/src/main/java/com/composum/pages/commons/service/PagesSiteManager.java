@@ -5,6 +5,7 @@ import com.composum.pages.commons.filter.TemplateFilter;
 import com.composum.pages.commons.model.Model;
 import com.composum.pages.commons.model.Site;
 import com.composum.sling.core.BeanContext;
+import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.util.ResourceUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
@@ -106,7 +107,7 @@ public class PagesSiteManager extends PagesResourceManager<Site> implements Site
     @Override
     public Collection<Site> getSites(@Nonnull BeanContext context, String tenant) {
         try {
-            return getSites(context, getSiteBase(context, tenant));
+            return getSites(context, getSiteBase(context, tenant), ResourceFilter.ALL);
         } catch (PersistenceException ex) {
             LOG.error(ex.getMessage(), ex);
             return Collections.emptyList();
@@ -119,7 +120,7 @@ public class PagesSiteManager extends PagesResourceManager<Site> implements Site
         ResourceResolver resolver = context.getResolver();
         for (String root : resolver.getSearchPath()) {
             Resource searchRoot = resolver.getResource(StringUtils.isNotBlank(tenant) ? root + tenant : root);
-            Collection<Site> templates = getSites(context, searchRoot);
+            Collection<Site> templates = getSites(context, searchRoot, TemplateFilter.INSTANCE);
             result.addAll(templates);
         }
         result.sort();
@@ -127,8 +128,8 @@ public class PagesSiteManager extends PagesResourceManager<Site> implements Site
     }
 
     @Override
-    public Collection<Site> getSites(@Nonnull BeanContext context, @Nullable Resource searchRoot) {
-        return getModels(context, NODE_TYPE_SITE, searchRoot, TemplateFilter.INSTANCE);
+    public Collection<Site> getSites(@Nonnull BeanContext context, @Nullable Resource searchRoot, @Nonnull ResourceFilter filter) {
+        return getModels(context, NODE_TYPE_SITE, searchRoot, filter);
     }
 
     @Override
