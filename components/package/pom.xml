@@ -116,6 +116,12 @@
             <version>${project.version}</version>
         </dependency>
 
+        <!-- Composum Platform -->
+        <dependency>
+            <groupId>com.composum.sling.platform</groupId>
+            <artifactId>composum-sling-platform-commons-bundle</artifactId>
+        </dependency>
+
         <!-- Composum Core -->
         <dependency>
             <groupId>com.composum.sling.core</groupId>

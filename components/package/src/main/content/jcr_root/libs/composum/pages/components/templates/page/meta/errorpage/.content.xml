@@ -6,19 +6,12 @@
         jcr:primaryType="cpp:Page">
     <jcr:content
             jcr:primaryType="cpp:PageContent"
+            jcr:title="Pages Components Error Page"
+            jcr:description="A custom error page derived from the n ormal content page."
             sling:resourceType="composum/pages/components/page/errorpage"
-            template="/libs/composum/pages/components/templates/page/meta/errorpage">
-        <top
-                jcr:primaryType="nt:unstructured">
-            <title
-                    jcr:primaryType="cpp:Element"
-                    sling:resourceType="composum/pages/components/element/title"
-                    title="404 - ooops... not found">
-                <image
-                        jcr:primaryType="nt:unstructured"
-                        imageRef="/content/shared/composum/pages/assets/background/apres_midi_dun_faune.jpg"/>
-            </title>
-        </top>
+            allowedChildTemplates="[
+                NONE
+            ]">
         <main
                 jcr:primaryType="cpp:Container"
                 sling:resourceType="composum/pages/components/container/parsys">
