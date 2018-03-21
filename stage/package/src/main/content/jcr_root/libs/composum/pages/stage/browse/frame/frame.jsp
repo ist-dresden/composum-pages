@@ -8,7 +8,8 @@
     <head>
         <meta name="viewport" content="width=device-width, minimum-scale=1, maximum-scale=1, user-scalable=no"/>
         <meta name="format-detection" content="telephone=no">
-        <cpn:clientlib type="css" path="composum/pages/stage/browse/clientlibs/frame"/>
+        <cpn:clientlib type="link" category="composum.pages.browse.frame"/>
+        <cpn:clientlib type="css" category="composum.pages.browse.frame"/>
     </head>
     <body class="composum-pages-${frame.displayModeHint}_body" data-path="${frame.pagePath}"
           data-pages-mode="BROWSE" data-pages-locale="${frame.locale}">
@@ -29,7 +30,7 @@
             </div>
         </div>
     </div>
-    <cpn:clientlib type="js" path="composum/pages/stage/browse/clientlibs/frame"/>
+    <cpn:clientlib type="js" category="composum.pages.browse.frame"/>
     </body>
     </html>
 </cpp:model>

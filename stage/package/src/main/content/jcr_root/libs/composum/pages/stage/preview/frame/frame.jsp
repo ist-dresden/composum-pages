@@ -6,7 +6,8 @@
 <cpp:model var="frame" type="com.composum.pages.stage.model.edit.FramePage" scope="request">
     <html data-context-path="${slingRequest.contextPath}">
     <head>
-        <cpn:clientlib type="css" path="composum/pages/stage/preview/clientlibs/frame"/>
+        <cpn:clientlib type="link" category="composum.pages.preview.frame"/>
+        <cpn:clientlib type="css" category="composum.pages.preview.frame"/>
     </head>
     <body class="composum-pages-${frame.displayModeHint}_body" data-path="${frame.pagePath}"
           data-pages-mode="PREVIEW" data-pages-locale="${frame.locale}">
@@ -16,7 +17,7 @@
     <div class="composum-pages-stage-edit-tools composum-widget">
         <sling:include resourceType="composum/pages/stage/edit/actions"/>
     </div>
-    <cpn:clientlib type="js" path="composum/pages/stage/preview/clientlibs/frame"/>
+    <cpn:clientlib type="js" category="composum.pages.preview.frame"/>
     </body>
     </html>
 </cpp:model>
