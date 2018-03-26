@@ -5,29 +5,35 @@ import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.util.LinkUtil;
 import com.composum.sling.core.util.ResourceUtil;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.felix.scr.annotations.Activate;
-import org.apache.felix.scr.annotations.sling.SlingServlet;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ValueMap;
+import org.apache.sling.api.servlets.HttpConstants;
+import org.apache.sling.api.servlets.ServletResolverConstants;
 import org.apache.sling.api.servlets.SlingSafeMethodsServlet;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.Constants;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
 
 import javax.annotation.Nonnull;
 import javax.servlet.RequestDispatcher;
+import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 import static com.composum.pages.commons.PagesConstants.PROP_SLING_TARGET;
 
-@SlingServlet(
-        resourceTypes = {"cpp:Page"},
-        methods = {"GET"}
-)
-public class PageServlet extends SlingSafeMethodsServlet {
+@Component(service = Servlet.class,
+        property = {
+                Constants.SERVICE_DESCRIPTION + "=Composum Pages Page Node Servlet",
+                ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES + "=cpp:Page",
+                ServletResolverConstants.SLING_SERVLET_METHODS + "=" + HttpConstants.METHOD_GET
+        })
+public class PageNodeServlet extends SlingSafeMethodsServlet {
 
     protected BundleContext bundleContext;
 

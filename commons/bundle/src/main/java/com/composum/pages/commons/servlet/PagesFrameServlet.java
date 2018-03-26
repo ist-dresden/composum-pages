@@ -5,19 +5,25 @@ import com.composum.pages.commons.request.RequestAspect;
 import com.composum.pages.commons.request.RequestLocale;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.servlet.AbstractConsoleServlet;
-import org.apache.felix.scr.annotations.sling.SlingServlet;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
+import org.apache.sling.api.servlets.HttpConstants;
+import org.apache.sling.api.servlets.ServletResolverConstants;
+import org.osgi.framework.Constants;
+import org.osgi.service.component.annotations.Component;
 
+import javax.servlet.Servlet;
 import java.util.regex.Pattern;
 
 /**
  * The general hook (servlet) for the Pages edit stage; provides the path '/bin/pages.html/...'.
  */
-@SlingServlet(
-        paths = "/bin/pages",
-        methods = {"GET"}
-)
+@Component(service = Servlet.class,
+        property = {
+                Constants.SERVICE_DESCRIPTION + "=Composum Pages Frame Servlet",
+                ServletResolverConstants.SLING_SERVLET_PATHS + "=/bin/pages",
+                ServletResolverConstants.SLING_SERVLET_METHODS + "=" + HttpConstants.METHOD_GET
+        })
 public class PagesFrameServlet extends AbstractConsoleServlet {
 
     public static final String RESOURCE_TYPE = "composum/pages/stage/{mode}/frame";
@@ -31,6 +37,7 @@ public class PagesFrameServlet extends AbstractConsoleServlet {
     /**
      * Adds some hints that this request is a 'Pages Frame' request; used to control the 'persistence' of
      * the selected display mode and selected language (locale)
+     *
      * @see RequestAspect#isFrameContext(BeanContext, String)
      */
     @Override

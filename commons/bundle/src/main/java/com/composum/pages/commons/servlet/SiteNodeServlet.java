@@ -5,32 +5,38 @@ import com.composum.pages.commons.model.Site;
 import com.composum.pages.commons.request.DisplayMode;
 import com.composum.pages.commons.service.SiteManager;
 import com.composum.sling.core.BeanContext;
-import org.apache.felix.scr.annotations.Activate;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.sling.SlingServlet;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.servlets.HttpConstants;
+import org.apache.sling.api.servlets.ServletResolverConstants;
 import org.apache.sling.api.servlets.SlingSafeMethodsServlet;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.Constants;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 import javax.annotation.Nonnull;
 import javax.servlet.RequestDispatcher;
+import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@SlingServlet(
-        resourceTypes = {"cpp:Site"},
-        methods = {"GET"}
-)
-public class SiteServlet extends SlingSafeMethodsServlet {
+@Component(service = Servlet.class,
+        property = {
+                Constants.SERVICE_DESCRIPTION + "=Composum Pages Site Node Servlet",
+                ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES + "=cpp:Site",
+                ServletResolverConstants.SLING_SERVLET_METHODS + "=" + HttpConstants.METHOD_GET
+        })
+public class SiteNodeServlet extends SlingSafeMethodsServlet {
+
+    protected BundleContext bundleContext;
 
     @Reference
     protected SiteManager siteManager;
-
-    protected BundleContext bundleContext;
 
     @Activate
     private void activate(final BundleContext bundleContext) {
@@ -50,7 +56,7 @@ public class SiteServlet extends SlingSafeMethodsServlet {
             BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
             DisplayMode.Value mode = DisplayMode.current(context);
 
-            if (mode == DisplayMode.Value.EDIT || mode == DisplayMode.Value.DEVELOP){
+            if (mode == DisplayMode.Value.EDIT || mode == DisplayMode.Value.DEVELOP) {
 
                 RequestDispatcher dispatcher = request.getRequestDispatcher(content);
                 if (dispatcher != null) {

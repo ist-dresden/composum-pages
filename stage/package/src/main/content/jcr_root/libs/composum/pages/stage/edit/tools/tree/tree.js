@@ -19,7 +19,7 @@
         tree.ToolsTree = core.components.Tree.extend({
 
             initialize: function (options) {
-                core.components.Tree.prototype.initialize.apply(this, [options]);
+                 core.components.Tree.prototype.initialize.apply(this, [options]);
             },
 
             onPathSelectedFailed: function (path) {
@@ -50,6 +50,19 @@
                 if (!this.initialSelect || this.initialSelect === '/') {
                     this.initialSelect = pages.profile.get('tree', 'current', "/");
                 }
+                options = _.extend(options || {}, {
+                    dragAndDrop: {
+                        is_draggable: _.bind(this.nodeIsDraggable, this),
+                        inside_pos: 'last',
+                        copy: false,
+                        check_while_dragging: false,
+                        drag_selection: false,
+                        touch: false, //'selection',
+                        large_drag_target: true,
+                        large_drop_target: true,
+                        use_html5: false
+                    }
+                });
                 tree.ToolsTree.prototype.initialize.apply(this, [options]);
                 $(document).on('component:selected.' + id, _.bind(this.onPathSelected, this));
                 $(document).on('component:changed.' + id, _.bind(this.onPathChanged, this));
@@ -57,6 +70,7 @@
                 $(document).on('content:inserted.' + id, _.bind(this.onContentInserted, this));
                 $(document).on('content:changed.' + id, _.bind(this.onPathChanged, this));
                 $(document).on('content:deleted.' + id, _.bind(this.onPathDeleted, this));
+                $(document).on('content:moved.' + id, _.bind(this.onPathMoved, this));
                 $(document).on('page:selected.' + id, _.bind(this.onPathSelected, this));
                 $(document).on('page:inserted.' + id, _.bind(this.onContentInserted, this));
                 $(document).on('page:changed.' + id, _.bind(this.onPathChanged, this));
@@ -68,6 +82,32 @@
 
             dataUrlForPath: function (path) {
                 return '/bin/cpm/pages/edit.pageTree.json' + path;
+            },
+
+            nodeIsDraggable: function (selection, event) {
+                return true;
+            },
+
+            dropNode: function (draggedNode, targetNode, index) {
+                var targetPath = targetNode.path;
+                var oldPath = draggedNode.path;
+                var before = this.getNodeOfIndex(targetNode, index);
+                var oldParentPath = core.getParentPath(oldPath);
+                if (oldParentPath === targetPath) {
+                    // reordering in the same parent resource - keep that simple...
+                    core.ajaxPost('/bin/cpm/pages/edit.moveContent.json' + core.encodePath(oldPath), {
+                        targetPath: targetPath,
+                        before: before ? before.original.path : undefined
+                    }, {}, _.bind(function (data) {
+                        $(document).trigger('content:moved', [oldPath, data.path]);
+                    }, this));
+                } else {
+                    // move to another parent - check and confirm...
+                    pages.dialogs.openMoveContentDialog(draggedNode.name, draggedNode.path, draggedNode.type,
+                        _.bind(function (dialog) {
+                            dialog.setValues(draggedNode, targetNode, before ? before.original : undefined);
+                        }, this));
+                }
             }
         });
 

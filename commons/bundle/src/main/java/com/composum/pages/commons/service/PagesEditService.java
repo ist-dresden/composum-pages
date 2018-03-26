@@ -4,19 +4,17 @@ import com.composum.pages.commons.PagesConstants;
 import com.composum.pages.commons.model.ElementTypeFilter;
 import com.composum.pages.commons.model.ResourceReference;
 import com.composum.pages.commons.util.ResolverUtil;
-import com.composum.sling.core.filter.ResourceFilter;
-import com.composum.sling.core.filter.StringFilter;
 import com.composum.sling.core.util.ResourceUtil;
 import com.composum.sling.platform.staging.query.Query;
 import com.composum.sling.platform.staging.query.QueryBuilder;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Service;
 import org.apache.jackrabbit.JcrConstants;
-import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
+import org.osgi.framework.Constants;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,24 +25,24 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static com.composum.pages.commons.PagesConstants.PROP_ALLOWED_CONTAINERS;
 import static com.composum.pages.commons.PagesConstants.PROP_ALLOWED_ELEMENTS;
 
 @Component(
-        label = "Composum Pages Edit Service",
-        immediate = true,
-        metatype = false
+        property = {
+                Constants.SERVICE_DESCRIPTION + "=Composum Pages Elements Manager"
+        }
 )
-@Service
 public class PagesEditService implements EditService {
 
     private static final Logger LOG = LoggerFactory.getLogger(PagesEditService.class);
 
     public static final String PROP_COLLECTION_NAME = "collection/name";
     public static final String PROP_COLLECTION_TYPE = "collection/resourceType";
+
+    @Reference
+    protected ResourceManager resourceManager;
 
     //
     // hierarchy management for the content tree
@@ -92,6 +90,7 @@ public class PagesEditService implements EditService {
      * @param element    the element which should be inserted in an(other) container
      * @return the list of target containers (not null, can be empty)
      */
+    @Override
     public ResourceReference.List filterTargetContainers(ResourceResolver resolver,
                                                          ResourceReference.List candidates,
                                                          ResourceReference element) {
@@ -113,6 +112,7 @@ public class PagesEditService implements EditService {
      * @param containers the set of designated container references
      * @return the result of a component type query filtered by the filter object
      */
+    @Override
     public List getAllowedElementTypes(ResourceResolver resolver,
                                        ResourceReference.List containers,
                                        boolean resourceTypePath) {
@@ -129,6 +129,7 @@ public class PagesEditService implements EditService {
      * @param filter     the filter instance (resource type pattern filter)
      * @return the result of a component type query filtered by the filter object
      */
+    @Override
     public List getAllowedElementTypes(ResourceResolver resolver,
                                        ResourceReference.List containers,
                                        ElementTypeFilter filter,
@@ -151,6 +152,7 @@ public class PagesEditService implements EditService {
         return allowedTypes;
     }
 
+    @Override
     public Resource getReferencedResource(ResourceResolver resolver, ResourceReference reference)
             throws PersistenceException {
         Resource resource = resolver.resolve(reference.getPath());
@@ -171,6 +173,7 @@ public class PagesEditService implements EditService {
      * @param target       the target (the parent resource) of the move
      * @param before       the designated sibling in an ordered target collection
      */
+    @Override
     public void insertComponent(ResourceResolver resolver, String resourceType,
                                 ResourceReference target, Resource before)
             throws RepositoryException, PersistenceException {
@@ -211,54 +214,6 @@ public class PagesEditService implements EditService {
     }
 
     /**
-     * Moves a resource and adopts all references to the moved resource or one of its children.
-     *
-     * @param resolver   the resolver (session context)
-     * @param changeRoot the root element for reference search and change
-     * @param source     the resource to move
-     * @param target     the target (the parent resource) of the move
-     * @param before     the designated sibling in an ordered target collection
-     */
-    public void moveComponent(ResourceResolver resolver, Resource changeRoot,
-                              Resource source, ResourceReference target, Resource before)
-            throws RepositoryException, PersistenceException {
-
-        // use the containers collection (can be the target itself) to move the source into
-        Resource collection = getContainerCollection(resolver, target);
-        Session session = resolver.adaptTo(Session.class);
-
-        String oldPath = source.getPath();
-        int lastSlash = oldPath.lastIndexOf('/');
-        String name = oldPath.substring(lastSlash + 1);
-        String newName = name;
-        String oldParentPath = oldPath.substring(0, lastSlash);
-        String newParentPath = collection.getPath();
-        String newPath = newParentPath + "/" + name;
-        String siblingName = before != null ? before.getName() : null;
-
-        if (LOG.isInfoEnabled()) {
-            LOG.info("moveComponent(" + oldPath + " > " + newPath + " < " + siblingName + ")...");
-        }
-
-        if (!oldParentPath.equals(newParentPath)) {
-            // check name collision before move into a new target collection
-            for (int i = 1; resolver.getResource(newPath) != null; i++) {
-                newPath = newParentPath + "/" + (newName = name + i);
-            }
-            session.move(oldPath, newPath);
-            // adopt all references to the source and use the new target path
-            changeReferences(ResourceFilter.ALL, StringFilter.ALL, changeRoot, oldPath, newPath);
-        }
-
-        if (StringUtils.isNotBlank(siblingName)) {
-            // move to the designated position in the target collection
-            session.refresh(true);
-            Node parentNode = session.getNode(newParentPath);
-            parentNode.orderBefore(newName, siblingName);
-        }
-    }
-
-    /**
      * Determine a container element collection resource (can be the container itself).
      */
     protected Resource getContainerCollection(ResourceResolver resolver, ResourceReference target)
@@ -294,136 +249,23 @@ public class PagesEditService implements EditService {
         return collection;
     }
 
-    //
-    //
-    //
-
     /**
-     * Changes the 'oldPath' references in each property of a tree to the 'newPath'.
+     * Moves a resource and adopts all references to the moved resource or one of its children.
      *
-     * @param resourceFilter change all resources accepted by this filter, let all other resources unchanged
-     * @param propertyFilter change only the properties with names matching to this property name filter
-     * @param resource       the resource to change (recursive! - the root in the initial call)
-     * @param oldPath        the old path of a moved resource
-     * @param newPath        the new path of the resource
+     * @param resolver     the resolver (session context)
+     * @param changeRoot   the root element for reference search and change
+     * @param source       the resource to move
+     * @param targetParent the target (a reference to the parent resource) of the move
+     * @param before       the designated sibling in an ordered target collection
+     * @return the new resource at the target path
      */
-    public void changeReferences(ResourceFilter resourceFilter, StringFilter propertyFilter,
-                                 Resource resource, String oldPath, String newPath) {
-        // check resource filter
-        if (resourceFilter.accept(resource)) {
+    @Override
+    public Resource moveComponent(ResourceResolver resolver, Resource changeRoot,
+                                  Resource source, ResourceReference targetParent, Resource before)
+            throws RepositoryException, PersistenceException {
 
-            ModifiableValueMap values = resource.adaptTo(ModifiableValueMap.class);
-            for (Map.Entry<String, Object> entry : values.entrySet()) {
-
-                String key = entry.getKey();
-                // check property by name
-                if (propertyFilter.accept(key)) {
-
-                    Object value = entry.getValue();
-                    if (value instanceof String) {
-                        // change single string values (probably rich text)
-                        String newValue = changeReferences((String) value, oldPath, newPath);
-                        if (newValue != null) {
-                            values.put(key, newValue);
-                        }
-
-                    } else if (value instanceof String[]) {
-                        // change each value of a multi string (probably rich text)
-                        boolean changed = false;
-                        List<String> newList = new ArrayList<>();
-                        for (String val : (String[]) value) {
-                            String newValue = changeReferences(val, oldPath, newPath);
-                            if (newValue != null) {
-                                newList.add(newValue);
-                                changed = true;
-                            } else {
-                                newList.add(val);
-                            }
-                        }
-                        if (changed) {
-                            // perform a change if one value is changed
-                            values.put(key, newList.toArray());
-                        }
-                    }
-                }
-            }
-
-            // recursive traversal
-            for (Resource child : resource.getChildren()) {
-                changeReferences(resourceFilter, propertyFilter, child, oldPath, newPath);
-            }
-        }
-    }
-
-    /**
-     * Changes all references to 'oldPath' and use the 'newPath' in simple values or rich text strings.
-     *
-     * @param value   the string value (probably rich text)
-     * @param oldPath the old path of the references to change
-     * @param newPath the new path value
-     * @return the changed value if changed otherwise 'null'
-     */
-    protected String changeReferences(String value, String oldPath, String newPath) {
-        if (value.matches("^" + oldPath + "(/.*)?$")) {
-            // simple path value...
-            return newPath + value.substring(oldPath.length());
-        } else {
-            // check for HTML patterns and change all references if found
-            Pattern htmlPattern = Pattern.compile("(href|src)=\"" + oldPath + "(/[^\"]*)?\"");
-            Matcher matcher = htmlPattern.matcher(value);
-            if (matcher.matches()) {
-                return matcher.replaceAll("$1=\"" + newPath + "$2\"");
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Changes the 'oldTypePattern' resource types in every appropriate component using the 'newTypeRule'.
-     *
-     * @param resourceFilter change all resources accepted by this filter, let all other resources unchanged
-     * @param resource       the resource to change (recursive! - the root in the initial call)
-     * @param oldTypePattern the resource type pattern to change
-     * @param newTypeRule    the pattern matcher rule to build the new type
-     */
-    public void changeResourceType(ResourceFilter resourceFilter,
-                                   Resource resource, String oldTypePattern, String newTypeRule) {
-        changeResourceType(resourceFilter, resource, Pattern.compile(oldTypePattern), newTypeRule);
-    }
-
-    /**
-     * Changes the 'oldTypePattern' resource types in every appropriate component using the 'newTypeRule'.
-     *
-     * @param resourceFilter change all resources accepted by this filter, let all other resources unchanged
-     * @param resource       the resource to change (recursive! - the root in the initial call)
-     * @param oldTypePattern the resource type pattern to change
-     * @param newTypeRule    the pattern matcher rule to build the new type
-     */
-    public void changeResourceType(ResourceFilter resourceFilter,
-                                   Resource resource, Pattern oldTypePattern, String newTypeRule) {
-        // check resource filter
-        if (resourceFilter.accept(resource)) {
-
-            ModifiableValueMap values = resource.adaptTo(ModifiableValueMap.class);
-            String resourceType = values.get(ResourceUtil.PROP_RESOURCE_TYPE, "");
-            if (StringUtils.isNotBlank(resourceType)) {
-                Matcher matcher = oldTypePattern.matcher(resourceType);
-                if (matcher.matches()) {
-                    String newResourceType = matcher.replaceAll(newTypeRule);
-                    if (!resourceType.equals(newResourceType)) {
-                        if (LOG.isInfoEnabled()) {
-                            LOG.info("changeResourceType(" + resource.getPath() + "): "
-                                    + resourceType + " -> " + newResourceType);
-                        }
-                        values.put(ResourceUtil.PROP_RESOURCE_TYPE, newResourceType);
-                    }
-                }
-            }
-
-            // recursive traversal
-            for (Resource child : resource.getChildren()) {
-                changeResourceType(resourceFilter, child, oldTypePattern, newTypeRule);
-            }
-        }
+        // use the containers collection (can be the target itself) to move the source into
+        Resource collection = getContainerCollection(resolver, targetParent);
+        return resourceManager.moveContentResource(resolver, changeRoot, source, collection, before);
     }
 }

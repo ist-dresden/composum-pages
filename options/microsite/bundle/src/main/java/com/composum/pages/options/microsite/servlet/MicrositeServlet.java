@@ -127,8 +127,7 @@ public class MicrositeServlet extends SlingAllMethodsServlet implements Microsit
                 jsonAnswer.beginObject();
                 jsonAnswer.name("success").value(success);
                 jsonAnswer.name("response").beginObject();
-                jsonAnswer.name("level").value(CpnlElFunctions.i18n(request,
-                        success ? "success" : "error"));
+                jsonAnswer.name("level").value(success ? "success" : "error");
                 jsonAnswer.name("text").value(CpnlElFunctions.i18n(request,
                         success ? "Import sucessful" : "Import failed"));
                 jsonAnswer.endObject();

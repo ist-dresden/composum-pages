@@ -23,6 +23,10 @@
                         _folder: '.folder.html',
                         _file: '.file.html'
                     },
+                    _move: {
+                        dialog: '/content/dialog/move.html',
+                        action: '/bin/cpm/pages/edit.moveContent.json'
+                    },
                     _create: {
                         page: '.createPage.json'
                     },
@@ -516,6 +520,50 @@
             var c = dialogs.const.edit.url;
             pages.dialogHandler.openEditDialog(c.path + c._remove.path + c._remove['_' + contentType],
                 dialogs.DeleteContentDialog, name, path, type);
+        };
+
+        /**
+         * the dialog to move a content element to a new parent path
+         */
+        dialogs.MoveContentDialog = dialogs.EditDialog.extend({
+
+            initView: function () {
+                dialogs.EditDialog.prototype.initView.apply(this);
+                this.$path = this.$('.widget-name_path');
+                this.oldPath = core.getWidget(this.el, '.widget-name_oldPath', core.components.PathWidget);
+                this.newPath = core.getWidget(this.el, '.widget-name_newPath', core.components.PathWidget);
+                this.name = core.getWidget(this.el, '.widget-name_name', core.components.TextFieldWidget);
+                this.before = core.getWidget(this.el, '.widget-name_before', core.components.TextFieldWidget);
+                this.index = core.getWidget(this.el, '.widget-name_index', core.components.NumberFieldWidget);
+            },
+
+            setValues: function (nodeToMove, moveTarget, beforeNode) {
+                var parentAndName = core.getParentAndName(nodeToMove.path);
+                this.oldPath.setValue(parentAndName.path);
+                this.name.setValue(parentAndName.name);
+                this.newPath.setValue(moveTarget.path);
+                this.before.setValue(beforeNode ? beforeNode.name : undefined);
+                this.index.setValue(undefined);
+            },
+
+            doSubmit: function () {
+                var c = dialogs.const.edit.url;
+                var oldPath = this.$path.val();
+                core.ajaxPost(c._move.action + core.encodePath(oldPath), {
+                    targetPath: this.newPath.getValue(),
+                    before: this.before.getValue(),
+                    index: this.index.getValue()
+                }, {}, _.bind(function (data) {
+                    $(document).trigger('content:moved', [oldPath, data.path]);
+                    this.hide();
+                }, this));
+            }
+        });
+
+        dialogs.openMoveContentDialog = function (name, path, type, setupDialog) {
+            var c = dialogs.const.edit.url;
+            pages.dialogHandler.openEditDialog(c.path + c._move.dialog,
+                dialogs.MoveContentDialog, name, path, type, setupDialog);
         };
 
         //

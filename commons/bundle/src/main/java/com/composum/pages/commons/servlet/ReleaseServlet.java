@@ -6,8 +6,6 @@ import com.composum.sling.core.servlet.ServletOperation;
 import com.composum.sling.core.servlet.ServletOperationSet;
 import com.composum.sling.platform.staging.service.ReleaseManager;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.sling.SlingServlet;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.request.RequestParameter;
@@ -15,13 +13,18 @@ import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
+import org.apache.sling.api.servlets.HttpConstants;
+import org.apache.sling.api.servlets.ServletResolverConstants;
+import org.osgi.framework.Constants;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.jcr.Node;
-import javax.jcr.RepositoryException;
+import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -39,7 +42,15 @@ import static com.composum.pages.commons.servlet.ReleaseServlet.Extension.http;
  * @author Mirko Zeibig
  * @since 16.09.16.
  */
-@SlingServlet(paths = "/bin/cpm/pages/release", methods = {"GET", "POST", "PUT", "DELETE"})
+@Component(service = Servlet.class,
+        property = {
+                Constants.SERVICE_DESCRIPTION + "=Composum Pages Release Servlet",
+                ServletResolverConstants.SLING_SERVLET_PATHS + "=/bin/cpm/pages/release",
+                ServletResolverConstants.SLING_SERVLET_METHODS + "=" + HttpConstants.METHOD_GET,
+                ServletResolverConstants.SLING_SERVLET_METHODS + "=" + HttpConstants.METHOD_POST,
+                ServletResolverConstants.SLING_SERVLET_METHODS + "=" + HttpConstants.METHOD_PUT,
+                ServletResolverConstants.SLING_SERVLET_METHODS + "=" + HttpConstants.METHOD_DELETE
+        })
 public class ReleaseServlet extends AbstractServiceServlet {
 
     private static final Logger LOG = LoggerFactory.getLogger(ReleaseServlet.class);
@@ -93,21 +104,21 @@ public class ReleaseServlet extends AbstractServiceServlet {
     abstract private class SetReleaseCategory implements ServletOperation {
 
         @Override
-        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response, ResourceHandle resource) throws RepositoryException, IOException, ServletException {
+        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response, ResourceHandle resource)
+                throws IOException {
             try {
                 final String path = getStringParameter(request, response, "path", "site path is required");
                 if (path == null) return;
 
-                String releaseName = getStringParameter(request, response, "releaseName","release name is required");
+                String releaseName = getStringParameter(request, response, "releaseName", "release name is required");
                 if (releaseName == null) return;
 
                 final ResourceResolver resourceResolver = request.getResourceResolver();
                 final Resource releases = resourceResolver.getResource(resource, "jcr:content/releases");
-                for (Resource releaseResource: releases.getChildren()) {
+                for (Resource releaseResource : releases.getChildren()) {
                     final ValueMap valueMap = releaseResource.adaptTo(ModifiableValueMap.class);
                     final String[] categories = valueMap.get("categories", new String[0]);
-                    final List<String> cs = new ArrayList<>();
-                    cs.addAll(Arrays.asList(categories));
+                    final List<String> cs = new ArrayList<>(Arrays.asList(categories));
                     if (releaseResource.getName().equals(releaseName)) {
                         // set categories to release
                         if (!cs.contains(getCategoryString())) {
@@ -132,7 +143,7 @@ public class ReleaseServlet extends AbstractServiceServlet {
 
     }
 
-    private class SetPublicRelease extends SetReleaseCategory  {
+    private class SetPublicRelease extends SetReleaseCategory {
         @Nonnull
         protected String getCategoryString() {
             return "public";
@@ -149,7 +160,8 @@ public class ReleaseServlet extends AbstractServiceServlet {
     private class DeleteRelease implements ServletOperation {
 
         @Override
-        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response, ResourceHandle resource) throws RepositoryException, IOException, ServletException {
+        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response, ResourceHandle resource)
+                throws IOException {
             try {
                 final String path = getStringParameter(request, response, "path", "site path is required");
                 if (path == null) return;
@@ -181,7 +193,8 @@ public class ReleaseServlet extends AbstractServiceServlet {
     private class ReleaseOperation implements ServletOperation {
 
         @Override
-        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response, ResourceHandle resourceHandle) throws RepositoryException, IOException, ServletException {
+        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response, ResourceHandle resourceHandle)
+                throws IOException {
             try {
 
                 final String path = getStringParameter(request, response, "path", "site path is required");

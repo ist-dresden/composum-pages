@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
-public interface SiteManager extends ResourceManager<Site> {
+public interface SiteManager extends ContentManager<Site> {
 
     /**
      * A list of Sites with unique names to collect all templates available in the resolvers search paths.

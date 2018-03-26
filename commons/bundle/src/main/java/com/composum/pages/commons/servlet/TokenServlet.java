@@ -6,21 +6,24 @@ import com.composum.sling.core.servlet.AbstractServiceServlet;
 import com.composum.sling.core.util.ResourceUtil;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.felix.scr.annotations.Activate;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.sling.SlingServlet;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.servlets.HttpConstants;
+import org.apache.sling.api.servlets.ServletResolverConstants;
 import org.apache.sling.api.servlets.SlingSafeMethodsServlet;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.Constants;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.jcr.RepositoryException;
-import javax.servlet.ServletException;
+import javax.servlet.Servlet;
 import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -29,12 +32,14 @@ import java.io.IOException;
  * the TokenServlet delegates each request to the 'TrackingService' to track the usage of the current
  * content; the TokenServlet is delivering a simple 1x1 transparent image after the request tracking
  */
-@SlingServlet(
-        selectors = "token",
-        extensions = {"png"},
-        methods = {"GET"},
-        resourceTypes = "sling/servlet/default"
-)
+@Component(service = Servlet.class,
+        property = {
+                Constants.SERVICE_DESCRIPTION + "=Composum Pages Token Servlet",
+                ServletResolverConstants.SLING_SERVLET_SELECTORS + "=token",
+                ServletResolverConstants.SLING_SERVLET_EXTENSIONS + "=png",
+                ServletResolverConstants.SLING_SERVLET_METHODS + "=" + HttpConstants.METHOD_GET,
+                ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES + "=sling/servlet/default"
+        })
 public class TokenServlet extends SlingSafeMethodsServlet {
 
     protected BundleContext bundleContext;
@@ -64,8 +69,7 @@ public class TokenServlet extends SlingSafeMethodsServlet {
 
     @Override
     protected void doGet(@Nonnull SlingHttpServletRequest request,
-                         @Nonnull SlingHttpServletResponse response) throws ServletException,
-            IOException {
+                         @Nonnull SlingHttpServletResponse response) throws IOException {
         String uri = request.getRequestURI();
         Resource resource = request.getResource();
         if (!ResourceUtil.isNonExistingResource(resource)) {
