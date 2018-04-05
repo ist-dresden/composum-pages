@@ -16,7 +16,7 @@
                     <cpp:widget label="checkselect (1: removable)" property="single_checkselect_removable" type="checkselect"
                                 options="checked:checked value"
                                 hint="select by checkbox; 'checked' / removed"/>
-                    <cpp:widget label="checkselect (2: toggling)" property="single_checkselect" type="checkselect"
+                    <cpp:widget label="checkselect (2: toggeling)" property="single_checkselect" type="checkselect"
                                 options="is checked,is not checked"
                                 hint="toggle strings; 'is (not) checked'"/>
                 </div>

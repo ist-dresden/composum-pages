@@ -88,11 +88,11 @@
             },
 
             copy: function (event, name, path, type) {
-                alert('page.copy... ' + name + ',' + path + ',' + type);
+                pages.clipboardCopyContent(path);
             },
 
             paste: function (event, name, path, type) {
-                alert('page.paste... ' + name + ',' + path + ',' + type);
+                pages.clipboardPasteContent(path);
             },
 
             rename: function (event, name, path, type) {
@@ -146,16 +146,24 @@
                 pages.dialogs.openCreateSiteDialog(name, path, type);
             },
 
-            delete: function (event, name, path, type) {
-                pages.dialogs.openDeleteSiteDialog(name, path, type);
-            },
-
             rename: function (event, name, path, type) {
                 pages.dialogs.openRenameContentDialog(name, path, type)
             },
 
             move: function (event, name, path, type) {
                 pages.dialogs.openMoveContentDialog(name, path, type)
+            },
+
+            copy: function (event, name, path, type) {
+                pages.clipboardCopyContent(path);
+            },
+
+            paste: function (event, name, path, type) {
+                pages.clipboardPasteContent(path);
+            },
+
+            delete: function (event, name, path, type) {
+                pages.dialogs.openDeleteSiteDialog(name, path, type);
             }
         };
 
@@ -187,11 +195,11 @@
             },
 
             copy: function (event, name, path, type) {
-                alert('folder.copy... ' + name + ',' + path + ',' + type);
+                pages.clipboardCopyContent(path);
             },
 
             paste: function (event, name, path, type) {
-                alert('folder.paste... ' + name + ',' + path + ',' + type);
+                pages.clipboardPasteContent(path);
             },
 
             delete: function (event, name, path, type) {
@@ -200,18 +208,6 @@
         };
 
         actions.file = {
-
-            insertPage: function (event, name, path, type) {
-                pages.dialogs.openNewPageDialog(name, path, type);
-            },
-
-            insertFolder: function (event, name, path, type) {
-                pages.dialogs.openNewFolderDialog(name, path, type);
-            },
-
-            insertFile: function (event, name, path, type) {
-                pages.dialogs.openNewFileDialog(name, path, type);
-            },
 
             rename: function (event, name, path, type) {
                 pages.dialogs.openRenameContentDialog(name, path, type)
@@ -222,11 +218,11 @@
             },
 
             copy: function (event, name, path, type) {
-                alert('file.copy... ' + name + ',' + path + ',' + type);
+                pages.clipboardCopyContent(path);
             },
 
             paste: function (event, name, path, type) {
-                alert('file.paste... ' + name + ',' + path + ',' + type);
+                pages.clipboardPasteContent(path);
             },
 
             delete: function (event, name, path, type) {

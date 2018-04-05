@@ -22,8 +22,8 @@
                 </tr>
                 <tr>
                     <td>checkselect (1; removable)</td>
-                        <%-- danger! the text tag is not rendered if text is empty; no 'td' if no value!; don't use:
-                            <cpn:text tagName="td">${element.properties.single_checkselect_removable}</cpn:text> --%>
+                        <%-- remark - the text tag is not rendered if text is empty; no 'td' if no value!; don't use:
+                             <cpn:text tagName="td">${element.properties.single_checkselect_removable}</cpn:text> --%>
                     <td>${cpn:text(element.properties.single_checkselect_removable)}</td>
                 </tr>
                 <tr>

@@ -105,7 +105,7 @@
                     // move to another parent - check and confirm...
                     pages.dialogs.openMoveContentDialog(draggedNode.name, draggedNode.path, draggedNode.type,
                         _.bind(function (dialog) {
-                            dialog.setValues(draggedNode, targetNode, before ? before.original : undefined);
+                            dialog.setValues(draggedNode.path, targetNode.path, before ? before.original.name : undefined);
                         }, this));
                 }
             },

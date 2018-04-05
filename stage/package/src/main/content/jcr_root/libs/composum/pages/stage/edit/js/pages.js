@@ -47,6 +47,12 @@
             login: {
                 id: 'composum-platform-commons-login-dialog',
                 url: '/libs/composum/platform/security/login/dialog.html'
+            },
+            clipboard: {
+                store: {
+                    content: 'content',
+                    element: 'element'
+                }
             }
         });
 
@@ -304,46 +310,42 @@
         // clipboard operations
         //
 
-        pages.clipboardCopy = function (event, path, callback) {
-            if (event) {
-                event.preventDefault();
-            }
+        /**
+         * stored the path in the profile for a later 'paste' which will copy the content of the stored path
+         */
+        pages.clipboardCopyContent = function (path) {
             if (!path) {
                 path = this.getCurrentPath();
             }
-            pages.profile.set('pages', 'clipboard', {
+            pages.profile.set('pages', 'contentClipboard', {
                 path: path
             });
-            if (_.isFunction(callback)) {
-                callback.call(this, path);
-            }
         };
 
-        pages.clipboardPaste = function (event, path, callback) {
-            if (event) {
-                event.preventDefault();
-            }
-            var clipboard = pages.profile.get('pages', 'clipboard');
+        /**
+         * copy path from clipboard to the target path, open copy dialog if an error is occurring
+         * @param path the target path for the copy operation
+         */
+        pages.clipboardPasteContent = function (path) {
+            var clipboard = pages.profile.get('pages', 'contentClipboard');
             if (path && clipboard && clipboard.path) {
                 var name = core.getNameFromPath(clipboard.path);
-                core.ajaxPut("/bin/cpm/pages/edit.copyContent.json" + clipboard.path, JSON.stringify({
+                // copy to the target with the same name
+                core.ajaxPost("/bin/cpm/pages/edit.copyContent.json" + clipboard.path, {
                     targetPath: path,
                     name: name
-                }), {
-                    dataType: 'json'
-                }, _.bind(function (result) {
+                }, {}, _.bind(function (result) {
+                    // trigger content change
                     $(document).trigger('content:inserted', [path, name]);
                 }, this), _.bind(function (result) {
-                    var dialog = pages.dialogs.openCopyContentDialog();
-                    dialog.show(_.bind(function () {
-                        dialog.setNodePath(clipboard.path);
-                        dialog.setTargetPath(path);
-                        dialog.errorMessage('Copy Node', result);
-                    }, this), _.bind(function () {
-                        if (_.isFunction(callback)) {
-                            callback.call(this, path);
-                        }
-                    }, this));
+                    // on error - display copy dialog initialized with the known data
+                    var data = result.responseJSON;
+                    pages.dialogs.openCopyContentDialog(undefined, clipboard.path, undefined,
+                        _.bind(function (dialog) {
+                            dialog.setValues(clipboard.path, path);
+                            dialog.validationHint('danger', dialog.toLabel, data.messages[0].text, data.messages[0].hint);
+                            dialog.hintsMessage('error');
+                        }, this));
                 }, this));
             }
         };

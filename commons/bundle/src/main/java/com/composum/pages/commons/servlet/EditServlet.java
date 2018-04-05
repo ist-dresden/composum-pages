@@ -354,23 +354,7 @@ public class EditServlet extends NodeTreeServlet {
                     JsonWriter jsonWriter = ResponseUtil.getJsonWriter(response);
                     jsonWriter.beginObject();
                     jsonWriter.name("isAllowed").value(allowed);
-                    if (!allowed) {
-                        jsonWriter.name("response").beginObject();
-                        jsonWriter.name("level").value("error");
-                        jsonWriter.name("text").value(CpnlElFunctions.i18n(request, "Invalid Target"));
-                        jsonWriter.endObject();
-                        jsonWriter.name("messages").beginArray();
-                        jsonWriter.beginObject();
-                        jsonWriter.name("level").value("error");
-                        jsonWriter.name("text").value(CpnlElFunctions.i18n(request, "Target path not allowed"));
-                        jsonWriter.name("hint").value(CpnlElFunctions.i18n(request, "this change is breaking the resource hierarchy policy rules"));
-                        jsonWriter.endObject();
-                        jsonWriter.endArray();
-                    }
-                    jsonWriter.name("parent");
-                    writeJsonResource(jsonWriter, pagesConfiguration.getPageNodeFilter(), parent);
-                    jsonWriter.name("child");
-                    writeJsonResource(jsonWriter, pagesConfiguration.getPageNodeFilter(), resource);
+                    addAllowedChildInfo(request, response, parent, resource, jsonWriter, allowed);
                     jsonWriter.endObject();
 
                 } else {
@@ -802,6 +786,51 @@ public class EditServlet extends NodeTreeServlet {
     // Content manipulation (Page, Folder, File)
     //
 
+    /**
+     * send a failed answer with error hints on changes which are forbidden by the structure rules
+     *
+     * @param parent the designated parent resource
+     * @param child  the child resource which is not allowed as the parents child
+     */
+    protected void sendNotAllowedChild(SlingHttpServletRequest request, SlingHttpServletResponse response,
+                                       Resource parent, Resource child)
+            throws IOException {
+        response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+        JsonWriter jsonWriter = ResponseUtil.getJsonWriter(response);
+        jsonWriter.beginObject();
+        addAllowedChildInfo(request, response, parent, child, jsonWriter, false);
+        jsonWriter.endObject();
+    }
+
+    /**
+     * add validation hints to a JSON validation answer
+     *
+     * @param parent  the designated parent resource
+     * @param child   the child resource which is not allowed as the parents child
+     * @param allowed 'true' if the child can be a child of the designated parent
+     */
+    protected void addAllowedChildInfo(SlingHttpServletRequest request, SlingHttpServletResponse response,
+                                       Resource parent, Resource child, JsonWriter jsonWriter, boolean allowed)
+            throws IOException {
+        if (!allowed) {
+            jsonWriter.name("response").beginObject();
+            jsonWriter.name("level").value("error");
+            jsonWriter.name("text").value(CpnlElFunctions.i18n(request, "Invalid Target"));
+            jsonWriter.endObject();
+            jsonWriter.name("messages").beginArray();
+            jsonWriter.beginObject();
+            jsonWriter.name("level").value("error");
+            jsonWriter.name("text").value(CpnlElFunctions.i18n(request, "Target path not allowed"));
+            jsonWriter.name("hint").value(CpnlElFunctions.i18n(request, "this change is breaking the resource hierarchy policy rules"));
+            jsonWriter.endObject();
+            jsonWriter.endArray();
+        }
+        jsonWriter.name("parent");
+        writeJsonResource(jsonWriter, pagesConfiguration.getPageNodeFilter(), parent);
+        jsonWriter.name("child");
+        writeJsonResource(jsonWriter, pagesConfiguration.getPageNodeFilter(), child);
+    }
+
     protected abstract class ChangeContentOperation implements ServletOperation {
 
         protected Resource getRequestedSibling(@Nonnull SlingHttpServletRequest request, @Nonnull Resource target,
@@ -858,26 +887,32 @@ public class EditServlet extends NodeTreeServlet {
             ResourceResolver resolver = request.getResourceResolver();
             Resource target = resolver.getResource(targetPath);
             if (target != null) {
-                Resource before = getRequestedSibling(request, target, resource);
 
-                try {
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("MoveContent(" + resource.getPath() + " > " + targetPath + " < "
-                                + (before != null ? before.getName() : "<end>") + ")...");
+                if (resourceManager.isAllowedChild(resolver, target, resource)) {
+
+                    Resource before = getRequestedSibling(request, target, resource);
+                    try {
+                        if (LOG.isDebugEnabled()) {
+                            LOG.debug("MoveContent(" + resource.getPath() + " > " + targetPath + " < "
+                                    + (before != null ? before.getName() : "<end>") + ")...");
+                        }
+
+                        Resource result = resourceManager.moveContentResource(resolver,
+                                resolver.getResource("/content"), resource, target, name, before);
+                        resolver.commit();
+
+                        sendResponse(response, result);
+
+                    } catch (ItemExistsException itex) {
+                        jsonAnswerItemExists(request, response);
+
+                    } catch (RepositoryException ex) {
+                        LOG.error(ex.getMessage(), ex);
+                        response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ex.getMessage());
                     }
 
-                    Resource result = resourceManager.moveContentResource(resolver,
-                            resolver.getResource("/content"), resource, target, name, before);
-                    resolver.commit();
-
-                    sendResponse(response, result);
-
-                } catch (ItemExistsException itex) {
-                    jsonAnswerItemExists(request, response);
-
-                } catch (RepositoryException ex) {
-                    LOG.error(ex.getMessage(), ex);
-                    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ex.getMessage());
+                } else {
+                    sendNotAllowedChild(request, response, target, resource);
                 }
             } else {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "target doesn't exist: '" + targetPath + "'");
@@ -930,18 +965,24 @@ public class EditServlet extends NodeTreeServlet {
             ResourceResolver resolver = request.getResourceResolver();
             Resource target = resolver.getResource(targetPath);
             if (target != null) {
-                Resource before = getRequestedSibling(request, target, resource);
 
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("CopyContent(" + resource.getPath() + " > " + targetPath + " < "
-                            + (before != null ? before.getName() : "<end>") + ")...");
+                if (resourceManager.isAllowedChild(resolver, target, resource)) {
+
+                    Resource before = getRequestedSibling(request, target, resource);
+
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("CopyContent(" + resource.getPath() + " > " + targetPath + " < "
+                                + (before != null ? before.getName() : "<end>") + ")...");
+                    }
+
+                    Resource result = resourceManager.copyContentResource(resolver, resource, target, name, before);
+                    resolver.commit();
+
+                    sendResponse(response, result);
+
+                } else {
+                    sendNotAllowedChild(request, response, target, resource);
                 }
-
-                Resource result = resourceManager.copyContentResource(resolver, resource, target, name, before);
-                resolver.commit();
-
-                sendResponse(response, result);
-
             } else {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "target doesn't exist: '" + targetPath + "'");
             }

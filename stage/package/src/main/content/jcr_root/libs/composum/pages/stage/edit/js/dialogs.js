@@ -31,6 +31,11 @@
                         check: '/bin/cpm/pages/edit.isAllowedChild.json',
                         action: '/bin/cpm/pages/edit.moveContent.json'
                     },
+                    _copy: {
+                        dialog: '/content/dialog/copy.html',
+                        check: '/bin/cpm/pages/edit.isAllowedChild.json',
+                        action: '/bin/cpm/pages/edit.copyContent.json'
+                    },
                     _rename: {
                         dialog: '/content/dialog/rename.html',
                         action: '/bin/cpm/pages/edit.renameContent.json'
@@ -76,6 +81,7 @@
             initialize: function (options) {
                 core.components.Dialog.prototype.initialize.apply(this, [options]);
                 this.form = core.getWidget(this.el, "form", core.components.FormWidget);
+                this.validationHints = [];
                 this.initView();
                 this.initSubmit();
                 this.$el.on('hidden.bs.modal', _.bind(this.onClose, this));
@@ -108,6 +114,11 @@
                         + '</span><span class="message">'
                         + message + (hint ? " (" + hint + ")" : '') + '</span></div>');
                 }
+            },
+
+            hintsMessage: function (level) {
+                this.messages(level ? level : 'warning', this.validationHints.length < 1
+                    ? 'validation error' : undefined, this.validationHints);
             },
 
             validationHint: function (type, label, message, hint) {
@@ -563,12 +574,16 @@
                 this.index = core.getWidget(this.el, '.widget-name_index', core.components.NumberFieldWidget);
             },
 
-            setValues: function (nodeToMove, moveTarget, beforeNode) {
-                var parentAndName = core.getParentAndName(nodeToMove.path);
+            getConfig: function () {
+                return dialogs.const.edit.url._move;
+            },
+
+            setValues: function (sourcePath, targetPath, beforeName) {
+                var parentAndName = core.getParentAndName(sourcePath);
                 this.oldPath.setValue(parentAndName.path);
                 this.name.setValue(parentAndName.name);
-                this.newPath.setValue(moveTarget.path);
-                this.before.setValue(beforeNode ? beforeNode.name : undefined);
+                this.newPath.setValue(targetPath);
+                this.before.setValue(beforeName);
                 this.index.setValue(undefined);
             },
 
@@ -579,8 +594,8 @@
              */
             doValidate: function (onSuccess, onError) {
                 if (this.validateForm()) {
-                    var c = dialogs.const.edit.url;
-                    core.ajaxGet(c._move.check + core.encodePath(this.$path.val()), {
+                    var config = this.getConfig();
+                    core.ajaxGet(config.check + core.encodePath(this.$path.val()), {
                         data: {
                             path: this.newPath.getValue()
                         }
@@ -601,9 +616,9 @@
             },
 
             doSubmit: function () {
-                var c = dialogs.const.edit.url;
+                var config = this.getConfig();
                 var oldPath = this.$path.val();
-                core.ajaxPost(c._move.action + core.encodePath(oldPath), {
+                core.ajaxPost(config.action + core.encodePath(oldPath), {
                     targetPath: this.newPath.getValue(),
                     name: this.name.getValue(),
                     before: this.before.getValue(),
@@ -653,6 +668,22 @@
             var c = dialogs.const.edit.url;
             pages.dialogHandler.openEditDialog(c.path + c._rename.dialog,
                 dialogs.RenameContentDialog, name, path, type, setupDialog);
+        };
+
+        /**
+         * the dialog to move a content element to a new parent path
+         */
+        dialogs.CopyContentDialog = dialogs.MoveContentDialog.extend({
+
+            getConfig: function () {
+                return dialogs.const.edit.url._copy;
+            }
+        });
+
+        dialogs.openCopyContentDialog = function (name, path, type, setupDialog) {
+            var c = dialogs.const.edit.url;
+            pages.dialogHandler.openEditDialog(c.path + c._copy.dialog,
+                dialogs.CopyContentDialog, name, path, type, setupDialog);
         };
 
         //
