@@ -100,7 +100,7 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
     // Site properties
 
     public boolean isTemplate() {
-        return getSiteManager().isTemplate(this);
+        return getResourceManager().isTemplate(this.getResource());
     }
 
     @Override

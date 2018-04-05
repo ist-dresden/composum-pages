@@ -24,7 +24,7 @@
             event: {
                 messagePattern: new RegExp('^([^\\{\\[]+)([\\{\\[].*[\\}\\]])$'),
                 pageContainerRefs: 'page:containerRefs',
-                componentSelected: 'component:selected',
+                componentSelected: 'element:selected',
                 pathSelected: 'path:selected',
                 insertComponent: 'component:insert',
                 moveComponent: 'component:move',
@@ -299,6 +299,54 @@
                 }
             }
         }, false);
+
+        //
+        // clipboard operations
+        //
+
+        pages.clipboardCopy = function (event, path, callback) {
+            if (event) {
+                event.preventDefault();
+            }
+            if (!path) {
+                path = this.getCurrentPath();
+            }
+            pages.profile.set('pages', 'clipboard', {
+                path: path
+            });
+            if (_.isFunction(callback)) {
+                callback.call(this, path);
+            }
+        };
+
+        pages.clipboardPaste = function (event, path, callback) {
+            if (event) {
+                event.preventDefault();
+            }
+            var clipboard = pages.profile.get('pages', 'clipboard');
+            if (path && clipboard && clipboard.path) {
+                var name = core.getNameFromPath(clipboard.path);
+                core.ajaxPut("/bin/cpm/pages/edit.copyContent.json" + clipboard.path, JSON.stringify({
+                    targetPath: path,
+                    name: name
+                }), {
+                    dataType: 'json'
+                }, _.bind(function (result) {
+                    $(document).trigger('content:inserted', [path, name]);
+                }, this), _.bind(function (result) {
+                    var dialog = pages.dialogs.openCopyContentDialog();
+                    dialog.show(_.bind(function () {
+                        dialog.setNodePath(clipboard.path);
+                        dialog.setTargetPath(path);
+                        dialog.errorMessage('Copy Node', result);
+                    }, this), _.bind(function () {
+                        if (_.isFunction(callback)) {
+                            callback.call(this, path);
+                        }
+                    }, this));
+                }, this));
+            }
+        };
 
         //
         // login dialog and session expired (unauthorized) fallback

@@ -3,6 +3,8 @@ package com.composum.pages.commons.widget;
 import com.composum.pages.commons.taglib.EditWidgetTag;
 import com.composum.pages.commons.taglib.PropertyEditHandle;
 import com.composum.sling.cpnl.CpnlElFunctions;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 
@@ -11,6 +13,22 @@ import java.util.List;
 import java.util.Map;
 
 public abstract class OptionsWidget extends PropertyEditHandle<String> {
+
+    // dynamic attributes consumed by the model itself
+
+    /**
+     * the 'options' are used to build the options list
+     */
+    public static final String ATTR_OPTIONS = "options";
+
+    /**
+     * the separators are useful if the default separators (',' and ':'; separators=", :") of a string based
+     * options list are not useful to split the options attribute string (e.g. if the default separators are
+     * necessary for the values ot labels of the options); the 'separators' attribute is splitted by a ' ' to
+     * separate the list separator (default ',') from the key separator (default ':')
+     */
+    public static final String ATTR_SEPARATORS = "separators";
+    public static final String DEFAULT_SEPARATORS = ", :";
 
     private transient List<Option> options;
 
@@ -75,11 +93,27 @@ public abstract class OptionsWidget extends PropertyEditHandle<String> {
         return options;
     }
 
+    /**
+     * @return the configured options as a JSON array
+     */
+    public String getOptionsData() {
+        JsonArray data = new JsonArray();
+        for (Option option : getOptions()) {
+            JsonObject item = new JsonObject();
+            item.addProperty("value", option.getValue());
+            item.addProperty("label", option.getLabel());
+            data.add(item);
+        }
+        return data.toString();
+    }
+
     protected List<Option> retrieveOptions() {
         List<Option> options;
-        Object optionsObject = widget.consumeDynamicAttribute("options", Object.class);
+        Object optionsObject = widget.consumeDynamicAttribute(ATTR_OPTIONS, Object.class);
         if (optionsObject instanceof String) {
-            options = useString((String) optionsObject);
+            String[] separators = StringUtils.split(widget.consumeDynamicAttribute(
+                    ATTR_SEPARATORS, DEFAULT_SEPARATORS), " ", 2);
+            options = useString((String) optionsObject, separators[0], separators[1]);
         } else if (optionsObject instanceof Map) {
             options = useMap((Map<String, Object>) optionsObject);
         } else if (optionsObject instanceof List) {
@@ -92,15 +126,15 @@ public abstract class OptionsWidget extends PropertyEditHandle<String> {
         return options;
     }
 
-    protected List<Option> useString(String string) {
+    protected List<Option> useString(String string, String listSeparator, String keySeparator) {
         Resource resource = resolver.getResource(string);
         if (resource != null) {
             return useResource(resource);
         }
         List<Option> options = new ArrayList<>();
-        String[] values = string.split(",");
+        String[] values = string.split(listSeparator);
         for (String value : values) {
-            String[] keyAndLabel = StringUtils.split(value.trim(), ':');
+            String[] keyAndLabel = StringUtils.split(value.trim(), keySeparator, 2);
             String key = (keyAndLabel.length > 0 ? keyAndLabel[0] : value).trim();
             options.add(new Option((keyAndLabel.length > 1 ? keyAndLabel[1] : key), key));
         }

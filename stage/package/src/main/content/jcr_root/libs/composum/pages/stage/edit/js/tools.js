@@ -152,11 +152,14 @@
                 pages.profile.set('tabs', 'navigation', key)
             },
 
-            selectPath: function (event, path, node) {
-                if (path && node) {
+            selectPath: function (event, path, name, type) {
+                if (!type) {
+
+                }
+                if (path && type) {
                     console.log('tools.Navigation.selectPath(' + path + ')');
                     // noinspection FallThroughInSwitchStatementJS
-                    switch (node.original.type) {
+                    switch (type) {
                         case 'siteconfiguration':
                             path = core.getParentPath(path);
                         case 'site':
@@ -167,8 +170,11 @@
                             path = core.getParentPath(path);
                         case 'page':
                             if (path === pages.current.page) {
-                                console.log('tools.trigger.component:select()');
-                                $(document).trigger("component:select", []);
+                                // trigger a 'page select again' to adjust all tools
+                                console.log('tools.trigger.page:selected(' + pages.current.page + ')');
+                                $(document).trigger("page:selected", [pages.current.page]);
+                                console.log('tools.trigger.element:select()');
+                                $(document).trigger("element:select", []);
                             } else {
                                 console.log('tools.trigger.page:select(' + path + ')');
                                 $(document).trigger("page:select", [path]);
@@ -179,16 +185,19 @@
                             pages.getPageData(path, _.bind(function (data) {
                                 if (data.path !== pages.current.page) {
                                     pages.editFrame.selectOnLoad = {
-                                        name: node.original.name,
+                                        name: name,
                                         path: path,
-                                        type: node.original.type
+                                        type: type
                                     };
                                     console.log('tools.trigger.page:select(' + data.path + ')');
                                     $(document).trigger("page:select", [data.path]);
                                 } else {
-                                    console.log('tools.trigger.component:select(' + path + ')');
-                                    $(document).trigger("component:select",
-                                        [node.original.name, path, node.original.type]);
+                                    // trigger a 'page select again' to adjust all tools
+                                    console.log('tools.trigger.page:selected(' + pages.current.page + ')');
+                                    $(document).trigger("page:selected", [pages.current.page]);
+                                    console.log('tools.trigger.element:select(' + path + ')');
+                                    $(document).trigger("element:select",
+                                        [name, path, type]);
                                 }
                             }, this));
                             break;
@@ -306,7 +315,7 @@
 
             initialize: function (options) {
                 $(document).on('page:selected.Context', _.bind(this.onPageSelected, this));
-                $(document).on('component:selected.Context', _.bind(this.onComponentSelected, this));
+                $(document).on('element:selected.Context', _.bind(this.onComponentSelected, this));
             },
 
             onPageSelected: function (event, path, parameters) {

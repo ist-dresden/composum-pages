@@ -27,7 +27,7 @@
     <cpp:editDialogGroup label="Search Result" expanded="true">
         <div class="row">
             <div class="col-xs-12">
-                <cpp:widget label="Search Result Path" property="searchResultPath" type="path" i18n="false" rules="optional"
+                <cpp:widget label="Search Result Path" property="searchResultPath" type="pathfield" i18n="false" rules="optional"
                             hint="Page in which the search result is shown; optional, default: containing page."/>
                 <cpp:widget label="Search Result Anchor" property="searchResultAnchor" type="textfield" i18n="false" rules="optional"
                             hint="Anchor in the search result page to jump to for displaying the search result; optional."/>

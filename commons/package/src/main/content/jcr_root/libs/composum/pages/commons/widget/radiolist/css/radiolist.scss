@@ -1,0 +1,21 @@
+@charset "UTF-8";
+
+@import "../../../css/variables";
+@import "../../../css/mixins";
+
+.composum-pages-edit-widget {
+
+    &_radiolist {
+
+        .form-control {
+            height: auto;
+        }
+    }
+
+    &_radiolist-item {
+
+        .radio-inline {
+            display: block;
+        }
+    }
+}

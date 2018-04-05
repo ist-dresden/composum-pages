@@ -27,6 +27,7 @@ import javax.jcr.Session;
 import javax.jcr.UnsupportedRepositoryOperationException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -66,6 +67,7 @@ public class PagesResourceManager implements ResourceManager {
      * @param changeRoot   the root element for reference search and change
      * @param source       the resource to move
      * @param targetParent the target (the parent resource) of the move
+     * @param newName      an optional new name for the resource
      * @param before       the designated sibling in an ordered target collection
      * @return the new resource at the target path
      */
@@ -73,29 +75,52 @@ public class PagesResourceManager implements ResourceManager {
     @Nonnull
     public Resource moveContentResource(@Nonnull ResourceResolver resolver, @Nonnull Resource changeRoot,
                                         @Nonnull Resource source, @Nonnull Resource targetParent,
-                                        @Nullable Resource before)
+                                        @Nullable String newName, @Nullable Resource before)
             throws RepositoryException {
 
         Session session = resolver.adaptTo(Session.class);
 
         String oldPath = source.getPath();
         int lastSlash = oldPath.lastIndexOf('/');
-        String name = oldPath.substring(lastSlash + 1);
-        String newName = name;
-        String oldParentPath = oldPath.substring(0, lastSlash);
+        String oldParentPath = lastSlash == 0 ? "/" : oldPath.substring(0, lastSlash);
         String newParentPath = targetParent.getPath();
-        String newPath = newParentPath + "/" + name;
-        String siblingName = before != null ? before.getName() : null;
+        String name = oldPath.substring(lastSlash + 1);
+        boolean isAnotherParent = !oldParentPath.equals(newParentPath);
 
-        if (LOG.isInfoEnabled()) {
-            LOG.info("moveComponent(" + oldPath + " > " + newPath + " < " + siblingName + ")...");
+        // determine the name of the next sibling in the target resource (ordering)
+        String siblingName = before != null ? before.getName() : null;
+        if (StringUtils.isNotBlank(newName) && !isAnotherParent) {
+            // preserve ordering on a simple rename
+            Iterator<Resource> children = targetParent.listChildren();
+            while (children.hasNext()) {
+                if (children.next().getPath().equals(oldPath)) {
+                    if (children.hasNext()) {
+                        siblingName = children.next().getName();
+                    }
+                    break;
+                }
+            }
         }
 
-        if (!oldParentPath.equals(newParentPath)) {
-            // check name collision before move into a new target resource
+        if (StringUtils.isBlank(newName)) {
+            newName = name;
+        }
+        String newPath = newParentPath + "/" + newName;
+
+        // check name collision before move into a new target resource; on the same parent let it fail
+        if (isAnotherParent) {
+            String n = newName;
             for (int i = 1; resolver.getResource(newPath) != null; i++) {
-                newPath = newParentPath + "/" + (newName = name + i);
+                newPath = newParentPath + "/" + (newName = n + i);
             }
+        }
+
+        if (LOG.isInfoEnabled()) {
+            LOG.info("moveContentResource(" + oldPath + " > " + newPath + " < " + siblingName + ")...");
+        }
+
+        // move it if it is a real move and adjust all references
+        if (isAnotherParent || !newName.equals(name)) {
             session.move(oldPath, newPath);
             ArrayList<Resource> foundReferers = new ArrayList<>();
             // adopt all references to the source and use the new target path
@@ -296,14 +321,16 @@ public class PagesResourceManager implements ResourceManager {
      * Creates a new resource as a copy of another resource.
      *
      * @param resolver the resolver to use for CRUD operations
+     * @param template the template content resource
      * @param parent   the parent resource for the new resource
      * @param name     the name of the new resource
-     * @param template the template content resource
+     * @param before   the designated sibling in an ordered target collection
      * @return the resource created
      * @throws PersistenceException if an error is occurring
      */
-    public Resource copyContentResource(@Nonnull ResourceResolver resolver, @Nonnull Resource parent,
-                                        @Nonnull String name, @Nonnull Resource template)
+    @Override
+    public Resource copyContentResource(@Nonnull ResourceResolver resolver, @Nonnull Resource template,
+                                        @Nonnull Resource parent, @Nonnull String name, @Nullable Resource before)
             throws PersistenceException {
         TemplateContext templateContext = new NopTemplateContext(resolver);
         ValueMap templateValues = template.getValueMap();
@@ -327,7 +354,7 @@ public class PagesResourceManager implements ResourceManager {
             String childName = child.getName();
             // maybe the child is always created by the referenced template
             if (!JcrConstants.JCR_CONTENT.equals(childName) && target.getChild(childName) == null) {
-                copyContentResource(resolver, target, childName, child);
+                copyContentResource(resolver, child, target, childName, null);
             }
         }
         return target;
@@ -362,6 +389,7 @@ public class PagesResourceManager implements ResourceManager {
      * @return the resource created
      * @throws PersistenceException if an error is occurring
      */
+    @Override
     public Resource createFromTemplate(@Nonnull TemplateContext context, @Nonnull Resource parent, @Nonnull String name,
                                        @Nonnull Resource template, boolean setTemplateProperty)
             throws PersistenceException {

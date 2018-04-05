@@ -19,7 +19,7 @@
         tree.ToolsTree = core.components.Tree.extend({
 
             initialize: function (options) {
-                 core.components.Tree.prototype.initialize.apply(this, [options]);
+                core.components.Tree.prototype.initialize.apply(this, [options]);
             },
 
             onPathSelectedFailed: function (path) {
@@ -64,7 +64,7 @@
                     }
                 });
                 tree.ToolsTree.prototype.initialize.apply(this, [options]);
-                $(document).on('component:selected.' + id, _.bind(this.onPathSelected, this));
+                $(document).on('element:selected.' + id, _.bind(this.onPathSelected, this));
                 $(document).on('component:changed.' + id, _.bind(this.onPathChanged, this));
                 $(document).on('content:selected.' + id, _.bind(this.onPathSelected, this));
                 $(document).on('content:inserted.' + id, _.bind(this.onContentInserted, this));
@@ -108,6 +108,24 @@
                             dialog.setValues(draggedNode, targetNode, before ? before.original : undefined);
                         }, this));
                 }
+            },
+
+            renameNode: function (node, oldName, newName) {
+                var nodePath = node.path;
+                var parentPath = core.getParentPath(nodePath);
+                var oldPath = core.buildContentPath(parentPath, oldName);
+                core.ajaxPost('/bin/cpm/pages/edit.renameContent.json' + core.encodePath(oldPath), {
+                    name: newName
+                }, {}, _.bind(function (data) {
+                    $(document).trigger('content:moved', [oldPath, data.path]);
+                }, this), _.bind(function (result) {
+                    this.refreshNodeById(node.id);
+                    pages.dialogs.openRenameContentDialog(oldName, oldPath, node.type,
+                        _.bind(function (dialog) {
+                            dialog.setValues(oldPath, newName);
+                            dialog.errorMessage('Rename Content', result);
+                        }, this));
+                }, this));
             }
         });
 
@@ -201,7 +219,7 @@
                 this.tree.panel = this;
                 tree.ToolsTreePanel.prototype.initialize.apply(this, [options]);
                 $(document).on('path:selected.' + this.treePanelId, _.bind(this.onPathSelected, this));
-                $(document).on('component:selected.' + this.treePanelId, _.bind(this.onPathSelected, this));
+                $(document).on('element:selected.' + this.treePanelId, _.bind(this.onPathSelected, this));
                 $(document).on('page:selected.' + this.treePanelId, _.bind(this.onPathSelected, this));
             },
 

@@ -30,13 +30,14 @@ public interface ResourceManager {
      * @param changeRoot   the root element for reference search and change
      * @param source       the resource to move
      * @param targetParent the target (the parent resource) of the move
+     * @param newName      an optional new name for the resource
      * @param before       the designated sibling in an ordered target collection
      * @return the new resource at the target path
      */
     @Nonnull
     Resource moveContentResource(@Nonnull ResourceResolver resolver, @Nonnull Resource changeRoot,
                                  @Nonnull Resource source, @Nonnull Resource targetParent,
-                                 @Nullable Resource before)
+                                 @Nullable String newName, @Nullable Resource before)
             throws RepositoryException;
 
     /**
@@ -101,14 +102,15 @@ public interface ResourceManager {
      * Creates a new resource as a copy of another resource.
      *
      * @param resolver the resolver to use for CRUD operations
+     * @param template the template content resource
      * @param parent   the parent resource for the new resource
      * @param name     the name of the new resource
-     * @param template the template content resource
+     * @param before   the designated sibling in an ordered target collection
      * @return the resource created
      * @throws PersistenceException if an error is occurring
      */
-    Resource copyContentResource(@Nonnull ResourceResolver resolver, @Nonnull Resource parent,
-                                 @Nonnull String name, @Nonnull Resource template)
+    Resource copyContentResource(@Nonnull ResourceResolver resolver, @Nonnull Resource template,
+                                 @Nonnull Resource parent, @Nonnull String name, @Nullable Resource before)
             throws PersistenceException;
 
     /**

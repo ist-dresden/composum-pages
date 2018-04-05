@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+        jcr:language="de"
+        jcr:mixinTypes="[mix:language]"
+        jcr:primaryType="sling:Folder"
+        sling:basename="composum-pages">
+
+    <entity jcr:primaryType="sling:Folder"><!-- Pages entities -->
+
+        <tenant jcr:primaryType="sling:MessageEntry"
+                sling:key="Tenant" sling:message="Mandant"/>
+        <site jcr:primaryType="sling:MessageEntry"
+                sling:key="Site" sling:message="Website"/>
+        <page jcr:primaryType="sling:MessageEntry"
+                sling:key="Page" sling:message="Seite"/>
+        <template jcr:primaryType="sling:MessageEntry"
+                sling:key="Template" sling:message="Vorlage"/>
+    </entity>
+
+    <content jcr:primaryType="sling:Folder"><!-- Content operations -->
+
+        <breaks-hierarchy-policy jcr:primaryType="sling:MessageEntry"
+                sling:key="this change is breaking the resource hierarchy policy rules"
+                sling:message="diese Änderung verletzt die Struktur-Regeln"/>
+        <invalid-target jcr:primaryType="sling:MessageEntry"
+                sling:key="Invalid Target"
+                sling:message="Unerlaubtes Ziel"/>
+        <target-path-not-allowed jcr:primaryType="sling:MessageEntry"
+                sling:key="Target path not allowed"
+                sling:message="Ziel-Pfad nicht erlaubt"/>
+    </content>
+
+    <widget jcr:primaryType="sling:Folder"><!-- widget and dialog buttons, labels and titles -->
+
+        <name-placeholder jcr:primaryType="sling:MessageEntry"
+                sling:key="the repository name" sling:message="der Name im Repository"/>
+        <title-placeholder jcr:primaryType="sling:MessageEntry"
+                sling:key="the more readable title" sling:message="der 'lesbare' Titel"/>
+    </widget>
+
+</jcr:root>

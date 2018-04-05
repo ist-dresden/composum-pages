@@ -163,6 +163,13 @@ public class ModelTag extends ComponentTag implements DynamicAttributes {
     /**
      * gets and removes a dynamic attribute
      */
+    public <T> T consumeDynamicAttribute(String key, Class<T> type) {
+        return dynamicAttributes.consumeAttribute(key, type);
+    }
+
+    /**
+     * gets and removes a dynamic attribute
+     */
     public <T> T consumeDynamicAttribute(String key, T defaultValue) {
         return dynamicAttributes.consumeAttribute(key, defaultValue);
     }

@@ -2,7 +2,6 @@ package com.composum.pages.commons.taglib;
 
 import com.composum.pages.commons.model.AbstractModel;
 import com.composum.pages.commons.model.properties.ValueSet;
-import org.apache.sling.api.resource.Resource;
 
 import java.lang.reflect.Array;
 
@@ -11,10 +10,16 @@ import java.lang.reflect.Array;
  */
 public class PropertyEditHandle<T> extends AbstractModel {
 
-    /** the property values (possibly multiValue values) if determined by the widget (tag) */
+    /**
+     * the property values (possibly multiValue values) if determined by the widget (tag);
+     * is initial 'null' if this model is using a 'property' name/path instead of the 'value'
+     */
     private transient ValueSet<T> values;
 
-    /** the values determined by the model getter (with the locale cascade) */
+    /**
+     * the values determined by the model getter (with the locale cascade); in a non-default language context
+     * this contains the values of the default language as possible placeholders for the input field(s)
+     */
     private transient ValueSet<T> defaultValues;
 
     protected String propertyName;  // the property name without the i18n context
@@ -24,7 +29,7 @@ public class PropertyEditHandle<T> extends AbstractModel {
     protected final Class<T> type;
     private transient Boolean multiValue;
 
-    protected EditWidgetTag widget;
+    protected EditWidgetTag widget; // the widget itself which is using this as model is accessible here
 
     public PropertyEditHandle(Class<T> type) {
         this.type = type;
@@ -34,10 +39,6 @@ public class PropertyEditHandle<T> extends AbstractModel {
         widget = tag;
     }
 
-    public Resource getEditResource() {
-        return widget.getDialog().getModelResource(getContext());
-    }
-
     /**
      * declares the property of the models content resource for this handle
      */
@@ -45,6 +46,13 @@ public class PropertyEditHandle<T> extends AbstractModel {
         propertyName = name;
         propertyPath = path;
         this.i18n = i18n;
+    }
+
+    /**
+     * the values can be set by the context (an edit widget tag) as 'value' instead of a 'property' name
+     */
+    public void setValue(Object object) {
+        values = object != null ? new ValueSet<T>(object) : null;
     }
 
     /**
@@ -67,6 +75,9 @@ public class PropertyEditHandle<T> extends AbstractModel {
         }
     }
 
+    /**
+     * @return 'true' if the model has a value for the referenced property
+     */
     public boolean isValueSet() {
         T value = getValue();
         return value != null;
@@ -80,6 +91,9 @@ public class PropertyEditHandle<T> extends AbstractModel {
         multiValue = isMultiValue;
     }
 
+    /**
+     * usr the next value of a multi value property as the current value (during iteration in a mutli value tag)
+     */
     public void nextValue() {
         ValueSet set;
         if ((set = getValues()) != null) {
@@ -88,13 +102,6 @@ public class PropertyEditHandle<T> extends AbstractModel {
         if ((set = getDefaultValues()) != null) {
             set.next();
         }
-    }
-
-    /**
-     * the values can be set by the context to provide a single point of access here
-     */
-    public void setValue(Object object) {
-        values = object != null ? new ValueSet<T>(object) : null;
     }
 
     public T getValue() {

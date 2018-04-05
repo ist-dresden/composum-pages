@@ -27,8 +27,8 @@
             },
 
             registerEventHandlers: function () {
-                $(document).on('component:select.EditFrame', _.bind(this.selectComponent, this));
-                $(document).on('component:selected.EditFrame', _.bind(this.onComponentSelected, this));
+                $(document).on('element:select.EditFrame', _.bind(this.selectComponent, this));
+                $(document).on('element:selected.EditFrame', _.bind(this.onComponentSelected, this));
                 $(document).on('component:changed.EditFrame', _.bind(this.onComponentChanged, this));
                 $(document).on('component:deleted.EditFrame', _.bind(this.onComponentDeleted, this));
                 $(document).on('content:inserted.EditFrame', _.bind(this.onComponentChanged, this));
@@ -160,10 +160,10 @@
             selectComponent: function (event, name, path, type) {
                 console.log('pages.EditFrame.selectComponent(' + path + ')');
                 if (path) {
-                    this.$frame[0].contentWindow.postMessage('component:select'
+                    this.$frame[0].contentWindow.postMessage('element:select'
                         + JSON.stringify({name: name, path: path, type: type}), '*');
                 } else {
-                    this.$frame[0].contentWindow.postMessage('component:select'
+                    this.$frame[0].contentWindow.postMessage('element:select'
                         + JSON.stringify({}), '*');
                 }
             },
@@ -181,10 +181,10 @@
             onComponentSelected: function (event, name, path, type) {
                 console.log('pages.EditFrame.onComponentSelected(' + path + ')');
                 if (path) {
-                    this.$frame[0].contentWindow.postMessage('component:selected'
+                    this.$frame[0].contentWindow.postMessage('element:selected'
                         + JSON.stringify({name: name, path: path, type: type}), '*');
                 } else {
-                    this.$frame[0].contentWindow.postMessage('component:selected'
+                    this.$frame[0].contentWindow.postMessage('element:selected'
                         + JSON.stringify({}), '*');
                 }
             },

@@ -266,6 +266,6 @@ public class PagesEditService implements EditService {
 
         // use the containers collection (can be the target itself) to move the source into
         Resource collection = getContainerCollection(resolver, targetParent);
-        return resourceManager.moveContentResource(resolver, changeRoot, source, collection, before);
+        return resourceManager.moveContentResource(resolver, changeRoot, source, collection, null, before);
     }
 }

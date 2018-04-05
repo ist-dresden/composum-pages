@@ -24,8 +24,8 @@
             event: { // event handling rules and keys (inter frame communication)
                 messagePattern: new RegExp('^([^\\{\\[]+)([\\{\\[].*[\\}\\]])$'),
                 pageContainerRefs: 'page:containerRefs',
-                componentSelect: 'component:select',
-                componentSelected: 'component:selected',
+                componentSelect: 'element:select',
+                componentSelected: 'element:selected',
                 insertComponent: 'component:insert',
                 moveComponent: 'component:move',
                 openEditDialog: 'dialog:edit',

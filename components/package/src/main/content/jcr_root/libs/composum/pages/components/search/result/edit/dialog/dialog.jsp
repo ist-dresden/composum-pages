@@ -15,7 +15,7 @@
     </div>
     <div class="row">
         <div class="col-xs-12">
-            <cpp:widget label="Search Root" property="searchRoot" type="path" i18n="false" rules="optional"
+            <cpp:widget label="Search Root" property="searchRoot" type="pathfield" i18n="false" rules="optional"
                         hint="Path where the search starts. Default: site-root."/>
             <cpp:widget label="Template" property="template" type="textfield" i18n="false" rules="optional"
                         hint="Template for printing the search results. Takes precedence over selector."/>

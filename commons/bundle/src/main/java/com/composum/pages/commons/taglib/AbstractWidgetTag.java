@@ -94,7 +94,13 @@ public abstract class AbstractWidgetTag extends AbstractWrappingTag {
     public Resource getModelResource(BeanContext context) {
         Resource resource = context.getAttribute(PROPERTY_RESOURCE_ATTR, Resource.class);
         if (resource == null) {
-            resource = super.getModelResource(context);
+            EditDialogTag dialog = getDialog();
+            if (dialog != null) {
+                resource = dialog.getModelResource(context);
+            }
+            if (resource == null) {
+                resource = super.getModelResource(context);
+            }
         }
         return resource;
     }

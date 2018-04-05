@@ -5,7 +5,7 @@
 <cpp:editDialog var="illustration" type="com.composum.pages.components.model.illustration.Illustration"
                 title="@{dialog.selector=='create'?'Create an Illustration':'Edit Illustration'}">
     <cpp:editDialogTab tabId="content" label="Content">
-        <cpp:widget label="Image" property="image/imageRef" type="image" mandatory="true"/>
+        <cpp:widget label="Image" property="image/imageRef" type="imagefield" mandatory="true"/>
         <cpp:widget label="Alt Text" property="image/alt" type="textfield" i18n="true"/>
     </cpp:editDialogTab>
     <cpp:editDialogTab tabId="shape" label="Shape">

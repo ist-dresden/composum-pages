@@ -69,6 +69,20 @@
             margin: 0;
         }
 
+        &_content {
+
+            .panel.tile-panel {
+
+                &.panel-default {
+                    background-color: $tile-panel-default-bg;
+                }
+
+                &.panel-info {
+                    background-color: $tile-panel-info-bg;
+                }
+            }
+        }
+
         &_hints {
             margin-top: -2px;
             margin-right: 15px;

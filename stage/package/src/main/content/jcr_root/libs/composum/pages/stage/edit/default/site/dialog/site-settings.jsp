@@ -12,6 +12,6 @@
 </div>
 <div class="row">
     <div class="col-xs-12">
-        <cpp:widget label="Description" property="jcr:description" type="textarea"/>
+        <cpp:widget label="Description" property="jcr:description" type="richtext" i18n="false"/>
     </div>
 </div>

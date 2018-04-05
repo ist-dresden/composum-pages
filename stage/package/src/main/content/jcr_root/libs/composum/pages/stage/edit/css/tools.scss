@@ -365,38 +365,6 @@
         .alert {
             padding: 5px;
         }
-
-        .jstree-node,
-        .jstree-anchor,
-        .jstree-anchor:hover,
-        .jstree-anchor:focus,
-        .jstree-icon {
-            color: #fff;
-            text-decoration: none;
-            font-size: $default-font-size;
-        }
-
-        .jstree-node,
-        .jstree-node > .jstree-anchor {
-            @include default-font;
-        }
-
-        .jstree-node.intermediate,
-        .jstree-node.intermediate > .jstree-anchor {
-            font-family: 'robotolight_italic';
-        }
-
-        .jstree-icon {
-            margin: 1px 4px 4px 0;
-        }
-
-        .jstree-anchor {
-            margin: 2px 0 3px;
-        }
-
-        .jstree-wholerow {
-            height: 27px;
-        }
     }
 }
 

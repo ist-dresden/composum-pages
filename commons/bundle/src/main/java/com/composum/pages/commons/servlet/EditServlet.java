@@ -21,6 +21,7 @@ import com.composum.sling.core.servlet.NodeTreeServlet;
 import com.composum.sling.core.servlet.ServletOperation;
 import com.composum.sling.core.servlet.ServletOperationSet;
 import com.composum.sling.core.util.ResponseUtil;
+import com.composum.sling.cpnl.CpnlElFunctions;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
@@ -45,6 +46,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.jcr.ItemExistsException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.version.VersionManager;
@@ -56,6 +59,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 
 import static com.composum.pages.commons.PagesConstants.PROP_TEMPLATE;
@@ -96,13 +100,13 @@ public class EditServlet extends NodeTreeServlet {
     }
 
     public enum Operation {
-        pageData, isTemplate, allowedChild,
+        pageData, isTemplate, isAllowedChild,
         siteTree, pageTree, developTree,
         editDialog, newDialog,
         editTile, editToolbar, treeActions,
         pageComponents, targetContainers,
         insertComponent, moveComponent, copyElement,
-        createPage, deletePage, moveContent, copyContent,
+        createPage, deletePage, moveContent, renameContent, copyContent,
         createSite, deleteSite,
         contextTools,
         versions, restoreVersion, checkpoint, setVersionLabel
@@ -162,7 +166,7 @@ public class EditServlet extends NodeTreeServlet {
         operations.setOperation(ServletOperationSet.Method.GET, Extension.json,
                 Operation.isTemplate, new CheckIsTemplate());
         operations.setOperation(ServletOperationSet.Method.GET, Extension.json,
-                Operation.allowedChild, new CheckIsAllowedChild());
+                Operation.isAllowedChild, new CheckIsAllowedChild());
         operations.setOperation(ServletOperationSet.Method.GET, Extension.html,
                 Operation.editDialog, new GetEditDialog());
         operations.setOperation(ServletOperationSet.Method.GET, Extension.html,
@@ -195,6 +199,10 @@ public class EditServlet extends NodeTreeServlet {
                 Operation.deletePage, new DeletePage());
         operations.setOperation(ServletOperationSet.Method.POST, Extension.json,
                 Operation.moveContent, new MoveContent());
+        operations.setOperation(ServletOperationSet.Method.POST, Extension.json,
+                Operation.renameContent, new RenameContent());
+        operations.setOperation(ServletOperationSet.Method.POST, Extension.json,
+                Operation.copyContent, new CopyContent());
         operations.setOperation(ServletOperationSet.Method.POST, Extension.json,
                 Operation.createSite, new CreateSite());
         operations.setOperation(ServletOperationSet.Method.POST, Extension.json,
@@ -346,6 +354,19 @@ public class EditServlet extends NodeTreeServlet {
                     JsonWriter jsonWriter = ResponseUtil.getJsonWriter(response);
                     jsonWriter.beginObject();
                     jsonWriter.name("isAllowed").value(allowed);
+                    if (!allowed) {
+                        jsonWriter.name("response").beginObject();
+                        jsonWriter.name("level").value("error");
+                        jsonWriter.name("text").value(CpnlElFunctions.i18n(request, "Invalid Target"));
+                        jsonWriter.endObject();
+                        jsonWriter.name("messages").beginArray();
+                        jsonWriter.beginObject();
+                        jsonWriter.name("level").value("error");
+                        jsonWriter.name("text").value(CpnlElFunctions.i18n(request, "Target path not allowed"));
+                        jsonWriter.name("hint").value(CpnlElFunctions.i18n(request, "this change is breaking the resource hierarchy policy rules"));
+                        jsonWriter.endObject();
+                        jsonWriter.endArray();
+                    }
                     jsonWriter.name("parent");
                     writeJsonResource(jsonWriter, pagesConfiguration.getPageNodeFilter(), parent);
                     jsonWriter.name("child");
@@ -781,7 +802,50 @@ public class EditServlet extends NodeTreeServlet {
     // Content manipulation (Page, Folder, File)
     //
 
-    protected class MoveContent implements ServletOperation {
+    protected abstract class ChangeContentOperation implements ServletOperation {
+
+        protected Resource getRequestedSibling(@Nonnull SlingHttpServletRequest request, @Nonnull Resource target,
+                                               @Nullable Resource skipThat) {
+            ResourceResolver resolver = request.getResourceResolver();
+            String beforePath = request.getParameter("before");
+            if (StringUtils.isNotBlank(beforePath)) {
+                return resolver.getResource(beforePath.startsWith("/")
+                        ? beforePath : target.getPath() + "/" + beforePath);
+            } else {
+                return getResourceAt(target, RequestUtil
+                        .getParameter(request, PARAM_INDEX, (Integer) null), skipThat);
+            }
+        }
+
+        protected Resource getResourceAt(@Nonnull Resource parent, @Nullable Integer index,
+                                         @Nullable Resource skipThat) {
+            if (index != null && index >= 0) {
+                String pathToSkip = skipThat != null ? skipThat.getPath() : null;
+                Iterator<Resource> children = parent.listChildren();
+                for (int i = 0; i < index && children.hasNext(); ) {
+                    if (pathToSkip == null || !children.next().getPath().equals(pathToSkip)) {
+                        i++;
+                    }
+                }
+                if (children.hasNext()) {
+                    return children.next();
+                }
+            }
+            return null;
+        }
+
+        protected void sendResponse(SlingHttpServletResponse response, Resource result)
+                throws IOException {
+            JsonWriter jsonWriter = ResponseUtil.getJsonWriter(response);
+            response.setStatus(HttpServletResponse.SC_OK);
+            jsonWriter.beginObject();
+            jsonWriter.name("name").value(result.getName());
+            jsonWriter.name("path").value(result.getPath());
+            jsonWriter.endObject();
+        }
+    }
+
+    protected class MoveContent extends ChangeContentOperation {
 
         @Override
         public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
@@ -789,37 +853,95 @@ public class EditServlet extends NodeTreeServlet {
                 throws IOException {
 
             String targetPath = request.getParameter("targetPath");
-            String beforePath = request.getParameter("before");
-
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("MoveContent(" + resource.getPath() + " > " + targetPath + " < " + beforePath + ")...");
-            }
+            String name = request.getParameter(PARAM_NAME);
 
             ResourceResolver resolver = request.getResourceResolver();
             Resource target = resolver.getResource(targetPath);
             if (target != null) {
-                Resource before = null;
-                if (StringUtils.isNotBlank(beforePath)) {
-                    before = resolver.getResource(beforePath.startsWith("/")
-                            ? beforePath : targetPath + "/" + beforePath);
-                }
+                Resource before = getRequestedSibling(request, target, resource);
 
                 try {
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("MoveContent(" + resource.getPath() + " > " + targetPath + " < "
+                                + (before != null ? before.getName() : "<end>") + ")...");
+                    }
+
                     Resource result = resourceManager.moveContentResource(resolver,
-                            resolver.getResource("/content"), resource, target, before);
+                            resolver.getResource("/content"), resource, target, name, before);
                     resolver.commit();
 
-                    JsonWriter jsonWriter = ResponseUtil.getJsonWriter(response);
-                    response.setStatus(HttpServletResponse.SC_OK);
-                    jsonWriter.beginObject();
-                    jsonWriter.name("name").value(result.getName());
-                    jsonWriter.name("path").value(result.getPath());
-                    jsonWriter.endObject();
+                    sendResponse(response, result);
+
+                } catch (ItemExistsException itex) {
+                    jsonAnswerItemExists(request, response);
 
                 } catch (RepositoryException ex) {
                     LOG.error(ex.getMessage(), ex);
                     response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ex.getMessage());
                 }
+            } else {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "target doesn't exist: '" + targetPath + "'");
+            }
+        }
+    }
+
+    protected class RenameContent extends ChangeContentOperation {
+
+        @Override
+        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
+                         ResourceHandle resource)
+                throws IOException {
+
+            String name = request.getParameter(PARAM_NAME);
+
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("RenameContent(" + resource.getPath() + " > " + name + ")...");
+            }
+
+            ResourceResolver resolver = request.getResourceResolver();
+
+            try {
+                Resource result = resourceManager.moveContentResource(resolver,
+                        resolver.getResource("/content"), resource, resource.getParent(), name, null);
+                resolver.commit();
+
+                sendResponse(response, result);
+
+            } catch (ItemExistsException itex) {
+                jsonAnswerItemExists(request, response);
+
+            } catch (RepositoryException ex) {
+                LOG.error(ex.getMessage(), ex);
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ex.getMessage());
+            }
+        }
+    }
+
+    protected class CopyContent extends ChangeContentOperation {
+
+        @Override
+        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
+                         ResourceHandle resource)
+                throws IOException {
+
+            String targetPath = request.getParameter("targetPath");
+            String name = request.getParameter(PARAM_NAME);
+
+            ResourceResolver resolver = request.getResourceResolver();
+            Resource target = resolver.getResource(targetPath);
+            if (target != null) {
+                Resource before = getRequestedSibling(request, target, resource);
+
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("CopyContent(" + resource.getPath() + " > " + targetPath + " < "
+                            + (before != null ? before.getName() : "<end>") + ")...");
+                }
+
+                Resource result = resourceManager.copyContentResource(resolver, resource, target, name, before);
+                resolver.commit();
+
+                sendResponse(response, result);
+
             } else {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "target doesn't exist: '" + targetPath + "'");
             }

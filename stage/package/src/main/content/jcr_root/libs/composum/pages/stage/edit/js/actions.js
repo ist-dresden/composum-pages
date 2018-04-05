@@ -96,11 +96,11 @@
             },
 
             rename: function (event, name, path, type) {
-                alert('page.rename... ' + name + ',' + path + ',' + type);
+                pages.dialogs.openRenameContentDialog(name, path, type)
             },
 
             move: function (event, name, path, type) {
-                alert('page.move... ' + name + ',' + path + ',' + type);
+                pages.dialogs.openMoveContentDialog(name, path, type)
             },
 
             delete: function (event, name, path, type) {
@@ -151,15 +151,20 @@
             },
 
             rename: function (event, name, path, type) {
-                alert('site.rename... ' + name + ',' + path + ',' + type);
+                pages.dialogs.openRenameContentDialog(name, path, type)
             },
 
             move: function (event, name, path, type) {
-                alert('site.move... ' + name + ',' + path + ',' + type);
+                pages.dialogs.openMoveContentDialog(name, path, type)
             }
         };
 
         actions.folder = {
+
+            edit: function (event, name, path, type) {
+                var c = pages.dialogs.const.edit.url;
+                pages.dialogs.openEditDialog(name, path, type, c.path + c._edit._folder);
+            },
 
             insertPage: function (event, name, path, type) {
                 pages.dialogs.openNewPageDialog(name, path, type);
@@ -174,11 +179,11 @@
             },
 
             rename: function (event, name, path, type) {
-                alert('folder.rename... ' + name + ',' + path + ',' + type);
+                pages.dialogs.openRenameContentDialog(name, path, type)
             },
 
             move: function (event, name, path, type) {
-                alert('folder.move... ' + name + ',' + path + ',' + type);
+                pages.dialogs.openMoveContentDialog(name, path, type)
             },
 
             copy: function (event, name, path, type) {
@@ -209,11 +214,11 @@
             },
 
             rename: function (event, name, path, type) {
-                alert('file.rename... ' + name + ',' + path + ',' + type);
+                pages.dialogs.openRenameContentDialog(name, path, type)
             },
 
             move: function (event, name, path, type) {
-                alert('file.move... ' + name + ',' + path + ',' + type);
+                pages.dialogs.openMoveContentDialog(name, path, type)
             },
 
             copy: function (event, name, path, type) {

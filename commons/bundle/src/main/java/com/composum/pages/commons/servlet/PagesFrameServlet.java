@@ -28,6 +28,8 @@ public class PagesFrameServlet extends AbstractConsoleServlet {
 
     public static final String RESOURCE_TYPE = "composum/pages/stage/{mode}/frame";
 
+    public static final String CONSOLE_PATH = "/libs/composum/pages/stage/edit/console/content";
+
     public static final Pattern PATH_PATTERN = Pattern.compile("^(/bin/pages(\\.[^/]+)?\\.html)(/.*)?$");
 
     protected Pattern getPathPattern(BeanContext context) {
@@ -68,5 +70,10 @@ public class PagesFrameServlet extends AbstractConsoleServlet {
                 break;
         }
         return RESOURCE_TYPE.replaceAll("\\{mode}", mode.name().toLowerCase());
+    }
+
+    @Override
+    protected String getConsolePath(BeanContext context) {
+        return CONSOLE_PATH;
     }
 }

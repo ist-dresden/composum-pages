@@ -105,9 +105,6 @@
                             <root>/libs/composum/pages/commons</root>
                         </filter>
                         <filter>
-                            <root>/libs/composum/pages/i18n</root>
-                        </filter>
-                        <filter>
                             <root>/oak:index/lucene/composum.pages</root>
                         </filter>
                         <filter>
