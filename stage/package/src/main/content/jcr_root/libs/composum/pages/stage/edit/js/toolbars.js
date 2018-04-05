@@ -134,7 +134,7 @@
                 this.initPageView();
                 $(document).on('page:view.PageToolbar', _.bind(this.onPageSelected, this));
                 $(document).on('page:selected.PageToolbar', _.bind(this.onPageSelected, this));
-                $(document).on('component:selected.PageToolbar', _.bind(this.onComponentSelected, this));
+                $(document).on('element:selected.PageToolbar', _.bind(this.onComponentSelected, this));
                 this.loadProfile();
                 this.$el.css('right', this.profile.position + '%');
                 if (pages.current.mode === pages.const.modes.edit ||

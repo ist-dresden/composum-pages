@@ -3,11 +3,13 @@ package com.composum.pages.commons.taglib;
 import com.composum.pages.commons.PagesConstants;
 import com.composum.pages.commons.model.properties.Language;
 import com.composum.pages.commons.model.properties.Languages;
+import com.composum.pages.commons.util.NewResourceParent;
 import com.composum.pages.commons.util.TagCssClasses;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.util.ResourceUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
@@ -73,6 +75,8 @@ public class EditDialogTag extends AbstractWrappingTag {
 
     protected boolean languageContext = true;
 
+    protected Resource editResource;
+    protected String resourcePath;
     protected String resourceType;
     protected String primaryType;
     private transient String defaultPrimaryType;
@@ -99,7 +103,9 @@ public class EditDialogTag extends AbstractWrappingTag {
         editPath = null;
         defaultPrimaryType = null;
         primaryType = null;
+        resourcePath = null;
         resourceType = null;
+        editResource = null;
         selectorValue = null;
         selector = null;
         titleValue = null;
@@ -111,8 +117,10 @@ public class EditDialogTag extends AbstractWrappingTag {
 
     /**
      * Determines the resource to edit by the form of the dialog to create by this tag. This resource is mainly
-     * determined by a 'EDIT_RESOURCE_KEY' reuqest attribute which is declared by the edit servlet during the dialog
+     * determined by a 'EDIT_RESOURCE_KEY' request attribute which is declared by the edit servlet during the dialog
      * load request; if the dialog is loaded by a dialog component URL the edit resource is expected as the URLs suffix.
+     * Dialogs to ceate a new resourceshould be marked with a '*' resourcePath attribute to avoid copying of
+     * parent properties.
      *
      * @param context the current request context
      * @return the resource to edit
@@ -120,18 +128,38 @@ public class EditDialogTag extends AbstractWrappingTag {
     @Override
     public Resource getModelResource(BeanContext context) {
         if (editResource == null) {
-            editResource = request.getAttribute(EDIT_RESOURCE_KEY);
-        }
-        if (editResource == null) {
-            String suffix = request.getRequestPathInfo().getSuffix();
-            if (StringUtils.isNotBlank(suffix) && !"/".equals(suffix)) {
-                editResource = request.getResourceResolver().getResource(suffix);
-                if (editResource != null) {
-                    request.setAttribute(EDIT_RESOURCE_KEY, editResource);
+            ResourceResolver resolver = context.getResolver();
+            boolean isStarResource = false;
+            if (StringUtils.isNotBlank(resourcePath)) {
+                if (resourcePath.endsWith("*")) {
+                    isStarResource = true; // this is a 'create' dialog...
+                } else {
+                    editResource = resolver.getResource(resourcePath);
                 }
             }
+            if (editResource == null) {
+                // use the resource defined by the dialog delivery servlet
+                editResource = (Resource) request.getAttribute(EDIT_RESOURCE_KEY);
+            }
+            if (editResource == null) {
+                // use the request suffix as the resource to edit
+                String suffix = request.getRequestPathInfo().getSuffix();
+                if (StringUtils.isNotBlank(suffix) && !"/".equals(suffix)) {
+                    editResource = request.getResourceResolver().getResource(suffix);
+                    if (editResource != null) {
+                        request.setAttribute(EDIT_RESOURCE_KEY, editResource);
+                    }
+                }
+            }
+            if (!(editResource instanceof Resource)) {
+                editResource = super.getModelResource(context);
+            }
+            if (isStarResource) {
+                // wrap the current resource and make the resource empty
+                editResource = new NewResourceParent(editResource);
+            }
         }
-        return editResource instanceof Resource ? ((Resource) editResource) : super.getModelResource(context);
+        return editResource;
     }
 
     public String getEditPath() {
@@ -200,6 +228,14 @@ public class EditDialogTag extends AbstractWrappingTag {
     }
 
     // create: 'sling:resourceType'
+
+    public void setResource(Resource resource) {
+        editResource = resource;
+    }
+
+    public void setResourcePath(String path) {
+        resourcePath = path;
+    }
 
     /**
      * the resource type of a new element created by a dialog (hidden 'sling:resourceType' property value)

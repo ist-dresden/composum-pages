@@ -31,6 +31,12 @@ public class AttributeSet implements Iterable<Map.Entry<String, Object>> {
         return builder.toString();
     }
 
+    public <T> T consumeAttribute(String key, Class<T> type) {
+        T value = getAttribute(key, type);
+        attributes.remove(key);
+        return value;
+    }
+
     public <T> T consumeAttribute(String key, T defaultValue) {
         T value = getAttribute(key, defaultValue);
         attributes.remove(key);

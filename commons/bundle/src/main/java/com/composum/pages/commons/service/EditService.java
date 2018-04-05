@@ -2,8 +2,6 @@ package com.composum.pages.commons.service;
 
 import com.composum.pages.commons.model.ElementTypeFilter;
 import com.composum.pages.commons.model.ResourceReference;
-import com.composum.sling.core.filter.ResourceFilter;
-import com.composum.sling.core.filter.StringFilter;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -71,36 +69,14 @@ public interface EditService {
     /**
      * Moves a resource and adopts all references to the moved resource or one of its children.
      *
-     * @param resolver   the resolver (session context)
-     * @param changeRoot the root element for reference search and change
-     * @param source     the resource to move
-     * @param target     the target (the parent resource) of the move
-     * @param before     the designated sibling in an ordered target collection
+     * @param resolver     the resolver (session context)
+     * @param changeRoot   the root element for reference search and change
+     * @param source       the resource to move
+     * @param targetParent the target (a reference to the parent resource) of the move
+     * @param before       the designated sibling in an ordered target collection
+     * @return the new resource at the target path
      */
-    void moveComponent(ResourceResolver resolver, Resource changeRoot,
-                       Resource source, ResourceReference target, Resource before)
+    Resource moveComponent(ResourceResolver resolver, Resource changeRoot,
+                           Resource source, ResourceReference targetParent, Resource before)
             throws RepositoryException, PersistenceException;
-
-    /**
-     * Changes the 'oldPath' references in each property of a tree to the 'newPath'.
-     *
-     * @param resourceFilter change all resources accepted by this filter, let all other resources unchanged
-     * @param propertyFilter change only the properties with names matching to this property name filter
-     * @param resource       the resource to change (recursive! - the root in the initial call)
-     * @param oldPath        the old path of a moved resource
-     * @param newPath        the new path of the resource
-     */
-    void changeReferences(ResourceFilter resourceFilter, StringFilter propertyFilter,
-                          Resource resource, String oldPath, String newPath);
-
-    /**
-     * Changes the 'oldTypePattern' resource types in every appropriate component using the 'newTypeRule'.
-     *
-     * @param resourceFilter change all resources accepted by this filter, let all other resources unchanged
-     * @param resource       the resource to change (recursive! - the root in the initial call)
-     * @param oldTypePattern the resource type pattern to change
-     * @param newTypeRule    the pattern matcher rule to build the new type
-     */
-    void changeResourceType(ResourceFilter resourceFilter,
-                            Resource resource, String oldTypePattern, String newTypeRule);
 }

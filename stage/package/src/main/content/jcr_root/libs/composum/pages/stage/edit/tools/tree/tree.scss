@@ -3,18 +3,77 @@
 @import "../../css/variables";
 @import "../../css/mixins";
 
-body.context-driven-view {
+$frame-tree-fg-color: #fff;
+$frame-tree-dnd-border: 1px dashed rgba(255, 255, 255, 0.7);
+
+.composum-pages-tools {
 
     .jstree {
+        color: $frame-tree-fg-color;
 
-        &-proton {
+        &-node,
+        &-anchor,
+        &-anchor:hover,
+        &-anchor:focus,
+        &-icon {
+            color: $frame-tree-fg-color;
+            text-decoration: none;
+            font-size: $default-font-size;
+        }
 
-            .jstree {
+        &-node,
+        &-node > .jstree-anchor {
+            @include default-font;
+        }
 
-                &-wholerow {
+        &-node.intermediate,
+        &-node.intermediate > .jstree-anchor {
+            font-family: 'robotolight_italic', sans-serif;
+        }
 
-                    &-clicked {
-                        @include secondary-selection-background();
+        &-wholerow {
+            height: 23px;
+            margin-top: 2px; /* important gap for */
+            margin-bottom: 2px; /* DnD reordering */
+        }
+
+        &-ocl {
+            margin: 1px 0;
+        }
+
+        &-anchor {
+            margin: 2px 0 3px;
+        }
+
+        &-themeicon {
+            margin: 0 4px 0 0;
+        }
+
+        &-dnd-parent {
+            border: $frame-tree-dnd-border;
+        }
+    }
+}
+
+/**
+ * in the 'context-driven' view mode the context panel is controlling the frame view
+ * - the context selection has to be highlighted and the tree selection must be 'muted'
+ */
+body.context-driven-view {
+
+    .composum-pages-tools {
+
+        .jstree {
+
+            &-proton {
+
+                .jstree {
+
+                    &-wholerow {
+
+                        &-clicked {
+                            @include secondary-selection-background();
+                        }
                     }
                 }
             }

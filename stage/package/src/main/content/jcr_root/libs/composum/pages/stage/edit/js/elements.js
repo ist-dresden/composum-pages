@@ -727,8 +727,8 @@
                             component.data.path,
                             component.data.type
                         ];
-                        console.log('elements.trigger.component:selected(' + component.data.path + ')');
-                        $(document).trigger('component:selected', eventData);
+                        console.log('elements.trigger.element:selected(' + component.data.path + ')');
+                        $(document).trigger('element:selected', eventData);
                     } else {
                         this.clearSelection();
                     }
@@ -742,8 +742,8 @@
                 if (elements.pageBody.selection.component) {
                     console.log('pages.elements.clearSelection(' + elements.pageBody.selection.component + ')');
                     elements.pageBody.selection.setComponent(undefined);
-                    console.log('elements.trigger.component:selected([])');
-                    $(document).trigger('component:selected', []);
+                    console.log('elements.trigger.element:selected([])');
+                    $(document).trigger('element:selected', []);
                 }
             },
 
@@ -761,8 +761,8 @@
                         }
                     }
                     if (!found) {
-                        console.log('elements.trigger.component:selected([])');
-                        $(document).trigger('component:selected', []);
+                        console.log('elements.trigger.element:selected([])');
+                        $(document).trigger('element:selected', []);
                     }
                 } else {
                     this.clearSelection();
@@ -793,7 +793,7 @@
                                     args.path,
                                     args.type
                                 ];
-                                console.log('elements.trigger.component:selected(' + args.path + ')');
+                                console.log('elements.trigger.element:selected(' + args.path + ')');
                                 $(document).trigger(elements.const.event.componentSelect, eventData);
                             } else {
                                 console.log('elements.trigger.' + elements.const.event.componentSelect + '([])');

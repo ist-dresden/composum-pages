@@ -3,12 +3,151 @@
         jcr:language="de"
         jcr:mixinTypes="[mix:language]"
         jcr:primaryType="sling:Folder"
-        sling:basename="composum-pages-stage">
+        sling:basename="composum-pages">
 
-    <!--
-      - stage dialogs...
-    -->
-    <file-upload-name-hint jcr:primaryType="sling:MessageEntry"
-            sling:key="add a name if the file name is not the right choice" sling:message="der Name, falls der Dateiname nicht genutzt werden soll"/>
+    <frame jcr:primaryType="sling:Folder"><!-- Stage frame -->
+
+        <browser-preview jcr:primaryType="sling:MessageEntry"
+                sling:key="Use Browse Mode" sling:message="Vorschau mit Browser"/>
+        <preview-mode jcr:primaryType="sling:MessageEntry"
+                sling:key="Preview Mode" sling:message="Vorschaumodus"/>
+        <toggle-favorite jcr:primaryType="sling:MessageEntry"
+                sling:key="Toggle Favorite" sling:message="Favorit-Markierung ändern"/>
+        <toolbar-handle jcr:primaryType="sling:MessageEntry"
+                sling:key="Toolbar Handle" sling:message="Toolbar positionieren"/>
+    </frame>
+
+    <site jcr:primaryType="sling:Folder"><!-- Site actions -->
+
+        <copy-site jcr:primaryType="sling:MessageEntry"
+                sling:key="Copy Site"
+                sling:message="Website Kopieren"/>
+        <create-new-site jcr:primaryType="sling:MessageEntry"
+                sling:key="Create a new Site" sling:message="Eine neue Website anlegen"/>
+        <create-site jcr:primaryType="sling:MessageEntry"
+                sling:key="Create Site" sling:message="Website Erzeugen"/>
+        <delete-site jcr:primaryType="sling:MessageEntry"
+                sling:key="Delete Site" sling:message="Website Löschen"/>
+        <delete-site-question jcr:primaryType="sling:MessageEntry"
+                sling:key="Do you really want to delete the entire site?"
+                sling:message="Wollen Sie wirklich die komplette Website löschen?"/>
+        <delete-site-selected jcr:primaryType="sling:MessageEntry"
+                sling:key="Delete the selected site" sling:message="Die ausgewählte Website löschen"/>
+        <edit-site-properties jcr:primaryType="sling:MessageEntry"
+                sling:key="Edit Site Properties" sling:message="Site-Einstellungen bearbeiten"/>
+        <paste-into-site jcr:primaryType="sling:MessageEntry"
+                sling:key="Paste into Site" sling:message="In Site Einfügen"/>
+        <public-policy jcr:primaryType="sling:MessageEntry"
+                sling:key="Publish Policy" sling:message="Publikationsregel"/>
+        <site-name jcr:primaryType="sling:MessageEntry"
+                sling:key="Site Name" sling:message="Site-Name"/>
+        <site-properties jcr:primaryType="sling:MessageEntry"
+                sling:key="Site Properties" sling:message="Site-Einstellungen"/>
+        <site-title jcr:primaryType="sling:MessageEntry"
+                sling:key="Site Title" sling:message="Site-Titel"/>
+    </site>
+
+    <page jcr:primaryType="sling:Folder"><!-- Page operations -->
+
+        <create-page jcr:primaryType="sling:MessageEntry"
+                sling:key="Create a new page" sling:message="Eine neue Seite anlegen"/>
+        <delete-page jcr:primaryType="sling:MessageEntry"
+                sling:key="Delete the selected page" sling:message="Die ausgewählte Seite löschen"/>
+        <edit-page-properties jcr:primaryType="sling:MessageEntry"
+                sling:key="Edit Page Properties" sling:message="Seiteneigenschaften bearbeiten"/>
+        <insert-page jcr:primaryType="sling:MessageEntry"
+                sling:key="Insert a new Page" sling:message="Eine neue Seite einfügen"/>
+        <page-properties jcr:primaryType="sling:MessageEntry"
+                sling:key="Page Properties" sling:message="Seiteneigenschaften"/>
+        <page-template jcr:primaryType="sling:MessageEntry"
+                sling:key="Page Template" sling:message="Seitenvorlage"/>
+        <select-page-template jcr:primaryType="sling:MessageEntry"
+                sling:key="select a template or type" sling:message="eine Vorlage oder den Typ auswählen"/>
+    </page>
+
+    <content jcr:primaryType="sling:Folder"><!-- Content operations -->
+
+        <from jcr:primaryType="sling:MessageEntry"
+                sling:key="From" sling:message="Von"/>
+        <insert-folder jcr:primaryType="sling:MessageEntry"
+                sling:key="Insert a new Folder" sling:message="Eine neues Verzeichnis einfügen"/>
+        <insert-file jcr:primaryType="sling:MessageEntry"
+                sling:key="Insert a new File" sling:message="Eine neue Datei einfügen"/>
+        <move jcr:primaryType="sling:MessageEntry"
+                sling:key="Move" sling:message="Verschieben"/>
+        <move-content jcr:primaryType="sling:MessageEntry"
+                sling:key="Move Content" sling:message="Inhalt Verschieben"/>
+        <orderable jcr:primaryType="sling:MessageEntry"
+                sling:key="arrange manually" sling:message="manuell anordnen"/>
+        <orderable-folder-hint jcr:primaryType="sling:MessageEntry"
+                sling:key="manual sorted folder ?" sling:message="manuelle Sortierung ?"/>
+        <order-before jcr:primaryType="sling:MessageEntry"
+                sling:key="Order Before" sling:message="Anordnen vor"/>
+        <or__ jcr:primaryType="sling:MessageEntry"
+                sling:key="or ..." sling:message="oder ..."/>
+        <rename-content jcr:primaryType="sling:MessageEntry"
+                sling:key="Rename Content" sling:message="Inhalt Umbenenen"/>
+        <new-name jcr:primaryType="sling:MessageEntry"
+                sling:key="New Name" sling:message="Neuer Name"/>
+        <to jcr:primaryType="sling:MessageEntry"
+                sling:key="To" sling:message="Nach"/>
+    </content>
+
+    <element jcr:primaryType="sling:Folder"><!-- Element operations -->
+
+        <delete-element jcr:primaryType="sling:MessageEntry"
+                sling:key="Delete Element" sling:message="Element Löschen"/>
+        <delete-question jcr:primaryType="sling:MessageEntry"
+                sling:key="Do you really want to delete the selected element?"
+                sling:message="Wollen Sie das markierte Element wirklich löschen?"/>
+        <delete-selected-element jcr:primaryType="sling:MessageEntry"
+                sling:key="Delete the selected Element" sling:message="Das ausgewählte Element löschen"/>
+        <edit-mode jcr:primaryType="sling:MessageEntry"
+                sling:key="Edit Mode" sling:message="Bearbeitungsmodus"/>
+        <edit-selected-element jcr:primaryType="sling:MessageEntry"
+                sling:key="Edit the selected Element" sling:message="Das ausgewählte Element bearbeiten"/>
+        <insert-element jcr:primaryType="sling:MessageEntry"
+                sling:key="Insert Element" sling:message="Element hinzufügen"/>
+        <insert-new-element jcr:primaryType="sling:MessageEntry"
+                sling:key="Insert a new Element" sling:message="Ein neues Element hinzufügen"/>
+        <new-element jcr:primaryType="sling:MessageEntry"
+                sling:key="Add a new Element" sling:message="Neues Element hinzufügen"/>
+        <pure-preview jcr:primaryType="sling:MessageEntry"
+                sling:key="Pure Preview Mode" sling:message="Einfache Vorschau"/>
+        <select-type jcr:primaryType="sling:MessageEntry"
+                sling:key="Select the element type" sling:message="Auswahl des Element-Typs"/>
+    </element>
+
+    <dialog jcr:primaryType="sling:Folder"><!-- Stage Dialogs -->
+
+        <cancel jcr:primaryType="sling:MessageEntry"
+                sling:key="Cancel" sling:message="Abbrechen"/>
+        <copy jcr:primaryType="sling:MessageEntry"
+                sling:key="Copy" sling:message="Kopieren"/>
+        <delete jcr:primaryType="sling:MessageEntry"
+                sling:key="Delete" sling:message="Löschen"/>
+        <file-upload-name-hint jcr:primaryType="sling:MessageEntry"
+                sling:key="add a name if the file name is not the right choice"
+                sling:message="der Name, falls der Dateiname nicht genutzt werden soll"/>
+        <move jcr:primaryType="sling:MessageEntry"
+                sling:key="Move" sling:message="Verschieben"/>
+        <paste jcr:primaryType="sling:MessageEntry"
+                sling:key="Paste" sling:message="Einfügen"/>
+        <remove jcr:primaryType="sling:MessageEntry"
+                sling:key="Remove" sling:message="Entfernen"/>
+        <rename jcr:primaryType="sling:MessageEntry"
+                sling:key="Rename" sling:message="Umbenennen"/>
+        <select jcr:primaryType="sling:MessageEntry"
+                sling:key="Select" sling:message="Auswählen"/>
+        <select-in-tree jcr:primaryType="sling:MessageEntry"
+                sling:key="Select in Tree"
+                sling:message="Im Baum Auswählen"/>
+        <select-repository-path jcr:primaryType="sling:MessageEntry"
+                sling:key="Select Repository Path"
+                sling:message="Repository-Pfad Auswählen"/>
+        <selected-path jcr:primaryType="sling:MessageEntry"
+                sling:key="Selected Path"
+                sling:message="Gewählter Pfad"/>
+    </dialog>
 
 </jcr:root>

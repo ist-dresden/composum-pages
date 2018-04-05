@@ -3,7 +3,8 @@
         jcr:primaryType="sling:OrderedFolder"
         embed="[category:composum.components.widgets,
                 composum/pages/commons/css/widgets.css,
-                composum/pages/commons/widget/codearea/clientlib,
-                composum/pages/commons/widget/radiolist/clientlib,
-                composum/pages/commons/widget/slider/clientlib]">
+                composum/pages/commons/widget/checkbox/css/checkbox.css,
+                composum/pages/commons/widget/codearea/css/codearea.css,
+                composum/pages/commons/widget/radiolist/css/radiolist.css,
+                composum/pages/commons/widget/slider/css/slider.css]">
 </jcr:root>

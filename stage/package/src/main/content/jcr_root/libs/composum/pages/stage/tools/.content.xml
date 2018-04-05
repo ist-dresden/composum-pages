@@ -5,7 +5,7 @@
     <userView
             jcr:primaryType="nt:unstructured"
             sling:resourceType="composum/pages/stage/edit/tools/main/user"
-            categories="[navigation,browse,edit,develop]"
+            _categories="[navigation,browse,edit,develop]"
             iconClass="user"
             hint="Users Things"
             title="User"
@@ -85,7 +85,7 @@
     <pageComments
             jcr:primaryType="nt:unstructured"
             sling:resourceType="composum/pages/stage/edit/tools/page/comments"
-            categories="[context,edit,develop,page]"
+            _categories="[context,edit,develop,page]"
             iconClass="commenting-o"
             hint="Comments"
             title="Comments"

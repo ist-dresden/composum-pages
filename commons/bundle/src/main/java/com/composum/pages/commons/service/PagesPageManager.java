@@ -17,6 +17,7 @@ import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -33,7 +34,7 @@ import static com.composum.pages.commons.model.Page.isPage;
                 Constants.SERVICE_DESCRIPTION + "=Composum Pages Page Manager"
         }
 )
-public class PagesPageManager extends PagesResourceManager<Page> implements PageManager {
+public class PagesPageManager extends PagesContentManager<Page> implements PageManager {
 
     public static final Map<String, Object> PAGE_PROPERTIES;
     public static final Map<String, Object> PAGE_CONTENT_PROPERTIES;
@@ -44,6 +45,9 @@ public class PagesPageManager extends PagesResourceManager<Page> implements Page
         PAGE_CONTENT_PROPERTIES = new HashMap<>();
         PAGE_CONTENT_PROPERTIES.put(JcrConstants.JCR_PRIMARYTYPE, PagesConstants.NODE_TYPE_PAGE_CONTENT);
     }
+
+    @Reference
+    protected ResourceManager resourceManager;
 
     @Override
     public Page createBean(BeanContext context, Resource resource) {
@@ -141,7 +145,7 @@ public class PagesPageManager extends PagesResourceManager<Page> implements Page
         checkExistence(resolver, parent, pageName);
         final SiteManager siteManager = context.getService(SiteManager.class);
 
-        pageResource = createFromTemplate(new TemplateContext() {
+        pageResource = resourceManager.createFromTemplate(new ResourceManager.TemplateContext() {
 
             @Override
             public ResourceResolver getResolver() {
@@ -161,7 +165,7 @@ public class PagesPageManager extends PagesResourceManager<Page> implements Page
                 return result;
             }
 
-        }, parent, pageName, pageTemplate);
+        }, parent, pageName, pageTemplate, true);
 
         ModifiableValueMap values = pageResource.getChild(JcrConstants.JCR_CONTENT).adaptTo(ModifiableValueMap.class);
         if (StringUtils.isNotBlank(pageTitle)) {

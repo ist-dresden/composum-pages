@@ -24,7 +24,7 @@
             event: {
                 messagePattern: new RegExp('^([^\\{\\[]+)([\\{\\[].*[\\}\\]])$'),
                 pageContainerRefs: 'page:containerRefs',
-                componentSelected: 'component:selected',
+                componentSelected: 'element:selected',
                 pathSelected: 'path:selected',
                 insertComponent: 'component:insert',
                 moveComponent: 'component:move',
@@ -47,6 +47,12 @@
             login: {
                 id: 'composum-platform-commons-login-dialog',
                 url: '/libs/composum/platform/security/login/dialog.html'
+            },
+            clipboard: {
+                store: {
+                    content: 'content',
+                    element: 'element'
+                }
             }
         });
 
@@ -299,6 +305,50 @@
                 }
             }
         }, false);
+
+        //
+        // clipboard operations
+        //
+
+        /**
+         * stored the path in the profile for a later 'paste' which will copy the content of the stored path
+         */
+        pages.clipboardCopyContent = function (path) {
+            if (!path) {
+                path = this.getCurrentPath();
+            }
+            pages.profile.set('pages', 'contentClipboard', {
+                path: path
+            });
+        };
+
+        /**
+         * copy path from clipboard to the target path, open copy dialog if an error is occurring
+         * @param path the target path for the copy operation
+         */
+        pages.clipboardPasteContent = function (path) {
+            var clipboard = pages.profile.get('pages', 'contentClipboard');
+            if (path && clipboard && clipboard.path) {
+                var name = core.getNameFromPath(clipboard.path);
+                // copy to the target with the same name
+                core.ajaxPost("/bin/cpm/pages/edit.copyContent.json" + clipboard.path, {
+                    targetPath: path,
+                    name: name
+                }, {}, _.bind(function (result) {
+                    // trigger content change
+                    $(document).trigger('content:inserted', [path, name]);
+                }, this), _.bind(function (result) {
+                    // on error - display copy dialog initialized with the known data
+                    var data = result.responseJSON;
+                    pages.dialogs.openCopyContentDialog(undefined, clipboard.path, undefined,
+                        _.bind(function (dialog) {
+                            dialog.setValues(clipboard.path, path);
+                            dialog.validationHint('danger', dialog.toLabel, data.messages[0].text, data.messages[0].hint);
+                            dialog.hintsMessage('error');
+                        }, this));
+                }, this));
+            }
+        };
 
         //
         // login dialog and session expired (unauthorized) fallback

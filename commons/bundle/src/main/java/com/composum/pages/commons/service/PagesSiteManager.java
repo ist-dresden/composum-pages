@@ -32,7 +32,7 @@ import static com.composum.pages.commons.PagesConstants.NODE_TYPE_SITE;
                 Constants.SERVICE_DESCRIPTION + "=Composum Pages Site Manager"
         }
 )
-public class PagesSiteManager extends PagesResourceManager<Site> implements SiteManager {
+public class PagesSiteManager extends PagesContentManager<Site> implements SiteManager {
 
     public static final String SITE_RESOURCE_TYPE = "composum/pages/stage/edit/site";
 
@@ -52,6 +52,9 @@ public class PagesSiteManager extends PagesResourceManager<Site> implements Site
         SITE_ASSETS_PROPERTIES = new HashMap<>();
         SITE_ASSETS_PROPERTIES.put(JcrConstants.JCR_PRIMARYTYPE, "sling:Folder");
     }
+
+    @Reference
+    protected ResourceManager resourceManager;
 
     @Reference
     protected PageManager pageManager;
@@ -192,7 +195,7 @@ public class PagesSiteManager extends PagesResourceManager<Site> implements Site
         checkExistence(resolver, siteBase, siteName);
 
         if (siteTemplate != null) {
-            siteResource = createFromTemplate(new TemplateContext() {
+            siteResource = resourceManager.createFromTemplate(new ResourceManager.TemplateContext() {
 
                 @Override
                 public ResourceResolver getResolver() {
@@ -211,7 +214,7 @@ public class PagesSiteManager extends PagesResourceManager<Site> implements Site
                     return result;
                 }
 
-            }, siteBase, siteName, siteTemplate);
+            }, siteBase, siteName, siteTemplate, true);
         } else {
             Site site = createSite(context, siteBase, siteName, null, commit);
             siteResource = site.getResource();

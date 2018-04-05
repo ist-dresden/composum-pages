@@ -4,5 +4,9 @@
 <cpp:editDialog var="dlgPage" type="com.composum.pages.commons.model.Page" selector="delete" languageContext="false"
                 title="Delete Page" successEvent="content:deleted"
                 alert-danger="Do you really want to delete the seleted page?">
-    <cpp:include resource="${dlgPage.resource}" subtype="edit/tile" replaceSelectors="wide"/>
+    <div class="panel panel-info tile-panel">
+        <div class="panel-body">
+            <cpp:include resource="${dlgPage.resource}" subtype="edit/tile" replaceSelectors="wide"/>
+        </div>
+    </div>
 </cpp:editDialog>

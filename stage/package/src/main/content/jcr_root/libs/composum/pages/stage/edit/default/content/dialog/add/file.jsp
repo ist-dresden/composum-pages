@@ -31,8 +31,8 @@
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <cpp:defineFrameObjects/>
 <cpp:editDialog var="model" type="com.composum.pages.commons.model.GenericModel" languageContext="false"
-                title="Insert a new File" selector="generic" submitLabel="Upload" submit="@{model.path}"
-                successEvent="content:inserted">
+                title="Insert a new File" selector="generic" resourcePath="*"
+                submitLabel="Upload" submit="@{model.path}" successEvent="content:inserted">
     <cpp:widget type="hidden" name="*@TypeHint" value="nt:file"/>
     <%-- the name is replaced by the mangeled file or name input field value --%>
     <cpp:widget label="File" name="*" type="fileupload" rules="mandatory"/>

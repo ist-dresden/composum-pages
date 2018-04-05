@@ -251,7 +251,7 @@ public class EditWidgetTag extends AbstractWidgetTag implements LoopTag {
     }
 
     @Override
-    protected void renderTagStart() throws JspException, IOException {
+    protected void renderTagStart() throws IOException {
         if (multi) {
             includeSnippet(getMultiResourceType(), "multiwidget-simple");
         }

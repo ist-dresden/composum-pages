@@ -110,7 +110,7 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
     }
 
     public boolean isTemplate() {
-        return getPageManager().isTemplate(this);
+        return getResourceManager().isTemplate(this.getResource());
     }
 
     /**

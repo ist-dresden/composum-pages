@@ -16,7 +16,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.regex.Pattern;
 
-public interface PageManager extends ResourceManager<Page> {
+public interface PageManager extends ContentManager<Page> {
 
     /**
      * A list of Pages with unique names to collect all templates available in the resolvers search paths.

@@ -5,7 +5,7 @@
 <cpp:editDialog var="pageProps" type="com.composum.pages.commons.model.Page"
                 title="Single Page Properties">
     <sling:call script="general.jsp"/>
-    <cpp:widget label="Logo Link" property="logoLink" type="link"/>
+    <cpp:widget label="Logo Link" property="logoLink" type="linkfield"/>
     <sling:call script="logo.jsp"/>
     <sling:call script="navigation.jsp"/>
 </cpp:editDialog>

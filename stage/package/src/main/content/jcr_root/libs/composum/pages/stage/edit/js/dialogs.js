@@ -11,6 +11,9 @@
                 url: {
                     base: '/bin/cpm/pages/edit',
                     path: '/libs/composum/pages/stage/edit/default',
+                    _edit: {
+                        _folder: '/folder/dialog.html'
+                    },
                     _add: {
                         path: '/content/dialog/add',
                         _page: '.page.html',
@@ -22,6 +25,20 @@
                         _page: '.page.html',
                         _folder: '.folder.html',
                         _file: '.file.html'
+                    },
+                    _move: {
+                        dialog: '/content/dialog/move.html',
+                        check: '/bin/cpm/pages/edit.isAllowedChild.json',
+                        action: '/bin/cpm/pages/edit.moveContent.json'
+                    },
+                    _copy: {
+                        dialog: '/content/dialog/copy.html',
+                        check: '/bin/cpm/pages/edit.isAllowedChild.json',
+                        action: '/bin/cpm/pages/edit.copyContent.json'
+                    },
+                    _rename: {
+                        dialog: '/content/dialog/rename.html',
+                        action: '/bin/cpm/pages/edit.renameContent.json'
                     },
                     _create: {
                         page: '.createPage.json'
@@ -64,6 +81,7 @@
             initialize: function (options) {
                 core.components.Dialog.prototype.initialize.apply(this, [options]);
                 this.form = core.getWidget(this.el, "form", core.components.FormWidget);
+                this.validationHints = [];
                 this.initView();
                 this.initSubmit();
                 this.$el.on('hidden.bs.modal', _.bind(this.onClose, this));
@@ -98,9 +116,34 @@
                 }
             },
 
+            hintsMessage: function (level) {
+                this.messages(level ? level : 'warning', this.validationHints.length < 1
+                    ? 'validation error' : undefined, this.validationHints);
+            },
+
             validationHint: function (type, label, message, hint) {
                 if (message) {
                     this.validationHints.push({level: type, label: label, text: message, hint: hint});
+                }
+            },
+
+            validateForm: function () {
+                this.validationReset();
+                return this.form.validate(_.bind(function (type, label, message, hint) {
+                    this.validationHint(type, label, message, hint)
+                }, this));
+            },
+
+            /**
+             * the validation strategy with support for an asynchronous validation call
+             * @param onSuccess called after successful validation
+             * @param onError called if a validation fault registered
+             */
+            doValidate: function (onSuccess, onError) {
+                if (this.validateForm()) {
+                    onSuccess();
+                } else {
+                    onError();
                 }
             },
 
@@ -112,16 +155,13 @@
                     event.preventDefault();
                 }
                 this.form.prepare();
-                this.validationReset();
-                if (this.form.validate(_.bind(function (type, label, message, hint) {
-                        this.validationHint(type, label, message, hint)
-                    }, this))) {
+                this.doValidate(_.bind(function () {
                     this.doSubmit();
-                } else {
+                }, this), _.bind(function () {
                     this.messages('warning', this.validationHints.length < 1 ? 'validation error' : undefined,
                         this.validationHints);
                     this.onValidationFault();
-                }
+                }, this));
                 return false;
             },
 
@@ -386,8 +426,8 @@
                 dialogs.EditDialog.prototype.initView.apply(this);
                 this.pageTemplate = core.getWidget(this.el, '.widget-name_template', pages.widgets.PageTemplateWidget);
                 this.pageName = core.getWidget(this.el, '.widget-name_name', core.components.TextFieldWidget);
-                this.pageTitle = core.getWidget(this.el, '.widget-name_title', core.components.TextFieldWidget);
-                this.description = core.getWidget(this.el, '.widget-name_description', core.components.TextFieldWidget);
+                this.pageTitle = core.getWidget(this.el, '.widget-name_jcr_title', core.components.TextFieldWidget);
+                this.description = core.getWidget(this.el, '.widget-name_jcr_description', core.components.TextFieldWidget);
             },
 
             getDefaultSuccessEvents: function () {
@@ -516,6 +556,134 @@
             var c = dialogs.const.edit.url;
             pages.dialogHandler.openEditDialog(c.path + c._remove.path + c._remove['_' + contentType],
                 dialogs.DeleteContentDialog, name, path, type);
+        };
+
+        /**
+         * the dialog to move a content element to a new parent path
+         */
+        dialogs.MoveContentDialog = dialogs.EditDialog.extend({
+
+            initView: function () {
+                dialogs.EditDialog.prototype.initView.apply(this);
+                this.$path = this.$('.widget-name_path');
+                this.toLabel = this.$('.composum-pages-edit-widget_newPath .label-text').text();
+                this.oldPath = core.getWidget(this.el, '.widget-name_oldPath', core.components.PathWidget);
+                this.newPath = core.getWidget(this.el, '.widget-name_newPath', core.components.PathWidget);
+                this.name = core.getWidget(this.el, '.widget-name_name', core.components.TextFieldWidget);
+                this.before = core.getWidget(this.el, '.widget-name_before', core.components.TextFieldWidget);
+                this.index = core.getWidget(this.el, '.widget-name_index', core.components.NumberFieldWidget);
+            },
+
+            getConfig: function () {
+                return dialogs.const.edit.url._move;
+            },
+
+            setValues: function (sourcePath, targetPath, beforeName) {
+                var parentAndName = core.getParentAndName(sourcePath);
+                this.oldPath.setValue(parentAndName.path);
+                this.name.setValue(parentAndName.name);
+                this.newPath.setValue(targetPath);
+                this.before.setValue(beforeName);
+                this.index.setValue(undefined);
+            },
+
+            /**
+             * the validation strategy with support for an asynchronous validation call
+             * @param onSuccess called after successful validation
+             * @param onError called if a validation fault registered
+             */
+            doValidate: function (onSuccess, onError) {
+                if (this.validateForm()) {
+                    var config = this.getConfig();
+                    core.ajaxGet(config.check + core.encodePath(this.$path.val()), {
+                        data: {
+                            path: this.newPath.getValue()
+                        }
+                    }, _.bind(function (data) {
+                        if (data.isAllowed) {
+                            onSuccess();
+                        } else {
+                            this.validationHint('danger', this.toLabel, data.messages[0].text, data.messages[0].hint);
+                            onError();
+                        }
+                    }, this), _.bind(function (result) {
+                        this.validationHint('danger', this.toLabel, 'Error on validation', result.responseText);
+                        onError();
+                    }, this));
+                } else {
+                    onError();
+                }
+            },
+
+            doSubmit: function () {
+                var config = this.getConfig();
+                var oldPath = this.$path.val();
+                core.ajaxPost(config.action + core.encodePath(oldPath), {
+                    targetPath: this.newPath.getValue(),
+                    name: this.name.getValue(),
+                    before: this.before.getValue(),
+                    index: this.index.getValue()
+                }, {}, _.bind(function (data) {
+                    $(document).trigger('content:moved', [oldPath, data.path]);
+                    this.hide();
+                }, this));
+            }
+        });
+
+        dialogs.openMoveContentDialog = function (name, path, type, setupDialog) {
+            var c = dialogs.const.edit.url;
+            pages.dialogHandler.openEditDialog(c.path + c._move.dialog,
+                dialogs.MoveContentDialog, name, path, type, setupDialog);
+        };
+
+        /**
+         * the dialog to rename a content element
+         */
+        dialogs.RenameContentDialog = dialogs.EditDialog.extend({
+
+            initView: function () {
+                dialogs.EditDialog.prototype.initView.apply(this);
+                this.$path = this.$('.widget-name_path');
+                this.name = core.getWidget(this.el, '.widget-name_name', core.components.TextFieldWidget);
+            },
+
+            setValues: function (pathToRename, newName) {
+                this.$path.val(pathToRename);
+                this.name.setValue(newName);
+            },
+
+            doSubmit: function () {
+                var c = dialogs.const.edit.url;
+                var oldPath = this.$path.val();
+                core.ajaxPost(c._rename.action + core.encodePath(oldPath), {
+                    name: this.name.getValue()
+                }, {}, _.bind(function (data) {
+                    $(document).trigger('content:moved', [oldPath, data.path]);
+                    this.hide();
+                }, this));
+            }
+        });
+
+        dialogs.openRenameContentDialog = function (name, path, type, setupDialog) {
+            var c = dialogs.const.edit.url;
+            pages.dialogHandler.openEditDialog(c.path + c._rename.dialog,
+                dialogs.RenameContentDialog, name, path, type, setupDialog);
+        };
+
+        /**
+         * the dialog to move a content element to a new parent path
+         */
+        dialogs.CopyContentDialog = dialogs.MoveContentDialog.extend({
+
+            getConfig: function () {
+                return dialogs.const.edit.url._copy;
+            }
+        });
+
+        dialogs.openCopyContentDialog = function (name, path, type, setupDialog) {
+            var c = dialogs.const.edit.url;
+            pages.dialogHandler.openEditDialog(c.path + c._copy.dialog,
+                dialogs.CopyContentDialog, name, path, type, setupDialog);
         };
 
         //
