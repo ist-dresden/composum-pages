@@ -15,7 +15,6 @@ public class CodeBlock extends Element {
 
     public static final String PN_CODE = "code";
     public static final String PN_CODE_REF = "codeRef";
-    public static final String PN_CODE_URL = "codeUrl";
     public static final String CODE_ENCODING = "UTF-8";
 
     public static final String PN_BORDERED = "bordered";
@@ -156,8 +155,7 @@ public class CodeBlock extends Element {
                 String codeRef = getProperty(PN_CODE_REF, "");
                 code = service.getReferencedContent(resolver, codeRef);
                 if (StringUtils.isBlank(code)) {
-                    String codeUrl = getProperty(PN_CODE_URL, "");
-                    code = service.getRenderedContent(context.getRequest(), codeUrl, false);
+                    code = service.getRenderedContent(context.getRequest(), codeRef, false);
                 }
             }
         }

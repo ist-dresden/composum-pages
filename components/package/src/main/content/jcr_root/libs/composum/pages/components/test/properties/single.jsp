@@ -44,6 +44,7 @@
                 </tr>
                 </tbody>
             </table>
+            <cpp:include path="template" resourceType="composum/pages/components/element/codeblock"/>
         </div>
     </div>
 </cpp:element>
