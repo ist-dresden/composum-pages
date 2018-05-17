@@ -1,25 +1,41 @@
 package com.composum.pages.components.model.text;
 
+import com.composum.pages.commons.model.Container;
 import com.composum.pages.commons.model.Element;
+import com.composum.pages.commons.model.Page;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
 
 public class Text extends Element {
 
-    private transient String title;
+    private transient Integer titleLevel;
     private transient String text;
 
     public boolean isValid() {
         return StringUtils.isNotBlank(getTitle()) || StringUtils.isNotBlank(getText());
     }
 
-    public String getTitle() {
-        if (title == null) {
-            title = getProperty("title", "");
-            if (StringUtils.isBlank(title)) {
-                title = getProperty("jcr:title", getLocale(), title);
+    public int getTitleLevel() {
+        if (titleLevel == null) {
+            titleLevel = getProperty("titleLevel", Integer.class);
+            if (titleLevel == null) {
+                titleLevel = Text.getTitleLevel(getResource());
             }
         }
-        return title;
+        return titleLevel;
+    }
+
+    public static int getTitleLevel(Resource element) {
+        int titleLevel = 2;
+        ResourceResolver resolver = element.getResourceResolver();
+        while (titleLevel < 5 && !Page.isPage(element)) {
+            if (Container.isContainer(resolver, element, null)) {
+                titleLevel++;
+            }
+            element = element.getParent();
+        }
+        return titleLevel < 3 ? 3 : titleLevel;
     }
 
     public String getText() {

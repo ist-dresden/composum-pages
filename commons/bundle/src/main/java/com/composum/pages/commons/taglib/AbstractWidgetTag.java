@@ -142,7 +142,7 @@ public abstract class AbstractWidgetTag extends AbstractWrappingTag {
         return name;
     }
 
-    protected EditDialogTag getDialog() {
+    public EditDialogTag getDialog() {
         return (EditDialogTag) pageContext.findAttribute(EditDialogTag.DIALOG_VAR);
     }
 

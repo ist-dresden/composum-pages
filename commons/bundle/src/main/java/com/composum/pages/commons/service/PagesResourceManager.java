@@ -298,7 +298,10 @@ public class PagesResourceManager implements ResourceManager {
     // templates and copies
     //
 
-    public class NopTemplateContext implements TemplateContext {
+    /**
+     * the 'transform nothing' context used in case of a copy operation
+     */
+    public static class NopTemplateContext implements TemplateContext {
 
         protected final ResourceResolver resolver;
 
@@ -345,7 +348,7 @@ public class PagesResourceManager implements ResourceManager {
             Resource targetContent = resolver.create(target, JcrConstants.JCR_CONTENT, Collections.singletonMap(
                     JcrConstants.JCR_PRIMARYTYPE, (Object) primaryContentType));
             ModifiableValueMap targetValues = targetContent.adaptTo(ModifiableValueMap.class);
-            applyContentTemplate(templateContext, templateContent, targetContent, false);
+            applyContentTemplate(templateContext, templateContent, targetContent, false, false);
         } else {
             applyTemplateProperties(templateContext, template, target, false);
         }
@@ -375,6 +378,30 @@ public class PagesResourceManager implements ResourceManager {
         }
         return false;
     }
+
+    /**
+     * the node filter to prevent from copying template rules to content targets
+     */
+    public static class TemplateCopyFilter implements ResourceFilter {
+
+        @Override
+        public boolean accept(Resource resource) {
+            String name = resource.getName();
+            return !"cpp:design".equals(name);
+        }
+
+        @Override
+        public boolean isRestriction() {
+            return true;
+        }
+
+        @Override
+        public void toString(StringBuilder builder) {
+            builder.append(getClass().getSimpleName());
+        }
+    }
+
+    public static final ResourceFilter TEMPLATE_COPY_FILTER = new TemplateCopyFilter();
 
     /**
      * Creates a new resource as a copy of a template. If content nodes of such a template are referencing
@@ -422,7 +449,7 @@ public class PagesResourceManager implements ResourceManager {
             Resource targetContent = resolver.create(target, JcrConstants.JCR_CONTENT, Collections.singletonMap(
                     JcrConstants.JCR_PRIMARYTYPE, (Object) primaryContentType));
             ModifiableValueMap targetValues = targetContent.adaptTo(ModifiableValueMap.class);
-            applyContentTemplate(context, templateContent, targetContent, false);
+            applyContentTemplate(context, templateContent, targetContent, false, true);
 
             // prevent from unwanted properties in raw node types...
             if (setTemplateProperty && !primaryContentType.startsWith("nt:")) {
@@ -438,16 +465,17 @@ public class PagesResourceManager implements ResourceManager {
             // create a full structure copy of the referenced template
             for (Resource child : template.getChildren()) {
                 String childName = child.getName();
-                if (!JcrConstants.JCR_CONTENT.equals(childName)) {
-                    createFromTemplate(context, target, childName, child, setTemplateProperty);
+                if (!JcrConstants.JCR_CONTENT.equals(childName) && TEMPLATE_COPY_FILTER.accept(child)) {
+                    createFromTemplate(context, target, child.getName(), child, setTemplateProperty);
                 }
             }
         }
         // create a full structure copy of the template
         for (Resource child : template.getChildren()) {
             String childName = child.getName();
-            // maybe the child is always created by the referenced template
-            if (!JcrConstants.JCR_CONTENT.equals(childName) && target.getChild(childName) == null) {
+            if (!JcrConstants.JCR_CONTENT.equals(childName) && TEMPLATE_COPY_FILTER.accept(child)
+                    // maybe the child is always created by the referenced template
+                    && target.getChild(childName) == null) {
                 createFromTemplate(context, target, childName, child, setTemplateProperty);
             }
         }
@@ -464,7 +492,7 @@ public class PagesResourceManager implements ResourceManager {
      * @throws PersistenceException if an error is occurring
      */
     protected void applyContentTemplate(@Nonnull TemplateContext context, @Nonnull Resource template,
-                                        @Nonnull Resource target, boolean merge)
+                                        @Nonnull Resource target, boolean merge, boolean filter)
             throws PersistenceException {
         ResourceResolver resolver = context.getResolver();
         if (!merge) {
@@ -476,17 +504,19 @@ public class PagesResourceManager implements ResourceManager {
         applyTemplateProperties(context, template, target, merge);
         for (Resource child : template.getChildren()) {
             // apply the template recursive...
-            String name = child.getName();
-            Resource targetChild = null;
-            if (merge) {
-                targetChild = target.getChild(name);
+            if (!filter || TEMPLATE_COPY_FILTER.accept(child)) {
+                String name = child.getName();
+                Resource targetChild = null;
+                if (merge) {
+                    targetChild = target.getChild(name);
+                }
+                if (targetChild == null) {
+                    ValueMap childValues = child.getValueMap();
+                    targetChild = resolver.create(target, name, Collections.singletonMap(
+                            JcrConstants.JCR_PRIMARYTYPE, childValues.get(JcrConstants.JCR_PRIMARYTYPE)));
+                }
+                applyContentTemplate(context, child, targetChild, merge, filter);
             }
-            if (targetChild == null) {
-                ValueMap childValues = child.getValueMap();
-                targetChild = resolver.create(target, name, Collections.singletonMap(
-                        JcrConstants.JCR_PRIMARYTYPE, childValues.get(JcrConstants.JCR_PRIMARYTYPE)));
-            }
-            applyContentTemplate(context, child, targetChild, merge);
         }
     }
 
