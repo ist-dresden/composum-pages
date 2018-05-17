@@ -343,7 +343,11 @@
                     pages.dialogs.openCopyContentDialog(undefined, clipboard.path, undefined,
                         _.bind(function (dialog) {
                             dialog.setValues(clipboard.path, path);
-                            dialog.validationHint('danger', dialog.toLabel, data.messages[0].text, data.messages[0].hint);
+                            if (data.messages) {
+                                dialog.validationHint(data.messages[0].level, null, data.messages[0].text, data.messages[0].hint);
+                            } else if (data.response) {
+                                dialog.validationHint(data.response.level, null, data.response.text);
+                            }
                             dialog.hintsMessage('error');
                         }, this));
                 }, this));

@@ -2,7 +2,9 @@ package com.composum.pages.commons.service;
 
 import com.composum.pages.commons.filter.TemplateFilter;
 import com.composum.pages.commons.model.ContentTypeFilter;
+import com.composum.pages.commons.model.Page;
 import com.composum.pages.commons.model.ResourceReference;
+import com.composum.pages.commons.model.Site;
 import com.composum.pages.commons.model.Template;
 import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.filter.StringFilter;
@@ -55,9 +57,15 @@ public class PagesResourceManager implements ResourceManager {
      */
     @Override
     public boolean isAllowedChild(@Nonnull ResourceResolver resolver, @Nonnull Resource parent, @Nonnull Resource child) {
+        String referencePath = parent.getPath() + "/" + child.getName();
+        Resource childTypeResource = child;
+        if (Page.isPage(child) || Site.isSite(child)) {
+            childTypeResource = child.getChild(JcrConstants.JCR_CONTENT);
+        }
+        String referenceType = childTypeResource.getResourceType();
         ContentTypeFilter filter = new ContentTypeFilter(parent);
         return filter.isAllowedChild(Template.getTemplateOf(child),
-                new ResourceReference(resolver, parent.getPath(), child.getResourceType()));
+                new ResourceReference(resolver, referencePath, referenceType));
     }
 
     /**
