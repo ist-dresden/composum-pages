@@ -19,7 +19,7 @@
 
     &_title {
         @include inline-title;
-        font-size: $column-title-font-size;
+        font-size: $text-title-font-size;
     }
 
     &_image,

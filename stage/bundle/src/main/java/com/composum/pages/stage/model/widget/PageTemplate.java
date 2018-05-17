@@ -1,8 +1,10 @@
 package com.composum.pages.stage.model.widget;
 
 import com.composum.pages.commons.model.Page;
+import com.composum.pages.commons.taglib.EditWidgetTag;
 import com.composum.pages.commons.taglib.PropertyEditHandle;
 import com.composum.pages.commons.widget.WidgetModel;
+import org.apache.sling.api.resource.Resource;
 
 import java.util.Collection;
 
@@ -11,10 +13,25 @@ import java.util.Collection;
  */
 public class PageTemplate extends PropertyEditHandle<String> implements WidgetModel {
 
+    public static final String ATTR_PARENT = "parent";
+
+    protected Resource parent;
+
     private transient Collection<Page> templates;
 
     public PageTemplate() {
         super(String.class);
+    }
+
+    public void setWidget(EditWidgetTag tag) {
+        super.setWidget(tag);
+        parent = widget.consumeDynamicAttribute(ATTR_PARENT, Resource.class);
+        if (parent == null) {
+            parent = tag.getDialog().getParentResource();
+            if (parent == null) {
+                parent = getResource();
+            }
+        }
     }
 
     /**
@@ -30,7 +47,7 @@ public class PageTemplate extends PropertyEditHandle<String> implements WidgetMo
      */
     public Collection<Page> getTemplates() {
         if (templates == null) {
-            templates = getPageManager().getPageTemplates(context, getResource());
+            templates = getPageManager().getPageTemplates(context, parent);
         }
         return templates;
     }

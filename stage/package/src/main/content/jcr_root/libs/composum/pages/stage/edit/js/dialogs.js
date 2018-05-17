@@ -377,6 +377,7 @@
                         // if no create dialog exists (not found) create a new instance directly
                         _.bind(function (name, path, type) {
                             core.ajaxPost(c.base + c._insert, {
+                                _charset_: 'UTF-8',
                                 resourceType: type,
                                 targetPath: path,
                                 targetType: this.data.type
@@ -440,35 +441,37 @@
                 var name = this.pageName.getValue();
                 var title = this.pageTitle.getValue();
                 var description = this.description.getValue();
+                var postData = {
+                    _charset_: 'UTF-8',
+                    name: name,
+                    title: title,
+                    description: description
+                };
                 this.hide(); // this is resetting the dialog
                 if (template) {
                     core.ajaxGet(c.base + c._isTemplate + template, {}, _.bind(function (result) {
                         if (result.isTemplate) {
+                            postData.template = template;
                             // create page as a copy of the template
-                            core.ajaxPost(c.base + c._create.page + this.data.path, {
-                                template: template,
-                                name: name,
-                                title: title,
-                                description: description
-                            }, {}, _.bind(function () {
-                                console.log('pages.trigger.component:changed(' + this.data.path + ')');
-                                $(document).trigger('component:changed', [this.data.path]);
-                            }, this));
+                            core.ajaxPost(c.base + c._create.page + this.data.path, postData, {},
+                                _.bind(function () {
+                                    console.log('pages.trigger.component:changed(' + this.data.path + ')');
+                                    $(document).trigger('component:changed', [this.data.path]);
+                                }, this));
                         } else {
                             // create page using resource type by opening the page create dialog of the designated type
                             dialogs.openCreateDialog(this.pageName.getValue() || '*', this.data.path, template, undefined, undefined,
                                 // if no create dialog exists (not found) create a new instance directly
                                 _.bind(function (name, path, type) {
-                                    core.ajaxPost(c.base + c._create.page + path, {
-                                        resourceType: type,
-                                        name: name,
-                                        title: title,
-                                        description: description
-                                    }, {}, _.bind(function () {
-                                        console.log('pages.trigger.component:changed(' + this.data.path + ')');
-                                        $(document).trigger('component:changed', [this.data.path]);
-                                    }, this));
-                                }, this));
+                                    postData.resourceType = type;
+                                    core.ajaxPost(c.base + c._create.page + path, postData, {},
+                                        _.bind(function () {
+                                            console.log('pages.trigger.component:changed(' + this.data.path + ')');
+                                            $(document).trigger('component:changed', [this.data.path]);
+                                        }, this));
+                                }, this)
+                            )
+                            ;
                         }
                     }, this));
                 }
@@ -619,6 +622,7 @@
                 var config = this.getConfig();
                 var oldPath = this.$path.val();
                 core.ajaxPost(config.action + core.encodePath(oldPath), {
+                    _charset_: 'UTF-8',
                     targetPath: this.newPath.getValue(),
                     name: this.name.getValue(),
                     before: this.before.getValue(),
@@ -656,6 +660,7 @@
                 var c = dialogs.const.edit.url;
                 var oldPath = this.$path.val();
                 core.ajaxPost(c._rename.action + core.encodePath(oldPath), {
+                    _charset_: 'UTF-8',
                     name: this.name.getValue()
                 }, {}, _.bind(function (data) {
                     $(document).trigger('content:moved', [oldPath, data.path]);

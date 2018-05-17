@@ -76,6 +76,7 @@ public class EditDialogTag extends AbstractWrappingTag {
     protected boolean languageContext = true;
 
     protected Resource editResource;
+    protected Resource parentResource;
     protected String resourcePath;
     protected String resourceType;
     protected String primaryType;
@@ -105,6 +106,7 @@ public class EditDialogTag extends AbstractWrappingTag {
         primaryType = null;
         resourcePath = null;
         resourceType = null;
+        parentResource = null;
         editResource = null;
         selectorValue = null;
         selector = null;
@@ -155,6 +157,8 @@ public class EditDialogTag extends AbstractWrappingTag {
                 editResource = super.getModelResource(context);
             }
             if (isStarResource) {
+                // keep parent resource an support access to it
+                parentResource = editResource;
                 // wrap the current resource and make the resource empty
                 editResource = new NewResourceParent(editResource);
             }
@@ -176,6 +180,10 @@ public class EditDialogTag extends AbstractWrappingTag {
     @Override
     public Resource getResource() {
         return getModelResource(context);
+    }
+
+    public Resource getParentResource() {
+        return parentResource;
     }
 
     // tag attributes

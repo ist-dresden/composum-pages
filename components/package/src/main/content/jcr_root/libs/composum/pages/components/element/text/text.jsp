@@ -6,7 +6,7 @@
 <cpp:element var="text" type="com.composum.pages.components.model.text.Text">
     <c:choose>
         <c:when test="${text.valid}">
-            <cpn:text tagName="h3" tagClass="${textCssBase}_title" value="${text.title}"/>
+            <cpn:text tagName="h${text.titleLevel}" tagClass="${textCssBase}_title" value="${text.title}"/>
             <cpn:text tagClass="${textCssBase}_text" value="${text.text}" type="rich"/>
         </c:when>
         <c:otherwise>
