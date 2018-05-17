@@ -975,10 +975,20 @@ public class EditServlet extends NodeTreeServlet {
                                 + (before != null ? before.getName() : "<end>") + ")...");
                     }
 
-                    Resource result = resourceManager.copyContentResource(resolver, resource, target, name, before);
-                    resolver.commit();
+                    try {
+                        Resource result = resourceManager.copyContentResource(resolver, resource, target, name, before);
+                        resolver.commit();
 
-                    sendResponse(response, result);
+                        sendResponse(response, result);
+
+                    } catch (PersistenceException pex) {
+
+                        if (pex.getCause() instanceof ItemExistsException) {
+                            jsonAnswerItemExists(request, response);
+                        } else {
+                            throw pex;
+                        }
+                    }
 
                 } else {
                     sendNotAllowedChild(request, response, target, resource);
