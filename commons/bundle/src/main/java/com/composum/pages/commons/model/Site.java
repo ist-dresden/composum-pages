@@ -29,9 +29,9 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
 
     private static final Logger LOG = LoggerFactory.getLogger(Site.class);
 
-    public static final String PUBLIC_MODE_LIVE = "live";
     public static final String PUBLIC_MODE_IN_PLACE = "inPlace";
-    public static final String PUBLIC_MODE_VERSION = "version";
+    public static final String PUBLIC_MODE_VERSIONS = "versions";
+    public static final String PUBLIC_MODE_LIVE = "live";
 
     public static final String PROP_PUBLIC_MODE = "publicMode";
     public static final String DEFAULT_PUBLIC_MODE = PUBLIC_MODE_IN_PLACE;

@@ -140,13 +140,15 @@ public class PagesReleaseFilter implements Filter {
                 if (!isUnreleasedPublicAccessAllowed(request.getServerName(), uri, path)) {
 
                     if (site != null) {
+                        release = site.getReleaseLabel(accessMode);
                         String mode = site.getPublicMode();
-                        if (Site.PUBLIC_MODE_LIVE.equals(mode)) {
-                            release = site.getReleaseLabel(accessMode);
-                            if (StringUtils.isBlank(release)) {
-                                sendReject(response, "no appropriate release found", uri, resource);
-                                return;
-                            }
+                        switch (mode) {
+                            case Site.PUBLIC_MODE_LIVE:
+                                if (StringUtils.isBlank(release)) {
+                                    sendReject(response, "no appropriate release found", uri, resource);
+                                    return;
+                                }
+                            break;
                         }
                     } else {
                         sendReject(response, "no appropriate site found", uri, resource);
