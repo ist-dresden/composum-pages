@@ -56,6 +56,8 @@ public class PagesReleaseFilter implements Filter {
 
     private static final Logger LOG = LoggerFactory.getLogger(PagesReleaseFilter.class);
 
+    public static final String PUBLIC_RELEASE_LABEL = "public";
+
     public static final String ATTR_CACHE_DISABLED = "com.composum.platform.cache.component.ComponentCacheService#cacheDisabled";
 
     @ObjectClassDefinition(
@@ -126,7 +128,7 @@ public class PagesReleaseFilter implements Filter {
 
             String accessMode = (String) request.getAttribute(ACCESS_MODE_KEY);
             if (StringUtils.isNotBlank(accessMode) &&
-                    !PlatformAccessFilter.AccessMode.AUTHOR.name().equals(accessMode.toUpperCase())) {
+                    !PlatformAccessFilter.AccessMode.AUTHOR.name().equals(accessMode = accessMode.toUpperCase())) {
 
                 String uri = ((SlingHttpServletRequest) request).getRequestURI();
                 String contextPath = slingRequest.getContextPath();
@@ -138,9 +140,9 @@ public class PagesReleaseFilter implements Filter {
                 if (!isUnreleasedPublicAccessAllowed(request.getServerName(), uri, path)) {
 
                     if (site != null) {
-                        Site.PublicMode mode = site.getPublicMode();
-                        if (mode != Site.PublicMode.LIVE) {
-                            release = site.getReleaseLabel(mode.name());
+                        String mode = site.getPublicMode();
+                        if (Site.PUBLIC_MODE_LIVE.equals(mode)) {
+                            release = site.getReleaseLabel(accessMode);
                             if (StringUtils.isBlank(release)) {
                                 sendReject(response, "no appropriate release found", uri, resource);
                                 return;
