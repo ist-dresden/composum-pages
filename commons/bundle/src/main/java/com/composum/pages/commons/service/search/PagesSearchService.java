@@ -16,6 +16,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.exception.ContextedRuntimeException;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
 import org.osgi.framework.Constants;
@@ -66,7 +67,8 @@ public class PagesSearchService implements SearchService {
     protected PagesSearchServiceConfiguration config;
     protected ExcerptGenerator excerptGenerator = new ExcerptGeneratorImpl();
 
-    @Activate @Modified
+    @Activate
+    @Modified
     public void activate(PagesSearchServiceConfiguration config) {
         this.config = config;
     }
@@ -79,6 +81,7 @@ public class PagesSearchService implements SearchService {
         Pair<Boolean, List<Result>> execQuery(int matchLimit) throws RepositoryException;
 
     }
+
     @Nonnull
     @Override
     public List<Result> searchPages(@Nonnull final BeanContext context, final String root,
@@ -192,7 +195,7 @@ public class PagesSearchService implements SearchService {
                 List<Result> results = new ArrayList<>();
                 Map<String, SubmatchResultImpl> targetToResultMap = new HashMap<>();
                 for (Resource match : q.execute()) {
-                    rowcount ++;
+                    rowcount++;
                     Resource target = findTarget(match, null != targetResourceFilter ? targetResourceFilter : PAGE_FILTER);
 
                     SubmatchResultImpl result = targetToResultMap.get(target.getPath());
@@ -290,6 +293,12 @@ public class PagesSearchService implements SearchService {
         @Override
         public Resource getTarget() {
             return target;
+        }
+
+        @Override
+        public Resource getTargetContent() {
+            Resource content = target.getChild(JcrConstants.JCR_CONTENT);
+            return content != null ? content : target;
         }
 
         @Override

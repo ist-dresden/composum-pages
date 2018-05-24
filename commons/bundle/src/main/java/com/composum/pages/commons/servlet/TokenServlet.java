@@ -8,7 +8,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
-import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.servlets.HttpConstants;
 import org.apache.sling.api.servlets.ServletResolverConstants;
@@ -22,11 +21,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
-import javax.jcr.RepositoryException;
 import javax.servlet.Servlet;
 import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 
 /**
  * the TokenServlet delegates each request to the 'TrackingService' to track the usage of the current
@@ -69,32 +66,40 @@ public class TokenServlet extends SlingSafeMethodsServlet {
 
     @Override
     protected void doGet(@Nonnull SlingHttpServletRequest request,
-                         @Nonnull SlingHttpServletResponse response) throws IOException {
-        String uri = request.getRequestURI();
-        Resource resource = request.getResource();
-        if (!ResourceUtil.isNonExistingResource(resource)) {
-            try {
-                String path = resource.getPath();
-                String suffix = request.getRequestPathInfo().getSuffix();
-                String referer = null;
-                if (StringUtils.isNotBlank(suffix)) {
-                    referer = suffix.substring(1);
-                    // the base64 encoded referer is NOT decoded here (the encoded string is used as a node name)
-                }
-                trackingService.trackToken(
-                        new BeanContext.Servlet(getServletContext(), bundleContext, request, response),
-                        path,
-                        referer);
-            } catch (RepositoryException | LoginException ex) {
-                LOG.error(ex.getMessage(), ex);
-            }
-        } else {
-            LOG.warn("resource not found: " + uri);
-        }
-        AbstractServiceServlet.setNoCacheHeaders(response);
+                         @Nonnull SlingHttpServletResponse response) {
+
         response.setStatus(HttpServletResponse.SC_OK);
-        response.setContentType("image/png");
-        response.setContentLength(TRACKING_PNG.length);
-        IOUtils.copy(new ByteArrayInputStream(TRACKING_PNG), response.getOutputStream());
+        AbstractServiceServlet.setNoCacheHeaders(response);
+
+        try {
+            String uri = request.getRequestURI();
+            Resource resource = request.getResource();
+            if (!ResourceUtil.isNonExistingResource(resource)) {
+                try {
+                    String path = resource.getPath();
+                    String suffix = request.getRequestPathInfo().getSuffix();
+                    String referer = null;
+                    if (StringUtils.isNotBlank(suffix)) {
+                        referer = suffix.substring(1);
+                        // the base64 encoded referer is NOT decoded here (the encoded string is used as a node name)
+                    }
+                    trackingService.trackToken(
+                            new BeanContext.Servlet(getServletContext(), bundleContext, request, response),
+                            path,
+                            referer);
+                } catch (Exception ex) {
+                    LOG.error(ex.getMessage(), ex);
+                }
+            } else {
+                LOG.warn("resource not found: " + uri);
+            }
+            response.setContentType("image/png");
+            response.setContentLength(TRACKING_PNG.length);
+            IOUtils.copy(new ByteArrayInputStream(TRACKING_PNG), response.getOutputStream());
+
+        } catch (Throwable ex) {
+            // no exception message sent back to the client...
+            LOG.error(ex.getMessage(), ex);
+        }
     }
 }

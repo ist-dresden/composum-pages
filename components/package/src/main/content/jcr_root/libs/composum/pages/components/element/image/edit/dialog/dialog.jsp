@@ -4,5 +4,6 @@
 --%><cpp:defineFrameObjects/>
 <cpp:editDialog var="element" type="com.composum.pages.commons.model.Image"
                 title="@{dialog.selector=='create'?'Create an Image':'Edit Image'}">
-    <sling:call script="embedded.jsp"/>
+    <cpp:widget label="Image" property="imageRef" type="imagefield" i18n="true" mandatory="true"/>
+    <cpp:widget label="Alt Text" property="alt" type="textfield" i18n="true"/>
 </cpp:editDialog>

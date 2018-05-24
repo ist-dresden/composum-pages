@@ -73,7 +73,7 @@ public class EditWidgetTag extends AbstractWidgetTag implements LoopTag {
     }
 
     public String getCssName() {
-        return getName().replaceAll("^i18n/.*/([^/]+)$", "$1")
+        return getName().replaceAll("^(.*/)?i18n/.*/([^/]+)$", "$1$2")
                 .replace('/', '-')
                 .replace(':', '_')
                 .replace("*", "STAR")

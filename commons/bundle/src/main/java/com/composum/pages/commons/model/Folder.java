@@ -11,9 +11,10 @@ public class Folder extends AbstractModel {
      * check the folder type for a resource
      */
     public static boolean isFolder(Resource resource) {
-        return ResourceUtil.isResourceType(resource, JcrConstants.NT_FOLDER)
+        return (ResourceUtil.isResourceType(resource, JcrConstants.NT_FOLDER)
                 || ResourceUtil.isResourceType(resource, ResourceUtil.TYPE_SLING_FOLDER)
-                || ResourceUtil.isResourceType(resource, ResourceUtil.TYPE_SLING_ORDERED_FOLDER);
+                || ResourceUtil.isResourceType(resource, ResourceUtil.TYPE_SLING_ORDERED_FOLDER))
+                && !(Page.isPage(resource) || Site.isSite(resource));
     }
 
     public Folder() {
