@@ -24,7 +24,7 @@
                                  resourceType="composum/pages/components/navigation/menuitem"
                                  replaceSelectors="dropdown"/>
                 </c:forEach>
-                <sling:call script="search.jsp"/>
+                <!%--sling:call script="search.jsp"/--%>
             </ul>
         </nav>
     </div>

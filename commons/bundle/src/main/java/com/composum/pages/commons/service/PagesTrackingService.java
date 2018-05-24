@@ -5,9 +5,6 @@ import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.util.ResourceUtil;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.ModifiableValueMap;
@@ -15,22 +12,35 @@ import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
+import org.osgi.framework.Constants;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Modified;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.metatype.annotations.AttributeDefinition;
+import org.osgi.service.metatype.annotations.Designate;
+import org.osgi.service.metatype.annotations.ObjectClassDefinition;
+import org.osgi.service.metatype.annotations.Option;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.jcr.RepositoryException;
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpSession;
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Formatter;
 import java.util.GregorianCalendar;
+import java.util.LinkedList;
+import java.util.List;
 
 @Component(
-        label = "Composum Pages Tracking Service",
-        immediate = true,
-        metatype = false
+        property = {
+                Constants.SERVICE_DESCRIPTION + "=Composum Pages Tracking Service"
+        }
 )
-@Service
+@Designate(ocd = PagesTrackingService.Config.class)
 public class PagesTrackingService implements TrackingService {
 
     public static final String STATS_NODE_NAME = "cpp:statistics";
@@ -41,7 +51,24 @@ public class PagesTrackingService implements TrackingService {
     public static final String PAGE_STATS_HOUR = "h-%02d";
     public static final String INTERMEDIATE_TYPE = "nt:unstructured";
 
+    public static final String SA_SESSION_TRACE = SessionTrace.class.getName();
+
     private static final Logger LOG = LoggerFactory.getLogger(PagesTrackingService.class);
+
+    @ObjectClassDefinition(name = "Composum Pages Tracking Service Configuration",
+            description = "Configurations for the Composum Pages Tracking Service")
+    public @interface Config {
+
+        @AttributeDefinition(name = "Cookie Policy", options = {
+                @Option(label = "Session", value = "session"),
+                @Option(label = "Tracking", value = "tracking")
+        })
+        String cookiePolicy() default "session";
+
+        @AttributeDefinition()
+        String webconsole_configurationFactory_nameHint() default
+                "{name} (cookiePolicy: {cookiePolicy})";
+    }
 
     public static class TokenRequest {
 
@@ -73,18 +100,49 @@ public class PagesTrackingService implements TrackingService {
         }
     }
 
+    public static class SessionTrace implements Serializable {
+
+        protected class TraceToken implements Serializable {
+
+            public final String path;
+            public final Calendar timestamp;
+
+            public TraceToken(TokenRequest request) {
+                path = request.resource.getPath();
+                timestamp = request.timestamp;
+            }
+        }
+
+        protected final List<TraceToken> trace = new LinkedList<>();
+
+        public void addRequest(TokenRequest request) {
+            trace.add(new TraceToken(request));
+        }
+
+        public boolean isNewRequest(TokenRequest request) {
+            String path = request.resource.getPath();
+            for (int index = trace.size(); --index >= 0; ) {
+                if (path.equals(trace.get(index).path)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
+
     @Reference
-    ResourceResolverFactory resolverFactory;
+    protected ResourceResolverFactory resolverFactory;
+
+    protected Config config;
 
     public void trackToken(BeanContext context,
                            String path,
                            String referer)
-            throws RepositoryException, LoginException {
+            throws LoginException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("trackToken(" + path + ")");
         }
-        ResourceResolver resolver = resolverFactory.getServiceResourceResolver(null);
-        try {
+        try (ResourceResolver resolver = resolverFactory.getServiceResourceResolver(null)) {
             Resource resource = resolver.getResource(path);
             if (resource != null) {
                 if (Page.isPage(resource)) {
@@ -105,8 +163,6 @@ public class PagesTrackingService implements TrackingService {
             }
         } catch (PersistenceException ex) {
             LOG.error(ex.getMessage(), ex);
-        } finally {
-            resolver.close();
         }
     }
 
@@ -130,7 +186,7 @@ public class PagesTrackingService implements TrackingService {
             ModifiableValueMap hourlyValues = hourlyStats.adaptTo(ModifiableValueMap.class);
             hourlyValues.put(PROP_TOTAL, hourlyValues.get(PROP_TOTAL, 0) + 1);
 
-            Resource refererStats = null;
+            Resource refererStats;
             ModifiableValueMap refererStatsValues = null;
 
             // count page access requests from one referer (daily count)
@@ -145,26 +201,51 @@ public class PagesTrackingService implements TrackingService {
                 refererStatsValues.put(PROP_TOTAL, refererStatsValues.get(PROP_TOTAL, 0) + 1);
             }
 
-            // use a cookie to detect repeated requests from the same client (daily cookie)
-            Cookie cookie = request.getCookie(PAGE_TOKEN_COOKIE);
-            if (cookie == null) {
+            boolean isUnique = false;
+            switch (config.cookiePolicy()) {
+                case "tracking":
+                    // use a cookie to detect repeated requests from the same client (daily cookie)
+                    Cookie cookie = request.getCookie(PAGE_TOKEN_COOKIE);
+                    if (cookie == null) {
+                        // count 'unique' requests if no cookie found
+                        isUnique = true;
 
-                // count 'unique' requests if no cookie found
+                        // set cookie to avoid multiple counts for the same day
+                        String uri = request.getRequestURI();
+                        if (!uri.endsWith(EXT_PNG)) {
+                            uri = uri.substring(0, uri.lastIndexOf("/")); // ignore referer suffix
+                        }
+                        cookie = new Cookie(PAGE_TOKEN_COOKIE,
+                                token.year + "-" + token.month + "-" + token.day + ":" + token.hour);
+                        cookie.setPath(uri);
+                        cookie.setMaxAge((25 - token.hour) * 3600); // expires near the end of the day
+                        token.context.getResponse().addCookie(cookie);
+                    }
+                    break;
+                case "session":
+                default:
+                    // use session instead of special cookies (one 'technical' session cookie only)
+                    HttpSession session = request.getSession(true);
+                    SessionTrace trace = (SessionTrace) session.getAttribute(SA_SESSION_TRACE);
+                    if (trace == null) {
+                        trace = new SessionTrace();
+                        session.setAttribute(SA_SESSION_TRACE, trace);
+                    }
+
+                    if (trace.isNewRequest(token)) {
+                        // count 'unique' requests if resource not found in session trace
+                        isUnique = true;
+                    }
+                    trace.addRequest(token);
+                    break;
+            }
+
+            // count 'unique' requests
+            if (isUnique) {
                 hourlyValues.put(PROP_UNIQUE, hourlyValues.get(PROP_UNIQUE, 0) + 1);
                 if (refererStatsValues != null) {
                     refererStatsValues.put(PROP_UNIQUE, refererStatsValues.get(PROP_UNIQUE, 0) + 1);
                 }
-
-                // set cookie to avoid multiple counts for the same day
-                String uri = request.getRequestURI();
-                if (!uri.endsWith(EXT_PNG)) {
-                    uri = uri.substring(0, uri.lastIndexOf("/")); // ignore referer suffix
-                }
-                cookie = new Cookie(PAGE_TOKEN_COOKIE,
-                        token.year + "-" + token.month + "-" + token.day + ":" + token.hour);
-                cookie.setPath(uri);
-                cookie.setMaxAge((25 - token.hour) * 3600); // expires near the end of the day
-                token.context.getResponse().addCookie(cookie);
             }
 
         } catch (RepositoryException ex) {
@@ -200,10 +281,17 @@ public class PagesTrackingService implements TrackingService {
                 statistics,
                 pathToDay,
                 INTERMEDIATE_TYPE);
+        @SuppressWarnings("UnnecessaryLocalVariable")
         Resource statsData = ResourceUtil.getOrCreateChild(
                 dayStatistics,
                 relativePath,
                 STATS_DATA_TYPE);
         return statsData;
+    }
+
+    @Activate
+    @Modified
+    protected void activate(final Config config) {
+        this.config = config;
     }
 }

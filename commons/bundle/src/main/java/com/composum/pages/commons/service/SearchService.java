@@ -75,9 +75,14 @@ public interface SearchService {
      * the search result renderer.
      */
     interface Result {
+
         /** The page which contains matches. */
         @Nonnull
         Resource getTarget();
+
+        /** The content child of the page which contains matches. */
+        @Nonnull
+        Resource getTargetContent();
 
         /** A link that shows the target, including search terms with {@link #PARAMETER_SEARCHTERM} */
         @Nonnull

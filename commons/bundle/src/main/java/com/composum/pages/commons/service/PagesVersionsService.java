@@ -1,5 +1,6 @@
 package com.composum.pages.commons.service;
 
+import com.composum.pages.commons.model.Folder;
 import com.composum.pages.commons.model.Page;
 import com.composum.pages.commons.model.Release;
 import com.composum.sling.core.BeanContext;
@@ -117,6 +118,8 @@ public class PagesVersionsService implements VersionsService {
                     result.add(page);
                 }
                 findModifiedPages(context, page.getResource(), result);
+            } else if (Folder.isFolder(resource)) {
+                findModifiedPages(context, resource, result);
             }
         }
     }
@@ -155,6 +158,8 @@ public class PagesVersionsService implements VersionsService {
                     }
                 }
                 findUnreleasedPages(context, page.getResource(), release, result);
+            } else if (Folder.isFolder(resource)) {
+                findModifiedPages(context, resource, result);
             }
         }
     }

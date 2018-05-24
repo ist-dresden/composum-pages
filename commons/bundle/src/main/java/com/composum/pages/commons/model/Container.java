@@ -108,7 +108,7 @@ public class Container extends Element {
         if (elementTypes == null) {
             EditService editService = context.getService(EditService.class);
             elementTypes = editService.getAllowedElementTypes(resolver,
-                    new ResourceReference.List(new ResourceReference(this)), false);
+                    new ResourceReference.List(new ResourceReference(this)), true);
         }
         return elementTypes;
     }

@@ -434,7 +434,7 @@
                 left: 4px;
                 width: 96px;
 
-                &_placeholder {
+                &_placeholder:before {
                     font-size: 48px;
                 }
             }

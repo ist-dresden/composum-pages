@@ -28,8 +28,11 @@
             height: 100%;
             padding: 7px 14px;
             background: rgba(255, 255, 255, 0.4);
-            color: #ddd;
-            font-size: 72px;
+
+            &:before {
+                color: #ddd;
+                font-size: 72px;
+            }
         }
     }
 

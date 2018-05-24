@@ -4,8 +4,7 @@
 --%><%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %><%--
 --%><cpp:defineObjects/>
 <cpp:element var="title" type="com.composum.pages.components.model.title.Title"
-             style="@{title.style}"
-             test="@{pagesAutor || title.valid}">
+             style="@{title.style}" test="@{title.editMode || title.valid}">
     <c:choose>
         <c:when test="${title.valid}">
             <div class="${titleCssBase}_text">

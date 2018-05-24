@@ -29,7 +29,7 @@
             <div class="${sitesCssBase}_no-site">
                 <cpn:text tagName="p" tagClass="${sitesCssBase}_paragraph alert alert-warning"
                           value="${sites.properties.noSitesMessage}"/>
-                <cpn:link href="" classes="${sitesCssBase}_link alert alert-info"><cpn:text
+                <cpn:link href="" classes="${sitesCssBase}_create alert alert-info"><cpn:text
                         tagName="span" value="${sites.properties.noSitesCreateLinkLabel}"/></cpn:link>
             </div>
         </c:otherwise>

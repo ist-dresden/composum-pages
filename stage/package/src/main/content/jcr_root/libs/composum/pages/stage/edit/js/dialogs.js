@@ -360,7 +360,7 @@
         dialogs.NewElementDialog = dialogs.ElementDialog.extend({
 
             initView: function () {
-                this.elementType = core.getWidget(this.el, '.radio-group-widget', core.components.RadioGroupWidget);
+                this.elementType = core.getWidget(this.el, '.element-type-select-widget', pages.widgets.ElementTypeSelectWidget);
                 if (this.elementType.getCount() === 1) {
                     this.useDefault = this.elementType.getOnlyOne();
                 }

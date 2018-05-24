@@ -118,7 +118,7 @@ public class SearchResult extends Element {
      * @see #getHead()
      */
     public String getHeadFormatted() {
-        return CpnlElFunctions.rich(getHead().format(new Object[]{getSearchTerm()}));
+        return CpnlElFunctions.rich(getContext().getRequest(), getHead().format(new Object[]{getSearchTerm()}));
     }
 
     /**

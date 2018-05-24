@@ -1,0 +1,89 @@
+@charset "UTF-8";
+
+@import "../../../edit/css/variables";
+@import "../../../edit/css/mixins";
+
+.composum-pages-component-tile {
+    position: relative;
+    display: block;
+    width: 100%;
+    margin: 0;
+    padding: 5px;
+    min-height: 80px;
+    color: #444;
+
+    &_thumbnail {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 130px;
+
+        &_wrapper {
+            @include aspect-ratio-wrapper(3, 2);
+        }
+
+        &_picture {
+            @include aspect-ratio-element();
+        }
+
+        &_image {
+            width: 100%;
+        }
+
+        &_placeholder {
+            width: 100%;
+            height: 100%;
+            padding: 7px 14px;
+            background: rgba(255, 255, 255, 0.4);
+            color: #ddd;
+            font-size: 60px;
+        }
+    }
+
+    &_text {
+        margin-left: 140px;
+        @include font('robotolight', 17px);
+    }
+}
+
+.composum-pages-edit-widget {
+
+    &_element-type-select {
+        width: 100%;
+        @include font('robotolight', 17px);
+
+        .composum-pages-component-tile {
+            padding-left: 30px;
+            background: #eee;
+
+            &_thumbnail {
+                left: 30px;
+            }
+        }
+
+        .composum-pages-edit-widget {
+
+            &_list {
+                list-style: none;
+                max-height: 600px;
+                padding: 0;
+                margin-bottom: 0;
+                overflow: scroll;
+            }
+
+            &_element-type {
+                position: relative;
+                margin: 5px 0;
+                padding: 0;
+                background-color: rgba(255, 255, 255, 0.4);
+            }
+
+            &_radio {
+                z-index: 1;
+                position: absolute;
+                top: 30px;
+                left: 8px;
+            }
+        }
+    }
+}
