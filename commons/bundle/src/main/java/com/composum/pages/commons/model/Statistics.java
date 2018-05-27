@@ -234,7 +234,7 @@ public class Statistics extends AbstractModel {
 
         protected abstract String getType();
 
-        protected abstract DateFormat getLabelFormat();
+        protected abstract DateFormat getLabelFormat(boolean detail);
 
         protected abstract DateFormat getDayFormat();
 
@@ -246,7 +246,7 @@ public class Statistics extends AbstractModel {
         public void toJSON(JsonWriter writer, boolean detail) throws IOException {
             writer.beginObject();
             writer.name("type").value(getType());
-            writer.name("label").value(getLabelFormat().format(from.getTime()));
+            writer.name("label").value(getLabelFormat(detail).format(from.getTime()));
             writer.name("summary");
             summary.toJSON(writer);
             if (detail) {
@@ -269,7 +269,7 @@ public class Statistics extends AbstractModel {
 
         @Override
         public String toString() {
-            return "{" + getType().charAt(0) + ":" + getLabelFormat().format(from.getTime()) + summary + "}";
+            return "{" + getType().charAt(0) + ":" + getLabelFormat(true).format(from.getTime()) + summary + "}";
         }
     }
 
@@ -290,13 +290,13 @@ public class Statistics extends AbstractModel {
         }
 
         @Override
-        protected DateFormat getLabelFormat() {
-            return new SimpleDateFormat(WEEK_FORMAT);
+        protected DateFormat getLabelFormat(boolean detail) {
+            return new SimpleDateFormat(detail ? WEEK_FORMAT : "'W'ww");
         }
 
         @Override
         protected DateFormat getDayFormat() {
-            return new SimpleDateFormat(DAY_OF_WEEK_FORMAT);
+            return new SimpleDateFormat("E");
         }
     }
 
@@ -317,13 +317,13 @@ public class Statistics extends AbstractModel {
         }
 
         @Override
-        protected DateFormat getLabelFormat() {
-            return new SimpleDateFormat(MONTH_FORMAT);
+        protected DateFormat getLabelFormat(boolean detail) {
+            return new SimpleDateFormat(detail ? MONTH_FORMAT : "MMM");
         }
 
         @Override
         protected DateFormat getDayFormat() {
-            return new SimpleDateFormat(DAY_OF_MONTH_FORMAT);
+            return new SimpleDateFormat("dd");
         }
     }
 
