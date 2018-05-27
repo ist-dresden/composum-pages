@@ -39,6 +39,9 @@ public interface PagesConstants {
     String NODE_TYPE_PAGE = CPP_PREFIX + "Page";
     String NODE_TYPE_PAGE_CONTENT = CPP_PREFIX + "PageContent";
 
+    String META_NODE_NAME = CPP_PREFIX + "metaData";
+    String META_NODE_TYPE = CPP_PREFIX + "MetaData";
+
     String PROP_ALLOWED_PARENTS = "allowedParents";
     String PROP_ALLOWED_CHILDREN = "allowedChildren";
 
