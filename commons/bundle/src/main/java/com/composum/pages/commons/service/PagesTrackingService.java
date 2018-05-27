@@ -1,6 +1,7 @@
 package com.composum.pages.commons.service;
 
 import com.composum.pages.commons.model.Page;
+import com.composum.pages.commons.replication.ReplicationManager;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.util.ResourceUtil;
 import org.apache.commons.codec.binary.Base64;
@@ -38,6 +39,7 @@ import java.util.List;
 
 import static com.composum.pages.commons.PagesConstants.META_NODE_NAME;
 import static com.composum.pages.commons.PagesConstants.META_NODE_TYPE;
+import static com.composum.sling.platform.security.PlatformAccessFilter.ACCESS_MODE_PUBLIC;
 
 @Component(
         property = {
@@ -135,6 +137,9 @@ public class PagesTrackingService implements TrackingService {
     @Reference
     protected ResourceResolverFactory resolverFactory;
 
+    @Reference
+    protected ReplicationManager replicationManager;
+
     protected Config config;
 
     @Override
@@ -151,6 +156,12 @@ public class PagesTrackingService implements TrackingService {
 
             Resource resource = resolver.getResource(path);
             if (resource != null) {
+
+                Resource origin = replicationManager.getOrigin(context, resource, ACCESS_MODE_PUBLIC);
+                if (origin != null) {
+                    // use origin instead of replicate to track - collect statistics on the author resource
+                    resource = origin;
+                }
 
                 if (Page.isPage(resource)) {
                     trackPage(new TokenRequest(context, resource, referer));
