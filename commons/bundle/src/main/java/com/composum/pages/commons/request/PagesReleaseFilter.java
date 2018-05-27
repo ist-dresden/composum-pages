@@ -1,10 +1,10 @@
 package com.composum.pages.commons.request;
 
 import com.composum.pages.commons.model.Site;
+import com.composum.pages.commons.replication.ReplicationManager;
 import com.composum.pages.commons.service.SiteManager;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.platform.security.PlatformAccessFilter;
-import com.composum.sling.platform.staging.ResourceResolverChangeFilter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
@@ -32,6 +32,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +40,9 @@ import java.util.regex.Pattern;
 
 import static com.composum.pages.commons.PagesConstants.COMPOSUM_PREFIX;
 import static com.composum.sling.platform.security.PlatformAccessFilter.ACCESS_MODE_KEY;
+import static com.composum.sling.platform.security.PlatformAccessFilter.ACCESS_MODE_PREVIEW;
+import static com.composum.sling.platform.security.PlatformAccessFilter.ACCESS_MODE_PUBLIC;
+import static com.composum.sling.platform.staging.ResourceResolverChangeFilter.ATTRIBUTE_NAME;
 import static com.composum.sling.platform.staging.ResourceResolverChangeFilter.COOKIE_NAME;
 import static com.composum.sling.platform.staging.ResourceResolverChangeFilter.PARAMETER_NAME;
 
@@ -108,10 +112,24 @@ public class PagesReleaseFilter implements Filter {
     @Reference
     protected SiteManager siteManager;
 
+    @Reference
+    protected ReplicationManager replicationManager;
+
     protected ServletContext servletContext;
 
     protected BundleContext bundleContext;
 
+    /**
+     * Determines the release to render depending on the access mode...
+     * <dl>
+     * <dt>'inPlace' staging mode is set for the requested site</dt>
+     * <dd>is checking that the requested path matches to the replication path; rejects the request if this doesn't match</dd>
+     * <dt>'versions' staging mode is set for the requested site</dt>
+     * <dd>is setting the 'composum-platform-release-label' the the release label declared for the requested access mode</dd>
+     * <dt>'live' staging mode is set for the requested site</dt>
+     * <dd>no check, render author content as is as public content</dd>
+     * </dl>
+     */
     public void doFilter(ServletRequest request, ServletResponse response,
                          FilterChain chain)
             throws IOException, ServletException {
@@ -130,6 +148,8 @@ public class PagesReleaseFilter implements Filter {
             if (StringUtils.isNotBlank(accessMode) &&
                     !PlatformAccessFilter.AccessMode.AUTHOR.name().equals(accessMode = accessMode.toUpperCase())) {
 
+                // not an AUTHOR access; check public/preview access against the staging policy of the site...
+
                 String uri = ((SlingHttpServletRequest) request).getRequestURI();
                 String contextPath = slingRequest.getContextPath();
                 if (uri.startsWith(contextPath)) {
@@ -140,22 +160,44 @@ public class PagesReleaseFilter implements Filter {
                 if (!isUnreleasedPublicAccessAllowed(request.getServerName(), uri, path)) {
 
                     if (site != null) {
-                        release = site.getReleaseLabel(accessMode);
                         String mode = site.getPublicMode();
                         switch (mode) {
-                            case Site.PUBLIC_MODE_LIVE:
+                            case Site.PUBLIC_MODE_IN_PLACE:
+                                switch (accessMode) {
+                                    case ACCESS_MODE_PUBLIC:
+                                        if (!path.startsWith(replicationManager.getConfig().inPlacePublicPath())) {
+                                            sendReject(response, "not a public resource request", uri, resource);
+                                            return;
+                                        }
+                                        if (LOG.isDebugEnabled()) {
+                                            LOG.debug("inPlace public: '{}' ({})", site.getPath(), resource);
+                                        }
+                                        break;
+                                    case ACCESS_MODE_PREVIEW:
+                                        if (!path.startsWith(replicationManager.getConfig().inPlacePreviewPath())) {
+                                            sendReject(response, "not a preview resource request", uri, resource);
+                                            return;
+                                        }
+                                        if (LOG.isDebugEnabled()) {
+                                            LOG.debug("inPlace preview: '{}' ({})", site.getPath(), resource);
+                                        }
+                                        break;
+                                }
+                                break;
+                            case Site.PUBLIC_MODE_VERSIONS:
+                                release = site.getReleaseLabel(accessMode);
                                 if (StringUtils.isBlank(release)) {
                                     sendReject(response, "no appropriate release found", uri, resource);
                                     return;
                                 }
-                            break;
+                                if (LOG.isDebugEnabled()) {
+                                    LOG.debug("release: '{}' ({})", release + '@' + site.getPath(), resource);
+                                }
+                                break;
                         }
                     } else {
                         sendReject(response, "no appropriate site found", uri, resource);
                         return;
-                    }
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("release: '{}' ({})", release + '@' + site.getPath(), resource);
                     }
                 } else {
                     if (LOG.isDebugEnabled()) {
@@ -166,18 +208,28 @@ public class PagesReleaseFilter implements Filter {
             } else {
 
                 // if Author or unspecific mode use requested release...
+
                 release = request.getParameter(PARAMETER_NAME);
                 if (StringUtils.isBlank(release)) {
-                    Cookie cookie = ((SlingHttpServletRequest) request).getCookie(COOKIE_NAME);
+                    Cookie cookie = slingRequest.getCookie(COOKIE_NAME);
                     if (cookie != null) {
                         release = cookie.getValue();
                     }
+                    if (StringUtils.isBlank(release)) {
+                        HttpSession session = slingRequest.getSession(false);
+                        if (session != null) {
+                            release = (String) session.getAttribute(ATTRIBUTE_NAME);
+                        }
+                    }
                 }
+
                 if (StringUtils.isNotBlank(release)) {
                     if (Character.isDigit(release.charAt(0))) {
+                        // use release labe as is if stating with a digit
                         release = Site.RELEASE_LABEL_PREFIX + release;
                     } else {
                         if (site != null && !release.startsWith(COMPOSUM_PREFIX)) {
+                            // assuming that an access mode is set for the requested release
                             String mapped = site.getReleaseLabel(release);
                             if (StringUtils.isNotBlank(mapped)) {
                                 release = mapped;
@@ -189,13 +241,14 @@ public class PagesReleaseFilter implements Filter {
 
             if (StringUtils.isNotBlank(release)) {
                 if (LOG.isDebugEnabled()) {
-                    LOG.debug("LIVE mode, release '{}' selected", release);
+                    LOG.debug("{} access mode, release '{}' selected", accessMode, release);
                 }
-                request.setAttribute(ResourceResolverChangeFilter.ATTRIBUTE_NAME, release);
+                request.setAttribute(ATTRIBUTE_NAME, release);
+                // disable editing for release requests
                 request.setAttribute(DisplayMode.ATTRIBUTE_KEY, DisplayMode.create(DisplayMode.Value.NONE));
             }
 
-            // disable component caching if in edit or preview mode
+            // disable component caching if in edit context ('edit', 'preview', 'browse', 'develop')
             if (DisplayMode.isEditMode(context) || DisplayMode.isPreviewMode(context)) {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("EDIT mode, no cache for '{}'", resource.getPath());

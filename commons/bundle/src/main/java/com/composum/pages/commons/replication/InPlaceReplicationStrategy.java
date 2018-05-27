@@ -5,7 +5,7 @@ import com.composum.sling.core.JcrResource;
 import com.composum.sling.core.ResourceHandle;
 import com.composum.sling.platform.security.PlatformAccessFilter;
 import com.composum.sling.platform.staging.service.ReleaseMapper;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.PersistenceException;
@@ -22,6 +22,9 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * the general implementation base for an in-place replication strategy
+ */
 public abstract class InPlaceReplicationStrategy implements ReplicationStrategy, ReleaseMapper {
 
     private static final Logger LOG = LoggerFactory.getLogger(InPlaceReplicationStrategy.class);
@@ -64,9 +67,9 @@ public abstract class InPlaceReplicationStrategy implements ReplicationStrategy,
     protected abstract ResourceResolver getReleaseResolver(ReplicationContext context, Resource resource);
 
     /**
-     * the general 'canReplicate' check fpr all InPlace replication strategy implementations
+     * the general 'canReplicate' check for all InPlace replication strategy implementations
      *
-     * @return 'true' strategy is configured and if the resource is part of a site which is replicated 'in place'
+     * @return 'true' if strategy is configured and if the resource is part of a site which is replicated 'in place'
      */
     protected boolean canReplicateSite(ReplicationContext context, Resource resource) {
         boolean result = false;
@@ -77,17 +80,23 @@ public abstract class InPlaceReplicationStrategy implements ReplicationStrategy,
         return result;
     }
 
+    /**
+     * replicates a resource and its children if recursive is 'on'
+     */
     @Override
     public void replicate(ReplicationContext context, Resource resource, boolean recursive)
             throws Exception {
-        ResourceResolver targetResolver = context.getResolver();
+        ResourceResolver replicateResolver = context.getResolver();
         String targetPath = getTargetPath(context);
         Resource targetRoot;
-        if (StringUtils.isNotBlank(targetPath) && (targetRoot = targetResolver.getResource(targetPath)) != null) {
+        if (StringUtils.isNotBlank(targetPath) && (targetRoot = replicateResolver.getResource(targetPath)) != null) {
             String relativePath = resource.getPath().replaceAll("^" + config.contentPath() + "/", "");
+            // the 'releaseResolver' is probably a version controlled resolver
             ResourceResolver releaseResolver = getReleaseResolver(context, resource);
             Resource released = releaseResolver.getResource(resource.getPath());
-            replicate(context, targetRoot, released, relativePath, recursive, false);        }
+            // delegation to the extension hook...
+            replicate(context, targetRoot, released, relativePath, recursive, false);
+        }
     }
 
     /**
@@ -116,6 +125,7 @@ public abstract class InPlaceReplicationStrategy implements ReplicationStrategy,
 
     /**
      * build the path to a resource replicate if not always existing
+     * - each intermediate path is only created on demand if a resource to replicate needs this path
      */
     protected Resource buildReplicationBase(ReplicationContext context,
                                             ResourceResolver targetResolver, Resource targetRoot,
@@ -139,6 +149,10 @@ public abstract class InPlaceReplicationStrategy implements ReplicationStrategy,
         return targetResource;
     }
 
+    /**
+     * makes a replication copy of one resource and their 'jcr:content' child if such a child exists
+     * does this also with the other children if 'recursive' is 'on'
+     */
     protected void copyReleasedResource(ReplicationContext context, String targetRoot, Resource released, Resource replicate,
                                         boolean recursive, boolean merge)
             throws Exception {
@@ -149,6 +163,7 @@ public abstract class InPlaceReplicationStrategy implements ReplicationStrategy,
             if (replicateContent == null) {
                 replicateContent = createReplicate(replicate.getResourceResolver(), releasedContent, replicate);
             }
+            // copy content of 'jcr:content' always recursive
             copyReleasedContent(context, targetRoot, releasedContent, replicateContent, true, merge);
         }
         if (recursive) {
@@ -156,6 +171,10 @@ public abstract class InPlaceReplicationStrategy implements ReplicationStrategy,
         }
     }
 
+    /**
+     * replication of the children is separated for reuse in subclasses
+     * - for each child the replication ist delegated back to the replication manager to use the right strategy
+     */
     protected void replicateChildren(ReplicationContext context, Resource released, boolean recursive)
             throws Exception {
         for (Resource releasedChild : released.getChildren()) {
@@ -165,9 +184,15 @@ public abstract class InPlaceReplicationStrategy implements ReplicationStrategy,
         }
     }
 
+    /**
+     * the replication of a 'jcr:content' resource is done recursive with this strategy
+     */
     protected void copyReleasedContent(ReplicationContext context, String targetRoot, Resource released, Resource replicate,
                                        boolean recursive, boolean merge)
             throws Exception {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("copyReleasedContent({}) to '{}'", released.getPath(), replicate.getPath());
+        }
         if (!merge) {
             // in case of a 'reset' remove all children from the target resource
             ResourceResolver replicateResolver = replicate.getResourceResolver();
@@ -219,31 +244,48 @@ public abstract class InPlaceReplicationStrategy implements ReplicationStrategy,
         }
     }
 
+    /**
+     * each string property can be a repository path
+     * - if such a path can be resolved to a resource this is a reference and will be transformed
+     * from the 'content' path the the replication root based path
+     */
     protected String transformStringProperty(ReplicationContext context, String targetRoot, String value) {
         Matcher contentPathMatcher = contentPathPattern.matcher(value);
-        if (contentPathMatcher.matches()) {
+        if (contentPathMatcher.matches() && context.getResolver().getResource(value) != null) {
+            // the the value is a reference transform the value to the replication path
             String path = contentPathMatcher.group(1);
             context.references.add(contentPath + path);
             value = targetRoot + path;
         } else {
+            // if the value is not a path it can be possible that this is a rich text with embedded paths...
             value = transformTextProperty(context, targetRoot, value);
         }
         return value;
     }
 
+    /**
+     * transforms embedded references of a rich text from 'content' to the replication path
+     */
     public String transformTextProperty(ReplicationContext context, String targetRoot, String value) {
+        ResourceResolver resolver = context.getResolver();
         StringBuilder result = new StringBuilder();
         Matcher matcher = contentLinkPattern.matcher(value);
         int len = value.length();
         int pos = 0;
         while (matcher.find(pos)) {
-            String path = matcher.group(3);
-            context.references.add(contentPath + path);
             result.append(value, pos, matcher.start());
-            result.append(matcher.group(1));
-            result.append(targetRoot);
-            result.append(path);
-            result.append(matcher.group(4));
+            String path = matcher.group(3);
+            // check for a resolvable resource
+            if (resolver.getResource(contentPath + path) != null) {
+                context.references.add(contentPath + path);
+                result.append(matcher.group(1));
+                result.append(targetRoot);
+                result.append(path);
+                result.append(matcher.group(4));
+            } else {
+                // skip pattern unchanged if resource can't be resolved
+                result.append(value, matcher.start(), matcher.end());
+            }
             pos = matcher.end();
         }
         if (pos >= 0 && pos < len) {
@@ -251,6 +293,8 @@ public abstract class InPlaceReplicationStrategy implements ReplicationStrategy,
         }
         return result.toString();
     }
+
+    // activation and deactivation of the strategy are controlled by the manager
 
     @Override
     public void activate(ReplicationManager manager) {
@@ -269,14 +313,19 @@ public abstract class InPlaceReplicationStrategy implements ReplicationStrategy,
 
     // helpers
 
+    /**
+     * creates a new replicate resource with all types of the origin but without the properties and children
+     */
     protected Resource createReplicate(ResourceResolver replicateResolver, Resource released, Resource parent)
             throws PersistenceException {
+        Map<String, Object> properties = new HashMap<>();
+        // determine the primary type of the origin
         String primaryType = released instanceof JcrResource
                 ? ((JcrResource) released).getPrimaryType()
                 : ResourceHandle.use(released).getPrimaryType();
-        String[] mixinTypes = released.getValueMap().get(JcrConstants.JCR_MIXINTYPES, String[].class);
-        Map<String, Object> properties = new HashMap<>();
         properties.put(JcrConstants.JCR_PRIMARYTYPE, primaryType);
+        // determine the mixin types of the replicate
+        String[] mixinTypes = released.getValueMap().get(JcrConstants.JCR_MIXINTYPES, String[].class);
         if (mixinTypes != null) {
             List<String> acceptedMixins = new ArrayList<>();
             for (String mixinType : mixinTypes) {
@@ -288,6 +337,7 @@ public abstract class InPlaceReplicationStrategy implements ReplicationStrategy,
                 properties.put(JcrConstants.JCR_MIXINTYPES, acceptedMixins.toArray(new String[0]));
             }
         }
+        // create the new resource with the same name as the origin
         return replicateResolver.create(parent, released.getName(), properties);
     }
 

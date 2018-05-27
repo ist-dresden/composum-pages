@@ -5,6 +5,8 @@ import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Component(
         service = {ReplicationStrategy.class},
@@ -14,6 +16,8 @@ import org.osgi.service.component.annotations.Component;
         immediate = true
 )
 public class InPlaceFolderReplication extends InPlaceReplicationStrategy {
+
+    private static final Logger LOG = LoggerFactory.getLogger(InPlaceFolderReplication.class);
 
     @Override
     public boolean canReplicate(ReplicationContext context, Resource resource, boolean isReferenced) {
@@ -35,6 +39,9 @@ public class InPlaceFolderReplication extends InPlaceReplicationStrategy {
             throws Exception {
         Resource replicate = targetRoot.getChild(relativePath);
         if (replicate != null) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("delete folder resource '{}'", replicate.getPath());
+            }
             // if a folder replicate exists remove it and wait for a request of a child
             replicate.getResourceResolver().delete(replicate);
         }

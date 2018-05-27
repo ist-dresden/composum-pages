@@ -1,5 +1,7 @@
 package com.composum.pages.commons.replication;
 
+import com.composum.sling.core.BeanContext;
+import org.apache.commons.lang.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.framework.Constants;
@@ -18,6 +20,9 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import static com.composum.sling.platform.security.PlatformAccessFilter.ACCESS_MODE_PREVIEW;
+import static com.composum.sling.platform.security.PlatformAccessFilter.ACCESS_MODE_PUBLIC;
 
 @Component(
         service = {ReplicationManager.class},
@@ -49,7 +54,7 @@ public class PagesReplicationManager implements ReplicationManager {
     @Override
     public void replicateReferences(ReplicationContext context)
             throws Exception {
-        int maxLoops = 5;
+        int maxLoops = 50;
         do {
             String[] references = context.references.toArray(new String[0]);
             context.references.clear();
@@ -69,19 +74,52 @@ public class PagesReplicationManager implements ReplicationManager {
                                      boolean isReference, boolean recursive)
             throws Exception {
         boolean replicationDone = false;
-        for (ReplicationStrategy strategy : instances) {
-            if (strategy.canReplicate(context, resource, isReference)) {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("replicate" + (isReference ? " reference" : "") + " '{}' using {}",
-                            resource.getPath(), strategy.getClass().getSimpleName());
+        String resourcePath = resource.getPath();
+        if (!context.done.contains(resourcePath)) {
+            // perform replication only of not always done
+            for (ReplicationStrategy strategy : instances) {
+                if (strategy.canReplicate(context, resource, isReference)) {
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("replicate" + (isReference ? " reference" : "") + " '{}' using {}",
+                                resourcePath, strategy.getClass().getSimpleName());
+                    }
+                    strategy.replicate(context, resource, recursive);
+                    replicationDone = true;
                 }
-                strategy.replicate(context, resource, recursive);
-                replicationDone = true;
+            }
+            if (replicationDone) {
+                // register successful replication
+                context.done.add(resourcePath);
+            }
+            if (!replicationDone && isReference) {
+                LOG.warn("referenced resource '{}' not replicated", resource.getPath());
             }
         }
-        if (!replicationDone && isReference) {
-            LOG.warn("referenced resource '{}' not replicated", resource.getPath());
+    }
+
+    @Override
+    public Resource getOrigin(BeanContext context, Resource replicate, String accessMode) {
+        Resource origin = null;
+        String replicatePath = replicate.getPath();
+        String relativePath = null;
+        String replicateRoot;
+        switch (accessMode) {
+            case ACCESS_MODE_PREVIEW:
+                if (replicatePath.startsWith((replicateRoot = config.inPlacePreviewPath()) + "/")) {
+                    relativePath = replicatePath.substring(replicateRoot.length());
+                }
+                break;
+            case ACCESS_MODE_PUBLIC:
+            default:
+                if (replicatePath.startsWith((replicateRoot = config.inPlacePublicPath()) + "/")) {
+                    relativePath = replicatePath.substring(replicateRoot.length());
+                }
+                break;
         }
+        if (StringUtils.isNotBlank(relativePath)) {
+            origin = context.getResolver().getResource(config.contentPath() + relativePath);
+        }
+        return origin;
     }
 
     @Reference(service = ReplicationStrategy.class, policy = ReferencePolicy.DYNAMIC, cardinality = ReferenceCardinality.MULTIPLE)

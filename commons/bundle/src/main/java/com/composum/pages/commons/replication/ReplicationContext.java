@@ -12,6 +12,7 @@ public class ReplicationContext extends BeanContext.Wrapper {
     public final Site site;
     public final PlatformAccessFilter.AccessMode accessMode;
 
+    public final Set<String> done = new HashSet<>();
     public final Set<String> references = new HashSet<>();
 
     public ReplicationContext(BeanContext beanContext, Site site, PlatformAccessFilter.AccessMode accessMode) {

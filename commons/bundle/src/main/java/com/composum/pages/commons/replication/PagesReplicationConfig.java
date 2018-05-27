@@ -6,7 +6,7 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 @ObjectClassDefinition(
         name = "Composum Pages Replication Configuration"
 )
-@interface PagesReplicationConfig {
+public @interface PagesReplicationConfig {
 
     @AttributeDefinition(
             name = "InPlace enabled",
