@@ -1,6 +1,7 @@
 package com.composum.pages.commons.request;
 
 import com.composum.pages.commons.model.Site;
+import com.composum.pages.commons.replication.PagesReplicationConfig;
 import com.composum.pages.commons.replication.ReplicationManager;
 import com.composum.pages.commons.service.SiteManager;
 import com.composum.sling.core.BeanContext;
@@ -9,6 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.wrappers.SlingHttpServletRequestWrapper;
 import org.apache.sling.commons.osgi.PropertiesUtil;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
@@ -23,6 +25,7 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nonnull;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -39,10 +42,6 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import static com.composum.pages.commons.PagesConstants.COMPOSUM_PREFIX;
-import static com.composum.pages.commons.PagesConstants.DISPLAY_MODE_ATTR;
-import static com.composum.sling.platform.security.PlatformAccessFilter.ACCESS_MODE_KEY;
-import static com.composum.sling.platform.security.PlatformAccessFilter.ACCESS_MODE_PREVIEW;
-import static com.composum.sling.platform.security.PlatformAccessFilter.ACCESS_MODE_PUBLIC;
 import static com.composum.sling.platform.staging.ResourceResolverChangeFilter.ATTRIBUTE_NAME;
 import static com.composum.sling.platform.staging.ResourceResolverChangeFilter.COOKIE_NAME;
 import static com.composum.sling.platform.staging.ResourceResolverChangeFilter.PARAMETER_NAME;
@@ -145,9 +144,8 @@ public class PagesReleaseFilter implements Filter {
 
             Site site = siteManager.getContainingSite(context, resource);
 
-            String accessMode = (String) request.getAttribute(ACCESS_MODE_KEY);
-            if (StringUtils.isNotBlank(accessMode) &&
-                    !AccessMode.AUTHOR.name().equals(accessMode = accessMode.toUpperCase())) {
+            AccessMode accessMode = AccessMode.requestMode(slingRequest);
+            if (accessMode != null && accessMode != AccessMode.AUTHOR) {
 
                 // not an AUTHOR access; check public/preview access against the staging policy of the site...
 
@@ -156,37 +154,26 @@ public class PagesReleaseFilter implements Filter {
                 if (uri.startsWith(contextPath)) {
                     uri = uri.substring(contextPath.length());
                 }
-                String path = resource.getPath();
 
-                if (!isUnreleasedPublicAccessAllowed(request.getServerName(), uri, path)) {
+                if (!isUnreleasedPublicAccessAllowed(request.getServerName(), uri, resource.getPath())) {
 
                     if (site != null) {
                         String mode = site.getPublicMode();
                         switch (mode) {
                             case Site.PUBLIC_MODE_IN_PLACE:
-                                switch (accessMode) {
-                                    case ACCESS_MODE_PUBLIC:
-                                        if (!path.startsWith(replicationManager.getConfig().inPlacePublicPath())) {
-                                            sendReject(response, "not a public resource request", uri, resource);
-                                            return;
-                                        }
-                                        if (LOG.isDebugEnabled()) {
-                                            LOG.debug("inPlace public: '{}' ({})", site.getPath(), resource);
-                                        }
-                                        break;
-                                    case ACCESS_MODE_PREVIEW:
-                                        if (!path.startsWith(replicationManager.getConfig().inPlacePreviewPath())) {
-                                            sendReject(response, "not a preview resource request", uri, resource);
-                                            return;
-                                        }
-                                        if (LOG.isDebugEnabled()) {
-                                            LOG.debug("inPlace preview: '{}' ({})", site.getPath(), resource);
-                                        }
-                                        break;
+                                try {
+                                    request = slingRequest = new ReplicationRequest(slingRequest, accessMode);
+                                    resource = slingRequest.getResource();
+                                } catch (IllegalAccessException iaex) {
+                                    sendReject(response, iaex.getMessage(), uri, resource);
+                                    return;
+                                }
+                                if (LOG.isDebugEnabled()) {
+                                    LOG.debug("inPlace " + accessMode + ": '{}' ({})", site.getPath(), resource);
                                 }
                                 break;
                             case Site.PUBLIC_MODE_VERSIONS:
-                                release = site.getReleaseLabel(accessMode);
+                                release = site.getReleaseLabel(accessMode.name());
                                 if (StringUtils.isBlank(release)) {
                                     sendReject(response, "no appropriate release found", uri, resource);
                                     return;
@@ -281,6 +268,56 @@ public class PagesReleaseFilter implements Filter {
             }
         }
         return false;
+    }
+
+    /**
+     * the request mapper to map a content request to the replication path
+     */
+    private class ReplicationRequest extends SlingHttpServletRequestWrapper {
+
+        private Resource mappedResource;
+
+        private ReplicationRequest(SlingHttpServletRequest request, AccessMode accessMode)
+                throws IllegalAccessException {
+            super(request);
+
+            PagesReplicationConfig config = replicationManager.getConfig();
+            String replicationRoot = null;
+            switch (accessMode) {
+                case PUBLIC:
+                    replicationRoot = config.inPlacePublicPath();
+                    break;
+                case PREVIEW:
+                    replicationRoot = config.inPlacePreviewPath();
+                    break;
+            }
+
+            Resource resource = request.getResource();
+            String path = resource.getPath();
+            mappedResource = null;
+
+            if (replicationRoot != null) {
+                if (!path.startsWith(replicationRoot + "/")) {
+                    String contentPath = config.contentPath();
+                    if (path.startsWith(contentPath + "/")) {
+                        path = path.replaceFirst("^" + contentPath, replicationRoot);
+                        mappedResource = request.getResourceResolver().getResource(path);
+                    }
+                } else {
+                    mappedResource = resource;
+                }
+            }
+            if (mappedResource == null) {
+                throw new IllegalAccessException("not a " + accessMode
+                        + " resource request or resource not found: " + resource.getPath());
+            }
+        }
+
+        @Nonnull
+        @Override
+        public Resource getResource() {
+            return mappedResource;
+        }
     }
 
     protected void sendReject(ServletResponse response, String message, String uri, Resource resource)

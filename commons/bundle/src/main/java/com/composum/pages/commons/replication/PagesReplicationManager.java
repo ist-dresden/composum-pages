@@ -1,6 +1,7 @@
 package com.composum.pages.commons.replication;
 
 import com.composum.sling.core.BeanContext;
+import com.composum.sling.platform.security.AccessMode;
 import org.apache.commons.lang.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -20,9 +21,6 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import static com.composum.sling.platform.security.PlatformAccessFilter.ACCESS_MODE_PREVIEW;
-import static com.composum.sling.platform.security.PlatformAccessFilter.ACCESS_MODE_PUBLIC;
 
 @Component(
         service = {ReplicationManager.class},
@@ -98,18 +96,18 @@ public class PagesReplicationManager implements ReplicationManager {
     }
 
     @Override
-    public Resource getOrigin(BeanContext context, Resource replicate, String accessMode) {
+    public Resource getOrigin(BeanContext context, Resource replicate, AccessMode accessMode) {
         Resource origin = null;
         String replicatePath = replicate.getPath();
         String relativePath = null;
         String replicateRoot;
         switch (accessMode) {
-            case ACCESS_MODE_PREVIEW:
+            case PREVIEW:
                 if (replicatePath.startsWith((replicateRoot = config.inPlacePreviewPath()) + "/")) {
                     relativePath = replicatePath.substring(replicateRoot.length());
                 }
                 break;
-            case ACCESS_MODE_PUBLIC:
+            case PUBLIC:
             default:
                 if (replicatePath.startsWith((replicateRoot = config.inPlacePublicPath()) + "/")) {
                     relativePath = replicatePath.substring(replicateRoot.length());

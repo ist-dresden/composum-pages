@@ -149,9 +149,9 @@
                 this.handle = core.getWidget(this.el, '.' + toolbars.const.toolbarHandleClass, toolbars.ToolbarHandle);
                 this.handle.toolbar = this;
                 this.$('.' + toolbars.const.previewAction).attr('href',
-                    '?pages.mode=' + pages.profile.get('mode', 'preview', 'preview'));
+                    '?pages.mode.switch=' + pages.profile.get('mode', 'preview', 'preview'));
                 this.$('.' + toolbars.const.editAction).attr('href',
-                    '?pages.mode=' + pages.profile.get('mode', 'edit', 'edit'));
+                    '?pages.mode.switch=' + pages.profile.get('mode', 'edit', 'edit'));
                 this.$('.' + c.tbar.base + c.tbar._open).click(_.bind(this.openPage, this));
                 toolbars.localeSelector = core.getView('.' + toolbars.const.languageMenu, toolbars.LocaleSelector);
                 toolbars.localeSelector.currentPage = this.currentPage;

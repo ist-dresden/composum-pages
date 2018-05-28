@@ -2,6 +2,7 @@ package com.composum.pages.commons.replication;
 
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.filter.StringFilter;
+import com.composum.sling.platform.security.AccessMode;
 import org.apache.sling.api.resource.Resource;
 
 public interface ReplicationManager {
@@ -35,5 +36,5 @@ public interface ReplicationManager {
     void replicateReferences(ReplicationContext context)
             throws Exception;
 
-    Resource getOrigin(BeanContext context, Resource replicate, String accessMode);
+    Resource getOrigin(BeanContext context, Resource replicate, AccessMode accessMode);
 }

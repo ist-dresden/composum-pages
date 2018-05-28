@@ -10,7 +10,7 @@
         <cpn:clientlib type="css" category="composum.pages.preview.frame"/>
     </head>
     <body class="composum-pages-${frame.displayModeHint}_body" data-path="${frame.pagePath}"
-          data-pages-mode="PREVIEW" data-pages-locale="${frame.locale}">
+          data-pages-mode="${frame.displayMode}" data-pages-locale="${frame.locale}">
     <div class="composum-pages-stage-edit-frame_wrapper" data-path="${frame.pagePath}">
         <iframe class="composum-pages-stage-edit-frame" src="${frame.pageUrl}"></iframe>
     </div>
