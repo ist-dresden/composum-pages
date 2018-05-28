@@ -4,7 +4,7 @@ import com.composum.pages.commons.model.Site;
 import com.composum.pages.commons.replication.ReplicationManager;
 import com.composum.pages.commons.service.SiteManager;
 import com.composum.sling.core.BeanContext;
-import com.composum.sling.platform.security.PlatformAccessFilter;
+import com.composum.sling.platform.security.AccessMode;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import static com.composum.pages.commons.PagesConstants.COMPOSUM_PREFIX;
+import static com.composum.pages.commons.PagesConstants.DISPLAY_MODE_ATTR;
 import static com.composum.sling.platform.security.PlatformAccessFilter.ACCESS_MODE_KEY;
 import static com.composum.sling.platform.security.PlatformAccessFilter.ACCESS_MODE_PREVIEW;
 import static com.composum.sling.platform.security.PlatformAccessFilter.ACCESS_MODE_PUBLIC;
@@ -146,7 +147,7 @@ public class PagesReleaseFilter implements Filter {
 
             String accessMode = (String) request.getAttribute(ACCESS_MODE_KEY);
             if (StringUtils.isNotBlank(accessMode) &&
-                    !PlatformAccessFilter.AccessMode.AUTHOR.name().equals(accessMode = accessMode.toUpperCase())) {
+                    !AccessMode.AUTHOR.name().equals(accessMode = accessMode.toUpperCase())) {
 
                 // not an AUTHOR access; check public/preview access against the staging policy of the site...
 
@@ -245,7 +246,7 @@ public class PagesReleaseFilter implements Filter {
                 }
                 request.setAttribute(ATTRIBUTE_NAME, release);
                 // disable editing for release requests
-                request.setAttribute(DisplayMode.ATTRIBUTE_KEY, DisplayMode.create(DisplayMode.Value.NONE));
+                slingRequest.adaptTo(DisplayMode.class).reset(DisplayMode.Value.NONE);
             }
 
             // disable component caching if in edit context ('edit', 'preview', 'browse', 'develop')

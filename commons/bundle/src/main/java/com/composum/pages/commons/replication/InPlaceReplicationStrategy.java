@@ -3,7 +3,7 @@ package com.composum.pages.commons.replication;
 import com.composum.pages.commons.model.Site;
 import com.composum.sling.core.JcrResource;
 import com.composum.sling.core.ResourceHandle;
-import com.composum.sling.platform.security.PlatformAccessFilter;
+import com.composum.sling.platform.security.AccessMode;
 import com.composum.sling.platform.staging.service.ReleaseMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
@@ -74,7 +74,7 @@ public abstract class InPlaceReplicationStrategy implements ReplicationStrategy,
     protected boolean canReplicateSite(ReplicationContext context, Resource resource) {
         boolean result = false;
         if (config != null && config.inPlaceEnabled()
-                && PlatformAccessFilter.AccessMode.AUTHOR != context.accessMode) {
+                && AccessMode.AUTHOR != context.accessMode) {
             result = Site.PUBLIC_MODE_IN_PLACE.equals(context.site.getPublicMode());
         }
         return result;

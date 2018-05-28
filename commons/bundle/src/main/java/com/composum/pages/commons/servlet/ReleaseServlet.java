@@ -9,7 +9,7 @@ import com.composum.sling.core.ResourceHandle;
 import com.composum.sling.core.servlet.AbstractServiceServlet;
 import com.composum.sling.core.servlet.ServletOperation;
 import com.composum.sling.core.servlet.ServletOperationSet;
-import com.composum.sling.platform.security.PlatformAccessFilter;
+import com.composum.sling.platform.security.AccessMode;
 import com.composum.sling.platform.staging.service.ReleaseManager;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
@@ -154,7 +154,7 @@ public class ReleaseServlet extends AbstractServiceServlet {
                 }
 
                 Site site = siteManager.getContainingSite(beanContext, resource);
-                PlatformAccessFilter.AccessMode accessMode = PlatformAccessFilter.AccessMode.valueOf(accessCategory.toUpperCase());
+                AccessMode accessMode = AccessMode.valueOf(accessCategory.toUpperCase());
                 if (LOG.isInfoEnabled()) {
                     LOG.info("replication of '{}' for {}...", site.getPath(), accessMode);
                 }
