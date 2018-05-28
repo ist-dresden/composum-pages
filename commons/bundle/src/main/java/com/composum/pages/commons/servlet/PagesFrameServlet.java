@@ -4,19 +4,18 @@ import com.composum.pages.commons.request.DisplayMode;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.servlet.AbstractConsoleServlet;
 import org.apache.sling.api.SlingHttpServletRequest;
-import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.servlets.HttpConstants;
 import org.apache.sling.api.servlets.ServletResolverConstants;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
 
 import javax.servlet.Servlet;
+import javax.servlet.http.HttpSession;
 import java.util.regex.Pattern;
 
 import static com.composum.pages.commons.PagesConstants.DISPLAY_MODE_ATTR;
 import static com.composum.pages.commons.PagesConstants.DISPLAY_MODE_REQ_PARAM;
-import static com.composum.pages.commons.PagesConstants.FRAME_CONTEXT_ATTR;
-import static com.composum.pages.commons.PagesConstants.PAGES_LOCALE_ATTR;
+import static com.composum.pages.commons.PagesConstants.PAGES_FRAME_PATH;
 
 /**
  * The general hook (servlet) for the Pages edit stage; provides the path '/bin/pages.html/...'.
@@ -24,7 +23,7 @@ import static com.composum.pages.commons.PagesConstants.PAGES_LOCALE_ATTR;
 @Component(service = Servlet.class,
         property = {
                 Constants.SERVICE_DESCRIPTION + "=Composum Pages Frame Servlet",
-                ServletResolverConstants.SLING_SERVLET_PATHS + "=/bin/pages",
+                ServletResolverConstants.SLING_SERVLET_PATHS + "=" + PAGES_FRAME_PATH,
                 ServletResolverConstants.SLING_SERVLET_METHODS + "=" + HttpConstants.METHOD_GET
         })
 public class PagesFrameServlet extends AbstractConsoleServlet {
@@ -33,24 +32,12 @@ public class PagesFrameServlet extends AbstractConsoleServlet {
 
     public static final String CONSOLE_PATH = "/libs/composum/pages/stage/edit/console/content";
 
-    public static final Pattern PATH_PATTERN = Pattern.compile("^(/bin/pages(\\.[^/]+)?\\.html)(/.*)?$");
+    public static final Pattern PATH_PATTERN = Pattern.compile("^(" + PAGES_FRAME_PATH + "(\\.[^/]+)?\\.html)(/.*)?$");
+
+    public static final String DISPLAY_MODE_SWITCH_PARAM = DISPLAY_MODE_REQ_PARAM + ".switch";
 
     protected Pattern getPathPattern(BeanContext context) {
         return PATH_PATTERN;
-    }
-
-    /**
-     * Adds some hints that this request is a 'Pages Frame' request; used to control the 'persistence' of
-     * the selected display mode and selected language (locale)
-     */
-    @Override
-    protected BeanContext createContext(SlingHttpServletRequest request, SlingHttpServletResponse response) {
-        BeanContext context = super.createContext(request, response);
-        context.setAttribute(FRAME_CONTEXT_ATTR + ":" + DISPLAY_MODE_ATTR,
-                Boolean.TRUE, BeanContext.Scope.request);
-        context.setAttribute(FRAME_CONTEXT_ATTR + ":" + PAGES_LOCALE_ATTR,
-                Boolean.TRUE, BeanContext.Scope.request);
-        return context;
     }
 
     /**
@@ -58,20 +45,32 @@ public class PagesFrameServlet extends AbstractConsoleServlet {
      */
     protected String getResourceType(BeanContext context) {
         SlingHttpServletRequest request = context.getRequest();
-        DisplayMode.Value mode = DisplayMode.current(context);
-        if (DisplayMode.Value.NONE == mode &&
-                !DisplayMode.Value.NONE.name().equalsIgnoreCase(
-                        request.getParameter(DISPLAY_MODE_REQ_PARAM))) {
-            // replace stored 'NONE' by 'EDIT' if this 'Pages' servlet is used and store the new mode
-            mode = DisplayMode.Value.EDIT;
-            request.adaptTo(DisplayMode.class).reset(mode);
-        }
+        DisplayMode.Value mode = getDisplayMode(context);
+        request.adaptTo(DisplayMode.class).reset(mode); // yset the selected mode for the frame rendering
         switch (mode) {
             case DEVELOP: // no extra view for the 'develop' mode
                 mode = DisplayMode.Value.EDIT;
                 break;
         }
         return RESOURCE_TYPE.replaceAll("\\{mode}", mode.name().toLowerCase());
+    }
+
+    /**
+     * manages the display mode of the frame controlled by the 'pages.mode.switch' parameter;
+     * the selected mode is stored in the session and used up to the next switch
+     */
+    protected DisplayMode.Value getDisplayMode(BeanContext context) {
+        SlingHttpServletRequest request = context.getRequest();
+        HttpSession session = request.getSession(true);
+        DisplayMode.Value modeSwitch = DisplayMode.Value.displayModeValue(
+                request.getParameter(DISPLAY_MODE_SWITCH_PARAM), null);
+        if (modeSwitch != null) {
+            session.setAttribute(DISPLAY_MODE_ATTR, modeSwitch.name());
+            return modeSwitch;
+        } else {
+            return DisplayMode.Value.displayModeValue(
+                    session.getAttribute(DISPLAY_MODE_ATTR), DisplayMode.Value.EDIT);
+        }
     }
 
     @Override

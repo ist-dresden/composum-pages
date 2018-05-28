@@ -75,6 +75,7 @@
                 if (!this.busy) {
                     this.busy = true;
                     var frameUrl = event.currentTarget.contentDocument.URL;
+                    var url;
                     core.ajaxGet('/bin/cpm/nodes/node.resolve.json', {
                             data: {
                                 url: frameUrl
@@ -82,14 +83,26 @@
                         }, _.bind(function (data) {
                             if (this.currentPath !== data.path) {
                                 console.log('pages.EditFrame.onFrameLoad(' + frameUrl + '): ' + data.path);
-                                var url = new core.SlingUrl(frameUrl);
-                                if (!url.parameters || url.parameters['pages.mode'] !== 'preview') {
+                                url = new core.SlingUrl(frameUrl);
+                                var displayMode = url.parameters ? url.parameters['pages.mode'] : undefined;
+                                if (!displayMode && pages.isEditMode()) {
+                                    // reload with the right display mode if no mode specified in the URL
+                                    // this is generally happens if the content navigation is used
+                                    this.reloadPage(url.parameters, data.path);
+                                } else {
+                                    // trigger all necessary events after loading a different page
                                     pages.current.page = data.path;
                                     var eventData = [data.path, url.parameters];
                                     console.log('frame.trigger.page:selected(' + data.path + ')');
                                     $(document).trigger("page:selected", eventData);
                                 }
                             } else {
+                                url = new core.SlingUrl(frameUrl);
+                                var locale = url.parameters ? url.parameters['pages.locale'] : undefined;
+                                if (locale) {
+                                    // get current locale from request if present to keep locale switching
+                                    pages.current.locale = locale;
+                                }
                                 var select = this.selectOnLoad;
                                 if (!select) {
                                     select = pages.toolbars.pageToolbar.getSelectedComponent();

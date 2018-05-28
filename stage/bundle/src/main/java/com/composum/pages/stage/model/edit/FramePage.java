@@ -81,11 +81,11 @@ public class FramePage extends Page {
     }
 
     public String getDisplayModeSelector() {
-        DisplayMode.Value mode = DisplayMode.requested(context);
-        switch (mode) {
-            case DEVELOP:
-                mode = DisplayMode.Value.EDIT;
-        }
-        return mode.name().toLowerCase();
+        return getDisplayModeHint().toLowerCase();
+    }
+
+    @Override
+    public DisplayMode.Value getDisplayMode() {
+        return DisplayMode.requested(context);
     }
 }

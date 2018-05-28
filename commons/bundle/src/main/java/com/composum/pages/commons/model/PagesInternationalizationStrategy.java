@@ -1,5 +1,6 @@
 package com.composum.pages.commons.model;
 
+import com.composum.pages.commons.request.PagesLocale;
 import com.composum.platform.models.annotations.InternationalizationStrategy;
 import com.composum.sling.core.BeanContext;
 import org.apache.sling.api.SlingHttpServletRequest;
@@ -19,6 +20,6 @@ public class PagesInternationalizationStrategy extends InternationalizationStrat
 
     // FIXME @Override
     protected Locale getLocale(BeanContext beanContext, SlingHttpServletRequest request, Locale locale) {
-        return request != null ? request.adaptTo(Locale.class) : null;
+        return request != null ? request.adaptTo(PagesLocale.class).getLocale() : null;
     }
 }

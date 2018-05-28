@@ -3,6 +3,7 @@ package com.composum.pages.commons.taglib;
 import com.composum.pages.commons.model.Page;
 import com.composum.pages.commons.model.properties.Languages;
 import com.composum.pages.commons.request.DisplayMode;
+import com.composum.pages.commons.request.PagesLocale;
 import com.composum.pages.commons.service.PageManager;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.platform.security.AccessMode;
@@ -10,15 +11,13 @@ import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
 
 import javax.servlet.jsp.PageContext;
-import java.util.Locale;
-
-import static com.composum.pages.commons.PagesConstants.FRAME_CONTEXT_ATTR;
-import static com.composum.pages.commons.PagesConstants.PAGES_LOCALE_ATTR;
 
 public class DefineObjectsTag extends org.apache.sling.scripting.jsp.taglib.DefineObjectsTag {
 
-    public static final String PAGES_AUTHOR = "pagesAuthor";
-    public static final String PAGES_PUBLIC = "pagesPublic";
+    public static final String PAGES_ACCESS_PREFIX = "pagesAccess";
+    public static final String PAGES_ACCESS_AUTHOR = PAGES_ACCESS_PREFIX + "Author";
+    public static final String PAGES_ACCESS_PREVIEW = PAGES_ACCESS_PREFIX + "Preview";
+    public static final String PAGES_ACCESS_PUBLIC = PAGES_ACCESS_PREFIX + "Public";
 
     public static final String PAGES_MODE_PREFIX = "pagesMode";
     public static final String PAGES_MODE_NONE = PAGES_MODE_PREFIX + "None";
@@ -39,9 +38,11 @@ public class DefineObjectsTag extends org.apache.sling.scripting.jsp.taglib.Defi
 
         context.setAttribute(CONTEXT_PATH, context.getRequest().getContextPath(), BeanContext.Scope.request);
         AccessMode accessMode = request.adaptTo(AccessMode.class);
-        context.setAttribute(PAGES_AUTHOR, accessMode == AccessMode.AUTHOR
+        context.setAttribute(PAGES_ACCESS_AUTHOR, accessMode == AccessMode.AUTHOR
                 ? Boolean.TRUE : Boolean.FALSE, BeanContext.Scope.request);
-        context.setAttribute(PAGES_PUBLIC, accessMode == AccessMode.PUBLIC
+        context.setAttribute(PAGES_ACCESS_PREVIEW, accessMode == AccessMode.PREVIEW
+                ? Boolean.TRUE : Boolean.FALSE, BeanContext.Scope.request);
+        context.setAttribute(PAGES_ACCESS_PUBLIC, accessMode == AccessMode.PUBLIC
                 ? Boolean.TRUE : Boolean.FALSE, BeanContext.Scope.request);
 
         DisplayMode.Value displayMode = DisplayMode.current(context);
@@ -54,7 +55,7 @@ public class DefineObjectsTag extends org.apache.sling.scripting.jsp.taglib.Defi
         context.setAttribute(PAGES_MODE_DEVELOP, displayMode == DisplayMode.Value.DEVELOP
                 ? Boolean.TRUE : Boolean.FALSE, BeanContext.Scope.request);
 
-        request.adaptTo(Locale.class);
+        request.adaptTo(PagesLocale.class);
         setCurrentPage();
         setLanguages();
 
@@ -62,10 +63,7 @@ public class DefineObjectsTag extends org.apache.sling.scripting.jsp.taglib.Defi
     }
 
     protected BeanContext createContext(PageContext pageContext) {
-        BeanContext context = new BeanContext.Page(pageContext);
-        context.setAttribute(FRAME_CONTEXT_ATTR + ":" + PAGES_LOCALE_ATTR,
-                Boolean.TRUE, BeanContext.Scope.request);
-        return context;
+        return new BeanContext.Page(pageContext);
     }
 
     protected void setCurrentPage() {

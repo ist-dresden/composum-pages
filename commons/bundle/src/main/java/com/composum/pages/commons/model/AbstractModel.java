@@ -4,6 +4,7 @@ import com.composum.pages.commons.PagesConstants;
 import com.composum.pages.commons.model.properties.Language;
 import com.composum.pages.commons.model.properties.Languages;
 import com.composum.pages.commons.request.DisplayMode;
+import com.composum.pages.commons.request.PagesLocale;
 import com.composum.pages.commons.service.PageManager;
 import com.composum.pages.commons.service.ResourceManager;
 import com.composum.pages.commons.service.SiteManager;
@@ -94,6 +95,8 @@ public abstract class AbstractModel implements SlingBean, Model {
 
     /** current access mode (author/public) od the contexts request */
     private transient AccessMode accessMode;
+
+    private transient DisplayMode.Value displayMode;
 
     private transient Page currentPage;
     private transient Page containingPage;
@@ -230,7 +233,10 @@ public abstract class AbstractModel implements SlingBean, Model {
     }
 
     public DisplayMode.Value getDisplayMode() {
-        return DisplayMode.requested(context);
+        if (displayMode == null) {
+            displayMode = DisplayMode.current(context);
+        }
+        return displayMode;
     }
 
     /**
@@ -389,7 +395,7 @@ public abstract class AbstractModel implements SlingBean, Model {
 
     public Locale getLocale() {
         if (locale == null) {
-            locale = context.getRequest().adaptTo(Locale.class);
+            locale = context.getRequest().adaptTo(PagesLocale.class).getLocale();
         }
         return locale;
     }
