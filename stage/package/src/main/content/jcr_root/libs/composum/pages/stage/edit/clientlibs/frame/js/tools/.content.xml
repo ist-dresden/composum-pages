@@ -5,7 +5,9 @@
             composum/pages/stage/edit/tools/site/releases/js/releases.js,
             composum/pages/stage/edit/tools/site/finished/js/finished.js,
             composum/pages/stage/edit/tools/site/modified/js/modified.js,
-            composum/pages/stage/edit/tools/page/versions/versions.js,
-            composum/pages/stage/edit/tools/page/versions/versionView.js,
-            composum/pages/stage/edit/tools/dev/component/component.js
+            composum/pages/stage/edit/tools/page/versions/js/versions.js,
+            composum/pages/stage/edit/tools/page/versions/js/versionView.js,
+            jslibs/chartist/0.11.0/chartist.js,
+            composum/pages/stage/edit/tools/page/statistics/js/statistics.js,
+            composum/pages/stage/edit/tools/dev/component/js/component.js
         ]"/>

@@ -90,11 +90,14 @@
                                     // this is generally happens if the content navigation is used
                                     this.reloadPage(url.parameters, data.path);
                                 } else {
-                                    // trigger all necessary events after loading a different page
-                                    pages.current.page = data.path;
-                                    var eventData = [data.path, url.parameters];
-                                    console.log('frame.trigger.page:selected(' + data.path + ')');
-                                    $(document).trigger("page:selected", eventData);
+                                    // no event for explicit 'preview' - probably site page scanning
+                                    if (!displayMode || displayMode !== 'preview') {
+                                        // trigger all necessary events after loading a different page
+                                        pages.current.page = data.path;
+                                        var eventData = [data.path, url.parameters];
+                                        console.log('frame.trigger.page:selected(' + data.path + ')');
+                                        $(document).trigger("page:selected", eventData);
+                                    }
                                 }
                             } else {
                                 url = new core.SlingUrl(frameUrl);

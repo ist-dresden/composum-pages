@@ -33,6 +33,10 @@ public class Release extends AbstractModel implements Comparable<Release> {
         created = getProperty("jcr:created", Calendar.class);
     }
 
+    /**
+     * use requested edit mode as mode for the component rendering;
+     * for the site the mode is set to 'none' in the page template to avoid container / element edit behavior
+     */
     @Override
     public boolean isEditMode() {
         return DisplayMode.isEditMode(DisplayMode.requested(context));
