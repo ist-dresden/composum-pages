@@ -5,12 +5,12 @@ import com.composum.pages.commons.replication.PagesReplicationConfig;
 import com.composum.pages.commons.replication.ReplicationManager;
 import com.composum.pages.commons.service.SiteManager;
 import com.composum.sling.core.BeanContext;
+import com.composum.sling.core.util.LinkUtil;
 import com.composum.sling.platform.security.AccessMode;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.wrappers.SlingHttpServletRequestWrapper;
 import org.apache.sling.commons.osgi.PropertiesUtil;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
@@ -25,7 +25,6 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nonnull;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -161,15 +160,36 @@ public class PagesReleaseFilter implements Filter {
                         String mode = site.getPublicMode();
                         switch (mode) {
                             case Site.PUBLIC_MODE_IN_PLACE:
-                                try {
-                                    request = slingRequest = new ReplicationRequest(slingRequest, accessMode);
-                                    resource = slingRequest.getResource();
-                                } catch (IllegalAccessException iaex) {
-                                    sendReject(response, iaex.getMessage(), uri, resource);
-                                    return;
+                                PagesReplicationConfig config = replicationManager.getConfig();
+                                String replicationRoot = null;
+                                switch (accessMode) {
+                                    case PUBLIC:
+                                        replicationRoot = config.inPlacePublicPath();
+                                        break;
+                                    case PREVIEW:
+                                        replicationRoot = config.inPlacePreviewPath();
+                                        break;
                                 }
-                                if (LOG.isDebugEnabled()) {
-                                    LOG.debug("inPlace " + accessMode + ": '{}' ({})", site.getPath(), resource);
+                                if (replicationRoot != null) {
+                                    String path = resource.getPath();
+                                    if (!path.startsWith(replicationRoot + "/")) {
+                                        String contentPath = config.contentPath();
+                                        if (path.startsWith(contentPath + "/")) {
+                                            path = path.replaceFirst("^" + contentPath, replicationRoot);
+                                            String url = LinkUtil.getUrl(slingRequest, path);
+                                            ((SlingHttpServletResponse) response).sendRedirect(url);
+                                            return;
+                                        } else {
+                                            sendReject(response, "not a released resource", uri, resource);
+                                            return;
+                                        }
+                                    }
+                                    if (LOG.isDebugEnabled()) {
+                                        LOG.debug("replication: '{}' ('{}')", accessMode + "@" + site.getPath(), resource);
+                                    }
+                                } else {
+                                    sendReject(response, "no replication configured", uri, resource);
+                                    return;
                                 }
                                 break;
                             case Site.PUBLIC_MODE_VERSIONS:
@@ -179,7 +199,7 @@ public class PagesReleaseFilter implements Filter {
                                     return;
                                 }
                                 if (LOG.isDebugEnabled()) {
-                                    LOG.debug("release: '{}' ({})", release + '@' + site.getPath(), resource);
+                                    LOG.debug("release: '{}' ({})", release + "@" + site.getPath(), resource);
                                 }
                                 break;
                         }
@@ -268,56 +288,6 @@ public class PagesReleaseFilter implements Filter {
             }
         }
         return false;
-    }
-
-    /**
-     * the request mapper to map a content request to the replication path
-     */
-    private class ReplicationRequest extends SlingHttpServletRequestWrapper {
-
-        private Resource mappedResource;
-
-        private ReplicationRequest(SlingHttpServletRequest request, AccessMode accessMode)
-                throws IllegalAccessException {
-            super(request);
-
-            PagesReplicationConfig config = replicationManager.getConfig();
-            String replicationRoot = null;
-            switch (accessMode) {
-                case PUBLIC:
-                    replicationRoot = config.inPlacePublicPath();
-                    break;
-                case PREVIEW:
-                    replicationRoot = config.inPlacePreviewPath();
-                    break;
-            }
-
-            Resource resource = request.getResource();
-            String path = resource.getPath();
-            mappedResource = null;
-
-            if (replicationRoot != null) {
-                if (!path.startsWith(replicationRoot + "/")) {
-                    String contentPath = config.contentPath();
-                    if (path.startsWith(contentPath + "/")) {
-                        path = path.replaceFirst("^" + contentPath, replicationRoot);
-                        mappedResource = request.getResourceResolver().getResource(path);
-                    }
-                } else {
-                    mappedResource = resource;
-                }
-            }
-            if (mappedResource == null) {
-                throw new IllegalAccessException("not a " + accessMode
-                        + " resource request or resource not found: " + resource.getPath());
-            }
-        }
-
-        @Nonnull
-        @Override
-        public Resource getResource() {
-            return mappedResource;
-        }
     }
 
     protected void sendReject(ServletResponse response, String message, String uri, Resource resource)
