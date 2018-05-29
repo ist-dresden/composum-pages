@@ -1,5 +1,6 @@
 package com.composum.pages.commons.model;
 
+import com.composum.pages.commons.request.DisplayMode;
 import com.composum.pages.commons.service.PageManager;
 import com.composum.pages.commons.service.SiteManager;
 import com.composum.platform.models.annotations.DetermineResourceStategy;
@@ -125,6 +126,11 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
             }
         }
         return homepage;
+    }
+
+    @Override
+    public boolean isEditMode() {
+        return DisplayMode.isEditMode(DisplayMode.requested(context));
     }
 
     // releases

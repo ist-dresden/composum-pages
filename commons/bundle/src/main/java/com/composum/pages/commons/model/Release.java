@@ -1,5 +1,6 @@
 package com.composum.pages.commons.model;
 
+import com.composum.pages.commons.request.DisplayMode;
 import com.composum.sling.core.BeanContext;
 import org.apache.sling.api.resource.Resource;
 
@@ -30,6 +31,11 @@ public class Release extends AbstractModel implements Comparable<Release> {
         key = getProperty("key", "");
         categories = Arrays.asList(getProperty("categories", new String[0]));
         created = getProperty("jcr:created", Calendar.class);
+    }
+
+    @Override
+    public boolean isEditMode() {
+        return DisplayMode.isEditMode(DisplayMode.requested(context));
     }
 
     public String getKey() {
