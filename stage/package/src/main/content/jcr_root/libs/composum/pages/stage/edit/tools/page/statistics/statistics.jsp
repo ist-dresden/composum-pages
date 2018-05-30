@@ -7,11 +7,39 @@
              cssClasses="composum-pages-tools">
     <div class="composum-pages-tools_actions btn-toolbar">
         <div class="composum-pages-tools_left-actions">
+            <div class="${statisticsCssBase}_range composum-pages-tools_button-group btn-group btn-group-sm" role="group">
+                <button type="button"
+                        class="fa fa-chevron-left time-range-select_prev composum-pages-tools_button btn btn-default"
+                        title="Earlier"><span
+                        class="composum-pages-tools_button-label">Earlier</span></button>
+                <div class="time-range-select_type btn-group" role="group">
+                    <button type="button"
+                            class="composum-pages-tools_button btn btn-default dropdown-toggle"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a class="days" href="#"></a></li>
+                        <li><a class="weeks" href="#"></a></li>
+                        <li><a class="months" href="#"></a></li>
+                        <li><a class="years" href="#"></a></li>
+                    </ul>
+                </div>
+                <button type="button"
+                        class="fa fa-bullseye time-range-select_current composum-pages-tools_button btn btn-default"
+                        title="Current"><span
+                        class="composum-pages-tools_button-label">Current</span></button>
+                <button type="button"
+                        class="fa fa-chevron-right time-range-select_next composum-pages-tools_button btn btn-default"
+                        title="Later"><span
+                        class="composum-pages-tools_button-label">Later</span></button>
+            </div>
         </div>
         <div class="composum-pages-tools_right-actions">
             <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
-            </div>
-            <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
+                <button type="button"
+                        class="fa fa-refresh ${statisticsCssBase}_reload composum-pages-tools_button btn btn-default"
+                        title="Reaload"><span
+                        class="composum-pages-tools_button-label">Reload</span></button>
             </div>
         </div>
     </div>

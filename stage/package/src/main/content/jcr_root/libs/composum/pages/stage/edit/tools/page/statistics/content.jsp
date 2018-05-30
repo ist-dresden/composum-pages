@@ -6,8 +6,14 @@
 <cpp:defineFrameObjects/>
 <cpp:model var="model" type="com.composum.pages.commons.model.Page">
     <div class="${modelCssBase}_chart">
-        <cpn:text tagName="h6" tagClass="${modelCssBase}_chart-title">Chart</cpn:text>
-        <div class="${modelCssBase}_chartist">
+        <div class="${modelCssBase}_chart-legend">
+            <span class="${modelCssBase}_chart-legend_unique"><b></b><cpn:text tagName="i" tagClass="" value="unique"
+                                                                               i18n="true"/></span>
+            <span class="${modelCssBase}_chart-legend_total"><b></b><cpn:text tagName="i" tagClass="" value="total"
+                                                                               i18n="true"/></span>
+        </div>
+        <div class="${modelCssBase}_canvas-wrapper">
+            <div class="${modelCssBase}_canvas"></div>
         </div>
     </div>
     <div class="${modelCssBase}_referrers">
