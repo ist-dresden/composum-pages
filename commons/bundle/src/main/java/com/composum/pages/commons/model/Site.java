@@ -128,6 +128,10 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
         return homepage;
     }
 
+    /**
+     * use requested edit mode as mode for the component rendering;
+     * for the site the mode is set to 'none' in the page template to avoid container / element edit behavior
+     */
     @Override
     public boolean isEditMode() {
         return DisplayMode.isEditMode(DisplayMode.requested(context));
