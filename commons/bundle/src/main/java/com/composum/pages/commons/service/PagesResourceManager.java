@@ -5,7 +5,6 @@ import com.composum.pages.commons.model.ContentTypeFilter;
 import com.composum.pages.commons.model.Page;
 import com.composum.pages.commons.model.ResourceReference;
 import com.composum.pages.commons.model.Site;
-import com.composum.pages.commons.model.Template;
 import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.filter.StringFilter;
 import com.composum.sling.core.util.ResourceUtil;
@@ -18,6 +17,7 @@ import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,6 +47,9 @@ public class PagesResourceManager implements ResourceManager {
 
     protected static final Logger LOG = LoggerFactory.getLogger(PagesResourceManager.class);
 
+    @Reference
+    protected TemplateService templateService;
+
     /**
      * Checks the policies of the resource hierarchy for a given parent and child (for move and copy operations).
      *
@@ -63,8 +66,8 @@ public class PagesResourceManager implements ResourceManager {
             childTypeResource = child.getChild(JcrConstants.JCR_CONTENT);
         }
         String referenceType = childTypeResource.getResourceType();
-        ContentTypeFilter filter = new ContentTypeFilter(parent);
-        return filter.isAllowedChild(Template.getTemplateOf(child),
+        ContentTypeFilter filter = new ContentTypeFilter(templateService, parent);
+        return filter.isAllowedChild(templateService.getTemplateOf(child),
                 new ResourceReference(resolver, referencePath, referenceType));
     }
 

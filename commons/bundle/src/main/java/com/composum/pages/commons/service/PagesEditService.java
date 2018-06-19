@@ -26,9 +26,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.composum.pages.commons.PagesConstants.PROP_ALLOWED_CONTAINERS;
-import static com.composum.pages.commons.PagesConstants.PROP_ALLOWED_ELEMENTS;
-
 @Component(
         property = {
                 Constants.SERVICE_DESCRIPTION + "=Composum Pages Elements Manager"
@@ -43,40 +40,6 @@ public class PagesEditService implements EditService {
 
     @Reference
     protected ResourceManager resourceManager;
-
-    //
-    // hierarchy management for the content tree
-    //
-
-    /**
-     * Determines the list of resource types (nodes of type 'cpp:Component') which are accepted by the filter.
-     *
-     * @param resolver   the requests resolver (session)
-     * @param containers the set of designated container references
-     * @param filter     the filter instance (resource type pattern filter)
-     * @return the result of a component type query filtered by the filter object
-     */
-    public List getAllowedContentTypes(ResourceResolver resolver,
-                                       ResourceReference.List containers,
-                                       ElementTypeFilter filter,
-                                       boolean resourceTypePath) {
-        List<String> allowedTypes = new ArrayList<>();
-        QueryBuilder queryBuilder = resolver.adaptTo(QueryBuilder.class);
-        for (String path : resolver.getSearchPath()) {
-            Query query = queryBuilder.createQuery().path(path).type("cpp:Component");
-            try {
-                for (Resource component : query.execute()) {
-                    String type = component.getPath().substring(path.length());
-                    if (!allowedTypes.contains(type) && filter.isAllowedType(type)) {
-                        allowedTypes.add(resourceTypePath ? path + type : type);
-                    }
-                }
-            } catch (RepositoryException ex) {
-                LOG.error(ex.getMessage(), ex);
-            }
-        }
-        return allowedTypes;
-    }
 
     //
     // hierarchy management for the page content
@@ -95,8 +58,7 @@ public class PagesEditService implements EditService {
                                                          ResourceReference.List candidates,
                                                          ResourceReference element) {
         ResourceReference.List result = new ResourceReference.List();
-        ElementTypeFilter filter = new ElementTypeFilter(resolver, candidates,
-                PROP_ALLOWED_CONTAINERS, PROP_ALLOWED_ELEMENTS);
+        ElementTypeFilter filter = new ElementTypeFilter(resolver, candidates);
         for (ResourceReference candidate : candidates) {
             if (filter.isAllowedElement(element, candidate)) {
                 result.add(candidate);
@@ -116,8 +78,7 @@ public class PagesEditService implements EditService {
     public List getAllowedElementTypes(ResourceResolver resolver,
                                        ResourceReference.List containers,
                                        boolean resourceTypePath) {
-        ElementTypeFilter filter = new ElementTypeFilter(resolver, containers,
-                PROP_ALLOWED_CONTAINERS, PROP_ALLOWED_ELEMENTS);
+        ElementTypeFilter filter = new ElementTypeFilter(resolver, containers);
         return getAllowedElementTypes(resolver, containers, filter, resourceTypePath);
     }
 

@@ -47,6 +47,9 @@ public class PagesPageManager extends PagesContentManager<Page> implements PageM
     }
 
     @Reference
+    protected TemplateService templateService;
+
+    @Reference
     protected ResourceManager resourceManager;
 
     @Override
@@ -55,10 +58,14 @@ public class PagesPageManager extends PagesContentManager<Page> implements PageM
     }
 
     public Page getContainingPage(Model element) {
+        return getContainingPage(element.getContext(), element.getResource());
+    }
+
+    public Page getContainingPage(BeanContext context, Resource resource) {
         Page page = null;
-        Resource pageResource = findContainingPageResource(element.getResource());
+        Resource pageResource = findContainingPageResource(resource);
         if (pageResource != null) {
-            page = createBean(element.getContext(), pageResource);
+            page = createBean(context, pageResource);
         }
         return page;
     }
@@ -90,7 +97,7 @@ public class PagesPageManager extends PagesContentManager<Page> implements PageM
             Collection<Page> templates = getModels(context, NODE_TYPE_PAGE, searchRoot, TemplateFilter.INSTANCE);
             result.addAll(templates);
         }
-        ContentTypeFilter filter = new ContentTypeFilter(parent);
+        ContentTypeFilter filter = new ContentTypeFilter(templateService, parent);
         String candidatePath = parent.getPath();
         for (int i = result.size(); --i >= 0; ) {
             Page templatePage = result.get(i);

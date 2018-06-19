@@ -2,6 +2,7 @@ package com.composum.pages.commons.model;
 
 import com.composum.pages.commons.PagesConstants;
 import com.composum.pages.commons.model.properties.PathPatternSet;
+import com.composum.pages.commons.service.TemplateService;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -14,6 +15,7 @@ import javax.annotation.Nullable;
  */
 public class ContentTypeFilter {
 
+    protected final TemplateService templateService;
     protected final ResourceReference designatedTarget;
     protected final Template targetTemplate;
     protected final String resourceType;
@@ -25,9 +27,10 @@ public class ContentTypeFilter {
     private transient PathPatternSet forbiddenChildTypes;
     private transient PathPatternSet allowedChildTypes;
 
-    public ContentTypeFilter(@Nonnull final Resource designatedTarget) {
+    public ContentTypeFilter(@Nonnull TemplateService templateService, @Nonnull final Resource designatedTarget) {
+        this.templateService = templateService;
         this.designatedTarget = new ResourceReference(designatedTarget, null);
-        this.targetTemplate = Template.getTemplateOf(designatedTarget);
+        this.targetTemplate = templateService.getTemplateOf(designatedTarget);
         Resource targetContent = designatedTarget.getChild(JcrConstants.JCR_CONTENT);
         this.resourceType = targetContent != null
                 ? targetContent.getResourceType() : designatedTarget.getResourceType();
@@ -45,7 +48,7 @@ public class ContentTypeFilter {
      * @return true if the content can be a child of the filters designated target
      */
     public boolean isAllowedChild(@Nonnull Resource existingContent) {
-        Template contentTemplate = Template.getTemplateOf(existingContent);
+        Template contentTemplate = templateService.getTemplateOf(existingContent);
         return isAllowedChild(contentTemplate, new ResourceReference(existingContent, null));
     }
 

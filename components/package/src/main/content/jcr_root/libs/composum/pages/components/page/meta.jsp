@@ -4,4 +4,4 @@
 <cpp:defineObjects/>
 <cpn:text tagName="title" value="${pageModel.title}"/>
 <meta name="viewport" content="width=device-width, minimum-scale=1, maximum-scale=1, user-scalable=no"/>
-<meta name="format-detection" content="telephone=no">
+<meta name="format-detection" content="telephone=no"/>

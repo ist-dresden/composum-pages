@@ -6,6 +6,9 @@ import org.apache.sling.api.resource.ResourceResolver;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.composum.pages.commons.PagesConstants.PROP_ALLOWED_CONTAINERS;
+import static com.composum.pages.commons.PagesConstants.PROP_ALLOWED_ELEMENTS;
+
 /**
  * a filter to determine the allowed elements for a set of containers (all containers of a page)
  */
@@ -14,21 +17,15 @@ public class ElementTypeFilter {
     /** the set of containers to use for allowed element check */
     protected final ResourceReference.List containerList;
 
-    protected final String allowedParentsPropertyName;
-    protected final String allowedChildrenPropertyName;
-
     /** caches for the 'allowed...' properties */
     protected Map<String, PathPatternSet> allowedElements = new HashMap<>();
     protected Map<String, PathPatternSet> allowedContainers = new HashMap<>();
 
     protected final ResourceResolver resolver;
 
-    public ElementTypeFilter(final ResourceResolver resolver, final ResourceReference.List containerList,
-                             String allowedParentsPropertyName, String allowedChildrenPropertyName) {
+    public ElementTypeFilter(final ResourceResolver resolver, final ResourceReference.List containerList) {
         this.resolver = resolver;
         this.containerList = containerList;
-        this.allowedParentsPropertyName = allowedParentsPropertyName;
-        this.allowedChildrenPropertyName = allowedChildrenPropertyName;
     }
 
     // check by resource reference (probably an existing resource)
@@ -37,9 +34,9 @@ public class ElementTypeFilter {
      * returns 'true' if the element can be inserted into the specified container
      */
     public boolean isAllowedElement(final ResourceReference element, final ResourceReference container) {
-        final PathPatternSet allowedEl = getAllowedTypes(allowedElements, allowedChildrenPropertyName, container);
+        final PathPatternSet allowedEl = getAllowedTypes(allowedElements, PROP_ALLOWED_ELEMENTS, container);
         if (allowedEl.matches(element.getType())) {
-            final PathPatternSet allowedCont = getAllowedTypes(allowedContainers, allowedParentsPropertyName, element);
+            final PathPatternSet allowedCont = getAllowedTypes(allowedContainers, PROP_ALLOWED_CONTAINERS, element);
             if (allowedCont.matches(container.getType())) {
                 return true;
             }
@@ -65,9 +62,9 @@ public class ElementTypeFilter {
      * returns 'true' if an element of the type can be inserted into the specified container
      */
     public boolean isAllowedType(String type, final ResourceReference container) {
-        final PathPatternSet allowedEl = getAllowedTypes(allowedElements, allowedChildrenPropertyName, container);
+        final PathPatternSet allowedEl = getAllowedTypes(allowedElements, PROP_ALLOWED_ELEMENTS, container);
         if (allowedEl.matches(type)) {
-            final PathPatternSet allowedCont = getAllowedTypes(allowedContainers, allowedParentsPropertyName, type);
+            final PathPatternSet allowedCont = getAllowedTypes(allowedContainers, PROP_ALLOWED_CONTAINERS, type);
             if (allowedCont.matches(container.getType())) {
                 return true;
             }
