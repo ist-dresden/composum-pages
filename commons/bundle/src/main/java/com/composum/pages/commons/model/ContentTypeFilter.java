@@ -2,6 +2,7 @@ package com.composum.pages.commons.model;
 
 import com.composum.pages.commons.PagesConstants;
 import com.composum.pages.commons.model.properties.PathPatternSet;
+import com.composum.pages.commons.service.ResourceManager;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -14,8 +15,9 @@ import javax.annotation.Nullable;
  */
 public class ContentTypeFilter {
 
-    protected final ResourceReference designatedTarget;
-    protected final Template targetTemplate;
+    protected final ResourceManager resourceManager;
+    protected final ResourceManager.ResourceReference designatedTarget;
+    protected final ResourceManager.Template targetTemplate;
     protected final String resourceType;
 
     protected final ResourceResolver resolver;
@@ -25,9 +27,10 @@ public class ContentTypeFilter {
     private transient PathPatternSet forbiddenChildTypes;
     private transient PathPatternSet allowedChildTypes;
 
-    public ContentTypeFilter(@Nonnull final Resource designatedTarget) {
-        this.designatedTarget = new ResourceReference(designatedTarget, null);
-        this.targetTemplate = Template.getTemplateOf(designatedTarget);
+    public ContentTypeFilter(@Nonnull ResourceManager resourceManager, @Nonnull final Resource designatedTarget) {
+        this.resourceManager = resourceManager;
+        this.designatedTarget = resourceManager.getReference(designatedTarget, null);
+        this.targetTemplate = resourceManager.getTemplateOf(designatedTarget);
         Resource targetContent = designatedTarget.getChild(JcrConstants.JCR_CONTENT);
         this.resourceType = targetContent != null
                 ? targetContent.getResourceType() : designatedTarget.getResourceType();
@@ -45,8 +48,8 @@ public class ContentTypeFilter {
      * @return true if the content can be a child of the filters designated target
      */
     public boolean isAllowedChild(@Nonnull Resource existingContent) {
-        Template contentTemplate = Template.getTemplateOf(existingContent);
-        return isAllowedChild(contentTemplate, new ResourceReference(existingContent, null));
+        ResourceManager.Template contentTemplate = resourceManager.getTemplateOf(existingContent);
+        return isAllowedChild(contentTemplate, resourceManager.getReference(existingContent, null));
     }
 
     /**
@@ -56,11 +59,13 @@ public class ContentTypeFilter {
      * @param resourceReference the probably virtual resource designated to insert as the targets child
      * @return true if the referenced resource could be a child of the filters designated target
      */
-    public boolean isAllowedChild(@Nullable Template template, @Nonnull ResourceReference resourceReference) {
+    public boolean isAllowedChild(@Nullable ResourceManager.Template template,
+                                  @Nonnull ResourceManager.ResourceReference resourceReference) {
         return isAllowedChildByTemplate(template, resourceReference) && isAllowedChildByType(template, resourceReference);
     }
 
-    public boolean isAllowedChildByTemplate(@Nullable Template template, @Nonnull ResourceReference resourceReference) {
+    public boolean isAllowedChildByTemplate(@Nullable ResourceManager.Template template,
+                                            @Nonnull ResourceManager.ResourceReference resourceReference) {
         PathPatternSet allowedParents = getAllowedParentTemplates(template, resourceReference);
         PathPatternSet forbiddenParents = getForbiddenParentTemplates(template, resourceReference);
         PathPatternSet allowedChildren = getAllowedChildTemplates();
@@ -75,7 +80,8 @@ public class ContentTypeFilter {
         return isAllowed;
     }
 
-    public boolean isAllowedChildByType(@Nullable Template template, @Nonnull ResourceReference resourceReference) {
+    public boolean isAllowedChildByType(@Nullable ResourceManager.Template template,
+                                        @Nonnull ResourceManager.ResourceReference resourceReference) {
         PathPatternSet allowedParents = getAllowedParentTypes(template, resourceReference);
         PathPatternSet forbiddenParents = getForbiddenParentTypes(template, resourceReference);
         PathPatternSet allowedChildren = getAllowedChildTypes();
@@ -91,19 +97,22 @@ public class ContentTypeFilter {
     }
 
     @Nonnull
-    protected PathPatternSet getAllowedParentTemplates(@Nullable Template template, @Nonnull ResourceReference resourceReference) {
+    protected PathPatternSet getAllowedParentTemplates(@Nullable ResourceManager.Template template,
+                                                       @Nonnull ResourceManager.ResourceReference resourceReference) {
         return getAllowedTypes(template, resourceReference, PagesConstants.PROP_ALLOWED_PARENT_TEMPLATES);
     }
 
     @Nonnull
-    protected PathPatternSet getForbiddenParentTemplates(@Nullable Template template, @Nonnull ResourceReference resourceReference) {
+    protected PathPatternSet getForbiddenParentTemplates(@Nullable ResourceManager.Template template,
+                                                         @Nonnull ResourceManager.ResourceReference resourceReference) {
         return getAllowedTypes(template, resourceReference, PagesConstants.PROP_FORBIDDEN_PARENT_TEMPLATES);
     }
 
     @Nonnull
     protected PathPatternSet getAllowedChildTemplates() {
         if (allowedChildTemplates == null) {
-            allowedChildTemplates = getAllowedTypes(targetTemplate, designatedTarget, PagesConstants.PROP_ALLOWED_CHILD_TEMPLATES);
+            allowedChildTemplates = getAllowedTypes(targetTemplate, designatedTarget,
+                    PagesConstants.PROP_ALLOWED_CHILD_TEMPLATES);
         }
         return allowedChildTemplates;
     }
@@ -111,25 +120,29 @@ public class ContentTypeFilter {
     @Nonnull
     protected PathPatternSet getForbiddenChildTemplates() {
         if (forbiddenChildTemplates == null) {
-            forbiddenChildTemplates = getAllowedTypes(targetTemplate, designatedTarget, PagesConstants.PROP_FORBIDDEN_CHILD_TEMPLATES);
+            forbiddenChildTemplates = getAllowedTypes(targetTemplate, designatedTarget,
+                    PagesConstants.PROP_FORBIDDEN_CHILD_TEMPLATES);
         }
         return forbiddenChildTemplates;
     }
 
     @Nonnull
-    protected PathPatternSet getAllowedParentTypes(@Nullable Template template, @Nonnull ResourceReference resourceReference) {
+    protected PathPatternSet getAllowedParentTypes(@Nullable ResourceManager.Template template,
+                                                   @Nonnull ResourceManager.ResourceReference resourceReference) {
         return getAllowedTypes(template, resourceReference, PagesConstants.PROP_ALLOWED_PARENT_TYPES);
     }
 
     @Nonnull
-    protected PathPatternSet getForbiddenParentTypes(@Nullable Template template, @Nonnull ResourceReference resourceReference) {
+    protected PathPatternSet getForbiddenParentTypes(@Nullable ResourceManager.Template template,
+                                                     @Nonnull ResourceManager.ResourceReference resourceReference) {
         return getAllowedTypes(template, resourceReference, PagesConstants.PROP_FORBIDDEN_PARENT_TYPES);
     }
 
     @Nonnull
     protected PathPatternSet getAllowedChildTypes() {
         if (allowedChildTypes == null) {
-            allowedChildTypes = getAllowedTypes(targetTemplate, designatedTarget, PagesConstants.PROP_ALLOWED_CHILD_TYPES);
+            allowedChildTypes = getAllowedTypes(targetTemplate, designatedTarget,
+                    PagesConstants.PROP_ALLOWED_CHILD_TYPES);
         }
         return allowedChildTypes;
     }
@@ -137,13 +150,15 @@ public class ContentTypeFilter {
     @Nonnull
     protected PathPatternSet getForbiddenChildTypes() {
         if (forbiddenChildTypes == null) {
-            forbiddenChildTypes = getAllowedTypes(targetTemplate, designatedTarget, PagesConstants.PROP_FORBIDDEN_CHILD_TYPES);
+            forbiddenChildTypes = getAllowedTypes(targetTemplate, designatedTarget,
+                    PagesConstants.PROP_FORBIDDEN_CHILD_TYPES);
         }
         return forbiddenChildTypes;
     }
 
     @Nonnull
-    protected PathPatternSet getAllowedTypes(@Nullable Template template, @Nonnull ResourceReference resourceReference,
+    protected PathPatternSet getAllowedTypes(@Nullable ResourceManager.Template template,
+                                             @Nonnull ResourceManager.ResourceReference resourceReference,
                                              @Nonnull String propertyName) {
         PathPatternSet allowedTypes = null;
         if (resourceReference.isExisting()) {
@@ -151,7 +166,7 @@ public class ContentTypeFilter {
         }
         if (allowedTypes == null || !allowedTypes.isValid()) {
             if (template != null) {
-                allowedTypes = template.getAllowedTypes(propertyName);
+                allowedTypes = template.getTypePatterns(resolver, propertyName);
             }
         }
         if (allowedTypes == null || !allowedTypes.isValid()) {

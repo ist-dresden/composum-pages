@@ -5,8 +5,6 @@ import com.composum.pages.commons.filter.TemplateFilter;
 import com.composum.pages.commons.model.ContentTypeFilter;
 import com.composum.pages.commons.model.Model;
 import com.composum.pages.commons.model.Page;
-import com.composum.pages.commons.model.ResourceReference;
-import com.composum.pages.commons.model.Template;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.util.ResourceUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -27,7 +25,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.composum.pages.commons.PagesConstants.NODE_TYPE_PAGE;
-import static com.composum.pages.commons.model.Page.isPage;
 
 @Component(
         property = {
@@ -55,29 +52,22 @@ public class PagesPageManager extends PagesContentManager<Page> implements PageM
     }
 
     public Page getContainingPage(Model element) {
+        return getContainingPage(element.getContext(), element.getResource());
+    }
+
+    public Page getContainingPage(BeanContext context, Resource resource) {
         Page page = null;
-        Resource pageResource = findContainingPageResource(element.getResource());
+        Resource pageResource = resourceManager.findContainingPageResource(resource);
         if (pageResource != null) {
-            page = createBean(element.getContext(), pageResource);
+            page = createBean(context, pageResource);
         }
         return page;
     }
 
     public Resource getContainingPageResource(Resource resource) {
-        Resource pageResource = findContainingPageResource(resource);
+        Resource pageResource = resourceManager.findContainingPageResource(resource);
         // fallback to resource itself if no 'page' found
         return pageResource != null ? pageResource : resource;
-    }
-
-    protected Resource findContainingPageResource(Resource resource) {
-        if (resource != null) {
-            if (isPage(resource)) {
-                return resource;
-            } else {
-                return findContainingPageResource(resource.getParent());
-            }
-        }
-        return null;
     }
 
     @Override
@@ -90,13 +80,13 @@ public class PagesPageManager extends PagesContentManager<Page> implements PageM
             Collection<Page> templates = getModels(context, NODE_TYPE_PAGE, searchRoot, TemplateFilter.INSTANCE);
             result.addAll(templates);
         }
-        ContentTypeFilter filter = new ContentTypeFilter(parent);
+        ContentTypeFilter filter = new ContentTypeFilter(resourceManager, parent);
         String candidatePath = parent.getPath();
         for (int i = result.size(); --i >= 0; ) {
             Page templatePage = result.get(i);
-            Template template = new Template(templatePage.getResource());
+            ResourceManager.Template template = resourceManager.toTemplate(templatePage.getResource());
             if (!filter.isAllowedChild(template,
-                    new ResourceReference(resolver, candidatePath, template.getResourceType()))) {
+                    resourceManager.getReference(resolver, candidatePath, template.getResourceType()))) {
                 result.remove(i);
             }
         }

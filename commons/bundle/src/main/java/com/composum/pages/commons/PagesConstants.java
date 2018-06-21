@@ -87,6 +87,9 @@ public interface PagesConstants {
     String PROP_IS_TEMPLATE = "isTemplate";
     String PROP_TEMPLATE_REF = "templateRef";
 
+    String NODE_NAME_DESIGN = CPP_PREFIX + "design";
+    String PROP_TYPE_PATTERNS = "typePatterns";
+
     String PROP_ALLOWED_PARENT_TEMPLATES = "allowedParentTemplates";
     String PROP_FORBIDDEN_PARENT_TEMPLATES = "forbiddenParentTemplates";
     String PROP_ALLOWED_CHILD_TEMPLATES = "allowedChildTemplates";

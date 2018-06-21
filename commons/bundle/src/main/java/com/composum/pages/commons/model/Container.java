@@ -3,6 +3,7 @@ package com.composum.pages.commons.model;
 import com.composum.pages.commons.PagesConstants;
 import com.composum.pages.commons.model.properties.PathPatternSet;
 import com.composum.pages.commons.service.EditService;
+import com.composum.pages.commons.service.ResourceManager;
 import com.composum.pages.commons.util.ResolverUtil;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.filter.ResourceFilter;
@@ -108,7 +109,7 @@ public class Container extends Element {
         if (elementTypes == null) {
             EditService editService = context.getService(EditService.class);
             elementTypes = editService.getAllowedElementTypes(resolver,
-                    new ResourceReference.List(new ResourceReference(this)), true);
+                    getResourceManager().getReferenceList(getResourceManager().getReference(this)), true);
         }
         return elementTypes;
     }
@@ -123,7 +124,7 @@ public class Container extends Element {
         return isAllowedElement(resource.getResourceType());
     }
 
-    public boolean isAllowedElement(ResourceReference element) {
+    public boolean isAllowedElement(ResourceManager.ResourceReference element) {
         return isAllowedElement(element.getType());
     }
 
@@ -136,7 +137,7 @@ public class Container extends Element {
      */
     public PathPatternSet getAllowedElements() {
         if (allowedElements == null) {
-            allowedElements = new PathPatternSet(new ResourceReference(this), PROP_ALLOWED_ELEMENTS);
+            allowedElements = new PathPatternSet(getResourceManager().getReference(this), PROP_ALLOWED_ELEMENTS);
         }
         return allowedElements;
     }

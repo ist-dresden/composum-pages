@@ -1,12 +1,12 @@
 package com.composum.pages.commons.service;
 
 import com.composum.pages.commons.model.ElementTypeFilter;
-import com.composum.pages.commons.model.ResourceReference;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 
 import javax.jcr.RepositoryException;
+import java.util.List;
 
 /**
  * the service interface for Pages editing operations
@@ -16,9 +16,9 @@ public interface EditService {
     /**
      * Determines the list of potential target containers for a page content element.
      */
-    ResourceReference.List filterTargetContainers(ResourceResolver resolver,
-                                                  ResourceReference.List candidates,
-                                                  ResourceReference element);
+    ResourceManager.ReferenceList filterTargetContainers(ResourceResolver resolver,
+                                                         ResourceManager.ReferenceList candidates,
+                                                         ResourceManager.ResourceReference element);
 
     /**
      * Determines the list of resource types (nodes of type 'cpp:Component') for any of the containers.
@@ -27,9 +27,9 @@ public interface EditService {
      * @param containers the set of designated container references
      * @return the result of a component type query filtered by the filter object
      */
-    java.util.List getAllowedElementTypes(ResourceResolver resolver,
-                                          ResourceReference.List containers,
-                                          boolean resourceTypePath);
+    List<String> getAllowedElementTypes(ResourceResolver resolver,
+                                        ResourceManager.ReferenceList containers,
+                                        boolean resourceTypePath);
 
     /**
      * Determines the list of resource types (nodes of type 'cpp:Component') which are accepted by the filter.
@@ -39,10 +39,10 @@ public interface EditService {
      * @param filter     the filter instance (resource type pattern filter)
      * @return the result of a component type query filtered by the filter object
      */
-    java.util.List getAllowedElementTypes(ResourceResolver resolver,
-                                          ResourceReference.List containers,
-                                          ElementTypeFilter filter,
-                                          boolean resourceTypePath);
+    List<String> getAllowedElementTypes(ResourceResolver resolver,
+                                        ResourceManager.ReferenceList containers,
+                                        ElementTypeFilter filter,
+                                        boolean resourceTypePath);
 
     /**
      * Returns or creates and returns the resource addressed by a reference.
@@ -51,7 +51,7 @@ public interface EditService {
      * @param reference the path and type of the resource
      * @return the resource instance
      */
-    Resource getReferencedResource(ResourceResolver resolver, ResourceReference reference)
+    Resource getReferencedResource(ResourceResolver resolver, ResourceManager.ResourceReference reference)
             throws PersistenceException;
 
     /**
@@ -63,7 +63,7 @@ public interface EditService {
      * @param before       the designated sibling in an ordered target collection
      */
     void insertComponent(ResourceResolver resolver, String resourceType,
-                         ResourceReference target, Resource before)
+                         ResourceManager.ResourceReference target, Resource before)
             throws RepositoryException, PersistenceException;
 
     /**
@@ -77,6 +77,6 @@ public interface EditService {
      * @return the new resource at the target path
      */
     Resource moveComponent(ResourceResolver resolver, Resource changeRoot,
-                           Resource source, ResourceReference targetParent, Resource before)
+                           Resource source, ResourceManager.ResourceReference targetParent, Resource before)
             throws RepositoryException, PersistenceException;
 }

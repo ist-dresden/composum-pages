@@ -64,6 +64,8 @@ public interface PageManager extends ContentManager<Page> {
 
     Page getContainingPage(Model element);
 
+    Page getContainingPage(BeanContext context, Resource resource);
+
     Resource getContainingPageResource(Resource resource);
 
     /**

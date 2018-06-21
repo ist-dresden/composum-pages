@@ -74,14 +74,23 @@ public abstract class AbstractModel implements SlingBean, Model {
         IGNORE_I18N.add(".");
     }
 
+    // OSGi services
+
+    /** protected to allow set instance by the Page and Site model */
+    protected transient SiteManager siteManager;
+    protected transient PageManager pageManager;
+
+    /** lazy referenced services */
+    private transient ResourceManager resourceManager;
+    private transient VersionsService versionsService;
+
+    // instance attributes
+
     /** the instance of the scripting context for the model (initialized) */
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @Self
     protected BeanContext context;
-    protected transient SiteManager siteManager;
-    protected transient PageManager pageManager;
-    protected transient ResourceManager resourceManager;
-    private transient VersionsService versionsService;
 
     /** the resource an related properties represented by this model (initialized) */
     protected Resource resource;

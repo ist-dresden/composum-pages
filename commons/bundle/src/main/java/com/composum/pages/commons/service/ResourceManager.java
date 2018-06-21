@@ -1,7 +1,11 @@
 package com.composum.pages.commons.service;
 
+import com.composum.pages.commons.model.AbstractModel;
+import com.composum.pages.commons.model.properties.PathPatternSet;
 import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.filter.StringFilter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -9,9 +13,132 @@ import org.apache.sling.api.resource.ResourceResolver;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.jcr.RepositoryException;
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.List;
 
 public interface ResourceManager {
+
+    /**
+     * the reference to a potentially non existing (static included; can exist but mustn't) content resource
+     * this is a simple transferable (JSON) resource description without the overhead of a NonExistingResource and
+     * with access to the resources properties (if resource exists), the configuration and the resource type properties
+     */
+    interface ResourceReference {
+
+        @Nonnull
+        String getPath();
+
+        @Nonnull
+        String getType();
+
+        boolean isExisting();
+
+        @Nonnull
+        Resource getResource();
+
+        /**
+         * returns the property value using the cascade: resource - configuration - resource type
+         */
+        @Nonnull
+        <T extends Serializable> T getProperty(@Nonnull String name, @Nonnull T defaultValue);
+
+        /**
+         * returns the property value using the cascade: resource - configuration - resource type
+         */
+        @Nullable
+        <T extends Serializable> T getProperty(@Nonnull String name, @Nonnull Class<T> type);
+    }
+
+    /**
+     * a list of references (simple transferable as a JSON array)
+     */
+    interface ReferenceList extends List<ResourceReference> {
+
+        void fromJson(ResourceResolver resolver, JsonReader reader) throws IOException;
+
+        void toJson(JsonWriter writer) throws IOException;
+    }
+
+    /**
+     * a page template to create pages as copy of the template and to reference design rules embedded in the template
+     */
+    interface Template extends Serializable {
+
+        String getPath();
+
+        String getResourceType();
+
+        @Nonnull
+        Resource getTemplateResource(ResourceResolver resolver);
+
+        @Nonnull
+        PathPatternSet getTypePatterns(@Nonnull ResourceResolver resolver, @Nonnull String propertyName);
+
+        // design configuration
+
+        /**
+         * Retrieves es the design rules for an element of a page; the design rules are configured as elements
+         * of a 'cpp:design' child node of the templates content resource.
+         *
+         * @param pageContent  the content resource of the page
+         * @param relativePath the path of the element relative to the pages content resource
+         * @param resourceType the designated or overlayed resource type of the content element
+         * @return the design model; 'null' if no design rules found
+         */
+        @Nullable
+        Design getDesign(@Nonnull Resource pageContent,
+                         @Nonnull String relativePath, @Nullable String resourceType);
+    }
+
+    /**
+     * a design rule for a content element determined from the template of the elements page
+     */
+    interface Design extends Serializable {
+
+        @Nonnull
+        String getPath();
+
+        @Nonnull
+        Resource getResource(@Nonnull ResourceResolver resolver);
+
+        @Nullable
+        <T extends Serializable> T getProperty(@Nonnull ResourceResolver resolver,
+                                               @Nonnull String name, @Nonnull Class<T> type);
+    }
+
+    // references can be built from various sources...
+
+    ResourceReference getReference(AbstractModel model);
+
+    /** a resource and a probably overlayed type (type can be 'null') */
+    ResourceReference getReference(@Nonnull Resource resource, @Nullable String type);
+
+    ResourceReference getReference(@Nonnull ResourceResolver resolver, @Nonnull String path, @Nullable String type);
+
+    /** a reference translated from a JSON object (transferred reference) */
+    ResourceReference getReference(ResourceResolver resolver, JsonReader reader) throws IOException;
+
+    ReferenceList getReferenceList();
+
+    ReferenceList getReferenceList(ResourceManager.ResourceReference... references);
+
+    ReferenceList getReferenceList(ResourceResolver resolver, String jsonValue) throws IOException;
+
+    ReferenceList getReferenceList(ResourceResolver resolver, JsonReader reader) throws IOException;
+
+    //
+    // page templates and hierarchy rules
+    //
+
+    @Nonnull
+    Template toTemplate(@Nonnull Resource resource);
+
+    @Nullable
+    Template getTemplateOf(@Nullable Resource resource);
+
+    @Nullable
+    Resource findContainingPageResource(Resource resource);
 
     /**
      * Checks the policies of the resource hierarchy for a given parent and child (for move and copy operations).
@@ -22,6 +149,10 @@ public interface ResourceManager {
      * @return 'true' if the child could be a child of the given parent
      */
     boolean isAllowedChild(@Nonnull ResourceResolver resolver, @Nonnull Resource parent, @Nonnull Resource child);
+
+    //
+    // content move operation
+    //
 
     /**
      * Moves a resource and adopts all references to the moved resource or one of its children.

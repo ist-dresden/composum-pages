@@ -2,7 +2,6 @@ package com.composum.pages.commons.service;
 
 import com.composum.pages.commons.PagesConstants;
 import com.composum.pages.commons.model.ElementTypeFilter;
-import com.composum.pages.commons.model.ResourceReference;
 import com.composum.pages.commons.util.ResolverUtil;
 import com.composum.sling.core.util.ResourceUtil;
 import com.composum.sling.platform.staging.query.Query;
@@ -26,9 +25,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.composum.pages.commons.PagesConstants.PROP_ALLOWED_CONTAINERS;
-import static com.composum.pages.commons.PagesConstants.PROP_ALLOWED_ELEMENTS;
-
 @Component(
         property = {
                 Constants.SERVICE_DESCRIPTION + "=Composum Pages Elements Manager"
@@ -45,40 +41,6 @@ public class PagesEditService implements EditService {
     protected ResourceManager resourceManager;
 
     //
-    // hierarchy management for the content tree
-    //
-
-    /**
-     * Determines the list of resource types (nodes of type 'cpp:Component') which are accepted by the filter.
-     *
-     * @param resolver   the requests resolver (session)
-     * @param containers the set of designated container references
-     * @param filter     the filter instance (resource type pattern filter)
-     * @return the result of a component type query filtered by the filter object
-     */
-    public List getAllowedContentTypes(ResourceResolver resolver,
-                                       ResourceReference.List containers,
-                                       ElementTypeFilter filter,
-                                       boolean resourceTypePath) {
-        List<String> allowedTypes = new ArrayList<>();
-        QueryBuilder queryBuilder = resolver.adaptTo(QueryBuilder.class);
-        for (String path : resolver.getSearchPath()) {
-            Query query = queryBuilder.createQuery().path(path).type("cpp:Component");
-            try {
-                for (Resource component : query.execute()) {
-                    String type = component.getPath().substring(path.length());
-                    if (!allowedTypes.contains(type) && filter.isAllowedType(type)) {
-                        allowedTypes.add(resourceTypePath ? path + type : type);
-                    }
-                }
-            } catch (RepositoryException ex) {
-                LOG.error(ex.getMessage(), ex);
-            }
-        }
-        return allowedTypes;
-    }
-
-    //
     // hierarchy management for the page content
     //
 
@@ -91,13 +53,12 @@ public class PagesEditService implements EditService {
      * @return the list of target containers (not null, can be empty)
      */
     @Override
-    public ResourceReference.List filterTargetContainers(ResourceResolver resolver,
-                                                         ResourceReference.List candidates,
-                                                         ResourceReference element) {
-        ResourceReference.List result = new ResourceReference.List();
-        ElementTypeFilter filter = new ElementTypeFilter(resolver, candidates,
-                PROP_ALLOWED_CONTAINERS, PROP_ALLOWED_ELEMENTS);
-        for (ResourceReference candidate : candidates) {
+    public ResourceManager.ReferenceList filterTargetContainers(ResourceResolver resolver,
+                                                                ResourceManager.ReferenceList candidates,
+                                                                ResourceManager.ResourceReference element) {
+        ResourceManager.ReferenceList result = resourceManager.getReferenceList();
+        ElementTypeFilter filter = new ElementTypeFilter(resolver, candidates);
+        for (ResourceManager.ResourceReference candidate : candidates) {
             if (filter.isAllowedElement(element, candidate)) {
                 result.add(candidate);
             }
@@ -114,10 +75,9 @@ public class PagesEditService implements EditService {
      */
     @Override
     public List getAllowedElementTypes(ResourceResolver resolver,
-                                       ResourceReference.List containers,
+                                       ResourceManager.ReferenceList containers,
                                        boolean resourceTypePath) {
-        ElementTypeFilter filter = new ElementTypeFilter(resolver, containers,
-                PROP_ALLOWED_CONTAINERS, PROP_ALLOWED_ELEMENTS);
+        ElementTypeFilter filter = new ElementTypeFilter(resolver, containers);
         return getAllowedElementTypes(resolver, containers, filter, resourceTypePath);
     }
 
@@ -131,7 +91,7 @@ public class PagesEditService implements EditService {
      */
     @Override
     public List getAllowedElementTypes(ResourceResolver resolver,
-                                       ResourceReference.List containers,
+                                       ResourceManager.ReferenceList containers,
                                        ElementTypeFilter filter,
                                        boolean resourceTypePath) {
         List<String> allowedTypes = new ArrayList<>();
@@ -153,7 +113,7 @@ public class PagesEditService implements EditService {
     }
 
     @Override
-    public Resource getReferencedResource(ResourceResolver resolver, ResourceReference reference)
+    public Resource getReferencedResource(ResourceResolver resolver, ResourceManager.ResourceReference reference)
             throws PersistenceException {
         Resource resource = resolver.resolve(reference.getPath());
         if (ResourceUtil.isNonExistingResource(resource)) {
@@ -175,7 +135,7 @@ public class PagesEditService implements EditService {
      */
     @Override
     public void insertComponent(ResourceResolver resolver, String resourceType,
-                                ResourceReference target, Resource before)
+                                ResourceManager.ResourceReference target, Resource before)
             throws RepositoryException, PersistenceException {
 
         // use the containers collection (can be the target itself) to move the source into
@@ -216,7 +176,7 @@ public class PagesEditService implements EditService {
     /**
      * Determine a container element collection resource (can be the container itself).
      */
-    protected Resource getContainerCollection(ResourceResolver resolver, ResourceReference target)
+    protected Resource getContainerCollection(ResourceResolver resolver, ResourceManager.ResourceReference target)
             throws RepositoryException, PersistenceException {
 
         // get or creae the target (the parent)
@@ -236,7 +196,7 @@ public class PagesEditService implements EditService {
                 if (StringUtils.isNotBlank(collectionType)) {
                     String collectionPath = targetResource.getPath() + "/" + collectionName;
                     collection = getReferencedResource(resolver,
-                            new ResourceReference(resolver, collectionPath, collectionType));
+                            resourceManager.getReference(resolver, collectionPath, collectionType));
                 }
             }
         }
@@ -261,7 +221,7 @@ public class PagesEditService implements EditService {
      */
     @Override
     public Resource moveComponent(ResourceResolver resolver, Resource changeRoot,
-                                  Resource source, ResourceReference targetParent, Resource before)
+                                  Resource source, ResourceManager.ResourceReference targetParent, Resource before)
             throws RepositoryException, PersistenceException {
 
         // use the containers collection (can be the target itself) to move the source into
