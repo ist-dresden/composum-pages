@@ -1,6 +1,6 @@
 package com.composum.pages.commons.model.properties;
 
-import com.composum.pages.commons.model.ResourceReference;
+import com.composum.pages.commons.service.ResourceManager;
 import com.composum.pages.commons.util.ResolverUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -17,7 +17,7 @@ public class PathPatternSet {
 
     protected List<Pattern> patternList = null;
 
-    public PathPatternSet(@Nonnull ResourceReference reference, @Nonnull String propertyName) {
+    public PathPatternSet(@Nonnull ResourceManager.ResourceReference reference, @Nonnull String propertyName) {
         this(reference.getProperty(propertyName, String[].class));
     }
 

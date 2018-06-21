@@ -1,6 +1,7 @@
 package com.composum.pages.commons.model;
 
 import com.composum.pages.commons.model.properties.PathPatternSet;
+import com.composum.pages.commons.service.ResourceManager;
 import org.apache.sling.api.resource.ResourceResolver;
 
 import java.util.HashMap;
@@ -15,7 +16,7 @@ import static com.composum.pages.commons.PagesConstants.PROP_ALLOWED_ELEMENTS;
 public class ElementTypeFilter {
 
     /** the set of containers to use for allowed element check */
-    protected final ResourceReference.List containerList;
+    protected final ResourceManager.ReferenceList containerList;
 
     /** caches for the 'allowed...' properties */
     protected Map<String, PathPatternSet> allowedElements = new HashMap<>();
@@ -23,7 +24,7 @@ public class ElementTypeFilter {
 
     protected final ResourceResolver resolver;
 
-    public ElementTypeFilter(final ResourceResolver resolver, final ResourceReference.List containerList) {
+    public ElementTypeFilter(final ResourceResolver resolver, final ResourceManager.ReferenceList containerList) {
         this.resolver = resolver;
         this.containerList = containerList;
     }
@@ -33,13 +34,11 @@ public class ElementTypeFilter {
     /**
      * returns 'true' if the element can be inserted into the specified container
      */
-    public boolean isAllowedElement(final ResourceReference element, final ResourceReference container) {
+    public boolean isAllowedElement(final ResourceManager.ResourceReference element, final ResourceManager.ResourceReference container) {
         final PathPatternSet allowedEl = getAllowedTypes(allowedElements, PROP_ALLOWED_ELEMENTS, container);
         if (allowedEl.matches(element.getType())) {
             final PathPatternSet allowedCont = getAllowedTypes(allowedContainers, PROP_ALLOWED_CONTAINERS, element);
-            if (allowedCont.matches(container.getType())) {
-                return true;
-            }
+            return allowedCont.matches(container.getType());
         }
         return false;
     }
@@ -47,8 +46,8 @@ public class ElementTypeFilter {
     /**
      * returns 'true' if the element can be inserted into one of the containers
      */
-    public boolean isAllowedElement(final ResourceReference element) {
-        for (ResourceReference container : containerList) {
+    public boolean isAllowedElement(final ResourceManager.ResourceReference element) {
+        for (ResourceManager.ResourceReference container : containerList) {
             if (isAllowedElement(element, container)) {
                 return true;
             }
@@ -61,13 +60,11 @@ public class ElementTypeFilter {
     /**
      * returns 'true' if an element of the type can be inserted into the specified container
      */
-    public boolean isAllowedType(String type, final ResourceReference container) {
+    public boolean isAllowedType(String type, final ResourceManager.ResourceReference container) {
         final PathPatternSet allowedEl = getAllowedTypes(allowedElements, PROP_ALLOWED_ELEMENTS, container);
         if (allowedEl.matches(type)) {
             final PathPatternSet allowedCont = getAllowedTypes(allowedContainers, PROP_ALLOWED_CONTAINERS, type);
-            if (allowedCont.matches(container.getType())) {
-                return true;
-            }
+            return allowedCont.matches(container.getType());
         }
         return false;
     }
@@ -76,7 +73,7 @@ public class ElementTypeFilter {
      * returns 'true' if an element of the type can be inserted into one of the containers
      */
     public boolean isAllowedType(String type) {
-        for (ResourceReference container : containerList) {
+        for (ResourceManager.ResourceReference container : containerList) {
             if (isAllowedType(type, container)) {
                 return true;
             }
@@ -94,7 +91,7 @@ public class ElementTypeFilter {
      * @param reference    the resource whose property should be retrieved
      */
     protected PathPatternSet getAllowedTypes(Map<String, PathPatternSet> map,
-                                             String propertyName, final ResourceReference reference) {
+                                             String propertyName, final ResourceManager.ResourceReference reference) {
         String path = reference.getPath();
         PathPatternSet allowedTypes = map.get(path);
         if (allowedTypes == null) {

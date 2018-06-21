@@ -4,7 +4,6 @@ import com.composum.pages.commons.PagesConfiguration;
 import com.composum.pages.commons.model.GenericModel;
 import com.composum.pages.commons.model.Model;
 import com.composum.pages.commons.model.Page;
-import com.composum.pages.commons.model.ResourceReference;
 import com.composum.pages.commons.model.Site;
 import com.composum.pages.commons.service.EditService;
 import com.composum.pages.commons.service.PageManager;
@@ -561,11 +560,12 @@ public class EditServlet extends NodeTreeServlet {
                          ResourceHandle resource)
                 throws ServletException, IOException {
 
-            final ResourceResolver resolver = request.getResourceResolver();
+            final BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
 
             try (final JsonReader reader = new JsonReader(request.getReader())) {
 
-                final ResourceReference.List containerRefs = new ResourceReference.List(resolver, reader);
+                final ResourceManager.ReferenceList containerRefs =
+                        resourceManager.getReferenceList(context.getResolver(), reader);
                 String selectors = RequestUtil.getSelectorString(request, null, 1);
 
                 if (LOG.isDebugEnabled()) {
@@ -575,7 +575,8 @@ public class EditServlet extends NodeTreeServlet {
                 // forward request with 'GET'! for right component rendering
                 request = new RequestUtil.GetWrapper(request);
 
-                final java.util.List allowedElements = editService.getAllowedElementTypes(resolver, containerRefs, true);
+                final java.util.List allowedElements =
+                        editService.getAllowedElementTypes(context.getResolver(), containerRefs, true);
                 request.setAttribute(PAGE_COMPONENT_TYPES, allowedElements);
 
                 final RequestDispatcherOptions options = new RequestDispatcherOptions();
@@ -600,17 +601,17 @@ public class EditServlet extends NodeTreeServlet {
         public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
                          ResourceHandle resource)
                 throws IOException {
-            final ResourceResolver resolver = request.getResourceResolver();
+            final BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
 
-            ResourceReference.List targetList =
-                    new ResourceReference.List(resolver, request.getParameter("targetList"));
+            ResourceManager.ReferenceList targetList =
+                    resourceManager.getReferenceList(context.getResolver(), request.getParameter("targetList"));
 
             if (LOG.isDebugEnabled()) {
                 LOG.debug("GetTargetContainers(" + resource + ", " + targetList + ")...");
             }
 
-            ResourceReference element = new ResourceReference(resource, null);
-            targetList = editService.filterTargetContainers(resolver, targetList, element);
+            ResourceManager.ResourceReference element = resourceManager.getReference(resource, null);
+            targetList = editService.filterTargetContainers(context.getResolver(), targetList, element);
 
             if (LOG.isDebugEnabled()) {
                 LOG.debug("GetTargetContainers(" + resource + "): " + targetList);
@@ -638,8 +639,9 @@ public class EditServlet extends NodeTreeServlet {
                 LOG.debug("InsertComponent(" + resourceType + " > " + targetPath + " < " + beforePath + ")...");
             }
 
-            ResourceResolver resolver = request.getResourceResolver();
-            ResourceReference target = new ResourceReference(resolver, targetPath, targetType);
+            final BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
+            final ResourceResolver resolver = context.getResolver();
+            ResourceManager.ResourceReference target = resourceManager.getReference(resolver, targetPath, targetType);
             Resource before = StringUtils.isNotBlank(beforePath) ? resolver.getResource(beforePath) : null;
 
             try {
@@ -669,8 +671,9 @@ public class EditServlet extends NodeTreeServlet {
                 LOG.debug("MoveComponent(" + resource.getPath() + " > " + targetPath + " < " + beforePath + ")...");
             }
 
-            ResourceResolver resolver = request.getResourceResolver();
-            ResourceReference target = new ResourceReference(resolver, targetPath, targetType);
+            final BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
+            final ResourceResolver resolver = context.getResolver();
+            ResourceManager.ResourceReference target = resourceManager.getReference(resolver, targetPath, targetType);
             Resource before = StringUtils.isNotBlank(beforePath) ? resolver.getResource(beforePath) : null;
 
             try {
@@ -703,7 +706,7 @@ public class EditServlet extends NodeTreeServlet {
                          ResourceHandle resource)
                 throws IOException {
 
-            BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
+            final BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
             try {
                 Page page;
                 String name = request.getParameter("name");

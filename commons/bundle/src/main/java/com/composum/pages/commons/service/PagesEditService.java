@@ -2,7 +2,6 @@ package com.composum.pages.commons.service;
 
 import com.composum.pages.commons.PagesConstants;
 import com.composum.pages.commons.model.ElementTypeFilter;
-import com.composum.pages.commons.model.ResourceReference;
 import com.composum.pages.commons.util.ResolverUtil;
 import com.composum.sling.core.util.ResourceUtil;
 import com.composum.sling.platform.staging.query.Query;
@@ -54,12 +53,12 @@ public class PagesEditService implements EditService {
      * @return the list of target containers (not null, can be empty)
      */
     @Override
-    public ResourceReference.List filterTargetContainers(ResourceResolver resolver,
-                                                         ResourceReference.List candidates,
-                                                         ResourceReference element) {
-        ResourceReference.List result = new ResourceReference.List();
+    public ResourceManager.ReferenceList filterTargetContainers(ResourceResolver resolver,
+                                                                ResourceManager.ReferenceList candidates,
+                                                                ResourceManager.ResourceReference element) {
+        ResourceManager.ReferenceList result = resourceManager.getReferenceList();
         ElementTypeFilter filter = new ElementTypeFilter(resolver, candidates);
-        for (ResourceReference candidate : candidates) {
+        for (ResourceManager.ResourceReference candidate : candidates) {
             if (filter.isAllowedElement(element, candidate)) {
                 result.add(candidate);
             }
@@ -76,7 +75,7 @@ public class PagesEditService implements EditService {
      */
     @Override
     public List getAllowedElementTypes(ResourceResolver resolver,
-                                       ResourceReference.List containers,
+                                       ResourceManager.ReferenceList containers,
                                        boolean resourceTypePath) {
         ElementTypeFilter filter = new ElementTypeFilter(resolver, containers);
         return getAllowedElementTypes(resolver, containers, filter, resourceTypePath);
@@ -92,7 +91,7 @@ public class PagesEditService implements EditService {
      */
     @Override
     public List getAllowedElementTypes(ResourceResolver resolver,
-                                       ResourceReference.List containers,
+                                       ResourceManager.ReferenceList containers,
                                        ElementTypeFilter filter,
                                        boolean resourceTypePath) {
         List<String> allowedTypes = new ArrayList<>();
@@ -114,7 +113,7 @@ public class PagesEditService implements EditService {
     }
 
     @Override
-    public Resource getReferencedResource(ResourceResolver resolver, ResourceReference reference)
+    public Resource getReferencedResource(ResourceResolver resolver, ResourceManager.ResourceReference reference)
             throws PersistenceException {
         Resource resource = resolver.resolve(reference.getPath());
         if (ResourceUtil.isNonExistingResource(resource)) {
@@ -136,7 +135,7 @@ public class PagesEditService implements EditService {
      */
     @Override
     public void insertComponent(ResourceResolver resolver, String resourceType,
-                                ResourceReference target, Resource before)
+                                ResourceManager.ResourceReference target, Resource before)
             throws RepositoryException, PersistenceException {
 
         // use the containers collection (can be the target itself) to move the source into
@@ -177,7 +176,7 @@ public class PagesEditService implements EditService {
     /**
      * Determine a container element collection resource (can be the container itself).
      */
-    protected Resource getContainerCollection(ResourceResolver resolver, ResourceReference target)
+    protected Resource getContainerCollection(ResourceResolver resolver, ResourceManager.ResourceReference target)
             throws RepositoryException, PersistenceException {
 
         // get or creae the target (the parent)
@@ -197,7 +196,7 @@ public class PagesEditService implements EditService {
                 if (StringUtils.isNotBlank(collectionType)) {
                     String collectionPath = targetResource.getPath() + "/" + collectionName;
                     collection = getReferencedResource(resolver,
-                            new ResourceReference(resolver, collectionPath, collectionType));
+                            resourceManager.getReference(resolver, collectionPath, collectionType));
                 }
             }
         }
@@ -222,7 +221,7 @@ public class PagesEditService implements EditService {
      */
     @Override
     public Resource moveComponent(ResourceResolver resolver, Resource changeRoot,
-                                  Resource source, ResourceReference targetParent, Resource before)
+                                  Resource source, ResourceManager.ResourceReference targetParent, Resource before)
             throws RepositoryException, PersistenceException {
 
         // use the containers collection (can be the target itself) to move the source into

@@ -20,6 +20,7 @@
             ],
             "text": {
               "jcr:primaryType": "nt:unstructured",
+              "property":"main/cpp:design/column/text",
               "typePatterns": [
                 "^(/[^/]+/)?composum/pages/components/element/(text.*|title)$"
               ]
@@ -27,6 +28,7 @@
           },
           "text": {
             "jcr:primaryType": "nt:unstructured",
+            "property":"main/cpp:design/text",
             "typePatterns": [
               "^(/[^/]+/)?composum/pages/components/element/(text.*|title)$"
             ]
@@ -45,6 +47,7 @@
           ],
           "text": {
             "jcr:primaryType": "nt:unstructured",
+            "property":"cpp:design/column/text",
             "typePatterns": [
               "^(/[^/]+/)?composum/pages/components/element/(text.*|title)$"
             ]
@@ -52,6 +55,7 @@
         },
         "text": {
           "jcr:primaryType": "nt:unstructured",
+          "property":"cpp:design/text",
           "typePatterns": [
             "^(/[^/]+/)?composum/pages/components/element/(text.*|title)$"
           ]
@@ -60,58 +64,63 @@
     }
   },
   "page": {
-    "jcr:primaryType": "{Name}cpp:Page",
+    "jcr:primaryType": "cpp:Page",
     "jcr:content": {
-      "jcr:primaryType": "{Name}cpp:PageContent",
+      "jcr:primaryType": "cpp:PageContent",
       "sling:resourceType": "composum/pages/components/page",
       "template": "/content/test/template",
       "main": {
-        "jcr:primaryType": "{Name}cpp:Container",
+        "jcr:primaryType": "cpp:Container",
         "sling:resourceType": "composum/pages/components/container/parsys",
         "pages": {
-          "jcr:primaryType": "{Name}cpp:Element",
+          "jcr:primaryType": "cpp:Element",
           "sling:resourceType": "composum/pages/components/element/title"
         },
         "row-1": {
-          "jcr:primaryType": "{Name}cpp:Element",
+          "jcr:primaryType": "cpp:Element",
           "sling:resourceType": "composum/pages/components/container/row",
           "column-0": {
-            "jcr:primaryType": "{Name}cpp:Container",
+            "jcr:primaryType": "cpp:Container",
             "sling:resourceType": "composum/pages/components/container/row/column",
             "textimage": {
-              "jcr:primaryType": "{Name}cpp:Element",
-              "sling:resourceType": "composum/pages/components/element/textimage"
+              "jcr:primaryType": "cpp:Element",
+              "sling:resourceType": "composum/pages/components/element/textimage",
+              "property":"page/main/row-1/column.0/textimage"
             }
           },
           "column-1": {
-            "jcr:primaryType": "{Name}cpp:Container",
+            "jcr:primaryType": "cpp:Container",
             "sling:resourceType": "composum/pages/components/container/row/column",
             "textimage": {
-              "jcr:primaryType": "{Name}cpp:Element",
+              "jcr:primaryType": "cpp:Element",
               "sling:resourceType": "composum/pages/components/element/textimage"
             }
           }
         }
       },
       "other": {
-        "jcr:primaryType": "{Name}cpp:Container",
+        "jcr:primaryType": "cpp:Container",
         "sling:resourceType": "composum/pages/components/container/parsys",
+        "pages": {
+          "jcr:primaryType": "cpp:Element",
+          "sling:resourceType": "composum/pages/components/element/title"
+        },
         "row-2": {
-          "jcr:primaryType": "{Name}cpp:Element",
+          "jcr:primaryType": "cpp:Element",
           "sling:resourceType": "composum/pages/components/container/row",
           "column-0": {
-            "jcr:primaryType": "{Name}cpp:Container",
+            "jcr:primaryType": "cpp:Container",
             "sling:resourceType": "composum/pages/components/container/row/column",
             "textimage": {
-              "jcr:primaryType": "{Name}cpp:Element",
+              "jcr:primaryType": "cpp:Element",
               "sling:resourceType": "composum/pages/components/element/textimage"
             }
           },
           "column-1": {
-            "jcr:primaryType": "{Name}cpp:Container",
+            "jcr:primaryType": "cpp:Container",
             "sling:resourceType": "composum/pages/components/container/row/column",
             "textimage": {
-              "jcr:primaryType": "{Name}cpp:Element",
+              "jcr:primaryType": "cpp:Element",
               "sling:resourceType": "composum/pages/components/element/textimage"
             }
           }

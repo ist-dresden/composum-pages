@@ -2,6 +2,7 @@ package com.composum.pages.commons.model;
 
 import com.composum.pages.commons.PagesConstants;
 import com.composum.pages.commons.model.properties.PathPatternSet;
+import com.composum.pages.commons.service.ResourceManager;
 import com.composum.pages.commons.util.ResolverUtil;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.util.ResourceUtil;
@@ -75,7 +76,7 @@ public class Element extends AbstractModel {
         return isAllowedContainer(resource.getResourceType());
     }
 
-    public boolean isAllowedContainer(ResourceReference container) {
+    public boolean isAllowedContainer(ResourceManager.ResourceReference container) {
         return isAllowedContainer(container.getType());
     }
 
@@ -88,7 +89,7 @@ public class Element extends AbstractModel {
      */
     public PathPatternSet getAllowedContainers() {
         if (allowedContainers == null) {
-            allowedContainers = new PathPatternSet(new ResourceReference(this), PROP_ALLOWED_CONTAINERS);
+            allowedContainers = new PathPatternSet(getResourceManager().getReference(this), PROP_ALLOWED_CONTAINERS);
         }
         return allowedContainers;
     }
