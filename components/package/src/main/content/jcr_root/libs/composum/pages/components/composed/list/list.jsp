@@ -6,7 +6,7 @@
     <${list.type} class="${listCssBase}_list">
     <c:forEach var="item" items="${list.elements}">
         <li class="${listCssBase}_list-item">
-            <cpp:include path="${item.path}"/>
+            <cpp:include resource="${item.resource}"/>
         </li>
     </c:forEach>
     </${list.type}>

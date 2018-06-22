@@ -3,12 +3,20 @@
 .composum-pages-components-element-codeblock {
     margin: 0 0 10px;
 
+    &_heading {
+        position: relative;
+        min-height: 40px;
+    }
+
     &_language {
         margin: -2px 0 0 10px;
     }
 
     &_button {
-        float: right;
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        line-height: 16px;
     }
 
     &_expand {
@@ -84,7 +92,21 @@
             }
 
             &_content-block {
-                height: 50px;
+                max-height: 63px;
+            }
+        }
+
+        &.medium .composum-pages-components-element-codeblock {
+
+            &_content-block {
+                max-height: 244px;
+            }
+        }
+
+        &.large .composum-pages-components-element-codeblock {
+
+            &_content-block {
+                max-height: 496px;
             }
         }
     }

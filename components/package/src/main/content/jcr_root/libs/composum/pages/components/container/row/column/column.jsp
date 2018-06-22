@@ -6,7 +6,7 @@
                cssBase="composum-pages-components-container">
     <c:forEach items="${container.elements}" var="element" varStatus="loop">
         <div class="${containerCssBase}_element">
-            <cpp:include path="${element.path}"/>
+            <cpp:include resource="${element.resource}"/>
         </div>
     </c:forEach>
 </cpp:container>

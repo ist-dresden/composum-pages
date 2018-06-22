@@ -1,0 +1,48 @@
+@charset "UTF-8";
+
+@import "../../../css/variables";
+@import "../../../css/mixins";
+
+.composum-pages-components-composed-decorator {
+
+    &_body {
+        padding: 10px;
+    }
+
+    &_item {
+        position: relative;
+
+        &.has-symbol {
+            padding-left: 4rem;
+        }
+    }
+
+    &_icon {
+        position: absolute;
+        top: 0.1rem;
+        left: 0.4rem;
+        width: 2rem;
+        text-align: center;
+        font-size: 2.5rem;
+    }
+
+    &_info {
+        color: $bootstrap-color-info;
+        background-color: $bootstrap-background-info;
+    }
+
+    &_success {
+        color: $bootstrap-color-success;
+        background-color: $bootstrap-background-success;
+    }
+
+    &_warning {
+        color: $bootstrap-color-warning;
+        background-color: $bootstrap-background-warning;
+    }
+
+    &_danger {
+        color: $bootstrap-color-danger;
+        background-color: $bootstrap-background-danger;
+    }
+}

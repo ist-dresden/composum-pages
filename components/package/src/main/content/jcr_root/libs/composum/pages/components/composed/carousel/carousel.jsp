@@ -21,7 +21,7 @@
         <c:forEach items="${carousel.elements}" var="element" varStatus="loop">
             <div class="${carouselCssBase}_element item ${loop.index == 0 ? 'active' : ''}" data-path="${element.path}"
                  data-index="${loop.index}">
-                <cpp:include path="${element.path}"/>
+                <cpp:include resource="${element.resource}"/>
             </div>
         </c:forEach>
     </div>

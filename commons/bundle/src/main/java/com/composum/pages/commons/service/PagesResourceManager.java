@@ -58,6 +58,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static com.composum.pages.commons.PagesConstants.META_NODE_NAME;
 import static com.composum.pages.commons.PagesConstants.NODE_NAME_DESIGN;
 import static com.composum.pages.commons.PagesConstants.PROP_TEMPLATE;
 import static com.composum.pages.commons.PagesConstants.PROP_TEMPLATE_REF;
@@ -543,7 +544,7 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
                     if (template != null) {
                         Resource pageContent = page.getChild(JcrConstants.JCR_CONTENT);
                         if (pageContent != null) {
-                            String relativePath = getPath().substring(pageContent.getPath().length() + 1);
+                            String relativePath = StringUtils.substring(getPath(), pageContent.getPath().length() + 1);
                             design = template.getDesign(pageContent, relativePath, getType());
                         }
                     }
@@ -1042,7 +1043,8 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
         for (Resource child : template.getChildren()) {
             String childName = child.getName();
             // maybe the child is always created by the referenced template
-            if (!JcrConstants.JCR_CONTENT.equals(childName) && target.getChild(childName) == null) {
+            if (!JcrConstants.JCR_CONTENT.equals(childName) && TEMPLATE_COPY_FILTER.accept(child)
+                    && target.getChild(childName) == null) {
                 copyContentResource(resolver, child, target, childName, null);
             }
         }
@@ -1066,14 +1068,14 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
     }
 
     /**
-     * the node filter to prevent from copying template rules to content targets
+     * the node filter to prevent from copying template rules and meta data to content targets
      */
     public static class TemplateCopyFilter implements ResourceFilter {
 
         @Override
         public boolean accept(Resource resource) {
             String name = resource.getName();
-            return !NODE_NAME_DESIGN.equals(name);
+            return !NODE_NAME_DESIGN.equals(name) && !META_NODE_NAME.equals(name);
         }
 
         @Override
