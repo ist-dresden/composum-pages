@@ -15,6 +15,8 @@ import org.apache.sling.api.resource.ValueMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.jcr.Node;
+import javax.jcr.RepositoryException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -159,12 +161,16 @@ public abstract class InPlaceReplicationStrategy implements ReplicationStrategy,
         copyReleasedContent(context, targetRoot, released, replicate, false, merge);
         Resource releasedContent = released.getChild(JcrConstants.JCR_CONTENT);
         if (releasedContent != null) {
+            ResourceResolver targetResolver = replicate.getResourceResolver();
             Resource replicateContent = replicate.getChild(JcrConstants.JCR_CONTENT);
             if (replicateContent == null) {
-                replicateContent = createReplicate(replicate.getResourceResolver(), releasedContent, replicate);
+                replicateContent = createReplicate(targetResolver, releasedContent, replicate);
             }
             // copy content of 'jcr:content' always recursive
             copyReleasedContent(context, targetRoot, releasedContent, replicateContent, true, merge);
+        }
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("commit changes '{}'", replicate.getPath());
         }
         if (recursive) {
             replicateChildren(context, released, true);
@@ -193,21 +199,23 @@ public abstract class InPlaceReplicationStrategy implements ReplicationStrategy,
         if (LOG.isDebugEnabled()) {
             LOG.debug("copyReleasedContent({}) to '{}'", released.getPath(), replicate.getPath());
         }
+        ResourceResolver targetResolver = replicate.getResourceResolver();
         if (!merge) {
             // in case of a 'reset' remove all children from the target resource
-            ResourceResolver replicateResolver = replicate.getResourceResolver();
             for (Resource child : replicate.getChildren()) {
-                replicateResolver.delete(child);
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("deleteChild({})", child.getPath());
+                }
+                targetResolver.delete(child);
             }
         }
         copyReleasedProperties(context, targetRoot, released, replicate, merge);
         if (recursive) {
-            ResourceResolver replicateResolver = replicate.getResourceResolver();
             for (Resource releasedChild : released.getChildren()) {
                 String name = releasedChild.getName();
                 Resource replicateChild = replicate.getChild(name);
                 if (replicateChild == null) {
-                    replicateChild = createReplicate(replicateResolver, releasedChild, replicate);
+                    replicateChild = createReplicate(targetResolver, releasedChild, replicate);
                 }
                 copyReleasedContent(context, targetRoot, releasedChild, replicateChild, true, merge);
             }
@@ -338,6 +346,9 @@ public abstract class InPlaceReplicationStrategy implements ReplicationStrategy,
             }
         }
         // create the new resource with the same name as the origin
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("createReplicate({}): '{}'", released.getPath(), parent.getPath() + "/" + released.getName());
+        }
         return replicateResolver.create(parent, released.getName(), properties);
     }
 

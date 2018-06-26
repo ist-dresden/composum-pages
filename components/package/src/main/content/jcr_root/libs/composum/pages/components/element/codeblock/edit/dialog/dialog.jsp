@@ -28,7 +28,7 @@
     <div class="row">
         <div class="col-xs-4">
             <cpp:widget label="Collapsed" property="collapsed" type="select" i18n="false"
-                        options=":expanded,small,medium,large"/>
+                        options=",small,medium,large"/>
         </div>
         <div class="col-xs-4">
             <cpp:widget label="Collapsible" property="collapsible" type="checkbox" i18n="false"/>

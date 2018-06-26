@@ -32,7 +32,6 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
@@ -41,8 +40,8 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import static com.composum.pages.commons.PagesConstants.COMPOSUM_PREFIX;
+import static com.composum.platform.commons.request.service.InternalRequestService.RA_IS_INTERNAL_REQUEST;
 import static com.composum.sling.platform.staging.ResourceResolverChangeFilter.ATTRIBUTE_NAME;
-import static com.composum.sling.platform.staging.ResourceResolverChangeFilter.COOKIE_NAME;
 import static com.composum.sling.platform.staging.ResourceResolverChangeFilter.PARAMETER_NAME;
 
 @Component(
@@ -141,6 +140,11 @@ public class PagesReleaseFilter implements Filter {
             BeanContext context = new BeanContext.Servlet(servletContext, bundleContext, slingRequest,
                     (SlingHttpServletResponse) response);
 
+            Boolean isInternalRequest = (Boolean) request.getAttribute(RA_IS_INTERNAL_REQUEST);
+            if (isInternalRequest == null) {
+                isInternalRequest = false;
+            }
+
             Site site = siteManager.getContainingSite(context, resource);
 
             AccessMode accessMode = AccessMode.requestMode(slingRequest);
@@ -154,7 +158,8 @@ public class PagesReleaseFilter implements Filter {
                     uri = uri.substring(contextPath.length());
                 }
 
-                if (!isUnreleasedPublicAccessAllowed(request.getServerName(), uri, resource.getPath())) {
+                if (!isInternalRequest &&
+                        !isUnreleasedPublicAccessAllowed(request.getServerName(), uri, resource.getPath())) {
 
                     if (site != null) {
                         String mode = site.getPublicMode();
@@ -219,15 +224,9 @@ public class PagesReleaseFilter implements Filter {
 
                 release = request.getParameter(PARAMETER_NAME);
                 if (StringUtils.isBlank(release)) {
-                    Cookie cookie = slingRequest.getCookie(COOKIE_NAME);
-                    if (cookie != null) {
-                        release = cookie.getValue();
-                    }
-                    if (StringUtils.isBlank(release)) {
-                        HttpSession session = slingRequest.getSession(false);
-                        if (session != null) {
-                            release = (String) session.getAttribute(ATTRIBUTE_NAME);
-                        }
+                    HttpSession session = slingRequest.getSession(false);
+                    if (session != null) {
+                        release = (String) session.getAttribute(ATTRIBUTE_NAME);
                     }
                 }
 
