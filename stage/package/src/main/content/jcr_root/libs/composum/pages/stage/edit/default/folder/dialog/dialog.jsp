@@ -5,10 +5,10 @@
 <cpp:editDialog var="folder" type="com.composum.pages.commons.model.Folder"
                 title="Edit Folder Properties" languageContext="false">
     <div class="row">
-        <div class="col-xs-8">
+        <div class="col col-xs-8">
             <cpp:widget label="Title" property="jcr:title" type="textfield" i18n="false"/>
         </div>
-        <div class="col-xs-4">
+        <div class="col col-xs-4">
             <cpp:widget label="arrange manually" name="jcr:primaryType" type="checkselect"
                         options="sling:OrderedFolder,sling:Folder" separators=", |"
                         hint="manual sorted folder ?"/>

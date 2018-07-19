@@ -3,7 +3,7 @@
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <cpp:defineFrameObjects/><%-- the 'checkselect' (checkbox) widget form template --%>
-<div class="${widgetCssBase}_${widget.widgetType} ${widgetCssBase}_${widget.cssName} checkbox">
+<div class="${widgetCssBase}_${widget.widgetType} ${widgetCssBase}_${widget.cssName} checkbox form-inline">
     <sling:call script="hint.jsp"/><%-- place hints in the 'label level'; on top of the checkbox --%>
     <label class="${widgetCssBase}_label"><%-- for checkboxes the label is the checkbox label itself --%>
         <%-- this 'span' is the widget 'div'; the hook for the widgets JS view --%>
@@ -22,7 +22,7 @@
            --%><input data-i18n="${widget.i18n}" class="${widgetCssBase}_input" type="checkbox"
                       <c:if test="${widget.model.checked}">name="${widget.name}"</c:if>
                       value="${widget.model.inputValue}" ${widget.model.checkedValue}/></c:if><%--
-           in each case - the label of the checkbox... --%>${widget.label}
+           in each case - the label of the checkbox... --%><span class="label-text">${widget.label}</span>
     <c:if test="${widget.model.hasSecondValue}"><%--
            an additional a hidden field for the 'unchecked' value if such an option is configured
            --%><input type="hidden" class="${widget.widgetType}-widget_second" <%--

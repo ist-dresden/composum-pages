@@ -5,9 +5,10 @@ import com.composum.pages.components.model.ImageRelatedElement;
 import com.composum.pages.components.model.text.Text;
 import org.apache.commons.lang3.StringUtils;
 
+import static com.composum.pages.components.model.text.Text.PROP_TEXT;
+
 public class TextImage extends ImageRelatedElement {
 
-    public static final String PROP_TEXT = "text";
     public static final String PROP_IMAGE_POS = "imagePosition";
     public static final String PROP_FLOATING_TEXT = "floatingText";
 

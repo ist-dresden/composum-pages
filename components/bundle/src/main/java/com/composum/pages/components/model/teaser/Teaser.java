@@ -5,6 +5,8 @@ import com.composum.pages.components.model.ImageRelatedElement;
 import com.composum.sling.core.util.LinkUtil;
 import org.apache.commons.lang3.StringUtils;
 
+import static com.composum.pages.components.model.text.Text.PROP_TEXT;
+
 public class Teaser extends ImageRelatedElement {
 
     public static final String PROP_VARIATION = "variation";
@@ -12,7 +14,6 @@ public class Teaser extends ImageRelatedElement {
 
     public static final String PROP_LINK = "link";
     public static final String PROP_SUBTITLE = "subtitle";
-    public static final String PROP_TEXT = "text";
 
     public static final String SELECTOR_TEXTBLOCK = "textblock";
     public static final String SELECTOR_PLACEHOLDER = "placeholder";
