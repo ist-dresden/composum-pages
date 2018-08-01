@@ -30,6 +30,7 @@ import static com.composum.pages.commons.PagesConstants.NODE_TYPE_PAGE_CONTENT;
 import static com.composum.pages.commons.PagesConstants.PAGES_PREFIX;
 import static com.composum.pages.commons.PagesConstants.PROP_EDIT_CATEGORY;
 import static com.composum.pages.commons.PagesConstants.PROP_PAGE_LANGUAGES;
+import static com.composum.pages.commons.PagesConstants.PROP_SLING_TARGET;
 import static com.composum.pages.commons.PagesConstants.PROP_VIEW_CATEGORY;
 
 @PropertyDetermineResourceStrategy(Page.ContainingPageResourceStrategy.class)
@@ -360,5 +361,20 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
 
     public String getEditClientlibCategory() {
         return getInherited(PROP_EDIT_CATEGORY, DEFAULT_EDIT_CATEGORY);
+    }
+
+    // forward / redirect
+
+    public String getSlingTarget() {
+        return getProperty(PROP_SLING_TARGET, "");
+    }
+
+    public String getSlingTargetUrl() {
+        String targetUrl = getSlingTarget();
+        if (StringUtils.isNotBlank(targetUrl)) {
+            SlingHttpServletRequest request = context.getRequest();
+            targetUrl = LinkUtil.getUrl(request, targetUrl);
+        }
+        return targetUrl;
     }
 }
