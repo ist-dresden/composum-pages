@@ -58,7 +58,7 @@ public class InPlacePageReplication extends InPlaceReplicationStrategy {
             // for a page the version based resolver has to be used...
             String releaseLabel = context.site.getReleaseLabel(context.accessMode.name());
             if (LOG.isDebugEnabled()) {
-                LOG.debug("using staging resolver of release '{}'...", releaseLabel);
+                LOG.debug("'{}': using staging resolver of release '{}'...", resource.getPath(), releaseLabel);
             }
             return new StagingResourceResolver(resolverFactory, defaultResolver, releaseLabel, this);
         }

@@ -5,18 +5,18 @@
                 title="Edit Search Field">
     <cpp:editDialogGroup label="Input Field" expanded="true">
         <div class="row">
-            <div class="col-xs-6">
+            <div class="col col-xs-6">
                 <cpp:widget label="Button Symbol" property="buttonSymbol" type="select" i18n="false"
                             options="search,question,filter,eye,bullseye" rules="optional"
                             hint="Symbol for the search button; optional, default: 'search'."/>
             </div>
-            <div class="col-xs-6">
+            <div class="col col-xs-6">
                 <cpp:widget label="Button Text" property="buttonText" type="textfield" i18n="true" rules="optional"
                             hint="Text for the search button (normally not visible); optional."/>
             </div>
         </div>
         <div class="row">
-            <div class="col-xs-12">
+            <div class="col col-xs-12">
                 <cpp:widget label="Button Title" property="hint" type="textfield" i18n="true" rules="optional"
                             hint="Title (i.e., mouseover text) for the button; optional."/>
                 <cpp:widget label="Placeholder Text" property="placeholderText" type="textfield" i18n="true" rules="optional"
@@ -26,7 +26,7 @@
     </cpp:editDialogGroup>
     <cpp:editDialogGroup label="Search Result" expanded="true">
         <div class="row">
-            <div class="col-xs-12">
+            <div class="col col-xs-12">
                 <cpp:widget label="Search Result Path" property="searchResultPath" type="pathfield" i18n="false" rules="optional"
                             hint="Page in which the search result is shown; optional, default: containing page."/>
                 <cpp:widget label="Search Result Anchor" property="searchResultAnchor" type="textfield" i18n="false" rules="optional"

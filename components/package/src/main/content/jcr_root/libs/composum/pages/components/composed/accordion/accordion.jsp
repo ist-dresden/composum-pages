@@ -10,6 +10,6 @@
                tagId="@{accordionId}" scope="request" replace="true" role="tablist"
                cssBase="composum-pages-components-accordion" cssAdd="panel-group">
     <c:forEach items="${accordion.elements}" var="element" varStatus="loop">
-        <cpp:include path="${element.path}" replaceSelectors="${accordion.behavior}"/>
+        <cpp:include resource="${element.resource}" replaceSelectors="${accordion.behavior}"/>
     </c:forEach>
 </cpp:container>

@@ -5,6 +5,7 @@ import com.composum.pages.commons.util.ResourceTypeUtil;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.util.ExpressionUtil;
 import com.composum.sling.core.util.LinkUtil;
+import com.composum.sling.core.util.ResourceUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
@@ -38,7 +39,16 @@ public class IncludeTag extends IncludeTagHandler {
     private transient ExpressionUtil expressionUtil;
 
     public void setResource(final Resource resource) {
-        super.setResource(this.resource = resource);
+        if (ResourceUtil.isSyntheticResource(resource)) {
+            if (StringUtils.isBlank(path)) {
+                setPath(resource.getPath());
+            }
+            if (StringUtils.isBlank(resourceType)) {
+                setResourceType(resource.getResourceType());
+            }
+        } else {
+            super.setResource(this.resource = resource);
+        }
     }
 
     public void setPath(String path) {

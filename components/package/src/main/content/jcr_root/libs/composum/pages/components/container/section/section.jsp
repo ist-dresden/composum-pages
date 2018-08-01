@@ -22,7 +22,7 @@
         <c:forEach items="${carousel.elements}" var="element" varStatus="loop">
             <div class="${carouselCssBase}_element item ${loop.index == 0 ? 'active' : ''}" data-path="${element.path}"
                  data-index="${loop.index}">
-                <sling:include path="${element.path}"/>
+                <sling:include resource="${element.resource}"/>
             </div>
         </c:forEach>
     </div>

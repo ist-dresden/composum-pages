@@ -30,7 +30,7 @@
     <%-- the jcr:primaryType depends on the 'ordered' checkbox value and is set before submit by JS --%>
     <cpp:widget name="jcr:primaryType" type="hidden"/>
     <div class="row">
-        <div class="col-xs-8">
+        <div class="col col-xs-8">
             <cpp:widget label="Name" name=":nameHint" placeholder="the repository name" type="textfield"
                         rules="mandatory" pattern="^[A-Za-z_][- \\w]*$"/>
         </div>

@@ -5,6 +5,12 @@
         jcr:primaryType="sling:Folder"
         sling:basename="composum-pages">
 
+    <general jcr:primaryType="sling:Folder">
+
+        <medium jcr:primaryType="sling:MessageEntry"
+                sling:key="medium" sling:message="mittel"/>
+    </general>
+
     <element jcr:primaryType="sling:Folder"><!-- element labels -->
 
         <create-teaser jcr:primaryType="sling:MessageEntry"

@@ -4,7 +4,7 @@
 <cpp:defineObjects/>
 <cpp:element var="element" type="com.composum.pages.commons.model.Element">
     <sling:call script="single.jsp"/>
-    <div class="col-xs-12">
+    <div class="col col-xs-12">
         <cpp:include path="dialog" resourceType="composum/pages/components/element/codeblock"/>
         <cpp:include path="rendered" resourceType="composum/pages/components/element/codeblock"/>
     </div>

@@ -418,7 +418,7 @@ public class EditDialogTag extends AbstractWrappingTag {
         Languages languages = getLanguages();
         if (languages != null) {
             Language defaultLanguage = languages.getDefaultLanguage();
-            if (!defaultLanguage.isCurrent()) {
+            if (defaultLanguage != null && !defaultLanguage.isCurrent()) {
                 Language language = languages.getLanguage();
                 path = I18N_PROPERTY_PATH + language.getKey() + "/" + path;
             }

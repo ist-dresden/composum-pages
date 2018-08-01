@@ -1,0 +1,11 @@
+@charset "UTF-8";
+
+.composum-pages-components-container-row {
+    display: inline-block;
+    clear: both;
+    width: 100%;
+
+    &:before, &:after {
+        content: none;
+    }
+}

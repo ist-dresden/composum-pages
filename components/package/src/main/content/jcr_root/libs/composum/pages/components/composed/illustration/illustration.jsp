@@ -9,6 +9,6 @@
     <div class="${illustrationCssBase}_image">
         <cpp:include path="image" resourceType="composum/pages/components/element/image"/>
         <sling:call script="shapes.jsp"/>
+        <sling:call script="container.jsp"/>
     </div>
-    <sling:call script="container.jsp"/>
 </cpp:element>

@@ -30,7 +30,6 @@
 
 @mixin inline-title {
     margin: $column-title-margin;
-    padding: $column-title-padding;
     @include title-font;
     color: $column-title-text-color;
 }

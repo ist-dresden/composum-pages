@@ -8,7 +8,7 @@ import java.util.List;
  * a 'checkbox' model to select the first value of an options list if checked,
  * if not checked the value is the second value of the options list
  */
-public class CheckSelect extends OptionsWidget {
+public class CheckSelect extends SingleStringOption {
 
     /**
      * @return 'true' if the current value equals to the first option

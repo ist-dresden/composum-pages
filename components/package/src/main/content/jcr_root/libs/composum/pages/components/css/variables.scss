@@ -13,8 +13,17 @@ $bootstrap-screen-md-max: ($bootstrap-screen-lg-min - 1) !default;
 $bootstrap-spacing-v: 10px;
 $bootstrap-spacing-h: 15px;
 
-$bootstrap-color-info: #337ab7;
-$bootstrap-color-mute: #777;
+$bootstrap-color-muted: #777;
+
+$bootstrap-color-info: #31708f;
+$bootstrap-color-success: #3c763d;
+$bootstrap-color-warning: #8a6d3b;
+$bootstrap-color-danger: #a94442;
+
+$bootstrap-background-info: #d9edf7;
+$bootstrap-background-success: #dff0d8;
+$bootstrap-background-warning: #fcf8e3;
+$bootstrap-background-danger: #f2dede;
 
 $bootstrap-navbar-background: #f8f8f8;
 
@@ -33,8 +42,8 @@ $column-title-text-color: $site-default-text-color;
 
 $site-default-font-family: 'robotolight';
 $site-title-font-family: 'robotothin';
-$site-small-font-size: 16px;
-$site-default-font-size: 18px;
+$site-small-font-size: 14px;
+$site-default-font-size: 16px;
 $site-subtitle-font-size: 24px;
 $site-title-font-size: 32px;
 $site-title-padding: 20px;

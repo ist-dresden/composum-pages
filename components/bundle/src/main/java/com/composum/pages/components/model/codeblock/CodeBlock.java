@@ -29,6 +29,8 @@ public class CodeBlock extends Element {
     public static final String PN_LANGUAGE = "language";
     public static final String PN_SHOW_LANGUAGE = "showLanguage";
 
+    public static final String PN_SERVICE_URI = "serviceUri";
+
     public static final String TYPE_PANEL = "panel";
     public static final String TYPE_SIMPLE = "simple";
 
@@ -36,12 +38,13 @@ public class CodeBlock extends Element {
     private transient String code;
     private transient String copyright;
     private transient String codeLanguage;
+    private transient String serviceUri;
     private transient Boolean showLanguage;
 
     private transient Boolean wrapLines;
     private transient Boolean bordered;
     private transient Boolean collapsible;
-    private transient Boolean collapsed;
+    private transient String collapsed;
 
     public boolean isValid() {
         return StringUtils.isNotBlank(getCode());
@@ -63,9 +66,9 @@ public class CodeBlock extends Element {
 
     public boolean isCollapsed() {
         if (collapsed == null) {
-            collapsed = getProperty(PN_COLLAPSED, Boolean.FALSE);
+            collapsed = getProperty(PN_COLLAPSED, "");
         }
-        return collapsed;
+        return StringUtils.isNotBlank(collapsed);
     }
 
     public boolean isWrapLines() {
@@ -107,6 +110,7 @@ public class CodeBlock extends Element {
         }
         if (isCollapsed()) {
             classes.add("collapsed");
+            classes.add(collapsed);
         }
         return StringUtils.join(classes, " ");
     }
@@ -147,12 +151,23 @@ public class CodeBlock extends Element {
         return codeLanguage;
     }
 
+    public String getServiceUri() {
+        if (serviceUri == null) {
+            serviceUri = getProperty(PN_SERVICE_URI, "");
+        }
+        return serviceUri;
+    }
+
     public String getCode() {
         if (code == null) {
             code = getProperty(PN_CODE, "");
             if (StringUtils.isBlank(code)) {
                 ContentRefService service = context.getService(ContentRefService.class);
                 String codeRef = getProperty(PN_CODE_REF, "");
+                String servicveUri = getServiceUri();
+                if (StringUtils.isNotBlank(servicveUri)) {
+                    codeRef = servicveUri + codeRef;
+                }
                 code = service.getReferencedContent(resolver, codeRef);
                 if (StringUtils.isBlank(code)) {
                     code = service.getRenderedContent(context.getRequest(), codeRef, false);

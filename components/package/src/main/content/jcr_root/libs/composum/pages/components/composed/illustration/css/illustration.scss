@@ -4,7 +4,8 @@
 @import "../../../css/mixins";
 
 .composum-pages-components-composed-illustration {
-    position: relative;
+    width: 100%;
+    margin: 1rem auto;
 
     &_image {
         position: relative;

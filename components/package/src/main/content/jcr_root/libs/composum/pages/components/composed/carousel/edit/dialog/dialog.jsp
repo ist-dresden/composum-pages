@@ -6,21 +6,21 @@
 <cpp:editDialog var="carousel" type="com.composum.pages.components.model.container.Carousel"
                 title="@{dialog.selector=='create'?'Create a Carousel':'Edit Carousel'}">
     <div class="row">
-        <div class="col-xs-4">
+        <div class="col col-xs-4">
             <cpp:widget label="Use controls" property="useControls" type="checkbox"/>
         </div>
-        <div class="col-xs-4">
+        <div class="col col-xs-4">
             <cpp:widget label="Show indicators" property="showIndicators" type="checkbox"/>
         </div>
-        <div class="col-xs-4">
+        <div class="col col-xs-4">
             <cpp:widget label="Auto start" property="autoStart" type="checkbox"/>
         </div>
     </div>
     <div class="row">
-        <div class="col-xs-4">
+        <div class="col col-xs-4">
             <cpp:widget label="Interval" property="interval" type="textfield"/>
         </div>
-        <div class="col-xs-8">
+        <div class="col col-xs-8">
             <cpp:widget label="Mouse enter doesn't stop" property="noPause" type="checkbox"/>
         </div>
     </div>
