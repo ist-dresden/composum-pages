@@ -1,14 +1,11 @@
 package com.composum.pages.commons.servlet;
 
 import com.composum.pages.commons.model.Page;
-import com.composum.sling.core.util.LinkUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
 
 import java.io.IOException;
-
-import static com.composum.pages.commons.PagesConstants.PROP_SLING_TARGET;
 
 @Component(
         property = {
@@ -30,23 +27,11 @@ public class SlingTargetPageDispatcher implements PageDispatcher {
      */
     @Override
     public boolean redirect(Page page) throws IOException {
-        String targetUrl = getSlingTargetUrl(page);
+        String targetUrl = page.getSlingTargetUrl();
         if (StringUtils.isNotBlank(targetUrl)) {
             page.getContext().getResponse().sendRedirect(targetUrl);
             return true;
         }
         return false;
-    }
-
-    public String getSlingTargetUrl(Page page) {
-        String targetUrl = getSlingTarget(page);
-        if (StringUtils.isNotBlank(targetUrl)) {
-            targetUrl = LinkUtil.getUrl(page.getContext().getRequest(), targetUrl);
-        }
-        return targetUrl;
-    }
-
-    public String getSlingTarget(Page page) {
-        return page.getProperty(PROP_SLING_TARGET, null,"");
     }
 }
