@@ -13,7 +13,8 @@
             treePanelClass: 'composum-pages-tools_panel',
             treeActionsClass: 'composum-pages-tools_actions',
             contextActionsClass: 'composum-pages-tools_left-actions',
-            contextActionsLoadUrl: '/bin/cpm/pages/edit.treeActions.html'
+            contextActionsLoadUrl: '/bin/cpm/pages/edit.treeActions.html',
+            pagesTreeClass: 'composum-pages-stage-edit-tools-tree-pages'
         });
 
         tree.ToolsTree = core.components.Tree.extend({
@@ -63,6 +64,7 @@
                         use_html5: false
                     }
                 });
+                this.initializeFilter();
                 tree.ToolsTree.prototype.initialize.apply(this, [options]);
                 $(document).on('element:selected.' + id, _.bind(this.onPathSelected, this));
                 $(document).on('component:changed.' + id, _.bind(this.onPathChanged, this));
@@ -80,8 +82,13 @@
                 $(document).on('site:deleted.' + id, _.bind(this.onPathDeleted, this));
             },
 
+            initializeFilter: function () {
+                this.filter = pages.profile.get('tree', 'filter', undefined);
+            },
+
             dataUrlForPath: function (path) {
-                return '/bin/cpm/pages/edit.pageTree.json' + path;
+                var params = this.filter ? '?filter=' + this.filter : '';
+                return '/bin/cpm/pages/edit.pageTree.json' + path + params;
             },
 
             nodeIsDraggable: function (selection, event) {
@@ -218,6 +225,8 @@
                 this.tree = core.getWidget(this.el, '.' + tree.const.treeClass, tree.PageTree);
                 this.tree.panel = this;
                 tree.ToolsTreePanel.prototype.initialize.apply(this, [options]);
+                this.selectFilter(pages.profile.get('tree', 'filter', undefined));
+                this.$('.' + tree.const.pagesTreeClass + '_filter-value a').click(_.bind(this.setFilter, this));
                 $(document).on('path:selected.' + this.treePanelId, _.bind(this.onPathSelected, this));
                 $(document).on('element:selected.' + this.treePanelId, _.bind(this.onPathSelected, this));
                 $(document).on('page:selected.' + this.treePanelId, _.bind(this.onPathSelected, this));
@@ -228,6 +237,23 @@
                     this.tree.selectNode(pages.current.page, _.bind(function () {
                         this.setNodeActions();
                     }, this));
+                }
+            },
+
+            setFilter: function (event) {
+                event.preventDefault();
+                var $link = $(event.currentTarget);
+                var filter = $link.parent().data('value');
+                this.tree.setFilter(filter);
+                this.selectFilter(filter);
+                pages.profile.set('tree', 'filter', filter);
+            },
+
+            selectFilter: function (filter) {
+                this.$('.' + tree.const.pagesTreeClass + '_filter-value').removeClass('active');
+                if (filter) {
+                    this.$('.' + tree.const.pagesTreeClass + '_filter-value[data-value="' + filter + '"]')
+                        .addClass('active');
                 }
             }
         });
