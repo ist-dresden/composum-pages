@@ -45,6 +45,13 @@
                 &_checkbox,
                 &_checkselect {
 
+                    .composum-pages-edit-widget {
+
+                        &_label {
+                            display: inline-block;
+                        }
+                    }
+
                     .label-text {
                         display: none;
                     }

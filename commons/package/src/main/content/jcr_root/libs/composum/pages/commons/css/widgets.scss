@@ -60,86 +60,75 @@
     &.multiwidget-simple,
     &.multiwidget-table {
 
-        &,
-        &_lg,
-        &_md,
-        &_sm,
-        &_xs {
+        .multi-form-item {
 
-            .multi-form-item {
+            .composum-pages-edit-widget {
 
-                label.composum-pages-edit-widget_label {
+                &_label {
                     display: none;
                 }
             }
+        }
 
-            .item-select {
-                top: auto;
-                bottom: 5px;
-            }
+        .item-select {
+            top: auto;
+            bottom: 5px;
+        }
 
-            .row {
-                margin-left: -7px;
-                margin-right: -7px;
-            }
+        .row {
+            margin-left: -7px;
+            margin-right: -7px;
+        }
 
-            .col {
-                padding-right: 7px;
-                padding-left: 7px;
-            }
+        .col {
+            padding-right: 7px;
+            padding-left: 7px;
+        }
 
-            .form-group {
-                margin-bottom: 5px;
-            }
+        .form-group {
+            margin-bottom: 5px;
         }
     }
 
     &.multiwidget-table {
 
-        &,
-        &_lg,
-        &_md,
-        &_sm,
-        &_xs {
+        .multi-form-item {
 
-            .multi-form-item {
+            .composum-pages-edit-widget {
+
+                &_hint {
+                    display: none;
+                }
+            }
+
+            &:first-child {
 
                 .composum-pages-edit-widget {
 
-                    &_hint {
-                        display: none;
-                    }
-                }
-
-                &:first-child {
-
-                    label.composum-pages-edit-widget_label {
+                    &_label {
                         display: inline-block;
                     }
 
-                    .composum-pages-edit-widget {
-
-                        &_hint {
-                            display: block;
-                        }
+                    &_hint {
+                        display: block;
                     }
                 }
+            }
 
-                .row {
+            .row {
+                display: flex;
+                align-items: stretch;
+
+                .col {
                     display: flex;
                     align-items: stretch;
 
-                    .col {
+                    .form-group,
+                    .form-inline {
                         display: flex;
-                        align-items: stretch;
-
-                        .form-group,
-                        .form-inline {
-                            display: flex;
-                            flex-direction: column;
-                            justify-content: space-between;
-                            width: 100%;
-                        }
+                        flex-direction: column;
+                        justify-content: space-between;
+                        width: 100%;
                     }
                 }
             }
