@@ -453,13 +453,13 @@ public abstract class AbstractModel implements SlingBean, Model {
         return getProperty(key, getLocale(), type);
     }
 
-    protected <T> T getProperty(String key, Locale locale, T defaultValue) {
+    public <T> T getProperty(String key, Locale locale, T defaultValue) {
         Class<T> type = PropertyUtil.getType(defaultValue);
         T value = getProperty(key, locale, type);
         return value != null ? value : defaultValue;
     }
 
-    protected <T> T getProperty(String key, Locale locale, Class<T> type) {
+    public <T> T getProperty(String key, Locale locale, Class<T> type) {
         return getProperty(key, type, locale != null ? getI18nPaths() : IGNORE_I18N);
     }
 

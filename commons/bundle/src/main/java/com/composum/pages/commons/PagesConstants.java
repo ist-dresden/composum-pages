@@ -25,6 +25,7 @@ public interface PagesConstants {
     String LANGUAGES_PATH = "jcr:content/languages";
     String LANGUAGES_TYPE = "composum/pages/stage/edit/site/languages";
     String DEFAULT_LANGUAGES = "/libs/composum/pages/commons/default/" + LANGUAGES_PATH;
+    String LANGUAGE_NAME_SEPARATOR = "_";
 
     String LANGUAGES_ATTR = PAGES_PREFIX + "declared-languages";
     String LANGUAGE_CSS_KEY = PAGES_PREFIX + "language";

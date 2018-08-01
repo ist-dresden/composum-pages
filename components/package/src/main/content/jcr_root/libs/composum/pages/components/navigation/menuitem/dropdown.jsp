@@ -13,7 +13,7 @@
       <cpp:include resourceType="composum/pages/components/navigation/submenu"/>
     </c:when>
     <c:otherwise>
-      <a href="${cpn:url(slingRequest,menuitem.path)}">${cpn:text(menuitem.title)}</a>
+      <a href="${menuitem.url}">${cpn:text(menuitem.title)}</a>
     </c:otherwise>
   </c:choose>
 </cpp:element>

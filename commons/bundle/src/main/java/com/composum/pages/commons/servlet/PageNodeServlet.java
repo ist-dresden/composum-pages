@@ -15,6 +15,10 @@ import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.servlet.RequestDispatcher;
@@ -22,6 +26,9 @@ import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 @Component(service = Servlet.class,
         property = {
@@ -31,10 +38,14 @@ import java.io.IOException;
         })
 public class PageNodeServlet extends SlingSafeMethodsServlet {
 
-    protected BundleContext bundleContext;
+    private static final Logger LOG = LoggerFactory.getLogger(PageNodeServlet.class);
 
     @Reference
     protected PageManager pageManager;
+
+    protected BundleContext bundleContext;
+
+    protected List<PageDispatcher> pageDispatchers = Collections.synchronizedList(new ArrayList<PageDispatcher>());
 
     @Activate
     private void activate(final BundleContext bundleContext) {
@@ -52,16 +63,21 @@ public class PageNodeServlet extends SlingSafeMethodsServlet {
 
         if (page.isValid()) {
 
-            // perform HTTP redirect if a redirect target is set at the page
+            // if not in edit mode check for a HTTP redirect triggered by one of the dispatchers
             DisplayMode.Value displayMode = DisplayMode.current(context);
             if (displayMode != DisplayMode.Value.EDIT && displayMode != DisplayMode.Value.DEVELOP) {
-                if (page.redirect()) {
-                    return;
+                for (PageDispatcher dispatcher : pageDispatchers) {
+                    if (dispatcher.redirect(page)) {
+                        return;
+                    }
                 }
             }
 
             // determine the page content resource to use for the request forward
-            Resource forwardContent = page.getForwardPage().getContent().getResource();
+            for (PageDispatcher dispatcher : pageDispatchers) {
+                page = dispatcher.getForwardPage(page);
+            }
+            Resource forwardContent = page.getContent().getResource();
 
             RequestDispatcher dispatcher = request.getRequestDispatcher(forwardContent);
             if (dispatcher != null) {
@@ -71,5 +87,22 @@ public class PageNodeServlet extends SlingSafeMethodsServlet {
         } else {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
         }
+    }
+
+    // page dispatcher registry
+
+    @Reference(
+            service = PageDispatcher.class,
+            policy = ReferencePolicy.DYNAMIC,
+            cardinality = ReferenceCardinality.MULTIPLE
+    )
+    protected void addPageDispatcher(@Nonnull final PageDispatcher dispatcher) {
+        LOG.info("addPageDispatcher: {}", dispatcher.getClass().getSimpleName());
+        pageDispatchers.add(dispatcher);
+    }
+
+    protected void removePageDispatcher(@Nonnull final PageDispatcher dispatcher) {
+        LOG.info("removePageDispatcher: {}", dispatcher.getClass().getSimpleName());
+        pageDispatchers.remove(dispatcher);
     }
 }
