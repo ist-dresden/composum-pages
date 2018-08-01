@@ -1,4 +1,7 @@
 package com.composum.pages.commons.widget;
 
-public class Select extends OptionsWidget {
+/**
+ * the widget model for the 'select' combo box widget
+ */
+public class Select extends SingleStringOption {
 }

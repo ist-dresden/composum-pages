@@ -29,6 +29,10 @@ public abstract class AbstractWidgetTag extends AbstractWrappingTag {
         super.clear();
     }
 
+    public boolean getHasLabel() {
+        return StringUtils.isNotBlank(label);
+    }
+
     public String getLabel() {
         return i18n(label);
     }

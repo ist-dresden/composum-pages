@@ -1,5 +1,7 @@
 package com.composum.pages.commons.widget;
 
+import com.composum.pages.commons.model.properties.Language;
+import com.composum.pages.commons.model.properties.Languages;
 import com.composum.pages.commons.taglib.EditWidgetTag;
 import com.composum.pages.commons.taglib.PropertyEditHandle;
 import com.composum.sling.cpnl.CpnlElFunctions;
@@ -12,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public abstract class OptionsWidget extends PropertyEditHandle<String> {
+public abstract class OptionsWidget<T> extends PropertyEditHandle<T> {
 
     // dynamic attributes consumed by the model itself
 
@@ -32,15 +34,11 @@ public abstract class OptionsWidget extends PropertyEditHandle<String> {
 
     private transient List<Option> options;
 
-    public class Option {
+    public abstract class Option {
 
         private final String label;
         private final String value;
         private final Object data;
-
-        public Option(String label, String value) {
-            this(label, value, null);
-        }
 
         public Option(String label, String value, Object data) {
             this.label = label;
@@ -60,31 +58,18 @@ public abstract class OptionsWidget extends PropertyEditHandle<String> {
             return data;
         }
 
-        public boolean isSelected() {
-            return value.equals(getCurrent());
-        }
+        public abstract boolean isSelected();
     }
 
-    public OptionsWidget() {
-        super(String.class);
+    public OptionsWidget(Class<T> type) {
+        super(type);
     }
 
     public void setWidget(EditWidgetTag tag) {
         super.setWidget(tag);
         options = retrieveOptions(); // consume the options attribute
     }
-
-    public String getCurrent() {
-        String value = getValue();
-        if (StringUtils.isBlank(value)) {
-            String defaultValue = getDefaultValue();
-            if (defaultValue != null) {
-                value = defaultValue;
-            }
-        }
-        return value;
-    }
-
+    
     public void setOptions(List<Option> options) {
         this.options = options;
     }
@@ -92,6 +77,8 @@ public abstract class OptionsWidget extends PropertyEditHandle<String> {
     public List<Option> getOptions() {
         return options;
     }
+    
+    protected abstract Option newOption(String label, String value, Object data);
 
     /**
      * @return the configured options as a JSON array
@@ -120,6 +107,8 @@ public abstract class OptionsWidget extends PropertyEditHandle<String> {
             options = useList((List<String>) optionsObject);
         } else if (optionsObject instanceof Resource) {
             options = useResource((Resource) optionsObject);
+        } else if (optionsObject instanceof Languages) {
+            options = useLanguages((Languages) optionsObject);
         } else {
             options = new ArrayList<>();
         }
@@ -136,7 +125,7 @@ public abstract class OptionsWidget extends PropertyEditHandle<String> {
         for (String value : values) {
             String[] keyAndLabel = StringUtils.split(value.trim(), keySeparator, 2);
             String key = (keyAndLabel.length > 0 ? keyAndLabel[0] : value).trim();
-            options.add(new Option((keyAndLabel.length > 1 ? keyAndLabel[1] : key), key));
+            options.add(newOption((keyAndLabel.length > 1 ? keyAndLabel[1] : key), key, null));
         }
         return options;
     }
@@ -144,7 +133,7 @@ public abstract class OptionsWidget extends PropertyEditHandle<String> {
     protected List<Option> useMap(Map<String, Object> map) {
         List<Option> options = new ArrayList<>();
         for (Map.Entry<String, Object> entry : map.entrySet()) {
-            options.add(new Option(entry.getValue().toString(), entry.getKey(), entry.getValue()));
+            options.add(newOption(entry.getValue().toString(), entry.getKey(), entry.getValue()));
         }
         return options;
     }
@@ -152,7 +141,7 @@ public abstract class OptionsWidget extends PropertyEditHandle<String> {
     protected List<Option> useList(List<String> list) {
         List<Option> options = new ArrayList<>();
         for (String value : list) {
-            options.add(new Option(value, value));
+            options.add(newOption(value, value, null));
         }
         return options;
     }
@@ -160,7 +149,15 @@ public abstract class OptionsWidget extends PropertyEditHandle<String> {
     protected List<Option> useResource(Resource resource) {
         List<Option> options = new ArrayList<>();
         for (Resource node : resource.getChildren()) {
-            options.add(new Option(getLabel(node), node.getName(), resource));
+            options.add(newOption(getLabel(node), node.getName(), resource));
+        }
+        return options;
+    }
+
+    protected List<Option> useLanguages(Languages languages) {
+        List<Option> options = new ArrayList<>();
+        for (Language language : languages.getLanguageList()) {
+            options.add(newOption(language.getLabel(), language.getKey(), language));
         }
         return options;
     }

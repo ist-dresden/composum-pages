@@ -4,8 +4,13 @@
 <cpp:defineFrameObjects/>
 <cpp:editDialog var="pageProps" type="com.composum.pages.commons.model.Page"
                 title="Subsite Root Properties">
-    <sling:call script="logo.jsp"/>
-    <sling:call script="redirect.jsp"/>
-    <sling:call script="general.jsp"/>
-    <sling:call script="navigation.jsp"/>
+    <cpp:editDialogTab tabId="page" label="Page">
+        <sling:call script="logo.jsp"/>
+        <sling:call script="redirect.jsp"/>
+        <sling:call script="general.jsp"/>
+        <sling:call script="navigation.jsp"/>
+    </cpp:editDialogTab>
+    <cpp:editDialogTab tabId="languages" label="Languages">
+        <sling:call script="languages.jsp"/>
+    </cpp:editDialogTab>
 </cpp:editDialog>

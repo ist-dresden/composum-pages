@@ -428,6 +428,10 @@ public abstract class AbstractModel implements SlingBean, Model {
     public Languages getLanguages() {
         if (languages == null) {
             languages = Languages.get(context);
+            if (languages == null) {
+                Languages.set(context, getResource());
+                languages = Languages.get(context);
+            }
         }
         return languages;
     }

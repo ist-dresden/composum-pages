@@ -1,7 +1,9 @@
 package com.composum.pages.commons.model;
 
 import com.composum.pages.commons.model.properties.Language;
+import com.composum.pages.commons.model.properties.Languages;
 import com.composum.pages.commons.request.DisplayMode;
+import com.composum.pages.commons.request.PagesLocale;
 import com.composum.pages.commons.service.PageManager;
 import com.composum.platform.models.annotations.DetermineResourceStategy;
 import com.composum.platform.models.annotations.PropertyDetermineResourceStrategy;
@@ -13,23 +15,22 @@ import com.composum.sling.platform.security.AccessMode;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
-import org.apache.sling.api.request.RequestDispatcherOptions;
 import org.apache.sling.api.resource.Resource;
 
 import javax.annotation.Nonnull;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import static com.composum.pages.commons.PagesConstants.DEFAULT_EDIT_CATEGORY;
 import static com.composum.pages.commons.PagesConstants.DEFAULT_VIEW_CATEGORY;
-import static com.composum.pages.commons.PagesConstants.LANGUAGE_KEY;
+import static com.composum.pages.commons.PagesConstants.LANGUAGE_CSS_KEY;
 import static com.composum.pages.commons.PagesConstants.NODE_TYPE_PAGE;
 import static com.composum.pages.commons.PagesConstants.NODE_TYPE_PAGE_CONTENT;
 import static com.composum.pages.commons.PagesConstants.PAGES_PREFIX;
 import static com.composum.pages.commons.PagesConstants.PROP_EDIT_CATEGORY;
+import static com.composum.pages.commons.PagesConstants.PROP_PAGE_LANGUAGES;
 import static com.composum.pages.commons.PagesConstants.PROP_SLING_TARGET;
 import static com.composum.pages.commons.PagesConstants.PROP_VIEW_CATEGORY;
 
@@ -54,10 +55,76 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
         return ResourceUtil.isResourceType(resource, NODE_TYPE_PAGE_CONTENT);
     }
 
+    // specified languages for a page
+
+    public static class PageLanguages extends ArrayList<Language> {
+
+        @Override
+        public int indexOf(Object object) {
+            if (object instanceof Language) {
+                String key = ((Language) object).getKey();
+                for (int index = 0; index < size(); index++) {
+                    if (get(index).getKey().equals(key)) {
+                        return index;
+                    }
+                }
+            }
+            return -1;
+        }
+    }
+
+    // child pages filter base
+
+    public static class DefaultPageFilter implements ResourceFilter {
+
+        protected final BeanContext context;
+        protected final Locale locale;
+        protected final Language language;
+
+        public DefaultPageFilter(BeanContext context) {
+            this.context = context;
+            locale = context.getRequest().adaptTo(PagesLocale.class).getLocale();
+            language = Languages.get(context).getLanguage(locale);
+        }
+
+        protected Page isAcceptedPage(Resource resource) {
+            if (Page.isPage(resource)) {
+                Page page = context.getService(PageManager.class).createBean(context, resource);
+                if (page.isValid()) {
+                    if (language != null) {
+                        PageLanguages pageLanguages = page.getPageLanguages();
+                        if (!pageLanguages.contains(language)) {
+                            return null;
+                        }
+                    }
+                    return page;
+                }
+            }
+            return null;
+        }
+
+        @Override
+        public boolean accept(Resource resource) {
+            return isAcceptedPage(resource) != null;
+        }
+
+        @Override
+        public boolean isRestriction() {
+            return true;
+        }
+
+        @Override
+        public void toString(StringBuilder builder) {
+            builder.append(getClass().getSimpleName());
+        }
+    }
+
     // page attributes
 
     private transient Site site;
     private transient Page parent;
+
+    private transient PageLanguages pageLanguages;
 
     public Page() {
     }
@@ -162,6 +229,65 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
         return children;
     }
 
+    public List<Page> getChildPages() {
+        return getChildPages(new DefaultPageFilter(getContext()));
+    }
+
+    // I18N
+
+    /**
+     * @return the language subset of the sites languages supported by this page
+     */
+    public PageLanguages getPageLanguages() {
+        if (pageLanguages == null) {
+            pageLanguages = new PageLanguages();
+            Languages declaredLanguages = getLanguages();
+            if (declaredLanguages != null) {
+                String[] languages = getProperty(PROP_PAGE_LANGUAGES, null, String[].class);
+                if (languages != null) {
+                    for (String key : languages) {
+                        Language language = declaredLanguages.getLanguage(key);
+                        if (language != null) {
+                            pageLanguages.add(language);
+                        }
+                    }
+                } else {
+                    pageLanguages.addAll(declaredLanguages.getLanguageList());
+                }
+            }
+        }
+        return pageLanguages;
+    }
+
+    /**
+     * @return 'true' if this page can render the content of the default language
+     */
+    public boolean isDefaultLanguagePage() {
+        PageLanguages pageLanguages = getPageLanguages();
+        return pageLanguages.contains(getLanguage());
+    }
+
+    /**
+     * @return the Page to use to build the general URL of the page even if this page is language split
+     */
+    public Page getDefaultLanguagePage() {
+        if (!isDefaultLanguagePage()) {
+            String baseName = StringUtils.substringBeforeLast(getName(), ".");
+            for (Resource sibling : getResource().getParent().getChildren()) {
+                if (Page.isPage(sibling)) {
+                    Page page = getPageManager().createBean(context, sibling);
+                    if (page.isValid()
+                            // searching for a sibling with the same 'base name' which can render the default language
+                            && baseName.equals(StringUtils.substringBeforeLast(page.getName(), "."))
+                            && page.isDefaultLanguagePage()) {
+                        return page;
+                    }
+                }
+            }
+        }
+        return this;
+    }
+
     // date / time properties
 
     public String getLastModifiedString() {
@@ -169,6 +295,13 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
     }
 
     // rendering
+
+    /**
+     * @return the URL to reference this page; this can be the 'general URL' of the default language sibling
+     */
+    public String getUrl() {
+        return LinkUtil.getUrl(getContext().getRequest(), getDefaultLanguagePage().getPath());
+    }
 
     public String getHtmlLangAttribute() {
         Language language = getLanguage();
@@ -207,7 +340,7 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
         }
         String languageKey = getLanguageKey();
         if (StringUtils.isNotBlank(languageKey)) {
-            classes.add(LANGUAGE_KEY + "_" + languageKey);
+            classes.add(LANGUAGE_CSS_KEY + "_" + languageKey);
         }
         return classes;
     }
@@ -222,6 +355,31 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
 
     // forward / redirect
 
+    /**
+     * @return the target page for the content forward performed by the PageNodeServlet;
+     * this can be the language variant in the case of a language split
+     */
+    public Page getForwardPage() {
+        Language language;
+        // it's possible that the request has to use a language variant if default language page is addressed
+        // and doesn't support the requested language
+        if (isDefaultLanguagePage() && !getPageLanguages().contains(language = getLanguage())) {
+            String baseName = StringUtils.substringBeforeLast(getName(), ".");
+            for (Resource sibling : getResource().getParent().getChildren()) {
+                if (Page.isPage(sibling)) {
+                    Page page = getPageManager().createBean(context, sibling);
+                    if (page.isValid()
+                            // searching for a sibling with the same 'base name' which can render the language
+                            && baseName.equals(StringUtils.substringBeforeLast(page.getName(), "."))
+                            && page.getPageLanguages().contains(language)) {
+                        return page;
+                    }
+                }
+            }
+        }
+        return this;
+    }
+
     public String getSlingTarget() {
         return getProperty(PROP_SLING_TARGET, "");
     }
@@ -233,18 +391,6 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
             targetUrl = LinkUtil.getUrl(request, targetUrl);
         }
         return targetUrl;
-    }
-
-    public boolean forward() throws ServletException, IOException {
-        String target = getSlingTarget();
-        if (StringUtils.isNotBlank(target)) {
-            SlingHttpServletRequest request = context.getRequest();
-            RequestDispatcherOptions options = new RequestDispatcherOptions();
-            RequestDispatcher dispatcher = request.getRequestDispatcher(target, options);
-            dispatcher.forward(request, context.getResponse());
-            return true;
-        }
-        return false;
     }
 
     public boolean redirect() throws IOException {

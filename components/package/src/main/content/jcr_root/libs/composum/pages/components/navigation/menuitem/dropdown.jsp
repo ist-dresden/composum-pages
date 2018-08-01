@@ -7,7 +7,7 @@
                tagName="li" cssAdd="menu-item @{menuitem.submenu ? 'dropdown' : 'link'}@{menuitem.cssClasses}">
   <c:choose>
     <c:when test="${menuitem.submenu}">
-      <a href="${menuitem.menuOnly ? '#' : cpn:url(slingRequest,menuitem.path)}" class="dropdown-toggle"
+      <a href="${menuitem.menuOnly ? '#' : menuitem.url}" class="dropdown-toggle"
          data-toggle="dropdown">${cpn:text(menuitem.title)}<span
               class="caret"></span></a>
       <cpp:include resourceType="composum/pages/components/navigation/submenu"/>
