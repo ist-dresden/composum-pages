@@ -24,7 +24,8 @@
 
             initialize: function () {
                 this.initContent();
-                $(document).on('site:changed.SiteReleases', _.bind(this.reload, this));
+                var c = pages.const.event;
+                $(document).on(c.site.changed + '.SiteReleases', _.bind(this.reload, this));
             },
 
             initContent: function () {

@@ -630,8 +630,8 @@
                 // init the component sets
                 this.initComponents();
                 // register the handlers for component selection in interaction with the edit frame
-                $(document).on(elements.const.event.componentSelected, _.bind(this.onComponentSelected, this));
-                $(document).on(elements.const.event.componentSelect, _.bind(this.selectComponent, this));
+                $(document).on(elements.const.event.element.selected, _.bind(this.onComponentSelected, this));
+                $(document).on(elements.const.event.element.select, _.bind(this.selectComponent, this));
                 window.addEventListener("message", _.bind(this.onMessage, this), false);
             },
 
@@ -681,7 +681,7 @@
                     console.log('elements.insert(' + type + ' > '
                         + target.path + (before ? (' < ' + before.path) : '') + ')');
                 }
-                parent.postMessage(elements.const.event.insertComponent
+                parent.postMessage(elements.const.event.element.insert
                     + JSON.stringify({
                         type: type,
                         target: {path: target.path, type: target.type},
@@ -727,8 +727,8 @@
                             component.data.path,
                             component.data.type
                         ];
-                        console.log('elements.trigger.element:selected(' + component.data.path + ')');
-                        $(document).trigger('element:selected', eventData);
+                        console.log('elements.trigger.' + elements.const.event.element.selected + '(' + component.data.path + ')');
+                        $(document).trigger(elements.const.event.element.selected, eventData);
                     } else {
                         this.clearSelection();
                     }
@@ -742,8 +742,8 @@
                 if (elements.pageBody.selection.component) {
                     console.log('pages.elements.clearSelection(' + elements.pageBody.selection.component + ')');
                     elements.pageBody.selection.setComponent(undefined);
-                    console.log('elements.trigger.element:selected([])');
-                    $(document).trigger('element:selected', []);
+                    console.log('elements.trigger.' + elements.const.event.element.selected + '([])');
+                    $(document).trigger(elements.const.event.element.selected, []);
                 }
             },
 
@@ -761,8 +761,8 @@
                         }
                     }
                     if (!found) {
-                        console.log('elements.trigger.element:selected([])');
-                        $(document).trigger('element:selected', []);
+                        console.log('elements.trigger.' + elements.const.event.element.selected + '([])');
+                        $(document).trigger(elements.const.event.element.selected, []);
                     }
                 } else {
                     this.clearSelection();
@@ -771,12 +771,12 @@
 
             onComponentSelected: function (event, name, path, type) {
                 if (path) {
-                    console.log('pages.elements.componentSelected(' + path + ')');
-                    parent.postMessage(elements.const.event.componentSelected
+                    console.log('pages.elements.element.selected(' + path + ')');
+                    parent.postMessage(elements.const.event.element.selected
                         + JSON.stringify({name: name, path: path, type: type}), '*');
                 } else {
                     console.log('pages.elements.selectionCleared()');
-                    parent.postMessage(elements.const.event.componentSelected
+                    parent.postMessage(elements.const.event.element.selected
                         + JSON.stringify({}), '*');
                 }
             },
@@ -786,18 +786,18 @@
                 if (message) {
                     var args = JSON.parse(message[2]);
                     switch (message[1]) {
-                        case elements.const.event.componentSelect:
+                        case elements.const.event.element.select:
                             if (args.path) {
                                 var eventData = [
                                     args.name,
                                     args.path,
                                     args.type
                                 ];
-                                console.log('elements.trigger.element:selected(' + args.path + ')');
-                                $(document).trigger(elements.const.event.componentSelect, eventData);
+                                console.log('elements.trigger.' + elements.const.event.element.select + '(' + args.path + ')');
+                                $(document).trigger(elements.const.event.element.select, eventData);
                             } else {
-                                console.log('elements.trigger.' + elements.const.event.componentSelect + '([])');
-                                $(document).trigger(elements.const.event.componentSelect, []);
+                                console.log('elements.trigger.' + elements.const.event.element.select + '([])');
+                                $(document).trigger(elements.const.event.element.select, []);
                             }
                             break;
                     }

@@ -66,20 +66,24 @@
                 });
                 this.initializeFilter();
                 tree.ToolsTree.prototype.initialize.apply(this, [options]);
-                $(document).on('element:selected.' + id, _.bind(this.onPathSelected, this));
-                $(document).on('component:changed.' + id, _.bind(this.onPathChanged, this));
-                $(document).on('content:selected.' + id, _.bind(this.onPathSelected, this));
-                $(document).on('content:inserted.' + id, _.bind(this.onContentInserted, this));
-                $(document).on('content:changed.' + id, _.bind(this.onPathChanged, this));
-                $(document).on('content:deleted.' + id, _.bind(this.onPathDeleted, this));
-                $(document).on('content:moved.' + id, _.bind(this.onPathMoved, this));
-                $(document).on('page:selected.' + id, _.bind(this.onPathSelected, this));
-                $(document).on('page:inserted.' + id, _.bind(this.onContentInserted, this));
-                $(document).on('page:changed.' + id, _.bind(this.onPathChanged, this));
-                $(document).on('page:deleted.' + id, _.bind(this.onPathDeleted, this));
-                $(document).on('site:created.' + id, _.bind(this.onContentInserted, this));
-                $(document).on('site:changed.' + id, _.bind(this.onPathChanged, this));
-                $(document).on('site:deleted.' + id, _.bind(this.onPathDeleted, this));
+                var c = pages.const.event;
+                $(document).on(c.element.selected + '.' + id, _.bind(this.onPathSelected, this));
+                $(document).on(c.element.inserted + '.' + id, _.bind(this.onContentInserted, this));
+                $(document).on(c.element.changed + '.' + id, _.bind(this.onPathChanged, this));
+                $(document).on(c.element.deleted + '.' + id, _.bind(this.onPathDeleted, this));
+                $(document).on(c.element.moved + '.' + id, _.bind(this.onPathMoved, this));
+                $(document).on(c.content.selected + '.' + id, _.bind(this.onPathSelected, this));
+                $(document).on(c.content.inserted + '.' + id, _.bind(this.onContentInserted, this));
+                $(document).on(c.content.changed + '.' + id, _.bind(this.onPathChanged, this));
+                $(document).on(c.content.deleted + '.' + id, _.bind(this.onPathDeleted, this));
+                $(document).on(c.content.moved + '.' + id, _.bind(this.onPathMoved, this));
+                $(document).on(c.page.selected + '.' + id, _.bind(this.onPathSelected, this));
+                $(document).on(c.page.inserted + '.' + id, _.bind(this.onContentInserted, this));
+                $(document).on(c.page.changed + '.' + id, _.bind(this.onPathChanged, this));
+                $(document).on(c.page.deleted + '.' + id, _.bind(this.onPathDeleted, this));
+                $(document).on(c.site.created + '.' + id, _.bind(this.onContentInserted, this));
+                $(document).on(c.site.changed + '.' + id, _.bind(this.onPathChanged, this));
+                $(document).on(c.site.deleted + '.' + id, _.bind(this.onPathDeleted, this));
             },
 
             initializeFilter: function () {
@@ -99,21 +103,37 @@
                 var targetPath = targetNode.path;
                 var oldPath = draggedNode.path;
                 var before = this.getNodeOfIndex(targetNode, index);
-                var oldParentPath = core.getParentPath(oldPath);
-                if (oldParentPath === targetPath) {
-                    // reordering in the same parent resource - keep that simple...
-                    core.ajaxPost('/bin/cpm/pages/edit.moveContent.json' + core.encodePath(oldPath), {
+                if (this.isElementType(targetNode) && this.isElementType(draggedNode)) {
+                    // move elements on a page or between pages via tree...
+                    core.ajaxPost(pages.const.url.edit.move + oldPath, {
                         targetPath: targetPath,
+                        targetType: targetNode.type,
                         before: before ? before.original.path : undefined
-                    }, {}, _.bind(function (data) {
-                        $(document).trigger('content:moved', [oldPath, data.path]);
-                    }, this));
+                    }, {}, function (data) {
+                        $(document).trigger(pages.const.event.element.moved, [oldPath, data.path]);
+                    }, function (xhr) {
+                        core.alert('error', 'Error', 'Error on moving element', xhr);
+                    });
                 } else {
-                    // move to another parent - check and confirm...
-                    pages.dialogs.openMoveContentDialog(draggedNode.name, draggedNode.path, draggedNode.type,
-                        _.bind(function (dialog) {
-                            dialog.setValues(draggedNode.path, targetNode.path, before ? before.original.name : undefined);
+                    // move folders, pages, files...
+                    var oldParentPath = core.getParentPath(oldPath);
+                    if (oldParentPath === targetPath) {
+                        // reordering in the same parent resource - keep that simple...
+                        core.ajaxPost('/bin/cpm/pages/edit.moveContent.json' + core.encodePath(oldPath), {
+                            targetPath: targetPath,
+                            before: before ? before.original.path : undefined
+                        }, {}, _.bind(function (data) {
+                            $(document).trigger(pages.const.event.content.moved, [oldPath, data.path]);
+                        }, this), _.bind(function (xhr) {
+                            core.alert('error', 'Error', 'Error on moving content', xhr);
                         }, this));
+                    } else {
+                        // move to another parent - check and confirm...
+                        pages.dialogs.openMoveContentDialog(draggedNode.name, draggedNode.path, draggedNode.type,
+                            _.bind(function (dialog) {
+                                dialog.setValues(draggedNode.path, targetNode.path, before ? before.original.name : undefined);
+                            }, this));
+                    }
                 }
             },
 
@@ -124,7 +144,11 @@
                 core.ajaxPost('/bin/cpm/pages/edit.renameContent.json' + core.encodePath(oldPath), {
                     name: newName
                 }, {}, _.bind(function (data) {
-                    $(document).trigger('content:moved', [oldPath, data.path]);
+                    if (this.isElementType(node)) {
+                        $(document).trigger(pages.const.event.element.moved, [oldPath, data.path]);
+                    } else {
+                        $(document).trigger(pages.const.event.content.moved, [oldPath, data.path]);
+                    }
                 }, this), _.bind(function (result) {
                     this.refreshNodeById(node.id);
                     pages.dialogs.openRenameContentDialog(oldName, oldPath, node.type,
@@ -133,6 +157,10 @@
                             dialog.errorMessage('Rename Content', result);
                         }, this));
                 }, this));
+            },
+
+            isElementType: function (node) {
+                return 'container' === node.type || 'element' === node.type;
             }
         });
 

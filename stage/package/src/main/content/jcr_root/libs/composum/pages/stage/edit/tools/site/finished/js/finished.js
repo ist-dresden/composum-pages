@@ -27,7 +27,8 @@
 
             initialize: function (options) {
                 this.initContent();
-                $(document).on('site:changed.FinishedPages', _.bind(this.reload, this));
+                var c = pages.const.event;
+                $(document).on(c.site.changed + '.FinishedPages', _.bind(this.reload, this));
             },
 
             initContent: function (options) {
@@ -51,8 +52,8 @@
                     }
                     this.$previewEntry = $listEntry;
                     $listEntry.addClass('selected');
-                    console.log('site.trigger.page:view(' + path + ',preview)');
-                    $(document).trigger("page:view", [path, {'pages.mode': 'preview'}]);
+                    console.log('site.trigger.' + pages.const.event.page.view + '(' + path + ',preview)');
+                    $(document).trigger(pages.const.event.page.view, [path, {'pages.mode': 'preview'}]);
                 }
             },
 
@@ -60,8 +61,8 @@
                 if (this.$previewEntry.length > 0) {
                     this.$previewEntry.removeClass('selected');
                     this.$previewEntry = [];
-                    console.log('site.trigger.page:view()');
-                    $(document).trigger("page:view", [null, {}]);
+                    console.log('site.trigger.' + pages.const.event.page.view + '()');
+                    $(document).trigger(pages.const.event.page.view, [null, {}]);
                 }
             },
 

@@ -22,21 +22,29 @@
                 action: 'composum-pages-action'
             },
             event: { // event handling rules and keys (inter frame communication)
-                messagePattern: new RegExp('^([^\\{\\[]+)([\\{\\[].*[\\}\\]])$'),
+                messagePattern: new RegExp('^([^{\\[]+)([{\\[].*[}\\]])$'),
                 pageContainerRefs: 'page:containerRefs',
-                componentSelect: 'element:select',
-                componentSelected: 'element:selected',
-                insertComponent: 'component:insert',
-                moveComponent: 'component:move',
-                openEditDialog: 'dialog:edit',
-                triggerEvent: 'event:trigger',
-                alertMessage: 'dialog:alert'
+                trigger: 'event:trigger',
+                dialog: {
+                    edit: 'dialog:edit',
+                    alert: 'dialog:alert'
+                },
+                element: {
+                    select: 'element:select',       // do it!...
+                    selected: 'element:selected',   // done.
+                    insert: 'element:insert',       // do it!...
+                    inserted: 'element:inserted',   // done.
+                    changed: 'element:changed',     // done.
+                    deleted: 'element:deleted',     // done.
+                    move: 'element:move',           // do it!...
+                    moved: 'element:moved'          // done.
+                }
             }
         });
 
         elements.alertMessage = function (type, title, message, data) {
             // call the action in the 'edit' layer of the UI
-            parent.postMessage(elements.const.event.alertMessage
+            parent.postMessage(elements.const.event.dialog.alert
                 + JSON.stringify({
                     type: type,
                     title: title,
@@ -47,7 +55,7 @@
 
         elements.triggerEvent = function (event, data) {
             // trigger the event in the 'edit' layer of the UI
-            parent.postMessage(elements.const.event.triggerEvent
+            parent.postMessage(elements.const.event.trigger
                 + JSON.stringify({
                     event: event,
                     data: data
@@ -56,7 +64,7 @@
 
         elements.openEditDialog = function (target, dialog, values) {
             // call the action in the 'edit' layer of the UI
-            parent.postMessage(elements.const.event.openEditDialog
+            parent.postMessage(elements.const.event.dialog.edit
                 + JSON.stringify({
                     target: target,
                     dialog: dialog,

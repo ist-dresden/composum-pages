@@ -22,15 +22,50 @@
             editDialogsClass: 'composum-pages-stage-edit-dialogs',
             versionViewCssClass: 'composum-pages-version-view',
             event: {
-                messagePattern: new RegExp('^([^\\{\\[]+)([\\{\\[].*[\\}\\]])$'),
+                messagePattern: new RegExp('^([^{\\[]+)([{\\[].*[}\\]])$'),
                 pageContainerRefs: 'page:containerRefs',
-                componentSelected: 'element:selected',
-                pathSelected: 'path:selected',
-                insertComponent: 'component:insert',
-                moveComponent: 'component:move',
-                openEditDialog: 'dialog:edit',
-                triggerEvent: 'event:trigger',
-                alertMessage: 'dialog:alert'
+                trigger: 'event:trigger',
+                dialog: {
+                    edit: 'dialog:edit',
+                    alert: 'dialog:alert'
+                },
+                site: {
+                    select: 'site:select',          // do it!...
+                    selected: 'site:selected',      // done.
+                    created: 'site:created',        // done.
+                    changed: 'site:changed',        // done.
+                    deleted: 'site:deleted'         // done.
+                },
+                page: {
+                    view: 'page:view',              // do it!...
+                    select: 'page:select',          // do it!...
+                    selected: 'page:selected',      // done.
+                    inserted: 'page:inserted',      // done.
+                    changed: 'page:changed',        // done.
+                    deleted: 'page:deleted'         // done.
+                },
+                content: {
+                    select: 'content:select',       // do it!...
+                    selected: 'content:selected',   // done.
+                    inserted: 'content:inserted',   // done.
+                    changed: 'content:changed',     // done.
+                    deleted: 'content:deleted',     // done.
+                    moved: 'content:moved'          // done.
+                },
+                element: {
+                    select: 'element:select',       // do it!...
+                    selected: 'element:selected',   // done.
+                    insert: 'element:insert',       // do it!...
+                    inserted: 'element:inserted',   // done.
+                    changed: 'element:changed',     // done.
+                    deleted: 'element:deleted',     // done.
+                    move: 'element:move',           // do it!...
+                    moved: 'element:moved'          // done.
+                },
+                path: {
+                    select: 'path:select',          // do it!...
+                    selected: 'path:selected'       // done.
+                }
             },
             url: {
                 get: {
@@ -226,23 +261,23 @@
             if (message) {
                 var args = JSON.parse(message[2]);
                 switch (message[1]) {
-                    case pages.const.event.componentSelected:
+                    case pages.const.event.element.selected:
                         // transform selection messages into the corresponding event for the edit frame components
                         if (args.path) {
-                            console.log('pages.trigger.' + pages.const.event.pathSelected + '(' + args.path + ')');
-                            $(document).trigger(pages.const.event.pathSelected, [args.path]);
+                            console.log('pages.trigger.' + pages.const.event.path.selected + '(' + args.path + ')');
+                            $(document).trigger(pages.const.event.path.selected, [args.path]);
                             var eventData = [
                                 args.name,
                                 args.path,
                                 args.type
                             ];
-                            console.log('pages.trigger.' + pages.const.event.componentSelected + '(' + args.path + ')');
-                            $(document).trigger(pages.const.event.componentSelected, eventData);
+                            console.log('pages.trigger.' + pages.const.event.element.selected + '(' + args.path + ')');
+                            $(document).trigger(pages.const.event.element.selected, eventData);
                         } else {
-                            console.log('pages.trigger.' + pages.const.event.pathSelected + '()');
-                            $(document).trigger(pages.const.event.pathSelected, []);
-                            console.log('pages.trigger.' + pages.const.event.componentSelected + '()');
-                            $(document).trigger(pages.const.event.componentSelected, []);
+                            console.log('pages.trigger.' + pages.const.event.path.selected + '()');
+                            $(document).trigger(pages.const.event.path.selected, []);
+                            console.log('pages.trigger.' + pages.const.event.element.selected + '()');
+                            $(document).trigger(pages.const.event.element.selected, []);
                         }
                         break;
                     case pages.const.event.pageContainerRefs:
@@ -250,9 +285,9 @@
                         console.log('pages.event.pageContainerRefs(' + message[2] + ')');
                         $(document).trigger(pages.const.event.pageContainerRefs, [args]);
                         break;
-                    case pages.const.event.insertComponent:
+                    case pages.const.event.element.insert:
                         // apply insert action messages from the edited page
-                        console.log('pages.event.insertComponent(' + message[2] + ')');
+                        console.log('pages.event.element.insert(' + message[2] + ')');
                         if (args.type && args.target) {
                             core.ajaxPost(pages.const.url.edit.insert + args.target.path, {
                                 elementType: args.type,
@@ -265,9 +300,9 @@
                             });
                         }
                         break;
-                    case pages.const.event.moveComponent:
+                    case pages.const.event.element.move:
                         // apply move action messages from the edited page
-                        console.log('pages.event.moveComponent(' + message[2] + ')');
+                        console.log('pages.event.element.move(' + message[2] + ')');
                         if (args.source && args.target) {
                             core.ajaxPost(pages.const.url.edit.move + args.source, {
                                 targetPath: args.target.path,
@@ -280,9 +315,9 @@
                             });
                         }
                         break;
-                    case pages.const.event.openEditDialog:
+                    case pages.const.event.dialog.edit:
                         // opens an edit dialog to perform editing of the content of the path transmitted
-                        console.log('pages.event.openEditDialog(' + message[2] + ')');
+                        console.log('pages.event.dialog.edit(' + message[2] + ')');
                         if (args.target) {
                             var url = undefined;
                             if (args.dialog) {
@@ -296,14 +331,14 @@
                                 });
                         }
                         break;
-                    case pages.const.event.triggerEvent:
+                    case pages.const.event.trigger:
                         // triggers an event in the frame document context
                         console.log('pages.event.' + args.event + '(' + message[2] + ')');
                         $(document).trigger(args.event, args.data);
                         break;
-                    case pages.const.event.alertMessage:
+                    case pages.const.event.dialog.alert:
                         // displays an alert message by opening an alert dialog
-                        console.log('pages.event.alertMessage(' + message[2] + ')');
+                        console.log('pages.event.dialog.alert(' + message[2] + ')');
                         core.alert(args.type, args.title, args.message, args.data);
                         break;
                 }
@@ -340,7 +375,7 @@
                     name: name
                 }, {}, _.bind(function (result) {
                     // trigger content change
-                    $(document).trigger('content:inserted', [path, name]);
+                    $(document).trigger(pages.const.event.content.inserted, [path, name]);
                 }, this), _.bind(function (result) {
                     // on error - display copy dialog initialized with the known data
                     var data = result.responseJSON;

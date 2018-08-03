@@ -1,6 +1,7 @@
 package com.composum.pages.commons.servlet;
 
 import com.composum.pages.commons.PagesConfiguration;
+import com.composum.pages.commons.model.Container;
 import com.composum.pages.commons.model.GenericModel;
 import com.composum.pages.commons.model.Model;
 import com.composum.pages.commons.model.Page;
@@ -135,6 +136,8 @@ public class EditServlet extends NodeTreeServlet {
     @Reference
     protected PagesConfiguration pagesConfiguration;
 
+    protected MoveComponent moveComponentOperation;
+
     @Activate
     private void activate(final BundleContext bundleContext) {
         this.bundleContext = bundleContext;
@@ -195,7 +198,7 @@ public class EditServlet extends NodeTreeServlet {
         operations.setOperation(ServletOperationSet.Method.POST, Extension.html,
                 Operation.insertComponent, new InsertComponent());
         operations.setOperation(ServletOperationSet.Method.POST, Extension.json,
-                Operation.moveComponent, new MoveComponent());
+                Operation.moveComponent, moveComponentOperation = new MoveComponent());
         operations.setOperation(ServletOperationSet.Method.POST, Extension.json,
                 Operation.createPage, new CreatePage());
         operations.setOperation(ServletOperationSet.Method.POST, Extension.json,
@@ -703,7 +706,7 @@ public class EditServlet extends NodeTreeServlet {
         }
     }
 
-    protected class MoveComponent implements ServletOperation {
+    protected class MoveComponent extends ChangeContentOperation {
 
         @Override
         public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
@@ -728,12 +731,7 @@ public class EditServlet extends NodeTreeServlet {
                         resource, target, before);
                 resolver.commit();
 
-                JsonWriter jsonWriter = ResponseUtil.getJsonWriter(response);
-                response.setStatus(HttpServletResponse.SC_OK);
-                jsonWriter.beginObject();
-                jsonWriter.name("name").value(result.getName());
-                jsonWriter.name("path").value(result.getPath());
-                jsonWriter.endObject();
+                sendResponse(response, result);
 
             } catch (RepositoryException ex) {
                 LOG.error(ex.getMessage(), ex);
@@ -938,7 +936,11 @@ public class EditServlet extends NodeTreeServlet {
             Resource target = resolver.getResource(targetPath);
             if (target != null) {
 
-                if (resourceManager.isAllowedChild(resolver, target, resource)) {
+                if (Container.isContainer(resolver, target, null)) {
+
+                    moveComponentOperation.doIt(request, response, resource);
+
+                } else if (resourceManager.isAllowedChild(resolver, target, resource)) {
 
                     Resource before = getRequestedSibling(request, target, resource);
                     try {
