@@ -140,15 +140,28 @@
 
             initialize: function (options) {
                 tools.TabPanel.prototype.initialize.apply(this, [options]);
+                var c = pages.const.event;
+                $(document).on(c.path.select + '.Navigation', _.bind(this.selectPath, this));
+            },
+
+            ready: function () {
                 this.selectTab(undefined, this.initialKey());
-                $(document).on('path:select.Navigation', _.bind(this.selectPath, this));
             },
 
             initialKey: function () {
                 return pages.profile.get('tabs', 'navigation', undefined);
             },
 
-            keyChanged: function (key) {
+            keyChanged: function (key, $panel) {
+                if ($panel && $panel.length === 1) {
+                    var $content = $panel.children();
+                    if ($content.length === 1) {
+                        var view = $content[0].view;
+                        if (view && _.isFunction(view.onTabSelected)) {
+                            view.onTabSelected.call(view);
+                        }
+                    }
+                }
                 pages.profile.set('tabs', 'navigation', key)
             },
 
@@ -163,21 +176,21 @@
                         case 'siteconfiguration':
                             path = core.getParentPath(path);
                         case 'site':
-                            console.log('tools.trigger.site:select(' + path + ')');
-                            $(document).trigger("site:select", [path]);
+                            console.log('tools.trigger.' + pages.const.event.site.select + '(' + path + ')');
+                            $(document).trigger(pages.const.event.site.select, [path]);
                             break;
                         case 'pagecontent':
                             path = core.getParentPath(path);
                         case 'page':
                             if (path === pages.current.page) {
                                 // trigger a 'page select again' to adjust all tools
-                                console.log('tools.trigger.page:selected(' + pages.current.page + ')');
-                                $(document).trigger("page:selected", [pages.current.page]);
-                                console.log('tools.trigger.element:select()');
-                                $(document).trigger("element:select", []);
+                                console.log('tools.trigger.' + pages.const.event.page.selected + '(' + pages.current.page + ')');
+                                $(document).trigger(pages.const.event.page.selected, [pages.current.page]);
+                                console.log('tools.trigger.' + pages.const.event.element.select + '()');
+                                $(document).trigger(pages.const.event.element.select, []);
                             } else {
-                                console.log('tools.trigger.page:select(' + path + ')');
-                                $(document).trigger("page:select", [path]);
+                                console.log('tools.trigger.' + pages.const.event.page.select + '(' + path + ')');
+                                $(document).trigger(pages.const.event.page.select, [path]);
                             }
                             break;
                         case 'container':
@@ -189,21 +202,21 @@
                                         path: path,
                                         type: type
                                     };
-                                    console.log('tools.trigger.page:select(' + data.path + ')');
-                                    $(document).trigger("page:select", [data.path]);
+                                    console.log('tools.trigger.' + pages.const.event.page.select + '(' + data.path + ')');
+                                    $(document).trigger(pages.const.event.page.select, [data.path]);
                                 } else {
                                     // trigger a 'page select again' to adjust all tools
-                                    console.log('tools.trigger.page:selected(' + pages.current.page + ')');
-                                    $(document).trigger("page:selected", [pages.current.page]);
-                                    console.log('tools.trigger.element:select(' + path + ')');
-                                    $(document).trigger("element:select",
+                                    console.log('tools.trigger.' + pages.const.event.page.selected + '(' + pages.current.page + ')');
+                                    $(document).trigger(pages.const.event.page.selected, [pages.current.page]);
+                                    console.log('tools.trigger.' + pages.const.event.element.select + '(' + path + ')');
+                                    $(document).trigger(pages.const.event.element.select,
                                         [name, path, type]);
                                 }
                             }, this));
                             break;
                         default:
-                            console.log('tools.trigger.path:selected(' + path + ')');
-                            $(document).trigger("path:selected", [path]);
+                            console.log('tools.trigger.' + pages.const.event.path.selected + '(' + path + ')');
+                            $(document).trigger(pages.const.event.path.selected, [path]);
                             break;
                     }
                 }
@@ -213,8 +226,9 @@
         tools.NavigationContext = Backbone.View.extend({
 
             initialize: function (options) {
-                $(document).on('site:selected.Navigation', _.bind(this.onSiteChanges, this));
-                $(document).on('site:changed.Navigation', _.bind(this.onSiteChanges, this));
+                var c = pages.const.event;
+                $(document).on(c.site.selected + '.Navigation', _.bind(this.onSiteChanges, this));
+                $(document).on(c.site.changed + '.Navigation', _.bind(this.onSiteChanges, this));
             },
 
             initContent: function (options) {
@@ -241,8 +255,8 @@
 
             selectSite: function (event) {
                 if (this.sitePath) {
-                    console.log('tools.trigger.site:select(' + this.sitePath + ')');
-                    $(document).trigger("site:select", [this.sitePath]);
+                    console.log('tools.trigger.' + pages.const.event.site.select + '(' + this.sitePath + ')');
+                    $(document).trigger(pages.const.event.site.select, [this.sitePath]);
                 }
             },
 
@@ -314,8 +328,9 @@
         tools.ContextTabsHook = Backbone.View.extend({
 
             initialize: function (options) {
-                $(document).on('page:selected.Context', _.bind(this.onPageSelected, this));
-                $(document).on('element:selected.Context', _.bind(this.onComponentSelected, this));
+                var c = pages.const.event;
+                $(document).on(c.page.selected + '.Context', _.bind(this.onPageSelected, this));
+                $(document).on(c.element.selected + '.Context', _.bind(this.onComponentSelected, this));
             },
 
             onPageSelected: function (event, path, parameters) {

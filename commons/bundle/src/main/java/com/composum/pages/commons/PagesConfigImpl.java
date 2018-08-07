@@ -1,5 +1,6 @@
 package com.composum.pages.commons;
 
+import com.composum.pages.commons.util.RequestUtil;
 import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.filter.StringFilter;
 import com.composum.sling.core.mapping.jcr.ResourceFilterMapping;
@@ -10,6 +11,7 @@ import org.apache.felix.scr.annotations.Deactivate;
 import org.apache.felix.scr.annotations.Modified;
 import org.apache.felix.scr.annotations.Property;
 import org.apache.felix.scr.annotations.Service;
+import org.apache.sling.api.SlingHttpServletRequest;
 import org.osgi.service.component.ComponentContext;
 
 import java.util.Dictionary;
@@ -55,12 +57,12 @@ public class PagesConfigImpl implements PagesConfiguration {
     private ResourceFilter containerNodeFilter;
 
     @Property(
-            name = COMPONENT_NODE_FILTER_KEY,
-            label = "Component resource filter",
-            description = "the filter configuration to set the scope to the content components",
+            name = ELEMENT_NODE_FILTER_KEY,
+            label = "Element resource filter",
+            description = "the filter configuration to set the scope to the content elements",
             value = "PrimaryType(+'^cpp:(Element|Container|Page|Site)$')"
     )
-    private ResourceFilter componentNodeFilter;
+    private ResourceFilter elementNodeFilter;
 
     @Property(
             name = DEVELOPMENT_TREE_FILTER_KEY,
@@ -137,8 +139,8 @@ public class PagesConfigImpl implements PagesConfiguration {
     }
 
     @Override
-    public ResourceFilter getComponentNodeFilter() {
-        return componentNodeFilter;
+    public ResourceFilter getElementNodeFilter() {
+        return elementNodeFilter;
     }
 
     @Override
@@ -155,6 +157,21 @@ public class PagesConfigImpl implements PagesConfiguration {
     public ResourceFilter getOrderableNodesFilter() {
         return orderableNodesFilter;
     }
+
+    @Override
+    public ResourceFilter getRequestNodeFilter(SlingHttpServletRequest request, String paramName, String defaultFilter) {
+        String filter = RequestUtil.getParameter(request, paramName, defaultFilter);
+        switch (filter) {
+            case "element":
+                return getElementNodeFilter();
+            case "container":
+                return getContainerNodeFilter();
+            case "page":
+            default:
+                return getPageNodeFilter();
+        }
+    }
+
 
     public Dictionary getProperties() {
         return properties;
@@ -203,9 +220,9 @@ public class PagesConfigImpl implements PagesConfiguration {
                         REPLICATION_ROOT_FILTER,
                         ResourceFilterMapping.fromString((String) properties.get(CONTAINER_NODE_FILTER_KEY))),
                 componentIntermediateFilter);
-        componentNodeFilter = buildTreeFilter(new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.and,
+        elementNodeFilter = buildTreeFilter(new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.and,
                         REPLICATION_ROOT_FILTER,
-                        ResourceFilterMapping.fromString((String) properties.get(COMPONENT_NODE_FILTER_KEY))),
+                        ResourceFilterMapping.fromString((String) properties.get(ELEMENT_NODE_FILTER_KEY))),
                 componentIntermediateFilter);
         devIntermediateFilter = ResourceFilterMapping.fromString(
                 (String) properties.get(DEV_INTERMEDIATE_FILTER_KEY));

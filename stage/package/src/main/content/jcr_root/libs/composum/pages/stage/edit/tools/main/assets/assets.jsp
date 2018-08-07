@@ -33,7 +33,7 @@
             </div>
         </div>
     </div>
-    <div class="composum-pages-tools_panel">
+    <div class="composum-pages-tools_tree-panel">
         <div class="${assetsCssBase}_assets-view">
             <h3>Assets (selector)</h3>
             <p>A list of assets (and variations) which can be inserted in the current page into an appropriate

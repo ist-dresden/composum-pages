@@ -1,6 +1,7 @@
 package com.composum.pages.commons.servlet;
 
 import com.composum.pages.commons.PagesConfiguration;
+import com.composum.pages.commons.model.Container;
 import com.composum.pages.commons.model.GenericModel;
 import com.composum.pages.commons.model.Model;
 import com.composum.pages.commons.model.Page;
@@ -56,6 +57,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -80,6 +82,9 @@ import static com.composum.pages.commons.util.ResourceTypeUtil.TREE_ACTIONS_PATH
 public class EditServlet extends NodeTreeServlet {
 
     private static final Logger LOG = LoggerFactory.getLogger(EditServlet.class);
+
+    public static final String PARAM_FILTER = "filter";
+    public static final String DEFAULT_FILTER = "page";
 
     public static final String EDIT_RESOURCE_KEY = EditServlet.class.getName() + "_resource";
     public static final String EDIT_RESOURCE_TYPE_KEY = EditServlet.class.getName() + "_resourceType";
@@ -130,6 +135,8 @@ public class EditServlet extends NodeTreeServlet {
 
     @Reference
     protected PagesConfiguration pagesConfiguration;
+
+    protected MoveComponent moveComponentOperation;
 
     @Activate
     private void activate(final BundleContext bundleContext) {
@@ -191,7 +198,7 @@ public class EditServlet extends NodeTreeServlet {
         operations.setOperation(ServletOperationSet.Method.POST, Extension.html,
                 Operation.insertComponent, new InsertComponent());
         operations.setOperation(ServletOperationSet.Method.POST, Extension.json,
-                Operation.moveComponent, new MoveComponent());
+                Operation.moveComponent, moveComponentOperation = new MoveComponent());
         operations.setOperation(ServletOperationSet.Method.POST, Extension.json,
                 Operation.createPage, new CreatePage());
         operations.setOperation(ServletOperationSet.Method.POST, Extension.json,
@@ -226,7 +233,7 @@ public class EditServlet extends NodeTreeServlet {
         }
     }
 
-    private static class CheckpointOperation implements ServletOperation {
+    protected class CheckpointOperation implements ServletOperation {
 
         @Override
         public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response, ResourceHandle resource)
@@ -369,13 +376,11 @@ public class EditServlet extends NodeTreeServlet {
     // JSON helpers
     //
 
-    public void writeJsonResource(@Nonnull JsonWriter writer, @Nonnull ResourceFilter filter,
-                                  Resource resource)
+    public void writeJsonResource(@Nonnull JsonWriter writer, @Nonnull TreeNodeStrategy nodeStrategy, Resource resource)
             throws IOException {
         ResourceHandle handle = ResourceHandle.use(resource);
         writer.beginObject();
         if (handle.isValid()) {
-            TreeNodeStrategy nodeStrategy = new DefaultTreeNodeStrategy(filter);
             writeJsonNodeData(writer, nodeStrategy, handle, LabelType.name, false);
             Resource contentResource = handle.getChild(JcrConstants.JCR_CONTENT);
             if (contentResource != null) {
@@ -429,9 +434,45 @@ public class EditServlet extends NodeTreeServlet {
 
     public class PageTreeOperation extends TreeOperation {
 
+        /**
+         * for a cpp:Page the jcr:content child should be the first in the tree
+         */
+        protected class PageContentIterable extends ArrayList<Resource> {
+
+            public PageContentIterable(Resource pageResource) {
+                for (Resource child : pageResource.getChildren()) {
+                    if (JcrConstants.JCR_CONTENT.equals(child.getName())) {
+                        add(0, child);
+                    } else {
+                        add(child);
+                    }
+                }
+            }
+        }
+
+        /**
+         * use the PageContentIterable in case of a page node resource
+         */
+        protected class TreeNodeStrategy extends DefaultTreeNodeStrategy {
+
+            public TreeNodeStrategy(ResourceFilter filter) {
+                super(filter);
+            }
+
+            @Override
+            public Iterable<Resource> getChildren(Resource nodeResource) {
+                return Page.isPage(nodeResource) ? new PageContentIterable(nodeResource) : nodeResource.getChildren();
+            }
+        }
+
+        @Override
+        protected NodeTreeServlet.TreeNodeStrategy getNodeStrategy(SlingHttpServletRequest request) {
+            return new TreeNodeStrategy(getNodeFilter(request));
+        }
+
         @Override
         protected ResourceFilter getNodeFilter(SlingHttpServletRequest request) {
-            return pagesConfiguration.getContainerNodeFilter();
+            return pagesConfiguration.getRequestNodeFilter(request, PARAM_FILTER, DEFAULT_FILTER);
         }
     }
 
@@ -656,7 +697,7 @@ public class EditServlet extends NodeTreeServlet {
         }
     }
 
-    protected class MoveComponent implements ServletOperation {
+    protected class MoveComponent extends ChangeContentOperation {
 
         @Override
         public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
@@ -681,12 +722,7 @@ public class EditServlet extends NodeTreeServlet {
                         resource, target, before);
                 resolver.commit();
 
-                JsonWriter jsonWriter = ResponseUtil.getJsonWriter(response);
-                response.setStatus(HttpServletResponse.SC_OK);
-                jsonWriter.beginObject();
-                jsonWriter.name("name").value(result.getName());
-                jsonWriter.name("path").value(result.getPath());
-                jsonWriter.endObject();
+                sendResponse(response, result);
 
             } catch (RepositoryException ex) {
                 LOG.error(ex.getMessage(), ex);
@@ -829,9 +865,9 @@ public class EditServlet extends NodeTreeServlet {
             jsonWriter.endArray();
         }
         jsonWriter.name("parent");
-        writeJsonResource(jsonWriter, pagesConfiguration.getPageNodeFilter(), parent);
+        writeJsonResource(jsonWriter, new DefaultTreeNodeStrategy(pagesConfiguration.getPageNodeFilter()), parent);
         jsonWriter.name("child");
-        writeJsonResource(jsonWriter, pagesConfiguration.getPageNodeFilter(), child);
+        writeJsonResource(jsonWriter, new DefaultTreeNodeStrategy(pagesConfiguration.getPageNodeFilter()), child);
     }
 
     protected abstract class ChangeContentOperation implements ServletOperation {
@@ -891,7 +927,11 @@ public class EditServlet extends NodeTreeServlet {
             Resource target = resolver.getResource(targetPath);
             if (target != null) {
 
-                if (resourceManager.isAllowedChild(resolver, target, resource)) {
+                if (Container.isContainer(resolver, target, null)) {
+
+                    moveComponentOperation.doIt(request, response, resource);
+
+                } else if (resourceManager.isAllowedChild(resolver, target, resource)) {
 
                     Resource before = getRequestedSibling(request, target, resource);
                     try {

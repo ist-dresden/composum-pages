@@ -7,6 +7,9 @@
     <div class="${siteCssBase}_actions">
         <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
             <button type="button"
+                    class="fa fa-lock composum-pages-tools_button btn btn-default lock-site"
+                    title="${cpn:i18n(slingRequest,'Restrict to Site subtree')}..."></button>
+            <button type="button"
                     class="fa fa-bullseye composum-pages-tools_button btn btn-default goto-site"
                     title="${cpn:i18n(slingRequest,'Go to Site page')}..."></button>
             <button type="button"

@@ -264,8 +264,8 @@
                 this.$('.' + c.base + c._pathField)
                     .before('<input name=":operation" type="hidden" value="delete"/>');
                 this.submitForm(_.bind(function () {
-                    console.log('pages.trigger.component:deleted(' + this.data.path + ')');
-                    $(document).trigger('component:deleted', [this.data.path]);
+                    console.log('pages.trigger.' + pages.const.event.element.deleted + '(' + this.data.path + ')');
+                    $(document).trigger(pages.const.event.element.deleted, [this.data.path]);
                 }, this));
             },
 
@@ -290,7 +290,7 @@
             },
 
             getDefaultSuccessEvents: function () {
-                return 'component:changed';
+                return pages.const.event.element.changed;
             },
 
             validationReset: function () {
@@ -382,8 +382,8 @@
                                 targetPath: path,
                                 targetType: this.data.type
                             }, {}, _.bind(function () {
-                                console.log('pages.trigger.component:changed' + path + ')');
-                                $(document).trigger('component:changed', [path]);
+                                console.log('pages.trigger.' + pages.const.event.element.changed + '(' + path + ')');
+                                $(document).trigger(pages.const.event.element.changed, [path]);
                             }, this));
                         }, this));
                 }
@@ -403,8 +403,8 @@
 
             doSubmit: function () {
                 this.submitForm(_.bind(function () {
-                    console.log('pages.trigger.component:deleted(' + this.data.path + ')');
-                    $(document).trigger('component:deleted', [this.data.path]);
+                    console.log('pages.trigger.' + pages.const.event.element.deleted + '(' + this.data.path + ')');
+                    $(document).trigger(pages.const.event.element.deleted, [this.data.path]);
                 }, this));
             }
         });
@@ -432,7 +432,7 @@
             },
 
             getDefaultSuccessEvents: function () {
-                return 'content:inserted';
+                return pages.const.event.content.inserted;
             },
 
             doSubmit: function () {
@@ -455,8 +455,8 @@
                             // create page as a copy of the template
                             core.ajaxPost(c.base + c._create.page + this.data.path, postData, {},
                                 _.bind(function () {
-                                    console.log('pages.trigger.component:changed(' + this.data.path + ')');
-                                    $(document).trigger('component:changed', [this.data.path]);
+                                    console.log('pages.trigger.' + pages.const.event.element.changed + '(' + this.data.path + ')');
+                                    $(document).trigger(pages.const.event.element.changed, [this.data.path]);
                                 }, this));
                         } else {
                             // create page using resource type by opening the page create dialog of the designated type
@@ -466,8 +466,8 @@
                                     postData.resourceType = type;
                                     core.ajaxPost(c.base + c._create.page + path, postData, {},
                                         _.bind(function () {
-                                            console.log('pages.trigger.component:changed(' + this.data.path + ')');
-                                            $(document).trigger('component:changed', [this.data.path]);
+                                            console.log('pages.trigger.' + pages.const.event.element.changed + '(' + this.data.path + ')');
+                                            $(document).trigger(pages.const.event.element.changed, [this.data.path]);
                                         }, this));
                                 }, this)
                             )
@@ -497,7 +497,7 @@
             },
 
             getDefaultSuccessEvents: function () {
-                return 'content:inserted';
+                return pages.const.event.content.inserted;
             },
 
             doSubmit: function () {
@@ -524,7 +524,7 @@
             },
 
             getDefaultSuccessEvents: function () {
-                return 'content:inserted';
+                return pages.const.event.content.inserted;
             },
 
             doSubmit: function () {
@@ -551,7 +551,7 @@
         dialogs.DeleteContentDialog = dialogs.EditDialog.extend({
 
             getDefaultSuccessEvents: function () {
-                return 'content:deleted';
+                return pages.const.event.content.deleted;
             }
         });
 
@@ -628,7 +628,7 @@
                     before: this.before.getValue(),
                     index: this.index.getValue()
                 }, {}, _.bind(function (data) {
-                    $(document).trigger('content:moved', [oldPath, data.path]);
+                    $(document).trigger(pages.const.event.content.moved, [oldPath, data.path]);
                     this.hide();
                 }, this));
             }
@@ -663,7 +663,7 @@
                     _charset_: 'UTF-8',
                     name: this.name.getValue()
                 }, {}, _.bind(function (data) {
-                    $(document).trigger('content:moved', [oldPath, data.path]);
+                    $(document).trigger(pages.const.event.content.moved, [oldPath, data.path]);
                     this.hide();
                 }, this));
             }
@@ -704,7 +704,7 @@
                 this.submitForm(_.bind(function (result) {
                     this.data.name = result.name;
                     this.data.path = result.path;
-                    this.triggerEvents(result, 'site:created');
+                    this.triggerEvents(result, pages.const.event.site.created);
                 }, this));
             }
         });
@@ -722,7 +722,7 @@
 
             doSubmit: function () {
                 this.submitForm(_.bind(function (result) {
-                    this.triggerEvents(result, 'site:deleted');
+                    this.triggerEvents(result, pages.const.event.site.deleted);
                 }, this));
             }
         });

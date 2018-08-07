@@ -132,9 +132,10 @@
                 this.$view = this.$('.' + toolbars.const.pageViewActions);
                 this.$component = this.$('.' + toolbars.const.componentActions);
                 this.initPageView();
-                $(document).on('page:view.PageToolbar', _.bind(this.onPageSelected, this));
-                $(document).on('page:selected.PageToolbar', _.bind(this.onPageSelected, this));
-                $(document).on('element:selected.PageToolbar', _.bind(this.onComponentSelected, this));
+                var c = pages.const.event;
+                $(document).on(c.page.view + '.PageToolbar', _.bind(this.onPageSelected, this));
+                $(document).on(c.page.selected + '.PageToolbar', _.bind(this.onPageSelected, this));
+                $(document).on(c.element.selected + '.PageToolbar', _.bind(this.onComponentSelected, this));
                 this.loadProfile();
                 this.$el.css('right', this.profile.position + '%');
                 if (pages.current.mode === pages.const.modes.edit ||

@@ -31,7 +31,7 @@
             </div>
         </div>
     </div>
-    <div class="composum-pages-tools_panel">
+    <div class="composum-pages-tools_search-panel">
         <div class="${componentsCssBase}_components-view"></div>
     </div>
 </cpp:element>

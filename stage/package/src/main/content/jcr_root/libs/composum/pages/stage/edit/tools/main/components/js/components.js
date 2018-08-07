@@ -24,9 +24,6 @@
                     get: {
                         components: '/bin/cpm/pages/edit.pageComponents.content.html'
                     }
-                },
-                event: {
-                    pageContainerRefs: 'page:containerRefs'
                 }
             }
         });
@@ -38,7 +35,7 @@
                 this.$name = this.$('.' + c.css.component + c.css._.name);
                 this.$path = this.$('.' + c.css.component + c.css._.path);
                 this.$type = this.$('.' + c.css.component + c.css._.type);
-                if (this.$path.length == 0) {
+                if (this.$path.length === 0) {
                     this.$path = undefined;
                 }
                 this.data = {
@@ -52,8 +49,7 @@
         tools.Components = Backbone.View.extend({
 
             initialize: function (options) {
-                var c = tools.const.components;
-                $(document).on(c.event.pageContainerRefs + '.Components', _.bind(this.onPageContainerRefs, this));
+                $(document).on(pages.const.event.page.containerRefs + '.Components', _.bind(this.onPageContainerRefs, this));
             },
 
             onPageContainerRefs: function (event, containerRefs) {
@@ -67,7 +63,7 @@
                 core.ajaxPut(c.url.get.components + pages.current.page,
                     JSON.stringify(this.containerRefs), {},
                     undefined, undefined, _.bind(function (data) {
-                        if (data.status == 200) {
+                        if (data.status === 200) {
                             this.$el.html(data.responseText);
                         } else {
                             this.$el.html("");

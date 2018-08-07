@@ -27,7 +27,8 @@
 
             initialize: function (options) {
                 this.initContent();
-                $(document).on('site:changed.ModifiedPages', _.bind(this.reload, this));
+                var c = pages.const.event;
+                $(document).on(c.site.changed + '.ModifiedPages', _.bind(this.reload, this));
             },
 
             initContent: function (options) {
@@ -52,8 +53,8 @@
                     this.$previewEntry = $listEntry;
                     $('body').addClass('context-driven-view');
                     $listEntry.addClass('selected');
-                    console.log('site.trigger.page:view(' + path + ',preview)');
-                    $(document).trigger("page:view", [path, {'pages.mode': 'preview'}]);
+                    console.log('site.trigger.' + pages.const.event.page.view + '(' + path + ',preview)');
+                    $(document).trigger(pages.const.event.page.view, [path, {'pages.mode': 'preview'}]);
                 }
             },
 
@@ -62,8 +63,8 @@
                     $('body').removeClass('context-driven-view');
                     this.$previewEntry.removeClass('selected');
                     this.$previewEntry = [];
-                    console.log('site.trigger.page:view()');
-                    $(document).trigger("page:view", [null, {}]);
+                    console.log('site.trigger.' + pages.const.event.page.view + '()');
+                    $(document).trigger(pages.const.event.page.view, [null, {}]);
                 }
             },
 

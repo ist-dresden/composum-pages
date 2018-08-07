@@ -73,10 +73,10 @@
                         }, {},
                         _.bind(function () {
                             if (pages.elements) {
-                                pages.elements.triggerEvent('site:changed', [this.sitePath]);
+                                pages.elements.triggerEvent(pages.const.event.site.changed, [this.sitePath]);
                             } else {
-                                console.log('site.trigger.site:changed(' + this.sitePath + ')');
-                                $(document).trigger('site:changed', [this.sitePath]);
+                                console.log('site.trigger.' + pages.const.event.site.changed + '(' + this.sitePath + ')');
+                                $(document).trigger(pages.const.event.site.changed, [this.sitePath]);
                             }
                         }, this), _.bind(function (result) {
                             var fn = pages.elements ? pages.elements.alertMessage : core.alert;
