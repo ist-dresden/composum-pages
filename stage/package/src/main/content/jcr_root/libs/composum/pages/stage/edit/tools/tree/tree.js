@@ -7,14 +7,14 @@
         'use strict';
 
         tree.const = _.extend(tree.const || {}, {
-            pagesCssBase: 'composum-pages-stage-edit-tools-tree-pages',
-            developCssBase: 'composum-pages-stage-edit-tools-tree-develop',
+            pagesCssBase: 'composum-pages-stage-edit-tools-main-pages',
+            developCssBase: 'composum-pages-stage-edit-tools-main-develop',
             treeClass: 'composum-pages-tools_tree',
-            treePanelClass: 'composum-pages-tools_panel',
             treeActionsClass: 'composum-pages-tools_actions',
+            treePanelClass: 'composum-pages-tools_tree-panel',
+            searchPanelClass: 'composum-pages-tools_search-panel',
             contextActionsClass: 'composum-pages-tools_left-actions',
-            contextActionsLoadUrl: '/bin/cpm/pages/edit.treeActions.html',
-            pagesTreeClass: 'composum-pages-stage-edit-tools-tree-pages'
+            contextActionsLoadUrl: '/bin/cpm/pages/edit.treeActions.html'
         });
 
         tree.ToolsTree = core.components.Tree.extend({
@@ -49,7 +49,7 @@
                 var id = this.nodeIdPrefix + 'Tree';
                 this.initialSelect = this.$el.attr('data-selected');
                 if (!this.initialSelect || this.initialSelect === '/') {
-                    this.initialSelect = pages.profile.get('tree', 'current', "/");
+                    this.initialSelect = pages.profile.get('page-tree', 'current', "/");
                 }
                 options = _.extend(options || {}, {
                     dragAndDrop: {
@@ -171,7 +171,7 @@
             initialize: function (options) {
                 this.initialSelect = this.$el.attr('data-selected');
                 if (!this.initialSelect || this.initialSelect === '/') {
-                    this.initialSelect = pages.profile.get('tree', 'current', "/");
+                    this.initialSelect = pages.profile.get('page-tree', 'current', "/");
                 }
                 tree.ToolsTree.prototype.initialize.apply(this, [options]);
             },
@@ -253,11 +253,53 @@
                 this.tree = core.getWidget(this.el, '.' + tree.const.treeClass, tree.PageTree);
                 this.tree.panel = this;
                 tree.ToolsTreePanel.prototype.initialize.apply(this, [options]);
-                this.selectFilter(pages.profile.get('tree', 'filter', undefined));
-                this.$('.' + tree.const.pagesTreeClass + '_filter-value a').click(_.bind(this.setFilter, this));
+                this.$treePanel = this.$('.' + tree.const.treePanelClass);
+                this.searchPanel = core.getWidget(this.el, '.' + pages.search.const.css.base + pages.search.const.css._panel,
+                    pages.search.SearchPanel);
+                this.$viewToggle = this.$('.' + tree.const.pagesCssBase + '_toggle-view');
+                this.setView(pages.profile.get('page-tree', 'view', 'tree'));
+                this.$viewToggle.click(_.bind(this.toggleView, this));
+                this.selectFilter(pages.profile.get('page-tree', 'filter', undefined));
+                this.$('.' + tree.const.pagesCssBase + '_filter-value a').click(_.bind(this.setFilter, this));
                 $(document).on('path:selected.' + this.treePanelId, _.bind(this.onPathSelected, this));
                 $(document).on('element:selected.' + this.treePanelId, _.bind(this.onPathSelected, this));
                 $(document).on('page:selected.' + this.treePanelId, _.bind(this.onPathSelected, this));
+            },
+
+            onTabSelected: function () {
+                if (this.currentView === 'search') {
+                    this.searchPanel.onShown();
+                }
+            },
+
+            setView: function (key) {
+                if (!key) {
+                    key = !this.currentView || this.currentView === 'search' ? 'tree' : 'search';
+                }
+                if (this.currentView !== key) {
+                    this.currentView = key;
+                    pages.profile.set('page-tree', 'view', key);
+                    switch (key) {
+                        default:
+                        case 'tree':
+                            this.$viewToggle.removeClass('active');
+                            this.searchPanel.$el.addClass('hidden');
+                            this.$treePanel.removeClass('hidden');
+                            break;
+                        case 'search':
+                            this.$viewToggle.addClass('active');
+                            this.$treePanel.addClass('hidden');
+                            this.searchPanel.$el.removeClass('hidden');
+                            this.searchPanel.onShown();
+                            break;
+                    }
+                }
+            },
+
+            toggleView: function (event) {
+                event.preventDefault();
+                this.setView();
+                return false;
             },
 
             selectDefaultNode: function () {
@@ -274,13 +316,13 @@
                 var filter = $link.parent().data('value');
                 this.tree.setFilter(filter);
                 this.selectFilter(filter);
-                pages.profile.set('tree', 'filter', filter);
+                pages.profile.set('page-tree', 'filter', filter);
             },
 
             selectFilter: function (filter) {
-                this.$('.' + tree.const.pagesTreeClass + '_filter-value').removeClass('active');
+                this.$('.' + tree.const.pagesCssBase + '_filter-value').removeClass('active');
                 if (filter) {
-                    this.$('.' + tree.const.pagesTreeClass + '_filter-value[data-value="' + filter + '"]')
+                    this.$('.' + tree.const.pagesCssBase + '_filter-value[data-value="' + filter + '"]')
                         .addClass('active');
                 }
             }

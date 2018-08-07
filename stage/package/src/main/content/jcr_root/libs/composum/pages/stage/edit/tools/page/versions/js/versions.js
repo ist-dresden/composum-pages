@@ -250,7 +250,7 @@
                     this.$slider.slider('disable');
                     core.ajaxGet(c.versionContentUri + this.contextTabs.data.path, {},
                         undefined, undefined, _.bind(function (data) {
-                            if (data.status == 200) {
+                            if (data.status === 200) {
                                 this.$versionContent.html(data.responseText);
                             } else {
                                 this.$versionContent.html("");

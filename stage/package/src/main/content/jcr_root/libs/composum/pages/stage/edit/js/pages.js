@@ -23,7 +23,6 @@
             versionViewCssClass: 'composum-pages-version-view',
             event: {
                 messagePattern: new RegExp('^([^{\\[]+)([{\\[].*[}\\]])$'),
-                pageContainerRefs: 'page:containerRefs',
                 trigger: 'event:trigger',
                 dialog: {
                     edit: 'dialog:edit',
@@ -42,7 +41,8 @@
                     selected: 'page:selected',      // done.
                     inserted: 'page:inserted',      // done.
                     changed: 'page:changed',        // done.
-                    deleted: 'page:deleted'         // done.
+                    deleted: 'page:deleted',        // done.
+                    containerRefs: 'page:containerRefs'
                 },
                 content: {
                     select: 'content:select',       // do it!...
@@ -280,10 +280,10 @@
                             $(document).trigger(pages.const.event.element.selected, []);
                         }
                         break;
-                    case pages.const.event.pageContainerRefs:
+                    case pages.const.event.page.containerRefs:
                         // forward container references list to the edit frame components
-                        console.log('pages.event.pageContainerRefs(' + message[2] + ')');
-                        $(document).trigger(pages.const.event.pageContainerRefs, [args]);
+                        console.log('pages.event.' + pages.const.event.page.containerRefs + '(' + message[2] + ')');
+                        $(document).trigger(pages.const.event.page.containerRefs, [args]);
                         break;
                     case pages.const.event.element.insert:
                         // apply insert action messages from the edited page

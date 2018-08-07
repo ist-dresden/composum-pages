@@ -51,6 +51,11 @@
         </div>
         <sling:call script="dialogs.jsp"/>
         <cpn:clientlib type="js" category="composum.pages.edit.frame"/>
+        <script>
+            $(document).ready(function () {
+                window.composum.pages.editFrame.ready();
+            });
+        </script>
         </body>
         </html>
     </cpp:model>

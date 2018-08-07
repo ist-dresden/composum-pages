@@ -12,7 +12,7 @@
             order="{Long}20"/>
     <pagesTree
             jcr:primaryType="nt:unstructured"
-            sling:resourceType="composum/pages/stage/edit/tools/tree/pages"
+            sling:resourceType="composum/pages/stage/edit/tools/main/pages"
             categories="[navigation,browse,edit,develop]"
             iconClass="sitemap"
             hint="Pages Tree"
@@ -36,7 +36,7 @@
             order="{Long}80"/>
     <developmentTree
             jcr:primaryType="nt:unstructured"
-            sling:resourceType="composum/pages/stage/edit/tools/tree/develop"
+            sling:resourceType="composum/pages/stage/edit/tools/main/develop"
             categories="[navigation,develop]"
             iconClass="wrench"
             hint="Development Tree"

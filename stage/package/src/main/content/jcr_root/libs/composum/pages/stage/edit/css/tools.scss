@@ -242,6 +242,7 @@
         &,
         &_panel,
         &_actions,
+        &_tree-panel,
         &_search-panel {
             position: absolute;
             left: 0;
@@ -252,10 +253,6 @@
         & {
             top: 45px;
             bottom: 0;
-        }
-
-        &_search-panel {
-            display: none;
         }
 
         &_actions {
@@ -287,6 +284,7 @@
         }
 
         &_panel,
+        &_tree-panel,
         &_search-panel {
             top: $tools-pane-padding;
             left: $tools-pane-padding;
@@ -307,42 +305,14 @@
             }
 
             &_panel,
+            &_tree-panel,
             &_search-panel {
                 top: 40px + $tools-pane-padding;
             }
         }
 
-        &_search-open {
-
-            .composum-pages-tools {
-
-                &_panel {
-                    display: none;
-                }
-
-                &_search-panel {
-                    display: block;
-                }
-            }
-        }
-
         &_button {
             @include tools-button;
-
-            &.disabled,
-            &.disabled.active,
-            &.disabled.focus,
-            &.disabled:active,
-            &.disabled:focus,
-            &.disabled:hover,
-            &[disabled],
-            &[disabled].active,
-            &[disabled].focus,
-            &[disabled]:active,
-            &[disabled]:focus,
-            &[disabled]:hover {
-                background-color: #444;
-            }
 
             &.hidden {
                 display: none;
@@ -409,6 +379,14 @@
 
     .composum-pages-component-tile {
         margin: $tools-pane-padding 0;
+
+        &:first-child {
+            margin-top: 0;
+        }
+
+        &:last-child {
+            margin-bottom: 0;
+        }
     }
 
     &-context {

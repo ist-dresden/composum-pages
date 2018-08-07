@@ -1,5 +1,6 @@
 package com.composum.pages.commons;
 
+import com.composum.pages.commons.util.RequestUtil;
 import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.filter.StringFilter;
 import com.composum.sling.core.mapping.jcr.ResourceFilterMapping;
@@ -10,6 +11,7 @@ import org.apache.felix.scr.annotations.Deactivate;
 import org.apache.felix.scr.annotations.Modified;
 import org.apache.felix.scr.annotations.Property;
 import org.apache.felix.scr.annotations.Service;
+import org.apache.sling.api.SlingHttpServletRequest;
 import org.osgi.service.component.ComponentContext;
 
 import java.util.Dictionary;
@@ -155,6 +157,21 @@ public class PagesConfigImpl implements PagesConfiguration {
     public ResourceFilter getOrderableNodesFilter() {
         return orderableNodesFilter;
     }
+
+    @Override
+    public ResourceFilter getRequestNodeFilter(SlingHttpServletRequest request, String paramName, String defaultFilter) {
+        String filter = RequestUtil.getParameter(request, paramName, defaultFilter);
+        switch (filter) {
+            case "element":
+                return getElementNodeFilter();
+            case "container":
+                return getContainerNodeFilter();
+            case "page":
+            default:
+                return getPageNodeFilter();
+        }
+    }
+
 
     public Dictionary getProperties() {
         return properties;

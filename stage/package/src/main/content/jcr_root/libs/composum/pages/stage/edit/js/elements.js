@@ -220,7 +220,7 @@
              */
             setComponent: function (component) {
                 if (component) {
-                    if (this.component != component) {
+                    if (this.component !== component) {
                         this.component = component;
                         this.setBounds(component);
                         this.$name.text(component.getName());
@@ -275,9 +275,9 @@
              */
             getComponentEl: function (domEl) {
                 if (domEl) {
-                    if (domEl == this.el || domEl == this.$head[0] || domEl == this.$left[0] ||
-                        domEl == this.$right[0] || domEl == this.$bottom[0] || domEl == this.$path[0] ||
-                        domEl == this.$name[0] || domEl == this.$type[0] || domEl == this.$size[0]) {
+                    if (domEl === this.el || domEl === this.$head[0] || domEl === this.$left[0] ||
+                        domEl === this.$right[0] || domEl === this.$bottom[0] || domEl === this.$path[0] ||
+                        domEl === this.$name[0] || domEl === this.$type[0] || domEl === this.$size[0]) {
                         return this.component.el;
                     }
                 }
@@ -430,7 +430,7 @@
             isTarget: function (container) {
                 if (this.dropTargets) {
                     for (var i = 0; i < this.dropTargets.length; i++) {
-                        if (this.dropTargets[i].data.path == container.data.path) {
+                        if (this.dropTargets[i].data.path === container.data.path) {
                             return true;
                         }
                     }
@@ -459,7 +459,7 @@
                     result.forEach(function (target) {
                         var $target = elements.pageBody.$('.' + elements.const.class.container
                             + '[data-' + elements.const.data.path + '="' + target.path + '"]');
-                        if ($target.length == 1) {
+                        if ($target.length === 1) {
                             var view = $target[0].view;
                             if (view) {
                                 this.dropTargets.push(view);
@@ -655,7 +655,7 @@
                 });
                 // build the component view hierarchy
                 this.components.forEach(function (component) {
-                    if (component.$parent.length == 1) {
+                    if (component.$parent.length === 1) {
                         component.parent = component.$parent[0].view;
                     }
                     if (component.parent && component.parent.$el.hasClass(elements.const.class.container)) {
@@ -664,7 +664,7 @@
                     }
                 }, this);
                 // send container references to the edit frame
-                parent.postMessage(elements.const.event.pageContainerRefs
+                parent.postMessage(elements.const.event.page.containerRefs
                     + JSON.stringify(this.containerRefs), '*');
             },
 

@@ -233,7 +233,7 @@ public class EditServlet extends NodeTreeServlet {
         }
     }
 
-    private static class CheckpointOperation implements ServletOperation {
+    protected class CheckpointOperation implements ServletOperation {
 
         @Override
         public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response, ResourceHandle resource)
@@ -472,16 +472,7 @@ public class EditServlet extends NodeTreeServlet {
 
         @Override
         protected ResourceFilter getNodeFilter(SlingHttpServletRequest request) {
-            String filter = RequestUtil.getParameter(request, PARAM_FILTER, DEFAULT_FILTER);
-            switch (filter) {
-                case "element":
-                    return pagesConfiguration.getElementNodeFilter();
-                case "container":
-                    return pagesConfiguration.getContainerNodeFilter();
-                case "page":
-                default:
-                    return pagesConfiguration.getPageNodeFilter();
-            }
+            return pagesConfiguration.getRequestNodeFilter(request, PARAM_FILTER, DEFAULT_FILTER);
         }
     }
 

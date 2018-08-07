@@ -46,14 +46,20 @@
                 $(document).on(c.site.created + '.EditFrame', _.bind(this.onSiteChanged, this));
                 $(document).on(c.site.changed + '.EditFrame', _.bind(this.onSiteChanged, this));
                 $(document).on(c.site.deleted + '.EditFrame', _.bind(this.onComponentDeleted, this));
-                pages.PageView.prototype.registerEventHandlers.apply(this);
                 var initialPath = this.$el.data('path');
                 if (initialPath) {
                     console.log('frame.trigger.' + pages.const.event.page.select + '(' + initialPath + ')');
                     $(document).trigger(pages.const.event.page.select, [initialPath]);
                 }
+                pages.PageView.prototype.registerEventHandlers.apply(this);
                 this.$frame.on('load.EditFrame', _.bind(this.onFrameLoad, this));
                 core.unauthorizedDelegate = pages.handleUnauthorized;
+            },
+
+            ready: function () {
+                window.setTimeout(function () {
+                    window.composum.pages.tools.navigationTabs.ready();
+                }, 300);
             },
 
             onPageSelected: function (event, path) {

@@ -71,15 +71,24 @@
     height: $edit-actions-button-size;
     font-size: $edit-actions-icon-font-size - 2;
     line-height: $edit-actions-button-size - 2;
+    padding: 1px 1px 0;
     border-color: #888;
     background-image: linear-gradient(to bottom, #888 0, #666 100%);
-    padding: 1px 1px 0;
+    background-color: #666;
     color: #ddd;
 
-    &:hover,
-    &:focus {
-        background-color: #777;
-        color: #fff;
+    &.active,
+    &:active,
+    &:hover {
+        background-image: linear-gradient(to bottom, #aaa 0, #ccc 100%);
+        background-color: #ccc;
+        color: #444;
+    }
+
+    &.active:hover {
+        background-image: linear-gradient(to bottom, #888 0, #666 100%);
+        background-color: #666;
+        color: #ddd;
     }
 }
 

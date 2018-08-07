@@ -140,16 +140,28 @@
 
             initialize: function (options) {
                 tools.TabPanel.prototype.initialize.apply(this, [options]);
-                this.selectTab(undefined, this.initialKey());
                 var c = pages.const.event;
                 $(document).on(c.path.select + '.Navigation', _.bind(this.selectPath, this));
+            },
+
+            ready: function () {
+                this.selectTab(undefined, this.initialKey());
             },
 
             initialKey: function () {
                 return pages.profile.get('tabs', 'navigation', undefined);
             },
 
-            keyChanged: function (key) {
+            keyChanged: function (key, $panel) {
+                if ($panel && $panel.length === 1) {
+                    var $content = $panel.children();
+                    if ($content.length === 1) {
+                        var view = $content[0].view;
+                        if (view && _.isFunction(view.onTabSelected)) {
+                            view.onTabSelected.call(view);
+                        }
+                    }
+                }
                 pages.profile.set('tabs', 'navigation', key)
             },
 

@@ -2,6 +2,7 @@ package com.composum.pages.commons;
 
 import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.servlet.AbstractServiceServlet;
+import org.apache.sling.api.SlingHttpServletRequest;
 
 import java.util.Dictionary;
 
@@ -36,6 +37,8 @@ public interface PagesConfiguration {
     ResourceFilter getTreeIntermediateFilter();
 
     ResourceFilter getOrderableNodesFilter();
+
+    ResourceFilter getRequestNodeFilter(SlingHttpServletRequest request, String paramaName, String defaultFilter);
 
     Dictionary getProperties();
 }
