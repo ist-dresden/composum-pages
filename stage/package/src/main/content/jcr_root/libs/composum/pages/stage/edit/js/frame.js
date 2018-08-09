@@ -56,12 +56,6 @@
                 core.unauthorizedDelegate = pages.handleUnauthorized;
             },
 
-            ready: function () {
-                window.setTimeout(function () {
-                    window.composum.pages.tools.navigationTabs.ready();
-                }, 300);
-            },
-
             onPageSelected: function (event, path) {
                 if (this.currentPath !== path) {
                     console.log('pages.EditFrame.onPageSelected(' + path + ')');

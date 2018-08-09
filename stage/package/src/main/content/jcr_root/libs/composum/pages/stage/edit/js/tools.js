@@ -140,8 +140,9 @@
 
             initialize: function (options) {
                 tools.TabPanel.prototype.initialize.apply(this, [options]);
-                var c = pages.const.event;
-                $(document).on(c.path.select + '.Navigation', _.bind(this.selectPath, this));
+                var e = pages.const.event;
+                $(document).on(e.path.select + '.Navigation', _.bind(this.selectPath, this));
+                $(document).on(e.ready + '.Navigation', _.bind(this.ready, this));
             },
 
             ready: function () {
@@ -226,19 +227,31 @@
         tools.NavigationContext = Backbone.View.extend({
 
             initialize: function (options) {
-                var c = pages.const.event;
-                $(document).on(c.site.selected + '.Navigation', _.bind(this.onSiteChanges, this));
-                $(document).on(c.site.changed + '.Navigation', _.bind(this.onSiteChanges, this));
+                var e = pages.const.event;
+                $(document).on(e.site.selected + '.Navigation', _.bind(this.onSiteChanged, this));
+                $(document).on(e.site.changed + '.Navigation', _.bind(this.onSiteChanged, this));
+                $(document).on(e.scope.changed + '.Navigation', _.bind(this.onScopeChanged, this));
             },
 
             initContent: function (options) {
+                this.$restrictToSite = this.$('.restrict-to-site');
                 this.$gotoSite = this.$('.goto-site');
                 this.$manageSites = this.$('.manage-sites');
+                this.$restrictToSite.click(_.bind(this.toggleScope, this));
                 this.$gotoSite.click(_.bind(this.selectSite, this));
                 this.$manageSites.click(_.bind(this.manageSites, this));
+                this.onScopeChanged();
             },
 
-            onSiteChanges: function (event, path) {
+            onScopeChanged: function () {
+                if (pages.getScope() === 'site') {
+                    this.$restrictToSite.addClass('active');
+                } else {
+                    this.$restrictToSite.removeClass('active');
+                }
+            },
+
+            onSiteChanged: function (event, path) {
                 var u = tools.const.navigation.context.url;
                 var url = u.base + (path ? u._site + path : u._general);
                 core.getHtml(url, undefined, undefined, _.bind(function (data) {
@@ -253,14 +266,18 @@
                 }, this));
             },
 
-            selectSite: function (event) {
+            toggleScope: function () {
+                pages.setScope(pages.getScope() === 'site' ? 'content' : 'site');
+            },
+
+            selectSite: function () {
                 if (this.sitePath) {
                     console.log('tools.trigger.' + pages.const.event.site.select + '(' + this.sitePath + ')');
                     $(document).trigger(pages.const.event.site.select, [this.sitePath]);
                 }
             },
 
-            manageSites: function (event) {
+            manageSites: function () {
             }
         });
 

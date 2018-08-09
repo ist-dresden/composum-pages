@@ -21,9 +21,21 @@
             frameClass: 'composum-pages-stage-edit-frame',
             editDialogsClass: 'composum-pages-stage-edit-dialogs',
             versionViewCssClass: 'composum-pages-version-view',
+            css: {
+                base_: 'composum-pages-',
+                scope: {
+                    _: 'scope-',
+                    content: 'content',
+                    site: 'site'
+                }
+            },
             event: {
                 messagePattern: new RegExp('^([^{\\[]+)([{\\[].*[}\\]])$'),
                 trigger: 'event:trigger',
+                ready: 'pages:ready',
+                scope: {
+                    changed: 'scope:changed'
+                },
                 dialog: {
                     edit: 'dialog:edit',
                     alert: 'dialog:alert'
@@ -82,6 +94,31 @@
             login: {
                 id: 'composum-platform-commons-login-dialog',
                 url: '/libs/composum/platform/security/login/dialog.html'
+            },
+            profile: {
+                pages: {
+                    aspect: 'pages',
+                    scope: 'scope'      // the scope of the edit UI: 'site' or 'content'
+                },
+                page: {
+                    tree: {
+                        aspect: 'page-tree',
+                        view: 'view',   // the current panel: 'tree' or 'search'
+                        filter: 'filter',
+                        path: 'path'
+                    },
+                    search: {
+                        aspect: 'page-search',
+                        scope: 'scope',
+                        term: 'term'
+                    }
+                },
+                develop: {
+                    tree: {
+                        aspect: 'develop-tree',
+                        path: 'path'
+                    }
+                }
             },
             clipboard: {
                 store: {
@@ -150,6 +187,34 @@
                 pages.profile.set('mode', 'edit', pages.current.mode.toLowerCase());
                 break;
         }
+
+        pages.getScope = function () {
+            var c = pages.const.css;
+            var g = pages.const.profile.pages;
+            return pages.profile.get(g.aspect, g.scope, c.scope.content);
+        };
+
+        pages.setScope = function (scope, triggerEvent) {
+            var c = pages.const.css;
+            var g = pages.const.profile.pages;
+            if (!scope) {
+                scope = pages.profile.get(g.aspect, g.scope, c.scope.content);
+            }
+            if (scope !== pages.profile.get(g.aspect, g.scope)) {
+                if (triggerEvent !== false) {
+                    triggerEvent = true;
+                }
+                pages.profile.set(g.aspect, g.scope, scope);
+                pages.$body.removeClass(c.base + c.scope._ + c.scope.content);
+                pages.$body.removeClass(c.base + c.scope._ + c.scope.site);
+                pages.$body.addClass(c.base + c.scope._ + scope);
+            }
+            if (triggerEvent) {
+                var e = pages.const.event.scope;
+                console.log('pages.trigger.' + e.changed + '(' + scope + ')');
+                $(document).trigger(e.changed, [scope]);
+            }
+        };
 
         pages.isEditMode = function () {
             return pages.current.mode === 'EDIT' || pages.current.mode === 'DEVELOP';

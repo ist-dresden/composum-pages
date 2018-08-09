@@ -21,6 +21,10 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Collection;
 
+/**
+ * the rendering strategy for a search result list which is generating an HTML list with links to the pages and
+ * page information rendered by delegation to the page itself using the subtype 'edit/tile' of the page
+ */
 @Component(
         property = {
                 Constants.SERVICE_DESCRIPTION + "=Composum Pages Page Tile Search Result"

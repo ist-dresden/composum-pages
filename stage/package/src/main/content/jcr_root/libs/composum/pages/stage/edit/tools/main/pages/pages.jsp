@@ -37,7 +37,7 @@
     </c:if>
     <%-- the '.tree-panel' around the tree is important for the 'auto-scroll to selected node' tree feature --%>
     <div class="composum-pages-tools_tree-panel tree-panel">
-        <div class="composum-pages-tools_tree" data-selected="${tree.pagePath}">
+        <div class="composum-pages-tools_tree">
         </div>
     </div>
     <cpp:include resourceType="composum/pages/stage/edit/tools/search"/>

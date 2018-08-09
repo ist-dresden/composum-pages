@@ -4,5 +4,7 @@
         embed="[category:composum.components.widgets,
                 composum/pages/commons/widget/checkselect/js/checkselect.js,
                 composum/pages/commons/widget/codearea/js/codearea.js,
-                composum/pages/commons/widget/linkfield/js/linkfield.js]">
+                composum/pages/commons/widget/linkfield/js/linkfield.js,
+                composum/pages/commons/widget/pathfield/js/pathfield.js,
+                composum/pages/commons/widget/imagefield/js/imagefield.js]">
 </jcr:root>
