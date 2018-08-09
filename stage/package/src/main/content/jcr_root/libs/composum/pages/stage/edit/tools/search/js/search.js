@@ -41,6 +41,19 @@
                 $(document).on(e.page.selected + '.' + p.aspect, _.bind(this.onSelected, this));
             },
 
+            onShown: function () {
+                this.onChange();
+            },
+
+            onScopeChanged: function () {
+                var s = this.$scope.val();
+                this.$scope.val(this.getScope(this.$scope));
+                if (!this.path || s !== this.$scope.val()) {
+                    // no search done before or search query changed...
+                    this.onChange();
+                }
+            },
+
             getScope: function ($select) {
                 var p = pages.const.profile.page.search;
                 if ($select) {
@@ -48,7 +61,6 @@
                 }
                 var scope = pages.profile.get(p.aspect, p.scope, 'site');
                 if (scope === 'content') {
-                    var g = pages.const.profile.pages;
                     if (pages.getScope() === 'site') {
                         scope = 'site';
                         if ($select) {
@@ -59,47 +71,37 @@
                 return scope;
             },
 
-            onScopeChanged: function () {
-                var s = this.$scope.val();
-                this.$scope.val(this.getScope(this.$scope));
-                if (s !== this.$scope.val()) {
-                    this.onChange();
-                }
-            },
-
-            onShown: function () {
-                this.onChange();
-            },
-
-            onChange: function () {
+            onChange: function (event) {
                 var p = pages.const.profile.page.search;
                 var term = this.$input.val();
                 var scope = this.$scope.val();
                 if (term && (term = term.trim()).length > 1) {
                     this.search(scope, term);
                 }
-                pages.profile.set(p.aspect, p.scope, scope);
-                pages.profile.set(p.aspect, p.term, term);
+                if (event) {
+                    pages.profile.set(p.aspect, p.scope, scope);
+                    pages.profile.set(p.aspect, p.term, term);
+                }
             },
 
             search: function (scope, term) {
-                var path;
+                this.path = undefined;
                 switch (scope) {
                     case 'content':
-                        path = '/content';
+                        this.path = '/content';
                         break;
                     case 'path':
-                        path = pages.current.page;
+                        this.path = pages.current.page;
                         break;
                     default:
                     case 'site':
-                        path = pages.current.site;
+                        this.path = pages.current.site;
                         break;
                 }
-                if (path) {
+                if (this.path) {
                     var c = search.const.css;
                     var h = search.const.http;
-                    var url = h.uri + path
+                    var url = h.uri + this.path
                         + '?' + h.q.term + '=' + encodeURIComponent(term)
                         + '&' + h.q.limit + '=50';
                     this.$el.addClass(c.searching);

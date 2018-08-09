@@ -64,7 +64,7 @@
                 this.initializeFilter();
                 tree.ToolsTree.prototype.initialize.apply(this, [options]);
                 var c = pages.const.event;
-                $(document).on(c.element.selected + '.' + id, _.bind(this.onPathSelected, this));
+                //$(document).on(c.element.selected + '.' + id, _.bind(this.onElementSelected, this));
                 $(document).on(c.element.inserted + '.' + id, _.bind(this.onContentInserted, this));
                 $(document).on(c.element.changed + '.' + id, _.bind(this.onPathChanged, this));
                 $(document).on(c.element.deleted + '.' + id, _.bind(this.onPathDeleted, this));
@@ -81,11 +81,10 @@
                 $(document).on(c.site.created + '.' + id, _.bind(this.onContentInserted, this));
                 $(document).on(c.site.changed + '.' + id, _.bind(this.onPathChanged, this));
                 $(document).on(c.site.deleted + '.' + id, _.bind(this.onPathDeleted, this));
-                $(document).on(c.scope.changed + '.' + id, _.bind(this.onScopeChanged, this));
             },
 
-            onScopeChanged: function () {
-                this.setRootPath('/');
+            onElementSelected: function (event, name, path, type) {
+                this.onPathSelected(event, path);
             },
 
             setRootPath: function (rootPath) {
@@ -204,6 +203,10 @@
                 this.treePanelId = this.tree.nodeIdPrefix + 'treePanel';
             },
 
+            onElementSelected: function (event, name, path, type) {
+                this.onPathSelected(event, path);
+            },
+
             onPathSelected: function (event, path) {
                 var treePath = this.tree.getSelectedPath();
                 if (this.actions) {
@@ -279,7 +282,7 @@
                 this.$viewToggle.click(_.bind(this.toggleView, this));
                 this.selectFilter(pages.profile.get(p.aspect, p.filter, undefined));
                 this.$('.' + tree.const.pagesCssBase + '_filter-value a').click(_.bind(this.setFilter, this));
-                $(document).on(e.element.selected + '.' + this.treePanelId, _.bind(this.onPathSelected, this));
+                $(document).on(e.element.selected + '.' + this.treePanelId, _.bind(this.onElementSelected, this));
                 $(document).on(e.path.selected + '.' + this.treePanelId, _.bind(this.onPathSelected, this));
                 $(document).on(e.page.selected + '.' + this.treePanelId, _.bind(this.onPathSelected, this));
                 $(document).on(e.site.selected + '.' + this.treePanelId, _.bind(this.onSiteSelected, this));
@@ -289,10 +292,9 @@
 
             ready: function () {
                 var p = pages.const.profile.page.tree;
-                this.onScopeChanged();
-                window.setTimeout(_.bind(function () {
-                    this.tree.selectNode(pages.profile.get(p.aspect, p.path, "/"));
-                }, this), 200);
+                this.tree.setRootPath('/');
+                this.tree.selectNode(pages.profile.get(p.aspect, p.path, "/"));
+                this.onTabSelected();
             },
 
             onScopeChanged: function () {

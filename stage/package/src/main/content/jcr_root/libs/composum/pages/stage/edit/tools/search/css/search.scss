@@ -20,8 +20,9 @@
                 padding-bottom: 0;
                 height: 30px;
                 line-height: 28px;
-                color: $tools-pane-foreground;
-                background-color: $tools-tile-background;
+                color: $tools-input-foreground;
+                background-color: $tools-input-background;
+                border-color: $tools-input-border-color;
             }
 
             &_search-scope {
@@ -53,7 +54,7 @@
                     margin: 0;
                     padding: 0 0 8px;
                     list-style: none;
-                    border-bottom: 2px solid $tools-tile-background;
+                    border-bottom: 2px dashed $tools-tile-background;
                 }
 
                 a,
