@@ -24,6 +24,9 @@
             },
 
             onPathSelectedFailed: function (path) {
+                if (this.log.getLevel() <= log.levels.DEBUG) {
+                    this.log.debug(this.nodeIdPrefix + 'tree.onPathSelectedFailed(' + path + ')');
+                }
                 var node = this.getSelectedTreeNode();
                 while (!node && (path = core.getParentPath(path)) && path !== '/') {
                     var busy = this.busy;
@@ -46,11 +49,8 @@
             nodeIdPrefix: 'PP_',
 
             initialize: function (options) {
+                var p = pages.const.profile.page.tree;
                 var id = this.nodeIdPrefix + 'Tree';
-                this.initialSelect = this.$el.attr('data-selected');
-                if (!this.initialSelect || this.initialSelect === '/') {
-                    this.initialSelect = pages.profile.get('page-tree', 'current', "/");
-                }
                 options = _.extend(options || {}, {
                     dragAndDrop: {
                         is_draggable: _.bind(this.nodeIsDraggable, this),
@@ -67,7 +67,7 @@
                 this.initializeFilter();
                 tree.ToolsTree.prototype.initialize.apply(this, [options]);
                 var c = pages.const.event;
-                $(document).on(c.element.selected + '.' + id, _.bind(this.onPathSelected, this));
+                //$(document).on(c.element.selected + '.' + id, _.bind(this.onElementSelected, this));
                 $(document).on(c.element.inserted + '.' + id, _.bind(this.onContentInserted, this));
                 $(document).on(c.element.changed + '.' + id, _.bind(this.onPathChanged, this));
                 $(document).on(c.element.deleted + '.' + id, _.bind(this.onPathDeleted, this));
@@ -86,8 +86,25 @@
                 $(document).on(c.site.deleted + '.' + id, _.bind(this.onPathDeleted, this));
             },
 
+            onElementSelected: function (event, name, path, type) {
+                this.onPathSelected(event, path);
+            },
+
+            setRootPath: function (rootPath) {
+                tree.ToolsTree.prototype.setRootPath.apply(this, [this.adjustRootPath(rootPath)]);
+            },
+
+            adjustRootPath: function (rootPath) {
+                var scope = pages.getScope();
+                if (scope === 'site' && pages.current.site && rootPath.indexOf(pages.current.site) !== 0) {
+                    rootPath = pages.current.site;
+                }
+                return rootPath;
+            },
+
             initializeFilter: function () {
-                this.filter = pages.profile.get('tree', 'filter', undefined);
+                var p = pages.const.profile.page.tree;
+                this.filter = pages.profile.get(p.aspect, p.filter, undefined);
             },
 
             dataUrlForPath: function (path) {
@@ -171,7 +188,8 @@
             initialize: function (options) {
                 this.initialSelect = this.$el.attr('data-selected');
                 if (!this.initialSelect || this.initialSelect === '/') {
-                    this.initialSelect = pages.profile.get('page-tree', 'current', "/");
+                    var p = pages.const.profile.develop.tree;
+                    this.initialSelect = pages.profile.get(p.aspect, p.path, "/");
                 }
                 tree.ToolsTree.prototype.initialize.apply(this, [options]);
             },
@@ -188,6 +206,10 @@
                 this.treePanelId = this.tree.nodeIdPrefix + 'treePanel';
             },
 
+            onElementSelected: function (event, name, path, type) {
+                this.onPathSelected(event, path);
+            },
+
             onPathSelected: function (event, path) {
                 var treePath = this.tree.getSelectedPath();
                 if (this.actions) {
@@ -195,7 +217,7 @@
                         return;
                     }
                 }
-                console.log(this.treePanelId + '.onPathSelected(' + path + ') <- ' + treePath);
+                pages.log.debug(this.treePanelId + '.onPathSelected(' + path + ') <- ' + treePath);
                 if (!path) {
                     this.doSelectDefaultNode();
                 } else if (path === treePath) {
@@ -250,6 +272,8 @@
         tree.PageTreePanel = tree.ToolsTreePanel.extend({
 
             initialize: function (options) {
+                var e = pages.const.event;
+                var p = pages.const.profile.page.tree;
                 this.tree = core.getWidget(this.el, '.' + tree.const.treeClass, tree.PageTree);
                 this.tree.panel = this;
                 tree.ToolsTreePanel.prototype.initialize.apply(this, [options]);
@@ -257,13 +281,32 @@
                 this.searchPanel = core.getWidget(this.el, '.' + pages.search.const.css.base + pages.search.const.css._panel,
                     pages.search.SearchPanel);
                 this.$viewToggle = this.$('.' + tree.const.pagesCssBase + '_toggle-view');
-                this.setView(pages.profile.get('page-tree', 'view', 'tree'));
+                this.setView(pages.profile.get(p.aspect, p.view, 'tree'));
                 this.$viewToggle.click(_.bind(this.toggleView, this));
-                this.selectFilter(pages.profile.get('page-tree', 'filter', undefined));
+                this.selectFilter(pages.profile.get(p.aspect, p.filter, undefined));
                 this.$('.' + tree.const.pagesCssBase + '_filter-value a').click(_.bind(this.setFilter, this));
-                $(document).on('path:selected.' + this.treePanelId, _.bind(this.onPathSelected, this));
-                $(document).on('element:selected.' + this.treePanelId, _.bind(this.onPathSelected, this));
-                $(document).on('page:selected.' + this.treePanelId, _.bind(this.onPathSelected, this));
+                $(document).on(e.element.selected + '.' + this.treePanelId, _.bind(this.onElementSelected, this));
+                $(document).on(e.path.selected + '.' + this.treePanelId, _.bind(this.onPathSelected, this));
+                $(document).on(e.page.selected + '.' + this.treePanelId, _.bind(this.onPathSelected, this));
+                $(document).on(e.site.selected + '.' + this.treePanelId, _.bind(this.onSiteSelected, this));
+                $(document).on(e.scope.changed + '.' + this.treePanelId, _.bind(this.onScopeChanged, this));
+                $(document).on(e.ready + '.' + this.treePanelId, _.bind(this.ready, this));
+            },
+
+            ready: function () {
+                var p = pages.const.profile.page.tree;
+                this.tree.setRootPath('/');
+                this.tree.selectNode(pages.profile.get(p.aspect, p.path, "/"));
+                this.onTabSelected();
+            },
+
+            onScopeChanged: function () {
+                this.tree.setRootPath('/');
+                this.searchPanel.onScopeChanged();
+            },
+
+            onSiteSelected: function () {
+                this.onScopeChanged();
             },
 
             onTabSelected: function () {
@@ -278,7 +321,8 @@
                 }
                 if (this.currentView !== key) {
                     this.currentView = key;
-                    pages.profile.set('page-tree', 'view', key);
+                    var p = pages.const.profile.page.tree;
+                    pages.profile.set(p.aspect, p.view, key);
                     switch (key) {
                         default:
                         case 'tree':
@@ -312,11 +356,12 @@
 
             setFilter: function (event) {
                 event.preventDefault();
+                var p = pages.const.profile.page.tree;
                 var $link = $(event.currentTarget);
                 var filter = $link.parent().data('value');
                 this.tree.setFilter(filter);
                 this.selectFilter(filter);
-                pages.profile.set('page-tree', 'filter', filter);
+                pages.profile.set(p.aspect, p.filter, filter);
             },
 
             selectFilter: function (filter) {

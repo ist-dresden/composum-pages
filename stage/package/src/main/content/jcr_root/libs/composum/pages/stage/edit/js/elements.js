@@ -355,7 +355,7 @@
                 if (!self.currentComponent) {
                     self.currentComponent = component;
                     if (elements.const.log.dnd.event) {
-                        console.log('elements.dnd.onDragStart(' + component.data.path + ')');
+                        elements.log.debug('elements.dnd.onDragStart(' + component.data.path + ')');
                     }
                     self.reset();
                     if (_.isFunction(event.dataTransfer.setDragImage)) {
@@ -384,7 +384,7 @@
             onDragEnd: function (event) {
                 var self = elements.pageBody.dnd;
                 if (elements.const.log.dnd.event) {
-                    console.log('elements.dnd.onDragEnd()');
+                    elements.log.debug('elements.dnd.onDragEnd()');
                 }
                 event.target.removeEventListener('dragend', self.onDragEnd);
                 event.target.removeEventListener('drag', self.onDrag);
@@ -411,7 +411,7 @@
                     var target = self.dragTarget.data;
                     var before = self.insert.before ? self.insert.before.data : undefined;
                     if (elements.const.log.dnd.event) {
-                        console.log('elements.dnd.onDrop(' + self.dragTarget.data.path + '): '
+                        elements.log.debug('elements.dnd.onDrop(' + self.dragTarget.data.path + '): '
                             + JSON.stringify(source) + ' > '
                             + JSON.stringify(target) + ' < '
                             + JSON.stringify(before)
@@ -502,7 +502,7 @@
             setDragTarget: function (container, event) {
                 if (this.dragTarget && this.dragTarget !== container) {
                     if (elements.const.log.dnd.target) {
-                        console.log('elements.dnd.dragTarget.clear! (' + this.dragTarget.data.path + ')');
+                        elements.log.debug('elements.dnd.dragTarget.clear! (' + this.dragTarget.data.path + ')');
                     }
                     this.dragTarget.$el.removeClass(elements.const.dnd.class.base + elements.const.dnd.class.targetOver);
                     this.$insert.removeClass(elements.const.dnd.class.base + elements.const.dnd.class.visible);
@@ -517,7 +517,7 @@
                     } else {
                         if (elements.const.log.dnd.target) {
                             var pointer = elements.pageBody.getPointer(event);
-                            console.log('elements.dnd.dragTarget.set: ' + container.data.path + ' ' + JSON.stringify(pointer));
+                            elements.log.debug('elements.dnd.dragTarget.set: ' + container.data.path + ' ' + JSON.stringify(pointer));
                         }
                         this.dragTarget = container;
                         container.$el.addClass(elements.const.dnd.class.base + elements.const.dnd.class.targetOver);
@@ -678,7 +678,7 @@
              */
             insert: function (type, target, before) {
                 if (elements.const.log.operation) {
-                    console.log('elements.insert(' + type + ' > '
+                    elements.log.debug('elements.insert(' + type + ' > '
                         + target.path + (before ? (' < ' + before.path) : '') + ')');
                 }
                 parent.postMessage(elements.const.event.element.insert
@@ -697,7 +697,7 @@
              */
             move: function (source, target, before) {
                 if (elements.const.log.operation) {
-                    console.log('elements.move(' + source.path + ' > '
+                    elements.log.debug('elements.move(' + source.path + ' > '
                         + target.path + (before ? (' < ' + before.path) : '') + ')');
                 }
                 parent.postMessage(elements.const.event.moveComponent
@@ -717,7 +717,7 @@
             // component selection and edit frame message handling
 
             setSelection: function (component, force) {
-                console.log('pages.elements.setSelection(' + component + ',' + force + ')');
+                elements.log.debug('pages.elements.setSelection(' + component + ',' + force + ')');
                 if (elements.pageBody.selection.component !== component || force) {
                     if (component) {
                         this.dnd.reset();
@@ -727,7 +727,7 @@
                             component.data.path,
                             component.data.type
                         ];
-                        console.log('elements.trigger.' + elements.const.event.element.selected + '(' + component.data.path + ')');
+                        elements.log.debug('elements.trigger.' + elements.const.event.element.selected + '(' + component.data.path + ')');
                         $(document).trigger(elements.const.event.element.selected, eventData);
                     } else {
                         this.clearSelection();
@@ -740,9 +740,9 @@
             clearSelection: function () {
                 this.dnd.reset();
                 if (elements.pageBody.selection.component) {
-                    console.log('pages.elements.clearSelection(' + elements.pageBody.selection.component + ')');
+                    elements.log.debug('pages.elements.clearSelection(' + elements.pageBody.selection.component + ')');
                     elements.pageBody.selection.setComponent(undefined);
-                    console.log('elements.trigger.' + elements.const.event.element.selected + '([])');
+                    elements.log.debug('elements.trigger.' + elements.const.event.element.selected + '([])');
                     $(document).trigger(elements.const.event.element.selected, []);
                 }
             },
@@ -755,13 +755,13 @@
                     if ($target && $target.length > 0) {
                         var component = $target[0].view;
                         if (component) {
-                            console.log('pages.elements.selectComponent(' + path + ')');
+                            elements.log.debug('pages.elements.selectComponent(' + path + ')');
                             this.setSelection(component, true);
                             found = true;
                         }
                     }
                     if (!found) {
-                        console.log('elements.trigger.' + elements.const.event.element.selected + '([])');
+                        elements.log.debug('elements.trigger.' + elements.const.event.element.selected + '([])');
                         $(document).trigger(elements.const.event.element.selected, []);
                     }
                 } else {
@@ -771,11 +771,11 @@
 
             onComponentSelected: function (event, name, path, type) {
                 if (path) {
-                    console.log('pages.elements.element.selected(' + path + ')');
+                    elements.log.debug('pages.elements.element.selected(' + path + ')');
                     parent.postMessage(elements.const.event.element.selected
                         + JSON.stringify({name: name, path: path, type: type}), '*');
                 } else {
-                    console.log('pages.elements.selectionCleared()');
+                    elements.log.debug('pages.elements.selectionCleared()');
                     parent.postMessage(elements.const.event.element.selected
                         + JSON.stringify({}), '*');
                 }
@@ -793,10 +793,10 @@
                                     args.path,
                                     args.type
                                 ];
-                                console.log('elements.trigger.' + elements.const.event.element.select + '(' + args.path + ')');
+                                elements.log.debug('elements.trigger.' + elements.const.event.element.select + '(' + args.path + ')');
                                 $(document).trigger(elements.const.event.element.select, eventData);
                             } else {
-                                console.log('elements.trigger.' + elements.const.event.element.select + '([])');
+                                elements.log.debug('elements.trigger.' + elements.const.event.element.select + '([])');
                                 $(document).trigger(elements.const.event.element.select, []);
                             }
                             break;
@@ -886,7 +886,7 @@
                     var self = this;
                     var viewRect = this.getViewRect(view);
                     if (elements.const.log.mouse.position) {
-                        console.log('elements.getPointerView(' + view.data.path + ', '
+                        elements.log.debug('elements.getPointerView(' + view.data.path + ', '
                             + JSON.stringify(pointer) + ' / ' + JSON.stringify(viewRect) + ', "'
                             + selector + '"' + (condition ? ' ++' : '') + ' ...');
                     }
@@ -898,7 +898,7 @@
                             if (nested) {
                                 var nestedRect = self.getViewRect(nested);
                                 if (elements.const.log.mouse.position) {
-                                    console.log('elements.getPointerView.try: ' + nested.data.path + ' ' + JSON.stringify(nestedRect));
+                                    elements.log.debug('elements.getPointerView.try: ' + nested.data.path + ' ' + JSON.stringify(nestedRect));
                                 }
                                 if (nestedRect.x1 <= pointer.x && nestedRect.y1 <= pointer.y &&
                                     nestedRect.x2 >= pointer.x && nestedRect.y2 >= pointer.y) {
@@ -935,7 +935,7 @@
                     }
                 }
                 if (elements.const.log.mouse.position) {
-                    console.log('elements.getPointerView: ' + (view ? view.data.path : 'undefined'));
+                    elements.log.debug('elements.getPointerView: ' + (view ? view.data.path : 'undefined'));
                 }
                 return view;
             }

@@ -52,7 +52,7 @@
                     }
                     this.$previewEntry = $listEntry;
                     $listEntry.addClass('selected');
-                    console.log('site.trigger.' + pages.const.event.page.view + '(' + path + ',preview)');
+                    pages.log.debug('site.trigger.' + pages.const.event.page.view + '(' + path + ',preview)');
                     $(document).trigger(pages.const.event.page.view, [path, {'pages.mode': 'preview'}]);
                 }
             },
@@ -61,7 +61,7 @@
                 if (this.$previewEntry.length > 0) {
                     this.$previewEntry.removeClass('selected');
                     this.$previewEntry = [];
-                    console.log('site.trigger.' + pages.const.event.page.view + '()');
+                    pages.log.debug('site.trigger.' + pages.const.event.page.view + '()');
                     $(document).trigger(pages.const.event.page.view, [null, {}]);
                 }
             },

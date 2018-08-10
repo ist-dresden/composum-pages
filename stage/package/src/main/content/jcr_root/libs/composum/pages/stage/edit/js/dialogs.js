@@ -264,7 +264,7 @@
                 this.$('.' + c.base + c._pathField)
                     .before('<input name=":operation" type="hidden" value="delete"/>');
                 this.submitForm(_.bind(function () {
-                    console.log('pages.trigger.' + pages.const.event.element.deleted + '(' + this.data.path + ')');
+                    pages.log.debug('pages.trigger.' + pages.const.event.element.deleted + '(' + this.data.path + ')');
                     $(document).trigger(pages.const.event.element.deleted, [this.data.path]);
                 }, this));
             },
@@ -282,7 +282,7 @@
                             }
                             break;
                         default:
-                            console.log('pages.trigger.' + event[i] + '(' + this.data.path + ')');
+                            pages.log.debug('pages.trigger.' + event[i] + '(' + this.data.path + ')');
                             $(document).trigger(event[i], [this.data.path]);
                             break;
                     }
@@ -382,7 +382,7 @@
                                 targetPath: path,
                                 targetType: this.data.type
                             }, {}, _.bind(function () {
-                                console.log('pages.trigger.' + pages.const.event.element.changed + '(' + path + ')');
+                                pages.log.debug('pages.trigger.' + pages.const.event.element.changed + '(' + path + ')');
                                 $(document).trigger(pages.const.event.element.changed, [path]);
                             }, this));
                         }, this));
@@ -403,7 +403,7 @@
 
             doSubmit: function () {
                 this.submitForm(_.bind(function () {
-                    console.log('pages.trigger.' + pages.const.event.element.deleted + '(' + this.data.path + ')');
+                    pages.log.debug('pages.trigger.' + pages.const.event.element.deleted + '(' + this.data.path + ')');
                     $(document).trigger(pages.const.event.element.deleted, [this.data.path]);
                 }, this));
             }
@@ -455,7 +455,7 @@
                             // create page as a copy of the template
                             core.ajaxPost(c.base + c._create.page + this.data.path, postData, {},
                                 _.bind(function () {
-                                    console.log('pages.trigger.' + pages.const.event.element.changed + '(' + this.data.path + ')');
+                                    pages.log.debug('pages.trigger.' + pages.const.event.element.changed + '(' + this.data.path + ')');
                                     $(document).trigger(pages.const.event.element.changed, [this.data.path]);
                                 }, this));
                         } else {
@@ -466,7 +466,7 @@
                                     postData.resourceType = type;
                                     core.ajaxPost(c.base + c._create.page + path, postData, {},
                                         _.bind(function () {
-                                            console.log('pages.trigger.' + pages.const.event.element.changed + '(' + this.data.path + ')');
+                                            pages.log.debug('pages.trigger.' + pages.const.event.element.changed + '(' + this.data.path + ')');
                                             $(document).trigger(pages.const.event.element.changed, [this.data.path]);
                                         }, this));
                                 }, this)

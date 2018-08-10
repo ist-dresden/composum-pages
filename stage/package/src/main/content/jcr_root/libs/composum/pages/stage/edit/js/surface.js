@@ -347,7 +347,7 @@
             onResize: function () {
                 var width = this.$el.width();
                 if (!this.lastWidth || Math.abs(this.lastWidth - width) > 5) {
-                    //console.log('surface.trigger.sidebarResized:' + this.profileAspect() + '(' + this + ',' + width + ')');
+                    //pages.log.debug('surface.trigger.sidebarResized:' + this.profileAspect() + '(' + this + ',' + width + ')');
                     $(document).trigger("sidebarResized:" + this.profileAspect(), [this, width]);
                 }
             }

@@ -39,7 +39,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * this servlet is searching content and answering in various formats depending selector keys additional
+ * this servlet is searching content and answering in various formats depending on selector keys additional
  * to the operation selectors, e.g. '/bin/cpm/pages/search.page.tile.html' is rendering an HTML list with
  * found pages rendered as tiles ('edit/tile' subtype; see PageTileSearchResult service) with a link around
  */

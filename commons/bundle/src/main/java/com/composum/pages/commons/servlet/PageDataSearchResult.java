@@ -20,6 +20,9 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Map;
 
+/**
+ * the rendering strategy for a JSON array search result list with data about the found pages and the page properties
+ */
 @Component(
         property = {
                 Constants.SERVICE_DESCRIPTION + "=Composum Pages Page Data Search Result"

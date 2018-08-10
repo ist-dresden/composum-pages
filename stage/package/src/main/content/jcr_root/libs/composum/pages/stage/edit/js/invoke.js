@@ -47,6 +47,8 @@
             }
         });
 
+        elements.log = log.getLogger("elements");
+
         /**
          * show an alert message in the edit frame
          * @param type
@@ -55,6 +57,14 @@
          * @param data
          */
         elements.alertMessage = function (type, title, message, data) {
+            if (elements.log.getLevel() <= log.levels.DEBUG) {
+                elements.log.debug('elements.postMessage.' + elements.const.event.dialog.alert + '('
+                    + type + ','
+                    + title + ','
+                    + message + ','
+                    + data + ')');
+
+            }
             // call the action in the 'edit' layer of the UI
             parent.postMessage(elements.const.event.dialog.alert
                 + JSON.stringify({
@@ -71,6 +81,12 @@
          * @param data
          */
         elements.triggerEvent = function (event, data) {
+            if (elements.log.getLevel() <= log.levels.DEBUG) {
+                elements.log.debug('elements.postMessage.' + elements.const.event.trigger + '('
+                    + event + ','
+                    + data + ')');
+
+            }
             // trigger the event in the 'edit' layer of the UI
             parent.postMessage(elements.const.event.trigger
                 + JSON.stringify({
@@ -86,6 +102,13 @@
          * @param values
          */
         elements.openEditDialog = function (target, dialog, values) {
+            if (elements.log.getLevel() <= log.levels.DEBUG) {
+                elements.log.debug('elements.postMessage.' + elements.const.dialog.edit + '('
+                    + target + ','
+                    + dialog + ','
+                    + values + ')');
+
+            }
             // call the action in the 'edit' layer of the UI
             parent.postMessage(elements.const.event.dialog.edit
                 + JSON.stringify({

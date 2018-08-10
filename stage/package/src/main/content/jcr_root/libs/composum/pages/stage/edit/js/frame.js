@@ -23,53 +23,63 @@
         pages.EditFrame = pages.PageView.extend({
 
             initialize: function (options) {
+                this.log = log.getLogger('frame');
                 pages.PageView.prototype.initialize.apply(this, [options]);
             },
 
             registerEventHandlers: function () {
-                var c = pages.const.event;
-                $(document).on(c.element.select + '.EditFrame', _.bind(this.selectComponent, this));
-                $(document).on(c.element.selected + '.EditFrame', _.bind(this.onComponentSelected, this));
-                $(document).on(c.element.inserted + '.EditFrame', _.bind(this.onComponentChanged, this));
-                $(document).on(c.element.changed + '.EditFrame', _.bind(this.onComponentChanged, this));
-                $(document).on(c.element.deleted + '.EditFrame', _.bind(this.onComponentDeleted, this));
-                $(document).on(c.content.inserted + '.EditFrame', _.bind(this.onComponentChanged, this));
-                $(document).on(c.content.changed + '.EditFrame', _.bind(this.onComponentChanged, this));
-                $(document).on(c.content.deleted + '.EditFrame', _.bind(this.onComponentDeleted, this));
-                $(document).on(c.page.selected + '.EditFrame', _.bind(this.onPageSelected, this));
-                $(document).on(c.page.select + '.EditFrame', _.bind(this.selectPage, this));
-                $(document).on(c.page.view + '.EditFrame', _.bind(this.onViewPage, this));
-                $(document).on(c.page.inserted + '.EditFrame', _.bind(this.onComponentChanged, this));
-                $(document).on(c.page.changed + '.EditFrame', _.bind(this.onComponentChanged, this));
-                $(document).on(c.page.deleted + '.EditFrame', _.bind(this.onComponentDeleted, this));
-                $(document).on(c.site.select + '.EditFrame', _.bind(this.selectSite, this));
-                $(document).on(c.site.created + '.EditFrame', _.bind(this.onSiteChanged, this));
-                $(document).on(c.site.changed + '.EditFrame', _.bind(this.onSiteChanged, this));
-                $(document).on(c.site.deleted + '.EditFrame', _.bind(this.onComponentDeleted, this));
-                var initialPath = this.$el.data('path');
-                if (initialPath) {
-                    console.log('frame.trigger.' + pages.const.event.page.select + '(' + initialPath + ')');
-                    $(document).trigger(pages.const.event.page.select, [initialPath]);
-                }
+                var e = pages.const.event;
+                $(document).on(e.element.select + '.EditFrame', _.bind(this.selectComponent, this));
+                $(document).on(e.element.selected + '.EditFrame', _.bind(this.onComponentSelected, this));
+                $(document).on(e.element.inserted + '.EditFrame', _.bind(this.onComponentChanged, this));
+                $(document).on(e.element.changed + '.EditFrame', _.bind(this.onComponentChanged, this));
+                $(document).on(e.element.deleted + '.EditFrame', _.bind(this.onComponentDeleted, this));
+                $(document).on(e.content.inserted + '.EditFrame', _.bind(this.onComponentChanged, this));
+                $(document).on(e.content.changed + '.EditFrame', _.bind(this.onComponentChanged, this));
+                $(document).on(e.content.deleted + '.EditFrame', _.bind(this.onComponentDeleted, this));
+                $(document).on(e.page.selected + '.EditFrame', _.bind(this.onPageSelected, this));
+                $(document).on(e.page.select + '.EditFrame', _.bind(this.selectPage, this));
+                $(document).on(e.page.view + '.EditFrame', _.bind(this.onViewPage, this));
+                $(document).on(e.page.inserted + '.EditFrame', _.bind(this.onComponentChanged, this));
+                $(document).on(e.page.changed + '.EditFrame', _.bind(this.onComponentChanged, this));
+                $(document).on(e.page.deleted + '.EditFrame', _.bind(this.onComponentDeleted, this));
+                $(document).on(e.site.select + '.EditFrame', _.bind(this.selectSite, this));
+                $(document).on(e.site.created + '.EditFrame', _.bind(this.onSiteChanged, this));
+                $(document).on(e.site.changed + '.EditFrame', _.bind(this.onSiteChanged, this));
+                $(document).on(e.site.deleted + '.EditFrame', _.bind(this.onComponentDeleted, this));
                 pages.PageView.prototype.registerEventHandlers.apply(this);
                 this.$frame.on('load.EditFrame', _.bind(this.onFrameLoad, this));
                 core.unauthorizedDelegate = pages.handleUnauthorized;
             },
 
             ready: function () {
-                window.setTimeout(function () {
-                    window.composum.pages.tools.navigationTabs.ready();
-                }, 300);
+                var e = pages.const.event;
+                pages.tools.navigationTabs.ready();
+                var initialPath = this.$el.data('path');
+                if (initialPath) {
+                    if (this.log.getLevel() <= log.levels.DEBUG) {
+                        this.log.debug('frame.trigger.' + e.page.select + '(' + initialPath + ')');
+                    }
+                    $(document).trigger(e.page.select, [initialPath]);
+                }
+                if (this.log.getLevel() <= log.levels.DEBUG) {
+                    this.log.debug('frame.trigger.' + e.ready + '(' + initialPath + ')');
+                }
+                $(document).trigger(e.ready);
             },
 
             onPageSelected: function (event, path) {
                 if (this.currentPath !== path) {
-                    console.log('pages.EditFrame.onPageSelected(' + path + ')');
+                    if (this.log.getLevel() <= log.levels.DEBUG) {
+                        this.log.debug('pages.EditFrame.onPageSelected(' + path + ')');
+                    }
                     this.currentPath = path;
                     pages.getPageData(path, _.bind(function (data) {
                         if (data.meta && data.meta.site !== pages.current.site) {
                             pages.current.site = data.meta.site;
-                            console.log('frame.trigger.' + pages.const.event.site.selected + '(' + data.meta.site + ')');
+                            if (this.log.getLevel() <= log.levels.DEBUG) {
+                                this.log.debug('frame.trigger.' + pages.const.event.site.selected + '(' + data.meta.site + ')');
+                            }
                             $(document).trigger(pages.const.event.site.selected, [data.meta.site]);
                         }
                     }, this));
@@ -90,7 +100,9 @@
                             }
                         }, _.bind(function (data) {
                             if (this.currentPath !== data.path) {
-                                console.log('pages.EditFrame.onFrameLoad(' + frameUrl + '): ' + data.path);
+                                if (this.log.getLevel() <= log.levels.DEBUG) {
+                                    this.log.debug('pages.EditFrame.onFrameLoad(' + frameUrl + '): ' + data.path);
+                                }
                                 url = new core.SlingUrl(frameUrl);
                                 var displayMode = url.parameters ? url.parameters['pages.mode'] : undefined;
                                 if (!displayMode && pages.isEditMode()) {
@@ -103,7 +115,9 @@
                                         // trigger all necessary events after loading a different page
                                         pages.current.page = data.path;
                                         var eventData = [data.path, url.parameters];
-                                        console.log('frame.trigger.' + pages.const.event.page.selected + '(' + data.path + ')');
+                                        if (this.log.getLevel() <= log.levels.DEBUG) {
+                                            this.log.debug('frame.trigger.' + pages.const.event.page.selected + '(' + data.path + ')');
+                                        }
                                         $(document).trigger(pages.const.event.page.selected, eventData);
                                     }
                                 }
@@ -134,9 +148,13 @@
 
             selectSite: function (event, path) {
                 if (pages.current.site !== path) {
-                    console.log('pages.EditFrame.selectSite(' + path + ')');
+                    if (this.log.getLevel() <= log.levels.DEBUG) {
+                        this.log.debug('pages.EditFrame.selectSite(' + path + ')');
+                    }
                     pages.current.site = path;
-                    console.log('frame.trigger.' + pages.const.event.site.selected + '(' + path + ')');
+                    if (this.log.getLevel() <= log.levels.DEBUG) {
+                        this.log.debug('frame.trigger.' + pages.const.event.site.selected + '(' + path + ')');
+                    }
                     $(document).trigger(pages.const.event.site.selected, [path]);
                 }
                 this.selectPage(event, path);
@@ -144,13 +162,19 @@
 
             selectPage: function (event, path, parameters) {
                 if (pages.current.page !== path) {
-                    console.log('pages.EditFrame.selectPage(' + path + ')');
+                    if (this.log.getLevel() <= log.levels.DEBUG) {
+                        this.log.debug('pages.EditFrame.selectPage(' + path + ')');
+                    }
                     pages.current.page = path;
                     this.reloadPage(parameters);
-                    console.log('frame.trigger.' + pages.const.event.page.selected + '(' + path + ')');
+                    if (this.log.getLevel() <= log.levels.DEBUG) {
+                        this.log.debug('frame.trigger.' + pages.const.event.page.selected + '(' + path + ')');
+                    }
                     $(document).trigger(pages.const.event.page.selected, [path]);
                 } else {
-                    console.log('frame.trigger.' + pages.const.event.path.selected + '(' + path + ')');
+                    if (this.log.getLevel() <= log.levels.DEBUG) {
+                        this.log.debug('frame.trigger.' + pages.const.event.path.selected + '(' + path + ')');
+                    }
                     $(document).trigger(pages.const.event.path.selected, [path]);
                 }
             },
@@ -169,7 +193,9 @@
                         frameUrl.parameters['pages.locale'] = pages.current.locale;
                     }
                     frameUrl.build();
-                    console.log('pages.EditFrame.reloadPage(' + path + '): ' + frameUrl.url);
+                    if (this.log.getLevel() <= log.levels.DEBUG) {
+                        this.log.debug('pages.EditFrame.reloadPage(' + path + '): ' + frameUrl.url);
+                    }
                     pages.retryIfUnauthorized(_.bind(function () {
                         this.$frame.attr('src', frameUrl.url);
                     }, this), frameUrl.url);
@@ -177,12 +203,16 @@
             },
 
             reloadFrame: function () {
-                console.log('pages.EditFrame.reloadFrame()');
+                if (this.log.getLevel() <= log.levels.DEBUG) {
+                    this.log.debug('pages.EditFrame.reloadFrame()');
+                }
                 window.location.reload();
             },
 
             selectComponent: function (event, name, path, type) {
-                console.log('pages.EditFrame.selectComponent(' + path + ')');
+                if (this.log.getLevel() <= log.levels.DEBUG) {
+                    this.log.debug('pages.EditFrame.selectComponent(' + path + ')');
+                }
                 if (path) {
                     this.$frame[0].contentWindow.postMessage(pages.const.event.element.select
                         + JSON.stringify({name: name, path: path, type: type}), '*');
@@ -203,7 +233,9 @@
             },
 
             onComponentSelected: function (event, name, path, type) {
-                console.log('pages.EditFrame.onComponentSelected(' + path + ')');
+                if (this.log.getLevel() <= log.levels.DEBUG) {
+                    this.log.debug('pages.EditFrame.onComponentSelected(' + path + ')');
+                }
                 if (path) {
                     this.$frame[0].contentWindow.postMessage(pages.const.event.element.selected
                         + JSON.stringify({name: name, path: path, type: type}), '*');
@@ -215,7 +247,9 @@
 
             onComponentChanged: function (event, path) {
                 if (path) {
-                    console.log('pages.EditFrame.onComponentChanged(' + path + ')');
+                    if (this.log.getLevel() <= log.levels.DEBUG) {
+                        this.log.debug('pages.EditFrame.onComponentChanged(' + path + ')');
+                    }
                     if (path === pages.current.site) {
                         // FIXME this.reloadFrame();
                     } else if (path.indexOf(pages.current.page) === 0) {
@@ -226,7 +260,9 @@
 
             onComponentDeleted: function (event, path) {
                 if (path) {
-                    console.log('pages.EditFrame.onComponentDeleted(' + path + ')');
+                    if (this.log.getLevel() <= log.levels.DEBUG) {
+                        this.log.debug('pages.EditFrame.onComponentDeleted(' + path + ')');
+                    }
                     if (path === pages.current.site || path === pages.current.page) {
                         // FIXME this.reloadFrame();
                     } else if (path.indexOf(pages.current.page) === 0) {
