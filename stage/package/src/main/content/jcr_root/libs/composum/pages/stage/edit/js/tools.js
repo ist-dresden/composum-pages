@@ -142,7 +142,6 @@
                 tools.TabPanel.prototype.initialize.apply(this, [options]);
                 var e = pages.const.event;
                 $(document).on(e.path.select + '.Navigation', _.bind(this.selectPath, this));
-                $(document).on(e.ready + '.Navigation', _.bind(this.ready, this));
             },
 
             ready: function () {
@@ -171,13 +170,13 @@
 
                 }
                 if (path && type) {
-                    console.log('tools.Navigation.selectPath(' + path + ')');
+                    pages.log.debug('tools.Navigation.selectPath(' + path + ')');
                     // noinspection FallThroughInSwitchStatementJS
                     switch (type) {
                         case 'siteconfiguration':
                             path = core.getParentPath(path);
                         case 'site':
-                            console.log('tools.trigger.' + pages.const.event.site.select + '(' + path + ')');
+                            pages.log.debug('tools.trigger.' + pages.const.event.site.select + '(' + path + ')');
                             $(document).trigger(pages.const.event.site.select, [path]);
                             break;
                         case 'pagecontent':
@@ -185,12 +184,12 @@
                         case 'page':
                             if (path === pages.current.page) {
                                 // trigger a 'page select again' to adjust all tools
-                                console.log('tools.trigger.' + pages.const.event.page.selected + '(' + pages.current.page + ')');
+                                pages.log.debug('tools.trigger.' + pages.const.event.page.selected + '(' + pages.current.page + ')');
                                 $(document).trigger(pages.const.event.page.selected, [pages.current.page]);
-                                console.log('tools.trigger.' + pages.const.event.element.select + '()');
+                                pages.log.debug('tools.trigger.' + pages.const.event.element.select + '()');
                                 $(document).trigger(pages.const.event.element.select, []);
                             } else {
-                                console.log('tools.trigger.' + pages.const.event.page.select + '(' + path + ')');
+                                pages.log.debug('tools.trigger.' + pages.const.event.page.select + '(' + path + ')');
                                 $(document).trigger(pages.const.event.page.select, [path]);
                             }
                             break;
@@ -203,20 +202,20 @@
                                         path: path,
                                         type: type
                                     };
-                                    console.log('tools.trigger.' + pages.const.event.page.select + '(' + data.path + ')');
+                                    pages.log.debug('tools.trigger.' + pages.const.event.page.select + '(' + data.path + ')');
                                     $(document).trigger(pages.const.event.page.select, [data.path]);
                                 } else {
                                     // trigger a 'page select again' to adjust all tools
-                                    console.log('tools.trigger.' + pages.const.event.page.selected + '(' + pages.current.page + ')');
+                                    pages.log.debug('tools.trigger.' + pages.const.event.page.selected + '(' + pages.current.page + ')');
                                     $(document).trigger(pages.const.event.page.selected, [pages.current.page]);
-                                    console.log('tools.trigger.' + pages.const.event.element.select + '(' + path + ')');
+                                    pages.log.debug('tools.trigger.' + pages.const.event.element.select + '(' + path + ')');
                                     $(document).trigger(pages.const.event.element.select,
                                         [name, path, type]);
                                 }
                             }, this));
                             break;
                         default:
-                            console.log('tools.trigger.' + pages.const.event.path.selected + '(' + path + ')');
+                            pages.log.debug('tools.trigger.' + pages.const.event.path.selected + '(' + path + ')');
                             $(document).trigger(pages.const.event.path.selected, [path]);
                             break;
                     }
@@ -272,7 +271,7 @@
 
             selectSite: function () {
                 if (this.sitePath) {
-                    console.log('tools.trigger.' + pages.const.event.site.select + '(' + this.sitePath + ')');
+                    pages.log.debug('tools.trigger.' + pages.const.event.site.select + '(' + this.sitePath + ')');
                     $(document).trigger(pages.const.event.site.select, [this.sitePath]);
                 }
             },
@@ -351,12 +350,12 @@
             },
 
             onPageSelected: function (event, path, parameters) {
-                console.log('tools.Context.onPageSelected(' + path + ')');
+                pages.log.debug('tools.Context.onPageSelected(' + path + ')');
                 this.changeTools(undefined, path, undefined);
             },
 
             onComponentSelected: function (event, name, path, type) {
-                console.log('tools.Context.onComponentSelected(' + path + ')');
+                pages.log.debug('tools.Context.onComponentSelected(' + path + ')');
                 this.changeTools(name, path, type);
             },
 

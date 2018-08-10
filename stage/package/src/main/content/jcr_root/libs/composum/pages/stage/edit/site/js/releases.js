@@ -75,7 +75,7 @@
                             if (pages.elements) {
                                 pages.elements.triggerEvent(pages.const.event.site.changed, [this.sitePath]);
                             } else {
-                                console.log('site.trigger.' + pages.const.event.site.changed + '(' + this.sitePath + ')');
+                                pages.log.debug('site.trigger.' + pages.const.event.site.changed + '(' + this.sitePath + ')');
                                 $(document).trigger(pages.const.event.site.changed, [this.sitePath]);
                             }
                         }, this), _.bind(function (result) {

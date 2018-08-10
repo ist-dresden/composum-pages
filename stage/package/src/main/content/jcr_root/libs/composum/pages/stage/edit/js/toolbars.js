@@ -183,7 +183,7 @@
             onPageSelected: function (event, path) {
                 if (path) {
                     if (this.currentPage !== path) {
-                        console.log('toolbars.PageToolbar.onPageSelected(' + path + ')');
+                        pages.log.debug('toolbars.PageToolbar.onPageSelected(' + path + ')');
                         core.ajaxGet(toolbars.const.pageViewActionsUri + path, {},
                             _.bind(function (data) {
                                 this.$view.html(data);
@@ -212,7 +212,7 @@
                 if (!path) {
                     path = this.currentPage;
                 }
-                console.log('toolbars.PageToolbar.onComponentSelected(' + path + ')');
+                pages.log.debug('toolbars.PageToolbar.onComponentSelected(' + path + ')');
                 if (path) {
                     this.loadComponentToolbar(path, type);
                 }

@@ -24,6 +24,9 @@
             },
 
             onPathSelectedFailed: function (path) {
+                if (this.log.getLevel() <= log.levels.DEBUG) {
+                    this.log.debug(this.nodeIdPrefix + 'tree.onPathSelectedFailed(' + path + ')');
+                }
                 var node = this.getSelectedTreeNode();
                 while (!node && (path = core.getParentPath(path)) && path !== '/') {
                     var busy = this.busy;
@@ -214,7 +217,7 @@
                         return;
                     }
                 }
-                console.log(this.treePanelId + '.onPathSelected(' + path + ') <- ' + treePath);
+                pages.log.debug(this.treePanelId + '.onPathSelected(' + path + ') <- ' + treePath);
                 if (!path) {
                     this.doSelectDefaultNode();
                 } else if (path === treePath) {

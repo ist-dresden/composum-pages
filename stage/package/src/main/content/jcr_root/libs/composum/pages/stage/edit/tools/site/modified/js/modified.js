@@ -53,7 +53,7 @@
                     this.$previewEntry = $listEntry;
                     $('body').addClass('context-driven-view');
                     $listEntry.addClass('selected');
-                    console.log('site.trigger.' + pages.const.event.page.view + '(' + path + ',preview)');
+                    pages.log.debug('site.trigger.' + pages.const.event.page.view + '(' + path + ',preview)');
                     $(document).trigger(pages.const.event.page.view, [path, {'pages.mode': 'preview'}]);
                 }
             },
@@ -63,7 +63,7 @@
                     $('body').removeClass('context-driven-view');
                     this.$previewEntry.removeClass('selected');
                     this.$previewEntry = [];
-                    console.log('site.trigger.' + pages.const.event.page.view + '()');
+                    pages.log.debug('site.trigger.' + pages.const.event.page.view + '()');
                     $(document).trigger(pages.const.event.page.view, [null, {}]);
                 }
             },

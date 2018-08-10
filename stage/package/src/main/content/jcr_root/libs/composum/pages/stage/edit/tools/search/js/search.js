@@ -120,7 +120,7 @@
                 var $el = $(event.currentTarget);
                 var path = $el.data('path');
                 if (path) {
-                    console.log('search.trigger.' + pages.const.event.page.select + '(' + path + ')');
+                    pages.log.debug('search.trigger.' + pages.const.event.page.select + '(' + path + ')');
                     $(document).trigger(pages.const.event.page.select, [path]);
                 }
                 return false;

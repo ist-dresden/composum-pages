@@ -128,6 +128,8 @@
             }
         });
 
+        pages.log = log.getLogger("pages");
+
         pages.profile = {
 
             aspectBase: 'composum.pages.',
@@ -211,7 +213,7 @@
             }
             if (triggerEvent) {
                 var e = pages.const.event.scope;
-                console.log('pages.trigger.' + e.changed + '(' + scope + ')');
+                pages.log.debug('pages.trigger.' + e.changed + '(' + scope + ')');
                 $(document).trigger(e.changed, [scope]);
             }
         };
@@ -329,30 +331,30 @@
                     case pages.const.event.element.selected:
                         // transform selection messages into the corresponding event for the edit frame components
                         if (args.path) {
-                            console.log('pages.trigger.' + pages.const.event.path.selected + '(' + args.path + ')');
+                            pages.log.debug('pages.trigger.' + pages.const.event.path.selected + '(' + args.path + ')');
                             $(document).trigger(pages.const.event.path.selected, [args.path]);
                             var eventData = [
                                 args.name,
                                 args.path,
                                 args.type
                             ];
-                            console.log('pages.trigger.' + pages.const.event.element.selected + '(' + args.path + ')');
+                            pages.log.debug('pages.trigger.' + pages.const.event.element.selected + '(' + args.path + ')');
                             $(document).trigger(pages.const.event.element.selected, eventData);
                         } else {
-                            console.log('pages.trigger.' + pages.const.event.path.selected + '()');
+                            pages.log.debug('pages.trigger.' + pages.const.event.path.selected + '()');
                             $(document).trigger(pages.const.event.path.selected, []);
-                            console.log('pages.trigger.' + pages.const.event.element.selected + '()');
+                            pages.log.debug('pages.trigger.' + pages.const.event.element.selected + '()');
                             $(document).trigger(pages.const.event.element.selected, []);
                         }
                         break;
                     case pages.const.event.page.containerRefs:
                         // forward container references list to the edit frame components
-                        console.log('pages.event.' + pages.const.event.page.containerRefs + '(' + message[2] + ')');
+                        pages.log.trace('pages.event.' + pages.const.event.page.containerRefs + '(' + message[2] + ')');
                         $(document).trigger(pages.const.event.page.containerRefs, [args]);
                         break;
                     case pages.const.event.element.insert:
                         // apply insert action messages from the edited page
-                        console.log('pages.event.element.insert(' + message[2] + ')');
+                        pages.log.info('pages.event.element.insert(' + message[2] + ')');
                         if (args.type && args.target) {
                             core.ajaxPost(pages.const.url.edit.insert + args.target.path, {
                                 elementType: args.type,
@@ -367,7 +369,7 @@
                         break;
                     case pages.const.event.element.move:
                         // apply move action messages from the edited page
-                        console.log('pages.event.element.move(' + message[2] + ')');
+                        pages.log.info('pages.event.element.move(' + message[2] + ')');
                         if (args.source && args.target) {
                             core.ajaxPost(pages.const.url.edit.move + args.source, {
                                 targetPath: args.target.path,
@@ -382,7 +384,7 @@
                         break;
                     case pages.const.event.dialog.edit:
                         // opens an edit dialog to perform editing of the content of the path transmitted
-                        console.log('pages.event.dialog.edit(' + message[2] + ')');
+                        pages.log.trace('pages.event.dialog.edit(' + message[2] + ')');
                         if (args.target) {
                             var url = undefined;
                             if (args.dialog) {
@@ -398,12 +400,12 @@
                         break;
                     case pages.const.event.trigger:
                         // triggers an event in the frame document context
-                        console.log('pages.event.' + args.event + '(' + message[2] + ')');
+                        pages.log.debug('pages.event.' + args.event + '(' + message[2] + ')');
                         $(document).trigger(args.event, args.data);
                         break;
                     case pages.const.event.dialog.alert:
                         // displays an alert message by opening an alert dialog
-                        console.log('pages.event.dialog.alert(' + message[2] + ')');
+                        pages.log.trace('pages.event.dialog.alert(' + message[2] + ')');
                         core.alert(args.type, args.title, args.message, args.data);
                         break;
                 }
