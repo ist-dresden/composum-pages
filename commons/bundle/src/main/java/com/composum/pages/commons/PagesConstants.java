@@ -121,6 +121,7 @@ public interface PagesConstants {
 
     String PROP_CREATION_DATE = "jcr:created";
     String PROP_LAST_MODIFIED = ResourceUtil.PROP_LAST_MODIFIED;
+    String PROP_LAST_MODIFIED_BY = "jcr:lastModifiedBy";
     String TIMESTAMP_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
     /** */

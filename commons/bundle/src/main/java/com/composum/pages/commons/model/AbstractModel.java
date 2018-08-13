@@ -656,4 +656,16 @@ public abstract class AbstractModel implements SlingBean, Model {
         }
         return versionsService;
     }
+
+    // Object
+
+    @Override
+    public int hashCode() {
+        return getPath().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return other instanceof Model && ((Model) other).getPath().equals(getPath());
+    }
 }
