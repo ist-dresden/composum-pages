@@ -15,7 +15,7 @@ public class FrameComponent extends Component {
 
     @Override
     protected Resource determineResource(Resource initialResource) {
-        String path = FrameElement.getElementPath(context);
+        String path = FrameModel.getDelegatePath(context);
         Resource frameResource = resolver.resolve(path);
         return super.determineResource(frameResource != null ? frameResource : initialResource);
     }

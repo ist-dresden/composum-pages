@@ -17,10 +17,11 @@ import org.apache.sling.api.resource.ResourceResolver;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static com.composum.pages.commons.PagesConstants.NODE_TYPE_COMPONENT;
 import static com.composum.pages.commons.servlet.EditServlet.EDIT_RESOURCE_TYPE_KEY;
 
 /**
- * the model class for a component itself (the implementation)
+ * the delegate class for a component itself (the implementation)
  */
 @PropertyDetermineResourceStrategy(Component.TypeResourceStrategy.class)
 public class Component extends AbstractModel {
@@ -33,7 +34,14 @@ public class Component extends AbstractModel {
     );
 
     /**
-     * the model of the components dialog implemented as a 'subcomponent'
+     * check the 'cpp:Page' type for a resource
+     */
+    public static boolean isComponent(Resource resource) {
+        return ResourceUtil.isResourceType(resource, NODE_TYPE_COMPONENT);
+    }
+
+    /**
+     * the delegate of the components dialog implemented as a 'subcomponent'
      */
     public class EditDialog extends AbstractModel {
 
@@ -77,7 +85,7 @@ public class Component extends AbstractModel {
     }
 
     /**
-     * the model of the components tile implemented as a 'subcomponent'
+     * the delegate of the components tile implemented as a 'subcomponent'
      */
     public class EditTile extends AbstractModel {
 
@@ -94,7 +102,7 @@ public class Component extends AbstractModel {
     private transient EditDialog editDialog;
     private transient EditTile editTile;
 
-    /** model initialization */
+    /** delegate initialization */
 
     public Component() {
     }

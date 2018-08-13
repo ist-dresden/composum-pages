@@ -4,7 +4,7 @@
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <cpp:defineFrameObjects/>
-<cpp:element var="site" type="com.composum.pages.stage.model.edit.site.SiteElement" mode="none"
+<cpp:element var="site" type="com.composum.pages.stage.model.edit.site.SiteModel" mode="none"
              cssBase="composum-pages-stage-edit-site-releases" data-path="@{site.site.path}">
     <div class="composum-pages-tools_actions btn-toolbar">
         <div class="composum-pages-tools_left-actions">

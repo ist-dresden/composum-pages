@@ -9,10 +9,10 @@ import java.util.Locale;
 
 public class ModelWrapper implements Model {
 
-    protected Model model;
+    protected Model delegate;
 
     public ModelWrapper(Model model) {
-        this.model = model;
+        this.delegate = model;
     }
 
     protected ModelWrapper() {
@@ -22,117 +22,125 @@ public class ModelWrapper implements Model {
     @Override
     @Deprecated
     public void initialize(BeanContext context, Resource resource) {
-        model.initialize(context, resource);
+        delegate.initialize(context, resource);
     }
 
     /** @deprecated the normal instantiation mechanism is by using the constructor. */
     @Override
     @Deprecated
     public void initialize(BeanContext context) {
-        model.initialize(context);
+        delegate.initialize(context);
+    }
+
+    public Model getDelegate() {
+        return delegate;
+    }
+
+    public void setDelegate(Model model) {
+        this.delegate = model;
     }
 
     //
 
     public BeanContext getContext() {
-        return model.getContext();
+        return delegate.getContext();
     }
 
     public Resource getResource() {
-        return model.getResource();
+        return delegate.getResource();
     }
 
     public String getPath() {
-        return model.getPath();
+        return delegate.getPath();
     }
 
     public String getName() {
-        return model.getName();
+        return delegate.getName();
     }
 
     public String getType() {
-        return model.getType();
+        return delegate.getType();
     }
 
     public String getPathHint() {
-        return model.getPathHint();
+        return delegate.getPathHint();
     }
 
     public String getTypeHint() {
-        return model.getTypeHint();
+        return delegate.getTypeHint();
     }
 
     //
 
     public String getTitle() {
-        return model.getTitle();
+        return delegate.getTitle();
     }
 
     public String getDescription() {
-        return model.getDescription();
+        return delegate.getDescription();
     }
 
     // component
 
     public Component getComponent() {
-        return model.getComponent();
+        return delegate.getComponent();
     }
 
     public PagesConstants.ComponentType getComponentType() {
-        return model.getComponentType();
+        return delegate.getComponentType();
     }
 
     // Sites & Pages
 
     public Page getCurrentPage() {
-        return model.getCurrentPage();
+        return delegate.getCurrentPage();
     }
 
     public Page getContainingPage() {
-        return model.getContainingPage();
+        return delegate.getContainingPage();
     }
 
     //
 
     public String getUrl() {
-        return model.getUrl();
+        return delegate.getUrl();
     }
 
     public String getCssBase() {
-        return model.getCssBase();
+        return delegate.getCssBase();
     }
 
     // properties & i18n
 
     public Language getLanguage() {
-        return model.getLanguage();
+        return delegate.getLanguage();
     }
 
     // resource properties
 
     public <T> T getProperty(String key, T defaultValue) {
-        return model.getProperty(key, defaultValue);
+        return delegate.getProperty(key, defaultValue);
     }
 
     public <T> T getProperty(String key, Class<T> type) {
-        return model.getProperty(key, type);
+        return delegate.getProperty(key, type);
     }
 
     public <T> T getProperty(Locale locale, T defaultValue, String... keys) {
-        return model.getProperty(locale, defaultValue, keys);
+        return delegate.getProperty(locale, defaultValue, keys);
     }
 
     // inherited properties
 
     public <T> T getInherited(String key, T defaultValue) {
-        return model.getInherited(key, defaultValue);
+        return delegate.getInherited(key, defaultValue);
     }
 
     public <T> T getInherited(String key, Class<T> type) {
-        return model.getInherited(key, type);
+        return delegate.getInherited(key, type);
     }
 
     public <T> T getInherited(Locale locale, T defaultValue, String... keys) {
-        return model.getInherited(locale, defaultValue, keys);
+        return delegate.getInherited(locale, defaultValue, keys);
     }
 }

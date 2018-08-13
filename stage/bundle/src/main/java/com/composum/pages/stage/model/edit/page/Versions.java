@@ -3,6 +3,7 @@ package com.composum.pages.stage.model.edit.page;
 import com.composum.sling.core.filter.StringFilter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.api.JackrabbitSession;
+import org.apache.sling.api.resource.ResourceResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,7 +18,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-public class Versions extends PageElement {
+public class Versions extends PageModel {
 
     private static final Logger LOG = LoggerFactory.getLogger(Versions.class);
 
@@ -87,6 +88,7 @@ public class Versions extends PageElement {
     public VersionManager getVersionManager() {
         if (versionManager == null) {
             try {
+                ResourceResolver resolver = getDelegate().getContext().getResolver();
                 final JackrabbitSession session = (JackrabbitSession) resolver.adaptTo(Session.class);
                 versionManager = session.getWorkspace().getVersionManager();
             } catch (RepositoryException rex) {

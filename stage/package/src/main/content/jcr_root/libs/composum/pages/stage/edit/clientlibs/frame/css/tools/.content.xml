@@ -8,5 +8,6 @@
             composum/pages/stage/edit/tools/page/versions/css/versions.css,
             jslibs/chartist/0.11.0/chartist.css,
             composum/pages/stage/edit/tools/page/statistics/css/statistics.css,
+            composum/pages/stage/edit/tools/container/elements/css/elements.css,
             composum/pages/stage/edit/tools/dev/component/css/component.css
         ]"/>

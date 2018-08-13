@@ -3,7 +3,7 @@
 --%><%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %><%--
 --%><%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%><%--
 --%><cpp:defineFrameObjects/>
-<cpp:element var="components" type="com.composum.pages.stage.model.edit.FrameElement" mode="none"
+<cpp:element var="components" type="com.composum.pages.stage.model.edit.page.Components" mode="none"
              cssAdd="composum-pages-tools">
     <div class="composum-pages-tools_actions btn-toolbar">
         <div class="composum-pages-tools_left-actions">
@@ -31,7 +31,7 @@
             </div>
         </div>
     </div>
-    <div class="composum-pages-tools_search-panel">
+    <div class="composum-pages-tools_panel">
         <div class="${componentsCssBase}_components-view"></div>
     </div>
 </cpp:element>

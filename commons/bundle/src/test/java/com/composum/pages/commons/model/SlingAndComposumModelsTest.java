@@ -3,7 +3,6 @@ package com.composum.pages.commons.model;
 import com.composum.sling.core.AbstractSlingBean;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.SlingBean;
-import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.resourcebuilder.api.ResourceBuilder;
 import org.apache.sling.testing.mock.sling.ResourceResolverType;
@@ -50,7 +49,7 @@ public class SlingAndComposumModelsTest {
         GenericModel model = bc.adaptTo(GenericModel.class);
         assertNotNull(model);
         assertSame(resource, model.getResource());
-        assertTrue(model.model instanceof Element);
+        assertTrue(model.delegate instanceof Element);
     }
 
     @Test

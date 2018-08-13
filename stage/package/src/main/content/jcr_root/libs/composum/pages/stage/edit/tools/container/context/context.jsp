@@ -1,9 +1,8 @@
-<%@page session="false" pageEncoding="UTF-8"%><%--
---%><%@taglib prefix="sling" uri="http://sling.apache.org/taglibs/sling/1.2" %><%--
---%><%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %><%--
---%><%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%><%--
---%><cpp:defineFrameObjects/>
-<cpp:element var="context" type="com.composum.pages.stage.model.edit.FramePage" mode="none"
+<%@page session="false" pageEncoding="UTF-8"%>
+<%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
+<%@taglib prefix="cpn" uri="http://sling.composum.com/cpnl/1.0" %>
+<cpp:defineFrameObjects/>
+<cpp:element var="context" type="com.composum.pages.stage.model.edit.FrameModel" mode="none"
                cssClasses="composum-pages-tools">
     <div class="composum-pages-tools_actions btn-toolbar">
         <div class="composum-pages-tools_left-actions">
@@ -19,6 +18,8 @@
     </div>
     <div class="composum-pages-tools_panel">
         <div class="${contextCssBase}_container-context">
+            <cpn:text tagName="h5" tagClass="${contextCssBase}_elements-title" i18n="true">Elements</cpn:text>
+            <cpp:include resourceType="composum/pages/stage/edit/tools/container/elements"/>
         </div>
     </div>
 </cpp:element>
