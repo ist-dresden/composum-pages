@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
         jcr:primaryType="nt:unstructured"
+        jcr:description="the tools collection declaration for all tools shipped with Composum Pages"
         sling:resourceType="composum/pages/tools/collection">
     <userView
             jcr:primaryType="nt:unstructured"

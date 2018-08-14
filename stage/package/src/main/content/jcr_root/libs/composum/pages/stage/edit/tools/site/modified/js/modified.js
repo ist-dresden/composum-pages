@@ -54,7 +54,7 @@
                     $('body').addClass('context-driven-view');
                     $listEntry.addClass('selected');
                     pages.log.debug('site.trigger.' + pages.const.event.page.view + '(' + path + ',preview)');
-                    $(document).trigger(pages.const.event.page.view, [path, {'pages.mode': 'preview'}]);
+                    $(document).trigger(pages.const.event.page.view, [path, {'pages.view': 'preview'}]);
                 }
             },
 

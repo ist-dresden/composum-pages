@@ -2,7 +2,7 @@
 <jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
         jcr:primaryType="nt:unstructured"
         sling:resourceType="composum/pages/stage/home"
-        jcr:description=""
+        jcr:description="the Composum Pages home page as an universal landing point"
         pageHeadline="Composum Pages"
         pageSubheadline="an Apache Sling based CMS solution"
         title="Your Sites"

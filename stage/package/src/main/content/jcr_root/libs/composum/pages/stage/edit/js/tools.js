@@ -365,7 +365,7 @@
                     path = pages.current.page;
                 }
                 if (path) {
-                    core.ajaxGet(tools.const.contextLoadUrl + path + '?pages.mode=' + pages.current.mode, {
+                    core.ajaxGet(tools.const.contextLoadUrl + path + '?pages.view=' + pages.current.mode, {
                             data: {
                                 type: type
                             }

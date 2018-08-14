@@ -202,6 +202,14 @@ public class PagesPageManager extends PagesContentManager<Page> implements PageM
     }
 
     @Override
+    public void touch(@Nonnull BeanContext context, @Nonnull Resource resource, @Nullable Calendar time, boolean commit) {
+        Page page = getContainingPage(context, resource);
+        if (page != null) {
+            touch(context, page, time, commit);
+        }
+    }
+
+    @Override
     public void touch(@Nonnull BeanContext context, @Nonnull Page page, @Nullable Calendar time, boolean commit) {
         PageContent content = page.getContent();
         if (content != null) {
@@ -209,8 +217,8 @@ public class PagesPageManager extends PagesContentManager<Page> implements PageM
                 time = new GregorianCalendar();
                 time.setTimeInMillis(System.currentTimeMillis());
             }
-            Resource resource = content.getResource();
-            ModifiableValueMap values = resource.adaptTo(ModifiableValueMap.class);
+            Resource contentResource = content.getResource();
+            ModifiableValueMap values = contentResource.adaptTo(ModifiableValueMap.class);
             values.put(PagesConstants.PROP_LAST_MODIFIED, time);
             Session session = context.getResolver().adaptTo(Session.class);
             if (session != null) {

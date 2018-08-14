@@ -18,7 +18,7 @@ import java.util.Map;
 import static com.composum.pages.commons.PagesConstants.ACCESS_MODE_ATTR;
 import static com.composum.pages.commons.PagesConstants.ACCESS_MODE_REQ_PARAM;
 import static com.composum.pages.commons.PagesConstants.DISPLAY_MODE_ATTR;
-import static com.composum.pages.commons.PagesConstants.DISPLAY_MODE_REQ_PARAM;
+import static com.composum.pages.commons.PagesConstants.DISPLAY_MODE_VIEW_PARAM;
 import static com.composum.pages.commons.PagesConstants.LOCALE_REQUEST_PARAM;
 import static com.composum.pages.commons.PagesConstants.PAGES_LOCALE_ATTR;
 
@@ -176,7 +176,7 @@ public class RequestAspectAdapterFactory implements AdapterFactory {
 
         @Override
         public DisplayMode createFromRequest(SlingHttpServletRequest request, String key) {
-            String parameter = request.getParameter(DISPLAY_MODE_REQ_PARAM);
+            String parameter = request.getParameter(DISPLAY_MODE_VIEW_PARAM);
             DisplayMode.Value value = DisplayMode.Value.displayModeValue(parameter, DisplayMode.Value.NONE);
             return new DisplayMode(value);
         }

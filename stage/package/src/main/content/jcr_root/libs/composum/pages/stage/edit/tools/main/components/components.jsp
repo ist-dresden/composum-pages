@@ -23,12 +23,6 @@
                            title="Shoe all components">Eelements</a></li>
                 </ul>
             </div>
-            <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
-                <button type="button"
-                        class="fa fa-search ${componentsCssBase}_search composum-pages-tools_button btn btn-default"
-                        title="Search a page"><span
-                        class="composum-pages-tools_button-label">Search</span></button>
-            </div>
         </div>
     </div>
     <div class="composum-pages-tools_panel">

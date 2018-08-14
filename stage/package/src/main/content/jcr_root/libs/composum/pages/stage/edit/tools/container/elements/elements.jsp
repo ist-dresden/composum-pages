@@ -7,7 +7,7 @@
     <ul class="${modelCssBase}_list">
         <c:forEach items="${model.elements}" var="element" varStatus="loop">
             <li class="${modelCssBase}_element">
-                <input type="checkbox" class="${modelCssBase}_element-select"/>
+                <!--<input type="checkbox" class="${modelCssBase}_element-select"/-->
                 <cpp:include resource="${element.resource}" subtype="edit/tile"/>
             </li>
         </c:forEach>

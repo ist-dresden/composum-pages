@@ -33,7 +33,8 @@ public interface PagesConstants {
     /** request aspects */
 
     String ACCESS_MODE_REQ_PARAM = PlatformAccessFilter.ACCESS_MODE_PARAM;
-    String DISPLAY_MODE_REQ_PARAM = "pages.mode";
+    String DISPLAY_MODE_SELECT_PARAM = "pages.mode";
+    String DISPLAY_MODE_VIEW_PARAM = "pages.view";
     String LOCALE_REQUEST_PARAM = "pages.locale";
 
     String ACCESS_MODE_ATTR = PlatformAccessFilter.ACCESS_MODE_KEY;

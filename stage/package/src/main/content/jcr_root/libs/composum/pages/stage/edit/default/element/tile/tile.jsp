@@ -6,7 +6,7 @@
 <cpp:element var="element" type="com.composum.pages.commons.model.GenericModel"
              cssBase="composum-pages-component-tile">
     <sling:call script="icon.jsp"/>
-    <cpn:text value="${element.title}" tagClass="${elementCssBase}_title"/>
+    <div class="${elementCssBase}_title">${cpn:text(element.title)}</div>
     <cpn:text value="${element.name}" format="{Message}({0})" tagClass="${elementCssBase}_name"/>
     <cpn:text value="${element.pathHint}${element.name}" tagClass="${elementCssBase}_path"/>
     <cpn:text value="${element.component.typeHint}" tagClass="${elementCssBase}_type"/>

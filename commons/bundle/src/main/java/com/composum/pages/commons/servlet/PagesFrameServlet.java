@@ -14,7 +14,7 @@ import javax.servlet.http.HttpSession;
 import java.util.regex.Pattern;
 
 import static com.composum.pages.commons.PagesConstants.DISPLAY_MODE_ATTR;
-import static com.composum.pages.commons.PagesConstants.DISPLAY_MODE_REQ_PARAM;
+import static com.composum.pages.commons.PagesConstants.DISPLAY_MODE_SELECT_PARAM;
 import static com.composum.pages.commons.PagesConstants.PAGES_FRAME_PATH;
 
 /**
@@ -33,8 +33,6 @@ public class PagesFrameServlet extends AbstractConsoleServlet {
     public static final String CONSOLE_PATH = "/libs/composum/pages/stage/edit/console/content";
 
     public static final Pattern PATH_PATTERN = Pattern.compile("^(" + PAGES_FRAME_PATH + "(\\.[^/]+)?\\.html)(/.*)?$");
-
-    public static final String DISPLAY_MODE_SWITCH_PARAM = DISPLAY_MODE_REQ_PARAM + ".switch";
 
     protected Pattern getPathPattern(BeanContext context) {
         return PATH_PATTERN;
@@ -56,14 +54,14 @@ public class PagesFrameServlet extends AbstractConsoleServlet {
     }
 
     /**
-     * manages the display mode of the frame controlled by the 'pages.mode.switch' parameter;
+     * manages the display mode of the frame controlled by the 'pages.mode' parameter;
      * the selected mode is stored in the session and used up to the next switch
      */
     protected DisplayMode.Value getDisplayMode(BeanContext context) {
         SlingHttpServletRequest request = context.getRequest();
         HttpSession session = request.getSession(true);
         DisplayMode.Value modeSwitch = DisplayMode.Value.displayModeValue(
-                request.getParameter(DISPLAY_MODE_SWITCH_PARAM), null);
+                request.getParameter(DISPLAY_MODE_SELECT_PARAM), null);
         if (modeSwitch != null) {
             session.setAttribute(DISPLAY_MODE_ATTR, modeSwitch.name());
             return modeSwitch;

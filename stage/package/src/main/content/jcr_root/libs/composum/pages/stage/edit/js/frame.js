@@ -104,7 +104,7 @@
                                     this.log.debug('pages.EditFrame.onFrameLoad(' + frameUrl + '): ' + data.path);
                                 }
                                 url = new core.SlingUrl(frameUrl);
-                                var displayMode = url.parameters ? url.parameters['pages.mode'] : undefined;
+                                var displayMode = url.parameters ? url.parameters['pages.view'] : undefined;
                                 if (!displayMode && pages.isEditMode()) {
                                     // reload with the right display mode if no mode specified in the URL
                                     // this is generally happens if the content navigation is used
@@ -186,8 +186,8 @@
                     if (parameters) {
                         frameUrl.parameters = parameters;
                     }
-                    if (!frameUrl.parameters['pages.mode']) {
-                        frameUrl.parameters['pages.mode'] = pages.current.mode.toLowerCase();
+                    if (!frameUrl.parameters['pages.view']) {
+                        frameUrl.parameters['pages.view'] = pages.current.mode.toLowerCase();
                     }
                     if (!frameUrl.parameters['pages.locale']) {
                         frameUrl.parameters['pages.locale'] = pages.current.locale;

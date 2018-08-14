@@ -14,7 +14,7 @@
     &_element {
         position: relative;
         margin: 0 0 $tools-pane-padding;
-        padding: 0 0 0 20px;
+        padding: 0 0 0 0; //0 0 0 20px;
 
         &:last-child {
             margin-bottom: 0;

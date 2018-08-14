@@ -30,7 +30,7 @@
 
             toogleDevelopMode: function () {
                 window.location.href = window.location.pathname
-                    + "?pages.mode.switch=" + (this.isDevelopMode ? 'edit' : 'develop');
+                    + "?pages.mode=" + (this.isDevelopMode ? 'edit' : 'develop');
             }
         });
 

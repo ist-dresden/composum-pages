@@ -198,6 +198,8 @@
     &_icon,
     &_title {
         display: inline-block;
+        height: 24px;
+        line-height: 24px;
     }
 
     &_name {
@@ -220,7 +222,6 @@
 
     &_icon {
         vertical-align: top;
-        margin-top: 3px;
         width: 30px;
     }
 }

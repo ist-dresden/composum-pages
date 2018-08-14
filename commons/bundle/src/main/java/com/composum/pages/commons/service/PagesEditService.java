@@ -3,6 +3,7 @@ package com.composum.pages.commons.service;
 import com.composum.pages.commons.PagesConstants;
 import com.composum.pages.commons.model.ElementTypeFilter;
 import com.composum.pages.commons.util.ResolverUtil;
+import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.util.ResourceUtil;
 import com.composum.sling.platform.staging.query.Query;
 import com.composum.sling.platform.staging.query.QueryBuilder;
@@ -39,6 +40,9 @@ public class PagesEditService implements EditService {
 
     @Reference
     protected ResourceManager resourceManager;
+
+    @Reference
+    protected PageManager pageManager;
 
     //
     // hierarchy management for the page content
@@ -138,9 +142,10 @@ public class PagesEditService implements EditService {
                                 ResourceManager.ResourceReference target, Resource before)
             throws RepositoryException, PersistenceException {
 
+        BeanContext context = new BeanContext.Service(resolver);
+
         // use the containers collection (can be the target itself) to move the source into
         Resource collection = getContainerCollection(resolver, target);
-        Session session = resolver.adaptTo(Session.class);
 
         int lastSlash = resourceType.lastIndexOf('/');
         String name = resourceType.substring(lastSlash + 1);
@@ -164,7 +169,9 @@ public class PagesEditService implements EditService {
         properties.put(JcrConstants.JCR_PRIMARYTYPE, primaryType);
         properties.put(ResourceUtil.PROP_RESOURCE_TYPE, resourceType);
         resolver.create(collection, newName, properties);
+        pageManager.touch(context, collection, null, false);
 
+        Session session = resolver.adaptTo(Session.class);
         if (StringUtils.isNotBlank(siblingName)) {
             // move to the designated position in the target collection
             session.refresh(true);
@@ -224,8 +231,13 @@ public class PagesEditService implements EditService {
                                   Resource source, ResourceManager.ResourceReference targetParent, Resource before)
             throws RepositoryException, PersistenceException {
 
+        BeanContext context = new BeanContext.Service(resolver);
+
         // use the containers collection (can be the target itself) to move the source into
         Resource collection = getContainerCollection(resolver, targetParent);
-        return resourceManager.moveContentResource(resolver, changeRoot, source, collection, null, before);
+        Resource result = resourceManager.moveContentResource(resolver, changeRoot, source, collection, null, before);
+        pageManager.touch(context, source, null, false);
+        pageManager.touch(context, collection, null, false);
+        return result;
     }
 }
