@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+        jcr:language="de"
+        jcr:mixinTypes="[mix:language]"
+        jcr:primaryType="sling:Folder"
+        sling:basename="composum-pages">
+
+    <general jcr:primaryType="sling:Folder">
+
+        <medium jcr:primaryType="sling:MessageEntry"
+                sling:key="medium" sling:message="mittel"/>
+    </general>
+
+    <element jcr:primaryType="sling:Folder"><!-- element labels -->
+
+        <create-teaser jcr:primaryType="sling:MessageEntry"
+                sling:key="Create a Teaser" sling:message="Teaser hinzufügen"/>
+        <edit-annotation jcr:primaryType="sling:MessageEntry"
+                sling:key="Edit Annotation" sling:message="Anmerkung bearbeiten"/>
+        <edit-container jcr:primaryType="sling:MessageEntry"
+                sling:key="Edit Container" sling:message="Container bearbeiten"/>
+        <edit-image jcr:primaryType="sling:MessageEntry"
+                sling:key="Edit Image" sling:message="Bild bearbeiten"/>
+        <edit-teaser jcr:primaryType="sling:MessageEntry"
+                sling:key="Edit Teaser" sling:message="Teaser bearbeiten"/>
+        <edit-text-image jcr:primaryType="sling:MessageEntry"
+                sling:key="Edit Text and Image" sling:message="Text und Bild bearbeiten"/>
+        <parsys jcr:primaryType="sling:MessageEntry"
+                sling:key="Paragraph System" sling:message="Paragraphensystem"/>
+        <textimage jcr:primaryType="sling:MessageEntry"
+                sling:key="Text &amp; Image" sling:message="Text &amp; Bild"/>
+    </element>
+
+    <property jcr:primaryType="sling:Folder"><!-- some property labels -->
+
+        <alignment jcr:primaryType="sling:MessageEntry"
+                sling:key="Alignment" sling:message="Ausrichtung"/>
+        <alt-text jcr:primaryType="sling:MessageEntry"
+                sling:key="Alt Text" sling:message="Alternativer Text"/>
+        <annotation jcr:primaryType="sling:MessageEntry"
+                sling:key="Annotation" sling:message="Anmerkung"/>
+        <column jcr:primaryType="sling:MessageEntry"
+                sling:key="Column" sling:message="Spalte"/>
+        <content jcr:primaryType="sling:MessageEntry"
+                sling:key="Content" sling:message="Inhalt"/>
+        <default-language jcr:primaryType="sling:MessageEntry"
+                sling:key="Default Language" sling:message="Standardsprache"/>
+        <description jcr:primaryType="sling:MessageEntry"
+                sling:key="Description" sling:message="Beschreibung"/>
+        <float-text jcr:primaryType="sling:MessageEntry"
+                sling:key="Floating Text" sling:message="Umfließender Text"/>
+        <languages jcr:primaryType="sling:MessageEntry"
+                sling:key="Languages" sling:message="Sprachen"/>
+        <language jcr:primaryType="sling:MessageEntry"
+                sling:key="Language" sling:message="Sprache"/>
+        <ignore-in-search jcr:primaryType="sling:MessageEntry"
+                sling:key="Ignore in Search" sling:message="in der Suche ignorieren"/>
+        <image-pos jcr:primaryType="sling:MessageEntry"
+                sling:key="Image Position" sling:message="Bildposition"/>
+        <hide-in-nav jcr:primaryType="sling:MessageEntry"
+                sling:key="Hide in Navigation" sling:message="in der Navigation verbergen"/>
+        <list jcr:primaryType="sling:MessageEntry"
+                sling:key="List" sling:message="Liste"/>
+        <nav-title jcr:primaryType="sling:MessageEntry"
+                sling:key="Navigation Title" sling:message="Navigationstitel"/>
+        <next jcr:primaryType="sling:MessageEntry"
+                sling:key="Next" sling:message="Weiter"/>
+        <offset jcr:primaryType="sling:MessageEntry"
+                sling:key="Offset" sling:message="Versatz"/>
+        <open jcr:primaryType="sling:MessageEntry"
+                sling:key="Open" sling:message="geöffnet"/>
+        <page-title jcr:primaryType="sling:MessageEntry"
+                sling:key="Page Title" sling:message="Seitentitel"/>
+        <properties jcr:primaryType="sling:MessageEntry"
+                sling:key="Properties" sling:message="Eigenschaften"/>
+        <row jcr:primaryType="sling:MessageEntry"
+                sling:key="Row" sling:message="Zeile"/>
+        <shape jcr:primaryType="sling:MessageEntry"
+                sling:key="Shape" sling:message="Darstellung"/>
+        <size jcr:primaryType="sling:MessageEntry"
+                sling:key="Size" sling:message="Größe"/>
+        <subtitle jcr:primaryType="sling:MessageEntry"
+                sling:key="Subtitle" sling:message="Untertitel"/>
+        <text-align jcr:primaryType="sling:MessageEntry"
+                sling:key="Text Alignment" sling:message="Text-Ausrichtung"/>
+        <title jcr:primaryType="sling:MessageEntry"
+                sling:key="Title" sling:message="Titel"/>
+        <type jcr:primaryType="sling:MessageEntry"
+                sling:key="Type" sling:message="Typ"/>
+        <with-space jcr:primaryType="sling:MessageEntry"
+                sling:key="with spacing" sling:message="mit Zwischenraum"/>
+    </property>
+
+    <text jcr:primaryType="sling:Folder"><!-- text formatting option name -->
+
+        <bottom jcr:primaryType="sling:MessageEntry"
+                sling:key="bottom" sling:message="unten"/>
+        <center jcr:primaryType="sling:MessageEntry"
+                sling:key="center" sling:message="zentriert"/>
+        <justify jcr:primaryType="sling:MessageEntry"
+                sling:key="justify" sling:message="Blocksatz"/>
+        <left jcr:primaryType="sling:MessageEntry"
+                sling:key="left" sling:message="links"/>
+        <right jcr:primaryType="sling:MessageEntry"
+                sling:key="right" sling:message="rechts"/>
+        <top jcr:primaryType="sling:MessageEntry"
+                sling:key="top" sling:message="oben"/>
+    </text>
+
+</jcr:root>

@@ -21,13 +21,63 @@
             frameClass: 'composum-pages-stage-edit-frame',
             editDialogsClass: 'composum-pages-stage-edit-dialogs',
             versionViewCssClass: 'composum-pages-version-view',
+            css: {
+                base_: 'composum-pages-',
+                scope: {
+                    _: 'scope-',
+                    content: 'content',
+                    site: 'site'
+                }
+            },
             event: {
-                messagePattern: new RegExp('^([^\\{\\[]+)([\\{\\[].*[\\}\\]])$'),
-                pageContainerRefs: 'page:containerRefs',
-                componentSelected: 'component:selected',
-                pathSelected: 'path:selected',
-                insertComponent: 'component:insert',
-                moveComponent: 'component:move'
+                messagePattern: new RegExp('^([^{\\[]+)([{\\[].*[}\\]])$'),
+                trigger: 'event:trigger',
+                ready: 'pages:ready',
+                scope: {
+                    changed: 'scope:changed'
+                },
+                dialog: {
+                    edit: 'dialog:edit',
+                    alert: 'dialog:alert'
+                },
+                site: {
+                    select: 'site:select',          // do it!...
+                    selected: 'site:selected',      // done.
+                    created: 'site:created',        // done.
+                    changed: 'site:changed',        // done.
+                    deleted: 'site:deleted'         // done.
+                },
+                page: {
+                    view: 'page:view',              // do it!...
+                    select: 'page:select',          // do it!...
+                    selected: 'page:selected',      // done.
+                    inserted: 'page:inserted',      // done.
+                    changed: 'page:changed',        // done.
+                    deleted: 'page:deleted',        // done.
+                    containerRefs: 'page:containerRefs'
+                },
+                content: {
+                    select: 'content:select',       // do it!...
+                    selected: 'content:selected',   // done.
+                    inserted: 'content:inserted',   // done.
+                    changed: 'content:changed',     // done.
+                    deleted: 'content:deleted',     // done.
+                    moved: 'content:moved'          // done.
+                },
+                element: {
+                    select: 'element:select',       // do it!...
+                    selected: 'element:selected',   // done.
+                    insert: 'element:insert',       // do it!...
+                    inserted: 'element:inserted',   // done.
+                    changed: 'element:changed',     // done.
+                    deleted: 'element:deleted',     // done.
+                    move: 'element:move',           // do it!...
+                    moved: 'element:moved'          // done.
+                },
+                path: {
+                    select: 'path:select',          // do it!...
+                    selected: 'path:selected'       // done.
+                }
             },
             url: {
                 get: {
@@ -40,8 +90,45 @@
             },
             sling: {
                 resourceType: 'sling:resourceType'
+            },
+            login: {
+                id: 'composum-platform-commons-login-dialog',
+                url: '/libs/composum/platform/security/login/dialog.html'
+            },
+            profile: {
+                pages: {
+                    aspect: 'pages',
+                    scope: 'scope'      // the scope of the edit UI: 'site' or 'content'
+                },
+                page: {
+                    tree: {
+                        aspect: 'page-tree',
+                        view: 'view',   // the current panel: 'tree' or 'search'
+                        filter: 'filter',
+                        path: 'path'
+                    },
+                    search: {
+                        aspect: 'page-search',
+                        scope: 'scope',
+                        term: 'term'
+                    }
+                },
+                develop: {
+                    tree: {
+                        aspect: 'develop-tree',
+                        path: 'path'
+                    }
+                }
+            },
+            clipboard: {
+                store: {
+                    content: 'content',
+                    element: 'element'
+                }
             }
         });
+
+        pages.log = log.getLogger("pages");
 
         pages.profile = {
 
@@ -91,6 +178,7 @@
             site: undefined,
             page: undefined
         };
+
         switch (pages.current.mode) {
             case 'PREVIEW':
             case 'BROWSE':
@@ -101,11 +189,37 @@
                 pages.profile.set('mode', 'edit', pages.current.mode.toLowerCase());
                 break;
         }
-        pages.authorize = function (retryThisFailedCall) {
-            var currentUrl = new RegExp('https?://[^/]+/bin/pages.html(/[^?]*).*').exec(window.location.href);
-            var pagesUrl = '/bin/pages.html' + (currentUrl ? currentUrl[1] : '/');
-            var loginUrl = "/libs/composum/platform/security/login.html?resource=" + encodeURIComponent(pagesUrl);
-            window.location.href = loginUrl;
+
+        pages.getScope = function () {
+            var c = pages.const.css;
+            var g = pages.const.profile.pages;
+            return pages.profile.get(g.aspect, g.scope, c.scope.content);
+        };
+
+        pages.setScope = function (scope, triggerEvent) {
+            var c = pages.const.css;
+            var g = pages.const.profile.pages;
+            if (!scope) {
+                scope = pages.profile.get(g.aspect, g.scope, c.scope.content);
+            }
+            if (scope !== pages.profile.get(g.aspect, g.scope)) {
+                if (triggerEvent !== false) {
+                    triggerEvent = true;
+                }
+                pages.profile.set(g.aspect, g.scope, scope);
+                pages.$body.removeClass(c.base + c.scope._ + c.scope.content);
+                pages.$body.removeClass(c.base + c.scope._ + c.scope.site);
+                pages.$body.addClass(c.base + c.scope._ + scope);
+            }
+            if (triggerEvent) {
+                var e = pages.const.event.scope;
+                pages.log.debug('pages.trigger.' + e.changed + '(' + scope + ')');
+                $(document).trigger(e.changed, [scope]);
+            }
+        };
+
+        pages.isEditMode = function () {
+            return pages.current.mode === 'EDIT' || pages.current.mode === 'DEVELOP';
         };
 
         pages.getPageData = function (path, callback) {
@@ -137,7 +251,7 @@
 
         pages.DialogHandler = Backbone.View.extend({
 
-            openEditDialog: function (url, viewType, name, path, type, onNotFound) {
+            openEditDialog: function (url, viewType, name, path, type, setupDialog, onNotFound) {
                 core.ajaxGet(url + (path ? path : ''), {
                         data: {
                             name: name ? name : '',
@@ -157,6 +271,9 @@
                             if (_.isFunction(dialog.afterLoad)) {
                                 dialog.afterLoad(name, path, type);
                             }
+                            if (_.isFunction(setupDialog)) {
+                                setupDialog(dialog);
+                            }
                             if (dialog.useDefault) {
                                 dialog.doSubmit(dialog.useDefault);
                             } else {
@@ -164,7 +281,7 @@
                             }
                         }
                     }, this), _.bind(function (xhr) {
-                        if (xhr.status == 404) {
+                        if (xhr.status === 404) {
                             if (_.isFunction(onNotFound)) {
                                 onNotFound(name, path, type);
                             }
@@ -173,22 +290,19 @@
             },
 
             openDialog: function (id, url, viewType, initView, callback) {
-                this.getDialog(id, url, viewType, _.bind(function (dialog) {
+                this.getDialog(id, url, {}, viewType, _.bind(function (dialog) {
                     dialog.show(initView, callback);
                 }, this));
             },
 
-            getDialog: function (id, url, viewType, callback) {
+            getDialog: function (id, url, config, viewType, callback) {
                 var dialog = core.getWidget(this.el, '#' + id, viewType);
                 if (!dialog) {
-                    core.getHtml(url,
+                    core.ajaxGet(url, _.extend({dataType: 'html'}, config),
                         _.bind(function (data) {
                             this.$el.append(data);
                             dialog = core.getWidget(this.el, '#' + id, viewType);
                             if (dialog) {
-                                if (_.isFunction(dialog.afterLoad)) {
-                                    dialog.afterLoad(name, path, type);
-                                }
                                 if (_.isFunction(callback)) {
                                     callback(dialog);
                                 }
@@ -199,6 +313,7 @@
                         callback(dialog);
                     }
                 }
+                return dialog;
             }
         });
 
@@ -213,28 +328,33 @@
             if (message) {
                 var args = JSON.parse(message[2]);
                 switch (message[1]) {
-                    case pages.const.event.componentSelected:
+                    case pages.const.event.element.selected:
                         // transform selection messages into the corresponding event for the edit frame components
                         if (args.path) {
-                            $(document).trigger(pages.const.event.pathSelected, [args.path]);
-                            $(document).trigger(pages.const.event.componentSelected, [
+                            pages.log.debug('pages.trigger.' + pages.const.event.path.selected + '(' + args.path + ')');
+                            $(document).trigger(pages.const.event.path.selected, [args.path]);
+                            var eventData = [
                                 args.name,
                                 args.path,
                                 args.type
-                            ]);
+                            ];
+                            pages.log.debug('pages.trigger.' + pages.const.event.element.selected + '(' + args.path + ')');
+                            $(document).trigger(pages.const.event.element.selected, eventData);
                         } else {
-                            $(document).trigger(pages.const.event.pathSelected, []);
-                            $(document).trigger(pages.const.event.componentSelected, []);
+                            pages.log.debug('pages.trigger.' + pages.const.event.path.selected + '()');
+                            $(document).trigger(pages.const.event.path.selected, []);
+                            pages.log.debug('pages.trigger.' + pages.const.event.element.selected + '()');
+                            $(document).trigger(pages.const.event.element.selected, []);
                         }
                         break;
-                    case pages.const.event.pageContainerRefs:
+                    case pages.const.event.page.containerRefs:
                         // forward container references list to the edit frame components
-                        console.log('pages.event.pageContainerRefs(' + message[2] + ')');
-                        $(document).trigger(pages.const.event.pageContainerRefs, [args]);
+                        pages.log.trace('pages.event.' + pages.const.event.page.containerRefs + '(' + message[2] + ')');
+                        $(document).trigger(pages.const.event.page.containerRefs, [args]);
                         break;
-                    case pages.const.event.insertComponent:
+                    case pages.const.event.element.insert:
                         // apply insert action messages from the edited page
-                        console.log('pages.event.insertComponent(' + message[2] + ')');
+                        pages.log.info('pages.event.element.insert(' + message[2] + ')');
                         if (args.type && args.target) {
                             core.ajaxPost(pages.const.url.edit.insert + args.target.path, {
                                 elementType: args.type,
@@ -247,9 +367,9 @@
                             });
                         }
                         break;
-                    case pages.const.event.moveComponent:
+                    case pages.const.event.element.move:
                         // apply move action messages from the edited page
-                        console.log('pages.event.moveComponent(' + message[2] + ')');
+                        pages.log.info('pages.event.element.move(' + message[2] + ')');
                         if (args.source && args.target) {
                             core.ajaxPost(pages.const.url.edit.move + args.source, {
                                 targetPath: args.target.path,
@@ -262,9 +382,161 @@
                             });
                         }
                         break;
+                    case pages.const.event.dialog.edit:
+                        // opens an edit dialog to perform editing of the content of the path transmitted
+                        pages.log.trace('pages.event.dialog.edit(' + message[2] + ')');
+                        if (args.target) {
+                            var url = undefined;
+                            if (args.dialog) {
+                                url = args.dialog.url;
+                            }
+                            pages.dialogs.openEditDialog(args.target.name, args.target.path, args.target.type, url,
+                                function (dialog) {
+                                    if (args.values) {
+                                        dialog.applyData(args.values);
+                                    }
+                                });
+                        }
+                        break;
+                    case pages.const.event.trigger:
+                        // triggers an event in the frame document context
+                        pages.log.debug('pages.event.' + args.event + '(' + message[2] + ')');
+                        $(document).trigger(args.event, args.data);
+                        break;
+                    case pages.const.event.dialog.alert:
+                        // displays an alert message by opening an alert dialog
+                        pages.log.trace('pages.event.dialog.alert(' + message[2] + ')');
+                        core.alert(args.type, args.title, args.message, args.data);
+                        break;
                 }
             }
         }, false);
+
+        //
+        // clipboard operations
+        //
+
+        /**
+         * stored the path in the profile for a later 'paste' which will copy the content of the stored path
+         */
+        pages.clipboardCopyContent = function (path) {
+            if (!path) {
+                path = this.getCurrentPath();
+            }
+            pages.profile.set('pages', 'contentClipboard', {
+                path: path
+            });
+        };
+
+        /**
+         * copy path from clipboard to the target path, open copy dialog if an error is occurring
+         * @param path the target path for the copy operation
+         */
+        pages.clipboardPasteContent = function (path) {
+            var clipboard = pages.profile.get('pages', 'contentClipboard');
+            if (path && clipboard && clipboard.path) {
+                var name = core.getNameFromPath(clipboard.path);
+                // copy to the target with the same name
+                core.ajaxPost("/bin/cpm/pages/edit.copyContent.json" + clipboard.path, {
+                    targetPath: path,
+                    name: name
+                }, {}, _.bind(function (result) {
+                    // trigger content change
+                    $(document).trigger(pages.const.event.content.inserted, [path, name]);
+                }, this), _.bind(function (result) {
+                    // on error - display copy dialog initialized with the known data
+                    var data = result.responseJSON;
+                    pages.dialogs.openCopyContentDialog(undefined, clipboard.path, undefined,
+                        _.bind(function (dialog) {
+                            dialog.setValues(clipboard.path, path);
+                            if (data.messages) {
+                                dialog.validationHint(data.messages[0].level, null, data.messages[0].text, data.messages[0].hint);
+                            } else if (data.response) {
+                                dialog.validationHint(data.response.level, null, data.response.text);
+                            }
+                            dialog.hintsMessage('error');
+                        }, this));
+                }, this));
+            }
+        };
+
+        //
+        // login dialog and session expired (unauthorized) fallback
+        //
+
+        pages.LoginDialog = core.components.Dialog.extend({
+
+            initialize: function (options) {
+                core.components.Dialog.prototype.initialize.apply(this, [options]);
+                this.form = core.getWidget(this.el, "form", core.components.FormWidget);
+                this.form.$el.on('submit', _.bind(this.onSubmit, this));
+                this.callsToRetry = [];
+                this.showing = false;
+            },
+
+            resetOnShown: function () {
+                core.components.Dialog.prototype.resetOnShown.apply(this);
+                this.alert('warning', this.$el.data('message'));
+            },
+
+            onSubmit: function (event) {
+                if (event) {
+                    event.preventDefault();
+                }
+                this.submitForm();
+                return false;
+            },
+
+            /**
+             * collect all failed request calls to retry after successful login
+             * @param retryThisFailedCall the call to retry after login
+             */
+            handleUnauthorized: function (retryThisFailedCall) {
+                if (this.showing) {
+                    // collect all failed calls during login
+                    this.callsToRetry.push(retryThisFailedCall);
+                } else {
+                    // show login dialog and collect failed calls...
+                    this.showing = true;
+                    this.callsToRetry = [retryThisFailedCall];
+                    this.show(undefined, _.bind(function () {
+                        // retry after login all collected calls
+                        this.callsToRetry.forEach(function (retryThisFailedCall) {
+                            retryThisFailedCall();
+                        });
+                        this.showing = false;
+                        this.callsToRetry = [];
+                    }, this));
+                }
+            }
+        });
+
+        /**
+         * the Pages Stage handler to resolve unauthorized request calls
+         * @param retryThisFailedCall the call to retry after login
+         * @see core.unauthorizedDelegate
+         * @see core.ajaxCall
+         */
+        pages.handleUnauthorized = function (retryThisFailedCall) {
+            var c = pages.const.login;
+            pages.dialogHandler.getDialog(c.id, c.url, {}, pages.LoginDialog,
+                _.bind(function (dialog) {
+                    dialog.handleUnauthorized(retryThisFailedCall);
+                }, this));
+        };
+
+        /**
+         * check accessibility of the url as condition to execute a function
+         * @param functionToCall the function to execute if url is accessible
+         * @param urlToCheck the url to use as indicator
+         */
+        pages.retryIfUnauthorized = function (functionToCall, urlToCheck) {
+            core.ajaxHead(urlToCheck, {}, _.bind(function () {
+                functionToCall();
+            }, this), _.bind(function () {
+                pages.handleUnauthorized(functionToCall);
+            }, this));
+        };
 
     })(window.composum.pages, window.core);
 })(window);

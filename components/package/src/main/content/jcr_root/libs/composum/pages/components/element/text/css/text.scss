@@ -1,0 +1,31 @@
+@charset "UTF-8";
+
+@import "../../../css/variables";
+@import "../../../css/mixins";
+
+.composum-pages-components-element-text {
+    @include default-font;
+    color: $site-default-text-color;
+
+    a,
+    a:visited {
+        text-decoration: none;
+        color: $site-default-link-color;
+    }
+
+    a:hover {
+        color: $site-default-link-hover;
+    }
+
+    &_title {
+        @include inline-title;
+        font-size: $text-title-font-size;
+    }
+
+    &_text {
+
+        p {
+            margin: 0.75rem 0;
+        }
+    }
+}

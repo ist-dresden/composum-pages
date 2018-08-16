@@ -2,5 +2,6 @@
 <jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
         jcr:primaryType="sling:OrderedFolder"
         embed="[composum/pages/components/css/placeholder.css,
-                composum/pages/components/composed/illustration/illustration-edit.css,
-                composum/pages/components/container/row/row-edit.css]"/>
+                composum/pages/components/composed/carousel/css/carousel-edit.css,
+                composum/pages/components/composed/illustration/css/illustration-edit.css,
+                composum/pages/components/container/row/css/row-edit.css]"/>

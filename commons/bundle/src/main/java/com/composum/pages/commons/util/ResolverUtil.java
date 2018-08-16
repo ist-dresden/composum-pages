@@ -1,5 +1,6 @@
 package com.composum.pages.commons.util;
 
+import com.composum.sling.core.util.ResourceUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -11,22 +12,35 @@ public class ResolverUtil {
         return getTypeProperty(getResourceType(resource, type), name, defaultValue);
     }
 
+    public static <T> T getTypeProperty(Resource resource, String type, String name, Class<T> valueType) {
+        return getTypeProperty(getResourceType(resource, type), name, valueType);
+    }
+
     public static <T> T getTypeProperty(ResourceResolver resolver, String type, String name, T defaultValue) {
         return getTypeProperty(getResourceType(resolver, type), name, defaultValue);
     }
 
+    public static <T> T getTypeProperty(ResourceResolver resolver, String type, String name, Class<T> valueType) {
+        return getTypeProperty(getResourceType(resolver, type), name, valueType);
+    }
+
     public static <T> T getTypeProperty(Resource typeResource, String name, T defaultValue) {
+        Class<?> valueType = defaultValue != null ? defaultValue.getClass() : String.class;
+        T value = (T) getTypeProperty(typeResource, name, valueType);
+        return value != null ? value : defaultValue;
+    }
+
+    public static <T> T getTypeProperty(Resource typeResource, String name, Class<T> type) {
         T value = null;
         if (typeResource != null) {
             ResourceResolver resolver = typeResource.getResourceResolver();
-            Class<?> valueType = defaultValue != null ? defaultValue.getClass() : String.class;
             while (typeResource != null && value == null) {
                 ValueMap values = typeResource.adaptTo(ValueMap.class);
-                value = (T) values.get(name, valueType);
+                value = values.get(name, type);
                 typeResource = getResourceType(resolver, typeResource.getResourceSuperType());
             }
         }
-        return value != null ? value : defaultValue;
+        return value;
     }
 
     /**
@@ -91,12 +105,14 @@ public class ResolverUtil {
                 Resource baseResource = resolver.getResource(base);
                 typeResource = resolver.getResource(baseResource, resourceType);
                 if (typeResource != null) {
-                    break;
+                    if (ResourceUtil.isSyntheticResource(typeResource)) {
+                        typeResource = null;
+                    }
                 } else {
                     typeResource = resolver.getResource(resourceType);
-                    if (typeResource != null) {
-                        break;
-                    }
+                }
+                if (typeResource != null) {
+                    break;
                 }
             }
         }

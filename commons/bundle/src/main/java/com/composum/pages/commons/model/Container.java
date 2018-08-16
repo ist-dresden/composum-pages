@@ -1,14 +1,16 @@
 package com.composum.pages.commons.model;
 
 import com.composum.pages.commons.PagesConstants;
-import com.composum.pages.commons.model.properties.AllowedTypes;
+import com.composum.pages.commons.model.properties.PathPatternSet;
 import com.composum.pages.commons.service.EditService;
+import com.composum.pages.commons.service.ResourceManager;
 import com.composum.pages.commons.util.ResolverUtil;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.filter.ResourceFilter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.SyntheticResource;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +24,9 @@ import static com.composum.pages.commons.PagesConstants.PROP_ALLOWED_ELEMENTS;
 public class Container extends Element {
 
     public static final String PROP_WITH_SPACING = "withSpacing";
+    public static final String PROP_MIN_ELEMENTS = "minElements";
+    public static final String PROP_MAX_ELEMENTS = "maxElements";
+    public static final String PROP_ELEMENT_TYPE = "elementType";
 
     // static resource type determination
 
@@ -54,12 +59,17 @@ public class Container extends Element {
 
     // transient attributes
 
-    private transient List<Element> elementList;
     private transient Boolean withSpacing;
 
-    private transient AllowedTypes allowedElements;
+    private transient Integer minElements;
+    private transient Integer maxElements;
+    private transient String elementType;
+
+    private transient PathPatternSet allowedElements;
 
     private transient List<String> elementTypes;
+
+    private transient List<Element> elementList;
 
     // rendering
 
@@ -75,17 +85,44 @@ public class Container extends Element {
      */
     public List<Element> getElements() {
         if (elementList == null) {
+            int max = getMaxElements();
             elementList = new ArrayList<>();
             ResourceFilter filter = getRenderFilter();
             for (Resource child : resource.getChildren()) {
-                if (filter.accept(child)) {
+                if (filter.accept(child) && (max < 1 || elementList.size() < max)) {
                     Element element = new Element();
                     element.initialize(context, child);
                     elementList.add(element);
                 }
             }
+            int min = getMinElements();
+            if (min > 0 && elementList.size() < min) {
+                String elementType = getElementType();
+                if (StringUtils.isNotBlank(elementType)) {
+                    ResourceResolver resolver = getContext().getResolver();
+                    for (int i = elementList.size(); i < min; i++) {
+                        Resource synthetic = createSyntheticElement(elementType, i);
+                        if (synthetic != null) {
+                            Element element = new Element();
+                            element.initialize(getContext(), synthetic);
+                            elementList.add(element);
+                        }
+                    }
+                }
+            }
         }
         return elementList;
+    }
+
+    protected Resource createSyntheticElement(String resourceType, int elementIndex) {
+        String name = StringUtils.substringAfterLast(elementType, "/") + "_" + elementIndex;
+        String n = name;
+        for (int j = 0; getResource().getChild(name) != null; j++) {
+            name = n + j;
+        }
+        String path = getPath() + "/" + name;
+        Element element = new Element();
+        return new SyntheticResource(getContext().getResolver(), path, elementType);
     }
 
     /**
@@ -98,6 +135,57 @@ public class Container extends Element {
         return withSpacing;
     }
 
+    /**
+     * returns the mininum count of elements in the container; '0' for no minimum
+     */
+    public int getMinElements() {
+        if (minElements == null) {
+            minElements = getProperty(PROP_MIN_ELEMENTS, getDefaultMinElements());
+        }
+        return minElements;
+    }
+
+    /**
+     * extension hook for fixed element slots
+     */
+    protected int getDefaultMinElements() {
+        return 0;
+    }
+
+    /**
+     * returns the maxinum count of elements in the container; '0' for no maximum
+     */
+    public int getMaxElements() {
+        if (maxElements == null) {
+            maxElements = getProperty(PROP_MAX_ELEMENTS, getDefaultMaxElements());
+        }
+        return maxElements;
+    }
+
+    /**
+     * extension hook for fixed element slots
+     */
+    protected int getDefaultMaxElements() {
+        return 0;
+    }
+
+    /**
+     * returns the default element type to fill list up to the minimum
+     */
+    public String getElementType() {
+        if (elementType == null) {
+            elementType = getProperty(PROP_ELEMENT_TYPE, getDefaultElementType());
+        }
+        return elementType;
+    }
+
+    /**
+     * extension hook for derived element slots
+     */
+    protected String getDefaultElementType() {
+        return "";
+    }
+
     // manipulation
 
     /**
@@ -108,7 +196,7 @@ public class Container extends Element {
         if (elementTypes == null) {
             EditService editService = context.getService(EditService.class);
             elementTypes = editService.getAllowedElementTypes(resolver,
-                    new ResourceReference.List(new ResourceReference(this)), false);
+                    getResourceManager().getReferenceList(getResourceManager().getReference(this)), true);
         }
         return elementTypes;
     }
@@ -123,7 +211,7 @@ public class Container extends Element {
         return isAllowedElement(resource.getResourceType());
     }
 
-    public boolean isAllowedElement(ResourceReference element) {
+    public boolean isAllowedElement(ResourceManager.ResourceReference element) {
         return isAllowedElement(element.getType());
     }
 
@@ -134,9 +222,9 @@ public class Container extends Element {
     /**
      * returns the 'allowedElements' rule for this container (from the configuration)
      */
-    public AllowedTypes getAllowedElements() {
+    public PathPatternSet getAllowedElements() {
         if (allowedElements == null) {
-            allowedElements = new AllowedTypes(new ResourceReference(this), PROP_ALLOWED_ELEMENTS);
+            allowedElements = new PathPatternSet(getResourceManager().getReference(this), PROP_ALLOWED_ELEMENTS);
         }
         return allowedElements;
     }

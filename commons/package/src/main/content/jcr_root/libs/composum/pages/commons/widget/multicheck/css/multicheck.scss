@@ -1,0 +1,27 @@
+@charset "UTF-8";
+
+@import "../../../css/variables";
+@import "../../../css/mixins";
+
+.composum-pages-edit-widget {
+
+    &_multicheck {
+
+        .composum-pages-edit-widget {
+
+            &_input {
+                margin: 0 10px;
+            }
+
+            &_option {
+                display: block;
+                margin: 5px 0 0;
+
+                .label-text {
+                    display: inline-block;
+                    float: none;
+                }
+            }
+        }
+    }
+}

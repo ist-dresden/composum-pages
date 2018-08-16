@@ -112,6 +112,14 @@
         <!-- Composum Platform -->
         <dependency>
             <groupId>com.composum.sling.platform</groupId>
+            <artifactId>composum-sling-platform-commons-bundle</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.composum.sling.platform</groupId>
+            <artifactId>composum-sling-platform-cache-bundle</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.composum.sling.platform</groupId>
             <artifactId>composum-sling-platform-staging-bundle</artifactId>
         </dependency>
         <dependency>
@@ -195,6 +203,12 @@
         <dependency>
             <groupId>org.apache.jackrabbit.vault</groupId>
             <artifactId>org.apache.jackrabbit.vault</artifactId>
+        </dependency>
+
+        <!-- Cache -->
+        <dependency>
+            <groupId>org.ehcache</groupId>
+            <artifactId>ehcache-bundle</artifactId>
         </dependency>
 
         <!-- JSON -->

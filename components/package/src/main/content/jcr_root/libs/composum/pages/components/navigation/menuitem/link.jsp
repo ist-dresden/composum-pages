@@ -5,7 +5,7 @@
 --%><cpp:defineObjects />
 <cpp:element var="menuitem" type="com.composum.pages.components.model.navigation.Menuitem"
                tagName="li" cssAdd="menu-item link@{menuitem.cssClasses}">
-    <a class="${menuitemCssBase}_link" href="${cpn:url(slingRequest,menuitem.path)}">
+    <a class="${menuitemCssBase}_link" href="${menuitem.url}">
             ${cpn:text(menuitem.title)}
     </a>
 </cpp:element>

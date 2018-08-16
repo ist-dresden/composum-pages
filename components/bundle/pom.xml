@@ -67,7 +67,6 @@
 
         </plugins>
     </build>
-
     <dependencies>
 
         <!-- Composum Pages -->
@@ -87,15 +86,15 @@
             <groupId>com.composum.sling.platform</groupId>
             <artifactId>composum-sling-platform-commons-bundle</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.composum.sling.platform</groupId>
+            <artifactId>composum-sling-platform-models-bundle</artifactId>
+        </dependency>
 
         <!-- Composum Core -->
         <dependency>
             <groupId>com.composum.sling.core</groupId>
             <artifactId>composum-sling-core-commons</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.composum.sling.platform</groupId>
-            <artifactId>composum-sling-platform-models-bundle</artifactId>
         </dependency>
 
         <!-- Sling, JCR -->

@@ -1,13 +1,14 @@
 package com.composum.pages.commons.taglib;
 
-import com.composum.pages.commons.model.AbstractModel;
-import com.composum.pages.commons.request.RequestLocale;
+import com.composum.pages.commons.request.PagesLocale;
 import com.composum.sling.core.BeanContext;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 
 import java.util.List;
 import java.util.Locale;
+
+import static com.composum.platform.models.annotations.InternationalizationStrategy.I18NFOLDER;
 
 /**
  * a tag to instantiate a model object for a property of a component (property node set)
@@ -49,8 +50,8 @@ public class PropertyTag extends ModelTag {
         Resource resource = super.getModelResource(context);
         Resource propertyResource = null;
         if (isI18n()) {
-            Locale locale = RequestLocale.get(context);
-            List<String> i18nPaths = AbstractModel.getI18nPaths(locale);
+            Locale locale = context.getRequest().adaptTo(PagesLocale.class).getLocale();
+            List<String> i18nPaths = I18NFOLDER.getI18nPaths(locale);
             for (String path : i18nPaths) {
                 if ((propertyResource = resolver.getResource(resource, path + '/' + property)) != null) {
                     break;

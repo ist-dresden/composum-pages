@@ -13,7 +13,7 @@
    <c:choose>
        <c:when test="${textImage.textValid}">
            <div class="${textImageCssBase}_text-block">
-               <cpn:text tagName="h3" tagClass="${textImageCssBase}_title" value="${textImage.title}"/>
+               <cpn:text tagName="h${textImage.titleLevel}" tagClass="${textImageCssBase}_title" value="${textImage.title}"/>
                <cpn:text tagClass="${textImageCssBase}_text" value="${textImage.text}" type="rich"/>
            </div>
        </c:when>

@@ -102,6 +102,6 @@ public class FrameElement extends Element {
     // Tile rendering
 
     public String getTileResourceType() {
-        return ResourceTypeUtil.getSubtypePath(resolver, getElementResource(), getElementPath(), EDIT_TILE_PATH);
+        return ResourceTypeUtil.getSubtypePath(resolver, getElementResource(), getElementPath(), EDIT_TILE_PATH, null);
     }
 }

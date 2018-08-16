@@ -2,22 +2,22 @@ package com.composum.pages.commons.taglib;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
-
 import java.io.IOException;
 
 import static com.composum.pages.commons.taglib.AbstractPageTag.STAGE_COMPONENT_BASE;
 
 /**
- * the PageBodyTag creates the HTML body tag and the EDIT elements around the page content
+ * the action tag an action of a element toolbar or a tree toolbar
  */
 public class EditActionTag extends AbstractWrappingTag {
 
     public static final String ACTION_VAR = "action";
 
-    public static final String ACTION_TAG_PATH = STAGE_COMPONENT_BASE + "edit/actions/tag";
+    public static final String ACTION_TAG_PATH = STAGE_COMPONENT_BASE + "edit/actions/toolbar";
 
     protected String icon;
     protected String label;
+    protected String condition;
     protected String action;
     protected String title;
 
@@ -25,6 +25,7 @@ public class EditActionTag extends AbstractWrappingTag {
     protected void clear() {
         title = null;
         action = null;
+        condition = null;
         label = null;
         icon = null;
         super.clear();
@@ -46,6 +47,14 @@ public class EditActionTag extends AbstractWrappingTag {
         label = text;
     }
 
+    public String getCondition() {
+        return condition;
+    }
+
+    public void setCondition(String script) {
+        condition = script;
+    }
+
     public String getAction() {
         return action;
     }
@@ -64,6 +73,14 @@ public class EditActionTag extends AbstractWrappingTag {
 
     protected String getSnippetResourceType() {
         return ACTION_TAG_PATH;
+    }
+
+    /**
+     * ensure that each additional attribute starts with 'data-'
+     */
+    @Override
+    protected void setDynamicAttribute(String key, Object value) throws JspException {
+        super.setDynamicAttribute(key.startsWith("data-") ? key : "data-" + key, value);
     }
 
     @Override

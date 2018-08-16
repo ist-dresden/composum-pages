@@ -1,5 +1,6 @@
 package com.composum.pages.commons.taglib;
 
+import com.composum.pages.commons.service.WidgetManager;
 import com.composum.sling.core.BeanContext;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
@@ -26,6 +27,10 @@ public abstract class AbstractWidgetTag extends AbstractWrappingTag {
         property = null;
         label = null;
         super.clear();
+    }
+
+    public boolean getHasLabel() {
+        return StringUtils.isNotBlank(label);
     }
 
     public String getLabel() {
@@ -60,6 +65,10 @@ public abstract class AbstractWidgetTag extends AbstractWrappingTag {
         modelClass = className;
     }
 
+    public boolean isFormWidget () {
+        return name == null || !name.startsWith("#");
+    }
+
     /**
      * @return the name of the form input element probably with a prepended relative path and the i18n path
      */
@@ -72,13 +81,30 @@ public abstract class AbstractWidgetTag extends AbstractWrappingTag {
     }
 
     /**
+     * returns the resource type (the path to the component) for a widget type
+     */
+    protected String getWidgetResourceType(String widgetType) {
+        String path = context.getService(WidgetManager.class).getWidgetTypeResourcePath(context, widgetType);
+        if (StringUtils.isBlank(path)) {
+            throw new IllegalArgumentException("unknown widget type '" + widgetType + "'");
+        }
+        return path;
+    }
+
+    /**
      * returns the property resource to edit
      */
     @Override
     public Resource getModelResource(BeanContext context) {
         Resource resource = context.getAttribute(PROPERTY_RESOURCE_ATTR, Resource.class);
         if (resource == null) {
-            resource = super.getModelResource(context);
+            EditDialogTag dialog = getDialog();
+            if (dialog != null) {
+                resource = dialog.getModelResource(context);
+            }
+            if (resource == null) {
+                resource = super.getModelResource(context);
+            }
         }
         return resource;
     }
@@ -120,7 +146,7 @@ public abstract class AbstractWidgetTag extends AbstractWrappingTag {
         return name;
     }
 
-    protected EditDialogTag getDialog() {
+    public EditDialogTag getDialog() {
         return (EditDialogTag) pageContext.findAttribute(EditDialogTag.DIALOG_VAR);
     }
 

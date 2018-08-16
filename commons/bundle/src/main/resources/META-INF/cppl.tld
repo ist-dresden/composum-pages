@@ -379,11 +379,10 @@
             <rtexprvalue>true</rtexprvalue>
         </attribute>
         <!-- common:include Extensions -->
-        <!-- Dynamic contents -->
         <attribute>
             <description>
                 Whether to force dynamic include as a separate request depending on the server settings.
-                Handle with care: on SSI include, some parameters are not effective anymore
+                Handle with care: on SSI include, some parameters are not effective anymore.
             </description>
             <name>dynamic</name>
             <required>false</required>
@@ -408,6 +407,9 @@
             <rtexprvalue>true</rtexprvalue>
         </attribute>
         <attribute>
+            <description>
+                include only if the result of this test expression is 'true' (boolean)
+            </description>
             <name>test</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -485,13 +487,13 @@
         <body-content>JSP</body-content>
         <attribute>
             <name>var</name>
-            <required>true</required>
+            <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
             <name>type</name>
-            <required>true</required>
+            <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
@@ -524,6 +526,18 @@
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.Boolean</type>
+        </attribute>
+        <attribute>
+            <name>resource</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>org.apache.sling.api.resource.Resource</type>
+        </attribute>
+        <attribute>
+            <name>resourcePath</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
         </attribute>
         <attribute>
             <name>resourceType</name>
@@ -563,6 +577,19 @@
         </attribute>
         <attribute>
             <name>cssClasses</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <name>submit</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <description>the event key of the event to trigger after a successful change request</description>
+            <name>successEvent</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
@@ -768,13 +795,13 @@
         <body-content>JSP</body-content>
         <attribute>
             <name>var</name>
-            <required>true</required>
+            <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
             <name>type</name>
-            <required>true</required>
+            <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
@@ -844,6 +871,12 @@
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <name>condition</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
             <name>action</name>
             <required>true</required>
             <rtexprvalue>true</rtexprvalue>
@@ -856,6 +889,198 @@
             <type>java.lang.String</type>
         </attribute>
         <dynamic-attributes>true</dynamic-attributes>
+    </tag>
+
+    <tag>
+        <description>
+            the action tag for the tree toolbars
+        </description>
+        <name>treeAction</name>
+        <tag-class>com.composum.pages.commons.taglib.TreeActionTag</tag-class>
+        <tei-class>com.composum.pages.commons.taglib.EditActionTagTEI</tei-class>
+        <body-content>JSP</body-content>
+        <attribute>
+            <name>icon</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <name>label</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <name>condition</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <name>action</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <name>title</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
+        <dynamic-attributes>true</dynamic-attributes>
+    </tag>
+
+    <tag>
+        <description>
+            the action menu tag for the tree toolbars
+        </description>
+        <name>treeMenu</name>
+        <tag-class>com.composum.pages.commons.taglib.TreeMenuTag</tag-class>
+        <tei-class>com.composum.pages.commons.taglib.TreeMenuTagTEI</tei-class>
+        <body-content>JSP</body-content>
+        <attribute>
+            <name>key</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <name>icon</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <name>label</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <name>condition</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <name>title</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
+        <dynamic-attributes>true</dynamic-attributes>
+    </tag>
+
+    <tag>
+        <description>
+            the menu item action tag for the dropdown menus of the toolbars
+        </description>
+        <name>menuItem</name>
+        <tag-class>com.composum.pages.commons.taglib.MenuItemTag</tag-class>
+        <tei-class>com.composum.pages.commons.taglib.EditActionTagTEI</tei-class>
+        <body-content>JSP</body-content>
+        <attribute>
+            <name>icon</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <name>label</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <name>condition</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <name>action</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <name>title</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
+        <dynamic-attributes>true</dynamic-attributes>
+    </tag>
+
+    <tag>
+        <description>
+            the general action tag to embed action calls to the edit layer into a page
+        </description>
+        <name>invoke</name>
+        <tag-class>com.composum.pages.commons.taglib.InvokeTag</tag-class>
+        <body-content>JSP</body-content>
+        <attribute>
+            <name>tagName</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <name>action</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <name>actionUrl</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <name>model</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>com.composum.pages.commons.model.Model</type>
+        </attribute>
+        <attribute>
+            <name>resource</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>org.apache.sling.api.resource.Resource</type>
+        </attribute>
+        <attribute>
+            <name>path</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <name>resourceType</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <name>test</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.Boolean</type>
+        </attribute>
+        <attribute>
+            <name>cssSet</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <name>cssAdd</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
     </tag>
 
     <tag>

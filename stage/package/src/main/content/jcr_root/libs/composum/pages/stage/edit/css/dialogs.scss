@@ -9,6 +9,7 @@
 
 .composum-pages-stage-edit-dialogs {
 
+    .composum-platform-dialog,
     .composum-pages-stage-edit-dialog {
         z-index: $dialogs-layer;
 
@@ -68,6 +69,20 @@
             margin: 0;
         }
 
+        &_content {
+
+            .panel.tile-panel {
+
+                &.panel-default {
+                    background-color: $tile-panel-default-bg;
+                }
+
+                &.panel-info {
+                    background-color: $tile-panel-info-bg;
+                }
+            }
+        }
+
         &_hints {
             margin-top: -2px;
             margin-right: 15px;
@@ -101,6 +116,14 @@
             display: none;
             margin-bottom: $bootstrap-spacing-v;
             @include clear-after;
+
+            .has-error {
+
+                a {
+                    @include dialog-label-font;
+                    color: $bootstrap-color-danger;
+                }
+            }
         }
 
         &_tabbed {
@@ -127,6 +150,28 @@
             .label {
                 color: inherit;
                 font-size: inherit;
+            }
+        }
+
+        &_selector {
+
+            &_wizard {
+
+                .composum-pages-stage-edit-dialog {
+
+                    &_button-cancel {
+                        float: left;
+                        margin-right: $bootstrap-spacing-h;
+                    }
+
+                    &_button-prev, &_button-next {
+                        min-width: 70px;
+                    }
+
+                    &_button-submit {
+                        margin-left: $bootstrap-spacing-h;
+                    }
+                }
             }
         }
     }

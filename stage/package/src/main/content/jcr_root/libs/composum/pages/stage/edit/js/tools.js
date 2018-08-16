@@ -15,10 +15,21 @@
             panelClass: 'tabbed-widget_panel',
 
             navigationTabs: 'composum-pages-stage-edit-sidebar-navigation',
+            navigationContext: 'composum-pages-stage-edit-sidebar-navigation-context',
             contextSidebar: 'composum-pages-stage-edit-tools_context',
             contextTabsHook: 'composum-pages-stage-edit-sidebar_content',
             contextTabs: 'composum-pages-stage-edit-sidebar-context',
-            contextLoadUrl: '/bin/cpm/pages/edit.contextTools.html'
+            contextLoadUrl: '/bin/cpm/pages/edit.contextTools.html',
+
+            navigation: {
+                context: {
+                    url: {
+                        base: '/libs/composum/pages/stage/edit/sidebar/navigation/context',
+                        _site: '.site.html',
+                        _general: '.general.html'
+                    }
+                }
+            }
         });
 
         tools.TabPanel = Backbone.View.extend({
@@ -43,7 +54,7 @@
                 var classes = $panel.attr('class').split(/\s+/);
                 for (var i = 0; i < classes.length; i++) {
                     var $handle = this.$tabs.find('[data-tab="' + classes[i] + '"]');
-                    if ($handle.length == 1) {
+                    if ($handle.length === 1) {
                         return classes[i];
                     }
                 }
@@ -63,6 +74,10 @@
                 }
             },
 
+            getTabPanel: function (key) {
+                return this.$content.find('.' + tools.const.panelClass + '.' + key);
+            },
+
             selectTab: function (event, key) {
                 if (!this.locked) {
                     var $handle = undefined;
@@ -78,23 +93,27 @@
                         $handle = $(this.$handles[0]);
                         key = $handle.data('tab');
                     }
-                    if (this.currentKey != key) {
+                    if (this.currentKey !== key) {
+                        if (this.currentKey) {
+                            var $prevPanel = this.getTabPanel(this.currentKey);
+                            var $prevHandle = this.$tabs.find('[data-tab="' + this.currentKey + '"]');
+                            this.beforeHideTab(this.currentKey);
+                            $prevHandle.removeClass('active');
+                            $prevPanel.removeClass('active');
+                        }
                         this.currentKey = key;
-                        this.closeAll();
-                        var $panel = this.$content.find('.' + tools.const.panelClass + '.' + key);
-                        $panel.addClass('active');
-                        $handle.addClass('active');
-                        this.stackHandles();
-                        this.keyChanged(key, $panel);
-                        $(document).trigger('pages:context:tool:selected',
-                            [key, $panel.data('tool-path'), $panel]);
+                        if (this.currentKey) {
+                            var $nextPanel = this.getTabPanel(this.currentKey);
+                            $nextPanel.addClass('active');
+                            $handle.addClass('active');
+                            this.stackHandles();
+                            this.keyChanged(key, $nextPanel);
+                        }
                     }
                 }
             },
 
-            closeAll: function () {
-                this.$handles.removeClass('active');
-                this.$panels.removeClass('active');
+            beforeHideTab: function (key) {
             },
 
             stackHandles: function () {
@@ -121,55 +140,143 @@
 
             initialize: function (options) {
                 tools.TabPanel.prototype.initialize.apply(this, [options]);
+                var e = pages.const.event;
+                $(document).on(e.path.select + '.Navigation', _.bind(this.selectPath, this));
+            },
+
+            ready: function () {
                 this.selectTab(undefined, this.initialKey());
-                $(document).on('path:select.Navigation', _.bind(this.selectPath, this));
             },
 
             initialKey: function () {
                 return pages.profile.get('tabs', 'navigation', undefined);
             },
 
-            keyChanged: function (key) {
+            keyChanged: function (key, $panel) {
+                if ($panel && $panel.length === 1) {
+                    var $content = $panel.children();
+                    if ($content.length === 1) {
+                        var view = $content[0].view;
+                        if (view && _.isFunction(view.onTabSelected)) {
+                            view.onTabSelected.call(view);
+                        }
+                    }
+                }
                 pages.profile.set('tabs', 'navigation', key)
             },
 
-            selectPath: function (event, path, node) {
-                if (path && node) {
-                    console.log('tools.Navigation.selectPath(' + path + ')');
-                    switch (node.original.type) {
+            selectPath: function (event, path, name, type) {
+                if (!type) {
+
+                }
+                if (path && type) {
+                    pages.log.debug('tools.Navigation.selectPath(' + path + ')');
+                    // noinspection FallThroughInSwitchStatementJS
+                    switch (type) {
                         case 'siteconfiguration':
                             path = core.getParentPath(path);
                         case 'site':
-                            $(document).trigger("site:select", [path]);
+                            pages.log.debug('tools.trigger.' + pages.const.event.site.select + '(' + path + ')');
+                            $(document).trigger(pages.const.event.site.select, [path]);
                             break;
                         case 'pagecontent':
                             path = core.getParentPath(path);
                         case 'page':
-                            if (path == pages.current.page) {
-                                $(document).trigger("component:select", []);
+                            if (path === pages.current.page) {
+                                // trigger a 'page select again' to adjust all tools
+                                pages.log.debug('tools.trigger.' + pages.const.event.page.selected + '(' + pages.current.page + ')');
+                                $(document).trigger(pages.const.event.page.selected, [pages.current.page]);
+                                pages.log.debug('tools.trigger.' + pages.const.event.element.select + '()');
+                                $(document).trigger(pages.const.event.element.select, []);
                             } else {
-                                $(document).trigger("page:select", [path]);
+                                pages.log.debug('tools.trigger.' + pages.const.event.page.select + '(' + path + ')');
+                                $(document).trigger(pages.const.event.page.select, [path]);
                             }
                             break;
                         case 'container':
                         case 'element':
                             pages.getPageData(path, _.bind(function (data) {
-                                if (data.path != pages.current.page) {
+                                if (data.path !== pages.current.page) {
                                     pages.editFrame.selectOnLoad = {
-                                        name: node.original.name,
+                                        name: name,
                                         path: path,
-                                        type: node.original.type
+                                        type: type
                                     };
-                                    $(document).trigger("page:select", [data.path]);
+                                    pages.log.debug('tools.trigger.' + pages.const.event.page.select + '(' + data.path + ')');
+                                    $(document).trigger(pages.const.event.page.select, [data.path]);
                                 } else {
-                                    $(document).trigger("component:select",
-                                        [node.original.name, path, node.original.type]);
+                                    // trigger a 'page select again' to adjust all tools
+                                    pages.log.debug('tools.trigger.' + pages.const.event.page.selected + '(' + pages.current.page + ')');
+                                    $(document).trigger(pages.const.event.page.selected, [pages.current.page]);
+                                    pages.log.debug('tools.trigger.' + pages.const.event.element.select + '(' + path + ')');
+                                    $(document).trigger(pages.const.event.element.select,
+                                        [name, path, type]);
                                 }
                             }, this));
                             break;
+                        default:
+                            pages.log.debug('tools.trigger.' + pages.const.event.path.selected + '(' + path + ')');
+                            $(document).trigger(pages.const.event.path.selected, [path]);
+                            break;
                     }
-                    $(document).trigger("path:selected", [path]);
                 }
+            }
+        });
+
+        tools.NavigationContext = Backbone.View.extend({
+
+            initialize: function (options) {
+                var e = pages.const.event;
+                $(document).on(e.site.selected + '.Navigation', _.bind(this.onSiteChanged, this));
+                $(document).on(e.site.changed + '.Navigation', _.bind(this.onSiteChanged, this));
+                $(document).on(e.scope.changed + '.Navigation', _.bind(this.onScopeChanged, this));
+            },
+
+            initContent: function (options) {
+                this.$restrictToSite = this.$('.restrict-to-site');
+                this.$gotoSite = this.$('.goto-site');
+                this.$manageSites = this.$('.manage-sites');
+                this.$restrictToSite.click(_.bind(this.toggleScope, this));
+                this.$gotoSite.click(_.bind(this.selectSite, this));
+                this.$manageSites.click(_.bind(this.manageSites, this));
+                this.onScopeChanged();
+            },
+
+            onScopeChanged: function () {
+                if (pages.getScope() === 'site') {
+                    this.$restrictToSite.addClass('active');
+                } else {
+                    this.$restrictToSite.removeClass('active');
+                }
+            },
+
+            onSiteChanged: function (event, path) {
+                var u = tools.const.navigation.context.url;
+                var url = u.base + (path ? u._site + path : u._general);
+                core.getHtml(url, undefined, undefined, _.bind(function (data) {
+                    if (data.status === 200) {
+                        this.sitePath = path;
+                        this.$el.html(data.responseText);
+                    } else {
+                        this.sitePath = undefined;
+                        this.$el.html("");
+                    }
+                    this.initContent();
+                }, this));
+            },
+
+            toggleScope: function () {
+                pages.setScope(pages.getScope() === 'site' ? 'content' : 'site');
+            },
+
+            selectSite: function () {
+                if (this.sitePath) {
+                    pages.log.debug('tools.trigger.' + pages.const.event.site.select + '(' + this.sitePath + ')');
+                    $(document).trigger(pages.const.event.site.select, [this.sitePath]);
+                }
+            },
+
+            manageSites: function () {
             }
         });
 
@@ -206,7 +313,7 @@
                 var view = this.tools[key];
                 if (view) {
                     if (_.isFunction(view.onTabSelected)) {
-                        view.onTabSelected.apply(view);
+                        view.onTabSelected.call(view);
                     }
                 }
                 pages.profile.set('tabs', 'context.' + this.componentType, key)
@@ -214,56 +321,84 @@
 
             reloadPage: function (parameters) {
                 pages.editFrame.reloadPage(parameters);
+            },
+
+            beforeHideTab: function (key) {
+                var view = this.tools[key];
+                if (view && _.isFunction(view.beforeHideTab)) {
+                    view.beforeHideTab.call(view);
+                }
+            },
+
+            beforeClose: function () {
+                var tools = this.tools;
+                _.each(_.keys(tools), function (key) {
+                    var view = tools[key];
+                    if (view && _.isFunction(view.beforeClose)) {
+                        view.beforeClose.call(view);
+                    }
+                });
             }
         });
 
         tools.ContextTabsHook = Backbone.View.extend({
 
             initialize: function (options) {
-                $(document).on('component:selected.Context', _.bind(this.onComponentSelected, this));
-                this.suppressReplace = false;
+                var c = pages.const.event;
+                $(document).on(c.page.selected + '.Context', _.bind(this.onPageSelected, this));
+                $(document).on(c.element.selected + '.Context', _.bind(this.onComponentSelected, this));
+            },
+
+            onPageSelected: function (event, path, parameters) {
+                pages.log.debug('tools.Context.onPageSelected(' + path + ')');
+                this.changeTools(undefined, path, undefined);
             },
 
             onComponentSelected: function (event, name, path, type) {
-                console.log('tools.Context.onComponentSelected(' + path + ')');
+                pages.log.debug('tools.Context.onComponentSelected(' + path + ')');
                 this.changeTools(name, path, type);
             },
 
             changeTools: function (name, path, type) {
-                if (this.suppressReplace) {
-                    this.suppressReplace = false;
-                } else {
-                    if (!path) {
-                        // default view...
-                        path = pages.current.page;
-                    }
-                    if (path) {
-                        core.ajaxGet(tools.const.contextLoadUrl + path, {
-                                data: {
-                                    type: type
-                                }
-                            },
-                            _.bind(function (data) {
-                                this.$el.html(data);
-                                this.contextTabs = core.getWidget(this.el,
-                                    '.' + tools.const.contextTabs, tools.ContextTabs);
-                                this.contextTabs.data = {
-                                    name: name,
-                                    path: path,
-                                    type: type
-                                };
-                                this.contextTabs.initTools();
-                            }, this));
-                    } else {
-                        // nothing selected (!?)...
-                        this.$el.html('');
-                        this.contextTabs = undefined;
-                    }
+                if (!path) {
+                    // default view...
+                    path = pages.current.page;
                 }
+                if (path) {
+                    core.ajaxGet(tools.const.contextLoadUrl + path + '?pages.mode=' + pages.current.mode, {
+                            data: {
+                                type: type
+                            }
+                        },
+                        _.bind(function (data) {
+                            this.closeCurrent();
+                            this.$el.html(data);
+                            this.contextTabs = core.getWidget(this.el,
+                                '.' + tools.const.contextTabs, tools.ContextTabs);
+                            this.contextTabs.data = {
+                                name: name,
+                                path: path,
+                                type: type
+                            };
+                            this.contextTabs.initTools();
+                        }, this));
+                } else {
+                    // nothing selected (!?)...
+                    this.closeCurrent();
+                    this.$el.html('');
+                }
+            },
+
+            closeCurrent: function () {
+                if (this.contextTabs) {
+                    this.contextTabs.beforeClose.call(this.contextTabs);
+                }
+                this.contextTabs = undefined;
             }
         });
 
         tools.navigationTabs = core.getView('.' + tools.const.navigationTabs, tools.NavigationTabs);
+        tools.navigationContext = core.getView('.' + tools.const.navigationContext, tools.NavigationContext);
         tools.contextTabsHook = core.getView('.' + tools.const.contextSidebar
             + ' .' + tools.const.contextTabsHook, tools.ContextTabsHook);
 

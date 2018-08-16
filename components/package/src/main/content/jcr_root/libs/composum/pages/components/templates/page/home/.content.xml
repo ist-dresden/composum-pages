@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:cpp="http://sling.composum.com/pages/1.0"
+        xmlns:jcr="http://www.jcp.org/jcr/1.0"
+        xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+        xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+        jcr:primaryType="cpp:Page">
+    <jcr:content
+            jcr:primaryType="cpp:PageContent"
+            jcr:title="Pages Components Homepage"
+            jcr:description="A sites root page with a carousel on top of the page and a container to arrange content of all general element types including rows and columns."
+            sling:resourceType="composum/pages/components/page/home"
+            allowedParentTemplates="[
+                ^(.*/)?pages/components/templates/site/.*$
+            ]"
+            allowedChildTemplates="[
+                ^(.*/)?pages/components/templates/page/.*$
+            ]">
+        <logo
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="composum/pages/components/element/image"
+                imageRef="/content/shared/composum/pages/assets/logo/Composum-color.svg"/>
+        <search
+                jcr:primaryType="nt:unstructured">
+            <field
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="composum/pages/components/search/field"
+                    buttonSymbol="search"
+                    searchResultPath="${site}/meta/search">
+            </field>
+        </search>
+        <stage
+                jcr:primaryType="cpp:Container"
+                sling:resourceType="composum/pages/components/composed/carousel"
+                autoStart="{Boolean}true"
+                interval="10000"
+                showIndicators="{Boolean}true"
+                useControls="{Boolean}true">
+        </stage>
+        <main
+                jcr:primaryType="cpp:Container"
+                sling:resourceType="composum/pages/components/container/parsys">
+        </main>
+    </jcr:content>
+</jcr:root>

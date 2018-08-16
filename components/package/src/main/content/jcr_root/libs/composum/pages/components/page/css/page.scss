@@ -1,0 +1,124 @@
+@charset "UTF-8";
+
+@import "../../css/variables";
+@import "../../css/mixins";
+
+.composum-pages-components-navigation-navbar,
+.composum-pages-components-page-subsite-navbar {
+    @include default-font;
+
+    &_logo {
+        position: absolute;
+        top: 9px;
+    }
+
+    &_search {
+        height: 34px;
+    }
+}
+
+.composum-pages-components-navigation-navbar {
+    @include default-font;
+
+    &_logo {
+        width: 70px;
+        max-height: 70px;
+    }
+
+    &_title {
+        @include default-font;
+        padding-left: 80px;
+    }
+
+    .dropdown-menu {
+
+        .composum-pages-components-navigation-menuitem {
+
+            &_link {
+                @include font($site-default-font-family, $site-small-font-size);
+                white-space: nowrap;
+                padding-right: 10px;
+            }
+        }
+    }
+}
+
+.composum-pages-components-page-subsite-navbar {
+    background-color: #fff;
+    border: none;
+    @include default-font;
+
+    &_brand {
+        position: absolute;
+    }
+
+    &_logo {
+        width: 120px;
+    }
+
+    &_title {
+        display: block;
+        width: 240px;
+        margin-top: -4px;
+        padding-left: 130px;
+        @include font('robotolight', 16px);
+        line-height: 18px;
+    }
+}
+
+.composum-pages-components-page_body {
+    margin: 50px 0 0;
+    padding: 0;
+}
+
+.composum-pages-components-page {
+
+    &_content {
+
+        &_top {
+            min-height: $bootstrap-spacing-v*4;
+        }
+
+        &_main {
+            padding: 0 $bootstrap-spacing-h $bootstrap-spacing-v*2;
+
+            .composum-pages-components-container-row {
+                margin: 0;
+            }
+        }
+    }
+}
+
+.composum-pages-components-page-subsite {
+
+    &_content {
+
+        &_top {
+            padding-top: $subsite-logo-padding;
+
+            .composum-pages-components-container-row {
+                margin: 0;
+
+                &_column-first {
+                    padding-top: $subsite-logo-padding;
+                }
+            }
+        }
+    }
+}
+
+/*
+ * bootstrap -xs-
+ */
+@media screen and (max-width: 767px) {
+
+    .composum-pages-components-page-subsite {
+
+        .composum-pages-components-page-subsite-navbar {
+
+            &_navbar-right {
+                margin-top: 25px;
+            }
+        }
+    }
+}

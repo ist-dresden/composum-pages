@@ -8,9 +8,11 @@
                 </div>
                 <div class="modal-footer ${dialogCssBase}_footer">
                     <button type="button" class="${dialogCssBase}_button-cancel ${dialogCssBase}_button btn btn-default" data-dismiss="modal">${cpn:i18n(slingRequest,'Cancel')}</button>
-                    <button type="button" class="${dialogCssBase}_button-prev ${dialogCssBase}_button btn btn-default">&lt;&lt;</button>
-                    <button type="button" class="${dialogCssBase}_button-next ${dialogCssBase}_button btn btn-primary">&gt;&gt;</button>
-                    <button type="submit" class="${dialogCssBase}_button-submit ${dialogCssBase}_button btn btn-primary">${cpn:i18n(slingRequest,dialog.submitLabel)}</button>
+                    <div class="${dialogCssBase}_hints">
+                    </div>
+                    <button type="button" class="${dialogCssBase}_button-prev ${dialogCssBase}_button btn btn-default fa fa-chevron-left"></button>
+                    <button type="button" class="${dialogCssBase}_button-next ${dialogCssBase}_button btn btn-primary fa fa-chevron-right"></button>
+                    <button type="submit" class="${dialogCssBase}_button-submit ${dialogCssBase}_button btn btn-default">${dialog.submitLabel}</button>
                 </div>
             </form>
         </div>

@@ -23,7 +23,10 @@
                 </div>
                 <div class="modal-body ${dialogCssBase}_content">
                     <div class="${dialogCssBase}_messages messages">
-                        <div class="${dialogCssBase}_alert alert alert-warning alert-hidden"></div>
+                        <div class="panel panel-${dialog.alertKey}">
+                            <div class="panel-heading">${dialog.alertText}</div>
+                            <div class="panel-body hidden"></div>
+                        </div>
                     </div>
                     <ul class="${dialogCssBase}_tabs nav nav-tabs">
                     </ul>

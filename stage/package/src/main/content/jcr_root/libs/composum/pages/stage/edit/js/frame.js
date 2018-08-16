@@ -23,30 +23,66 @@
         pages.EditFrame = pages.PageView.extend({
 
             initialize: function (options) {
+                this.log = log.getLogger('frame');
                 pages.PageView.prototype.initialize.apply(this, [options]);
             },
 
             registerEventHandlers: function () {
-                $(document).on('component:select.EditFrame', _.bind(this.selectComponent, this));
-                $(document).on('component:selected.EditFrame', _.bind(this.onComponentSelected, this));
-                $(document).on('component:changed.EditFrame', _.bind(this.onComponentChanged, this));
-                $(document).on('component:deleted.EditFrame', _.bind(this.onComponentDeleted, this));
-                $(document).on('page:selected.EditFrame', _.bind(this.onPageSelected, this));
-                $(document).on('page:select.EditFrame', _.bind(this.selectPage, this));
-                $(document).on('site:select.EditFrame', _.bind(this.selectSite, this));
+                var e = pages.const.event;
+                $(document).on(e.element.select + '.EditFrame', _.bind(this.selectComponent, this));
+                $(document).on(e.element.selected + '.EditFrame', _.bind(this.onComponentSelected, this));
+                $(document).on(e.element.inserted + '.EditFrame', _.bind(this.onComponentChanged, this));
+                $(document).on(e.element.changed + '.EditFrame', _.bind(this.onComponentChanged, this));
+                $(document).on(e.element.deleted + '.EditFrame', _.bind(this.onComponentDeleted, this));
+                $(document).on(e.content.inserted + '.EditFrame', _.bind(this.onComponentChanged, this));
+                $(document).on(e.content.changed + '.EditFrame', _.bind(this.onComponentChanged, this));
+                $(document).on(e.content.deleted + '.EditFrame', _.bind(this.onComponentDeleted, this));
+                $(document).on(e.page.selected + '.EditFrame', _.bind(this.onPageSelected, this));
+                $(document).on(e.page.select + '.EditFrame', _.bind(this.selectPage, this));
+                $(document).on(e.page.view + '.EditFrame', _.bind(this.onViewPage, this));
+                $(document).on(e.page.inserted + '.EditFrame', _.bind(this.onComponentChanged, this));
+                $(document).on(e.page.changed + '.EditFrame', _.bind(this.onComponentChanged, this));
+                $(document).on(e.page.deleted + '.EditFrame', _.bind(this.onComponentDeleted, this));
+                $(document).on(e.site.select + '.EditFrame', _.bind(this.selectSite, this));
+                $(document).on(e.site.created + '.EditFrame', _.bind(this.onSiteChanged, this));
+                $(document).on(e.site.changed + '.EditFrame', _.bind(this.onSiteChanged, this));
+                $(document).on(e.site.deleted + '.EditFrame', _.bind(this.onComponentDeleted, this));
                 pages.PageView.prototype.registerEventHandlers.apply(this);
+                this.$frame.on('load.EditFrame', _.bind(this.onFrameLoad, this));
+                core.unauthorizedDelegate = pages.handleUnauthorized;
+            },
+
+            ready: function () {
+                var e = pages.const.event;
+                pages.tools.navigationTabs.ready();
                 var initialPath = this.$el.data('path');
                 if (initialPath) {
-                    $(document).trigger("page:select", [initialPath]);
+                    if (this.log.getLevel() <= log.levels.DEBUG) {
+                        this.log.debug('frame.trigger.' + e.page.select + '(' + initialPath + ')');
+                    }
+                    $(document).trigger(e.page.select, [initialPath]);
                 }
-                this.$frame.on('load.EditFrame', _.bind(this.onFrameLoad, this));
-                core.unauthorizedDelegate = pages.authorize;
+                if (this.log.getLevel() <= log.levels.DEBUG) {
+                    this.log.debug('frame.trigger.' + e.ready + '(' + initialPath + ')');
+                }
+                $(document).trigger(e.ready);
             },
 
             onPageSelected: function (event, path) {
-                if (this.currentPath != path) {
-                    console.log('pages.EditFrame.onPageSelected(' + path + ')');
+                if (this.currentPath !== path) {
+                    if (this.log.getLevel() <= log.levels.DEBUG) {
+                        this.log.debug('pages.EditFrame.onPageSelected(' + path + ')');
+                    }
                     this.currentPath = path;
+                    pages.getPageData(path, _.bind(function (data) {
+                        if (data.meta && data.meta.site !== pages.current.site) {
+                            pages.current.site = data.meta.site;
+                            if (this.log.getLevel() <= log.levels.DEBUG) {
+                                this.log.debug('frame.trigger.' + pages.const.event.site.selected + '(' + data.meta.site + ')');
+                            }
+                            $(document).trigger(pages.const.event.site.selected, [data.meta.site]);
+                        }
+                    }, this));
                     if (history.replaceState) {
                         history.replaceState(path, 'pages', core.getContextUrl('/bin/pages.html' + path));
                     }
@@ -56,17 +92,42 @@
             onFrameLoad: function (event) {
                 if (!this.busy) {
                     this.busy = true;
-                    var url = event.currentTarget.contentDocument.URL;
+                    var frameUrl = event.currentTarget.contentDocument.URL;
+                    var url;
                     core.ajaxGet('/bin/cpm/nodes/node.resolve.json', {
                             data: {
-                                url: url
+                                url: frameUrl
                             }
                         }, _.bind(function (data) {
-                            if (this.currentPath != data.path) {
-                                console.log('pages.EditFrame.onFrameLoad(' + url + '): ' + data.path);
-                                pages.current.page = data.path;
-                                $(document).trigger("page:selected", [data.path]);
+                            if (this.currentPath !== data.path) {
+                                if (this.log.getLevel() <= log.levels.DEBUG) {
+                                    this.log.debug('pages.EditFrame.onFrameLoad(' + frameUrl + '): ' + data.path);
+                                }
+                                url = new core.SlingUrl(frameUrl);
+                                var displayMode = url.parameters ? url.parameters['pages.mode'] : undefined;
+                                if (!displayMode && pages.isEditMode()) {
+                                    // reload with the right display mode if no mode specified in the URL
+                                    // this is generally happens if the content navigation is used
+                                    this.reloadPage(url.parameters, data.path);
+                                } else {
+                                    // no event for explicit 'preview' - probably site page scanning
+                                    if (!displayMode || displayMode !== 'preview') {
+                                        // trigger all necessary events after loading a different page
+                                        pages.current.page = data.path;
+                                        var eventData = [data.path, url.parameters];
+                                        if (this.log.getLevel() <= log.levels.DEBUG) {
+                                            this.log.debug('frame.trigger.' + pages.const.event.page.selected + '(' + data.path + ')');
+                                        }
+                                        $(document).trigger(pages.const.event.page.selected, eventData);
+                                    }
+                                }
                             } else {
+                                url = new core.SlingUrl(frameUrl);
+                                var locale = url.parameters ? url.parameters['pages.locale'] : undefined;
+                                if (locale) {
+                                    // get current locale from request if present to keep locale switching
+                                    pages.current.locale = locale;
+                                }
                                 var select = this.selectOnLoad;
                                 if (!select) {
                                     select = pages.toolbars.pageToolbar.getSelectedComponent();
@@ -86,80 +147,127 @@
             },
 
             selectSite: function (event, path) {
-                if (pages.current.site != path) {
-                    console.log('pages.EditFrame.selectSite(' + path + ')');
+                if (pages.current.site !== path) {
+                    if (this.log.getLevel() <= log.levels.DEBUG) {
+                        this.log.debug('pages.EditFrame.selectSite(' + path + ')');
+                    }
                     pages.current.site = path;
-                    $(document).trigger("site:selected", [path]);
+                    if (this.log.getLevel() <= log.levels.DEBUG) {
+                        this.log.debug('frame.trigger.' + pages.const.event.site.selected + '(' + path + ')');
+                    }
+                    $(document).trigger(pages.const.event.site.selected, [path]);
                 }
                 this.selectPage(event, path);
             },
 
             selectPage: function (event, path, parameters) {
-                if (pages.current.page != path) {
-                    console.log('pages.EditFrame.selectPage(' + path + ')');
+                if (pages.current.page !== path) {
+                    if (this.log.getLevel() <= log.levels.DEBUG) {
+                        this.log.debug('pages.EditFrame.selectPage(' + path + ')');
+                    }
                     pages.current.page = path;
                     this.reloadPage(parameters);
-                    $(document).trigger("page:selected", [path]);
+                    if (this.log.getLevel() <= log.levels.DEBUG) {
+                        this.log.debug('frame.trigger.' + pages.const.event.page.selected + '(' + path + ')');
+                    }
+                    $(document).trigger(pages.const.event.page.selected, [path]);
                 } else {
-                    $(document).trigger("path:selected", [path]);
+                    if (this.log.getLevel() <= log.levels.DEBUG) {
+                        this.log.debug('frame.trigger.' + pages.const.event.path.selected + '(' + path + ')');
+                    }
+                    $(document).trigger(pages.const.event.path.selected, [path]);
                 }
             },
 
-            reloadPage: function (parameters) {
-                if (pages.current.page) {
-                    if (!parameters) {
-                        parameters = {};
+            reloadPage: function (parameters, path) {
+                var pagePath = path || pages.current.page;
+                if (pagePath) {
+                    var frameUrl = new core.SlingUrl(core.getContextUrl(pagePath + '.html'));
+                    if (parameters) {
+                        frameUrl.parameters = parameters;
                     }
-                    if (!parameters['pages.mode']) {
-                        parameters ['pages.mode'] = pages.current.mode.toLowerCase();
+                    if (!frameUrl.parameters['pages.mode']) {
+                        frameUrl.parameters['pages.mode'] = pages.current.mode.toLowerCase();
                     }
-                    if (!parameters['pages.locale']) {
-                        parameters ['pages.locale'] = pages.current.locale;
+                    if (!frameUrl.parameters['pages.locale']) {
+                        frameUrl.parameters['pages.locale'] = pages.current.locale;
                     }
-                    var parameterString = '';
-                    _.each(_.keys(parameters), function (key) {
-                        parameterString += parameterString.length == 0 ? '?' : '&';
-                        parameterString += encodeURIComponent(key) + '=' + encodeURIComponent(parameters[key]);
-                    });
-                    console.log('pages.EditFrame.reloadPage(): ' + pages.current.page);
-                    this.$frame.attr('src',
-                        core.getContextUrl(pages.current.page + '.html' + parameterString));
+                    frameUrl.build();
+                    if (this.log.getLevel() <= log.levels.DEBUG) {
+                        this.log.debug('pages.EditFrame.reloadPage(' + path + '): ' + frameUrl.url);
+                    }
+                    pages.retryIfUnauthorized(_.bind(function () {
+                        this.$frame.attr('src', frameUrl.url);
+                    }, this), frameUrl.url);
                 }
+            },
+
+            reloadFrame: function () {
+                if (this.log.getLevel() <= log.levels.DEBUG) {
+                    this.log.debug('pages.EditFrame.reloadFrame()');
+                }
+                window.location.reload();
             },
 
             selectComponent: function (event, name, path, type) {
-                console.log('pages.EditFrame.selectComponent(' + path + ')');
+                if (this.log.getLevel() <= log.levels.DEBUG) {
+                    this.log.debug('pages.EditFrame.selectComponent(' + path + ')');
+                }
                 if (path) {
-                    this.$frame[0].contentWindow.postMessage('component:select'
+                    this.$frame[0].contentWindow.postMessage(pages.const.event.element.select
                         + JSON.stringify({name: name, path: path, type: type}), '*');
                 } else {
-                    this.$frame[0].contentWindow.postMessage('component:select'
+                    this.$frame[0].contentWindow.postMessage(pages.const.event.element.select
                         + JSON.stringify({}), '*');
                 }
             },
 
+            onSiteChanged: function (event, path) {
+                if (pages.current.page === path) {
+                    this.reloadPage();
+                }
+            },
+
+            onViewPage: function (event, path, parameters) {
+                this.reloadPage(parameters, path);
+            },
+
             onComponentSelected: function (event, name, path, type) {
-                console.log('pages.EditFrame.onComponentSelected(' + path + ')');
+                if (this.log.getLevel() <= log.levels.DEBUG) {
+                    this.log.debug('pages.EditFrame.onComponentSelected(' + path + ')');
+                }
                 if (path) {
-                    this.$frame[0].contentWindow.postMessage('component:selected'
+                    this.$frame[0].contentWindow.postMessage(pages.const.event.element.selected
                         + JSON.stringify({name: name, path: path, type: type}), '*');
                 } else {
-                    this.$frame[0].contentWindow.postMessage('component:selected'
+                    this.$frame[0].contentWindow.postMessage(pages.const.event.element.selected
                         + JSON.stringify({}), '*');
                 }
             },
 
             onComponentChanged: function (event, path) {
-                if (path && path.indexOf(pages.current.page) == 0) {
-                    console.log('pages.EditFrame.onComponentChanged(' + path + ')');
-                    this.reloadPage();
+                if (path) {
+                    if (this.log.getLevel() <= log.levels.DEBUG) {
+                        this.log.debug('pages.EditFrame.onComponentChanged(' + path + ')');
+                    }
+                    if (path === pages.current.site) {
+                        // FIXME this.reloadFrame();
+                    } else if (path.indexOf(pages.current.page) === 0) {
+                        this.reloadPage();
+                    }
                 }
             },
 
             onComponentDeleted: function (event, path) {
-                if (path && path.indexOf(pages.current.page) == 0) {
-                    console.log('pages.EditFrame.onComponentDeleted(' + path + ')');
-                    this.reloadPage();
+                if (path) {
+                    if (this.log.getLevel() <= log.levels.DEBUG) {
+                        this.log.debug('pages.EditFrame.onComponentDeleted(' + path + ')');
+                    }
+                    if (path === pages.current.site || path === pages.current.page) {
+                        // FIXME this.reloadFrame();
+                    } else if (path.indexOf(pages.current.page) === 0) {
+                        this.reloadPage();
+                    }
                 }
             }
         });

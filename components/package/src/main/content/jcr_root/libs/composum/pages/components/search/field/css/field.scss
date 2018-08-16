@@ -1,0 +1,13 @@
+@charset "UTF-8";
+
+@import "../../../css/variables.scss";
+
+.composum-pages-components-search-field {
+
+    &_button {
+
+        .button-text {
+            display: none;
+        }
+    }
+}

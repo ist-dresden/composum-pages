@@ -1,9 +1,9 @@
-<%@page session="false" pageEncoding="UTF-8" %><%--
---%><%@taglib prefix="sling" uri="http://sling.apache.org/taglibs/sling/1.2" %><%--
---%><%@taglib prefix="cpn" uri="http://sling.composum.com/cpnl/1.0" %><%--
---%><%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %><%--
---%><%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %><%--
---%><cpp:defineObjects/>
-<meta name="viewport" content="width=device-width, minimum-scale=1, maximum-scale=1, user-scalable=no"/>
-<meta name="format-detection" content="telephone=no">
-<cpn:clientlib type="css" path="composum/pages/components/clientlibs/page"/>
+<%@page session="false" pageEncoding="UTF-8" %>
+<%@taglib prefix="sling" uri="http://sling.apache.org/taglibs/sling/1.2" %>
+<%@taglib prefix="cpn" uri="http://sling.composum.com/cpnl/1.0" %>
+<%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
+<cpp:defineObjects/>
+<sling:call script="meta.jsp"/>
+<cpn:clientlib type="link" category="${pageModel.viewClientlibCategory}"/>
+<cpn:clientlib type="css" category="${pageModel.viewClientlibCategory}"/>
+<cpn:clientlib type="css" test="${pageModel.editMode}" category="${pageModel.editClientlibCategory}"/>

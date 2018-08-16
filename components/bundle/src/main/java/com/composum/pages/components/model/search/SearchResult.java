@@ -4,6 +4,8 @@ import com.composum.pages.commons.model.Element;
 import com.composum.pages.commons.service.SearchService;
 import com.composum.pages.commons.service.search.SearchTermParseException;
 import com.composum.sling.core.BeanContext;
+import com.composum.sling.cpnl.CpnlElFunctions;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.slf4j.Logger;
@@ -32,10 +34,8 @@ public class SearchResult extends Element {
 
     /** The request attribute where the {@link SearchService.Result} is saved during rendering. */
     public static final String REQUEST_ATTRIBUTE_SEARCHRESULT = "searchresult";
-    /** Optional parameter for the node below which we search. */
-    public static final String PARAMETER_SEARCHROOT = "search.root";
     /** Mandatory parameter for the fulltext search expression to search for. */
-    public static final String PARAMETER_TEXT = "search.text";
+    public static final String PARAMETER_TERM = "search.term";
     /** Optional parameter that determines the offset of the first shown search result (in items, not in pages). */
     public static final String PARAMETER_OFFSET = "search.offset";
     /** Optional parameter that determines the number of searchresults to be shown in the page. */
@@ -63,8 +63,8 @@ public class SearchResult extends Element {
     private List<SearchService.Result> results;
     /** @see #getSearchRoot() */
     private transient String searchRoot;
-    /** @see #getSearchText() */
-    private transient String searchText;
+    /** @see #getSearchTerm() */
+    private transient String searchTerm;
     /** @see #getHead() */
     private transient MessageFormat head;
     /** @see #getOffset() */
@@ -118,29 +118,38 @@ public class SearchResult extends Element {
      * @see #getHead()
      */
     public String getHeadFormatted() {
-        return getHead().format(new Object[]{getSearchText()});
+        return CpnlElFunctions.rich(getContext().getRequest(), getHead().format(new Object[]{getSearchTerm()}));
     }
 
     /**
-     * The absolute path that serves as root for the search, from the request parameter {@link #PARAMETER_SEARCHROOT},
-     * or {@link #PROP_SEARCH_ROOT}. Default: site-root.
+     * The absolute path that serves as root for the search {@link #PROP_SEARCH_ROOT}. Default: site-root.
      */
-    public java.lang.String getSearchRoot() {
+    public String getSearchRoot() {
         if (searchRoot == null) {
-            searchRoot = getContext().getRequest().getParameter(PARAMETER_SEARCHROOT);
-            if (searchRoot == null) {
-                searchRoot = getInherited(PROP_SEARCH_ROOT, getContainingPage().getSite().getPath());
+            String siteRoot = getCurrentPage().getSite().getPath();
+            searchRoot = getInherited(PROP_SEARCH_ROOT, "").trim();
+            if (StringUtils.isBlank(searchRoot)) {
+                // use the site root if not property or a blank property was found
+                searchRoot = siteRoot;
+            } else {
+                if (!searchRoot.startsWith("/")) {
+                    // use a root relative to the site root if not absolute
+                    searchRoot = siteRoot + "/" + searchRoot;
+                }
             }
         }
         return searchRoot;
     }
 
-    /** The fulltext search expression, from the request parameter {@link #PARAMETER_TEXT}. */
-    public String getSearchText() {
-        if (searchText == null) {
-            searchText = getContext().getRequest().getParameter(PARAMETER_TEXT);
+    /** The fulltext search expression, from the request parameter {@link #PARAMETER_TERM}. */
+    public String getSearchTerm() {
+        if (searchTerm == null) {
+            searchTerm = getContext().getRequest().getParameter(PARAMETER_TERM);
+            if (searchTerm == null) {
+                searchTerm = "";
+            }
         }
-        return searchText;
+        return searchTerm;
     }
 
     /** Offset of the shown results. */
@@ -197,10 +206,10 @@ public class SearchResult extends Element {
     public List<SearchService.Result> getResults() {
         try {
             if (results == null) {
-                if (isNotBlank(getSearchText())) {
+                if (isNotBlank(getSearchTerm())) {
                     SearchService searchService = context.getService(SearchService.class);
                     // easiest way to tell whether there are more pages is to fetch one more result than needed
-                    results = searchService.searchPages(context, getSearchRoot(), getSearchText(),
+                    results = searchService.searchPages(context, getSearchRoot(), getSearchTerm(),
                             getOffset(), getPageSize() + 1);
                     if (results.size() > getPageSize()) {
                         hasMoreSearchPages = true;
@@ -211,7 +220,7 @@ public class SearchResult extends Element {
             hasError = false;
         } catch (RepositoryException | SearchTermParseException e) {
             hasError = true;
-            LOG.error("Error when searching for " + getSearchText(), e);
+            LOG.error("Error when searching for " + getSearchTerm(), e);
             results = Collections.emptyList();
         }
         return results;

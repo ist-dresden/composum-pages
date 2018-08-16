@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
-        jcr:primaryType="sling:OrderedFolder">
-    <widgets/>
-    <radiolist/>
-    <slider/>
-    <codearea/>
+        jcr:primaryType="sling:OrderedFolder"
+        embed="[category:composum.components.widgets,
+                composum/pages/commons/css/widgets.css,
+                composum/pages/commons/widget/checkbox/css/checkbox.css,
+                composum/pages/commons/widget/codearea/css/codearea.css,
+                composum/pages/commons/widget/multicheck/css/multicheck.css,
+                composum/pages/commons/widget/pathfield/css/pathfield.css,
+                composum/pages/commons/widget/imagefield/css/imagefield.css,
+                composum/pages/commons/widget/radiolist/css/radiolist.css,
+                composum/pages/commons/widget/slider/css/slider.css]">
 </jcr:root>

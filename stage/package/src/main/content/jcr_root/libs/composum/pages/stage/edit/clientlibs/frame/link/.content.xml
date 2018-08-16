@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:jcr="http://www.jcp.org/jcr/1.0"
+        jcr:primaryType="nt:unstructured">
+    <cpp-64 jcr:primaryType="nt:unstructured"
+            rel="shortcut icon"
+            embed="composum/pages/commons/images/cpp-64.png"/>
+    <cpp-128 jcr:primaryType="nt:unstructured"
+            rel="apple-touch-icon"
+            embed="composum/pages/commons/images/cpp-128.png"/>
+</jcr:root>

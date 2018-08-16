@@ -1,0 +1,117 @@
+@charset "UTF-8";
+
+.composum-pages-components-element-codeblock {
+    margin: 0 0 10px;
+
+    &_heading {
+        position: relative;
+        min-height: 40px;
+    }
+
+    &_panel {
+        margin: 1rem 0;
+    }
+
+    &_language {
+        margin: -2px 0 0 10px;
+    }
+
+    &_button {
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        line-height: 16px;
+    }
+
+    &_expand {
+        display: none;
+    }
+
+    &_content-block {
+        padding: 0;
+        overflow: auto;
+    }
+
+    &_content {
+        margin: 0;
+        border: none;
+        padding: 0;
+        background: transparent;
+
+        code {
+            white-space: pre;
+
+            code * {
+                white-space: pre;
+            }
+        }
+    }
+
+    &.wrap-lines {
+
+        .composum-pages-components-element-codeblock {
+
+            &_content {
+
+                code {
+                    white-space: pre-wrap;
+
+                    code * {
+                        white-space: pre-wrap;
+                    }
+                }
+            }
+        }
+    }
+
+    &.code-simple {
+
+        .composum-pages-components-element-codeblock {
+
+            &_content {
+
+                code {
+                    padding: 0 10px;
+                }
+            }
+
+            &_footer {
+                opacity: 0.8;
+                margin-top: 10px;
+                padding: 0 10px;
+            }
+        }
+    }
+
+    &.collapsed {
+
+        .composum-pages-components-element-codeblock {
+
+            &_expand {
+                display: block;
+            }
+
+            &_collapse {
+                display: none;
+            }
+
+            &_content-block {
+                max-height: 63px;
+            }
+        }
+
+        &.medium .composum-pages-components-element-codeblock {
+
+            &_content-block {
+                max-height: 244px;
+            }
+        }
+
+        &.large .composum-pages-components-element-codeblock {
+
+            &_content-block {
+                max-height: 496px;
+            }
+        }
+    }
+}

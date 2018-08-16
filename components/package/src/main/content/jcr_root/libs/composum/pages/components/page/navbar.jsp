@@ -1,5 +1,4 @@
-<%@page session="false" pageEncoding="utf-8" %><%--
---%><%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %><%--
---%><cpp:defineObjects/>
+<%@page session="false" pageEncoding="utf-8" %>
+<%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
+<cpp:defineObjects/>
 <cpp:include resourceType="composum/pages/components/navigation/navbar" resource="${pageModel.homepage.resource}"/>
-<cpp:include resourceType="composum/pages/components/element/search/field" path="search"/>

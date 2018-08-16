@@ -3,13 +3,18 @@
 .composum-pages-components-placeholder {
 
   &_icon {
-    margin: 15px;
+    width: auto;
+    height: auto;
+    min-width: 40px;
+    min-height: 40px;
+    margin: 13px 13px 7px 7px;
     color: rgba(219, 219, 219, 0.6);
   }
 
   .add-plus {
+    top: -17px;
+    right: -45px;
+    width: auto;
     color: rgba(204, 204, 204, 0.7);
-    margin-top: -36%;
-    margin-left: 52%;
   }
 }

@@ -3,6 +3,8 @@ package com.composum.pages.commons.model;
 import com.composum.pages.commons.PagesConstants;
 import com.composum.pages.commons.util.ResolverUtil;
 import com.composum.pages.commons.util.ResourceTypeUtil;
+import com.composum.platform.models.annotations.DetermineResourceStategy;
+import com.composum.platform.models.annotations.PropertyDetermineResourceStrategy;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.util.ResourceUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -10,6 +12,7 @@ import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.NonExistingResource;
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -19,6 +22,7 @@ import static com.composum.pages.commons.servlet.EditServlet.EDIT_RESOURCE_TYPE_
 /**
  * the model class for a component itself (the implementation)
  */
+@PropertyDetermineResourceStrategy(Component.TypeResourceStrategy.class)
 public class Component extends AbstractModel {
 
     public static final String TYPE_HINT_PARAM = "type";
@@ -38,7 +42,7 @@ public class Component extends AbstractModel {
         public EditDialog() {
             super();
             Resource subtypeResource = ResourceTypeUtil.getSubtype(Component.this.resolver,
-                    null, Component.this.getPath(), ResourceTypeUtil.EDIT_DIALOG_PATH);
+                    null, Component.this.getPath(), ResourceTypeUtil.EDIT_DIALOG_PATH, null);
             // a component mustn't have a dialog implementation...
             initialize(Component.this.context, subtypeResource != null
                     ? subtypeResource
@@ -80,7 +84,7 @@ public class Component extends AbstractModel {
         public EditTile() {
             super();
             Resource subtypeResource = ResourceTypeUtil.getSubtype(Component.this.resolver,
-                    null, Component.this.getPath(), ResourceTypeUtil.EDIT_TILE_PATH);
+                    null, Component.this.getPath(), ResourceTypeUtil.EDIT_TILE_PATH, null);
             initialize(Component.this.context, subtypeResource);
         }
     }
@@ -99,6 +103,7 @@ public class Component extends AbstractModel {
         initialize(context, resource);
     }
 
+
     /**
      * determine the components resource even if the initial resource is an instance of the component
      */
@@ -114,47 +119,68 @@ public class Component extends AbstractModel {
      * if the resource is an instance of the component (content resource)
      */
     protected Resource getTypeResource(Resource resource) {
-        Resource typeResource = null;
-        if (!ResourceUtil.isNonExistingResource(resource)) {
+        return TypeResourceStrategy.getTypeResource(resource, resolver, context);
+    }
+
+    /** Compatible to {@link Component#determineResource(Resource)}. */
+    public static class TypeResourceStrategy implements DetermineResourceStategy {
+
+        /** Compatible to {@link Component#determineResource(Resource)}. */
+        @Override
+        public Resource determineResource(BeanContext beanContext, Resource requestResource) {
             // ignore all resource types modified by resource wrappers
-            typeResource = resolver.getResource(resource.getPath());
-            if (typeResource != null &&
-                    !typeResource.isResourceType(PagesConstants.NODE_TYPE_COMPONENT)) {
-                // the initialResource is probably an instance of a component not a component itself
-                // in this case we have to switch to the resource of the resource type
-                String resourceType = typeResource.getResourceType();
-                if (StringUtils.isBlank(resourceType) || PRIMARY_TYPE_PATTERN.matcher(resourceType).matches()) {
-                    // check a probably present content child if no resource type property found
-                    Resource contentResource = resource.getChild(JcrConstants.JCR_CONTENT);
-                    if (contentResource != null) {
-                        resourceType = contentResource.getResourceType();
-                    } else {
-                        // is there a hint in the request...
-                        // (used if context tools are rendered for the current selection)
-                        resourceType = context.getRequest().getParameter(TYPE_HINT_PARAM);
-                        if (StringUtils.isBlank(resourceType)) {
-                            resourceType = resource.getResourceType();
-                        }
-                        Matcher matcher = EDIT_SUBTYPE_PATTERN.matcher(resourceType);
-                        if (matcher.matches()) {
-                            // if type is a subtype use the component type instead
-                            resourceType = matcher.group(1);
+            Resource typeResource = getTypeResource(requestResource, beanContext.getResolver(), beanContext);
+            return typeResource != null ? typeResource : requestResource;
+        }
+
+        /**
+         * determines the resource of the component (of the 'implementation') even
+         * if the resource is an instance of the component (content resource)
+         */
+        public static Resource getTypeResource(Resource resource, ResourceResolver resolver, BeanContext context) {
+            Resource typeResource = null;
+            if (!ResourceUtil.isNonExistingResource(resource)) {
+                // ignore all resource types modified by resource wrappers
+                typeResource = resolver.getResource(resource.getPath());
+                if (typeResource != null &&
+                        !typeResource.isResourceType(PagesConstants.NODE_TYPE_COMPONENT)) {
+                    // the initialResource is probably an instance of a component not a component itself
+                    // in this case we have to switch to the resource of the resource type
+                    String resourceType = typeResource.getResourceType();
+                    if (StringUtils.isBlank(resourceType) || PRIMARY_TYPE_PATTERN.matcher(resourceType).matches()) {
+                        // check a probably present content child if no resource type property found
+                        Resource contentResource = resource.getChild(JcrConstants.JCR_CONTENT);
+                        if (contentResource != null) {
+                            resourceType = contentResource.getResourceType();
+                        } else {
+                            // is there a hint in the request...
+                            // (used if context tools are rendered for the current selection)
+                            resourceType = context.getRequest().getParameter(TYPE_HINT_PARAM);
+                            if (StringUtils.isBlank(resourceType)) {
+                                resourceType = resource.getResourceType();
+                            }
+                            Matcher matcher = EDIT_SUBTYPE_PATTERN.matcher(resourceType);
+                            if (matcher.matches()) {
+                                // if type is a subtype use the component type instead
+                                resourceType = matcher.group(1);
+                            }
                         }
                     }
+                    if (StringUtils.isNotBlank(resourceType)) {
+                        typeResource = ResolverUtil.getResourceType(typeResource, resourceType);
+                    }
                 }
+            } else {
+                // probably a static include of a non existing resource - search for a type hint...
+                SlingHttpServletRequest request = context.getRequest();
+                String resourceType = (String) request.getAttribute(EDIT_RESOURCE_TYPE_KEY);
                 if (StringUtils.isNotBlank(resourceType)) {
-                    typeResource = ResolverUtil.getResourceType(typeResource, resourceType);
+                    typeResource = ResolverUtil.getResourceType(resolver, resourceType);
                 }
             }
-        } else {
-            // probably a static include of a non existing resource - search for a type hint...
-            SlingHttpServletRequest request = context.getRequest();
-            String resourceType = (String) request.getAttribute(EDIT_RESOURCE_TYPE_KEY);
-            if (StringUtils.isNotBlank(resourceType)) {
-                typeResource = ResolverUtil.getResourceType(resolver, resourceType);
-            }
+            return typeResource;
         }
-        return typeResource;
+
     }
 
     /** the type of a component is the the components absolute resource path */
@@ -175,4 +201,5 @@ public class Component extends AbstractModel {
         }
         return editTile;
     }
+
 }

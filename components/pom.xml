@@ -16,7 +16,6 @@
     <modules>
         <module>bundle</module>
         <module>package</module>
-        <module>prototype</module>
     </modules>
 
 </project>

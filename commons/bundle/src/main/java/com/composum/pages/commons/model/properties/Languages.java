@@ -10,15 +10,13 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Locale;
 
-import static com.composum.pages.commons.PagesConstants.PAGES_PREFIX;
+import static com.composum.pages.commons.PagesConstants.DEFAULT_LANGUAGES;
+import static com.composum.pages.commons.PagesConstants.LANGUAGES_ATTR;
+import static com.composum.pages.commons.PagesConstants.LANGUAGES_PATH;
+import static com.composum.pages.commons.PagesConstants.LANGUAGES_TYPE;
 import static com.composum.pages.commons.taglib.DefineObjectsTag.CURRENT_PAGE;
 
 public class Languages extends PropertyNodeSet<Language> {
-
-    public static final String LANGUAGES_ATTR = PAGES_PREFIX + "declared-languages";
-    public static final String LANGUAGES_PATH = "jcr:content/languages";
-    public static final String LANGUAGES_TYPE = "composum/pages/stage/edit/site/languages";
-    public static final String DEFAULT_LANGUAGES = "/libs/composum/pages/commons/default/" + LANGUAGES_PATH;
 
     // static access in the current requests context
 
@@ -105,16 +103,23 @@ public class Languages extends PropertyNodeSet<Language> {
      * or the default language if the set doesn't contain an appropriate language
      */
     public Language getLanguage(final Locale locale) {
-        return getLanguage(locale.toString());
+        return retrieveLanguage(locale.toString());
+    }
+
+    /**
+     * returns the language for a language key; 'null' if not declared for the key
+     */
+    public Language getLanguage(String key) {
+       return languageSet.get(key);
     }
 
     /**
      * returns the language for a language key
      * or the default language if the set doesn't contain an appropriate language
      */
-    public Language getLanguage(String key) {
+    public Language retrieveLanguage(String key) {
         while (StringUtils.isNotBlank(key)) {
-            Language language = languageSet.get(key);
+            Language language = getLanguage(key);
             if (language != null) {
                 return language;
             }

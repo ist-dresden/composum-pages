@@ -3,89 +3,29 @@
         jcr:primaryType="cpp:Site">
     <jcr:content
             jcr:primaryType="cpp:SiteConfiguration"
-            sling:resourceType="composum/pages/stage/edit/site">
+            jcr:title="A Simple Site"
+            jcr:description="An empty site template with only one language and a standard components homepage."
+            sling:resourceType="composum/pages/stage/edit/site"
+            allowedChildTemplates="[
+                (.*/)?templates/(page/)?home(page)?$
+            ]">
+        <style
+                jcr:primaryType="nt:unstructured"
+                category.edit="composum.pages.components.edit"
+                category.view="composum.pages.components.view"/>
         <languages
                 jcr:primaryType="nt:unstructured"
                 sling:resourceType="composum/pages/stage/edit/site/languages">
             <english
                     jcr:primaryType="nt:unstructured"
                     key="en" label="english" default="true"/>
-            <german
-                    jcr:primaryType="nt:unstructured"
-                    key="de" label="deutsch"/>
         </languages>
-        <templates
-                jcr:primaryType="cpp:Container">
-            <homepage
-                    jcr:primaryType="cpp:Element"
-                    sling:resourceType="composum/pages/stage/edit/template">
-                <jcr:content
-                        jcr:primaryType="nt:unstructured"
-                        jcr:title="Homepage"
-                        sling:resourceType="composum/pages/stage/edit/template/content">
-                    <i18n
-                            jcr:primaryType="nt:unstructured">
-                        <de
-                                jcr:primaryType="nt:unstructured"
-                                jcr:title="Heimatseite"/>
-                    </i18n>
-                    <templateSet
-                            jcr:primaryType="cpp:Container"
-                            sling:resourceType="composum/pages/stage/edit/template/set">
-                        <default
-                                jcr:primaryType="cpp:Page">
-                            <jcr:content
-                                    jcr:primaryType="cpp:PageContent"
-                                    jcr:title="Content Page"
-                                    sling:resourceType="composum/prototype/pages/main/page">
-                                <i18n
-                                        jcr:primaryType="nt:unstructured">
-                                    <de
-                                            jcr:primaryType="nt:unstructured"
-                                            jcr:title="Inhaltsseite"/>
-                                </i18n>
-                            </jcr:content>
-                        </default>
-                    </templateSet>
-                </jcr:content>
-                <contentpage
-                        jcr:primaryType="cpp:Element"
-                        sling:resourceType="composum/pages/stage/edit/template">
-                    <jcr:content
-                            jcr:primaryType="nt:unstructured"
-                            jcr:title="Content Page"
-                            sling:resourceType="composum/pages/stage/edit/template/content">
-                        <i18n
-                                jcr:primaryType="nt:unstructured">
-                            <de
-                                    jcr:primaryType="nt:unstructured"
-                                    jcr:title="Inhaltsseite"/>
-                        </i18n>
-                        <templateSet
-                                jcr:primaryType="cpp:Container"
-                                sling:resourceType="composum/pages/stage/edit/template/set">
-                            <default
-                                    jcr:primaryType="cpp:Page">
-                                <jcr:content
-                                        jcr:primaryType="cpp:PageContent"
-                                        jcr:title="Content Page"
-                                        sling:resourceType="composum/prototype/pages/main/page">
-                                    <i18n
-                                            jcr:primaryType="nt:unstructured">
-                                        <de
-                                                jcr:primaryType="nt:unstructured"
-                                                jcr:title="Inhaltsseite"/>
-                                    </i18n>
-                                </jcr:content>
-                            </default>
-                        </templateSet>
-                    </jcr:content>
-                </contentpage>
-            </homepage>
-        </templates>
         <releases
                 jcr:primaryType="nt:unstructured"
                 sling:resourceType="composum/pages/stage/edit/site/releases">
         </releases>
     </jcr:content>
+    <meta/>
+    <home/>
+    <assets/>
 </jcr:root>

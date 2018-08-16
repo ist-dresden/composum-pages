@@ -1,14 +1,12 @@
 package com.composum.pages.commons.taglib;
 
+import com.composum.pages.commons.util.TagCssClasses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 import java.io.IOException;
-import java.util.List;
-
-import static com.composum.pages.commons.model.AbstractModel.addCssClass;
 
 /**
  * the PageBodyTag creates the HTML body tag and the EDIT elements around the page content
@@ -31,10 +29,10 @@ public class PageBodyTag extends AbstractPageTag {
         tagId = id;
     }
 
-    protected void collectCssClasses(List<String> collection) {
+    protected void collectCssClasses(TagCssClasses.CssSet collection) {
         super.collectCssClasses(collection);
         if (isEditMode()) {
-            addCssClass(collection, PAGE_EDIT_BODY_CLASSES);
+            collection.add(PAGE_EDIT_BODY_CLASSES);
         }
     }
 

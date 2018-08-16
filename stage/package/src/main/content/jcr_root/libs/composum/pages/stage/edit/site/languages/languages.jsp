@@ -3,7 +3,7 @@
 --%><%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %><%--
 --%><%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <cpp:defineFrameObjects/>
-<cpp:container var="languages" type="com.composum.pages.stage.model.edit.site.Languages" mode="edit">
+<cpp:container var="languages" type="com.composum.pages.stage.model.edit.site.Languages" mode="none">
     <table class="${languagesCssBase}_table table">
         <thead class="${languagesCssBase}_thead">
         <tr>

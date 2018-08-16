@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+        jcr:primaryType="sling:OrderedFolder"
+        depends="[fonts/awesome/4.7.0/css/font-awesome.css,
+                  fonts/roboto/2014/roboto.css,
+                  jslibs/bootstrap/3.3.7/css/bootstrap.css,
+                  jslibs/highlight/9.8.0/clientlib]"
+        embed="[composum/pages/components/page/css/page.css,
+                composum/pages/components/css/token.css,
+                composum/pages/components/search/field/css/field.css,
+                composum/pages/components/navigation/navbar/css/navbar.css,
+                composum/pages/components/container/row/css/row.css,
+                composum/pages/components/composed/carousel/css/carousel.css,
+                composum/pages/components/composed/decorator/css/decorator.css,
+                composum/pages/components/composed/illustration/css/illustration.css,
+                composum/pages/components/composed/list/css/list.css,
+                composum/pages/components/element/codeblock/css/codeblock.css,
+                composum/pages/components/element/image/css/image.css,
+                composum/pages/components/element/text/css/text.css,
+                composum/pages/components/element/textimage/css/textimage.css,
+                composum/pages/components/element/title/css/title.css]"/>

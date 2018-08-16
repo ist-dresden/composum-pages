@@ -5,6 +5,7 @@ import com.composum.pages.commons.util.ResourceTypeUtil;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.util.ExpressionUtil;
 import com.composum.sling.core.util.LinkUtil;
+import com.composum.sling.core.util.ResourceUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
@@ -38,7 +39,16 @@ public class IncludeTag extends IncludeTagHandler {
     private transient ExpressionUtil expressionUtil;
 
     public void setResource(final Resource resource) {
-        super.setResource(this.resource = resource);
+        if (ResourceUtil.isSyntheticResource(resource)) {
+            if (StringUtils.isBlank(path)) {
+                setPath(resource.getPath());
+            }
+            if (StringUtils.isBlank(resourceType)) {
+                setResourceType(resource.getResourceType());
+            }
+        } else {
+            super.setResource(this.resource = resource);
+        }
     }
 
     public void setPath(String path) {
@@ -100,16 +110,14 @@ public class IncludeTag extends IncludeTagHandler {
 
     protected void configure() {
         /*
-        TODO PagesConfiguration
-        ConfigService configService = sling.getService(ConfigService.class);
-        ssiEnabled = configService.getSSIEnabled();
+        TODO PagesConfiguration to overlay resource types on include
         */
         if (StringUtils.isNotBlank(subtype)) {
             final SlingHttpServletRequest request = TagUtil.getRequest(pageContext);
             final ResourceResolver resolver = request.getResourceResolver();
             String subtypePath = ResourceTypeUtil.getSubtypePath(resolver,
                     resource != null ? resource : resolver.getResource(path),
-                    resourceType, subtype);
+                    resourceType, subtype, null);
             if (StringUtils.isNotBlank(subtypePath)) {
                 super.setResourceType(subtypePath);
             }
@@ -163,7 +171,7 @@ public class IncludeTag extends IncludeTagHandler {
         }
     }
 
-    /** Returns or creates the expressionUtil . Not null. */
+    /** Returns or creates the expressionUtil. Not null. */
     protected com.composum.sling.core.util.ExpressionUtil getExpressionUtil() {
         if (expressionUtil == null) {
             expressionUtil = new ExpressionUtil(pageContext);
@@ -181,7 +189,7 @@ public class IncludeTag extends IncludeTagHandler {
         return testResult;
     }
 
-    // Tag Implementation ...
+    // dynamic include implementation ...
 
     /**
      * Renders an include tag for Apache (needs Apache SSI module) instead of the actual include.

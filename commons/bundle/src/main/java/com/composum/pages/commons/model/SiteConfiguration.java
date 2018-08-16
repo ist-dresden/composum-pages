@@ -14,4 +14,8 @@ public class SiteConfiguration extends ContentModel<Site> {
     public SiteConfiguration(BeanContext context, Resource resource) {
         initialize(context, resource);
     }
+
+    public boolean isThumbnailAvailable() {
+        return getResource().getChild("thumbnail/image") != null;
+    }
 }

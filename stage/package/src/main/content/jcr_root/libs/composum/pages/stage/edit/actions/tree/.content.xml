@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+        jcr:primaryType="nt:unstructured"
+        jcr:description="the tree actions component is rendering a button in the tree toolbar to trigger an action (JS)"
+        sling:resourceType="composum/pages/stage/edit/actions/tree"/>

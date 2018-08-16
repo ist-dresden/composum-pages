@@ -7,11 +7,12 @@
         'use strict';
 
         tree.const = _.extend(tree.const || {}, {
-            pagesCssBase: 'composum-pages-stage-edit-tools-tree-pages',
-            developCssBase: 'composum-pages-stage-edit-tools-tree-develop',
+            pagesCssBase: 'composum-pages-stage-edit-tools-main-pages',
+            developCssBase: 'composum-pages-stage-edit-tools-main-develop',
             treeClass: 'composum-pages-tools_tree',
-            treePanelClass: 'composum-pages-tools_panel',
             treeActionsClass: 'composum-pages-tools_actions',
+            treePanelClass: 'composum-pages-tools_tree-panel',
+            searchPanelClass: 'composum-pages-tools_search-panel',
             contextActionsClass: 'composum-pages-tools_left-actions',
             contextActionsLoadUrl: '/bin/cpm/pages/edit.treeActions.html'
         });
@@ -23,8 +24,11 @@
             },
 
             onPathSelectedFailed: function (path) {
+                if (this.log.getLevel() <= log.levels.DEBUG) {
+                    this.log.debug(this.nodeIdPrefix + 'tree.onPathSelectedFailed(' + path + ')');
+                }
                 var node = this.getSelectedTreeNode();
-                while (!node && (path = core.getParentPath(path)) && path != '/') {
+                while (!node && (path = core.getParentPath(path)) && path !== '/') {
                     var busy = this.busy;
                     this.busy = true;
                     this.selectNode(path);
@@ -34,10 +38,9 @@
                 this.onPathSelected(undefined, path);
             },
 
-            onPathSelected: function (event, path) {
-                if (path) {
-                    core.components.Tree.prototype.onPathSelected.apply(this, [event, path]);
-                }
+            onContentInserted: function (event, path) {
+                var parentAndName = core.getParentAndName(path);
+                this.onPathInserted(event, parentAndName.path, parentAndName.name);
             }
         });
 
@@ -46,15 +49,135 @@
             nodeIdPrefix: 'PP_',
 
             initialize: function (options) {
-                this.initialSelect = this.$el.attr('data-selected');
-                if (!this.initialSelect || this.initialSelect == '/') {
-                    this.initialSelect = pages.profile.get('tree', 'current', "/");
-                }
+                var p = pages.const.profile.page.tree;
+                var id = this.nodeIdPrefix + 'Tree';
+                options = _.extend(options || {}, {
+                    dragAndDrop: {
+                        is_draggable: _.bind(this.nodeIsDraggable, this),
+                        inside_pos: 'last',
+                        copy: false,
+                        check_while_dragging: false,
+                        drag_selection: false,
+                        touch: false, //'selection',
+                        large_drag_target: true,
+                        large_drop_target: true,
+                        use_html5: false
+                    }
+                });
+                this.initializeFilter();
                 tree.ToolsTree.prototype.initialize.apply(this, [options]);
+                var c = pages.const.event;
+                //$(document).on(c.element.selected + '.' + id, _.bind(this.onElementSelected, this));
+                $(document).on(c.element.inserted + '.' + id, _.bind(this.onContentInserted, this));
+                $(document).on(c.element.changed + '.' + id, _.bind(this.onPathChanged, this));
+                $(document).on(c.element.deleted + '.' + id, _.bind(this.onPathDeleted, this));
+                $(document).on(c.element.moved + '.' + id, _.bind(this.onPathMoved, this));
+                $(document).on(c.content.selected + '.' + id, _.bind(this.onPathSelected, this));
+                $(document).on(c.content.inserted + '.' + id, _.bind(this.onContentInserted, this));
+                $(document).on(c.content.changed + '.' + id, _.bind(this.onPathChanged, this));
+                $(document).on(c.content.deleted + '.' + id, _.bind(this.onPathDeleted, this));
+                $(document).on(c.content.moved + '.' + id, _.bind(this.onPathMoved, this));
+                $(document).on(c.page.selected + '.' + id, _.bind(this.onPathSelected, this));
+                $(document).on(c.page.inserted + '.' + id, _.bind(this.onContentInserted, this));
+                $(document).on(c.page.changed + '.' + id, _.bind(this.onPathChanged, this));
+                $(document).on(c.page.deleted + '.' + id, _.bind(this.onPathDeleted, this));
+                $(document).on(c.site.created + '.' + id, _.bind(this.onContentInserted, this));
+                $(document).on(c.site.changed + '.' + id, _.bind(this.onPathChanged, this));
+                $(document).on(c.site.deleted + '.' + id, _.bind(this.onPathDeleted, this));
+            },
+
+            onElementSelected: function (event, name, path, type) {
+                this.onPathSelected(event, path);
+            },
+
+            setRootPath: function (rootPath) {
+                tree.ToolsTree.prototype.setRootPath.apply(this, [this.adjustRootPath(rootPath)]);
+            },
+
+            adjustRootPath: function (rootPath) {
+                var scope = pages.getScope();
+                if (scope === 'site' && pages.current.site && rootPath.indexOf(pages.current.site) !== 0) {
+                    rootPath = pages.current.site;
+                }
+                return rootPath;
+            },
+
+            initializeFilter: function () {
+                var p = pages.const.profile.page.tree;
+                this.filter = pages.profile.get(p.aspect, p.filter, undefined);
             },
 
             dataUrlForPath: function (path) {
-                return '/bin/cpm/pages/edit.pageTree.json' + path;
+                var params = this.filter ? '?filter=' + this.filter : '';
+                return '/bin/cpm/pages/edit.pageTree.json' + path + params;
+            },
+
+            nodeIsDraggable: function (selection, event) {
+                return true;
+            },
+
+            dropNode: function (draggedNode, targetNode, index) {
+                var targetPath = targetNode.path;
+                var oldPath = draggedNode.path;
+                var before = this.getNodeOfIndex(targetNode, index);
+                if (this.isElementType(targetNode) && this.isElementType(draggedNode)) {
+                    // move elements on a page or between pages via tree...
+                    core.ajaxPost(pages.const.url.edit.move + oldPath, {
+                        targetPath: targetPath,
+                        targetType: targetNode.type,
+                        before: before ? before.original.path : undefined
+                    }, {}, function (data) {
+                        $(document).trigger(pages.const.event.element.moved, [oldPath, data.path]);
+                    }, function (xhr) {
+                        core.alert('error', 'Error', 'Error on moving element', xhr);
+                    });
+                } else {
+                    // move folders, pages, files...
+                    var oldParentPath = core.getParentPath(oldPath);
+                    if (oldParentPath === targetPath) {
+                        // reordering in the same parent resource - keep that simple...
+                        core.ajaxPost('/bin/cpm/pages/edit.moveContent.json' + core.encodePath(oldPath), {
+                            targetPath: targetPath,
+                            before: before ? before.original.path : undefined
+                        }, {}, _.bind(function (data) {
+                            $(document).trigger(pages.const.event.content.moved, [oldPath, data.path]);
+                        }, this), _.bind(function (xhr) {
+                            core.alert('error', 'Error', 'Error on moving content', xhr);
+                        }, this));
+                    } else {
+                        // move to another parent - check and confirm...
+                        pages.dialogs.openMoveContentDialog(draggedNode.name, draggedNode.path, draggedNode.type,
+                            _.bind(function (dialog) {
+                                dialog.setValues(draggedNode.path, targetNode.path, before ? before.original.name : undefined);
+                            }, this));
+                    }
+                }
+            },
+
+            renameNode: function (node, oldName, newName) {
+                var nodePath = node.path;
+                var parentPath = core.getParentPath(nodePath);
+                var oldPath = core.buildContentPath(parentPath, oldName);
+                core.ajaxPost('/bin/cpm/pages/edit.renameContent.json' + core.encodePath(oldPath), {
+                    name: newName
+                }, {}, _.bind(function (data) {
+                    if (this.isElementType(node)) {
+                        $(document).trigger(pages.const.event.element.moved, [oldPath, data.path]);
+                    } else {
+                        $(document).trigger(pages.const.event.content.moved, [oldPath, data.path]);
+                    }
+                }, this), _.bind(function (result) {
+                    this.refreshNodeById(node.id);
+                    pages.dialogs.openRenameContentDialog(oldName, oldPath, node.type,
+                        _.bind(function (dialog) {
+                            dialog.setValues(oldPath, newName);
+                            dialog.errorMessage('Rename Content', result);
+                        }, this));
+                }, this));
+            },
+
+            isElementType: function (node) {
+                return 'container' === node.type || 'element' === node.type;
             }
         });
 
@@ -64,8 +187,9 @@
 
             initialize: function (options) {
                 this.initialSelect = this.$el.attr('data-selected');
-                if (!this.initialSelect || this.initialSelect == '/') {
-                    this.initialSelect = pages.profile.get('tree', 'current', "/");
+                if (!this.initialSelect || this.initialSelect === '/') {
+                    var p = pages.const.profile.develop.tree;
+                    this.initialSelect = pages.profile.get(p.aspect, p.path, "/");
                 }
                 tree.ToolsTree.prototype.initialize.apply(this, [options]);
             },
@@ -79,29 +203,34 @@
 
             initialize: function (options) {
                 this.$actions = this.$('.' + tree.const.contextActionsClass);
-                $(document).on('path:selected.' + this.tree.nodeIdPrefix + 'ToolsTree',
-                    _.bind(this.onPathSelected, this));
+                this.treePanelId = this.tree.nodeIdPrefix + 'treePanel';
+            },
+
+            onElementSelected: function (event, name, path, type) {
+                this.onPathSelected(event, path);
             },
 
             onPathSelected: function (event, path) {
                 var treePath = this.tree.getSelectedPath();
                 if (this.actions) {
-                    if (treePath && this.actions.data.path == treePath && treePath == path) {
+                    if (treePath && this.actions.data.path === treePath && treePath === path) {
                         return;
                     }
                 }
-                console.log(this.tree.nodeIdPrefix + 'ToolsTree.onPathSelected(' + path + '): ' + treePath);
+                pages.log.debug(this.treePanelId + '.onPathSelected(' + path + ') <- ' + treePath);
                 if (!path) {
                     this.doSelectDefaultNode();
-                } else if (path == treePath) {
+                } else if (path === treePath) {
                     this.setNodeActions(path);
                 } else {
-                    var node = this.tree.getSelectedTreeNode();
-                    if (node) {
-                        this.setNodeActions();
-                    } else {
-                        this.doSelectDefaultNode();
-                    }
+                    this.tree.selectNode(path, _.bind(function () {
+                        var node = this.tree.getSelectedTreeNode();
+                        if (node) {
+                            this.setNodeActions();
+                        } else {
+                            this.doSelectDefaultNode();
+                        }
+                    }, this));
                 }
             },
 
@@ -143,9 +272,78 @@
         tree.PageTreePanel = tree.ToolsTreePanel.extend({
 
             initialize: function (options) {
+                var e = pages.const.event;
+                var p = pages.const.profile.page.tree;
                 this.tree = core.getWidget(this.el, '.' + tree.const.treeClass, tree.PageTree);
                 this.tree.panel = this;
                 tree.ToolsTreePanel.prototype.initialize.apply(this, [options]);
+                this.$treePanel = this.$('.' + tree.const.treePanelClass);
+                this.searchPanel = core.getWidget(this.el, '.' + pages.search.const.css.base + pages.search.const.css._panel,
+                    pages.search.SearchPanel);
+                this.$viewToggle = this.$('.' + tree.const.pagesCssBase + '_toggle-view');
+                this.setView(pages.profile.get(p.aspect, p.view, 'tree'));
+                this.$viewToggle.click(_.bind(this.toggleView, this));
+                this.selectFilter(pages.profile.get(p.aspect, p.filter, undefined));
+                this.$('.' + tree.const.pagesCssBase + '_filter-value a').click(_.bind(this.setFilter, this));
+                $(document).on(e.element.selected + '.' + this.treePanelId, _.bind(this.onElementSelected, this));
+                $(document).on(e.path.selected + '.' + this.treePanelId, _.bind(this.onPathSelected, this));
+                $(document).on(e.page.selected + '.' + this.treePanelId, _.bind(this.onPathSelected, this));
+                $(document).on(e.site.selected + '.' + this.treePanelId, _.bind(this.onSiteSelected, this));
+                $(document).on(e.scope.changed + '.' + this.treePanelId, _.bind(this.onScopeChanged, this));
+                $(document).on(e.ready + '.' + this.treePanelId, _.bind(this.ready, this));
+            },
+
+            ready: function () {
+                var p = pages.const.profile.page.tree;
+                this.tree.setRootPath('/');
+                this.tree.selectNode(pages.profile.get(p.aspect, p.path, "/"));
+                this.onTabSelected();
+            },
+
+            onScopeChanged: function () {
+                this.tree.setRootPath('/');
+                this.searchPanel.onScopeChanged();
+            },
+
+            onSiteSelected: function () {
+                this.onScopeChanged();
+            },
+
+            onTabSelected: function () {
+                if (this.currentView === 'search') {
+                    this.searchPanel.onShown();
+                }
+            },
+
+            setView: function (key) {
+                if (!key) {
+                    key = !this.currentView || this.currentView === 'search' ? 'tree' : 'search';
+                }
+                if (this.currentView !== key) {
+                    this.currentView = key;
+                    var p = pages.const.profile.page.tree;
+                    pages.profile.set(p.aspect, p.view, key);
+                    switch (key) {
+                        default:
+                        case 'tree':
+                            this.$viewToggle.removeClass('active');
+                            this.searchPanel.$el.addClass('hidden');
+                            this.$treePanel.removeClass('hidden');
+                            break;
+                        case 'search':
+                            this.$viewToggle.addClass('active');
+                            this.$treePanel.addClass('hidden');
+                            this.searchPanel.$el.removeClass('hidden');
+                            this.searchPanel.onShown();
+                            break;
+                    }
+                }
+            },
+
+            toggleView: function (event) {
+                event.preventDefault();
+                this.setView();
+                return false;
             },
 
             selectDefaultNode: function () {
@@ -153,6 +351,24 @@
                     this.tree.selectNode(pages.current.page, _.bind(function () {
                         this.setNodeActions();
                     }, this));
+                }
+            },
+
+            setFilter: function (event) {
+                event.preventDefault();
+                var p = pages.const.profile.page.tree;
+                var $link = $(event.currentTarget);
+                var filter = $link.parent().data('value');
+                this.tree.setFilter(filter);
+                this.selectFilter(filter);
+                pages.profile.set(p.aspect, p.filter, filter);
+            },
+
+            selectFilter: function (filter) {
+                this.$('.' + tree.const.pagesCssBase + '_filter-value').removeClass('active');
+                if (filter) {
+                    this.$('.' + tree.const.pagesCssBase + '_filter-value[data-value="' + filter + '"]')
+                        .addClass('active');
                 }
             }
         });

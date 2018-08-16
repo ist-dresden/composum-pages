@@ -1,0 +1,94 @@
+@charset "UTF-8";
+
+@import "../../../css/variables";
+@import "../../../css/mixins";
+
+.composum-pages-edit-widget {
+
+    &_checkbox,
+    &_checkselect {
+
+        .row > .col > & {
+
+            .composum-pages-edit-widget {
+
+                &_hint {
+                    margin-top: -10px;
+                    margin-bottom: 12px;
+                }
+            }
+        }
+
+        .composum-pages-edit-widget {
+
+            &_hint {
+                min-height: 22px;
+            }
+        }
+
+        .label-text {
+            display: inline-block;
+            margin: 0;
+            float: none;
+        }
+    }
+}
+
+.composum-pages-edit-multiwidget {
+
+    &.multiwidget-table {
+
+        .multi-form-item {
+
+            .composum-pages-edit-widget {
+
+                &_checkbox,
+                &_checkselect {
+
+                    .composum-pages-edit-widget {
+
+                        &_label {
+                            display: inline-block;
+                        }
+                    }
+
+                    .label-text {
+                        display: none;
+                    }
+                }
+            }
+
+            &:first-child {
+
+                .composum-pages-edit-widget {
+
+                    &_checkbox,
+                    &_checkselect {
+                        position: relative;
+                        margin-top: 0;
+
+                        .composum-pages-edit-widget {
+
+                            &_label {
+                                width: auto;
+                                padding-left: 0;
+
+                                .label-text {
+                                    display: block;
+                                    position: absolute;
+                                    top: 0;
+                                    left: 0;
+                                }
+                            }
+
+                            &_input {
+                                top: auto;
+                                margin-left: 0;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

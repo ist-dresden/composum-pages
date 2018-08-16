@@ -4,9 +4,12 @@ import com.composum.pages.commons.PagesConstants;
 import com.composum.pages.commons.model.properties.Language;
 import com.composum.pages.commons.model.properties.Languages;
 import com.composum.pages.commons.request.DisplayMode;
-import com.composum.pages.commons.request.RequestLocale;
+import com.composum.pages.commons.request.PagesLocale;
 import com.composum.pages.commons.service.PageManager;
+import com.composum.pages.commons.service.ResourceManager;
 import com.composum.pages.commons.service.SiteManager;
+import com.composum.pages.commons.service.VersionsService;
+import com.composum.pages.commons.util.TagCssClasses;
 import com.composum.pages.commons.util.ValueHashMap;
 import com.composum.platform.models.annotations.PropertyDefaults;
 import com.composum.sling.core.BeanContext;
@@ -18,7 +21,7 @@ import com.composum.sling.core.request.DomIdentifiers;
 import com.composum.sling.core.util.LinkUtil;
 import com.composum.sling.core.util.PropertyUtil;
 import com.composum.sling.core.util.ResourceUtil;
-import com.composum.sling.platform.security.PlatformAccessFilter;
+import com.composum.sling.platform.security.AccessMode;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.apache.sling.api.SlingHttpServletRequest;
@@ -33,10 +36,13 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import static com.composum.pages.commons.taglib.DefineObjectsTag.CURRENT_PAGE;
+import static com.composum.platform.models.annotations.InternationalizationStrategy.I18NFOLDER;
 import static com.composum.sling.platform.security.PlatformAccessFilter.ACCESS_MODE_KEY;
 
 /**
@@ -60,9 +66,6 @@ public abstract class AbstractModel implements SlingBean, Model {
     public static final ResourceFilter CSS_BASE_TYPE_RESTRICTION =
             new ResourceFilter.ResourceTypeFilter(new StringFilter.BlackList("^(nt|sling):.*$"));
 
-    /** the subpath to store I18N translations of the element properties */
-    public static final String I18N_PROPERTY_PATH = "i18n/";
-
     /** the list paths to use as I18N access path if I18N should be ignored */
     public static final List<String> IGNORE_I18N;
 
@@ -71,11 +74,23 @@ public abstract class AbstractModel implements SlingBean, Model {
         IGNORE_I18N.add(".");
     }
 
-    /** the instance of the scripting context for the model (initialized) */
-    @Inject @Self
-    protected BeanContext context;
+    // OSGi services
+
+    /** protected to allow set instance by the Page and Site model */
     protected transient SiteManager siteManager;
     protected transient PageManager pageManager;
+
+    /** lazy referenced services */
+    private transient ResourceManager resourceManager;
+    private transient VersionsService versionsService;
+
+    // instance attributes
+
+    /** the instance of the scripting context for the model (initialized) */
+    @SuppressWarnings("CdiInjectionPointsInspection")
+    @Inject
+    @Self
+    protected BeanContext context;
 
     /** the resource an related properties represented by this model (initialized) */
     protected Resource resource;
@@ -84,8 +99,13 @@ public abstract class AbstractModel implements SlingBean, Model {
     /** inherited properties are initialized lazy */
     private transient InheritedValues inheritedValues;
 
+    private transient Map<String, Object> propertiesMap;
+    private transient Map<String, Object> inheritedMap;
+
     /** current access mode (author/public) od the contexts request */
-    private transient PlatformAccessFilter.AccessMode accessMode;
+    private transient AccessMode accessMode;
+
+    private transient DisplayMode.Value displayMode;
 
     private transient Page currentPage;
     private transient Page containingPage;
@@ -107,6 +127,8 @@ public abstract class AbstractModel implements SlingBean, Model {
 
     private transient PagesConstants.ComponentType componentType;
     private transient Component component;
+
+    private transient List<Resource> referrers;
 
     // Initializing
 
@@ -156,9 +178,9 @@ public abstract class AbstractModel implements SlingBean, Model {
         initialize(context, resource);
     }
 
-    /** Initialization if called from Sling Models. Do not call otherwise. */
+    /** Initialization called during construction by Sling Models. Do not call otherwise. */
     @PostConstruct
-    public void initialize() {
+    protected void initialize() {
         Validate.notNull(context);
         initialize(context);
     }
@@ -195,20 +217,20 @@ public abstract class AbstractModel implements SlingBean, Model {
     }
 
     public boolean isPublicMode() {
-        PlatformAccessFilter.AccessMode accessMode = getAccessMode();
-        return accessMode != null && accessMode == PlatformAccessFilter.AccessMode.PUBLIC;
+        AccessMode accessMode = getAccessMode();
+        return accessMode != null && accessMode == AccessMode.PUBLIC;
     }
 
     public boolean isAuthorMode() {
-        PlatformAccessFilter.AccessMode accessMode = getAccessMode();
-        return accessMode != null && accessMode == PlatformAccessFilter.AccessMode.AUTHOR;
+        AccessMode accessMode = getAccessMode();
+        return accessMode != null && accessMode == AccessMode.AUTHOR;
     }
 
-    public PlatformAccessFilter.AccessMode getAccessMode() {
+    public AccessMode getAccessMode() {
         if (accessMode == null) {
             String value = (String) context.getRequest().getAttribute(ACCESS_MODE_KEY);
             accessMode = StringUtils.isNotBlank(value)
-                    ? PlatformAccessFilter.AccessMode.valueOf(value)
+                    ? AccessMode.valueOf(value)
                     : null;
         }
         return accessMode;
@@ -220,11 +242,14 @@ public abstract class AbstractModel implements SlingBean, Model {
     }
 
     public DisplayMode.Value getDisplayMode() {
-        return DisplayMode.requested(context);
+        if (displayMode == null) {
+            displayMode = DisplayMode.current(context);
+        }
+        return displayMode;
     }
 
     /**
-     * This is used by the 'component' tag to determins the CSS class base name for the component.
+     * This is used by the 'component' tag to determine the CSS class base name for the component.
      */
     public String getCssBase() {
         if (cssBase == null) {
@@ -238,7 +263,7 @@ public abstract class AbstractModel implements SlingBean, Model {
      */
     protected String buildCssBase() {
         String type = getCssBaseType();
-        return StringUtils.isNotBlank(type) ? cssOfType(type) : null;
+        return StringUtils.isNotBlank(type) ? TagCssClasses.cssOfType(type) : null;
     }
 
     /**
@@ -246,26 +271,6 @@ public abstract class AbstractModel implements SlingBean, Model {
      */
     protected String getCssBaseType() {
         return CSS_BASE_TYPE_RESTRICTION.accept(resource) ? resource.getResourceType() : null;
-    }
-
-    /**
-     * Transforms a resource type into a CSS class name; replaces all '/' by '-'.
-     */
-    public static String cssOfType(String type) {
-        if (StringUtils.isNotBlank(type)) {
-            type = type.replaceAll("^/((apps|libs)/)?", "");
-            type = type.replace('/', '-').replace(':', '-');
-        }
-        return type;
-    }
-
-    /**
-     * Collects a CSS class if not 'blank' and not always present in the collection.
-     */
-    public static void addCssClass(List<String> collection, String cssClass) {
-        if (StringUtils.isNotBlank(cssClass) && !collection.contains(cssClass)) {
-            collection.add(cssClass);
-        }
     }
 
     //
@@ -336,6 +341,15 @@ public abstract class AbstractModel implements SlingBean, Model {
         return type;
     }
 
+    public List<Resource> getReferrers() {
+        if (referrers == null) {
+            referrers = new ArrayList<>();
+            getResourceManager().changeReferences(ResourceFilter.ALL, StringFilter.ALL,
+                    getContext().getResolver().getResource("/content"), referrers, true, getPath(), "");
+        }
+        return referrers;
+    }
+
     // component
 
     public Component getComponent() {
@@ -390,7 +404,7 @@ public abstract class AbstractModel implements SlingBean, Model {
 
     public Locale getLocale() {
         if (locale == null) {
-            locale = RequestLocale.get(context);
+            locale = context.getRequest().adaptTo(PagesLocale.class).getLocale();
         }
         return locale;
     }
@@ -414,32 +428,18 @@ public abstract class AbstractModel implements SlingBean, Model {
     public Languages getLanguages() {
         if (languages == null) {
             languages = Languages.get(context);
+            if (languages == null) {
+                Languages.set(context, getResource());
+                languages = Languages.get(context);
+            }
         }
         return languages;
     }
 
     protected List<String> getI18nPaths() {
         if (i18nPaths == null) {
-            i18nPaths = getI18nPaths(getLocale());
+            i18nPaths = I18NFOLDER.getI18nPaths(getLocale());
         }
-        return i18nPaths;
-    }
-
-    public static List<String> getI18nPaths(Locale locale) {
-        List<String> i18nPaths = new ArrayList<>();
-        if (locale != null) {
-            String variant = locale.getVariant();
-            String country = locale.getCountry();
-            String language = locale.getLanguage();
-            if (StringUtils.isNotBlank(variant)) {
-                i18nPaths.add(I18N_PROPERTY_PATH + language + "_" + country + "_" + variant);
-            }
-            if (StringUtils.isNotBlank(country)) {
-                i18nPaths.add(I18N_PROPERTY_PATH + language + "_" + country);
-            }
-            i18nPaths.add(I18N_PROPERTY_PATH + language);
-        }
-        i18nPaths.add(".");
         return i18nPaths;
     }
 
@@ -453,13 +453,13 @@ public abstract class AbstractModel implements SlingBean, Model {
         return getProperty(key, getLocale(), type);
     }
 
-    protected <T> T getProperty(String key, Locale locale, T defaultValue) {
+    public <T> T getProperty(String key, Locale locale, T defaultValue) {
         Class<T> type = PropertyUtil.getType(defaultValue);
         T value = getProperty(key, locale, type);
         return value != null ? value : defaultValue;
     }
 
-    protected <T> T getProperty(String key, Locale locale, Class<T> type) {
+    public <T> T getProperty(String key, Locale locale, Class<T> type) {
         return getProperty(key, type, locale != null ? getI18nPaths() : IGNORE_I18N);
     }
 
@@ -484,6 +484,16 @@ public abstract class AbstractModel implements SlingBean, Model {
             }
         }
         return null;
+    }
+
+    /**
+     * the generic map for direct use in templates
+     */
+    public Map<String, Object> getProperties() {
+        if (propertiesMap == null) {
+            propertiesMap = new GenericProperties();
+        }
+        return propertiesMap;
     }
 
     // inherited properties
@@ -544,10 +554,60 @@ public abstract class AbstractModel implements SlingBean, Model {
     }
 
     /**
+     * the generic map for direct use in templates
+     */
+    public Map<String, Object> getInherited() {
+        if (inheritedMap == null) {
+            inheritedMap = new GenericInherited();
+        }
+        return inheritedMap;
+    }
+
+    /**
      * create the inherited properties strategy (extension hook, defaults to an instance of InheritedValues)
      */
     protected InheritedValues createInheritedValues(Resource resource) {
         return new InheritedValues(resource);
+    }
+
+    // generic property access via generic Map for direct use in templates
+
+    public abstract class GenericMap extends HashMap<String, Object> {
+
+        public static final String UNDEFINED = "<undefined>";
+
+        /**
+         * delegates each 'get' to the localized methods and caches the result
+         */
+        @Override
+        public Object get(Object key) {
+            Object value = super.get(key);
+            if (value == null) {
+                value = getValue((String) key);
+                super.put((String) key, value != null ? value : UNDEFINED);
+            }
+            return value != UNDEFINED ? value : null;
+        }
+
+        protected abstract Object getValue(String key);
+    }
+
+    public class GenericProperties extends GenericMap {
+
+        @Override
+        public Object getValue(String key) {
+            return getProperty(key, Object.class);
+        }
+
+    }
+
+    public class GenericInherited extends GenericMap {
+
+        @Override
+        public Object getValue(String key) {
+            return getInherited(key, Object.class);
+        }
+
     }
 
     // Sites & Pages
@@ -581,5 +641,19 @@ public abstract class AbstractModel implements SlingBean, Model {
             siteManager = context.getService(SiteManager.class);
         }
         return siteManager;
+    }
+
+    public ResourceManager getResourceManager() {
+        if (resourceManager == null) {
+            resourceManager = context.getService(ResourceManager.class);
+        }
+        return resourceManager;
+    }
+
+    public VersionsService getVersionsService() {
+        if (versionsService == null) {
+            versionsService = context.getService(VersionsService.class);
+        }
+        return versionsService;
     }
 }

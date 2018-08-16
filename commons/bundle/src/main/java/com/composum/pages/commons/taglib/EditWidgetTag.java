@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ValueMap;
 
+import javax.annotation.Nonnull;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.jstl.core.LoopTag;
@@ -18,7 +19,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import static com.composum.pages.commons.taglib.AbstractPageTag.COMMONS_COMPONENT_BASE;
 import static com.composum.pages.commons.taglib.EditMultiWidgetTag.MULTIWIDGET_TYPE;
 
 /**
@@ -38,8 +38,6 @@ public class EditWidgetTag extends AbstractWidgetTag implements LoopTag {
 
     public static final String MODEL_CLASS = "modelClass";
     public static final String DEFAULT_MODEL_CLASS = "";
-
-    public static final String COMMONS_WIDGET_PATH = COMMONS_COMPONENT_BASE + "widget/";
 
     protected String widgetType;
     protected Object value;
@@ -75,7 +73,11 @@ public class EditWidgetTag extends AbstractWidgetTag implements LoopTag {
     }
 
     public String getCssName() {
-        return getName().replace('/', '-');
+        return getName().replaceAll("^(.*/)?i18n/.*/([^/]+)$", "$1$2")
+                .replace('/', '-')
+                .replace(':', '_')
+                .replace("*", "STAR")
+                .replace("#", "");
     }
 
     public Object getValue() {
@@ -206,8 +208,7 @@ public class EditWidgetTag extends AbstractWidgetTag implements LoopTag {
     }
 
     @Override
-    protected void initialize(SlingBean component) {
-        super.initialize(component);
+    protected void additionalInitialization(SlingBean component) {
         if (component instanceof PropertyEditHandle) {
             PropertyEditHandle handle = (PropertyEditHandle) component;
             handle.setWidget(this);
@@ -227,11 +228,11 @@ public class EditWidgetTag extends AbstractWidgetTag implements LoopTag {
     }
 
     protected String getSnippetResourceType() {
-        return COMMONS_WIDGET_PATH + getWidgetType();
+        return getWidgetResourceType(getWidgetType());
     }
 
     protected String getMultiResourceType() {
-        return COMMONS_WIDGET_PATH + MULTIWIDGET_TYPE;
+        return getWidgetResourceType(MULTIWIDGET_TYPE);
     }
 
     @Override
@@ -251,7 +252,7 @@ public class EditWidgetTag extends AbstractWidgetTag implements LoopTag {
     }
 
     @Override
-    protected void renderTagStart() throws JspException, IOException {
+    protected void renderTagStart() throws IOException {
         if (multi) {
             includeSnippet(getMultiResourceType(), "multiwidget-simple");
         }
@@ -303,7 +304,7 @@ public class EditWidgetTag extends AbstractWidgetTag implements LoopTag {
 
         protected PropertyEditHandle propertyHandle;
 
-        public MultiValueStatus(PropertyEditHandle editHandle) {
+        public MultiValueStatus(@Nonnull PropertyEditHandle editHandle) {
             propertyHandle = editHandle;
         }
 

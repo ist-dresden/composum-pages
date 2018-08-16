@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
-        jcr:primaryType="sling:OrderedFolder"
-        depends="[jslibs/jstree/3.3.3/themes/proton/style.css]"
-        embed="[jslibs/bootstrap-slider/9.7.2/css/bootstrap-slider.css,
-                jslibs/trumbowyg/2.3.0/ui/trumbowyg.css]"/>

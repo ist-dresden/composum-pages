@@ -12,4 +12,8 @@ public class SubsiteMenu extends Menu {
         }
         return rootPage;
     }
+
+    public boolean isRoot() {
+        return getCurrentPage().getPath().equals(getRootPage().getPath());
+    }
 }

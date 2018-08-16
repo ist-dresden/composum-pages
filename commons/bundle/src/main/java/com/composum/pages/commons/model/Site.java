@@ -1,15 +1,23 @@
 package com.composum.pages.commons.model;
 
+import com.composum.pages.commons.request.DisplayMode;
 import com.composum.pages.commons.service.PageManager;
 import com.composum.pages.commons.service.SiteManager;
+import com.composum.platform.models.annotations.DetermineResourceStategy;
+import com.composum.platform.models.annotations.PropertyDetermineResourceStrategy;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.util.ResourceUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ValueMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nonnull;
+import javax.jcr.RepositoryException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import static com.composum.pages.commons.PagesConstants.DEFAULT_HOMEPAGE_PATH;
@@ -17,12 +25,17 @@ import static com.composum.pages.commons.PagesConstants.NODE_TYPE_SITE;
 import static com.composum.pages.commons.PagesConstants.NODE_TYPE_SITE_CONFIGURATION;
 import static com.composum.pages.commons.PagesConstants.PROP_HOMEPAGE;
 
-public class Site extends ContentDriven<SiteConfiguration> {
+@PropertyDetermineResourceStrategy(Site.ContainingSiteResourceStrategy.class)
+public class Site extends ContentDriven<SiteConfiguration> implements Comparable<Site> {
 
-    public enum PublicMode {LIVE, PUBLIC, PREVIEW}
+    private static final Logger LOG = LoggerFactory.getLogger(Site.class);
+
+    public static final String PUBLIC_MODE_IN_PLACE = "inPlace";
+    public static final String PUBLIC_MODE_VERSIONS = "versions";
+    public static final String PUBLIC_MODE_LIVE = "live";
 
     public static final String PROP_PUBLIC_MODE = "publicMode";
-    public static final String DEFAULT_PUBLIC_MODE = PublicMode.PUBLIC.name();
+    public static final String DEFAULT_PUBLIC_MODE = PUBLIC_MODE_IN_PLACE;
 
     public static final String RELEASE_LABEL_PREFIX = "composum-release-";
 
@@ -44,8 +57,11 @@ public class Site extends ContentDriven<SiteConfiguration> {
 
     // site attributes
 
-    private transient PublicMode publicMode;
+    private transient String publicMode;
     private transient Homepage homepage;
+
+    private transient Collection<Page> modifiedPages;
+    private transient Collection<Page> unreleasedPages;
 
     public Site() {
     }
@@ -59,7 +75,20 @@ public class Site extends ContentDriven<SiteConfiguration> {
         initialize(context, resource);
     }
 
+    @Override
+    public int compareTo(@Nonnull Site site) {
+        return getName().compareTo(site.getName());
+    }
+
     // initializer extensions
+
+    /** Compatible to {@link Site#determineResource(Resource)}. */
+    public static class ContainingSiteResourceStrategy implements DetermineResourceStategy {
+        @Override
+        public Resource determineResource(BeanContext beanContext, Resource requestResource) {
+            return beanContext.getService(SiteManager.class).getContainingSiteResource(requestResource);
+        }
+    }
 
     @Override
     protected Resource determineResource(Resource initialResource) {
@@ -69,6 +98,18 @@ public class Site extends ContentDriven<SiteConfiguration> {
     @Override
     protected SiteConfiguration createContentModel(BeanContext context, Resource contentResource) {
         return new SiteConfiguration(context, contentResource);
+    }
+
+    // Site properties
+
+    public boolean isTemplate() {
+        return getResourceManager().isTemplate(this.getResource());
+    }
+
+    @Override
+    public String getTitle() {
+        String title = super.getTitle();
+        return StringUtils.isNotBlank(title) ? title : getName();
     }
 
     // site hierarchy
@@ -87,15 +128,23 @@ public class Site extends ContentDriven<SiteConfiguration> {
         return homepage;
     }
 
+    /**
+     * use requested edit mode as mode for the component rendering;
+     * for the site the mode is set to 'none' in the page template to avoid container / element edit behavior
+     */
+    @Override
+    public boolean isEditMode() {
+        return DisplayMode.isEditMode(DisplayMode.requested(context));
+    }
+
     // releases
 
     /**
      * returns the 'publicMode' property value of this site
      */
-    public PublicMode getPublicMode() {
+    public String getPublicMode() {
         if (publicMode == null) {
-            String propertyValue = getProperty(PROP_PUBLIC_MODE, null, DEFAULT_PUBLIC_MODE);
-            publicMode = PublicMode.valueOf(propertyValue.toUpperCase());
+            publicMode = getProperty(PROP_PUBLIC_MODE, null, DEFAULT_PUBLIC_MODE);
         }
         return publicMode;
     }
@@ -141,4 +190,30 @@ public class Site extends ContentDriven<SiteConfiguration> {
         return result;
     }
 
+    public Collection<Page> getModifiedPages() {
+        if (modifiedPages == null) {
+            modifiedPages = getVersionsService().findModifiedPages(getContext(), getResource());
+        }
+        return modifiedPages;
+    }
+
+    public Collection<Page> getUnreleasedPages() {
+        if (unreleasedPages == null) {
+            final List<Release> releases = getReleases();
+            final Release release = releases.isEmpty() ? null : releases.get(releases.size() - 1);
+            unreleasedPages = getUnreleasedPages(release);
+        }
+        return unreleasedPages;
+    }
+
+    public Collection<Page> getUnreleasedPages(Release releaseToCheck) {
+        Collection<Page> result;
+        try {
+            result = getVersionsService().findUnreleasedPages(getContext(), getResource(), releaseToCheck);
+        } catch (RepositoryException ex) {
+            LOG.error(ex.getMessage(), ex);
+            result = new ArrayList<>();
+        }
+        return result;
+    }
 }

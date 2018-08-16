@@ -3,21 +3,10 @@
     window.composum.pages = window.composum.pages || {};
     window.composum.pages.elements = window.composum.pages.elements || {};
 
-    (function (elements, core) {
+    (function (elements, core) { // strong dependency to: 'invoke.js'
         'use strict';
 
         elements.const = _.extend(elements.const || {}, {
-            data: { // the data attribute names of a component
-                name: 'pages-edit-name',
-                path: 'pages-edit-path',
-                type: 'pages-edit-type'
-            },
-            class: { // general edit UI CSS classes
-                editBody: 'composum-pages-EDIT_body',
-                component: 'composum-pages-component',
-                container: 'composum-pages-container',
-                element: 'composum-pages-element'
-            },
             handle: { // selection handle CSS classes
                 handles: 'composum-pages-stage-edit-handles',
                 pointer: 'composum-pages-component-handle_pointer',
@@ -44,15 +33,6 @@
                 url: {
                     targets: '/bin/cpm/pages/edit.targetContainers.json'
                 }
-            },
-            event: { // event handling rules and keys (inter frame communication)
-                messagePattern: new RegExp('^([^\\{\\[]+)([\\{\\[].*[\\}\\]])$'),
-                pageContainerRefs: 'page:containerRefs',
-                componentSelect: 'component:select',
-                componentSelected: 'component:selected',
-                insertComponent: 'component:insert',
-                moveComponent: 'component:move',
-                openDialog: 'doalog:open'
             },
             log: { // logging switches (for debugging only)
                 operation: true,
@@ -240,7 +220,7 @@
              */
             setComponent: function (component) {
                 if (component) {
-                    if (this.component != component) {
+                    if (this.component !== component) {
                         this.component = component;
                         this.setBounds(component);
                         this.$name.text(component.getName());
@@ -295,9 +275,9 @@
              */
             getComponentEl: function (domEl) {
                 if (domEl) {
-                    if (domEl == this.el || domEl == this.$head[0] || domEl == this.$left[0] ||
-                        domEl == this.$right[0] || domEl == this.$bottom[0] || domEl == this.$path[0] ||
-                        domEl == this.$name[0] || domEl == this.$type[0] || domEl == this.$size[0]) {
+                    if (domEl === this.el || domEl === this.$head[0] || domEl === this.$left[0] ||
+                        domEl === this.$right[0] || domEl === this.$bottom[0] || domEl === this.$path[0] ||
+                        domEl === this.$name[0] || domEl === this.$type[0] || domEl === this.$size[0]) {
                         return this.component.el;
                     }
                 }
@@ -375,7 +355,7 @@
                 if (!self.currentComponent) {
                     self.currentComponent = component;
                     if (elements.const.log.dnd.event) {
-                        console.log('elements.dnd.onDragStart(' + component.data.path + ')');
+                        elements.log.debug('elements.dnd.onDragStart(' + component.data.path + ')');
                     }
                     self.reset();
                     if (_.isFunction(event.dataTransfer.setDragImage)) {
@@ -404,7 +384,7 @@
             onDragEnd: function (event) {
                 var self = elements.pageBody.dnd;
                 if (elements.const.log.dnd.event) {
-                    console.log('elements.dnd.onDragEnd()');
+                    elements.log.debug('elements.dnd.onDragEnd()');
                 }
                 event.target.removeEventListener('dragend', self.onDragEnd);
                 event.target.removeEventListener('drag', self.onDrag);
@@ -431,7 +411,7 @@
                     var target = self.dragTarget.data;
                     var before = self.insert.before ? self.insert.before.data : undefined;
                     if (elements.const.log.dnd.event) {
-                        console.log('elements.dnd.onDrop(' + self.dragTarget.data.path + '): '
+                        elements.log.debug('elements.dnd.onDrop(' + self.dragTarget.data.path + '): '
                             + JSON.stringify(source) + ' > '
                             + JSON.stringify(target) + ' < '
                             + JSON.stringify(before)
@@ -450,7 +430,7 @@
             isTarget: function (container) {
                 if (this.dropTargets) {
                     for (var i = 0; i < this.dropTargets.length; i++) {
-                        if (this.dropTargets[i].data.path == container.data.path) {
+                        if (this.dropTargets[i].data.path === container.data.path) {
                             return true;
                         }
                     }
@@ -479,7 +459,7 @@
                     result.forEach(function (target) {
                         var $target = elements.pageBody.$('.' + elements.const.class.container
                             + '[data-' + elements.const.data.path + '="' + target.path + '"]');
-                        if ($target.length == 1) {
+                        if ($target.length === 1) {
                             var view = $target[0].view;
                             if (view) {
                                 this.dropTargets.push(view);
@@ -522,7 +502,7 @@
             setDragTarget: function (container, event) {
                 if (this.dragTarget && this.dragTarget !== container) {
                     if (elements.const.log.dnd.target) {
-                        console.log('elements.dnd.dragTarget.clear! (' + this.dragTarget.data.path + ')');
+                        elements.log.debug('elements.dnd.dragTarget.clear! (' + this.dragTarget.data.path + ')');
                     }
                     this.dragTarget.$el.removeClass(elements.const.dnd.class.base + elements.const.dnd.class.targetOver);
                     this.$insert.removeClass(elements.const.dnd.class.base + elements.const.dnd.class.visible);
@@ -537,7 +517,7 @@
                     } else {
                         if (elements.const.log.dnd.target) {
                             var pointer = elements.pageBody.getPointer(event);
-                            console.log('elements.dnd.dragTarget.set: ' + container.data.path + ' ' + JSON.stringify(pointer));
+                            elements.log.debug('elements.dnd.dragTarget.set: ' + container.data.path + ' ' + JSON.stringify(pointer));
                         }
                         this.dragTarget = container;
                         container.$el.addClass(elements.const.dnd.class.base + elements.const.dnd.class.targetOver);
@@ -650,8 +630,8 @@
                 // init the component sets
                 this.initComponents();
                 // register the handlers for component selection in interaction with the edit frame
-                $(document).on(elements.const.event.componentSelected, _.bind(this.onComponentSelected, this));
-                $(document).on(elements.const.event.componentSelect, _.bind(this.selectComponent, this));
+                $(document).on(elements.const.event.element.selected, _.bind(this.onComponentSelected, this));
+                $(document).on(elements.const.event.element.select, _.bind(this.selectComponent, this));
                 window.addEventListener("message", _.bind(this.onMessage, this), false);
             },
 
@@ -675,7 +655,7 @@
                 });
                 // build the component view hierarchy
                 this.components.forEach(function (component) {
-                    if (component.$parent.length == 1) {
+                    if (component.$parent.length === 1) {
                         component.parent = component.$parent[0].view;
                     }
                     if (component.parent && component.parent.$el.hasClass(elements.const.class.container)) {
@@ -684,7 +664,7 @@
                     }
                 }, this);
                 // send container references to the edit frame
-                parent.postMessage(elements.const.event.pageContainerRefs
+                parent.postMessage(elements.const.event.page.containerRefs
                     + JSON.stringify(this.containerRefs), '*');
             },
 
@@ -698,10 +678,10 @@
              */
             insert: function (type, target, before) {
                 if (elements.const.log.operation) {
-                    console.log('elements.insert(' + type + ' > '
+                    elements.log.debug('elements.insert(' + type + ' > '
                         + target.path + (before ? (' < ' + before.path) : '') + ')');
                 }
-                parent.postMessage(elements.const.event.insertComponent
+                parent.postMessage(elements.const.event.element.insert
                     + JSON.stringify({
                         type: type,
                         target: {path: target.path, type: target.type},
@@ -717,7 +697,7 @@
              */
             move: function (source, target, before) {
                 if (elements.const.log.operation) {
-                    console.log('elements.move(' + source.path + ' > '
+                    elements.log.debug('elements.move(' + source.path + ' > '
                         + target.path + (before ? (' < ' + before.path) : '') + ')');
                 }
                 parent.postMessage(elements.const.event.moveComponent
@@ -737,16 +717,18 @@
             // component selection and edit frame message handling
 
             setSelection: function (component, force) {
-                console.log('pages.elements.setSelection(' + component + ',' + force + ')');
-                if (elements.pageBody.selection.component != component || force) {
+                elements.log.debug('pages.elements.setSelection(' + component + ',' + force + ')');
+                if (elements.pageBody.selection.component !== component || force) {
                     if (component) {
                         this.dnd.reset();
                         elements.pageBody.selection.setComponent(component);
-                        $(document).trigger('component:selected', [
+                        var eventData = [
                             component.data.name,
                             component.data.path,
                             component.data.type
-                        ]);
+                        ];
+                        elements.log.debug('elements.trigger.' + elements.const.event.element.selected + '(' + component.data.path + ')');
+                        $(document).trigger(elements.const.event.element.selected, eventData);
                     } else {
                         this.clearSelection();
                     }
@@ -758,9 +740,10 @@
             clearSelection: function () {
                 this.dnd.reset();
                 if (elements.pageBody.selection.component) {
-                    console.log('pages.elements.clearSelection(' + elements.pageBody.selection.component + ')');
+                    elements.log.debug('pages.elements.clearSelection(' + elements.pageBody.selection.component + ')');
                     elements.pageBody.selection.setComponent(undefined);
-                    $(document).trigger('component:selected', []);
+                    elements.log.debug('elements.trigger.' + elements.const.event.element.selected + '([])');
+                    $(document).trigger(elements.const.event.element.selected, []);
                 }
             },
 
@@ -772,13 +755,14 @@
                     if ($target && $target.length > 0) {
                         var component = $target[0].view;
                         if (component) {
-                            console.log('pages.elements.selectComponent(' + path + ')');
+                            elements.log.debug('pages.elements.selectComponent(' + path + ')');
                             this.setSelection(component, true);
                             found = true;
                         }
                     }
                     if (!found) {
-                        $(document).trigger('component:selected', []);
+                        elements.log.debug('elements.trigger.' + elements.const.event.element.selected + '([])');
+                        $(document).trigger(elements.const.event.element.selected, []);
                     }
                 } else {
                     this.clearSelection();
@@ -787,12 +771,12 @@
 
             onComponentSelected: function (event, name, path, type) {
                 if (path) {
-                    console.log('pages.elements.componentSelected(' + path + ')');
-                    parent.postMessage(elements.const.event.componentSelected
+                    elements.log.debug('pages.elements.element.selected(' + path + ')');
+                    parent.postMessage(elements.const.event.element.selected
                         + JSON.stringify({name: name, path: path, type: type}), '*');
                 } else {
-                    console.log('pages.elements.selectionCleared()');
-                    parent.postMessage(elements.const.event.componentSelected
+                    elements.log.debug('pages.elements.selectionCleared()');
+                    parent.postMessage(elements.const.event.element.selected
                         + JSON.stringify({}), '*');
                 }
             },
@@ -802,15 +786,18 @@
                 if (message) {
                     var args = JSON.parse(message[2]);
                     switch (message[1]) {
-                        case elements.const.event.componentSelect:
+                        case elements.const.event.element.select:
                             if (args.path) {
-                                $(document).trigger(elements.const.event.componentSelect, [
+                                var eventData = [
                                     args.name,
                                     args.path,
                                     args.type
-                                ]);
+                                ];
+                                elements.log.debug('elements.trigger.' + elements.const.event.element.select + '(' + args.path + ')');
+                                $(document).trigger(elements.const.event.element.select, eventData);
                             } else {
-                                $(document).trigger(elements.const.event.componentSelect, []);
+                                elements.log.debug('elements.trigger.' + elements.const.event.element.select + '([])');
+                                $(document).trigger(elements.const.event.element.select, []);
                             }
                             break;
                     }
@@ -899,7 +886,7 @@
                     var self = this;
                     var viewRect = this.getViewRect(view);
                     if (elements.const.log.mouse.position) {
-                        console.log('elements.getPointerView(' + view.data.path + ', '
+                        elements.log.debug('elements.getPointerView(' + view.data.path + ', '
                             + JSON.stringify(pointer) + ' / ' + JSON.stringify(viewRect) + ', "'
                             + selector + '"' + (condition ? ' ++' : '') + ' ...');
                     }
@@ -911,7 +898,7 @@
                             if (nested) {
                                 var nestedRect = self.getViewRect(nested);
                                 if (elements.const.log.mouse.position) {
-                                    console.log('elements.getPointerView.try: ' + nested.data.path + ' ' + JSON.stringify(nestedRect));
+                                    elements.log.debug('elements.getPointerView.try: ' + nested.data.path + ' ' + JSON.stringify(nestedRect));
                                 }
                                 if (nestedRect.x1 <= pointer.x && nestedRect.y1 <= pointer.y &&
                                     nestedRect.x2 >= pointer.x && nestedRect.y2 >= pointer.y) {
@@ -948,22 +935,13 @@
                     }
                 }
                 if (elements.const.log.mouse.position) {
-                    console.log('elements.getPointerView: ' + (view ? view.data.path : 'undefined'));
+                    elements.log.debug('elements.getPointerView: ' + (view ? view.data.path : 'undefined'));
                 }
                 return view;
             }
         });
 
         elements.pageBody = core.getView('body.' + elements.const.class.editBody, elements.PageBody);
-
-        elements.openEditDialog = function () {
-            parent.postMessage(elements.const.event.openDialog
-                + JSON.stringify({
-                    type: type,
-                    target: {path: target.path, type: target.type},
-                    before: before ? before.path : null
-                }), '*');
-        };
 
     })(window.composum.pages.elements, window.core);
 })(window);

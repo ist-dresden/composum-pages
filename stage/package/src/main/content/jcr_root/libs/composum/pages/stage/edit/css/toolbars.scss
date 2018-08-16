@@ -39,10 +39,26 @@ body {
 
                 &_edit {
                     display: block;
+
+                    body.context-driven-view & {
+                        display: none;
+                    }
                 }
 
                 &_preview {
                     display: none;
+
+                    body.context-driven-view & {
+                        display: none;
+                    }
+                }
+
+                &_open-page {
+                    display: none;
+
+                    body.context-driven-view & {
+                        display: block;
+                    }
                 }
 
                 &_hide {
@@ -67,6 +83,10 @@ body {
 
         &_component {
             float: left;
+
+            body.context-driven-view & {
+                display: none;
+            }
 
             .composum-pages-stage-edit-toolbar {
                 display: inline-block;

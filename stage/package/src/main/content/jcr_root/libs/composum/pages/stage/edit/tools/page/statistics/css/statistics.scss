@@ -1,0 +1,135 @@
+@charset "UTF-8";
+
+@import "../../../../css/variables";
+@import "../../../../css/mixins";
+
+.composum-pages-stage-edit-tools-page-statistics {
+
+    &_range {
+
+        .time-range-select {
+
+            &_type {
+
+                .dropdown-toggle {
+                    width: 160px;
+                    @include font('robotolight', $hint-font-size);
+                }
+            }
+        }
+    }
+
+    &_chart {
+        @include default-font;
+
+        .composum-pages-stage-edit-tools-page-statistics {
+
+            &_chart {
+
+                &-legend {
+                    margin-top: 10px;
+                    width: 100%;
+                    padding-right: 10px;
+                    text-align: right;
+                    @include font('robotolight', $hint-font-size);
+                    color: $tools-pane-foreground;
+
+                    &_unique, &_total {
+                        padding: 4px 4px 4px 12px;
+
+                        b {
+                            display: inline-block;
+                            width: 30px;
+                            height: 8px;
+                            margin-right: 6px;
+                        }
+
+                        i {
+                            opacity: 0.7;
+                        }
+                    }
+
+                    &_unique {
+
+                        b {
+                            background-color: $tools-pane-main-selection-color;
+                        }
+                    }
+
+                    &_total {
+
+                        b {
+                            background-color: $tools-pane-sec-selection-color;
+                        }
+                    }
+                }
+            }
+
+            &_canvas-wrapper {
+                position: relative;
+                height: 240px;
+
+                // chartist.js
+
+                .ct-label {
+                    fill: rgba(255, 255, 255, 0.4);
+                    color: rgba(255, 255, 255, 0.4);
+                }
+
+                .ct-grid {
+                    stroke: rgba(255, 255, 255, 0.2);
+                }
+
+                .ct-series-a .ct-point, .ct-series-a .ct-line {
+                    stroke: $tools-pane-sec-selection-color;
+                }
+
+                .ct-series-b .ct-point, .ct-series-b .ct-line {
+                    stroke: $tools-pane-main-selection-color;
+                }
+            }
+        }
+    }
+
+    &_referrers {
+
+        .table {
+
+            th, td {
+                border-color: #888;
+                @include font('robotolight', $hint-font-size);
+                color: $tools-pane-foreground;
+                padding: 4px;
+
+                a, a:focus, a:visited, a:hover {
+                    text-decoration: none;
+                    color: $tools-pane-foreground;
+                }
+
+                a:hover {
+                    color: #fff;
+                }
+
+                &.url {
+                    overflow: scroll;
+                }
+
+                &.unique, &.total {
+                    width: 40px;
+                    padding-left: 12px;
+                    text-align: right;
+                    font-weight: bold;
+                }
+
+                &.unique {
+                    color: #fff;
+                }
+
+                &.total {
+                    color: #eee;
+                }
+            }
+
+        }
+    }
+}

@@ -1,78 +1,110 @@
 package com.composum.pages.commons.request;
 
 import com.composum.sling.core.BeanContext;
-import org.apache.sling.api.SlingHttpServletRequest;
 
 import java.util.Stack;
 
-import static com.composum.pages.commons.PagesConstants.PAGES_PREFIX;
+/**
+ * the display mode stack is mainly controlled by the various JSP tags with a 'mode' attribute set
+ */
+public class DisplayMode extends Stack<DisplayMode.Value> {
 
-public class DisplayMode extends RequestAspect<Stack<DisplayMode.Value>> {
+    public enum Value {
 
-    public enum Value {NONE, PREVIEW, BROWSE, EDIT, DEVELOP}
+        NONE, PREVIEW, BROWSE, EDIT, DEVELOP;
 
-    public static final String PARAMETER_NAME = "pages.mode";
-    public static final String ATTRIBUTE_KEY = PAGES_PREFIX + "display-mode";
+        public static DisplayMode.Value displayModeValue(Object value, Value defaultValue) {
+            Value mode = null;
+            if (value != null) {
+                try {
+                    mode = Enum.valueOf(DisplayMode.Value.class, value.toString().trim().toUpperCase());
+                } catch (IllegalArgumentException iaex) {
+                    // ok, null...
+                }
+            }
+            return mode != null ? mode : defaultValue;
+        }
+    }
 
-    public static DisplayMode instance = new DisplayMode();
+    /** display mode string values */
+    public static final String DISPLAY_MODE_NONE = Value.NONE.name();
+    public static final String DISPLAY_MODE_PREVIEW = Value.PREVIEW.name();
+    public static final String DISPLAY_MODE_BROWSE = Value.BROWSE.name();
+    public static final String DISPLAY_MODE_EDIT = Value.EDIT.name();
+    public static final String DISPLAY_MODE_DEVELOP = Value.DEVELOP.name();
+
+    // static accessors
+
+    public static boolean isEditMode(BeanContext context) {
+        return isEditMode(current(context));
+    }
+
+    public static boolean isEditMode(Value value) {
+        return value == Value.EDIT || value == Value.DEVELOP;
+    }
+
+    public static boolean isPreviewMode(BeanContext context) {
+        return isPreviewMode(current(context));
+    }
+
+    public static boolean isPreviewMode(Value value) {
+        return value == Value.PREVIEW || value == Value.BROWSE;
+    }
+
+    public static boolean isLiveMode(BeanContext context) {
+        return isLiveMode(current(context));
+    }
+
+    public static boolean isLiveMode(Value value) {
+        return value == Value.NONE;
+    }
+
+    public static boolean isDevelopMode(BeanContext context) {
+        return isDevelopMode(current(context));
+    }
+
+    public static boolean isDevelopMode(Value value) {
+        return value == Value.DEVELOP;
+    }
 
     /**
      * returns the current (topmost) value of the stack instance in the given context
      */
     public static Value current(BeanContext context) {
-        return instance.getAspect(context).peek();
+        return get(context).peek();
     }
 
     /**
      * returns the initial value of the stack instance in the given context
      */
     public static Value requested(BeanContext context) {
-        return instance.getAspect(context).firstElement();
+        return get(context).firstElement();
     }
 
     /**
-     * returns the display mode stack instance determined using the given context (request)
+     * adapts the current mode from the request of the context
      */
-    public static Stack<DisplayMode.Value> get(BeanContext context) {
-        return instance.getAspect(context);
+    public static DisplayMode get(BeanContext context) {
+        return context.getRequest().adaptTo(DisplayMode.class);
     }
+
+    // stack instance
 
     /**
-     * creates a display mode stack instance initialized with the given value
+     * package access - use request.adaptTo() to get an instance
      */
-    public static Stack<DisplayMode.Value> create(DisplayMode.Value value) {
-        return instance.createInstance(value.name());
+    DisplayMode(Value requestedValue) {
+        reset(requestedValue);
     }
 
-    // request aspect
-
-    protected DisplayMode() {
+    public void reset(Value requestedValue) {
+        clear();
+        push(requestedValue);
     }
 
+    /** at least one value must always be in the stack */
     @Override
-    protected String getValue(Stack<Value> instance) {
-        return instance.peek().name();
-    }
-
-    @Override
-    protected String getParameterName() {
-        return PARAMETER_NAME;
-    }
-
-    @Override
-    protected String getAttributeKey() {
-        return ATTRIBUTE_KEY;
-    }
-
-    @Override
-    protected Stack<Value> createInstance(String value) {
-        Stack<Value> instance = new Stack<>();
-        instance.push(Value.valueOf(value.toUpperCase()));
-        return instance;
-    }
-
-    @Override
-    protected Stack<Value> createInstance(SlingHttpServletRequest request) {
-        return createInstance(Value.NONE.name());
+    public synchronized Value pop() {
+        return size() > 1 ? super.pop() : peek();
     }
 }

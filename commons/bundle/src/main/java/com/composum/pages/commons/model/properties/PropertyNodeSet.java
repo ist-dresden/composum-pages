@@ -44,6 +44,7 @@ public class PropertyNodeSet<T extends PropertyNode> extends PropertyNode implem
         }
     }
 
+    @SuppressWarnings("unchecked")
     protected T createProperty(final Resource resource) {
         return (T) new GenericNode(context, resource);
     }

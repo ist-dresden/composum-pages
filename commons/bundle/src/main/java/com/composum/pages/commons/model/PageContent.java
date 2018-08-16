@@ -14,4 +14,8 @@ public class PageContent extends ContentModel<Page> {
     public PageContent(BeanContext context, Resource resource) {
         initialize(context, resource);
     }
+
+    public boolean isThumbnailAvailable() {
+        return getResource().getChild("thumbnail/image") != null;
+    }
 }

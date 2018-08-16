@@ -1,7 +1,9 @@
 @charset "UTF-8";
 
+$bootstrap-color-danger: #a94442;
 $bootstrap-color-info: #337ab7;
 $bootstrap-color-mute: #777;
+$bootstrap-btn-menu-active-bg: #e6e6e6;
 
 $bootstrap-spacing-v: 10px;
 $bootstrap-spacing-h: 15px;
@@ -40,6 +42,10 @@ $tools-pane-foreground: #eee;
 $tools-pane-background: rgba(40, 40, 40, 0.9);
 $tools-tile-background: rgba(160, 160, 160, 0.3);
 
+$tools-input-foreground: $tools-pane-foreground;
+$tools-input-background: $tools-tile-background;
+$tools-input-border-color: #888;
+
 $tools-pane-padding: 8px;
 
 $tools-pane-tabs-background: rgba(160, 160, 160, 0.3);
@@ -47,12 +53,18 @@ $tools-pane-tabs-tab-color: rgba(140, 140, 140, 0.9);
 $tools-pane-tabs-tab-active: rgba(55, 55, 55, 0.9);
 $tools-pane-tabs-tab-label: $tools-pane-foreground;
 
+$tools-pane-main-selection-color: #3392e3;
+$tools-pane-sec-selection-color: #929292;
+$tools-pane-main-selection-bg: rgba(255, 255, 255, 0.25);
+$tools-pane-sec-selection-bg: rgba(200, 200, 200, 0.25);
+
 $edit-actions-layer: $edit-tools-layer + 2;
 $edit-actions-height: 36px;
 $edit-actions-spacing-v: 3px;
 $edit-actions-spacing-h: 4px;
 $edit-actions-corner-width: 22px;
 $edit-actions-background: $tools-pane-background;
+$edit-actions-menu-bg: $bootstrap-btn-menu-active-bg;
 $edit-actions-foreground: #ffffff;
 $edit-actions-highlight: #ffda88;
 $edit-actions-button-size: 27px;
@@ -77,3 +89,6 @@ $dialog-input-font-size: $dialog-default-font-size;
 $dialogs-layer: $surface-layer + 2;
 
 $dialog-close-icon-size: 25px;
+
+$tile-panel-default-bg: #f8f8f8;
+$tile-panel-info-bg: #f4f8ff;
