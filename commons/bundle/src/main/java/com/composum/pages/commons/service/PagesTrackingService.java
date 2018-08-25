@@ -209,9 +209,9 @@ public class PagesTrackingService implements TrackingService {
 
             // count page access requests from one referer (daily count)
             if (StringUtils.isNotBlank(token.referer)) {
+                String refererPath = "referer/r-" + Integer.toHexString(Math.abs(token.referer.hashCode()));
                 String refererUrl = new String(Base64.decodeBase64(token.referer.getBytes()), CHARSET);
-                refererStats = ResourceUtil.getOrCreateChild(dayStatistics,
-                        "referer/" + token.referer, INTERMEDIATE_TYPE);
+                refererStats = ResourceUtil.getOrCreateChild(dayStatistics, refererPath, INTERMEDIATE_TYPE);
                 refererStatsValues = refererStats.adaptTo(ModifiableValueMap.class);
                 refererStatsValues.put(PROP_URL, refererUrl);
                 refererStatsValues.put(PROP_TOTAL, refererStatsValues.get(PROP_TOTAL, 0) + 1);

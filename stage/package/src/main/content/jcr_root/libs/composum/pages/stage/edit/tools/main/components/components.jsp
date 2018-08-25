@@ -3,7 +3,7 @@
 --%><%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %><%--
 --%><%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%><%--
 --%><cpp:defineFrameObjects/>
-<cpp:element var="components" type="com.composum.pages.stage.model.edit.FrameElement" mode="none"
+<cpp:element var="components" type="com.composum.pages.stage.model.edit.page.Components" mode="none"
              cssAdd="composum-pages-tools">
     <div class="composum-pages-tools_actions btn-toolbar">
         <div class="composum-pages-tools_left-actions">
@@ -23,15 +23,9 @@
                            title="Shoe all components">Eelements</a></li>
                 </ul>
             </div>
-            <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
-                <button type="button"
-                        class="fa fa-search ${componentsCssBase}_search composum-pages-tools_button btn btn-default"
-                        title="Search a page"><span
-                        class="composum-pages-tools_button-label">Search</span></button>
-            </div>
         </div>
     </div>
-    <div class="composum-pages-tools_search-panel">
+    <div class="composum-pages-tools_panel">
         <div class="${componentsCssBase}_components-view"></div>
     </div>
 </cpp:element>

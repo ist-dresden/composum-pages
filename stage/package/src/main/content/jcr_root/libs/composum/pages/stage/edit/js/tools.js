@@ -350,12 +350,16 @@
             },
 
             onPageSelected: function (event, path, parameters) {
-                pages.log.debug('tools.Context.onPageSelected(' + path + ')');
+                if (pages.contextTools.log.getLevel() <= log.levels.DEBUG) {
+                    pages.contextTools.log.debug('tools.Context.onPageSelected(' + path + ')');
+                }
                 this.changeTools(undefined, path, undefined);
             },
 
             onComponentSelected: function (event, name, path, type) {
-                pages.log.debug('tools.Context.onComponentSelected(' + path + ')');
+                if (pages.contextTools.log.getLevel() <= log.levels.DEBUG) {
+                    pages.contextTools.log.debug('tools.Context.onComponentSelected(' + path + ')');
+                }
                 this.changeTools(name, path, type);
             },
 
@@ -365,7 +369,7 @@
                     path = pages.current.page;
                 }
                 if (path) {
-                    core.ajaxGet(tools.const.contextLoadUrl + path + '?pages.mode=' + pages.current.mode, {
+                    core.ajaxGet(tools.const.contextLoadUrl + path + '?pages.view=' + pages.current.mode, {
                             data: {
                                 type: type
                             }

@@ -1,6 +1,7 @@
 package com.composum.pages.commons.model;
 
 import com.composum.pages.commons.PagesConstants;
+import com.composum.pages.commons.filter.ElementFilter;
 import com.composum.pages.commons.model.properties.PathPatternSet;
 import com.composum.pages.commons.service.EditService;
 import com.composum.pages.commons.service.ResourceManager;
@@ -69,15 +70,19 @@ public class Container extends Element {
 
     private transient List<String> elementTypes;
 
+    private transient ResourceFilter renderFilter;
     private transient List<Element> elementList;
 
     // rendering
 
     /**
-     * the filter to restrict the rendering of the embedded elements (if useful; defaults to ALL - no restriction)
+     * the filter to restrict the rendering of the embedded elements (defaults to an ElementFilter instance)
      */
     protected ResourceFilter getRenderFilter() {
-        return ResourceFilter.ALL;
+        if (renderFilter == null){
+            renderFilter = new ElementFilter(this);
+        }
+        return renderFilter;
     }
 
     /**

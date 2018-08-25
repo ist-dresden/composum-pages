@@ -9,10 +9,10 @@ import java.util.Locale;
 
 public class ModelWrapper implements Model {
 
-    protected Model model;
+    protected Model delegate;
 
     public ModelWrapper(Model model) {
-        this.model = model;
+        this.delegate = model;
     }
 
     protected ModelWrapper() {
@@ -22,117 +22,147 @@ public class ModelWrapper implements Model {
     @Override
     @Deprecated
     public void initialize(BeanContext context, Resource resource) {
-        model.initialize(context, resource);
+        delegate.initialize(context, resource);
     }
 
     /** @deprecated the normal instantiation mechanism is by using the constructor. */
     @Override
     @Deprecated
     public void initialize(BeanContext context) {
-        model.initialize(context);
+        delegate.initialize(context);
+    }
+
+    public Model getDelegate() {
+        return delegate;
+    }
+
+    public void setDelegate(Model model) {
+        this.delegate = model;
     }
 
     //
 
+    @Override
     public BeanContext getContext() {
-        return model.getContext();
+        return delegate.getContext();
     }
 
+    @Override
     public Resource getResource() {
-        return model.getResource();
+        return delegate.getResource();
     }
 
+    @Override
     public String getPath() {
-        return model.getPath();
+        return delegate.getPath();
     }
 
+    @Override
     public String getName() {
-        return model.getName();
+        return delegate.getName();
     }
 
+    @Override
     public String getType() {
-        return model.getType();
+        return delegate.getType();
     }
 
+    @Override
     public String getPathHint() {
-        return model.getPathHint();
+        return delegate.getPathHint();
     }
 
+    @Override
     public String getTypeHint() {
-        return model.getTypeHint();
+        return delegate.getTypeHint();
     }
 
     //
 
+    @Override
     public String getTitle() {
-        return model.getTitle();
+        return delegate.getTitle();
     }
 
+    @Override
     public String getDescription() {
-        return model.getDescription();
+        return delegate.getDescription();
     }
 
     // component
 
+    @Override
     public Component getComponent() {
-        return model.getComponent();
+        return delegate.getComponent();
     }
 
+    @Override
     public PagesConstants.ComponentType getComponentType() {
-        return model.getComponentType();
+        return delegate.getComponentType();
     }
 
     // Sites & Pages
 
+    @Override
     public Page getCurrentPage() {
-        return model.getCurrentPage();
+        return delegate.getCurrentPage();
     }
 
+    @Override
     public Page getContainingPage() {
-        return model.getContainingPage();
+        return delegate.getContainingPage();
     }
 
     //
 
+    @Override
     public String getUrl() {
-        return model.getUrl();
+        return delegate.getUrl();
     }
 
+    @Override
     public String getCssBase() {
-        return model.getCssBase();
+        return delegate.getCssBase();
     }
 
     // properties & i18n
 
+    @Override
     public Language getLanguage() {
-        return model.getLanguage();
+        return delegate.getLanguage();
     }
 
     // resource properties
 
+    @Override
     public <T> T getProperty(String key, T defaultValue) {
-        return model.getProperty(key, defaultValue);
+        return delegate.getProperty(key, defaultValue);
     }
 
+    @Override
     public <T> T getProperty(String key, Class<T> type) {
-        return model.getProperty(key, type);
+        return delegate.getProperty(key, type);
     }
 
+    @Override
     public <T> T getProperty(Locale locale, T defaultValue, String... keys) {
-        return model.getProperty(locale, defaultValue, keys);
+        return delegate.getProperty(locale, defaultValue, keys);
     }
 
     // inherited properties
 
+    @Override
     public <T> T getInherited(String key, T defaultValue) {
-        return model.getInherited(key, defaultValue);
+        return delegate.getInherited(key, defaultValue);
     }
 
+    @Override
     public <T> T getInherited(String key, Class<T> type) {
-        return model.getInherited(key, type);
+        return delegate.getInherited(key, type);
     }
 
+    @Override
     public <T> T getInherited(Locale locale, T defaultValue, String... keys) {
-        return model.getInherited(locale, defaultValue, keys);
+        return delegate.getInherited(locale, defaultValue, keys);
     }
 }

@@ -63,11 +63,19 @@
                     _tabbed: '_tabbed',
                     _tabList: '_tabs',
                     _tabContent: '_tabbed-content',
+                    _parentPrimType: '_parent-primaryType',
+                    _parentResType: '_parent-resourceType',
                     _pathField: '_path',
                     _deleteButton: '_button-delete',
                     _submitButton: '_button-submit',
                     _prevButton: '_button-prev',
                     _nextButton: '_button-next'
+                },
+                data: {
+                    name: 'pages-edit-name',
+                    path: 'pages-edit-path',
+                    type: 'pages-edit-type',
+                    prim: 'pages-edit-prim'
                 },
                 type: {
                     site: 'cpp:Site',
@@ -325,9 +333,9 @@
             return url + ".html";
         };
 
-        dialogs.openEditDialog = function (name, path, type, url, setupDialog) {
+        dialogs.openEditDialog = function (name, path, type, context, url, setupDialog) {
             pages.dialogHandler.openEditDialog(url ? url : dialogs.getEditDialogUrl(),
-                dialogs.EditDialog, name, path, type, setupDialog);
+                dialogs.EditDialog, name, path, type, context, setupDialog);
         };
 
         //
@@ -335,7 +343,7 @@
         //
 
         /**
-         * the dialog to edit the initial properties of a new element
+         * the dialog to edit (and validate) the initial properties of a new element
          */
         dialogs.CreateDialog = dialogs.EditDialog.extend({
 
@@ -343,19 +351,35 @@
                 this.initTabs();
             },
 
-            afterLoad: function (name, path, type) {
-                // set resource Type if such a hidden field is available
-                //this.$('[name="' + dialogs.const.pages.const.sling.resourceType + '"]').attr('value',type); ??? FIXME
+            afterLoad: function (name, path, type, context) {
+                var c = dialogs.const.edit.css;
+                if (context) {
+                    if (context.parent) {
+                        // set parent resource types if such (hidden) fields are available
+                        // the parant data values are transmitted from the new element dialog
+                        if (context.parent.type) {
+                            var parentResType = this.$('.' + c.base + c._parentResType);
+                            parentResType.attr('name',
+                                context.parent.path + '/sling:resourceType').attr('value', context.parent.type);
+                        }
+                        if (context.parent.prim) {
+                            var parentPrimType = this.$('.' + c.base + c._parentPrimType);
+                            parentPrimType.attr('name',
+                                context.parent.path + '/jcr:primaryType').attr('value', context.parent.prim);
+                        }
+                    }
+                }
             }
         });
 
-        dialogs.openCreateDialog = function (name, path, type, url, setupDialog, onNotFound) {
+        dialogs.openCreateDialog = function (name, path, type, context, url, setupDialog, onNotFound) {
             pages.dialogHandler.openEditDialog(url ? url : dialogs.getEditDialogUrl('create'),
-                dialogs.CreateDialog, name, path, type, setupDialog, onNotFound);
+                dialogs.CreateDialog, name, path, type, context, setupDialog, onNotFound);
         };
 
         /**
-         * the dialog to select the element type of a new element to insert in a container
+         * the dialog to select the element type of a new element to insert into a container;
+         * the create dialog of the selected type is opened to complete the creation of the element
          */
         dialogs.NewElementDialog = dialogs.ElementDialog.extend({
 
@@ -367,16 +391,26 @@
             },
 
             doSubmit: function (type) {
-                var c = dialogs.const.edit.url;
+                var u = dialogs.const.edit.url;
+                var d = dialogs.const.edit.data;
                 if (!type) {
                     type = this.elementType.getValue();
                     this.hide();
                 }
+                // prepare parent (container) data of the new element for the create dialog
+                // to create the right parent type if the parent is a synthetic resource
+                var context = {
+                    parent: {
+                        path: this.$el.data(d.path),
+                        type: this.$el.data(d.type),
+                        prim: this.$el.data(d.prim)
+                    }
+                };
                 if (type) {
-                    dialogs.openCreateDialog('*', this.data.path, type, undefined, undefined,
+                    dialogs.openCreateDialog('*', this.data.path, type, context, undefined, undefined,
                         // if no create dialog exists (not found) create a new instance directly
                         _.bind(function (name, path, type) {
-                            core.ajaxPost(c.base + c._insert, {
+                            core.ajaxPost(u.base + u._insert, {
                                 _charset_: 'UTF-8',
                                 resourceType: type,
                                 targetPath: path,
@@ -637,7 +671,7 @@
         dialogs.openMoveContentDialog = function (name, path, type, setupDialog) {
             var c = dialogs.const.edit.url;
             pages.dialogHandler.openEditDialog(c.path + c._move.dialog,
-                dialogs.MoveContentDialog, name, path, type, setupDialog);
+                dialogs.MoveContentDialog, name, path, type, undefined/*context*/, setupDialog);
         };
 
         /**
@@ -672,7 +706,7 @@
         dialogs.openRenameContentDialog = function (name, path, type, setupDialog) {
             var c = dialogs.const.edit.url;
             pages.dialogHandler.openEditDialog(c.path + c._rename.dialog,
-                dialogs.RenameContentDialog, name, path, type, setupDialog);
+                dialogs.RenameContentDialog, name, path, type, undefined/*context*/, setupDialog);
         };
 
         /**
@@ -688,7 +722,7 @@
         dialogs.openCopyContentDialog = function (name, path, type, setupDialog) {
             var c = dialogs.const.edit.url;
             pages.dialogHandler.openEditDialog(c.path + c._copy.dialog,
-                dialogs.CopyContentDialog, name, path, type, setupDialog);
+                dialogs.CopyContentDialog, name, path, type, undefined/*context*/, setupDialog);
         };
 
         //

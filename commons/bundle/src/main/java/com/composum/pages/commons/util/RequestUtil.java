@@ -22,10 +22,10 @@ public class RequestUtil extends com.composum.sling.core.util.RequestUtil {
         }
     }
 
-    public static List<String> getSelectors(SlingHttpServletRequest request, StringFilter filter, int index) {
+    public static List<String> getSelectors(SlingHttpServletRequest request, StringFilter filter, int index, int max) {
         List<String> result = new ArrayList<>();
         String[] selectors = request.getRequestPathInfo().getSelectors();
-        for (int i = index; i < selectors.length; i++) {
+        for (int i = index; i < selectors.length && (max < 1 || result.size() < max); i++) {
             if (filter == null || filter.accept(selectors[i])) {
                 result.add(selectors[i]);
             }
@@ -34,6 +34,10 @@ public class RequestUtil extends com.composum.sling.core.util.RequestUtil {
     }
 
     public static String getSelectorString(SlingHttpServletRequest request, StringFilter filter, int index) {
-        return StringUtils.join(getSelectors(request, filter, index), '.');
+        return getSelectorString(request, filter, index, 0);
+    }
+
+    public static String getSelectorString(SlingHttpServletRequest request, StringFilter filter, int index, int max) {
+        return StringUtils.join(getSelectors(request, filter, index, max), '.');
     }
 }

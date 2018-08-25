@@ -28,7 +28,7 @@
                 var $action = $(event.currentTarget);
                 var selectors = $action.data('selectors');
                 var dialogUrl = pages.dialogs.getEditDialogUrl('load', selectors);
-                pages.dialogs.openEditDialog(name, path, type, dialogUrl);
+                pages.dialogs.openEditDialog(name, path, type, undefined/*context*/, dialogUrl);
             }
         };
 
@@ -171,7 +171,7 @@
 
             edit: function (event, name, path, type) {
                 var c = pages.dialogs.const.edit.url;
-                pages.dialogs.openEditDialog(name, path, type, c.path + c._edit._folder);
+                pages.dialogs.openEditDialog(name, path, type, undefined/*context*/, c.path + c._edit._folder);
             },
 
             insertPage: function (event, name, path, type) {
@@ -227,6 +227,45 @@
 
             delete: function (event, name, path, type) {
                 pages.dialogs.openDeleteContentDialog('file', name, path, type);
+            }
+        };
+
+        actions.dnd = {
+
+            doDrop: function (event, target, object) {
+                if (target && target.container.data.path && object) {
+                    switch (object.type) {
+                        case 'component': // insert a new component
+                            actions.dnd.doDropInsert(event, target, object);
+                            break;
+                        case 'element': // copy or move an element
+                            switch (target.operation) {
+                                case 'copy': // copy the element
+                                    actions.dnd.doDropCopy(event, target, object);
+                                    break;
+                                default: // move the element
+                                    actions.dnd.doDropMove(event, target, object);
+                                    break;
+                            }
+                            break;
+                    }
+                }
+            },
+
+            doDropInsert: function (event, target, object) {
+                if (target && target.container.data.path && object && object.type === 'component') {
+                    pages.dnd.insertNewElement(target, object);
+                }
+            },
+
+            doDropCopy: function (event, target, object) {
+                if (target && target.container.data.path && object && object.type === 'element') {
+                }
+            },
+
+            doDropMove: function (event, target, object) {
+                if (target && target.container.data.path && object && object.type === 'element') {
+                }
             }
         };
 

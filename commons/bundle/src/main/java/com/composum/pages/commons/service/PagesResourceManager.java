@@ -503,6 +503,11 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
             return type;
         }
 
+        @Nonnull
+        public String getPrimaryType(){
+            return ResolverUtil.getTypeProperty(resolver, getType(), PagesConstants.PROP_COMPONENT_TYPE, "");
+        }
+
         /**
          * returns the property value using the cascade: resource - design - resource type;
          * no 18n support for this property value retrieval
@@ -574,6 +579,11 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
                 resource = resolver.resolve(getPath());
             }
             return resource;
+        }
+
+        @Nonnull
+        public ResourceResolver getResolver() {
+            return resolver;
         }
 
         // JSON transformation for the Pages editing UI
@@ -678,7 +688,7 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
     }
 
     /**
-     * a resource rewferenced by the path and a probably overlayed type; the type can be 'null' if the addressed
+     * a resource referenced by the path and a probably overlayed type; the type can be 'null' if the addressed
      * resource exists, the type should be present if the path is pointing to a non existing resource
      */
     public ResourceReference getReference(@Nonnull ResourceResolver resolver,

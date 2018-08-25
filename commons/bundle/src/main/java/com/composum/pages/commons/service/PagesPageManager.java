@@ -5,6 +5,7 @@ import com.composum.pages.commons.filter.TemplateFilter;
 import com.composum.pages.commons.model.ContentTypeFilter;
 import com.composum.pages.commons.model.Model;
 import com.composum.pages.commons.model.Page;
+import com.composum.pages.commons.model.PageContent;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.util.ResourceUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -20,7 +21,10 @@ import org.osgi.service.component.annotations.Reference;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -195,5 +199,34 @@ public class PagesPageManager extends PagesContentManager<Page> implements PageM
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void touch(@Nonnull BeanContext context, @Nonnull Resource resource, @Nullable Calendar time, boolean commit) {
+        Page page = getContainingPage(context, resource);
+        if (page != null) {
+            touch(context, page, time, commit);
+        }
+    }
+
+    @Override
+    public void touch(@Nonnull BeanContext context, @Nonnull Page page, @Nullable Calendar time, boolean commit) {
+        PageContent content = page.getContent();
+        if (content != null) {
+            if (time == null) {
+                time = new GregorianCalendar();
+                time.setTimeInMillis(System.currentTimeMillis());
+            }
+            Resource contentResource = content.getResource();
+            ModifiableValueMap values = contentResource.adaptTo(ModifiableValueMap.class);
+            values.put(PagesConstants.PROP_LAST_MODIFIED, time);
+            Session session = context.getResolver().adaptTo(Session.class);
+            if (session != null) {
+                String userId = session.getUserID();
+                if (StringUtils.isNotBlank(userId)) {
+                    values.put(PagesConstants.PROP_LAST_MODIFIED_BY, userId);
+                }
+            }
+        }
     }
 }

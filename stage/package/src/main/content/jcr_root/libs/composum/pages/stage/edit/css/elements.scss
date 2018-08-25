@@ -14,14 +14,10 @@
 
         &_start, &_end {
             width: 100%;
-            @include edit-label-font;
+            @include edit-hint-font;
             color: $edit-hint-color;
 
             .composum-pages-container {
-
-                &_path-hint, &_type-hint {
-                    font-size: $edit-hint-font-size;
-                }
 
                 &_path-hint {
                     margin-right: 0.2rem;
@@ -30,13 +26,13 @@
         }
 
         &_start {
-            padding: 12px 4px 4px;
+            padding: 12px 4px 0;
             border-bottom: 2px dashed $edit-hint-color;
         }
 
         &_end {
             border-top: 2px dashed $edit-hint-color;
-            padding: 4px 4px 8px;
+            padding: 0 4px 8px;
         }
     }
 

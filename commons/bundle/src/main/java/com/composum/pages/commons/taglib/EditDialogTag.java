@@ -4,6 +4,7 @@ import com.composum.pages.commons.PagesConstants;
 import com.composum.pages.commons.model.properties.Language;
 import com.composum.pages.commons.model.properties.Languages;
 import com.composum.pages.commons.util.NewResourceParent;
+import com.composum.pages.commons.util.ResourceTypeUtil;
 import com.composum.pages.commons.util.TagCssClasses;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.util.ResourceUtil;
@@ -24,6 +25,7 @@ import static com.composum.pages.commons.taglib.AbstractPageTag.STAGE_COMPONENT_
 import static com.composum.pages.commons.taglib.ElementTag.PAGES_EDIT_DATA;
 import static com.composum.pages.commons.taglib.ElementTag.PAGES_EDIT_DATA_NAME;
 import static com.composum.pages.commons.taglib.ElementTag.PAGES_EDIT_DATA_PATH;
+import static com.composum.pages.commons.taglib.ElementTag.PAGES_EDIT_DATA_PRIM;
 import static com.composum.pages.commons.taglib.ElementTag.PAGES_EDIT_DATA_TYPE;
 import static com.composum.pages.commons.util.TagCssClasses.cssOfType;
 import static com.composum.platform.models.annotations.InternationalizationStrategy.I18NFOLDER.I18N_PROPERTY_PATH;
@@ -39,13 +41,17 @@ public class EditDialogTag extends AbstractWrappingTag {
 
     public static final String DEFAULT_SELECTOR = "edit";
     public static final String SELECTOR_CREATE = "create";
+    public static final String SELECTOR_NEW = "new";
+    public static final String SELECTOR_DELETE = "delete";
+    public static final String SELECTOR_GENERIC = "generic";
+    public static final String SELECTOR_WIZARD = "wizard";
     public static final List<String> KNOWN_SELECTORS = Arrays.asList(
             DEFAULT_SELECTOR,
             SELECTOR_CREATE,
-            "new",
-            "delete",
-            "generic",
-            "wizard"
+            SELECTOR_NEW,
+            SELECTOR_DELETE,
+            SELECTOR_GENERIC,
+            SELECTOR_WIZARD
     );
 
     public static final String TYPE_NONE = "none";
@@ -153,11 +159,11 @@ public class EditDialogTag extends AbstractWrappingTag {
                     }
                 }
             }
-            if (!(editResource instanceof Resource)) {
+            if (editResource == null) {
                 editResource = super.getModelResource(context);
             }
             if (isStarResource) {
-                // keep parent resource an support access to it
+                // keep parent resource and support access to it
                 parentResource = editResource;
                 // wrap the current resource and make the resource empty
                 editResource = new NewResourceParent(editResource);
@@ -249,7 +255,8 @@ public class EditDialogTag extends AbstractWrappingTag {
      * the resource type of a new element created by a dialog (hidden 'sling:resourceType' property value)
      */
     public String getResourceType() {
-        return StringUtils.isNotBlank(resourceType) ? resourceType : getDefaultResourceType();
+        return ResourceTypeUtil.relativeResourceType(resourceResolver,
+                StringUtils.isNotBlank(resourceType) ? resourceType : getDefaultResourceType());
     }
 
     public void setResourceType(String type) {
@@ -459,9 +466,11 @@ public class EditDialogTag extends AbstractWrappingTag {
         attributeSet.put("aria-hidden", "true");
         Resource resourceToEdit = getResource();
         if (resourceToEdit != null) {
+            // embed reference data as data attributes of the dialog DOM element
             attributeSet.put(PAGES_EDIT_DATA_NAME, resourceToEdit.getName());
             attributeSet.put(PAGES_EDIT_DATA_PATH, resourceToEdit.getPath());
             attributeSet.put(PAGES_EDIT_DATA_TYPE, getResourceType());
+            attributeSet.put(PAGES_EDIT_DATA_PRIM, getPrimaryType());
         }
         if (StringUtils.isNotBlank(value = getSuccessEvent())) {
             attributeSet.put(PAGES_EDIT_SUCCESS_EVENT, value);

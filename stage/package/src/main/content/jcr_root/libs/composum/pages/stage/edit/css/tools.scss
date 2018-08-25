@@ -183,6 +183,7 @@
 }
 
 .composum-pages-component-tile {
+    position: relative;
     padding: $tools-pane-padding;
     @include default-font;
 
@@ -198,6 +199,20 @@
     &_icon,
     &_title {
         display: inline-block;
+        height: 24px;
+        line-height: 24px;
+    }
+
+    &_icon{
+        position: absolute;
+        top: $tools-pane-padding;
+        left: $tools-pane-padding;
+    }
+
+    &_title{
+        padding-left: 30px;
+        max-width: 100%;
+        overflow: auto;
     }
 
     &_name {
@@ -220,7 +235,6 @@
 
     &_icon {
         vertical-align: top;
-        margin-top: 3px;
         width: 30px;
     }
 }
@@ -307,7 +321,7 @@
             &_panel,
             &_tree-panel,
             &_search-panel {
-                top: 40px + $tools-pane-padding;
+                top: 44px + $tools-pane-padding;
             }
         }
 

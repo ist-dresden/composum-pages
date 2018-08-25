@@ -12,6 +12,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.jcr.RepositoryException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.regex.Pattern;
@@ -96,4 +97,12 @@ public interface PageManager extends ContentManager<Page> {
 
     boolean deletePage(@Nonnull BeanContext context, @Nullable Resource pageResource, boolean commit)
             throws PersistenceException;
+
+    /**
+     * touches (adjusts 'jcr:lastModified') the containing page of a resource (e.g. during changes);
+     * if 'time' is null the current time is used
+     */
+    void touch(@Nonnull BeanContext context, @Nonnull Resource resource, @Nullable Calendar time, boolean commit);
+
+    void touch(@Nonnull BeanContext context, @Nonnull Page page, @Nullable Calendar time, boolean commit);
 }

@@ -33,7 +33,8 @@ public interface PagesConstants {
     /** request aspects */
 
     String ACCESS_MODE_REQ_PARAM = PlatformAccessFilter.ACCESS_MODE_PARAM;
-    String DISPLAY_MODE_REQ_PARAM = "pages.mode";
+    String DISPLAY_MODE_SELECT_PARAM = "pages.mode";
+    String DISPLAY_MODE_VIEW_PARAM = "pages.view";
     String LOCALE_REQUEST_PARAM = "pages.locale";
 
     String ACCESS_MODE_ATTR = PlatformAccessFilter.ACCESS_MODE_KEY;
@@ -121,6 +122,7 @@ public interface PagesConstants {
 
     String PROP_CREATION_DATE = "jcr:created";
     String PROP_LAST_MODIFIED = ResourceUtil.PROP_LAST_MODIFIED;
+    String PROP_LAST_MODIFIED_BY = "jcr:lastModifiedBy";
     String TIMESTAMP_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
     /** */

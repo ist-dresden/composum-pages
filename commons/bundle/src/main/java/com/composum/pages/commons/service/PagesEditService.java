@@ -3,6 +3,7 @@ package com.composum.pages.commons.service;
 import com.composum.pages.commons.PagesConstants;
 import com.composum.pages.commons.model.ElementTypeFilter;
 import com.composum.pages.commons.util.ResolverUtil;
+import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.util.ResourceUtil;
 import com.composum.sling.platform.staging.query.Query;
 import com.composum.sling.platform.staging.query.QueryBuilder;
@@ -17,6 +18,7 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nonnull;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
@@ -40,9 +42,24 @@ public class PagesEditService implements EditService {
     @Reference
     protected ResourceManager resourceManager;
 
+    @Reference
+    protected PageManager pageManager;
+
     //
     // hierarchy management for the page content
     //
+
+    /**
+     * @return 'true' if the element can be a child of the container
+     */
+    @Override
+    public boolean isAllowedElement(@Nonnull ResourceResolver resolver,
+                                    @Nonnull ResourceManager.ResourceReference container,
+                                    @Nonnull ResourceManager.ResourceReference element) {
+        ResourceManager.ReferenceList containers = resourceManager.getReferenceList(container);
+        ElementTypeFilter filter = new ElementTypeFilter(resolver, containers);
+        return filter.isAllowedElement(element);
+    }
 
     /**
      * Determines the list of potential target containers for a page content element.
@@ -112,15 +129,25 @@ public class PagesEditService implements EditService {
         return allowedTypes;
     }
 
+    /**
+     * get or create referenced resource
+     */
     @Override
     public Resource getReferencedResource(ResourceResolver resolver, ResourceManager.ResourceReference reference)
             throws PersistenceException {
         Resource resource = resolver.resolve(reference.getPath());
         if (ResourceUtil.isNonExistingResource(resource)) {
-            Map<String, Object> properties = new HashMap<>();
-            properties.put(JcrConstants.JCR_PRIMARYTYPE, JcrConstants.NT_UNSTRUCTURED);
-            properties.put(ResourceUtil.PROP_RESOURCE_TYPE, reference.getType());
-            resource = resolver.create(resource.getParent(), resource.getName(), properties);
+            Resource parent = resource.getParent();
+            if (parent != null) {
+                String resourceType = reference.getType();
+                String primaryType = ResolverUtil.getTypeProperty(resolver, resourceType,
+                        PagesConstants.PROP_COMPONENT_TYPE, "");
+                Map<String, Object> properties = new HashMap<>();
+                properties.put(JcrConstants.JCR_PRIMARYTYPE, StringUtils.isNotBlank(primaryType)
+                        ? primaryType : JcrConstants.NT_UNSTRUCTURED);
+                properties.put(ResourceUtil.PROP_RESOURCE_TYPE, resourceType);
+                resource = resolver.create(parent, resource.getName(), properties);
+            }
         }
         return resource;
     }
@@ -138,9 +165,10 @@ public class PagesEditService implements EditService {
                                 ResourceManager.ResourceReference target, Resource before)
             throws RepositoryException, PersistenceException {
 
+        BeanContext context = new BeanContext.Service(resolver);
+
         // use the containers collection (can be the target itself) to move the source into
         Resource collection = getContainerCollection(resolver, target);
-        Session session = resolver.adaptTo(Session.class);
 
         int lastSlash = resourceType.lastIndexOf('/');
         String name = resourceType.substring(lastSlash + 1);
@@ -164,7 +192,9 @@ public class PagesEditService implements EditService {
         properties.put(JcrConstants.JCR_PRIMARYTYPE, primaryType);
         properties.put(ResourceUtil.PROP_RESOURCE_TYPE, resourceType);
         resolver.create(collection, newName, properties);
+        pageManager.touch(context, collection, null, false);
 
+        Session session = resolver.adaptTo(Session.class);
         if (StringUtils.isNotBlank(siblingName)) {
             // move to the designated position in the target collection
             session.refresh(true);
@@ -179,7 +209,7 @@ public class PagesEditService implements EditService {
     protected Resource getContainerCollection(ResourceResolver resolver, ResourceManager.ResourceReference target)
             throws RepositoryException, PersistenceException {
 
-        // get or creae the target (the parent)
+        // get or create the target (the parent)
         Resource targetResource = getReferencedResource(resolver, target);
 
         // check the configuration for an embedded collection node to use
@@ -224,8 +254,13 @@ public class PagesEditService implements EditService {
                                   Resource source, ResourceManager.ResourceReference targetParent, Resource before)
             throws RepositoryException, PersistenceException {
 
+        BeanContext context = new BeanContext.Service(resolver);
+
         // use the containers collection (can be the target itself) to move the source into
         Resource collection = getContainerCollection(resolver, targetParent);
-        return resourceManager.moveContentResource(resolver, changeRoot, source, collection, null, before);
+        Resource result = resourceManager.moveContentResource(resolver, changeRoot, source, collection, null, before);
+        pageManager.touch(context, source, null, false);
+        pageManager.touch(context, collection, null, false);
+        return result;
     }
 }

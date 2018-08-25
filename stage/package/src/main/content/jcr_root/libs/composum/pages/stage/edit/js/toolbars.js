@@ -80,7 +80,7 @@
                     var label = key.replace(/_/g, '.');
                     var parameters = {'pages.locale': key};
                     if (this.currentPage && pages.current.page !== this.currentPage) {
-                        parameters['pages.mode'] = 'preview'
+                        parameters['pages.view'] = 'preview'
                     }
                     pages.editFrame.reloadPage(parameters, this.currentPage);
                     this.$menuLabel.text(label);
@@ -150,9 +150,9 @@
                 this.handle = core.getWidget(this.el, '.' + toolbars.const.toolbarHandleClass, toolbars.ToolbarHandle);
                 this.handle.toolbar = this;
                 this.$('.' + toolbars.const.previewAction).attr('href',
-                    '?pages.mode.switch=' + pages.profile.get('mode', 'preview', 'preview'));
+                    '?pages.mode=' + pages.profile.get('mode', 'preview', 'preview'));
                 this.$('.' + toolbars.const.editAction).attr('href',
-                    '?pages.mode.switch=' + pages.profile.get('mode', 'edit', 'edit'));
+                    '?pages.mode=' + pages.profile.get('mode', 'edit', 'edit'));
                 this.$('.' + c.tbar.base + c.tbar._open).click(_.bind(this.openPage, this));
                 toolbars.localeSelector = core.getView('.' + toolbars.const.languageMenu, toolbars.LocaleSelector);
                 toolbars.localeSelector.currentPage = this.currentPage;

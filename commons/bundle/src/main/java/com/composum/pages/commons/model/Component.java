@@ -13,14 +13,19 @@ import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.NonExistingResource;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.ResourceWrapper;
+import org.apache.sling.api.resource.SyntheticResource;
 
+import javax.annotation.Nonnull;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static com.composum.pages.commons.PagesConstants.NODE_TYPE_COMPONENT;
 import static com.composum.pages.commons.servlet.EditServlet.EDIT_RESOURCE_TYPE_KEY;
+import static org.apache.sling.api.resource.Resource.RESOURCE_TYPE_NON_EXISTING;
 
 /**
- * the model class for a component itself (the implementation)
+ * the delegate class for a component itself (the implementation)
  */
 @PropertyDetermineResourceStrategy(Component.TypeResourceStrategy.class)
 public class Component extends AbstractModel {
@@ -29,11 +34,18 @@ public class Component extends AbstractModel {
 
     public static final Pattern PRIMARY_TYPE_PATTERN = Pattern.compile("^[^:/]+:.+");
     public static final Pattern EDIT_SUBTYPE_PATTERN = Pattern.compile(
-            "^(.+)/edit(/(default|actions)/[^/]+)?/(dialog|toolbar|tree|tile)$"
+            "^(.+)/edit(/(default|actions)/[^/]+)?/(dialog(/.+)?|toolbar|tree|tile|context/.+)$"
     );
 
     /**
-     * the model of the components dialog implemented as a 'subcomponent'
+     * check the 'cpp:Component' type for a resource
+     */
+    public static boolean isComponent(Resource resource) {
+        return ResourceUtil.isResourceType(resource, NODE_TYPE_COMPONENT);
+    }
+
+    /**
+     * the delegate of the components dialog implemented as a 'subcomponent'
      */
     public class EditDialog extends AbstractModel {
 
@@ -77,7 +89,7 @@ public class Component extends AbstractModel {
     }
 
     /**
-     * the model of the components tile implemented as a 'subcomponent'
+     * the delegate of the components tile implemented as a 'subcomponent'
      */
     public class EditTile extends AbstractModel {
 
@@ -94,7 +106,9 @@ public class Component extends AbstractModel {
     private transient EditDialog editDialog;
     private transient EditTile editTile;
 
-    /** model initialization */
+    private transient String type;
+
+    /** delegate initialization */
 
     public Component() {
     }
@@ -109,8 +123,20 @@ public class Component extends AbstractModel {
      */
     @Override
     protected Resource determineResource(Resource initialResource) {
-        // ignore all resource types modified by resource wrappers
-        Resource typeResource = getTypeResource(initialResource);
+        Resource typeResource = null;
+        if (Component.isComponent(initialResource)) {
+            typeResource = initialResource;
+        } else {
+            String resourceType = initialResource.getResourceType();
+            Matcher matcher = EDIT_SUBTYPE_PATTERN.matcher(resourceType);
+            if (matcher.matches()) {
+                // if type is a subtype use the component type instead
+                typeResource = resolver.getResource(matcher.group(1));
+            }
+            if (typeResource == null) {
+                typeResource = getTypeResource(initialResource);
+            }
+        }
         return typeResource != null ? typeResource : initialResource;
     }
 
@@ -139,7 +165,7 @@ public class Component extends AbstractModel {
          */
         public static Resource getTypeResource(Resource resource, ResourceResolver resolver, BeanContext context) {
             Resource typeResource = null;
-            if (!ResourceUtil.isNonExistingResource(resource)) {
+            if (!isSyntheticResource(resource)) {
                 // ignore all resource types modified by resource wrappers
                 typeResource = resolver.getResource(resource.getPath());
                 if (typeResource != null &&
@@ -159,11 +185,7 @@ public class Component extends AbstractModel {
                             if (StringUtils.isBlank(resourceType)) {
                                 resourceType = resource.getResourceType();
                             }
-                            Matcher matcher = EDIT_SUBTYPE_PATTERN.matcher(resourceType);
-                            if (matcher.matches()) {
-                                // if type is a subtype use the component type instead
-                                resourceType = matcher.group(1);
-                            }
+                            resourceType = getTypeOfSubtype(resourceType);
                         }
                     }
                     if (StringUtils.isNotBlank(resourceType)) {
@@ -177,15 +199,40 @@ public class Component extends AbstractModel {
                 if (StringUtils.isNotBlank(resourceType)) {
                     typeResource = ResolverUtil.getResourceType(resolver, resourceType);
                 }
+                if (typeResource == null) {
+                    String type = request.getParameter(TYPE_HINT_PARAM);
+                    if (StringUtils.isNotBlank(type)) {
+                        typeResource = ResolverUtil.getResourceType(resolver, type);
+                    }
+                }
             }
             return typeResource;
         }
 
     }
 
-    /** the type of a component is the the components absolute resource path */
+    public static String getTypeOfSubtype(String resourceType) {
+        Matcher matcher = EDIT_SUBTYPE_PATTERN.matcher(resourceType);
+        if (matcher.matches()) {
+            // if type is a subtype use the component type instead
+            return matcher.group(1);
+        }
+        return resourceType;
+    }
+
+    public static boolean isSyntheticResource(@Nonnull Resource resource) {
+        while (resource instanceof ResourceWrapper) {
+            resource = ((ResourceWrapper) resource).getResource();
+        }
+        return resource instanceof SyntheticResource || resource.isResourceType(RESOURCE_TYPE_NON_EXISTING);
+    }
+
+    /** the type of a component is the the components resource path relative to the resolver root path */
     public String getType() {
-        return getPath();
+        if (type == null) {
+            type = ResourceTypeUtil.relativeResourceType(getContext().getResolver(), getPath());
+        }
+        return type;
     }
 
     public EditDialog getEditDialog() {
@@ -201,5 +248,4 @@ public class Component extends AbstractModel {
         }
         return editTile;
     }
-
 }

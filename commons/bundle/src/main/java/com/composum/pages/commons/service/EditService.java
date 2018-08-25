@@ -5,6 +5,7 @@ import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 
+import javax.annotation.Nonnull;
 import javax.jcr.RepositoryException;
 import java.util.List;
 
@@ -12,6 +13,13 @@ import java.util.List;
  * the service interface for Pages editing operations
  */
 public interface EditService {
+
+    /**
+     * @return 'true' if the element can be a child of the container
+     */
+    boolean isAllowedElement(@Nonnull ResourceResolver resolver,
+                             @Nonnull ResourceManager.ResourceReference container,
+                             @Nonnull ResourceManager.ResourceReference element);
 
     /**
      * Determines the list of potential target containers for a page content element.

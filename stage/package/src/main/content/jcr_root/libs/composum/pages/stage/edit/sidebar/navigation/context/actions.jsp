@@ -2,7 +2,7 @@
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <%@taglib prefix="cpn" uri="http://sling.composum.com/cpnl/1.0" %>
 <cpp:defineFrameObjects/>
-<cpp:model var="site" type="com.composum.pages.stage.model.edit.site.SiteElement" mode="none"
+<cpp:model var="site" type="com.composum.pages.stage.model.edit.site.SiteModel" mode="none"
            cssBase="composum-pages-stage-edit-sidebar-navigation-context">
     <div class="${siteCssBase}_actions">
         <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">

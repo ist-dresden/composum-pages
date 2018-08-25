@@ -33,6 +33,7 @@ public class ElementTag extends AbstractWrappingTag {
     public static final String PAGES_EDIT_DATA_NAME = PAGES_EDIT_DATA + "-name";
     public static final String PAGES_EDIT_DATA_PATH = PAGES_EDIT_DATA + "-path";
     public static final String PAGES_EDIT_DATA_TYPE = PAGES_EDIT_DATA + "-type";
+    public static final String PAGES_EDIT_DATA_PRIM = PAGES_EDIT_DATA + "-prim";
 
     protected String id;
     protected String tagId;

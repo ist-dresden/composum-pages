@@ -19,18 +19,21 @@ public class GenericModel extends ModelWrapper implements SlingBean {
     @Override
     @Deprecated
     public void initialize(BeanContext context, Resource resource) {
+        resource = determineDelegateResource(context, resource);
         if (Site.isSite(resource)) {
-            model = new Site(context, resource);
+            delegate = new Site(context, resource);
         } else if (Page.isPage(resource)) {
-            model = new Page(context, resource);
+            delegate = new Page(context, resource);
         } else if (Folder.isFolder(resource)) {
-            model = new Folder(context, resource);
+            delegate = new Folder(context, resource);
         } else if (File.isFile(resource)) {
-            model = new File(context, resource);
+            delegate = new File(context, resource);
+        } else if (Component.isComponent(resource)) {
+            delegate = new Component(context, resource);
         } else if (Container.isContainer(context.getResource().getResourceResolver(), resource, null)) {
-            model = new Container(context, resource);
+            delegate = new Container(context, resource);
         } else {
-            model = new Element(context, resource);
+            delegate = new Element(context, resource);
         }
     }
 
@@ -39,5 +42,9 @@ public class GenericModel extends ModelWrapper implements SlingBean {
     @Deprecated
     public void initialize(BeanContext context) {
         initialize(context, context.getResource());
+    }
+
+    protected Resource determineDelegateResource (BeanContext context, Resource resource) {
+        return resource;
     }
 }
