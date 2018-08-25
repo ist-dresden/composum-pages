@@ -11,6 +11,9 @@ import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import static com.composum.pages.commons.PagesConstants.NODE_TYPE_ELEMENT;
 import static com.composum.pages.commons.PagesConstants.PROP_ALLOWED_CONTAINERS;
 import static com.composum.pages.commons.servlet.EditServlet.EDIT_RESOURCE_TYPE_KEY;
@@ -26,7 +29,8 @@ public class Element extends AbstractModel {
      * @param resource the resource (can be 'null' if type is available)
      * @param type     the optional resource type (necessary if resource is 'null')
      */
-    public static boolean isElement(ResourceResolver resolver, Resource resource, String type) {
+    public static boolean isElement(@Nonnull ResourceResolver resolver,
+                                    @Nullable Resource resource, @Nullable String type) {
         return (resource != null && (resource.isResourceType(NODE_TYPE_ELEMENT) ||
                 NODE_TYPE_ELEMENT.equals(ResolverUtil.getTypeProperty(
                         resource, type, PagesConstants.PROP_COMPONENT_TYPE, "")))) ||

@@ -37,6 +37,12 @@ public interface ResourceManager {
         @Nonnull
         Resource getResource();
 
+        @Nonnull
+        String getPrimaryType();
+
+        @Nonnull
+        ResourceResolver getResolver();
+
         /**
          * returns the property value using the cascade: resource - configuration - resource type
          */

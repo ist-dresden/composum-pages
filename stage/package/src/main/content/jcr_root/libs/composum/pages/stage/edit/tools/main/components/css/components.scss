@@ -2,3 +2,36 @@
 
 @import "../../../../css/variables";
 @import "../../../../css/mixins";
+
+.composum-pages-stage-edit-tools-main-components {
+
+    &_list {
+        list-style: none;
+        margin: 0 0 $tools-pane-padding*2;
+        padding: 0;
+    }
+
+    &_item {
+        position: relative;
+        margin: 0 0 $tools-pane-padding;
+        padding: 0;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+
+        &.selected {
+
+            .composum-pages-component-tile {
+                background-color: $tools-pane-main-selection-color;
+            }
+        }
+
+        &.dragging {
+
+            .composum-pages-component-tile {
+                background-color: $tools-pane-sec-selection-color;
+            }
+        }
+    }
+}

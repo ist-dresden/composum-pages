@@ -31,7 +31,11 @@
                     edit: 'dialog:edit',
                     alert: 'dialog:alert'
                 },
+                site: {
+                    changed: 'site:changed'         // done.
+                },
                 page: {
+                    changed: 'page:changed',        // done.
                     containerRefs: 'page:containerRefs'
                 },
                 element: {
@@ -44,6 +48,10 @@
                     move: 'element:move',           // do it!...
                     moved: 'element:moved'          // done.
                 }
+            },
+            url: {
+                edit: '/bin/cpm/pages/edit',
+                _info: '.resourceInfo.json'
             }
         });
 

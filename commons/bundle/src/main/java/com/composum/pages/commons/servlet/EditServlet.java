@@ -20,6 +20,7 @@ import com.composum.sling.core.mapping.MappingRules;
 import com.composum.sling.core.servlet.NodeTreeServlet;
 import com.composum.sling.core.servlet.ServletOperation;
 import com.composum.sling.core.servlet.ServletOperationSet;
+import com.composum.sling.core.util.ResourceUtil;
 import com.composum.sling.core.util.ResponseUtil;
 import com.composum.sling.cpnl.CpnlElFunctions;
 import com.google.gson.Gson;
@@ -64,6 +65,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import static com.composum.pages.commons.PagesConstants.PROP_TEMPLATE;
+import static com.composum.pages.commons.util.ResourceTypeUtil.CONTEXT_ACTIONS_PATH;
+import static com.composum.pages.commons.util.ResourceTypeUtil.CONTEXT_CONTAINER_PATH;
 import static com.composum.pages.commons.util.ResourceTypeUtil.EDIT_DIALOG_PATH;
 import static com.composum.pages.commons.util.ResourceTypeUtil.EDIT_TILE_PATH;
 import static com.composum.pages.commons.util.ResourceTypeUtil.EDIT_TOOLBAR_PATH;
@@ -106,13 +109,13 @@ public class EditServlet extends NodeTreeServlet {
     public enum Operation {
         pageData, isTemplate, isAllowedChild,
         siteTree, pageTree, developTree,
-        editDialog, newDialog,
+        resourceInfo, editDialog, newDialog,
         editTile, editToolbar, treeActions,
-        pageComponents, targetContainers,
+        pageComponents, targetContainers, isAllowedElement,
         insertComponent, moveComponent, copyElement,
         createPage, deletePage, moveContent, renameContent, copyContent,
         createSite, deleteSite,
-        contextTools,
+        contextTools, context,
         versions, restoreVersion, checkpoint, setVersionLabel
     }
 
@@ -168,6 +171,8 @@ public class EditServlet extends NodeTreeServlet {
         operations.setOperation(ServletOperationSet.Method.GET, Extension.json,
                 Operation.developTree, new DevTreeOperation());
         operations.setOperation(ServletOperationSet.Method.GET, Extension.json,
+                Operation.resourceInfo, new GetResourceInfo());
+        operations.setOperation(ServletOperationSet.Method.GET, Extension.json,
                 Operation.pageData, new GetPageData());
         operations.setOperation(ServletOperationSet.Method.GET, Extension.json,
                 Operation.isTemplate, new CheckIsTemplate());
@@ -184,7 +189,11 @@ public class EditServlet extends NodeTreeServlet {
         operations.setOperation(ServletOperationSet.Method.GET, Extension.html,
                 Operation.treeActions, new GetTreeActions());
         operations.setOperation(ServletOperationSet.Method.GET, Extension.html,
+                Operation.context, new GetContextResource());
+        operations.setOperation(ServletOperationSet.Method.GET, Extension.html,
                 Operation.contextTools, new GetContextTools());
+        operations.setOperation(ServletOperationSet.Method.GET, Extension.json,
+                Operation.isAllowedElement, new CheckIsAllowedElement());
         operations.setOperation(ServletOperationSet.Method.GET, Extension.json,
                 Operation.targetContainers, new GetTargetContainers());
         operations.setOperation(ServletOperationSet.Method.GET, Extension.html,
@@ -253,6 +262,34 @@ public class EditServlet extends NodeTreeServlet {
                 LOG.error(ex.getMessage(), ex);
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, ex.getMessage());
             }
+
+        }
+    }
+
+    protected class GetResourceInfo implements ServletOperation {
+
+        @Override
+        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
+                         ResourceHandle resource)
+                throws IOException {
+
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("GetResourceInfo(" + resource + ")...");
+            }
+
+            String type = RequestUtil.getParameter(request, PARAM_TYPE, (String) null);
+            ResourceManager.ResourceReference reference = resourceManager.getReference(resource, type);
+
+            response.setStatus(HttpServletResponse.SC_OK);
+            JsonWriter jsonWriter = ResponseUtil.getJsonWriter(response);
+            jsonWriter.beginObject();
+            jsonWriter.name("name").value(resource.getName());
+            jsonWriter.name("path").value(resource.getPath());
+            jsonWriter.name("type").value(reference.getType());
+            jsonWriter.name("prim").value(reference.getPrimaryType());
+            jsonWriter.name("title").value(resource.getProperty("title",
+                    resource.getProperty(ResourceUtil.PROP_TITLE, resource.getName())));
+            jsonWriter.endObject();
 
         }
     }
@@ -340,6 +377,9 @@ public class EditServlet extends NodeTreeServlet {
         }
     }
 
+    /**
+     * hierarchy check for the content hierarchy (Site, Pages, Folder, Files)
+     */
     protected class CheckIsAllowedChild implements ServletOperation {
 
         @Override
@@ -525,8 +565,8 @@ public class EditServlet extends NodeTreeServlet {
                 selectors = getDefaultSelectors();
             }
             String paramType = request.getParameter(PARAM_TYPE);
-            Resource editResource =
-                    ResourceTypeUtil.getSubtype(resolver, contentResource, paramType, getResourcePath(), selectors);
+            Resource editResource = ResourceTypeUtil.getSubtype(resolver, contentResource, paramType,
+                    getResourcePath(request), selectors);
 
             if (LOG.isDebugEnabled()) {
                 LOG.debug("GetEditResource(" + contentResource.getPath() + "," + editResource.getPath() + ")...");
@@ -543,7 +583,11 @@ public class EditServlet extends NodeTreeServlet {
             }
         }
 
-        protected abstract String getResourcePath();
+        protected String getSelectors(SlingHttpServletRequest request) {
+            return RequestUtil.getSelectorString(request, null, 1);
+        }
+
+        protected abstract String getResourcePath(SlingHttpServletRequest request);
 
         protected String getDefaultSelectors() {
             return "";
@@ -553,7 +597,7 @@ public class EditServlet extends NodeTreeServlet {
     protected class GetEditDialog extends GetEditResource {
 
         @Override
-        protected String getResourcePath() {
+        protected String getResourcePath(SlingHttpServletRequest request) {
             return EDIT_DIALOG_PATH;
         }
     }
@@ -561,7 +605,7 @@ public class EditServlet extends NodeTreeServlet {
     protected class GetNewDialog extends GetEditDialog {
 
         @Override
-        protected String getResourcePath() {
+        protected String getResourcePath(SlingHttpServletRequest request) {
             return NEW_DIALOG_PATH;
         }
     }
@@ -569,7 +613,7 @@ public class EditServlet extends NodeTreeServlet {
     protected class GetEditTile extends GetEditResource {
 
         @Override
-        protected String getResourcePath() {
+        protected String getResourcePath(SlingHttpServletRequest request) {
             return EDIT_TILE_PATH;
         }
     }
@@ -577,7 +621,7 @@ public class EditServlet extends NodeTreeServlet {
     protected class GetEditToolbar extends GetEditResource {
 
         @Override
-        protected String getResourcePath() {
+        protected String getResourcePath(SlingHttpServletRequest request) {
             return EDIT_TOOLBAR_PATH;
         }
     }
@@ -585,14 +629,67 @@ public class EditServlet extends NodeTreeServlet {
     protected class GetTreeActions extends GetEditResource {
 
         @Override
-        protected String getResourcePath() {
+        protected String getResourcePath(SlingHttpServletRequest request) {
             return TREE_ACTIONS_PATH;
+        }
+    }
+
+    protected class GetContextResource extends GetEditResource {
+
+        @Override
+        protected String getSelectors(SlingHttpServletRequest request) {
+            return RequestUtil.getSelectorString(request, null, 2);
+        }
+
+        @Override
+        protected String getResourcePath(SlingHttpServletRequest request) {
+            switch (RequestUtil.getSelectorString(request, null, 1, 1)) {
+                case "container":
+                    return CONTEXT_CONTAINER_PATH;
+            }
+            return CONTEXT_ACTIONS_PATH;
         }
     }
 
     //
     // Containers & Elements
     //
+
+    /**
+     * hierarchy check for the page element hierarchy (Container, Element)
+     */
+    protected class CheckIsAllowedElement implements ServletOperation {
+
+        @Override
+        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
+                         ResourceHandle resource)
+                throws IOException {
+
+            if (resource != null) {
+                String path = request.getParameter(PARAM_PATH);
+
+                if (StringUtils.isNotBlank(path)) {
+                    ResourceResolver resolver = request.getResourceResolver();
+                    String type = request.getParameter(PARAM_TYPE);
+
+                    boolean allowed = editService.isAllowedElement(resolver,
+                            resourceManager.getReference(resource, null),
+                            resourceManager.getReference(resolver, path, type));
+
+                    response.setStatus(HttpServletResponse.SC_OK);
+                    JsonWriter jsonWriter = ResponseUtil.getJsonWriter(response);
+                    jsonWriter.beginObject();
+                    jsonWriter.name("isAllowed").value(allowed);
+                    jsonWriter.endObject();
+
+                } else {
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "invalid path");
+                }
+            } else {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            }
+        }
+    }
 
     protected class GetPageComponents implements ServletOperation {
 

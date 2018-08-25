@@ -73,7 +73,7 @@
                         }, {},
                         _.bind(function () {
                             if (pages.elements) {
-                                pages.elements.triggerEvent(pages.const.event.site.changed, [this.sitePath]);
+                                pages.elements.triggerEvent(pages.elements.const.event.site.changed, [this.sitePath]);
                             } else {
                                 pages.log.debug('site.trigger.' + pages.const.event.site.changed + '(' + this.sitePath + ')');
                                 $(document).trigger(pages.const.event.site.changed, [this.sitePath]);
@@ -133,7 +133,8 @@
                             objects: objects
                         });
                     } else { // context is the stage edit frame
-                        pages.dialogs.openEditDialog(undefined, this.sitePath, undefined, u.root + u._create,
+                        pages.dialogs.openEditDialog(undefined, this.sitePath, undefined, undefined/*context*/,
+                            u.root + u._create,
                             function (dialog) {
                                 if (objects) {
                                     dialog.applyData({
@@ -177,7 +178,12 @@
                                 releaseName: key
                             }, {},
                             _.bind(function (result) { // onSuccess
-                                window.location.reload();
+                                if (pages.elements) {
+                                    pages.elements.triggerEvent(pages.elements.const.event.site.changed, [this.sitePath]);
+                                } else {
+                                    pages.log.debug('site.trigger.' + pages.const.event.site.changed + '(' + this.sitePath + ')');
+                                    $(document).trigger(pages.const.event.site.changed, [this.sitePath]);
+                                }
                             }, this),
                             _.bind(function (result) { // onError
                                 var fn = pages.elements ? pages.elements.alertMessage : core.alert;
@@ -217,7 +223,8 @@
                                 url: u.root + u._delete
                             });
                         } else { // context is the stage edit frame
-                            pages.dialogs.openEditDialog(value.value, path, undefined, u.root + u._delete);
+                            pages.dialogs.openEditDialog(value.value, path, undefined/*type*/,
+                                undefined/*context*/, u.root + u._delete);
                         }
                     }
                 }, this));

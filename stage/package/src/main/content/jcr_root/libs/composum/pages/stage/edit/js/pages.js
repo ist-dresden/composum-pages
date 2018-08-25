@@ -77,10 +77,15 @@
                 path: {
                     select: 'path:select',          // do it!...
                     selected: 'path:selected'       // done.
+                },
+                dnd: {
+                    finished: 'dnd:finished'        // done, reset state.
                 }
             },
             url: {
                 get: {
+                    edit: '/bin/cpm/pages/edit',
+                    _resourceInfo: '.resourceInfo.json',
                     pageData: '/bin/cpm/pages/edit.pageData.json'
                 },
                 edit: {
@@ -176,7 +181,9 @@
             locale: pages.$body.data(pages.const.data.body.locale),
             folder: undefined,
             site: undefined,
-            page: undefined
+            page: undefined,
+            element: undefined,
+            dnd: {}
         };
 
         switch (pages.current.mode) {
@@ -232,6 +239,8 @@
 
         pages.contextTools = {
 
+            log: log.getLogger("context"),
+
             initializers: [],
 
             getInitializers: function () {
@@ -251,7 +260,7 @@
 
         pages.DialogHandler = Backbone.View.extend({
 
-            openEditDialog: function (url, viewType, name, path, type, setupDialog, onNotFound) {
+            openEditDialog: function (url, viewType, name, path, type, context, setupDialog, onNotFound) {
                 core.ajaxGet(url + (path ? path : ''), {
                         data: {
                             name: name ? name : '',
@@ -269,7 +278,7 @@
                                 type: type
                             };
                             if (_.isFunction(dialog.afterLoad)) {
-                                dialog.afterLoad(name, path, type);
+                                dialog.afterLoad(name, path, type, context);
                             }
                             if (_.isFunction(setupDialog)) {
                                 setupDialog(dialog);
@@ -390,7 +399,8 @@
                             if (args.dialog) {
                                 url = args.dialog.url;
                             }
-                            pages.dialogs.openEditDialog(args.target.name, args.target.path, args.target.type, url,
+                            pages.dialogs.openEditDialog(args.target.name, args.target.path, args.target.type,
+                                undefined/*context*/, url,
                                 function (dialog) {
                                     if (args.values) {
                                         dialog.applyData(args.values);
@@ -411,6 +421,56 @@
                 }
             }
         }, false);
+
+        //
+        // DnD operations
+        //
+
+        pages.dnd = {
+
+            insertNewElement: function (target, object, context) {
+                if (!context) {
+                    context = {
+                        parent: target.container.data,
+                        before: target.before.data
+                    };
+                }
+                if (context.parent.type === undefined || context.parent.prim === undefined) {
+                    // get resource type and/or primary type of potentially synthetic parent and retry...
+                    var u = pages.const.url.get;
+                    core.ajaxGet(u.edit + u._resourceInfo + target.container.data.path, {
+                        data: {
+                            type: target.container.data.type
+                        }
+                    }, function (data) {
+                        // '' as fallback to prevent from infinity recursion..
+                        if (!context.parent.type) {
+                            context.parent.type = data.type ? data.type : '';
+                        }
+                        if (!context.parent.prim) {
+                            context.parent.prim = data.prim ? data.prim : '';
+                        }
+                        pages.dnd.insertNewElement(target, object, context);
+                    });
+                } else {
+                    var d = pages.dialogs.const.edit.url;
+                    pages.dialogs.openCreateDialog('*', context.parent.path, object.data.type,
+                        context, undefined, undefined,
+                        // if no create dialog exists (not found) create a new instance directly
+                        _.bind(function (name, path, type) {
+                            core.ajaxPost(d.base + d._insert, {
+                                _charset_: 'UTF-8',
+                                resourceType: type,
+                                targetPath: path,
+                                targetType: target.container.data.type
+                            }, {}, _.bind(function () {
+                                pages.log.debug('pages.trigger.' + pages.const.event.element.changed + '(' + path + ')');
+                                $(document).trigger(pages.const.event.element.changed, [path]);
+                            }, this));
+                        }, this));
+                }
+            }
+        };
 
         //
         // clipboard operations

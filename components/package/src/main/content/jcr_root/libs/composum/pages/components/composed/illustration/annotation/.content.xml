@@ -3,5 +3,5 @@
         jcr:primaryType="cpp:Component"
         jcr:title="Annotation"
         componentGroup="none"
-        sling:resourceSuperType="composum/pages/components/element"
+        sling:resourceSuperType="composum/pages/components/embedded"
         allowedContainers="[composum/pages/components/composed/illustration]"/>

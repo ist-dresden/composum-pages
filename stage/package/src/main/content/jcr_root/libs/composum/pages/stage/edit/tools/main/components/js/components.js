@@ -13,12 +13,16 @@
                     tools: 'composum-pages-tools',
                     component: 'composum-pages-component',
                     _: {
+                        item: '_item',
                         name: '_name',
                         path: '_path',
                         type: '_type',
                         actions: '_actions',
                         content: '_components-view'
                     }
+                },
+                log: {
+                    prefix: 'tools.Elements.'
                 },
                 url: {
                     get: {
@@ -31,18 +35,43 @@
         tools.Component = Backbone.View.extend({
 
             initialize: function (options) {
-                var c = tools.const.components;
-                this.$name = this.$('.' + c.css.component + c.css._.name);
-                this.$path = this.$('.' + c.css.component + c.css._.path);
-                this.$type = this.$('.' + c.css.component + c.css._.type);
-                if (this.$path.length === 0) {
-                    this.$path = undefined;
-                }
-                this.data = {
-                    name: this.$name.text(),
-                    path: this.$path ? this.$path.text() : null,
-                    type: this.$type.text()
+                var c = tools.const.components.css;
+                this.log = {
+                    tools: pages.contextTools.log,
+                    dnd: log.getLogger('dnd')
                 };
+                this.data = {
+                    name: this.$el.data('name'),
+                    path: this.$el.data('path'),
+                    type: this.$el.data('type')
+                };
+                this.$el
+                    .on('dragstart', _.bind(this.onDragStart, this))
+                    .on('dragend', _.bind(this.onDragEnd, this));
+            },
+
+            onDragStart: function (event) {
+                var $component = $(event.currentTarget);
+                pages.current.dnd.object = {
+                    type: 'component',
+                    data: this.data
+                };
+                var jsonData = JSON.stringify(pages.current.dnd.object);
+                var dndEvent = event.originalEvent;
+                dndEvent.dataTransfer.setData('application/json', jsonData);
+                dndEvent.dataTransfer.effectAllowed = 'copy';
+                if (this.log.dnd.getLevel() <= log.levels.DEBUG) {
+                    this.log.dnd.debug(tools.const.components.log.prefix + 'dndStart(' + jsonData + ')');
+                }
+
+            },
+
+            onDragEnd: function (event) {
+                var e = pages.const.event;
+                if (this.log.dnd.getLevel() <= log.levels.DEBUG) {
+                    this.log.dnd.debug('components.trigger.' + e.dnd.finished + '(' + event + ')');
+                }
+                $(document).trigger(e.dnd.finished, [event]);
             }
         });
 
@@ -58,9 +87,10 @@
             },
 
             reload: function () {
-                var c = tools.const.components;
-                this.elements = [];
-                core.ajaxPut(c.url.get.components + pages.current.page,
+                var c = tools.const.components.css;
+                var u = tools.const.components.url;
+                this.items = [];
+                core.ajaxPut(u.get.components + pages.current.page,
                     JSON.stringify(this.containerRefs), {},
                     undefined, undefined, _.bind(function (data) {
                         if (data.status === 200) {
@@ -68,10 +98,10 @@
                         } else {
                             this.$el.html("");
                         }
-                        var elements = this.elements;
-                        this.$el.find('.' + c.css.base + c.css.component).each(function () {
-                            var component = core.getWidget(undefined, this, tools.Component);
-                            elements.push(component);
+                        var items = this.items;
+                        this.$el.find('.' + c.base + c._.item).each(function () {
+                            var item = core.getWidget(undefined, this, tools.Component);
+                            items.push(item);
                         });
                     }, this));
             }

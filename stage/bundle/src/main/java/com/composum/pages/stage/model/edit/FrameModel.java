@@ -21,16 +21,15 @@ import static com.composum.sling.core.servlet.AbstractServiceServlet.PARAM_TYPE;
  */
 public class FrameModel extends GenericModel {
 
-    private transient Resource delegateType;
+    private transient String resourceType;
+    private transient Resource typeResource;
     private transient PagesConstants.ComponentType componentType;
+    private transient Component component;
 
     public PagesConstants.ComponentType getComponentType() {
         if (componentType == null) {
             BeanContext context = delegate.getContext();
-            SlingHttpServletRequest request = context.getRequest();
-            // use type hint if available (useful on type overriding during 'include')
-            String typeParam = request.getParameter(PARAM_TYPE);
-            componentType = PagesConstants.ComponentType.typeOf(context.getResolver(), getResource(), typeParam);
+            componentType = PagesConstants.ComponentType.typeOf(context.getResolver(), getResource(), getType());
         }
         return componentType;
     }
@@ -50,6 +49,31 @@ public class FrameModel extends GenericModel {
         Resource resource = getFrameResource();
         String type = CSS_BASE_TYPE_RESTRICTION.accept(resource) ? resource.getResourceType() : null;
         return StringUtils.isNotBlank(type) ? TagCssClasses.cssOfType(type) : null;
+    }
+
+    /**
+     * @return the resource type retrieved from the URL 'type' parameter ot the resource type element to edit
+     */
+    @Override
+    public String getType() {
+        if (resourceType == null) {
+            BeanContext context = delegate.getContext();
+            SlingHttpServletRequest request = context.getRequest();
+            resourceType = request.getParameter(PARAM_TYPE);
+            if (StringUtils.isBlank(resourceType)) {
+                resourceType = super.getType();
+            }
+        }
+        return resourceType;
+    }
+
+    @Override
+    public Component getComponent() {
+        if (component == null) {
+            Resource typeResource = getTypeResource();
+            component = new Component(getContext(), typeResource != null ? typeResource : getResource());
+        }
+        return component;
     }
 
     /**
@@ -83,18 +107,11 @@ public class FrameModel extends GenericModel {
     }
 
     public Resource getTypeResource() {
-        if (delegateType == null) {
+        if (typeResource == null) {
             Resource resource = getResource();
-            delegateType = ResolverUtil.getResourceType(resource, resource.getResourceType());
-            if (delegateType == null) {
-                BeanContext context = delegate.getContext();
-                String type = context.getRequest().getParameter(Component.TYPE_HINT_PARAM);
-                if (StringUtils.isBlank(type)) {
-                    delegateType = ResolverUtil.getResourceType(resource, type);
-                }
-            }
+            typeResource = ResolverUtil.getResourceType(resource, getType());
         }
-        return delegateType;
+        return typeResource;
     }
 
     public String getTypePath() {

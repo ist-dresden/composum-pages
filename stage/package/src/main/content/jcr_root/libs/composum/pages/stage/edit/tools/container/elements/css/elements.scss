@@ -7,14 +7,19 @@
 
     &_list {
         list-style: none;
-        margin: 0;
+        margin: 0 0 $tools-pane-padding*2;
         padding: 0;
+
+        &.drop-into {
+            border-bottom: $tools-pane-padding/2 solid $tools-pane-dnd-target-color;
+            padding-bottom: $tools-pane-padding*1.5;
+        }
     }
 
     &_element {
         position: relative;
         margin: 0 0 $tools-pane-padding;
-        padding: 0 0 0 0; //0 0 0 20px;
+        padding: 0; //0 0 0 20px;
 
         &:last-child {
             margin-bottom: 0;
@@ -27,7 +32,51 @@
         }
 
         .composum-pages-component-tile {
-            position: static;
+            position: relative;
+        }
+
+        &.selected {
+
+            .composum-pages-component-tile {
+                background-color: $tools-pane-sec-selection-color;
+            }
+
+            &.current {
+
+                .composum-pages-component-tile {
+                    background-color: $tools-pane-main-selection-color;
+                }
+            }
+        }
+
+        &.dragging {
+
+            .composum-pages-component-tile {
+                opacity: 0.5;
+            }
+        }
+
+        &.drop-before {
+            margin-top: $tools-pane-padding*1.5;
+            border-top: $tools-pane-padding/2 solid $tools-pane-dnd-target-color;
+            padding-top: $tools-pane-padding*1.5;
+        }
+
+        &.drop-into:after {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            box-sizing: border-box;
+            border: 2px dashed $tools-pane-dnd-target-color;
+            padding: 18px;
+            text-align: center;
+            content: "\f140"; // bullseye
+            font-family: "FontAwesome";
+            font-size: 40px;
+            line-height: 40px;
+            color: $tools-pane-dnd-target-color;
         }
     }
 }

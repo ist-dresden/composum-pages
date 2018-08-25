@@ -18,6 +18,7 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nonnull;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
@@ -47,6 +48,18 @@ public class PagesEditService implements EditService {
     //
     // hierarchy management for the page content
     //
+
+    /**
+     * @return 'true' if the element can be a child of the container
+     */
+    @Override
+    public boolean isAllowedElement(@Nonnull ResourceResolver resolver,
+                                    @Nonnull ResourceManager.ResourceReference container,
+                                    @Nonnull ResourceManager.ResourceReference element) {
+        ResourceManager.ReferenceList containers = resourceManager.getReferenceList(container);
+        ElementTypeFilter filter = new ElementTypeFilter(resolver, containers);
+        return filter.isAllowedElement(element);
+    }
 
     /**
      * Determines the list of potential target containers for a page content element.
@@ -116,15 +129,25 @@ public class PagesEditService implements EditService {
         return allowedTypes;
     }
 
+    /**
+     * get or create referenced resource
+     */
     @Override
     public Resource getReferencedResource(ResourceResolver resolver, ResourceManager.ResourceReference reference)
             throws PersistenceException {
         Resource resource = resolver.resolve(reference.getPath());
         if (ResourceUtil.isNonExistingResource(resource)) {
-            Map<String, Object> properties = new HashMap<>();
-            properties.put(JcrConstants.JCR_PRIMARYTYPE, JcrConstants.NT_UNSTRUCTURED);
-            properties.put(ResourceUtil.PROP_RESOURCE_TYPE, reference.getType());
-            resource = resolver.create(resource.getParent(), resource.getName(), properties);
+            Resource parent = resource.getParent();
+            if (parent != null) {
+                String resourceType = reference.getType();
+                String primaryType = ResolverUtil.getTypeProperty(resolver, resourceType,
+                        PagesConstants.PROP_COMPONENT_TYPE, "");
+                Map<String, Object> properties = new HashMap<>();
+                properties.put(JcrConstants.JCR_PRIMARYTYPE, StringUtils.isNotBlank(primaryType)
+                        ? primaryType : JcrConstants.NT_UNSTRUCTURED);
+                properties.put(ResourceUtil.PROP_RESOURCE_TYPE, resourceType);
+                resource = resolver.create(parent, resource.getName(), properties);
+            }
         }
         return resource;
     }
@@ -186,7 +209,7 @@ public class PagesEditService implements EditService {
     protected Resource getContainerCollection(ResourceResolver resolver, ResourceManager.ResourceReference target)
             throws RepositoryException, PersistenceException {
 
-        // get or creae the target (the parent)
+        // get or create the target (the parent)
         Resource targetResource = getReferencedResource(resolver, target);
 
         // check the configuration for an embedded collection node to use

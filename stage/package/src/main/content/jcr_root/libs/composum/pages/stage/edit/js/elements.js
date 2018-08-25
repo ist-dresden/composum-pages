@@ -631,7 +631,7 @@
                 this.initComponents();
                 // register the handlers for component selection in interaction with the edit frame
                 $(document).on(elements.const.event.element.selected, _.bind(this.onComponentSelected, this));
-                $(document).on(elements.const.event.element.select, _.bind(this.selectComponent, this));
+                $(document).on(elements.const.event.element.select, _.bind(this.selectElement, this));
                 window.addEventListener("message", _.bind(this.onMessage, this), false);
             },
 
@@ -747,7 +747,7 @@
                 }
             },
 
-            selectComponent: function (event, name, path, type) {
+            selectElement: function (event, name, path, type) {
                 if (path) {
                     var $target = $('.' + elements.const.class.component
                         + '[data-' + elements.const.data.path + '="' + path + '"]');
@@ -755,7 +755,7 @@
                     if ($target && $target.length > 0) {
                         var component = $target[0].view;
                         if (component) {
-                            elements.log.debug('pages.elements.selectComponent(' + path + ')');
+                            elements.log.debug('pages.elements.selectElement(' + path + ')');
                             this.setSelection(component, true);
                             found = true;
                         }

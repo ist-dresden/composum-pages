@@ -35,6 +35,9 @@ public class ResourceTypeUtil {
     public static final String EDIT_THUMBNAIL_PATH = EDIT_PATH + "/thumbnail";
     public static final String EDIT_TOOLBAR_PATH = EDIT_PATH + "/toolbar";
     public static final String TREE_ACTIONS_PATH = EDIT_PATH + "/tree";
+    public static final String EDIT_CONTEXT_PATH = EDIT_PATH + "/context";
+    public static final String CONTEXT_ACTIONS_PATH = EDIT_CONTEXT_PATH + "/actions";
+    public static final String CONTEXT_CONTAINER_PATH = EDIT_CONTEXT_PATH + "/elements";
 
     // the default component types used if a component doesn't have its own subtype implementation...
 
@@ -74,6 +77,11 @@ public class ResourceTypeUtil {
     public static final String DEFAULT_SITE_ACTIONS = EDIT_DEFAULT_ROOT + "site/tree";
     public static final String DEFAULT_FOLDER_ACTIONS = EDIT_DEFAULT_ROOT + "folder/tree";
     public static final String DEFAULT_NONE_ACTIONS = EDIT_DEFAULT_ROOT + "none/tree";
+
+    public static final String DEFAULT_CONTEXT_ACTIONS = EDIT_DEFAULT_ROOT + "element/context/actions";
+    public static final String DEFAULT_CONTAINER_CONTEXT = EDIT_DEFAULT_ROOT + "container/context/actions";
+    public static final String DEFAULT_ELEMENT_CONTAINER = EDIT_DEFAULT_ROOT + "element/context/elements";
+    public static final String DEFAULT_CONTEXT_CONTAINER = EDIT_DEFAULT_ROOT + "container/context/elements";
 
     /**
      * the check to support folders as intermediate nodes in the content tree
@@ -170,6 +178,23 @@ public class ResourceTypeUtil {
         }
     }
 
+    public static class ContextActionsStrategy implements SubtypeStrategy {
+
+        public String getDefaultResourcePath(ResourceResolver resolver, Resource resource, String type) {
+            return Container.isContainer(resolver, resource, type) ? DEFAULT_CONTAINER_CONTEXT
+                    : Element.isElement(resolver, resource, type) ? DEFAULT_CONTEXT_ACTIONS
+                    : DEFAULT_NONE_ACTIONS;
+        }
+    }
+
+    public static class ContextContainerStrategy implements SubtypeStrategy {
+
+        public String getDefaultResourcePath(ResourceResolver resolver, Resource resource, String type) {
+            return Container.isContainer(resolver, resource, type)
+                    ? DEFAULT_CONTEXT_CONTAINER : DEFAULT_ELEMENT_CONTAINER;
+        }
+    }
+
     /**
      * the set of declared subtypes to implement edit components for a component type
      */
@@ -185,6 +210,8 @@ public class ResourceTypeUtil {
         SUBTYPES.put(DELETE_DIALOG_PATH, new DeleteDialogStrategy());
         SUBTYPES.put(EDIT_TOOLBAR_PATH, new EditToolbarStrategy());
         SUBTYPES.put(TREE_ACTIONS_PATH, new TreeActionsStrategy());
+        SUBTYPES.put(CONTEXT_ACTIONS_PATH, new ContextActionsStrategy());
+        SUBTYPES.put(CONTEXT_CONTAINER_PATH, new ContextContainerStrategy());
     }
 
     /**
@@ -251,5 +278,13 @@ public class ResourceTypeUtil {
                                                Resource resource, String type, String subtype) {
         SubtypeStrategy strategy = SUBTYPES.get(subtype);
         return strategy != null ? strategy.getDefaultResourcePath(resolver, resource, type) : null;
+    }
+
+    /**
+     * @return the 'normalized' resource type - relative to the resolver root paths
+     */
+    public static String relativeResourceType(ResourceResolver resolver, String resourceType) {
+        String rootPattern = "^(" + StringUtils.join(resolver.getSearchPath(), "|") + ")";
+        return resourceType.replaceFirst(rootPattern, "");
     }
 }

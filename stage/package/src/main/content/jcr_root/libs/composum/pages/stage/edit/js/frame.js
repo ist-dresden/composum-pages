@@ -29,24 +29,24 @@
 
             registerEventHandlers: function () {
                 var e = pages.const.event;
-                $(document).on(e.element.select + '.EditFrame', _.bind(this.selectComponent, this));
-                $(document).on(e.element.selected + '.EditFrame', _.bind(this.onComponentSelected, this));
-                $(document).on(e.element.inserted + '.EditFrame', _.bind(this.onComponentChanged, this));
-                $(document).on(e.element.changed + '.EditFrame', _.bind(this.onComponentChanged, this));
-                $(document).on(e.element.deleted + '.EditFrame', _.bind(this.onComponentDeleted, this));
-                $(document).on(e.content.inserted + '.EditFrame', _.bind(this.onComponentChanged, this));
-                $(document).on(e.content.changed + '.EditFrame', _.bind(this.onComponentChanged, this));
-                $(document).on(e.content.deleted + '.EditFrame', _.bind(this.onComponentDeleted, this));
+                $(document).on(e.element.select + '.EditFrame', _.bind(this.selectElement, this));
+                $(document).on(e.element.selected + '.EditFrame', _.bind(this.onElementSelected, this));
+                $(document).on(e.element.inserted + '.EditFrame', _.bind(this.onElementChanged, this));
+                $(document).on(e.element.changed + '.EditFrame', _.bind(this.onElementChanged, this));
+                $(document).on(e.element.deleted + '.EditFrame', _.bind(this.onElementDeleted, this));
+                $(document).on(e.content.inserted + '.EditFrame', _.bind(this.onElementChanged, this));
+                $(document).on(e.content.changed + '.EditFrame', _.bind(this.onElementChanged, this));
+                $(document).on(e.content.deleted + '.EditFrame', _.bind(this.onElementDeleted, this));
                 $(document).on(e.page.selected + '.EditFrame', _.bind(this.onPageSelected, this));
                 $(document).on(e.page.select + '.EditFrame', _.bind(this.selectPage, this));
                 $(document).on(e.page.view + '.EditFrame', _.bind(this.onViewPage, this));
-                $(document).on(e.page.inserted + '.EditFrame', _.bind(this.onComponentChanged, this));
-                $(document).on(e.page.changed + '.EditFrame', _.bind(this.onComponentChanged, this));
-                $(document).on(e.page.deleted + '.EditFrame', _.bind(this.onComponentDeleted, this));
+                $(document).on(e.page.inserted + '.EditFrame', _.bind(this.onElementChanged, this));
+                $(document).on(e.page.changed + '.EditFrame', _.bind(this.onElementChanged, this));
+                $(document).on(e.page.deleted + '.EditFrame', _.bind(this.onElementDeleted, this));
                 $(document).on(e.site.select + '.EditFrame', _.bind(this.selectSite, this));
                 $(document).on(e.site.created + '.EditFrame', _.bind(this.onSiteChanged, this));
                 $(document).on(e.site.changed + '.EditFrame', _.bind(this.onSiteChanged, this));
-                $(document).on(e.site.deleted + '.EditFrame', _.bind(this.onComponentDeleted, this));
+                $(document).on(e.site.deleted + '.EditFrame', _.bind(this.onElementDeleted, this));
                 pages.PageView.prototype.registerEventHandlers.apply(this);
                 this.$frame.on('load.EditFrame', _.bind(this.onFrameLoad, this));
                 core.unauthorizedDelegate = pages.handleUnauthorized;
@@ -133,7 +133,7 @@
                                     select = pages.toolbars.pageToolbar.getSelectedComponent();
                                 }
                                 if (select) {
-                                    this.selectComponent(undefined, select.name, select.path, select.type);
+                                    this.selectElement(undefined, select.name, select.path, select.type);
                                 }
                             }
                             this.selectOnLoad = undefined;
@@ -209,9 +209,9 @@
                 window.location.reload();
             },
 
-            selectComponent: function (event, name, path, type) {
+            selectElement: function (event, name, path, type) {
                 if (this.log.getLevel() <= log.levels.DEBUG) {
-                    this.log.debug('pages.EditFrame.selectComponent(' + path + ')');
+                    this.log.debug('pages.EditFrame.selectElement(' + path + ')');
                 }
                 if (path) {
                     this.$frame[0].contentWindow.postMessage(pages.const.event.element.select
@@ -232,23 +232,26 @@
                 this.reloadPage(parameters, path);
             },
 
-            onComponentSelected: function (event, name, path, type) {
-                if (this.log.getLevel() <= log.levels.DEBUG) {
-                    this.log.debug('pages.EditFrame.onComponentSelected(' + path + ')');
-                }
-                if (path) {
-                    this.$frame[0].contentWindow.postMessage(pages.const.event.element.selected
-                        + JSON.stringify({name: name, path: path, type: type}), '*');
-                } else {
-                    this.$frame[0].contentWindow.postMessage(pages.const.event.element.selected
-                        + JSON.stringify({}), '*');
+            onElementSelected: function (event, name, path, type) {
+                if (!pages.current.element || pages.current.element.path !== path) {
+                    pages.current.element = {name: name, path: path, type: type};
+                    if (this.log.getLevel() <= log.levels.DEBUG) {
+                        this.log.debug('pages.EditFrame.onElementSelected(' + path + ')');
+                    }
+                    if (path) {
+                        this.$frame[0].contentWindow.postMessage(pages.const.event.element.selected
+                            + JSON.stringify({name: name, path: path, type: type}), '*');
+                    } else {
+                        this.$frame[0].contentWindow.postMessage(pages.const.event.element.selected
+                            + JSON.stringify({}), '*');
+                    }
                 }
             },
 
-            onComponentChanged: function (event, path) {
+            onElementChanged: function (event, path) {
                 if (path) {
                     if (this.log.getLevel() <= log.levels.DEBUG) {
-                        this.log.debug('pages.EditFrame.onComponentChanged(' + path + ')');
+                        this.log.debug('pages.EditFrame.onElementChanged(' + path + ')');
                     }
                     if (path === pages.current.site) {
                         // FIXME this.reloadFrame();
@@ -258,10 +261,10 @@
                 }
             },
 
-            onComponentDeleted: function (event, path) {
+            onElementDeleted: function (event, path) {
                 if (path) {
                     if (this.log.getLevel() <= log.levels.DEBUG) {
-                        this.log.debug('pages.EditFrame.onComponentDeleted(' + path + ')');
+                        this.log.debug('pages.EditFrame.onElementDeleted(' + path + ')');
                     }
                     if (path === pages.current.site || path === pages.current.page) {
                         // FIXME this.reloadFrame();

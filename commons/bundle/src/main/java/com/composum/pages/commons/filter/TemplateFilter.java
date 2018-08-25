@@ -5,15 +5,20 @@ import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ValueMap;
 
+import javax.annotation.Nonnull;
+
 import static com.composum.pages.commons.PagesConstants.PROP_IS_TEMPLATE;
 import static com.composum.pages.commons.PagesConstants.PROP_TEMPLATE;
 
+/**
+ * accepts page resources marked as a template
+ */
 public class TemplateFilter implements ResourceFilter {
 
     public static final TemplateFilter INSTANCE = new TemplateFilter();
 
     @Override
-    public boolean accept(Resource resource) {
+    public boolean accept(@Nonnull final Resource resource) {
         Resource content = resource.getChild(JcrConstants.JCR_CONTENT);
         if (content != null) {
             ValueMap values = content.getValueMap();

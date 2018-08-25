@@ -99,22 +99,14 @@
             hint="Access Statistics"
             title="Statistics"
             order="{Long}70"/>
-    <containerContext
+    <containerElements
             jcr:primaryType="nt:unstructured"
-            sling:resourceType="composum/pages/stage/edit/tools/container/context"
-            categories="[context,edit,develop,container]"
+            sling:resourceType="composum/pages/stage/edit/tools/container/elements"
+            categories="[context,edit,develop,container,element]"
             iconClass="cubes"
-            hint="Container Properties"
-            title="Container"
-            order="{Long}44"/>
-    <elementContext
-            jcr:primaryType="nt:unstructured"
-            sling:resourceType="composum/pages/stage/edit/tools/element/context"
-            categories="[context,edit,develop,element]"
-            iconClass="cube"
-            hint="Element Properties"
-            title="Element"
-            order="{Long}46"/>
+            hint="Container Elements"
+            title="Elements"
+            order="{Long}60"/>
     <somethingContext
             jcr:primaryType="nt:unstructured"
             sling:resourceType="composum/pages/stage/edit/tools/something/context"
