@@ -234,7 +234,7 @@
 
             onElementSelected: function (event, name, path, type) {
                 if (!pages.current.element || pages.current.element.path !== path) {
-                    pages.current.element = {name: name, path: path, type: type};
+                    pages.current.element = new pages.Reference(name, path, type);
                     if (this.log.getLevel() <= log.levels.DEBUG) {
                         this.log.debug('pages.EditFrame.onElementSelected(' + path + ')');
                     }

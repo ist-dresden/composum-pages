@@ -7,7 +7,6 @@ import com.composum.pages.commons.util.ResolverUtil;
 import com.composum.pages.commons.util.ResourceTypeUtil;
 import com.composum.pages.commons.util.TagCssClasses;
 import com.composum.sling.core.BeanContext;
-import com.composum.sling.core.util.ResourceUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
@@ -93,15 +92,6 @@ public class FrameModel extends GenericModel {
         String delegatePath = request.getRequestPathInfo().getSuffix();
         if (StringUtils.isBlank(delegatePath)) {
             delegatePath = "/";
-        } else {
-            Resource resource = request.getResourceResolver().resolve(delegatePath);
-            if (!ResourceUtil.isNonExistingResource(resource)) {
-                delegatePath = resource.getPath();
-            } else {
-                if (delegatePath.endsWith(".html")) {
-                    delegatePath = delegatePath.substring(0, delegatePath.length() - 5);
-                }
-            }
         }
         return delegatePath;
     }

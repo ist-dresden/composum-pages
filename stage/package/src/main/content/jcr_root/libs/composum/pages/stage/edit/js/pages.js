@@ -175,6 +175,72 @@
             }
         };
 
+        pages.Reference = function (nameOrView, path, type, prim) {
+            if (nameOrView instanceof Backbone.View) {
+                nameOrView = nameOrView.$el;
+            }
+            if (nameOrView instanceof jQuery) {
+                var reference = nameOrView.data('pages-edit-reference');
+                if (reference) {
+                    _.extend(this, reference);
+                } else {
+                    this.name = nameOrView.data('pages-edit-name');
+                    this.path = path || nameOrView.data('pages-edit-path');
+                    this.type = type || nameOrView.data('pages-edit-type');
+                    this.prim = prim || nameOrView.data('pages-edit-prim');
+                }
+            } else {
+                this.name = nameOrView; // resource name
+                this.path = path;       // resource path
+                this.type = type;       // resource type
+                this.prim = prim;       // primary / component type
+            }
+        };
+        _.extend(pages.Reference.prototype, {
+
+            /**
+             * check reference data on completeness
+             */
+            isComplete: function () {
+                return this.name !== undefined && this.path !== undefined &&
+                    this.type !== undefined && this.prim !== undefined;
+            },
+
+            /**
+             * load reference information if necessary and call callback after data load if a callback is present
+             */
+            complete: function (callback) {
+                if (!this.isComplete()) {
+                    var u = pages.const.url.get;
+                    var options = {};
+                    if (this.type) {
+                        options.data = {
+                            type: this.type
+                        };
+                    }
+                    core.ajaxGet(u.edit + u._resourceInfo + this.path, options, _.bind(function (data) {
+                        // '' as fallback to prevent from infinite recursion..
+                        if (!this.name) {
+                            this.name = data.name ? data.name : '';
+                        }
+                        if (!this.type) {
+                            this.type = data.type ? data.type : '';
+                        }
+                        if (!this.prim) {
+                            this.prim = data.prim ? data.prim : '';
+                        }
+                        if (_.isFunction(callback)) {
+                            callback(this);
+                        }
+                    }, this));
+                } else {
+                    if (_.isFunction(callback)) {
+                        callback(this);
+                    }
+                }
+            }
+        });
+
         pages.$body = $('body');
         pages.current = {
             mode: pages.$body.data(pages.const.data.body.mode),
@@ -431,30 +497,18 @@
             insertNewElement: function (target, object, context) {
                 if (!context) {
                     context = {
-                        parent: target.container.data,
-                        before: target.before.data
+                        parent: target.container.reference,
+                        before: target.before.reference
                     };
                 }
-                if (context.parent.type === undefined || context.parent.prim === undefined) {
+                if (!context.parent.isComplete()) {
                     // get resource type and/or primary type of potentially synthetic parent and retry...
-                    var u = pages.const.url.get;
-                    core.ajaxGet(u.edit + u._resourceInfo + target.container.data.path, {
-                        data: {
-                            type: target.container.data.type
-                        }
-                    }, function (data) {
-                        // '' as fallback to prevent from infinity recursion..
-                        if (!context.parent.type) {
-                            context.parent.type = data.type ? data.type : '';
-                        }
-                        if (!context.parent.prim) {
-                            context.parent.prim = data.prim ? data.prim : '';
-                        }
+                    context.parent.complete(function () {
                         pages.dnd.insertNewElement(target, object, context);
                     });
                 } else {
                     var d = pages.dialogs.const.edit.url;
-                    pages.dialogs.openCreateDialog('*', context.parent.path, object.data.type,
+                    pages.dialogs.openCreateDialog('*', context.parent.path, object.reference.type,
                         context, undefined, undefined,
                         // if no create dialog exists (not found) create a new instance directly
                         _.bind(function (name, path, type) {
@@ -462,13 +516,29 @@
                                 _charset_: 'UTF-8',
                                 resourceType: type,
                                 targetPath: path,
-                                targetType: target.container.data.type
+                                targetType: target.container.reference.type
                             }, {}, _.bind(function () {
                                 pages.log.debug('pages.trigger.' + pages.const.event.element.changed + '(' + path + ')');
                                 $(document).trigger(pages.const.event.element.changed, [path]);
                             }, this));
                         }, this));
                 }
+            },
+
+            moveElement: function (target, object) {
+                core.ajaxPost(pages.const.url.edit.move + object.reference.path, {
+                    targetPath: target.container.reference.path,
+                    targetType: target.container.reference.type,
+                    before: target.before && target.before.reference.path ? target.before.reference.path : ''
+                }, {}, function (result) {
+                    var oldParentPath = core.getParentPath(object.reference.path);
+                    if (oldParentPath !== target.container.reference.path) {
+                        $(document).trigger(pages.const.event.element.changed, [oldParentPath]);
+                    }
+                    $(document).trigger(pages.const.event.element.changed, [target.container.reference.path]);
+                }, function (xhr) {
+                    core.alert('error', 'Error', 'Error on moving component', xhr);
+                });
             }
         };
 

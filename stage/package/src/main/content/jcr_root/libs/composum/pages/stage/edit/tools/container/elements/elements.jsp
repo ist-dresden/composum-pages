@@ -2,8 +2,8 @@
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <cpp:defineFrameObjects/>
 <cpp:container var="container" type="com.composum.pages.stage.model.edit.FrameContainer" mode="none"
-               data-name="@{container.name}" data-path="@{container.path}" data-type="@{container.type}"
-               cssAdd="composum-pages-tools">
+               data-pages-edit-name="@{container.name}" data-pages-edit-path="@{container.path}"
+               data-pages-edit-type="@{container.type}" cssAdd="composum-pages-tools">
     <div class="composum-pages-tools_actions btn-toolbar">
         <div class="composum-pages-tools_left-actions ${containerCssBase}_actions">
         </div>

@@ -40,11 +40,7 @@
                     tools: pages.contextTools.log,
                     dnd: log.getLogger('dnd')
                 };
-                this.data = {
-                    name: this.$el.data('name'),
-                    path: this.$el.data('path'),
-                    type: this.$el.data('type')
-                };
+                this.reference = new pages.Reference(this);
                 this.$el
                     .on('dragstart', _.bind(this.onDragStart, this))
                     .on('dragend', _.bind(this.onDragEnd, this));
@@ -54,7 +50,7 @@
                 var $component = $(event.currentTarget);
                 pages.current.dnd.object = {
                     type: 'component',
-                    data: this.data
+                    reference: this.reference
                 };
                 var jsonData = JSON.stringify(pages.current.dnd.object);
                 var dndEvent = event.originalEvent;

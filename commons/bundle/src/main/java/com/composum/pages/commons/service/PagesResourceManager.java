@@ -293,24 +293,26 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
          */
         protected DesignImpl findDesign(Resource designNode, Resource contentNode,
                                         String relativePath, String resourceType, int weight) {
-            String childName = StringUtils.substringBefore(relativePath, "/");
-            Resource contentChild = contentNode.getChild(childName);
-            if (contentChild != null || StringUtils.isNotBlank(resourceType)) {
-                String contentPath = StringUtils.substringAfter(relativePath, "/");
-                // use 'resourceType' if present for the last path segment (potentially not existing)
-                String contentType = contentChild != null && (StringUtils.isNotBlank(contentPath)
-                        || StringUtils.isBlank(resourceType)) ? contentChild.getResourceType() : resourceType;
-                for (Resource designChild : designNode.getChildren()) {
-                    if (isMatchingType(designChild, contentType)) {
-                        if (StringUtils.isBlank(contentPath)) {
-                            return new DesignImpl(designChild, weight);
-                        } else {
-                            return findDesign(designChild, contentChild, contentPath, resourceType, weight + 2);
+            if (contentNode != null) {
+                String childName = StringUtils.substringBefore(relativePath, "/");
+                Resource contentChild = contentNode.getChild(childName);
+                if (contentChild != null || StringUtils.isNotBlank(resourceType)) {
+                    String contentPath = StringUtils.substringAfter(relativePath, "/");
+                    // use 'resourceType' if present for the last path segment (potentially not existing)
+                    String contentType = contentChild != null && (StringUtils.isNotBlank(contentPath)
+                            || StringUtils.isBlank(resourceType)) ? contentChild.getResourceType() : resourceType;
+                    for (Resource designChild : designNode.getChildren()) {
+                        if (isMatchingType(designChild, contentType)) {
+                            if (StringUtils.isBlank(contentPath)) {
+                                return new DesignImpl(designChild, weight);
+                            } else {
+                                return findDesign(designChild, contentChild, contentPath, resourceType, weight + 2);
+                            }
                         }
                     }
-                }
-                if (StringUtils.isNotBlank(contentPath)) {
-                    return findDesign(designNode, contentChild, contentPath, resourceType, weight);
+                    if (StringUtils.isNotBlank(contentPath)) {
+                        return findDesign(designNode, contentChild, contentPath, resourceType, weight);
+                    }
                 }
             }
             return null;
@@ -504,7 +506,7 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
         }
 
         @Nonnull
-        public String getPrimaryType(){
+        public String getPrimaryType() {
             return ResolverUtil.getTypeProperty(resolver, getType(), PagesConstants.PROP_COMPONENT_TYPE, "");
         }
 

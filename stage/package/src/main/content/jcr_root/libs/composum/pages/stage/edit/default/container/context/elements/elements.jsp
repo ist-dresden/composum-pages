@@ -7,7 +7,7 @@
     <ul class="${containerCssBase}_list">
         <c:forEach items="${container.elements}" var="element" varStatus="loop">
             <li class="${containerCssBase}_element" draggable="true"
-                data-name="${element.name}" data-path="${element.path}" data-type="${element.type}">
+                data-pages-edit-reference='{"name":"${element.name}","path":"${element.path}","type":"${element.type}"}'>
                 <cpp:include resource="${element.resource}" subtype="edit/tile"/>
             </li>
         </c:forEach>

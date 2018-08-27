@@ -52,11 +52,7 @@
                     tools: pages.contextTools.log,
                     dnd: log.getLogger('dnd')
                 };
-                this.data = {
-                    name: this.$el.data('name'),
-                    path: this.$el.data('path'),
-                    type: this.$el.data('type')
-                };
+                this.reference = new pages.Reference(this);
                 this.$el
                     .on('dragstart', _.bind(this.onDragStart, this))
                     .on('dragover', _.bind(this.onDragOver, this))
@@ -68,7 +64,7 @@
                 var $element = $(event.currentTarget);
                 pages.current.dnd.object = {
                     type: 'element',
-                    data: this.data
+                    reference: this.reference
                 };
                 var jsonData = JSON.stringify(pages.current.dnd.object);
                 var dndEvent = event.originalEvent;
@@ -85,8 +81,8 @@
                 var dnd = core.dnd.getDndData(event);
                 var target = this.getDndTarget(dnd);
                 if (this.log.dnd.getLevel() <= log.levels.TRACE) {
-                    this.log.dnd.trace(tools.const.elements.log.prefix + 'dndOver(' + dnd.el.view.data.path + '): '
-                        + JSON.stringify(dnd.pos) + " - " + (target ? target.container.data.path : '?'));
+                    this.log.dnd.trace(tools.const.elements.log.prefix + 'dndOver(' + dnd.el.view.reference.path + '): '
+                        + JSON.stringify(dnd.pos) + " - " + (target ? target.container.reference.path : '?'));
                 }
                 this.elements.setDndTarget(dnd, target);
                 // 'return' DnD operation if allowed (dndTarget defined) and an element to drop is available
@@ -120,41 +116,41 @@
             getDndTarget: function (dnd) {
                 if (dnd.pos.rx > 0.05 && dnd.pos.rx < 0.95) { // no target if outside of the element
                     var object = pages.current.dnd.object;
-                    if (!object instanceof tools.ElementsItem || object.data.path !== this.data.path) {
+                    if (!object instanceof tools.ElementsItem || object.reference.path !== this.reference.path) {
                         // if this element is not the dragged object itself...
                         if (dnd.pos.ry < 0.25) {
                             var prev = this.elements.getPrevSibling(this);
-                            if (!object instanceof tools.ElementsItem || !prev || prev.data.path !== object.data.path) {
+                            if (!object instanceof tools.ElementsItem || !prev || prev.reference.path !== object.reference.path) {
                                 // drop before this element if dragged object is not always the previous sibling...
                                 return {
                                     container: {
-                                        data: this.elements.data, view: this.elements
+                                        reference: this.elements.reference, view: this.elements
                                     },
                                     before: {
-                                        data: this.data, item: this
+                                        reference: this.reference, item: this
                                     }
                                 }
                             }
                         } else if (dnd.pos.ry > 0.75) {
                             var next = this.elements.getNextSibling(this);
-                            if (!object instanceof tools.ElementsItem || !next || next.data.path !== object.data.path) {
+                            if (!object instanceof tools.ElementsItem || !next || next.reference.path !== object.reference.path) {
                                 // drop behind this element if dragged object is not always the next sibling...
                                 return {
                                     container: {
-                                        data: this.elements.data, view: this.elements
+                                        reference: this.elements.reference, view: this.elements
                                     },
                                     before: next
-                                        ? {data: next.data, item: next}
-                                        : {data: {path: undefined}, item: undefined}
+                                        ? {reference: next.reference, item: next}
+                                        : {reference: new pages.Reference(), item: undefined}
                                 }
                             }
                         } else {
                             // drop target is the element itself (useful if it is a container)
                             return {
                                 container: {
-                                    data: this.data, view: this
+                                    reference: this.reference, view: this
                                 },
-                                before: {data: {path: undefined}, item: undefined}
+                                before: {reference: new pages.Reference(), item: undefined}
                             }
                         }
                     }
@@ -173,11 +169,7 @@
                     tools: pages.contextTools.log,
                     dnd: log.getLogger('dnd')
                 };
-                this.data = {
-                    name: this.$el.data('name'),
-                    path: this.$el.data('path'),
-                    type: this.$el.data('type')
-                };
+                this.reference = new pages.Reference(this);
                 this.$actions = this.$('.' + c.base + c._actions);
                 this.$dndPanel = this.$('.' + c.tools + c._panel);
                 this.$moveUp = this.$('.' + c.base + c._move_up);
@@ -212,6 +204,15 @@
                     item.$el.click(_.bind(that.selectLocal, that))
                 });
                 this.selectPath(pages.current.element);
+            },
+
+            getElement: function (reference) {
+                for (var i = 0; i < this.elements.length; i++) {
+                    if (this.elements[i].reference.path === reference.path) {
+                        return this.elements[i];
+                    }
+                }
+                return undefined;
             },
 
             getPrevSibling: function (item) {
@@ -258,11 +259,11 @@
                 var u = tools.const.elements.uri.edit.context;
                 if (this.log.tools.getLevel() <= log.levels.DEBUG) {
                     this.log.tools.debug(tools.const.elements.log.prefix
-                        + 'reload(' + this.data.path + ')');
+                        + 'reload(' + this.reference.path + ')');
                 }
-                core.ajaxGet(u._ + u._container + this.data.path, {
+                core.ajaxGet(u._ + u._container + this.reference.path, {
                         data: {
-                            type: this.data.type // the type to support synthetic resources
+                            type: this.reference.type // the type to support synthetic resources
                         }
                     },
                     undefined, undefined, _.bind(function (data) {
@@ -277,7 +278,7 @@
 
             selectLocal: function (event) {
                 event.preventDefault();
-                this.selectPath(event.currentTarget.view.data);
+                this.selectPath(event.currentTarget.view.reference);
                 return false;
             },
 
@@ -304,12 +305,14 @@
                 var c = tools.const.elements.css;
                 this.$content.find('.' + c.base + c._element).removeClass('selected').removeClass('current');
                 if (!reference || this.selection === reference.path) {
-                    reference = this.data;
+                    reference = this.reference;
                 } else {
-                    var $selected = this.$content.find('.' + c.base + c._element + '[data-path="' + reference.path + '"]');
-                    $selected.addClass('selected');
-                    if (pages.current.element && reference.path === pages.current.element.path) {
-                        $selected.addClass('current');
+                    var selected = this.getElement(reference);
+                    if (selected) {
+                        selected.$el.addClass('selected');
+                        if (pages.current.element && reference.path === pages.current.element.path) {
+                            selected.$el.addClass('current');
+                        }
                     }
                 }
                 this.selection = reference.path;
@@ -334,7 +337,7 @@
                             this.$actions.html(data);
                             this.actions = core.getWidget(this.$actions[0],
                                 '.' + pages.toolbars.const.editToolbarClass, pages.toolbars.EditToolbar);
-                            this.actions.data = reference;
+                            this.actions.reference = reference;
                         }, this));
                 }
             },
@@ -346,8 +349,8 @@
                 var dnd = core.dnd.getDndData(event);
                 var target = this.getDndTarget(dnd);
                 if (this.log.dnd.getLevel() <= log.levels.TRACE) {
-                    this.log.dnd.trace(tools.const.elements.log.prefix + 'dndEnter(' + dnd.el.view.data.path + '): '
-                        + JSON.stringify(dnd.pos) + " - " + (target ? target.container.data.path : '?'));
+                    this.log.dnd.trace(tools.const.elements.log.prefix + 'dndEnter(' + dnd.el.view.reference.path + '): '
+                        + JSON.stringify(dnd.pos) + " - " + (target ? target.container.reference.path : '?'));
                 }
                 this.setDndTarget(dnd, target);
                 return false;
@@ -369,8 +372,8 @@
                 if (this.dndTarget && pages.current.dnd.object) {
                     if (this.log.dnd.getLevel() <= log.levels.INFO) {
                         this.log.dnd.info(tools.const.elements.log.prefix + 'dndDrop('
-                            + this.dndTarget.container.data.path + ':' + this.dndTarget.before.data.path + ', '
-                            + pages.current.dnd.object.type + ':' + JSON.stringify(pages.current.dnd.object.data) + ')');
+                            + this.dndTarget.container.reference.path + ':' + this.dndTarget.before.reference.path + ', '
+                            + pages.current.dnd.object.type + ':' + JSON.stringify(pages.current.dnd.object.reference) + ')');
                     }
                     pages.actions.dnd.doDrop(event, this.dndTarget, pages.current.dnd.object);
                 }
@@ -387,21 +390,21 @@
                 var object = pages.current.dnd.object;
                 var before = this.getNextElement(dnd.pos);
                 if (before) {
-                    if (!object instanceof tools.ElementsItem || object.data.path !== before.data.path) {
+                    if (!object instanceof tools.ElementsItem || object.reference.path !== before.reference.path) {
                         var prev = this.getPrevSibling(before);
-                        if (!object instanceof tools.ElementsItem || !prev || object.data.path !== prev.data.path) {
+                        if (!object instanceof tools.ElementsItem || !prev || object.reference.path !== prev.reference.path) {
                             return {
-                                container: {data: this.data, view: this},
-                                before: {data: before.data, view: before},
+                                container: {reference: this.reference, view: this},
+                                before: {reference: before.reference, view: before}
                             }
                         }
                     }
                 } else {
                     var last = this.elements.length > 0 ? this.elements[this.elements.length - 1] : undefined;
-                    if (!object instanceof tools.ElementsItem || !last || object.data.path !== last.data.path) {
+                    if (!object instanceof tools.ElementsItem || !last || object.reference.path !== last.reference.path) {
                         return {
-                            container: {data: this.data, view: this},
-                            before: {data: {path: undefined}, item: undefined}
+                            container: {reference: this.reference, view: this},
+                            before: {reference: new pages.Reference(), item: undefined}
                         }
                     }
                 }
@@ -418,18 +421,18 @@
                     this.dndBusy = true; // wait for the answer of the hierarchy check
                     // if the status is not the same as known already...
                     if (!this.dndTarget || !target
-                        || this.dndTarget.container.data.path !== target.container.data.path
-                        || this.dndTarget.before.data.path !== target.before.data.path) {
+                        || this.dndTarget.container.reference.path !== target.container.reference.path
+                        || this.dndTarget.before.reference.path !== target.before.reference.path) {
                         if (target) {
                             var object = pages.current.dnd.object;
                             if (object) {
                                 var u = tools.const.elements.uri;
                                 // check the hierarchy rules to make the DnD object an element of the target
-                                core.ajaxGet(u.allowed + target.container.data.path, {
+                                core.ajaxGet(u.allowed + target.container.reference.path, {
                                         dataType: 'json',
                                         data: {
-                                            path: object.data.path,
-                                            type: object.data.type
+                                            path: object.reference.path,
+                                            type: object.reference.type
                                         }
                                     },
                                     _.bind(function (data) { // success
@@ -473,7 +476,7 @@
                     }
                     if (this.log.dnd.getLevel() <= log.levels.DEBUG) {
                         this.log.dnd.debug(tools.const.elements.log.prefix
-                            + 'dndTarget: ' + target.container.data.path);
+                            + 'dndTarget: ' + target.container.reference.path);
                     }
                 } else {
                     this.dndTarget = undefined;

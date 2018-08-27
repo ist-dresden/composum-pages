@@ -66,6 +66,10 @@
 
             insert: function (event, name, path, type) {
                 pages.dialogs.openNewElementDialog(name, path, type);
+            },
+
+            delete: function (event, name, path, type) {
+                actions.element.delete(event, name, path, type);
             }
         };
 
@@ -233,7 +237,7 @@
         actions.dnd = {
 
             doDrop: function (event, target, object) {
-                if (target && target.container.data.path && object) {
+                if (target && target.container.reference.path && object) {
                     switch (object.type) {
                         case 'component': // insert a new component
                             actions.dnd.doDropInsert(event, target, object);
@@ -253,18 +257,19 @@
             },
 
             doDropInsert: function (event, target, object) {
-                if (target && target.container.data.path && object && object.type === 'component') {
+                if (target && target.container.reference.path && object && object.type === 'component') {
                     pages.dnd.insertNewElement(target, object);
                 }
             },
 
             doDropCopy: function (event, target, object) {
-                if (target && target.container.data.path && object && object.type === 'element') {
+                if (target && target.container.reference.path && object && object.type === 'element') {
                 }
             },
 
             doDropMove: function (event, target, object) {
-                if (target && target.container.data.path && object && object.type === 'element') {
+                if (target && target.container.reference.path && object && object.type === 'element') {
+                    pages.dnd.moveElement(target, object);
                 }
             }
         };
