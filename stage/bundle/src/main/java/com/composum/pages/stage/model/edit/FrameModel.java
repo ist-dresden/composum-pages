@@ -20,7 +20,9 @@ import static com.composum.sling.core.servlet.AbstractServiceServlet.PARAM_TYPE;
  */
 public class FrameModel extends GenericModel {
 
-    private transient String resourceType;
+    // probably preset during resource determination
+    protected transient String resourceType;
+
     private transient Resource typeResource;
     private transient PagesConstants.ComponentType componentType;
     private transient Component component;
