@@ -489,60 +489,6 @@
         }, false);
 
         //
-        // DnD operations
-        //
-
-        pages.dnd = {
-
-            insertNewElement: function (target, object, context) {
-                if (!context) {
-                    context = {
-                        parent: target.container.reference,
-                        before: target.before.reference
-                    };
-                }
-                if (!context.parent.isComplete()) {
-                    // get resource type and/or primary type of potentially synthetic parent and retry...
-                    context.parent.complete(function () {
-                        pages.dnd.insertNewElement(target, object, context);
-                    });
-                } else {
-                    var d = pages.dialogs.const.edit.url;
-                    pages.dialogs.openCreateDialog('*', context.parent.path, object.reference.type,
-                        context, undefined, undefined,
-                        // if no create dialog exists (not found) create a new instance directly
-                        _.bind(function (name, path, type) {
-                            core.ajaxPost(d.base + d._insert, {
-                                _charset_: 'UTF-8',
-                                resourceType: type,
-                                targetPath: path,
-                                targetType: target.container.reference.type
-                            }, {}, _.bind(function () {
-                                pages.log.debug('pages.trigger.' + pages.const.event.element.changed + '(' + path + ')');
-                                $(document).trigger(pages.const.event.element.changed, [path]);
-                            }, this));
-                        }, this));
-                }
-            },
-
-            moveElement: function (target, object) {
-                core.ajaxPost(pages.const.url.edit.move + object.reference.path, {
-                    targetPath: target.container.reference.path,
-                    targetType: target.container.reference.type,
-                    before: target.before && target.before.reference.path ? target.before.reference.path : ''
-                }, {}, function (result) {
-                    var oldParentPath = core.getParentPath(object.reference.path);
-                    if (oldParentPath !== target.container.reference.path) {
-                        $(document).trigger(pages.const.event.element.changed, [oldParentPath]);
-                    }
-                    $(document).trigger(pages.const.event.element.changed, [target.container.reference.path]);
-                }, function (xhr) {
-                    core.alert('error', 'Error', 'Error on moving component', xhr);
-                });
-            }
-        };
-
-        //
         // clipboard operations
         //
 

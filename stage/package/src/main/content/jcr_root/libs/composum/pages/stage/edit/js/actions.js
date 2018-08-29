@@ -234,8 +234,19 @@
             }
         };
 
+        //
+        // DnD operations
+        //
+
         actions.dnd = {
 
+            /**
+             * handler to drop an object into a new target or at a new position;
+             * if the object is a component (type: 'component') a new element is inserted at the designated position
+             * @param event the DnD event object
+             * @param target a target description: { container: {reference: reference}(, before: {reference: reference})}
+             * @param object the object to drop (element or component): { type: 'component'|'element', reference: reference}
+             */
             doDrop: function (event, target, object) {
                 if (target && target.container.reference.path && object) {
                     switch (object.type) {
@@ -243,7 +254,7 @@
                             actions.dnd.doDropInsert(event, target, object);
                             break;
                         case 'element': // copy or move an element
-                            switch (target.operation) {
+                            switch (target.operation || object.operation) {
                                 case 'copy': // copy the element
                                     actions.dnd.doDropCopy(event, target, object);
                                     break;
@@ -256,20 +267,60 @@
                 }
             },
 
-            doDropInsert: function (event, target, object) {
+            doDropInsert: function (event, target, object, context) {
                 if (target && target.container.reference.path && object && object.type === 'component') {
-                    pages.dnd.insertNewElement(target, object);
+                    if (!context) {
+                        context = {
+                            parent: target.container.reference,
+                            before: target.before.reference
+                        };
+                    }
+                    if (!context.parent.isComplete()) {
+                        // get resource type and/or primary type of potentially synthetic parent and retry...
+                        context.parent.complete(function () {
+                            actions.dnd.doDropInsert(event, target, object, context);
+                        });
+                    } else {
+                        var d = pages.dialogs.const.edit.url;
+                        pages.dialogs.openCreateDialog('*', context.parent.path, object.reference.type,
+                            context, undefined, undefined,
+                            // if no create dialog exists (not found) create a new instance directly
+                            _.bind(function (name, path, type) {
+                                core.ajaxPost(d.base + d._insert, {
+                                    _charset_: 'UTF-8',
+                                    resourceType: type,
+                                    targetPath: path,
+                                    targetType: target.container.reference.type
+                                }, {}, _.bind(function () {
+                                    pages.log.debug('pages.trigger.' + pages.const.event.element.changed + '(' + path + ')');
+                                    $(document).trigger(pages.const.event.element.changed, [path]);
+                                }, this));
+                            }, this));
+                    }
                 }
             },
 
             doDropCopy: function (event, target, object) {
                 if (target && target.container.reference.path && object && object.type === 'element') {
+                    // TODO: UI concept (copy/move handling) and implementation
                 }
             },
 
             doDropMove: function (event, target, object) {
                 if (target && target.container.reference.path && object && object.type === 'element') {
-                    pages.dnd.moveElement(target, object);
+                    core.ajaxPost(pages.const.url.edit.move + object.reference.path, {
+                        targetPath: target.container.reference.path,
+                        targetType: target.container.reference.type,
+                        before: target.before && target.before.reference.path ? target.before.reference.path : ''
+                    }, {}, function (result) {
+                        var oldParentPath = core.getParentPath(object.reference.path);
+                        if (oldParentPath !== target.container.reference.path) {
+                            $(document).trigger(pages.const.event.element.changed, [oldParentPath]);
+                        }
+                        $(document).trigger(pages.const.event.element.changed, [target.container.reference.path]);
+                    }, function (xhr) {
+                        core.alert('error', 'Error', 'Error on moving component', xhr);
+                    });
                 }
             }
         };
