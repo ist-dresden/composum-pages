@@ -250,14 +250,18 @@ public class EditServlet extends NodeTreeServlet {
             try {
                 final ResourceResolver resolver = request.getResourceResolver();
                 final JackrabbitSession session = (JackrabbitSession) resolver.adaptTo(Session.class);
-                final VersionManager versionManager = session.getWorkspace().getVersionManager();
                 final RequestParameter paths = request.getRequestParameter("paths");
-                for (String path : paths.getString().split(",")) {
-                    if (versionManager.isCheckedOut(path + "/jcr:content")) {
-                        versionManager.checkpoint(path + "/jcr:content");
+                if (session != null && paths != null) {
+                    final VersionManager versionManager = session.getWorkspace().getVersionManager();
+                    for (String path : paths.getString().split(",")) {
+                        if (versionManager.isCheckedOut(path + "/jcr:content")) {
+                            versionManager.checkpoint(path + "/jcr:content");
+                        }
                     }
+                    ResponseUtil.writeEmptyArray(response);
+                } else {
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "no 'paths' parameter found");
                 }
-                ResponseUtil.writeEmptyArray(response);
             } catch (final RepositoryException ex) {
                 LOG.error(ex.getMessage(), ex);
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, ex.getMessage());
@@ -287,6 +291,7 @@ public class EditServlet extends NodeTreeServlet {
             jsonWriter.name("path").value(resource.getPath());
             jsonWriter.name("type").value(reference.getType());
             jsonWriter.name("prim").value(reference.getPrimaryType());
+            jsonWriter.name("synthetic").value(ResourceTypeUtil.isSyntheticResource(resource));
             jsonWriter.name("title").value(resource.getProperty("title",
                     resource.getProperty(ResourceUtil.PROP_TITLE, resource.getName())));
             jsonWriter.endObject();
@@ -1037,12 +1042,14 @@ public class EditServlet extends NodeTreeServlet {
                                     + (before != null ? before.getName() : "<end>") + ")...");
                         }
 
-                        Resource result = resourceManager.moveContentResource(resolver,
-                                resolver.getResource("/content"), resource, target, name, before);
-                        resolver.commit();
+                        Resource root = resolver.getResource("/content");
+                        if (root != null) {
+                            Resource result = resourceManager.moveContentResource(resolver, root,
+                                    resource, target, name, before);
+                            resolver.commit();
 
-                        sendResponse(response, result);
-
+                            sendResponse(response, result);
+                        }
                     } catch (ItemExistsException itex) {
                         jsonAnswerItemExists(request, response);
 
@@ -1076,12 +1083,14 @@ public class EditServlet extends NodeTreeServlet {
             ResourceResolver resolver = request.getResourceResolver();
 
             try {
-                Resource result = resourceManager.moveContentResource(resolver,
-                        resolver.getResource("/content"), resource, resource.getParent(), name, null);
-                resolver.commit();
+                Resource root = resolver.getResource("/content");
+                if (root != null) {
+                    Resource result = resourceManager.moveContentResource(resolver, root,
+                            resource, resource.getParent(), name, null);
+                    resolver.commit();
 
-                sendResponse(response, result);
-
+                    sendResponse(response, result);
+                }
             } catch (ItemExistsException itex) {
                 jsonAnswerItemExists(request, response);
 

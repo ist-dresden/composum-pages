@@ -3,7 +3,7 @@
     window.composum.pages = window.composum.pages || {};
     window.composum.pages.elements = window.composum.pages.elements || {};
 
-    (function (elements, core) { // strong dependency to: 'invoke.js'
+    (function (elements, pages, core) { // strong dependency to: 'invoke.js', 'commons.js'
         'use strict';
 
         elements.const = _.extend(elements.const || {}, {
@@ -27,21 +27,12 @@
                         vertical: '_vertical',
                         horizontal: '_horizontal'
                     }
-                }
+                },
+                id:'.pagesElements'
             },
             edit: { // editing interface urls and keys
                 url: {
                     targets: '/bin/cpm/pages/edit.targetContainers.json'
-                }
-            },
-            log: { // logging switches (for debugging only)
-                operation: true,
-                dnd: {
-                    event: false,
-                    target: false
-                },
-                mouse: {
-                    position: false
                 }
             }
         });
@@ -57,15 +48,11 @@
 
             initialize: function (options) {
                 // collect the component reference data
-                this.data = {
-                    name: this.$el.data(elements.const.data.name),
-                    path: this.$el.data(elements.const.data.path),
-                    type: this.$el.data(elements.const.data.type)
-                };
+                this.reference = new pages.Reference(this);
                 // set up the parent component DOM element
                 this.$parent = this.$el.parent().closest('.' + elements.const.class.component);
                 // determine the draggable settings an set up the DnD event handling
-                this.draggable = !!this.$el.attr('draggable');
+                this.draggable = core.parseBool(this.$el.attr('draggable'));
                 if (this.draggable) {
                     this.el.addEventListener('dragstart', _.bind(this.onDragStart, this), false);
                 }
@@ -79,14 +66,14 @@
              * returns the resource name for visualization
              */
             getName: function () {
-                return this.data.name;
+                return this.reference.name;
             },
 
             /**
              * returns the shortened path for visualization
              */
             getPathHint: function () {
-                var path = this.data.path;
+                var path = this.reference.path;
                 path = path.replace(/^\/content\/.*\/jcr:content\//, './');
                 path = path.replace(/\/[^\/]*$/, '/');
                 return path;
@@ -96,7 +83,7 @@
              * returns the shortened resource type for visualization
              */
             getTypeHint: function () {
-                var type = this.data.type;
+                var type = this.reference.type;
                 type = type.replace(/^(.*\/)?composum\/(.*\/)?pages\//, '$2');
                 type = type.replace(/\/components?\//, '/');
                 type = type.replace(/\/containers?\//, '/');
@@ -228,7 +215,7 @@
                         this.$type.text(component.getTypeHint());
                         this.$size.text(component.getSizeHint());
                         this.$el.addClass(elements.const.handle.class.base + elements.const.handle.class.visible);
-                        var isDraggable = !!component.getDraggable();
+                        var isDraggable = core.parseBool(component.getDraggable());
                         this.$head.attr('draggable', isDraggable);
                         this.$left.attr('draggable', isDraggable);
                         this.$right.attr('draggable', isDraggable);
@@ -354,8 +341,8 @@
                 var self = elements.pageBody.dnd;
                 if (!self.currentComponent) {
                     self.currentComponent = component;
-                    if (elements.const.log.dnd.event) {
-                        elements.log.debug('elements.dnd.onDragStart(' + component.data.path + ')');
+                    if (elements.log.getLevel() <= log.levels.DEBUG) {
+                        elements.log.debug('elements.dnd.onDragStart(' + component.reference.path + ')');
                     }
                     self.reset();
                     if (_.isFunction(event.dataTransfer.setDragImage)) {
@@ -371,7 +358,7 @@
                             self.$image.removeClass(elements.const.dnd.class.base + elements.const.dnd.class.visible);
                         }, self), 100);
                     }
-                    event.dataTransfer.setData('application/component', JSON.stringify(component.data));
+                    event.dataTransfer.setData('application/component', JSON.stringify(component.reference));
                     event.dataTransfer.effectAllowed = 'move';
                     setTimeout(_.bind(function () {
                         self.markTargets(component);
@@ -383,7 +370,7 @@
 
             onDragEnd: function (event) {
                 var self = elements.pageBody.dnd;
-                if (elements.const.log.dnd.event) {
+                if (elements.log.getLevel() <= log.levels.DEBUG) {
                     elements.log.debug('elements.dnd.onDragEnd()');
                 }
                 event.target.removeEventListener('dragend', self.onDragEnd);
@@ -408,10 +395,10 @@
                 var self = elements.pageBody.dnd;
                 if (self.dragTarget && self.insert) {
                     var source = JSON.parse(event.dataTransfer.getData('application/component'));
-                    var target = self.dragTarget.data;
-                    var before = self.insert.before ? self.insert.before.data : undefined;
-                    if (elements.const.log.dnd.event) {
-                        elements.log.debug('elements.dnd.onDrop(' + self.dragTarget.data.path + '): '
+                    var target = self.dragTarget.reference;
+                    var before = self.insert.before ? self.insert.before.reference : undefined;
+                    if (elements.log.getLevel() <= log.levels.DEBUG) {
+                        elements.log.debug('elements.dnd.onDrop(' + self.dragTarget.reference.path + '): '
                             + JSON.stringify(source) + ' > '
                             + JSON.stringify(target) + ' < '
                             + JSON.stringify(before)
@@ -430,7 +417,7 @@
             isTarget: function (container) {
                 if (this.dropTargets) {
                     for (var i = 0; i < this.dropTargets.length; i++) {
-                        if (this.dropTargets[i].data.path === container.data.path) {
+                        if (this.dropTargets[i].reference.path === container.reference.path) {
                             return true;
                         }
                     }
@@ -447,11 +434,11 @@
                 var candidates = [];
                 elements.pageBody.containers.forEach(function (candidate) {
                     candidates.push({
-                        path: candidate.data.path,
-                        type: candidate.data.type
+                        path: candidate.reference.path,
+                        type: candidate.reference.type
                     });
                 });
-                var path = component.data.path;
+                var path = component.reference.path;
                 core.ajaxPost(elements.const.edit.url.targets + path, {
                     targetList: JSON.stringify(candidates)
                 }, {}, _.bind(function (result) {
@@ -501,8 +488,8 @@
 
             setDragTarget: function (container, event) {
                 if (this.dragTarget && this.dragTarget !== container) {
-                    if (elements.const.log.dnd.target) {
-                        elements.log.debug('elements.dnd.dragTarget.clear! (' + this.dragTarget.data.path + ')');
+                    if (elements.log.getLevel() <= log.levels.DEBUG) {
+                        elements.log.debug('elements.dnd.dragTarget.clear! (' + this.dragTarget.reference.path + ')');
                     }
                     this.dragTarget.$el.removeClass(elements.const.dnd.class.base + elements.const.dnd.class.targetOver);
                     this.$insert.removeClass(elements.const.dnd.class.base + elements.const.dnd.class.visible);
@@ -515,9 +502,9 @@
                     if (this.dragTarget === container) {
                         this.moveInsertMarker(event);
                     } else {
-                        if (elements.const.log.dnd.target) {
+                        if (elements.log.getLevel() <= log.levels.DEBUG) {
                             var pointer = elements.pageBody.getPointer(event);
-                            elements.log.debug('elements.dnd.dragTarget.set: ' + container.data.path + ' ' + JSON.stringify(pointer));
+                            elements.log.debug('elements.dnd.dragTarget.set: ' + container.reference.path + ' ' + JSON.stringify(pointer));
                         }
                         this.dragTarget = container;
                         container.$el.addClass(elements.const.dnd.class.base + elements.const.dnd.class.targetOver);
@@ -633,6 +620,11 @@
                 $(document).on(elements.const.event.element.selected, _.bind(this.onComponentSelected, this));
                 $(document).on(elements.const.event.element.select, _.bind(this.selectElement, this));
                 window.addEventListener("message", _.bind(this.onMessage, this), false);
+                var id = elements.const.dnd.id;
+                this.$el
+                    .on('dragenter' + id, _.bind(this.onDragEnter, this))
+                    .on('dragover' + id, _.bind(this.onDragOver, this))
+                    .on('dragleave' + id, _.bind(this.onDragLeave, this));
             },
 
             initComponents: function () {
@@ -646,7 +638,7 @@
                     var view = core.getView(this, elements.Container);
                     self.components.push(view);
                     self.containers.push(view);
-                    self.containerRefs.push(view.data);
+                    self.containerRefs.push(view.reference);
                 });
                 this.$('.' + elements.const.class.element).each(function () {
                     var view = core.getView(this, elements.Element);
@@ -677,7 +669,7 @@
              * @param before  the path of the following sibling (optional)
              */
             insert: function (type, target, before) {
-                if (elements.const.log.operation) {
+                if (elements.log.getLevel() <= log.levels.DEBUG) {
                     elements.log.debug('elements.insert(' + type + ' > '
                         + target.path + (before ? (' < ' + before.path) : '') + ')');
                 }
@@ -696,11 +688,11 @@
              * @param before  the path of the following sibling (optional)
              */
             move: function (source, target, before) {
-                if (elements.const.log.operation) {
-                    elements.log.debug('elements.move(' + source.path + ' > '
+                if (elements.log.getLevel() <= log.levels.INFO) {
+                    elements.log.info('elements.move(' + source.path + ' > '
                         + target.path + (before ? (' < ' + before.path) : '') + ')');
                 }
-                parent.postMessage(elements.const.event.moveComponent
+                parent.postMessage(elements.const.event.element.move
                     + JSON.stringify({
                         source: source.path,
                         target: {path: target.path, type: target.type},
@@ -708,10 +700,31 @@
                     }), '*');
             },
 
-            // DnD forwarding
+            // DnD
 
+            /**
+             * forward drag start to the DnD handle
+             */
             onDragStart: function (event, component) {
                 this.dnd.onDragStart(event, component);
+            },
+
+            onDragEnter: function(event) {
+                if (elements.log.getLevel() <= log.levels.DEBUG) {
+                    elements.log.debug('elements.onDragEnter(' + '' + ')');
+                }
+            },
+
+            onDragOver: function(event) {
+                if (elements.log.getLevel() <= log.levels.DEBUG) {
+                    elements.log.debug('elements.onDragOver(' + '' + ')');
+                }
+            },
+
+            onDragLeave: function(event) {
+                if (elements.log.getLevel() <= log.levels.DEBUG) {
+                    elements.log.debug('elements.onDragLeave(' + '' + ')');
+                }
             },
 
             // component selection and edit frame message handling
@@ -723,11 +736,11 @@
                         this.dnd.reset();
                         elements.pageBody.selection.setComponent(component);
                         var eventData = [
-                            component.data.name,
-                            component.data.path,
-                            component.data.type
+                            component.reference.name,
+                            component.reference.path,
+                            component.reference.type
                         ];
-                        elements.log.debug('elements.trigger.' + elements.const.event.element.selected + '(' + component.data.path + ')');
+                        elements.log.debug('elements.trigger.' + elements.const.event.element.selected + '(' + component.reference.path + ')');
                         $(document).trigger(elements.const.event.element.selected, eventData);
                     } else {
                         this.clearSelection();
@@ -885,8 +898,8 @@
                 if (view) {
                     var self = this;
                     var viewRect = this.getViewRect(view);
-                    if (elements.const.log.mouse.position) {
-                        elements.log.debug('elements.getPointerView(' + view.data.path + ', '
+                    if (elements.log.getLevel() <= log.levels.TRACE) {
+                        elements.log.trace('elements.getPointerView(' + view.reference.path + ', '
                             + JSON.stringify(pointer) + ' / ' + JSON.stringify(viewRect) + ', "'
                             + selector + '"' + (condition ? ' ++' : '') + ' ...');
                     }
@@ -897,8 +910,8 @@
                             var nested = this.view; // use the elements view
                             if (nested) {
                                 var nestedRect = self.getViewRect(nested);
-                                if (elements.const.log.mouse.position) {
-                                    elements.log.debug('elements.getPointerView.try: ' + nested.data.path + ' ' + JSON.stringify(nestedRect));
+                                if (elements.log.getLevel() <= log.levels.TRACE) {
+                                    elements.log.trace('elements.getPointerView.try: ' + nested.reference.path + ' ' + JSON.stringify(nestedRect));
                                 }
                                 if (nestedRect.x1 <= pointer.x && nestedRect.y1 <= pointer.y &&
                                     nestedRect.x2 >= pointer.x && nestedRect.y2 >= pointer.y) {
@@ -934,8 +947,8 @@
                         }
                     }
                 }
-                if (elements.const.log.mouse.position) {
-                    elements.log.debug('elements.getPointerView: ' + (view ? view.data.path : 'undefined'));
+                if (elements.log.getLevel() <= log.levels.TRACE) {
+                    elements.log.trace('elements.getPointerView: ' + (view ? view.reference.path : 'undefined'));
                 }
                 return view;
             }
@@ -943,5 +956,5 @@
 
         elements.pageBody = core.getView('body.' + elements.const.class.editBody, elements.PageBody);
 
-    })(window.composum.pages.elements, window.core);
+    })(window.composum.pages.elements, window.composum.pages, window.core);
 })(window);

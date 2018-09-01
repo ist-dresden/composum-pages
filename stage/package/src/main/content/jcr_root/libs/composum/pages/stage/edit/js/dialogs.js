@@ -355,7 +355,7 @@
             afterLoad: function (name, path, type, context) {
                 var c = dialogs.const.edit.css;
                 if (context) {
-                    if (context.parent) {
+                    if (context.parent && context.parent.synthetic) {
                         // set parent resource types if such (hidden) fields are available
                         // the parant data values are transmitted from the new element dialog
                         if (context.parent.type) {
