@@ -1,3 +1,6 @@
+/**
+ * the 'pages' namespace and core Pages edit frame functions
+ */
 (function (window) {
     window.composum = window.composum || {};
     window.composum.pages = window.composum.pages || {};
@@ -79,6 +82,8 @@
                     selected: 'path:selected'       // done.
                 },
                 dnd: {
+                    object: 'dnd:object',           // prepare dragging
+                    drop: 'dnd:drop',               // do it!...
                     finished: 'dnd:finished'        // done, reset state.
                 }
             },
@@ -327,100 +332,6 @@
         });
 
         pages.dialogHandler = core.getView('.' + pages.const.editDialogsClass, pages.DialogHandler);
-
-        //
-        // page frame message handler
-        //
-
-        window.addEventListener("message", function (event) {
-            var message = pages.const.event.messagePattern.exec(event.data);
-            if (message) {
-                var args = JSON.parse(message[2]);
-                switch (message[1]) {
-                    case pages.const.event.element.selected:
-                        // transform selection messages into the corresponding event for the edit frame components
-                        if (args.path) {
-                            pages.log.debug('pages.trigger.' + pages.const.event.path.selected + '(' + args.path + ')');
-                            $(document).trigger(pages.const.event.path.selected, [args.path]);
-                            var eventData = [
-                                args.name,
-                                args.path,
-                                args.type
-                            ];
-                            pages.log.debug('pages.trigger.' + pages.const.event.element.selected + '(' + args.path + ')');
-                            $(document).trigger(pages.const.event.element.selected, eventData);
-                        } else {
-                            pages.log.debug('pages.trigger.' + pages.const.event.path.selected + '()');
-                            $(document).trigger(pages.const.event.path.selected, []);
-                            pages.log.debug('pages.trigger.' + pages.const.event.element.selected + '()');
-                            $(document).trigger(pages.const.event.element.selected, []);
-                        }
-                        break;
-                    case pages.const.event.page.containerRefs:
-                        // forward container references list to the edit frame components
-                        pages.log.trace('pages.event.' + pages.const.event.page.containerRefs + '(' + message[2] + ')');
-                        $(document).trigger(pages.const.event.page.containerRefs, [args]);
-                        break;
-                    case pages.const.event.element.insert:
-                        // apply insert action messages from the edited page
-                        pages.log.info('pages.event.element.insert(' + message[2] + ')');
-                        if (args.type && args.target) {
-                            core.ajaxPost(pages.const.url.edit.insert + args.target.path, {
-                                elementType: args.type,
-                                targetType: args.target.type,
-                                before: args.before ? args.before : ''
-                            }, {}, function (result) {
-                                pages.editFrame.reloadPage();
-                            }, function (xhr) {
-                                core.alert('error', 'Error', 'Error on inserting component', xhr);
-                            });
-                        }
-                        break;
-                    case pages.const.event.element.move:
-                        // apply move action messages from the edited page
-                        pages.log.info('pages.event.element.move(' + message[2] + ')');
-                        if (args.source && args.target) {
-                            core.ajaxPost(pages.const.url.edit.move + args.source, {
-                                targetPath: args.target.path,
-                                targetType: args.target.type,
-                                before: args.before ? args.before : ''
-                            }, {}, function (result) {
-                                pages.editFrame.reloadPage();
-                            }, function (xhr) {
-                                core.alert('error', 'Error', 'Error on moving component', xhr);
-                            });
-                        }
-                        break;
-                    case pages.const.event.dialog.edit:
-                        // opens an edit dialog to perform editing of the content of the path transmitted
-                        pages.log.trace('pages.event.dialog.edit(' + message[2] + ')');
-                        if (args.target) {
-                            var url = undefined;
-                            if (args.dialog) {
-                                url = args.dialog.url;
-                            }
-                            pages.dialogs.openEditDialog(args.target.name, args.target.path, args.target.type,
-                                undefined/*context*/, url,
-                                function (dialog) {
-                                    if (args.values) {
-                                        dialog.applyData(args.values);
-                                    }
-                                });
-                        }
-                        break;
-                    case pages.const.event.trigger:
-                        // triggers an event in the frame document context
-                        pages.log.debug('pages.event.' + args.event + '(' + message[2] + ')');
-                        $(document).trigger(args.event, args.data);
-                        break;
-                    case pages.const.event.dialog.alert:
-                        // displays an alert message by opening an alert dialog
-                        pages.log.trace('pages.event.dialog.alert(' + message[2] + ')');
-                        core.alert(args.type, args.title, args.message, args.data);
-                        break;
-                }
-            }
-        }, false);
 
         //
         // clipboard operations

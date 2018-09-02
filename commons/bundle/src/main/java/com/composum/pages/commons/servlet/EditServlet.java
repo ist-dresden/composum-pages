@@ -753,7 +753,8 @@ public class EditServlet extends NodeTreeServlet {
                 LOG.debug("GetTargetContainers(" + resource + ", " + targetList + ")...");
             }
 
-            ResourceManager.ResourceReference element = resourceManager.getReference(resource, null);
+            String type = request.getParameter(PARAM_TYPE);
+            ResourceManager.ResourceReference element = resourceManager.getReference(resource, type);
             targetList = editService.filterTargetContainers(context.getResolver(), targetList, element);
 
             if (LOG.isDebugEnabled()) {

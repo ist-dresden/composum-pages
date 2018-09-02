@@ -61,12 +61,14 @@
             },
 
             onDragStart: function (event) {
+                var e = pages.const.event;
                 var $element = $(event.currentTarget);
-                pages.current.dnd.object = {
+                var object = {
                     type: 'element',
                     reference: this.reference
                 };
-                var jsonData = JSON.stringify(pages.current.dnd.object);
+                $(document).trigger(e.dnd.object, [object]);
+                var jsonData = JSON.stringify(object);
                 var dndEvent = event.originalEvent;
                 dndEvent.dataTransfer.setData('application/json', jsonData);
                 dndEvent.dataTransfer.effectAllowed = 'move';
@@ -101,7 +103,7 @@
                 event.preventDefault();
                 var e = pages.const.event;
                 if (this.log.dnd.getLevel() <= log.levels.DEBUG) {
-                    this.log.dnd.debug('elements.trigger.' + e.dnd.finished + '(' + event + ')');
+                    this.log.dnd.debug('elements.trigger.' + e.dnd.finished + '(...)');
                 }
                 $(document).trigger(e.dnd.finished, [event]);
                 return false;
@@ -375,7 +377,7 @@
                             + this.dndTarget.container.reference.path + ':' + this.dndTarget.before.reference.path + ', '
                             + pages.current.dnd.object.type + ':' + JSON.stringify(pages.current.dnd.object.reference) + ')');
                     }
-                    pages.actions.dnd.doDrop(event, this.dndTarget, pages.current.dnd.object);
+                    pages.actions.dnd.doDrop(this.dndTarget, pages.current.dnd.object);
                 }
                 return false;
             },
@@ -488,7 +490,6 @@
             },
 
             onDragFinished: function (event) {
-                pages.current.dnd.object = undefined;
                 this.changeDndTarget();
                 this.$elements.removeClass('dragging');
             }

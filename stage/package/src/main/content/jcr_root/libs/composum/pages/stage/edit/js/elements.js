@@ -1,3 +1,6 @@
+/**
+ * edit user interface functions embedded in a content page to support edit interaction
+ */
 (function (window) {
     window.composum = window.composum || {};
     window.composum.pages = window.composum.pages || {};
@@ -28,7 +31,7 @@
                         horizontal: '_horizontal'
                     }
                 },
-                id:'.pagesElements'
+                id: '.pagesElements'
             },
             edit: { // editing interface urls and keys
                 url: {
@@ -54,7 +57,9 @@
                 // determine the draggable settings an set up the DnD event handling
                 this.draggable = core.parseBool(this.$el.attr('draggable'));
                 if (this.draggable) {
-                    this.el.addEventListener('dragstart', _.bind(this.onDragStart, this), false);
+                    this.$el
+                        .on('dragstart', _.bind(this.onDragStart, this))
+                        .on('dragend', _.bind(this.onDragEnd, this));
                 }
                 // set up the component selection handling
                 this.$el.mouseover(_.bind(this.onMouseOver, this));
@@ -147,6 +152,10 @@
                     event.preventDefault();
                     return false;
                 }
+            },
+
+            onDragEnd: function (event) {
+                elements.pageBody.onDragEnd(event);
             }
         });
 
@@ -332,38 +341,47 @@
             reset: function () {
                 this.clearTargets();
                 this.$el.removeClass(elements.const.dnd.class.base + elements.const.dnd.class.visible);
-                this.currentComponent = undefined;
+                this.currentReference = undefined;
             },
 
             // event handlers
 
-            onDragStart: function (event, component) {
+            onDragStart: function (event, object) {
                 var self = elements.pageBody.dnd;
-                if (!self.currentComponent) {
-                    self.currentComponent = component;
-                    if (elements.log.getLevel() <= log.levels.DEBUG) {
-                        elements.log.debug('elements.dnd.onDragStart(' + component.reference.path + ')');
+                var dnd = core.dnd.getDndData(event);
+                var reference = object.reference;
+                if (!self.currentReference) {
+                    self.currentReference = reference;
+                    if (object instanceof elements.Component) {
+                        if (elements.log.getLevel() <= log.levels.DEBUG) {
+                            elements.log.debug('elements.dnd.onDragStart(' + object.reference.path + ')');
+                        }
+                        self.reset();
+                        dnd.ev.dataTransfer.setData('application/json', JSON.stringify({
+                            type: 'element',
+                            reference: reference
+                        }));
+                        dnd.ev.dataTransfer.effectAllowed = 'move';
+                        parent.postMessage(elements.const.event.dnd.object + JSON.stringify({
+                            type: 'element',
+                            reference: reference
+                        }), '*');
+                        if (_.isFunction(dnd.ev.dataTransfer.setDragImage)) {
+                            var pos = object.$el.offset();
+                            self.$image.css({
+                                width: Math.max(100, object.$el.width()) + 'px'
+                            });
+                            self.$content.html('').append(object.$el.clone());
+                            self.$image.addClass(elements.const.dnd.class.base + elements.const.dnd.class.visible);
+                            dnd.ev.dataTransfer.setDragImage(self.$image[0], Math.max(0, dnd.ev.pageX - pos.left), 50);
+                            setTimeout(_.bind(function () {
+                                self.$content.html('');
+                                self.$image.removeClass(elements.const.dnd.class.base + elements.const.dnd.class.visible);
+                            }, self), 100);
+                        }
                     }
-                    self.reset();
-                    if (_.isFunction(event.dataTransfer.setDragImage)) {
-                        var pos = component.$el.offset();
-                        self.$image.css({
-                            width: Math.max(100, component.$el.width()) + 'px'
-                        });
-                        self.$content.html('').append(component.$el.clone());
-                        self.$image.addClass(elements.const.dnd.class.base + elements.const.dnd.class.visible);
-                        event.dataTransfer.setDragImage(self.$image[0], Math.max(0, event.pageX - pos.left), 50);
-                        setTimeout(_.bind(function () {
-                            self.$content.html('');
-                            self.$image.removeClass(elements.const.dnd.class.base + elements.const.dnd.class.visible);
-                        }, self), 100);
-                    }
-                    event.dataTransfer.setData('application/component', JSON.stringify(component.reference));
-                    event.dataTransfer.effectAllowed = 'move';
                     setTimeout(_.bind(function () {
-                        self.markTargets(component);
-                        event.target.addEventListener('drag', self.onDrag, false);
-                        event.target.addEventListener('dragend', self.onDragEnd, false);
+                        self.markTargets(reference);
                     }, self), 150);
                 }
             },
@@ -373,39 +391,12 @@
                 if (elements.log.getLevel() <= log.levels.DEBUG) {
                     elements.log.debug('elements.dnd.onDragEnd()');
                 }
-                event.target.removeEventListener('dragend', self.onDragEnd);
-                event.target.removeEventListener('drag', self.onDrag);
                 self.reset();
-            },
-
-            onDrag: function (event) {
-                var self = elements.pageBody.dnd;
-                var target = self.getDragTarget(event);
-                self.setDragTarget(target, event);
-            },
-
-            onDragOver: function (event) {
-                var self = elements.pageBody.dnd;
-                if (self.dragTarget && self.insert) {
-                    event.preventDefault();
-                }
+                parent.postMessage(elements.const.event.dnd.finished + '{}', '*');
             },
 
             onDrop: function (event) {
-                var self = elements.pageBody.dnd;
-                if (self.dragTarget && self.insert) {
-                    var source = JSON.parse(event.dataTransfer.getData('application/component'));
-                    var target = self.dragTarget.reference;
-                    var before = self.insert.before ? self.insert.before.reference : undefined;
-                    if (elements.log.getLevel() <= log.levels.DEBUG) {
-                        elements.log.debug('elements.dnd.onDrop(' + self.dragTarget.reference.path + '): '
-                            + JSON.stringify(source) + ' > '
-                            + JSON.stringify(target) + ' < '
-                            + JSON.stringify(before)
-                        );
-                    }
-                    elements.pageBody.move(source, target, before);
-                }
+                elements.pageBody.onDrop(event);
             },
 
             // target markers
@@ -428,9 +419,9 @@
             /**
              * Determines the list of allowed target containers (this.dropTargets)
              * for the given component (the drag source) and marks this containers.
-             * @param component  the component which should be inserted in an(other) container
+             * @param reference the reference of the element which should be inserted in an(other) container
              */
-            markTargets: function (component) {
+            markTargets: function (reference) {
                 var candidates = [];
                 elements.pageBody.containers.forEach(function (candidate) {
                     candidates.push({
@@ -438,8 +429,9 @@
                         type: candidate.reference.type
                     });
                 });
-                var path = component.reference.path;
+                var path = reference.path;
                 core.ajaxPost(elements.const.edit.url.targets + path, {
+                    type: reference.type,
                     targetList: JSON.stringify(candidates)
                 }, {}, _.bind(function (result) {
                     this.dropTargets = [];
@@ -450,8 +442,6 @@
                             var view = $target[0].view;
                             if (view) {
                                 this.dropTargets.push(view);
-                                view.el.addEventListener('drop', this.onDrop, false);
-                                view.el.addEventListener('dragover', this.onDragOver, false);
                                 view.$el.addClass(elements.const.dnd.class.base + elements.const.dnd.class.target);
                             }
                         }
@@ -462,20 +452,10 @@
             clearTargets: function () {
                 this.setDragTarget();
                 elements.pageBody.containers.forEach(function (container) {
-                    container.el.removeEventListener('drop', this.onDrop);
-                    container.el.removeEventListener('dragover', this.onDragOver);
                     container.$el.removeClass(elements.const.dnd.class.base + elements.const.dnd.class.targetOver);
                     container.$el.removeClass(elements.const.dnd.class.base + elements.const.dnd.class.target);
                 }, this);
                 this.dropTargets = undefined;
-            },
-
-            clearOver: function () {
-                if (this.dropTargets) {
-                    this.dropTargets.forEach(function (target) {
-                        target.$el.removeClass(elements.const.dnd.class.base + elements.const.dnd.class.targetOver);
-                    }, this);
-                }
             },
 
             // move / insert handling
@@ -624,7 +604,7 @@
                 this.$el
                     .on('dragenter' + id, _.bind(this.onDragEnter, this))
                     .on('dragover' + id, _.bind(this.onDragOver, this))
-                    .on('dragleave' + id, _.bind(this.onDragLeave, this));
+                    .on('drop' + id, _.bind(this.onDrop, this));
             },
 
             initComponents: function () {
@@ -660,71 +640,93 @@
                     + JSON.stringify(this.containerRefs), '*');
             },
 
-            // operations
-
-            /**
-             * Insert a new component by triggering the Pages edit frame with the insert parameters.
-             * @param type    the resource type of the new component
-             * @param target  the target container path and type (element reference)
-             * @param before  the path of the following sibling (optional)
-             */
-            insert: function (type, target, before) {
-                if (elements.log.getLevel() <= log.levels.DEBUG) {
-                    elements.log.debug('elements.insert(' + type + ' > '
-                        + target.path + (before ? (' < ' + before.path) : '') + ')');
-                }
-                parent.postMessage(elements.const.event.element.insert
-                    + JSON.stringify({
-                        type: type,
-                        target: {path: target.path, type: target.type},
-                        before: before ? before.path : null
-                    }), '*');
-            },
-
-            /**
-             * Move an existing component by triggering the Pages edit frame with the move parameters.
-             * @param source  the resource to move to the new container and/or index
-             * @param target  the target container path and type (element reference)
-             * @param before  the path of the following sibling (optional)
-             */
-            move: function (source, target, before) {
-                if (elements.log.getLevel() <= log.levels.INFO) {
-                    elements.log.info('elements.move(' + source.path + ' > '
-                        + target.path + (before ? (' < ' + before.path) : '') + ')');
-                }
-                parent.postMessage(elements.const.event.element.move
-                    + JSON.stringify({
-                        source: source.path,
-                        target: {path: target.path, type: target.type},
-                        before: before ? before.path : null
-                    }), '*');
-            },
-
             // DnD
 
             /**
-             * forward drag start to the DnD handle
+             * forward drag start to the DnD handle on start dragging from inside or outside
+             * @param event the jQuery DnD event
+             * @param object the dragged object (component from inside, DbD object from outside)
              */
-            onDragStart: function (event, component) {
-                this.dnd.onDragStart(event, component);
+            onDragStart: function (event, object) {
+                this.dnd.onDragStart(event, object);
             },
 
-            onDragEnter: function(event) {
+            /**
+             * start drag handling on drag from outside of the page
+             * @param event the jQuery DnD event
+             */
+            onDragEnter: function (event) {
+                event.preventDefault();
                 if (elements.log.getLevel() <= log.levels.DEBUG) {
-                    elements.log.debug('elements.onDragEnter(' + '' + ')');
+                    elements.log.debug('elements.dndEnter(' + '' + ')');
                 }
+                if (pages.current.dnd.object) {
+                    this.onDragStart(event, pages.current.dnd.object);
+                }
+                return false;
             },
 
-            onDragOver: function(event) {
+            /**
+             * determine the target for the current drag position
+             * @param event the jQuery DnD event
+             */
+            onDragOver: function (event) {
+                event.preventDefault();
+                var dnd = core.dnd.getDndData(event);
+                var ref = dnd.el.view.reference;
+                var target = this.dnd.getDragTarget(event);
                 if (elements.log.getLevel() <= log.levels.DEBUG) {
-                    elements.log.debug('elements.onDragOver(' + '' + ')');
+                    elements.log.debug('elements.dndOver(' + (ref ? ref.path : 'body') + '): '
+                        + JSON.stringify(dnd.pos) + " - " + (target ? target.reference.path : '?'));
                 }
+                this.dnd.setDragTarget(target, event);
+                return false;
             },
 
-            onDragLeave: function(event) {
-                if (elements.log.getLevel() <= log.levels.DEBUG) {
-                    elements.log.debug('elements.onDragLeave(' + '' + ')');
+            /**
+             * forward drag end to the DnD handle on end dragging from inside
+             * @param event the jQuery DnD event
+             */
+            onDragEnd: function (event) {
+                this.dnd.onDragEnd(event);
+            },
+
+            /**
+             * performs the drop operation if DnD status enables a change by delegating the drop to the edit frame
+             * @param event the jQuery DnD event
+             */
+            onDrop: function (event) {
+                event.preventDefault();
+                if (this.dnd.dragTarget && this.dnd.insert) {
+                    var object = JSON.parse(event.originalEvent.dataTransfer.getData('application/json'));
+                    var target = this.dnd.dragTarget.reference;
+                    var before = this.dnd.insert.before ? this.dnd.insert.before.reference : undefined;
+                    if (elements.log.getLevel() <= log.levels.DEBUG) {
+                        elements.log.debug('elements.dnd.onDrop(' + this.dnd.dragTarget.reference.path + '): '
+                            + JSON.stringify(object) + ' > '
+                            + JSON.stringify(target) + ' < '
+                            + JSON.stringify(before)
+                        );
+                    }
+                    parent.postMessage(elements.const.event.dnd.drop
+                        + JSON.stringify({
+                            target: {
+                                container: {
+                                    reference: {
+                                        path: target.path,
+                                        type: target.type
+                                    }
+                                },
+                                before: before ? {
+                                    reference: {
+                                        path: before.path
+                                    }
+                                } : undefined
+                            },
+                            object: object
+                        }), '*');
                 }
+                return false;
             },
 
             // component selection and edit frame message handling
@@ -795,23 +797,47 @@
             },
 
             onMessage: function (event) {
-                var message = elements.const.event.messagePattern.exec(event.data);
+                var e = elements.const.event;
+                var message = e.messagePattern.exec(event.data);
+                if (elements.log.getLevel() <= log.levels.TRACE) {
+                    elements.log.trace('elements.message.on: "' + event.data + '"...');
+                }
                 if (message) {
                     var args = JSON.parse(message[2]);
                     switch (message[1]) {
-                        case elements.const.event.element.select:
+                        case e.element.select:
+                            if (elements.log.getLevel() <= log.levels.DEBUG) {
+                                elements.log.debug('elements.message.on.' + e.element.select + JSON.stringify(args));
+                            }
                             if (args.path) {
                                 var eventData = [
                                     args.name,
                                     args.path,
                                     args.type
                                 ];
-                                elements.log.debug('elements.trigger.' + elements.const.event.element.select + '(' + args.path + ')');
-                                $(document).trigger(elements.const.event.element.select, eventData);
+                                if (elements.log.getLevel() <= log.levels.DEBUG) {
+                                    elements.log.debug('elements.trigger.' + e.element.select + '(' + args.path + ')');
+                                }
+                                $(document).trigger(e.element.select, eventData);
                             } else {
-                                elements.log.debug('elements.trigger.' + elements.const.event.element.select + '([])');
-                                $(document).trigger(elements.const.event.element.select, []);
+                                if (elements.log.getLevel() <= log.levels.DEBUG) {
+                                    elements.log.debug('elements.trigger.' + e.element.select + '([])');
+                                }
+                                $(document).trigger(e.element.select, []);
                             }
+                            break;
+                        case e.dnd.object:
+                            if (elements.log.getLevel() <= log.levels.DEBUG) {
+                                elements.log.debug('elements.message.on.' + e.dnd.object + JSON.stringify(args));
+                            }
+                            pages.current.dnd.object = args;
+                            break;
+                        case e.dnd.finished:
+                            if (elements.log.getLevel() <= log.levels.DEBUG) {
+                                elements.log.debug('elements.message.on.' + e.dnd.finished);
+                            }
+                            pages.current.dnd.object = undefined;
+                            elements.pageBody.dnd.reset();
                             break;
                     }
                 }
@@ -824,8 +850,8 @@
              */
             getPointer: function (event) {
                 return {
-                    x: event.pageX - window.pageXOffset,
-                    y: event.pageY - window.pageYOffset
+                    x: event.originalEvent.pageX - window.pageXOffset,
+                    y: event.originalEvent.pageY - window.pageYOffset
                 };
             },
 

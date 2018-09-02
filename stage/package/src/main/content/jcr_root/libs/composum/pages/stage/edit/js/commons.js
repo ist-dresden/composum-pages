@@ -1,3 +1,6 @@
+/**
+ * general functions used in the injected edit code of a content page and in the Pages edit frame
+ */
 (function (window) {
     window.composum = window.composum || {};
     window.composum.pages = window.composum.pages || {};
@@ -14,32 +17,42 @@
                     prim: 'pages-edit-prim',
                     synthetic: 'pages-edit-synthetic'
                 },
-                url: {
+                url: { // the URLs to load data from the authoring system
                     edit: '/bin/cpm/pages/edit',
                     _resourceInfo: '.resourceInfo.json'
                 }
             }
         });
 
-        pages.Reference = function (nameOrView, path, type, prim, synthetic) {
-            if (nameOrView instanceof Backbone.View) {
-                nameOrView = nameOrView.$el;
+        /**
+         * a resource reference class to handel containers, elements and component types event if they are synthetic
+         * @param nameOrData  name value or a data object: View, $() or a template data object to clone
+         * @param path        the resource path; should be undefined (not present) if a data object is used
+         * @param type        the resource type is important if a synthetic resource is referenced
+         * @param prim        the primary type if the reference is used to create a (synthetic) resource
+         * @param synthetic   the 'synthetic' state indicator
+         */
+        pages.Reference = function (nameOrData, path, type, prim, synthetic) {
+            if (nameOrData instanceof Backbone.View) {
+                nameOrData = nameOrData.$el;
             }
-            if (nameOrView instanceof jQuery) {
+            if (nameOrData instanceof jQuery) {
                 var d = pages.const.commons.data;
-                var reference = nameOrView.data(d.reference);
+                var reference = nameOrData.data(d.reference);
                 if (reference) {
                     _.extend(this, reference);
                 } else {
-                    this.name = nameOrView.data(d.name);
-                    this.path = path || nameOrView.data(d.path);
-                    this.type = type || nameOrView.data(d.type);
-                    this.prim = prim || nameOrView.data(d.prim);
+                    this.name = nameOrData.data(d.name);
+                    this.path = path || nameOrData.data(d.path);
+                    this.type = type || nameOrData.data(d.type);
+                    this.prim = prim || nameOrData.data(d.prim);
                     this.synthetic = synthetic !== undefined ? synthetic
-                        : core.parseBool(nameOrView.data(d.synthetic));
+                        : core.parseBool(nameOrData.data(d.synthetic));
                 }
+            } else if (nameOrData && nameOrData.path && !path) {
+                _.extend(this, nameOrData); // clone an appropriate data object
             } else {
-                this.name = nameOrView; // resource name
+                this.name = nameOrData; // resource name
                 this.path = path;       // resource path
                 this.type = type;       // resource type
                 this.prim = prim;       // primary / component type

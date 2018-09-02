@@ -22,7 +22,7 @@
                     }
                 },
                 log: {
-                    prefix: 'tools.Elements.'
+                    prefix: 'main.Components.'
                 },
                 url: {
                     get: {
@@ -47,12 +47,14 @@
             },
 
             onDragStart: function (event) {
+                var e = pages.const.event;
                 var $component = $(event.currentTarget);
-                pages.current.dnd.object = {
+                var object = {
                     type: 'component',
                     reference: this.reference
                 };
-                var jsonData = JSON.stringify(pages.current.dnd.object);
+                $(document).trigger(e.dnd.object, [object]);
+                var jsonData = JSON.stringify(object);
                 var dndEvent = event.originalEvent;
                 dndEvent.dataTransfer.setData('application/json', jsonData);
                 dndEvent.dataTransfer.effectAllowed = 'copy';
@@ -65,7 +67,7 @@
             onDragEnd: function (event) {
                 var e = pages.const.event;
                 if (this.log.dnd.getLevel() <= log.levels.DEBUG) {
-                    this.log.dnd.debug('components.trigger.' + e.dnd.finished + '(' + event + ')');
+                    this.log.dnd.debug('components.trigger.' + e.dnd.finished + '(...)');
                 }
                 $(document).trigger(e.dnd.finished, [event]);
             }

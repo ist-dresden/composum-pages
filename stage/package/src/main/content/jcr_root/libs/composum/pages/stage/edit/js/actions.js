@@ -243,23 +243,22 @@
             /**
              * handler to drop an object into a new target or at a new position;
              * if the object is a component (type: 'component') a new element is inserted at the designated position
-             * @param event the DnD event object
              * @param target a target description: { container: {reference: reference}(, before: {reference: reference})}
              * @param object the object to drop (element or component): { type: 'component'|'element', reference: reference}
              */
-            doDrop: function (event, target, object) {
+            doDrop: function (target, object) {
                 if (target && target.container.reference.path && object) {
                     switch (object.type) {
                         case 'component': // insert a new component
-                            actions.dnd.doDropInsert(event, target, object);
+                            actions.dnd.doDropInsert(target, object);
                             break;
                         case 'element': // copy or move an element
                             switch (target.operation || object.operation) {
                                 case 'copy': // copy the element
-                                    actions.dnd.doDropCopy(event, target, object);
+                                    actions.dnd.doDropCopy(target, object);
                                     break;
                                 default: // move the element
-                                    actions.dnd.doDropMove(event, target, object);
+                                    actions.dnd.doDropMove(target, object);
                                     break;
                             }
                             break;
@@ -267,7 +266,7 @@
                 }
             },
 
-            doDropInsert: function (event, target, object, context) {
+            doDropInsert: function (target, object, context) {
                 if (target && target.container.reference.path && object && object.type === 'component') {
                     if (!context) {
                         context = {
@@ -278,7 +277,7 @@
                     if (!context.parent.isComplete()) {
                         // get resource type and/or primary type of potentially synthetic parent and retry...
                         context.parent.complete(function () {
-                            actions.dnd.doDropInsert(event, target, object, context);
+                            actions.dnd.doDropInsert(target, object, context);
                         });
                     } else {
                         var d = pages.dialogs.const.edit.url;
@@ -300,13 +299,13 @@
                 }
             },
 
-            doDropCopy: function (event, target, object) {
+            doDropCopy: function (target, object) {
                 if (target && target.container.reference.path && object && object.type === 'element') {
                     // TODO: UI concept (copy/move handling) and implementation
                 }
             },
 
-            doDropMove: function (event, target, object) {
+            doDropMove: function (target, object) {
                 if (target && target.container.reference.path && object && object.type === 'element') {
                     core.ajaxPost(pages.const.url.edit.move + object.reference.path, {
                         targetPath: target.container.reference.path,
