@@ -46,7 +46,7 @@
                     _delete: {
                         page: '.deletePage.json'
                     },
-                    _insert: '.insertComponent.html',
+                    _insert: '.insertElement.html',
                     _isTemplate: '.isTemplate.json',
                     _dialog: {
                         load: '.editDialog',

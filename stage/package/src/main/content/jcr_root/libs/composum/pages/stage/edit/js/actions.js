@@ -39,7 +39,13 @@
             },
 
             copy: function (event, name, path, type) {
-                alert('element.copy... ' + name + ',' + path + ',' + type);
+                if (!path && pages.current.element) {
+                    path = pages.current.element.reference
+                        ? pages.current.element.reference.path : pages.current.element;
+                }
+                pages.profile.set('pages', 'elementClipboard', {
+                    path: path
+                });
             },
 
             paste: function (event, name, path, type) {
@@ -73,6 +79,43 @@
             }
         };
 
+        actions.content = {
+
+            copy: function (path) {
+                pages.profile.set('pages', 'contentClipboard', {
+                    path: path
+                });
+            },
+
+            paste: function (path) {
+                var clipboard = pages.profile.get('pages', 'contentClipboard');
+                if (path && clipboard && clipboard.path) {
+                    var name = core.getNameFromPath(clipboard.path);
+                    // copy to the target with the same name
+                    core.ajaxPost("/bin/cpm/pages/edit.copyContent.json" + clipboard.path, {
+                        targetPath: path,
+                        name: name
+                    }, {}, _.bind(function (result) {
+                        // trigger content change
+                        $(document).trigger(pages.const.event.content.inserted, [path, name]);
+                    }, this), _.bind(function (result) {
+                        // on error - display copy dialog initialized with the known data
+                        var data = result.responseJSON;
+                        pages.dialogs.openCopyContentDialog(undefined, clipboard.path, undefined,
+                            _.bind(function (dialog) {
+                                dialog.setValues(clipboard.path, path);
+                                if (data.messages) {
+                                    dialog.validationHint(data.messages[0].level, null, data.messages[0].text, data.messages[0].hint);
+                                } else if (data.response) {
+                                    dialog.validationHint(data.response.level, null, data.response.text);
+                                }
+                                dialog.hintsMessage('error');
+                            }, this));
+                    }, this));
+                }
+            }
+        };
+
         actions.page = {
 
             edit: function (event, name, path, type) {
@@ -92,11 +135,11 @@
             },
 
             copy: function (event, name, path, type) {
-                pages.clipboardCopyContent(path);
+                actions.content.copy(path);
             },
 
             paste: function (event, name, path, type) {
-                pages.clipboardPasteContent(path);
+                actions.content.paste(path);
             },
 
             rename: function (event, name, path, type) {
@@ -159,11 +202,11 @@
             },
 
             copy: function (event, name, path, type) {
-                pages.clipboardCopyContent(path);
+                actions.content.copy(path);
             },
 
             paste: function (event, name, path, type) {
-                pages.clipboardPasteContent(path);
+                actions.content.paste(path);
             },
 
             delete: function (event, name, path, type) {
@@ -199,11 +242,11 @@
             },
 
             copy: function (event, name, path, type) {
-                pages.clipboardCopyContent(path);
+                actions.content.copy(path);
             },
 
             paste: function (event, name, path, type) {
-                pages.clipboardPasteContent(path);
+                actions.content.paste(path);
             },
 
             delete: function (event, name, path, type) {
@@ -222,11 +265,11 @@
             },
 
             copy: function (event, name, path, type) {
-                pages.clipboardCopyContent(path);
+                actions.content.copy(path);
             },
 
             paste: function (event, name, path, type) {
-                pages.clipboardPasteContent(path);
+                actions.content.paste(path);
             },
 
             delete: function (event, name, path, type) {
@@ -271,7 +314,7 @@
                     if (!context) {
                         context = {
                             parent: target.container.reference,
-                            before: target.before.reference
+                            before: target.before ? target.before.reference : undefined
                         };
                     }
                     if (!context.parent.isComplete()) {

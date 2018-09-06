@@ -8,7 +8,7 @@
         <c:when test="${code.valid}">
             <div class="${codeCssBase}_content-block">
                 <pre class="${codeCssBase}_content"><code
-                        class="${code.codeLanguage}"><cpn:text value="${code.code}"/></code></pre>
+                        class="${code.codeLanguage}"><cpn:text value="${code.code}" type="value"/></code></pre>
             </div>
             <c:if test="${code.hasCopyright}">
                 <cpn:text tagClass="${codeCssBase}_footer simple-footer" value="${code.copyright}"/>

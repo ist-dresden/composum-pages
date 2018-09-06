@@ -1,8 +1,8 @@
-<%@page session="false" pageEncoding="UTF-8" %><%--
---%><%@taglib prefix="cpn" uri="http://sling.composum.com/cpnl/1.0" %><%--
---%><%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %><%--
---%><%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %><%--
---%><cpp:defineObjects/><%-- the 'independent' selector is used to enable multiple open items --%>
+<%@page session="false" pageEncoding="UTF-8" %>
+<%@taglib prefix="cpn" uri="http://sling.composum.com/cpnl/1.0" %>
+<%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<cpp:defineObjects/><%-- the 'independent' selector is used to enable multiple open items --%>
 <cpp:container var="item" type="com.composum.pages.components.model.accordion.AccordionItem"
                cssBase="composum-pages-components-accordion-item" cssAdd="panel panel-default">
     <div id="${itemId}_head" class="panel-heading" role="tab">

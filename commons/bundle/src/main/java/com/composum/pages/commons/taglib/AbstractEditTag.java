@@ -1,6 +1,8 @@
 package com.composum.pages.commons.taglib;
 
 import com.composum.pages.commons.PagesConstants;
+import com.composum.pages.commons.model.Page;
+import com.composum.pages.commons.model.Site;
 import com.composum.pages.commons.util.NewResourceParent;
 import com.composum.pages.commons.util.ResourceTypeUtil;
 import com.composum.sling.core.BeanContext;
@@ -24,6 +26,7 @@ import static com.composum.pages.commons.taglib.ElementTag.PAGES_EDIT_DATA_TYPE;
 public abstract class AbstractEditTag extends AbstractWrappingTag {
 
     protected Resource editResource;
+    protected Resource referenceResource;
     protected Resource parentResource;
     protected String resourcePath;
     protected String resourceType;
@@ -40,6 +43,7 @@ public abstract class AbstractEditTag extends AbstractWrappingTag {
         resourcePath = null;
         resourceType = null;
         parentResource = null;
+        referenceResource = null;
         editResource = null;
         super.clear();
     }
@@ -156,15 +160,25 @@ public abstract class AbstractEditTag extends AbstractWrappingTag {
     public String getDefaultPrimaryType() {
         if (defaultPrimaryType == null) {
             defaultPrimaryType = PagesConstants.ComponentType.getPrimaryType(
-                    PagesConstants.ComponentType.typeOf(resourceResolver, getResource(), getResourceType()));
+                    PagesConstants.ComponentType.typeOf(resourceResolver, getReferenceResource(), getResourceType()));
         }
         return defaultPrimaryType;
+    }
+
+    public Resource getReferenceResource() {
+        if (referenceResource == null) {
+            referenceResource = getResource();
+            if (Page.isPageContent(referenceResource) || Site.isSiteConfiguration(referenceResource)) {
+                referenceResource = referenceResource.getParent();
+            }
+        }
+        return referenceResource;
     }
 
     @Override
     protected void collectAttributes(Map<String, String> attributeSet) {
         super.collectAttributes(attributeSet);
-        Resource resourceToEdit = getResource();
+        Resource resourceToEdit = getReferenceResource();
         if (resourceToEdit != null) {
             // embed reference data as data attributes of the dialog DOM element
             attributeSet.put(PAGES_EDIT_DATA_NAME, resourceToEdit.getName());

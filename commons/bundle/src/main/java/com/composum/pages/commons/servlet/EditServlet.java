@@ -112,7 +112,7 @@ public class EditServlet extends NodeTreeServlet {
         resourceInfo, editDialog, newDialog,
         editTile, editToolbar, treeActions,
         pageComponents, targetContainers, isAllowedElement,
-        insertComponent, moveComponent, copyElement,
+        insertElement, moveElement, copyElement,
         createPage, deletePage, moveContent, renameContent, copyContent,
         createSite, deleteSite,
         contextTools, context,
@@ -139,7 +139,7 @@ public class EditServlet extends NodeTreeServlet {
     @Reference
     protected PagesConfiguration pagesConfiguration;
 
-    protected MoveComponent moveComponentOperation;
+    protected MoveElement moveElementOperation;
 
     @Activate
     private void activate(final BundleContext bundleContext) {
@@ -205,9 +205,11 @@ public class EditServlet extends NodeTreeServlet {
         operations.setOperation(ServletOperationSet.Method.POST, Extension.json,
                 Operation.targetContainers, new GetTargetContainers());
         operations.setOperation(ServletOperationSet.Method.POST, Extension.html,
-                Operation.insertComponent, new InsertComponent());
+                Operation.insertElement, new InsertElement());
         operations.setOperation(ServletOperationSet.Method.POST, Extension.json,
-                Operation.moveComponent, moveComponentOperation = new MoveComponent());
+                Operation.moveElement, moveElementOperation = new MoveElement());
+        operations.setOperation(ServletOperationSet.Method.POST, Extension.json,
+                Operation.copyElement, new CopyElement());
         operations.setOperation(ServletOperationSet.Method.POST, Extension.json,
                 Operation.createPage, new CreatePage());
         operations.setOperation(ServletOperationSet.Method.POST, Extension.json,
@@ -696,6 +698,10 @@ public class EditServlet extends NodeTreeServlet {
         }
     }
 
+    /**
+     * get a list of allowend components (element type) for one page
+     * (depends on the current content an the hierarchical rules of the pages elements)
+     */
     protected class GetPageComponents implements ServletOperation {
 
         @Override
@@ -738,6 +744,9 @@ public class EditServlet extends NodeTreeServlet {
         }
     }
 
+    /**
+     * get a list of allowed containers on a page to insert a given element or component (type)
+     */
     protected class GetTargetContainers implements ServletOperation {
 
         @Override
@@ -767,70 +776,120 @@ public class EditServlet extends NodeTreeServlet {
         }
     }
 
-    protected class InsertComponent implements ServletOperation {
+    protected abstract class ElementResourceOperation extends ChangeContentOperation {
 
         @Override
         public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
                          ResourceHandle resource)
                 throws IOException {
 
-            String resourceType = request.getParameter("resourceType");
             String targetPath = request.getParameter("targetPath");
             String targetType = request.getParameter("targetType");
             String beforePath = request.getParameter("before");
 
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("InsertComponent(" + resourceType + " > " + targetPath + " < " + beforePath + ")...");
-            }
-
             final BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
             final ResourceResolver resolver = context.getResolver();
             ResourceManager.ResourceReference target = resourceManager.getReference(resolver, targetPath, targetType);
-            Resource before = StringUtils.isNotBlank(beforePath) ? resolver.getResource(beforePath) : null;
+            ResourceManager.ResourceReference object = getReference(request, resource, targetPath);
 
-            try {
-                editService.insertComponent(resolver, resourceType, target, before);
-                resolver.commit();
-                ResponseUtil.writeEmptyObject(response);
-
-            } catch (RepositoryException ex) {
-                LOG.error(ex.getMessage(), ex);
-                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ex.getMessage());
+            if (LOG.isDebugEnabled()) {
+                LOG.debug(getOperationName() + "Element(" + object.getType() + "@" + object.getPath()
+                        + " > " + targetPath + " < " + beforePath + ")...");
             }
+
+            if (editService.isAllowedElement(resolver, target, object)) {
+                Resource before = StringUtils.isNotBlank(beforePath) ? resolver.getResource(beforePath) : null;
+
+                try {
+                    Resource result = editService.moveElement(resolver, resolver.getResource("/content"),
+                            resource, target, before);
+                    resolver.commit();
+
+                    sendResponse(response, result);
+
+                } catch (RepositoryException ex) {
+                    LOG.error(ex.getMessage(), ex);
+                    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ex.getMessage());
+                }
+            } else {
+                LOG.warn(getOperationName() + " not allowed: " + object.getType() + "@" + targetPath);
+            }
+        }
+
+        protected abstract ResourceManager.ResourceReference getReference(SlingHttpServletRequest request,
+                                                                          ResourceHandle resource, String targetPath);
+
+        protected abstract Resource doIt(ResourceResolver resolver, ResourceManager.ResourceReference source,
+                                         ResourceManager.ResourceReference target, Resource before)
+                throws PersistenceException, RepositoryException;
+
+        protected abstract String getOperationName();
+    }
+
+    protected class InsertElement extends ElementResourceOperation {
+
+        @Override
+        protected ResourceManager.ResourceReference getReference(SlingHttpServletRequest request,
+                                                                 ResourceHandle resource, String targetPath) {
+            return resourceManager.getReference(request.getResourceResolver(),
+                    targetPath + "/_for_check_only_", request.getParameter("resourceType"));
+        }
+
+        @Override
+        public Resource doIt(ResourceResolver resolver, ResourceManager.ResourceReference source,
+                             ResourceManager.ResourceReference target, Resource before)
+                throws PersistenceException, RepositoryException {
+            return editService.insertElement(resolver, source.getType(), target, before);
+        }
+
+        @Override
+        protected String getOperationName() {
+            return "insert";
         }
     }
 
-    protected class MoveComponent extends ChangeContentOperation {
+    protected class MoveElement extends ElementResourceOperation {
 
         @Override
-        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
-                         ResourceHandle resource)
-                throws IOException {
+        protected ResourceManager.ResourceReference getReference(SlingHttpServletRequest request,
+                                                                 ResourceHandle resource, String targetPath) {
+            return resourceManager.getReference(request.getResourceResolver(),
+                    targetPath + "/" + resource.getName(), resource.getResourceType());
+        }
 
-            String targetPath = request.getParameter("targetPath");
-            String targetType = request.getParameter("targetType");
-            String beforePath = request.getParameter("before");
+        @Override
+        public Resource doIt(ResourceResolver resolver, ResourceManager.ResourceReference source,
+                             ResourceManager.ResourceReference target, Resource before)
+                throws PersistenceException, RepositoryException {
+            return editService.moveElement(resolver, resolver.getResource("/content"),
+                    source.getResource(), target, before);
+        }
 
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("MoveComponent(" + resource.getPath() + " > " + targetPath + " < " + beforePath + ")...");
-            }
+        @Override
+        protected String getOperationName() {
+            return "move";
+        }
+    }
 
-            final BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
-            final ResourceResolver resolver = context.getResolver();
-            ResourceManager.ResourceReference target = resourceManager.getReference(resolver, targetPath, targetType);
-            Resource before = StringUtils.isNotBlank(beforePath) ? resolver.getResource(beforePath) : null;
+    protected class CopyElement extends ElementResourceOperation {
 
-            try {
-                Resource result = editService.moveComponent(resolver, resolver.getResource("/content"),
-                        resource, target, before);
-                resolver.commit();
+        @Override
+        protected ResourceManager.ResourceReference getReference(SlingHttpServletRequest request,
+                                                                 ResourceHandle resource, String targetPath) {
+            return resourceManager.getReference(request.getResourceResolver(),
+                    targetPath + "/" + resource.getName(), resource.getResourceType());
+        }
 
-                sendResponse(response, result);
+        @Override
+        public Resource doIt(ResourceResolver resolver, ResourceManager.ResourceReference source,
+                             ResourceManager.ResourceReference target, Resource before)
+                throws PersistenceException, RepositoryException {
+            return editService.copyElement(resolver, source.getResource(), target, before);
+        }
 
-            } catch (RepositoryException ex) {
-                LOG.error(ex.getMessage(), ex);
-                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ex.getMessage());
-            }
+        @Override
+        protected String getOperationName() {
+            return "copy";
         }
     }
 
@@ -1032,7 +1091,7 @@ public class EditServlet extends NodeTreeServlet {
 
                 if (Container.isContainer(resolver, target, null)) {
 
-                    moveComponentOperation.doIt(request, response, resource);
+                    moveElementOperation.doIt(request, response, resource);
 
                 } else if (resourceManager.isAllowedChild(resolver, target, resource)) {
 

@@ -4,6 +4,8 @@ import com.composum.pages.commons.PagesConstants;
 import com.composum.pages.commons.filter.TemplateFilter;
 import com.composum.pages.commons.model.AbstractModel;
 import com.composum.pages.commons.model.ContentTypeFilter;
+import com.composum.pages.commons.model.File;
+import com.composum.pages.commons.model.Folder;
 import com.composum.pages.commons.model.Page;
 import com.composum.pages.commons.model.Site;
 import com.composum.pages.commons.model.properties.PathPatternSet;
@@ -423,7 +425,8 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
                     template = toTemplate(templateResource);
                 }
             } else {
-                if (!JcrConstants.JCR_CONTENT.equals(resource.getName())) {
+                if (!Folder.isFolder(resource) && !File.isFile(resource) &&
+                        !JcrConstants.JCR_CONTENT.equals(resource.getName())) {
                     Template parentTemplate = getTemplateOf(resource.getParent());
                     if (parentTemplate != null) {
                         ResourceResolver resolver = resource.getResourceResolver();

@@ -6,6 +6,7 @@
     &_heading {
         position: relative;
         min-height: 40px;
+        overflow: hidden;
     }
 
     &_panel {
@@ -13,6 +14,8 @@
     }
 
     &_language {
+        position: absolute;
+        top: 13px;
         margin: -2px 0 0 10px;
     }
 
@@ -45,6 +48,11 @@
                 white-space: pre;
             }
         }
+    }
+
+    &_footer {
+        white-space: nowrap;
+        overflow: auto;
     }
 
     &.wrap-lines {
