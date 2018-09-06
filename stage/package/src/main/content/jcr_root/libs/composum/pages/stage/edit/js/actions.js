@@ -48,10 +48,6 @@
                 });
             },
 
-            paste: function (event, name, path, type) {
-                alert('element.paste... ' + name + ',' + path + ',' + type);
-            },
-
             delete: function (event, name, path, type) {
                 pages.dialogs.openDeleteElementDialog(name, path, type);
             }
@@ -72,6 +68,29 @@
 
             insert: function (event, name, path, type) {
                 pages.dialogs.openNewElementDialog(name, path, type);
+            },
+
+            paste: function (event, name, path, type) {
+                var clipboard = pages.profile.get('pages', 'elementClipboard');
+                if (path && clipboard && clipboard.path) {
+                    var sourceName = core.getNameFromPath(clipboard.path);
+                    // copy to the target with the same name
+                    core.ajaxPost("/bin/cpm/pages/edit.copyElement.json" + clipboard.path, {
+                        targetPath: path,
+                        targetType: type,
+                        name: sourceName
+                    }, {}, _.bind(function (result) {
+                        // trigger content change
+                        $(document).trigger(pages.const.event.element.inserted, [path, sourceName]);
+                    }, this), function (xhr) {
+                        var msgs = xhr.responseJSON.messages;
+                        if (msgs && msgs.length > 0) {
+                            core.alert(msgs[0].level, msgs[0].text, msgs[0].hint);
+                        } else {
+                            core.alert('error', 'Error', 'Error on copying element');
+                        }
+                    });
+                }
             },
 
             delete: function (event, name, path, type) {

@@ -26,6 +26,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Component(
         property = {
@@ -38,6 +40,8 @@ public class PagesEditService implements EditService {
 
     public static final String PROP_COLLECTION_NAME = "collection/name";
     public static final String PROP_COLLECTION_TYPE = "collection/resourceType";
+
+    public static final Pattern NAME_PATTERN = Pattern.compile("^(.*[^\\d])(\\d+)$");
 
     @Reference
     protected ResourceManager resourceManager;
@@ -180,11 +184,7 @@ public class PagesEditService implements EditService {
             LOG.info("insertElement(" + resourceType + " > " + collection.getPath() + " < " + siblingName + ")...");
         }
 
-        // check name collision before move into a new target collection
-        String newName = name;
-        for (int i = 1; collection.getChild(newName) != null; i++) {
-            newName = name + '_' + i;
-        }
+        String newName = checkNameCollision(collection, name);
 
         // determine the primary type for the designated resource type
         PagesConstants.ComponentType componentType = PagesConstants.ComponentType.typeOf(resolver, null, resourceType);
@@ -262,7 +262,8 @@ public class PagesEditService implements EditService {
         // use the containers collection (can be the target itself) to move the source into
         Resource collection = getContainerCollection(resolver, targetParent);
         pageManager.touch(context, source, null, false);
-        Resource result = resourceManager.moveContentResource(resolver, changeRoot, source, collection, null, before);
+        String newName = checkNameCollision(collection, source.getName());
+        Resource result = resourceManager.moveContentResource(resolver, changeRoot, source, collection, newName, before);
         pageManager.touch(context, collection, null, false);
         return result;
     }
@@ -285,8 +286,27 @@ public class PagesEditService implements EditService {
 
         // use the containers collection (can be the target itself) to move the source into
         Resource collection = getContainerCollection(resolver, targetParent);
-        Resource result = resourceManager.copyContentResource(resolver, source, collection, source.getName(), before);
+        String newName = checkNameCollision(collection, source.getName());
+        Resource result = resourceManager.copyContentResource(resolver, source, collection, newName, before);
         pageManager.touch(context, collection, null, false);
         return result;
+    }
+
+    /**
+     * check name collision before insert into a new target collection
+     */
+    protected String checkNameCollision(Resource collection, String name) {
+        Matcher matcher = NAME_PATTERN.matcher(name);
+        String base = name;
+        int number = 0;
+        if (matcher.matches()) {
+            base = matcher.group(1);
+            number = Integer.parseInt(matcher.group(2));
+        }
+        String newName = name;
+        while (collection.getChild(newName) != null) {
+            newName = base + (++number);
+        }
+        return newName;
     }
 }

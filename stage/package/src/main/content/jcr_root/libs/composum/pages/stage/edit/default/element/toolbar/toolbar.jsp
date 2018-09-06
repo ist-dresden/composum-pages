@@ -4,6 +4,8 @@
 <cpp:editToolbar>
     <cpp:editAction icon="edit" label="Edit" title="Edit the selected Element"
                     action="window.composum.pages.actions.element.edit"/>
+    <cpp:editAction icon="copy" label="Copy" title="Copy the selected element"
+                    action="window.composum.pages.actions.element.copy"/>
     <cpp:editAction icon="trash" label="Delete" title="Delete the selected Element"
                     action="window.composum.pages.actions.element.delete"/>
 </cpp:editToolbar>

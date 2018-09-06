@@ -139,7 +139,7 @@ public class EditServlet extends NodeTreeServlet {
     @Reference
     protected PagesConfiguration pagesConfiguration;
 
-    protected MoveElement moveElementOperation;
+    protected MoveElementOperation moveElementOperation;
 
     @Activate
     private void activate(final BundleContext bundleContext) {
@@ -205,11 +205,11 @@ public class EditServlet extends NodeTreeServlet {
         operations.setOperation(ServletOperationSet.Method.POST, Extension.json,
                 Operation.targetContainers, new GetTargetContainers());
         operations.setOperation(ServletOperationSet.Method.POST, Extension.html,
-                Operation.insertElement, new InsertElement());
+                Operation.insertElement, new InsertElementOperation());
         operations.setOperation(ServletOperationSet.Method.POST, Extension.json,
-                Operation.moveElement, moveElementOperation = new MoveElement());
+                Operation.moveElement, moveElementOperation = new MoveElementOperation());
         operations.setOperation(ServletOperationSet.Method.POST, Extension.json,
-                Operation.copyElement, new CopyElement());
+                Operation.copyElement, new CopyElementOperation());
         operations.setOperation(ServletOperationSet.Method.POST, Extension.json,
                 Operation.createPage, new CreatePage());
         operations.setOperation(ServletOperationSet.Method.POST, Extension.json,
@@ -801,8 +801,7 @@ public class EditServlet extends NodeTreeServlet {
                 Resource before = StringUtils.isNotBlank(beforePath) ? resolver.getResource(beforePath) : null;
 
                 try {
-                    Resource result = editService.moveElement(resolver, resolver.getResource("/content"),
-                            resource, target, before);
+                    Resource result = doIt(resolver, object, target, before);
                     resolver.commit();
 
                     sendResponse(response, result);
@@ -812,7 +811,8 @@ public class EditServlet extends NodeTreeServlet {
                     response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ex.getMessage());
                 }
             } else {
-                LOG.warn(getOperationName() + " not allowed: " + object.getType() + "@" + targetPath);
+                LOG.info(getOperationName() + " not allowed: " + object.getType() + "@" + targetPath);
+                sendNotAllowedChild(request, response, target.getResource(), object.getResource());
             }
         }
 
@@ -826,7 +826,7 @@ public class EditServlet extends NodeTreeServlet {
         protected abstract String getOperationName();
     }
 
-    protected class InsertElement extends ElementResourceOperation {
+    protected class InsertElementOperation extends ElementResourceOperation {
 
         @Override
         protected ResourceManager.ResourceReference getReference(SlingHttpServletRequest request,
@@ -848,13 +848,12 @@ public class EditServlet extends NodeTreeServlet {
         }
     }
 
-    protected class MoveElement extends ElementResourceOperation {
+    protected class MoveElementOperation extends ElementResourceOperation {
 
         @Override
         protected ResourceManager.ResourceReference getReference(SlingHttpServletRequest request,
                                                                  ResourceHandle resource, String targetPath) {
-            return resourceManager.getReference(request.getResourceResolver(),
-                    targetPath + "/" + resource.getName(), resource.getResourceType());
+            return resourceManager.getReference(resource, null);
         }
 
         @Override
@@ -871,13 +870,12 @@ public class EditServlet extends NodeTreeServlet {
         }
     }
 
-    protected class CopyElement extends ElementResourceOperation {
+    protected class CopyElementOperation extends ElementResourceOperation {
 
         @Override
         protected ResourceManager.ResourceReference getReference(SlingHttpServletRequest request,
                                                                  ResourceHandle resource, String targetPath) {
-            return resourceManager.getReference(request.getResourceResolver(),
-                    targetPath + "/" + resource.getName(), resource.getResourceType());
+            return resourceManager.getReference(resource, null);
         }
 
         @Override
