@@ -4,6 +4,8 @@ import com.composum.pages.commons.PagesConstants;
 import com.composum.pages.commons.filter.TemplateFilter;
 import com.composum.pages.commons.model.AbstractModel;
 import com.composum.pages.commons.model.ContentTypeFilter;
+import com.composum.pages.commons.model.File;
+import com.composum.pages.commons.model.Folder;
 import com.composum.pages.commons.model.Page;
 import com.composum.pages.commons.model.Site;
 import com.composum.pages.commons.model.properties.PathPatternSet;
@@ -293,24 +295,26 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
          */
         protected DesignImpl findDesign(Resource designNode, Resource contentNode,
                                         String relativePath, String resourceType, int weight) {
-            String childName = StringUtils.substringBefore(relativePath, "/");
-            Resource contentChild = contentNode.getChild(childName);
-            if (contentChild != null || StringUtils.isNotBlank(resourceType)) {
-                String contentPath = StringUtils.substringAfter(relativePath, "/");
-                // use 'resourceType' if present for the last path segment (potentially not existing)
-                String contentType = contentChild != null && (StringUtils.isNotBlank(contentPath)
-                        || StringUtils.isBlank(resourceType)) ? contentChild.getResourceType() : resourceType;
-                for (Resource designChild : designNode.getChildren()) {
-                    if (isMatchingType(designChild, contentType)) {
-                        if (StringUtils.isBlank(contentPath)) {
-                            return new DesignImpl(designChild, weight);
-                        } else {
-                            return findDesign(designChild, contentChild, contentPath, resourceType, weight + 2);
+            if (contentNode != null) {
+                String childName = StringUtils.substringBefore(relativePath, "/");
+                Resource contentChild = contentNode.getChild(childName);
+                if (contentChild != null || StringUtils.isNotBlank(resourceType)) {
+                    String contentPath = StringUtils.substringAfter(relativePath, "/");
+                    // use 'resourceType' if present for the last path segment (potentially not existing)
+                    String contentType = contentChild != null && (StringUtils.isNotBlank(contentPath)
+                            || StringUtils.isBlank(resourceType)) ? contentChild.getResourceType() : resourceType;
+                    for (Resource designChild : designNode.getChildren()) {
+                        if (isMatchingType(designChild, contentType)) {
+                            if (StringUtils.isBlank(contentPath)) {
+                                return new DesignImpl(designChild, weight);
+                            } else {
+                                return findDesign(designChild, contentChild, contentPath, resourceType, weight + 2);
+                            }
                         }
                     }
-                }
-                if (StringUtils.isNotBlank(contentPath)) {
-                    return findDesign(designNode, contentChild, contentPath, resourceType, weight);
+                    if (StringUtils.isNotBlank(contentPath)) {
+                        return findDesign(designNode, contentChild, contentPath, resourceType, weight);
+                    }
                 }
             }
             return null;
@@ -421,7 +425,8 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
                     template = toTemplate(templateResource);
                 }
             } else {
-                if (!JcrConstants.JCR_CONTENT.equals(resource.getName())) {
+                if (!Folder.isFolder(resource) && !File.isFile(resource) &&
+                        !JcrConstants.JCR_CONTENT.equals(resource.getName())) {
                     Template parentTemplate = getTemplateOf(resource.getParent());
                     if (parentTemplate != null) {
                         ResourceResolver resolver = resource.getResourceResolver();
@@ -504,7 +509,7 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
         }
 
         @Nonnull
-        public String getPrimaryType(){
+        public String getPrimaryType() {
             return ResolverUtil.getTypeProperty(resolver, getType(), PagesConstants.PROP_COMPONENT_TYPE, "");
         }
 

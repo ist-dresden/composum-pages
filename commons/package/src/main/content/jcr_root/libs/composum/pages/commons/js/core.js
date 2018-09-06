@@ -2,6 +2,10 @@
 (function (core) {
     'use strict';
 
+    core.parseBool = function(string){
+        return (/^(0*1|on|true)$/i).test(string);
+    };
+
     core.dnd = core.dnd || {};
 
     (function (dnd) {

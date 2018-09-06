@@ -6,6 +6,7 @@
 .composum-pages-components-element-text {
     @include default-font;
     color: $site-default-text-color;
+    text-align: left;
 
     a,
     a:visited {
@@ -26,6 +27,24 @@
 
         p {
             margin: 0.75rem 0;
+        }
+    }
+
+    &_align-right {
+        text-align: right;
+    }
+
+    &_align-center {
+        text-align: center;
+    }
+
+    &_align-justify {
+
+        .composum-pages-components-element-text {
+
+            &_text {
+                text-align: justify;
+            }
         }
     }
 }

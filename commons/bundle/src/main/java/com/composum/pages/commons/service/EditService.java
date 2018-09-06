@@ -70,12 +70,12 @@ public interface EditService {
      * @param target       the target (the parent resource) of the move
      * @param before       the designated sibling in an ordered target collection
      */
-    void insertComponent(ResourceResolver resolver, String resourceType,
-                         ResourceManager.ResourceReference target, Resource before)
+    Resource insertElement(ResourceResolver resolver, String resourceType,
+                           ResourceManager.ResourceReference target, Resource before)
             throws RepositoryException, PersistenceException;
 
     /**
-     * Moves a resource and adopts all references to the moved resource or one of its children.
+     * Moves aan element and adopts all references to the moved resource or one of its children.
      *
      * @param resolver     the resolver (session context)
      * @param changeRoot   the root element for reference search and change
@@ -84,7 +84,20 @@ public interface EditService {
      * @param before       the designated sibling in an ordered target collection
      * @return the new resource at the target path
      */
-    Resource moveComponent(ResourceResolver resolver, Resource changeRoot,
-                           Resource source, ResourceManager.ResourceReference targetParent, Resource before)
+    Resource moveElement(ResourceResolver resolver, Resource changeRoot,
+                         Resource source, ResourceManager.ResourceReference targetParent, Resource before)
+            throws RepositoryException, PersistenceException;
+
+    /**
+     * Copies an element.
+     *
+     * @param resolver     the resolver (session context)
+     * @param source       the resource to move
+     * @param targetParent the target (a reference to the parent resource) of the move
+     * @param before       the designated sibling in an ordered target collection
+     * @return the new resource at the target path
+     */
+    Resource copyElement(ResourceResolver resolver,
+                         Resource source, ResourceManager.ResourceReference targetParent, Resource before)
             throws RepositoryException, PersistenceException;
 }

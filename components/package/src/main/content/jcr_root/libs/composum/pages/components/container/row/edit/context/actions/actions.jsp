@@ -5,6 +5,10 @@
     <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
         <cpp:treeAction icon="edit" label="Edit" title="Edit the selected Element"
                         action="window.composum.pages.actions.element.edit"/>
+    </div>
+    <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
+        <cpp:treeAction icon="copy" label="Copy" title="Copy the selected row"
+                        action="window.composum.pages.actions.element.copy"/>
         <cpp:treeAction icon="trash" label="Delete" title="Delete the selected Element"
                         action="window.composum.pages.actions.element.delete"/>
     </div>

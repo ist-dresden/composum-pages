@@ -1,3 +1,6 @@
+/**
+ * functions for a content page to invoke edit functions of the Pages edit frame
+ */
 (function (window) {
     window.composum = window.composum || {};
     window.composum.pages = window.composum.pages || {};
@@ -6,8 +9,13 @@
     /**
      * the JS hook for content pages to trigger Pages stage actions and synchronize the page view with the edit state
      */
-    (function (elements, core) { // the small hook to use edit functions in a normal content page
+    (function (elements, pages, core) { // the small hook to use edit functions in a normal content page
         'use strict';
+
+        pages.current = {
+            element: undefined,
+            dnd: {}
+        };
 
         elements.const = _.extend(elements.const || {}, {
             data: { // the data attribute names of a component
@@ -41,12 +49,15 @@
                 element: {
                     select: 'element:select',       // do it!...
                     selected: 'element:selected',   // done.
-                    insert: 'element:insert',       // do it!...
                     inserted: 'element:inserted',   // done.
                     changed: 'element:changed',     // done.
                     deleted: 'element:deleted',     // done.
-                    move: 'element:move',           // do it!...
                     moved: 'element:moved'          // done.
+                },
+                dnd: {
+                    object: 'dnd:object',           // prepare dragging
+                    drop: 'dnd:drop',               // do it!...
+                    finished: 'dnd:finished'        // done, reset state.
                 }
             },
             url: {
@@ -160,5 +171,5 @@
             core.getView(this, elements.OpenEditDialogAction);
         });
 
-    })(window.composum.pages.elements, window.core);
+    })(window.composum.pages.elements, window.composum.pages, window.core);
 })(window);

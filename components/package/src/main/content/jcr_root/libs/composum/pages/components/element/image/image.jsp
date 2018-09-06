@@ -3,10 +3,13 @@
 --%><%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %><%--
 --%><%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %><%--
 --%><cpp:defineObjects/>
-<cpp:element var="image" type="com.composum.pages.commons.model.Image">
+<cpp:element var="image" type="com.composum.pages.commons.model.Image"
+             test="@{image.valid||image.editMode}">
     <c:choose>
         <c:when test="${image.valid}">
-            <cpn:image classes="${imageCssBase}_picture" src="${image.src}" alt="${cpn:text(image.alt)}"/>
+            <div class="${imageCssBase}_frame">
+                <cpn:image classes="${imageCssBase}_picture" src="${image.src}" alt="${cpn:text(image.alt)}"/>
+            </div>
         </c:when>
         <c:otherwise>
             <cpp:include replaceSelectors="placeholder"/>

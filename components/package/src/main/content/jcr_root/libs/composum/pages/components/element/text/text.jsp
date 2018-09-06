@@ -3,11 +3,13 @@
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <cpp:defineObjects/>
-<cpp:element var="text" type="com.composum.pages.components.model.text.Text">
+<cpp:element var="text" type="com.composum.pages.components.model.text.Text"
+             cssAdd="@{textCssBase}_align-@{text.alignment}">
     <c:choose>
         <c:when test="${text.valid}">
             <cpn:text tagName="h${text.titleLevel}" tagClass="${textCssBase}_title" value="${text.title}"/>
-            <cpn:text tagClass="${textCssBase}_text" value="${text.text}" type="rich"/>
+            <cpn:text tagClass="${textCssBase}_text" value="${text.text}"
+                      type="rich"/>
         </c:when>
         <c:otherwise>
             <cpp:include replaceSelectors="placeholder"/>

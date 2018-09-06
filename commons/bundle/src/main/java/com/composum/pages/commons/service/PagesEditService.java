@@ -26,6 +26,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Component(
         property = {
@@ -38,6 +40,8 @@ public class PagesEditService implements EditService {
 
     public static final String PROP_COLLECTION_NAME = "collection/name";
     public static final String PROP_COLLECTION_TYPE = "collection/resourceType";
+
+    public static final Pattern NAME_PATTERN = Pattern.compile("^(.*[^\\d])(\\d+)$");
 
     @Reference
     protected ResourceManager resourceManager;
@@ -91,9 +95,9 @@ public class PagesEditService implements EditService {
      * @return the result of a component type query filtered by the filter object
      */
     @Override
-    public List getAllowedElementTypes(ResourceResolver resolver,
-                                       ResourceManager.ReferenceList containers,
-                                       boolean resourceTypePath) {
+    public List<String> getAllowedElementTypes(ResourceResolver resolver,
+                                               ResourceManager.ReferenceList containers,
+                                               boolean resourceTypePath) {
         ElementTypeFilter filter = new ElementTypeFilter(resolver, containers);
         return getAllowedElementTypes(resolver, containers, filter, resourceTypePath);
     }
@@ -107,23 +111,25 @@ public class PagesEditService implements EditService {
      * @return the result of a component type query filtered by the filter object
      */
     @Override
-    public List getAllowedElementTypes(ResourceResolver resolver,
-                                       ResourceManager.ReferenceList containers,
-                                       ElementTypeFilter filter,
-                                       boolean resourceTypePath) {
+    public List<String> getAllowedElementTypes(ResourceResolver resolver,
+                                               ResourceManager.ReferenceList containers,
+                                               ElementTypeFilter filter,
+                                               boolean resourceTypePath) {
         List<String> allowedTypes = new ArrayList<>();
         QueryBuilder queryBuilder = resolver.adaptTo(QueryBuilder.class);
-        for (String path : resolver.getSearchPath()) {
-            Query query = queryBuilder.createQuery().path(path).type("cpp:Component");
-            try {
-                for (Resource component : query.execute()) {
-                    String type = component.getPath().substring(path.length());
-                    if (!allowedTypes.contains(type) && filter.isAllowedType(type)) {
-                        allowedTypes.add(resourceTypePath ? path + type : type);
+        if (queryBuilder != null) {
+            for (String path : resolver.getSearchPath()) {
+                Query query = queryBuilder.createQuery().path(path).type("cpp:Component");
+                try {
+                    for (Resource component : query.execute()) {
+                        String type = component.getPath().substring(path.length());
+                        if (!allowedTypes.contains(type) && filter.isAllowedType(type)) {
+                            allowedTypes.add(resourceTypePath ? path + type : type);
+                        }
                     }
+                } catch (RepositoryException ex) {
+                    LOG.error(ex.getMessage(), ex);
                 }
-            } catch (RepositoryException ex) {
-                LOG.error(ex.getMessage(), ex);
             }
         }
         return allowedTypes;
@@ -161,8 +167,8 @@ public class PagesEditService implements EditService {
      * @param before       the designated sibling in an ordered target collection
      */
     @Override
-    public void insertComponent(ResourceResolver resolver, String resourceType,
-                                ResourceManager.ResourceReference target, Resource before)
+    public Resource insertElement(ResourceResolver resolver, String resourceType,
+                                  ResourceManager.ResourceReference target, Resource before)
             throws RepositoryException, PersistenceException {
 
         BeanContext context = new BeanContext.Service(resolver);
@@ -175,14 +181,10 @@ public class PagesEditService implements EditService {
         String siblingName = before != null ? before.getName() : null;
 
         if (LOG.isInfoEnabled()) {
-            LOG.info("insertComponent(" + resourceType + " > " + collection.getPath() + " < " + siblingName + ")...");
+            LOG.info("insertElement(" + resourceType + " > " + collection.getPath() + " < " + siblingName + ")...");
         }
 
-        // check name collision before move into a new target collection
-        String newName = name;
-        for (int i = 1; collection.getChild(newName) != null; i++) {
-            newName = name + '_' + i;
-        }
+        String newName = checkNameCollision(collection, name);
 
         // determine the primary type for the designated resource type
         PagesConstants.ComponentType componentType = PagesConstants.ComponentType.typeOf(resolver, null, resourceType);
@@ -191,16 +193,17 @@ public class PagesEditService implements EditService {
         Map<String, Object> properties = new HashMap<>();
         properties.put(JcrConstants.JCR_PRIMARYTYPE, primaryType);
         properties.put(ResourceUtil.PROP_RESOURCE_TYPE, resourceType);
-        resolver.create(collection, newName, properties);
+        Resource result = resolver.create(collection, newName, properties);
         pageManager.touch(context, collection, null, false);
 
         Session session = resolver.adaptTo(Session.class);
-        if (StringUtils.isNotBlank(siblingName)) {
+        if (session != null && StringUtils.isNotBlank(siblingName)) {
             // move to the designated position in the target collection
             session.refresh(true);
             Node parentNode = session.getNode(collection.getPath());
             parentNode.orderBefore(newName, siblingName);
         }
+        return result;
     }
 
     /**
@@ -250,17 +253,60 @@ public class PagesEditService implements EditService {
      * @return the new resource at the target path
      */
     @Override
-    public Resource moveComponent(ResourceResolver resolver, Resource changeRoot,
-                                  Resource source, ResourceManager.ResourceReference targetParent, Resource before)
+    public Resource moveElement(ResourceResolver resolver, Resource changeRoot,
+                                Resource source, ResourceManager.ResourceReference targetParent, Resource before)
             throws RepositoryException, PersistenceException {
 
         BeanContext context = new BeanContext.Service(resolver);
 
         // use the containers collection (can be the target itself) to move the source into
         Resource collection = getContainerCollection(resolver, targetParent);
-        Resource result = resourceManager.moveContentResource(resolver, changeRoot, source, collection, null, before);
         pageManager.touch(context, source, null, false);
+        String newName = checkNameCollision(collection, source.getName());
+        Resource result = resourceManager.moveContentResource(resolver, changeRoot, source, collection, newName, before);
         pageManager.touch(context, collection, null, false);
         return result;
+    }
+
+    /**
+     * Copies an element.
+     *
+     * @param resolver     the resolver (session context)
+     * @param source       the resource to move
+     * @param targetParent the target (a reference to the parent resource) of the move
+     * @param before       the designated sibling in an ordered target collection
+     * @return the new resource at the target path
+     */
+    @Override
+    public Resource copyElement(ResourceResolver resolver,
+                                Resource source, ResourceManager.ResourceReference targetParent, Resource before)
+            throws RepositoryException, PersistenceException {
+
+        BeanContext context = new BeanContext.Service(resolver);
+
+        // use the containers collection (can be the target itself) to move the source into
+        Resource collection = getContainerCollection(resolver, targetParent);
+        String newName = checkNameCollision(collection, source.getName());
+        Resource result = resourceManager.copyContentResource(resolver, source, collection, newName, before);
+        pageManager.touch(context, collection, null, false);
+        return result;
+    }
+
+    /**
+     * check name collision before insert into a new target collection
+     */
+    protected String checkNameCollision(Resource collection, String name) {
+        Matcher matcher = NAME_PATTERN.matcher(name);
+        String base = name;
+        int number = 0;
+        if (matcher.matches()) {
+            base = matcher.group(1);
+            number = Integer.parseInt(matcher.group(2));
+        }
+        String newName = name;
+        while (collection.getChild(newName) != null) {
+            newName = base + (++number);
+        }
+        return newName;
     }
 }

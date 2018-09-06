@@ -7,8 +7,7 @@
     <ul class="${rowCssBase}_list">
         <c:forEach items="${row.columns}" var="column" varStatus="loop">
             <li class="${rowCssBase}_element" draggable="true"
-                data-name="column-${loop.index}" data-path="${row.path}/column-${loop.index}"
-                data-type="composum/pages/components/container/row/column">
+                data-pages-edit-reference='{"name":"column-${loop.index}","path":"${row.path}/column-${loop.index}","type":"composum/pages/components/container/row/column"}'>
                 <cpp:include path="column-${loop.index}" resourceType="composum/pages/components/container/row/column"
                              subtype="edit/tile"/>
             </li>

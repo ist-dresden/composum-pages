@@ -71,12 +71,12 @@ public class ContentTypeFilter {
         PathPatternSet allowedChildren = getAllowedChildTemplates();
         PathPatternSet forbiddenChildren = getForbiddenChildTemplates();
         @SuppressWarnings("UnnecessaryLocalVariable")
-        boolean isAllowed = (targetTemplate != null
-                && (!allowedParents.isValid() || allowedParents.matches(targetTemplate.getPath()))
+        boolean isAllowed = (targetTemplate == null
+                || ((!allowedParents.isValid() || allowedParents.matches(targetTemplate.getPath()))
                 && (!forbiddenParents.isValid() || !forbiddenParents.matches(targetTemplate.getPath())))
                 && (template != null
                 && (!allowedChildren.isValid() || allowedChildren.matches(template.getPath()))
-                && (!forbiddenChildren.isValid() || !forbiddenChildren.matches(template.getPath())));
+                && (!forbiddenChildren.isValid() || !forbiddenChildren.matches(template.getPath()))));
         return isAllowed;
     }
 
@@ -87,12 +87,12 @@ public class ContentTypeFilter {
         PathPatternSet allowedChildren = getAllowedChildTypes();
         PathPatternSet forbiddenChildren = getForbiddenChildTypes();
         @SuppressWarnings("UnnecessaryLocalVariable")
-        boolean isAllowed = (targetTemplate != null
-                && (!allowedParents.isValid() || allowedParents.matches(resourceType))
+        boolean isAllowed = (targetTemplate == null
+                || ((!allowedParents.isValid() || allowedParents.matches(resourceType))
                 && (!forbiddenParents.isValid() || !forbiddenParents.matches(resourceType)))
                 && (template != null
                 && (!allowedChildren.isValid() || allowedChildren.matches(resourceReference.getType()))
-                && (!forbiddenChildren.isValid() || !forbiddenChildren.matches(resourceReference.getType())));
+                && (!forbiddenChildren.isValid() || !forbiddenChildren.matches(resourceReference.getType()))));
         return isAllowed;
     }
 

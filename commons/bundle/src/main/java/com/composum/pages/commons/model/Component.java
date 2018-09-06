@@ -13,16 +13,13 @@ import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.NonExistingResource;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.resource.ResourceWrapper;
-import org.apache.sling.api.resource.SyntheticResource;
 
-import javax.annotation.Nonnull;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.composum.pages.commons.PagesConstants.NODE_TYPE_COMPONENT;
 import static com.composum.pages.commons.servlet.EditServlet.EDIT_RESOURCE_TYPE_KEY;
-import static org.apache.sling.api.resource.Resource.RESOURCE_TYPE_NON_EXISTING;
+import static com.composum.pages.commons.util.ResourceTypeUtil.isSyntheticResource;
 
 /**
  * the delegate class for a component itself (the implementation)
@@ -218,13 +215,6 @@ public class Component extends AbstractModel {
             return matcher.group(1);
         }
         return resourceType;
-    }
-
-    public static boolean isSyntheticResource(@Nonnull Resource resource) {
-        while (resource instanceof ResourceWrapper) {
-            resource = ((ResourceWrapper) resource).getResource();
-        }
-        return resource instanceof SyntheticResource || resource.isResourceType(RESOURCE_TYPE_NON_EXISTING);
     }
 
     /** the type of a component is the the components resource path relative to the resolver root path */

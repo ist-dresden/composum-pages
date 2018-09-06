@@ -9,9 +9,14 @@ import com.composum.sling.core.filter.ResourceFilter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.ResourceWrapper;
+import org.apache.sling.api.resource.SyntheticResource;
 
+import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.apache.sling.api.resource.Resource.RESOURCE_TYPE_NON_EXISTING;
 
 /**
  * the utility to determine resource types for the rendering of editing subtypes of a component
@@ -82,6 +87,13 @@ public class ResourceTypeUtil {
     public static final String DEFAULT_CONTAINER_CONTEXT = EDIT_DEFAULT_ROOT + "container/context/actions";
     public static final String DEFAULT_ELEMENT_CONTAINER = EDIT_DEFAULT_ROOT + "element/context/elements";
     public static final String DEFAULT_CONTEXT_CONTAINER = EDIT_DEFAULT_ROOT + "container/context/elements";
+
+    public static boolean isSyntheticResource(@Nonnull Resource resource) {
+        while (resource instanceof ResourceWrapper) {
+            resource = ((ResourceWrapper) resource).getResource();
+        }
+        return resource instanceof SyntheticResource || resource.isResourceType(RESOURCE_TYPE_NON_EXISTING);
+    }
 
     /**
      * the check to support folders as intermediate nodes in the content tree

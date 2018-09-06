@@ -36,12 +36,10 @@
             },
 
             onClick: function (event) {
-                var name = this.toolbar.data.name;
-                var path = this.toolbar.data.path;
-                var type = this.toolbar.data.type;
+                var reference = this.toolbar.reference;
                 var action = eval(this.$el.data('action'));
                 if (_.isFunction(action)) {
-                    action(event, name, path, type);
+                    action(event, reference.name, reference.path, reference.type);
                 }
             }
         });
@@ -49,6 +47,7 @@
         toolbars.EditToolbar = Backbone.View.extend({
 
             initialize: function (options) {
+                this.reference = new pages.Reference(this);
                 var toolbar = this;
                 this.$('[data-action]').each(function () {
                     var action = core.getWidget(toolbar.$el, this, toolbars.EditAction);

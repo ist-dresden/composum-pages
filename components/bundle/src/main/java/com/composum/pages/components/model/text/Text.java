@@ -8,9 +8,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 
+import javax.annotation.Nonnull;
+
 public class Text extends Element {
 
     public static final String PROP_TEXT = "text";
+    public static final String PROP_ALIGNMENT = "textAlignment";
 
     private transient Integer titleLevel;
     private transient String text;
@@ -29,10 +32,10 @@ public class Text extends Element {
         return titleLevel;
     }
 
-    public static int getTitleLevel(Resource element) {
+    public static int getTitleLevel(@Nonnull Resource element) {
         int titleLevel = 2;
         ResourceResolver resolver = element.getResourceResolver();
-        while (titleLevel < 5 && !Page.isPage(element)) {
+        while (element != null && titleLevel < 5 && !Page.isPage(element)) {
             if (Container.isContainer(resolver, element, null)) {
                 titleLevel++;
             }
@@ -41,10 +44,16 @@ public class Text extends Element {
         return titleLevel < 3 ? 3 : titleLevel;
     }
 
+    @Nonnull
     public String getText() {
         if (text == null) {
             text = RichTextUtil.prepareRichText(context.getRequest(), getProperty(PROP_TEXT, ""));
         }
         return text;
+    }
+
+    @Nonnull
+    public String getAlignment() {
+        return getProperty(PROP_ALIGNMENT, "left");
     }
 }

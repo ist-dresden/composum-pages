@@ -1,3 +1,6 @@
+/**
+ * the 'pages' namespace and core Pages edit frame functions
+ */
 (function (window) {
     window.composum = window.composum || {};
     window.composum.pages = window.composum.pages || {};
@@ -79,6 +82,8 @@
                     selected: 'path:selected'       // done.
                 },
                 dnd: {
+                    object: 'dnd:object',           // prepare dragging
+                    drop: 'dnd:drop',               // do it!...
                     finished: 'dnd:finished'        // done, reset state.
                 }
             },
@@ -89,8 +94,8 @@
                     pageData: '/bin/cpm/pages/edit.pageData.json'
                 },
                 edit: {
-                    insert: '/bin/cpm/pages/edit.insertComponent.json',
-                    move: '/bin/cpm/pages/edit.moveComponent.json'
+                    insert: '/bin/cpm/pages/edit.insertElement.json',
+                    move: '/bin/cpm/pages/edit.moveElement.json'
                 }
             },
             sling: {
@@ -327,198 +332,6 @@
         });
 
         pages.dialogHandler = core.getView('.' + pages.const.editDialogsClass, pages.DialogHandler);
-
-        //
-        // page frame message handler
-        //
-
-        window.addEventListener("message", function (event) {
-            var message = pages.const.event.messagePattern.exec(event.data);
-            if (message) {
-                var args = JSON.parse(message[2]);
-                switch (message[1]) {
-                    case pages.const.event.element.selected:
-                        // transform selection messages into the corresponding event for the edit frame components
-                        if (args.path) {
-                            pages.log.debug('pages.trigger.' + pages.const.event.path.selected + '(' + args.path + ')');
-                            $(document).trigger(pages.const.event.path.selected, [args.path]);
-                            var eventData = [
-                                args.name,
-                                args.path,
-                                args.type
-                            ];
-                            pages.log.debug('pages.trigger.' + pages.const.event.element.selected + '(' + args.path + ')');
-                            $(document).trigger(pages.const.event.element.selected, eventData);
-                        } else {
-                            pages.log.debug('pages.trigger.' + pages.const.event.path.selected + '()');
-                            $(document).trigger(pages.const.event.path.selected, []);
-                            pages.log.debug('pages.trigger.' + pages.const.event.element.selected + '()');
-                            $(document).trigger(pages.const.event.element.selected, []);
-                        }
-                        break;
-                    case pages.const.event.page.containerRefs:
-                        // forward container references list to the edit frame components
-                        pages.log.trace('pages.event.' + pages.const.event.page.containerRefs + '(' + message[2] + ')');
-                        $(document).trigger(pages.const.event.page.containerRefs, [args]);
-                        break;
-                    case pages.const.event.element.insert:
-                        // apply insert action messages from the edited page
-                        pages.log.info('pages.event.element.insert(' + message[2] + ')');
-                        if (args.type && args.target) {
-                            core.ajaxPost(pages.const.url.edit.insert + args.target.path, {
-                                elementType: args.type,
-                                targetType: args.target.type,
-                                before: args.before ? args.before : ''
-                            }, {}, function (result) {
-                                pages.editFrame.reloadPage();
-                            }, function (xhr) {
-                                core.alert('error', 'Error', 'Error on inserting component', xhr);
-                            });
-                        }
-                        break;
-                    case pages.const.event.element.move:
-                        // apply move action messages from the edited page
-                        pages.log.info('pages.event.element.move(' + message[2] + ')');
-                        if (args.source && args.target) {
-                            core.ajaxPost(pages.const.url.edit.move + args.source, {
-                                targetPath: args.target.path,
-                                targetType: args.target.type,
-                                before: args.before ? args.before : ''
-                            }, {}, function (result) {
-                                pages.editFrame.reloadPage();
-                            }, function (xhr) {
-                                core.alert('error', 'Error', 'Error on moving component', xhr);
-                            });
-                        }
-                        break;
-                    case pages.const.event.dialog.edit:
-                        // opens an edit dialog to perform editing of the content of the path transmitted
-                        pages.log.trace('pages.event.dialog.edit(' + message[2] + ')');
-                        if (args.target) {
-                            var url = undefined;
-                            if (args.dialog) {
-                                url = args.dialog.url;
-                            }
-                            pages.dialogs.openEditDialog(args.target.name, args.target.path, args.target.type,
-                                undefined/*context*/, url,
-                                function (dialog) {
-                                    if (args.values) {
-                                        dialog.applyData(args.values);
-                                    }
-                                });
-                        }
-                        break;
-                    case pages.const.event.trigger:
-                        // triggers an event in the frame document context
-                        pages.log.debug('pages.event.' + args.event + '(' + message[2] + ')');
-                        $(document).trigger(args.event, args.data);
-                        break;
-                    case pages.const.event.dialog.alert:
-                        // displays an alert message by opening an alert dialog
-                        pages.log.trace('pages.event.dialog.alert(' + message[2] + ')');
-                        core.alert(args.type, args.title, args.message, args.data);
-                        break;
-                }
-            }
-        }, false);
-
-        //
-        // DnD operations
-        //
-
-        pages.dnd = {
-
-            insertNewElement: function (target, object, context) {
-                if (!context) {
-                    context = {
-                        parent: target.container.data,
-                        before: target.before.data
-                    };
-                }
-                if (context.parent.type === undefined || context.parent.prim === undefined) {
-                    // get resource type and/or primary type of potentially synthetic parent and retry...
-                    var u = pages.const.url.get;
-                    core.ajaxGet(u.edit + u._resourceInfo + target.container.data.path, {
-                        data: {
-                            type: target.container.data.type
-                        }
-                    }, function (data) {
-                        // '' as fallback to prevent from infinity recursion..
-                        if (!context.parent.type) {
-                            context.parent.type = data.type ? data.type : '';
-                        }
-                        if (!context.parent.prim) {
-                            context.parent.prim = data.prim ? data.prim : '';
-                        }
-                        pages.dnd.insertNewElement(target, object, context);
-                    });
-                } else {
-                    var d = pages.dialogs.const.edit.url;
-                    pages.dialogs.openCreateDialog('*', context.parent.path, object.data.type,
-                        context, undefined, undefined,
-                        // if no create dialog exists (not found) create a new instance directly
-                        _.bind(function (name, path, type) {
-                            core.ajaxPost(d.base + d._insert, {
-                                _charset_: 'UTF-8',
-                                resourceType: type,
-                                targetPath: path,
-                                targetType: target.container.data.type
-                            }, {}, _.bind(function () {
-                                pages.log.debug('pages.trigger.' + pages.const.event.element.changed + '(' + path + ')');
-                                $(document).trigger(pages.const.event.element.changed, [path]);
-                            }, this));
-                        }, this));
-                }
-            }
-        };
-
-        //
-        // clipboard operations
-        //
-
-        /**
-         * stored the path in the profile for a later 'paste' which will copy the content of the stored path
-         */
-        pages.clipboardCopyContent = function (path) {
-            if (!path) {
-                path = this.getCurrentPath();
-            }
-            pages.profile.set('pages', 'contentClipboard', {
-                path: path
-            });
-        };
-
-        /**
-         * copy path from clipboard to the target path, open copy dialog if an error is occurring
-         * @param path the target path for the copy operation
-         */
-        pages.clipboardPasteContent = function (path) {
-            var clipboard = pages.profile.get('pages', 'contentClipboard');
-            if (path && clipboard && clipboard.path) {
-                var name = core.getNameFromPath(clipboard.path);
-                // copy to the target with the same name
-                core.ajaxPost("/bin/cpm/pages/edit.copyContent.json" + clipboard.path, {
-                    targetPath: path,
-                    name: name
-                }, {}, _.bind(function (result) {
-                    // trigger content change
-                    $(document).trigger(pages.const.event.content.inserted, [path, name]);
-                }, this), _.bind(function (result) {
-                    // on error - display copy dialog initialized with the known data
-                    var data = result.responseJSON;
-                    pages.dialogs.openCopyContentDialog(undefined, clipboard.path, undefined,
-                        _.bind(function (dialog) {
-                            dialog.setValues(clipboard.path, path);
-                            if (data.messages) {
-                                dialog.validationHint(data.messages[0].level, null, data.messages[0].text, data.messages[0].hint);
-                            } else if (data.response) {
-                                dialog.validationHint(data.response.level, null, data.response.text);
-                            }
-                            dialog.hintsMessage('error');
-                        }, this));
-                }, this));
-            }
-        };
 
         //
         // login dialog and session expired (unauthorized) fallback

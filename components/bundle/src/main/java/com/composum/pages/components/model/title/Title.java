@@ -9,7 +9,7 @@ public class Title extends ImageRelatedElement {
     private transient String style;
 
     public boolean isValid() {
-        return StringUtils.isNotBlank(getTitle());
+        return StringUtils.isNotBlank(getTitle()) || StringUtils.isNotBlank(getSubtitle());
     }
 
     public String getSubtitle() {

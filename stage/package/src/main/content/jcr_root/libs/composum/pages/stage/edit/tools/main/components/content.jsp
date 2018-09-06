@@ -6,7 +6,7 @@
     <ul class="${componentsCssBase}_list">
         <c:forEach items="${components.componentList}" var="componentType">
             <li class="${componentsCssBase}_item" draggable="true"
-                data-name="${componentType.name}" data-path="${componentType.path}" data-type="${componentType.type}">
+                data-pages-edit-reference='{"name":"${componentType.name}","path":"${componentType.path}","type":"${componentType.type}"}'>
                 <cpp:include path="${componentType.path}" resourceType="${componentType.path}"
                              subtype="edit/tile" replaceSelectors="type"/>
             </li>

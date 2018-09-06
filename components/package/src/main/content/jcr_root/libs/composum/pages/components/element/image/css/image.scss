@@ -1,8 +1,16 @@
 @charset "UTF-8";
 
 .composum-pages-components-element-image {
+    display: table;
+    margin: 10px auto;
+    border: 1px solid #ccc;
+    padding: 5px;
+
+    &_frame {
+        display: inline-block;
+    }
 
     &_picture {
-        max-width: 100%;
+        width: 100%;
     }
 }

@@ -46,7 +46,7 @@
                     _delete: {
                         page: '.deletePage.json'
                     },
-                    _insert: '.insertComponent.html',
+                    _insert: '.insertElement.html',
                     _isTemplate: '.isTemplate.json',
                     _dialog: {
                         load: '.editDialog',
@@ -65,6 +65,7 @@
                     _tabContent: '_tabbed-content',
                     _parentPrimType: '_parent-primaryType',
                     _parentResType: '_parent-resourceType',
+                    _order: '_child-order',
                     _pathField: '_path',
                     _deleteButton: '_button-delete',
                     _submitButton: '_button-submit',
@@ -354,18 +355,25 @@
             afterLoad: function (name, path, type, context) {
                 var c = dialogs.const.edit.css;
                 if (context) {
-                    if (context.parent) {
+                    if (context.parent && context.parent.synthetic) {
                         // set parent resource types if such (hidden) fields are available
                         // the parant data values are transmitted from the new element dialog
                         if (context.parent.type) {
-                            var parentResType = this.$('.' + c.base + c._parentResType);
-                            parentResType.attr('name',
+                            var $parentResType = this.$('.' + c.base + c._parentResType);
+                            $parentResType.attr('name',
                                 context.parent.path + '/sling:resourceType').attr('value', context.parent.type);
                         }
                         if (context.parent.prim) {
-                            var parentPrimType = this.$('.' + c.base + c._parentPrimType);
-                            parentPrimType.attr('name',
+                            var $parentPrimType = this.$('.' + c.base + c._parentPrimType);
+                            $parentPrimType.attr('name',
                                 context.parent.path + '/jcr:primaryType').attr('value', context.parent.prim);
+                        }
+                    }
+                    if (context.before && context.before.path) {
+                        var siblingName = core.getNameFromPath(context.before.path);
+                        if (siblingName) {
+                            var $order = this.$('.' + c.base + c._order);
+                            $order.attr('value', 'before ' + siblingName);
                         }
                     }
                 }

@@ -6,6 +6,26 @@
 /*
  * default (bootstrap -sm,md-)
  */
+
+.composum-pages-components-element-title {
+
+    &_text {
+        padding: $column-title-padding;
+        text-align: left;
+        background: none;
+    }
+
+    &_title {
+        margin: $column-title-margin 0;
+        font-size: $column-title-font-size;
+    }
+
+    &_subtitle {
+        margin: $column-subtitle-margin 0;
+        font-size: $column-subtitle-font-size;
+    }
+}
+
 .composum-pages-components-page {
 
     &_content {
@@ -17,22 +37,18 @@
                 .composum-pages-components-element-title {
 
                     &_text {
-                        @include inline-title;
+                        padding: $column-title-padding;
                         text-align: left;
                         background: none;
                     }
 
-                    &_title,
-                    &_subtitle {
-                        margin: 0;
-                    }
-
                     &_title {
+                        margin: $column-title-margin 0;
                         font-size: $column-title-font-size;
                     }
 
                     &_subtitle {
-                        margin-top: $column-title-gap;
+                        margin: $column-subtitle-margin 0;
                         font-size: $column-subtitle-font-size;
                     }
                 }
@@ -59,24 +75,20 @@
             .composum-pages-components-element-title {
 
                 &_text {
-                    @include title-font;
                     padding: $main-title-padding;
-                    background-color: $main-title-background-color;
+                    @include title-font;
                     text-align: center;
                     color: $main-title-text-color;
-                }
-
-                &_title,
-                &_subtitle {
-                    margin: 0;
+                    background-color: $main-title-background-color;
                 }
 
                 &_title {
+                    margin: $main-title-margin 0;
                     font-size: $main-title-font-size;
                 }
 
                 &_subtitle {
-                    margin-top: $main-title-padding / 2;
+                    margin: $main-subtitle-margin 0;
                     font-size: $main-subtitle-font-size;
                 }
             }
@@ -92,6 +104,18 @@
     .composum-pages-components-page {
 
         &_content {
+
+            &_top {
+
+                .composum-pages-components-element-title {
+                    height: 70px;
+                    padding: 6px 24px 12px;
+
+                    &_title {
+                        font-size: $site-title-font-size * (3/4);
+                    }
+                }
+            }
 
             &_main {
 
