@@ -3,11 +3,12 @@
  *
  * This software may be modified and distributed under the terms of the MIT license.
  */
-package com.composum.pages.components.model.image;
+package com.composum.pages.options.assets.model;
 
 import com.composum.assets.commons.AssetsConstants;
 import com.composum.assets.commons.handle.AssetMetaData;
 import com.composum.assets.commons.handle.ImageAsset;
+import com.composum.pages.components.model.image.AbstractImage;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.ResourceHandle;
 import org.apache.commons.lang3.StringUtils;

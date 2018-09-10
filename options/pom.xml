@@ -15,6 +15,7 @@
     <name>Composum Pages Options...</name>
 
     <modules>
+        <module>assets</module>
         <module>microsite</module>
     </modules>
 

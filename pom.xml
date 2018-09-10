@@ -384,14 +384,6 @@
                 <scope>provided</scope>
             </dependency>
 
-            <!-- Composum Assets -->
-            <dependency>
-                <groupId>com.composum.sling.assets</groupId>
-                <artifactId>composum-sling-assets-commons-bundle</artifactId>
-                <version>1.0.0-SNAPSHOT</version>
-                <scope>provided</scope>
-            </dependency>
-
             <!-- Composum Platform -->
             <dependency>
                 <groupId>com.composum.sling.platform</groupId>

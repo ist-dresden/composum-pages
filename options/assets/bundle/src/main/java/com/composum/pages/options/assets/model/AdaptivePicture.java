@@ -3,7 +3,7 @@
  *
  * This software may be modified and distributed under the terms of the MIT license.
  */
-package com.composum.pages.components.model.image;
+package com.composum.pages.options.assets.model;
 
 import com.composum.sling.core.BeanContext;
 import org.apache.sling.api.resource.Resource;
