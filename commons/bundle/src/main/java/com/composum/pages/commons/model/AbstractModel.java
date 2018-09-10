@@ -228,10 +228,9 @@ public abstract class AbstractModel implements SlingBean, Model {
 
     public AccessMode getAccessMode() {
         if (accessMode == null) {
-            String value = (String) context.getRequest().getAttribute(ACCESS_MODE_KEY);
-            accessMode = StringUtils.isNotBlank(value)
-                    ? AccessMode.valueOf(value)
-                    : null;
+            Object value = context.getRequest().getAttribute(ACCESS_MODE_KEY);
+            accessMode = value instanceof AccessMode ? (AccessMode) value
+                    : (value != null ? AccessMode.valueOf(value.toString()) : null);
         }
         return accessMode;
     }

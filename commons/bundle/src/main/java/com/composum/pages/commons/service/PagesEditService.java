@@ -209,6 +209,7 @@ public class PagesEditService implements EditService {
     /**
      * Determine a container element collection resource (can be the container itself).
      */
+    @Nonnull
     protected Resource getContainerCollection(ResourceResolver resolver, ResourceManager.ResourceReference target)
             throws RepositoryException, PersistenceException {
 
@@ -256,15 +257,26 @@ public class PagesEditService implements EditService {
     public Resource moveElement(ResourceResolver resolver, Resource changeRoot,
                                 Resource source, ResourceManager.ResourceReference targetParent, Resource before)
             throws RepositoryException, PersistenceException {
+        Resource result = null;
 
         BeanContext context = new BeanContext.Service(resolver);
+        Resource currentParent = source.getParent();
+        if (currentParent != null) {
 
-        // use the containers collection (can be the target itself) to move the source into
-        Resource collection = getContainerCollection(resolver, targetParent);
-        pageManager.touch(context, source, null, false);
-        String newName = checkNameCollision(collection, source.getName());
-        Resource result = resourceManager.moveContentResource(resolver, changeRoot, source, collection, newName, before);
-        pageManager.touch(context, collection, null, false);
+            // use the containers collection (can be the target itself) to move the source into
+            Resource collection = getContainerCollection(resolver, targetParent);
+            boolean isAnotherParent = !collection.getPath().equals(currentParent.getPath());
+
+            String newName = source.getName();
+            if (isAnotherParent) {
+                pageManager.touch(context, currentParent, null, false);
+                newName = checkNameCollision(collection, newName);
+            }
+
+            result = resourceManager.moveContentResource(resolver, changeRoot, source, collection,
+                    isAnotherParent ? newName : null, before);
+            pageManager.touch(context, collection, null, false);
+        }
         return result;
     }
 
