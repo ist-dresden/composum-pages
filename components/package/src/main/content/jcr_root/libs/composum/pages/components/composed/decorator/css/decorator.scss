@@ -32,6 +32,23 @@
         margin: -0.75rem 0;
     }
 
+    &_none {
+        margin: 0.5rem 0;
+        border: none;
+        border-radius: 0;
+        -webkit-box-shadow: none;
+        -moz-box-shadow: none;
+        box-shadow: none;
+
+        .composum-pages-components-composed-decorator {
+
+            &_body {
+                border: none;
+                padding: 0 11px;
+            }
+        }
+    }
+
     &_info {
         color: $bootstrap-color-info;
         background-color: $bootstrap-background-info;
