@@ -179,6 +179,8 @@
                 this.$goUp = this.$('.' + c.base + c._go_up);
                 this.$select = this.$('.' + c.base + c._select);
                 this.$content = this.$('.' + c.base + c._content);
+                this.$moveUp.click(_.bind(this.moveUp, this));
+                this.$moveDown.click(_.bind(this.moveDown, this));
                 this.$goUp.click(_.bind(this.selectContainer, this));
                 this.$select.click(_.bind(this.selectElement, this));
                 $(document).on(e.element.selected + id, _.bind(this.onElementSelected, this));
@@ -342,6 +344,55 @@
                             this.actions.reference = reference;
                         }, this));
                 }
+            },
+
+            moveUp: function (event) {
+                event.preventDefault();
+                if (this.selection && this.selection !== this.reference) {
+                    var element = this.getElement({path: this.selection});
+                    if (element) {
+                        var before = this.getPrevSibling(element);
+                        if (before) {
+                            pages.actions.dnd.doDropMove({
+                                container: {
+                                    reference: this.reference
+                                },
+                                before: {
+                                    reference: before.reference
+                                }
+                            }, {
+                                type: 'element',
+                                reference: element.reference
+                            });
+                        }
+                    }
+                }
+                return false;
+            },
+
+            moveDown: function (event) {
+                event.preventDefault();
+                if (this.selection && this.selection !== this.reference) {
+                    var element = this.getElement({path: this.selection});
+                    if (element) {
+                        var next = this.getNextSibling(element);
+                        if (next) {
+                            var before = this.getNextSibling(next);
+                            pages.actions.dnd.doDropMove({
+                                container: {
+                                    reference: this.reference
+                                },
+                                before: before ? {
+                                    reference: before.reference
+                                } : undefined
+                            }, {
+                                type: 'element',
+                                reference: element.reference
+                            });
+                        }
+                    }
+                }
+                return false;
             },
 
             // DnD...

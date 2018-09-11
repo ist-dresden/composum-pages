@@ -10,6 +10,7 @@
         pages.const = _.extend(pages.const || {}, {
             commons: {
                 data: { // the data attribute names of a component
+                    encoded: 'pages-edit-encoded',
                     reference: 'pages-edit-reference',
                     name: 'pages-edit-name',
                     path: 'pages-edit-path',
@@ -38,7 +39,14 @@
             }
             if (nameOrData instanceof jQuery) {
                 var d = pages.const.commons.data;
-                var reference = nameOrData.data(d.reference);
+                var reference = undefined;
+                var encoded = nameOrData.data(d.encoded);
+                if (encoded) {
+                    reference = JSON.parse(atob(encoded));
+                } else {
+                    reference = nameOrData.data(d.reference);
+
+                }
                 if (reference) {
                     _.extend(this, reference);
                 } else {

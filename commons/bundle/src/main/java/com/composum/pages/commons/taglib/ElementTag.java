@@ -29,12 +29,6 @@ public class ElementTag extends AbstractWrappingTag {
 
     public static final String STYLE_PROPERTY = "style";
 
-    public static final String PAGES_EDIT_DATA = "data-pages-edit";
-    public static final String PAGES_EDIT_DATA_NAME = PAGES_EDIT_DATA + "-name";
-    public static final String PAGES_EDIT_DATA_PATH = PAGES_EDIT_DATA + "-path";
-    public static final String PAGES_EDIT_DATA_TYPE = PAGES_EDIT_DATA + "-type";
-    public static final String PAGES_EDIT_DATA_PRIM = PAGES_EDIT_DATA + "-prim";
-
     protected String id;
     protected String tagId;
     protected String tagName;
@@ -95,7 +89,7 @@ public class ElementTag extends AbstractWrappingTag {
     /**
      * builds the list of CSS classes for the wrapping tag
      */
-    protected void collectCssClasses( TagCssClasses.CssSet collection) {
+    protected void collectCssClasses(TagCssClasses.CssSet collection) {
         ValueMap values = resource.adaptTo(ValueMap.class);
         if (values != null) {
             collection.add(values.get(STYLE_PROPERTY, ""));
@@ -117,9 +111,8 @@ public class ElementTag extends AbstractWrappingTag {
         }
         super.collectAttributes(attributeSet);
         if (isEditMode()) {
-            attributeSet.put(PAGES_EDIT_DATA_NAME, resource.getName());
             attributeSet.put(PAGES_EDIT_DATA_PATH, resource.getPath());
-            attributeSet.put(PAGES_EDIT_DATA_TYPE, resource.getResourceType());
+            addEditAttributes(attributeSet, resource, resource.getResourceType());
             if (isDraggable()) {
                 attributeSet.put("draggable", "true");
             }
