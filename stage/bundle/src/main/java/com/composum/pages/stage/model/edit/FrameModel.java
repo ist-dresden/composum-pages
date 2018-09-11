@@ -89,7 +89,7 @@ public class FrameModel extends GenericModel {
     /**
      * retrieves the path of the element to handle by the frame element using the suffix of the request
      */
-    public static String getDelegatePath(BeanContext context) {
+    public String getDelegatePath(BeanContext context) {
         SlingHttpServletRequest request = context.getRequest();
         String delegatePath = request.getRequestPathInfo().getSuffix();
         if (StringUtils.isBlank(delegatePath)) {
