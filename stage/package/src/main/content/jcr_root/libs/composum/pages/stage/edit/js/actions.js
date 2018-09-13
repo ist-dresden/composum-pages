@@ -18,6 +18,15 @@
 
         actions.const = _.extend(actions.const || {}, {});
 
+        actions.trigger = function (event, action, reference) {
+            if (_.isString(action)) {
+                action = eval(action);
+            }
+            if (_.isFunction(action)) {
+                action(event, reference.name, reference.path, reference.type);
+            }
+        };
+
         actions.dialog = {
 
             /**

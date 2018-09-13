@@ -14,9 +14,9 @@ import java.io.IOException;
 
 import static com.composum.pages.commons.taglib.ElementTag.DEFAULT_TAG;
 import static com.composum.pages.commons.taglib.ElementTag.NONE_TAG;
-import static com.composum.pages.commons.taglib.ElementTag.PAGES_EDIT_DATA;
-import static com.composum.pages.commons.taglib.ElementTag.PAGES_EDIT_DATA_PATH;
-import static com.composum.pages.commons.taglib.ElementTag.PAGES_EDIT_DATA_TYPE;
+import static com.composum.pages.commons.taglib.ModelTag.PAGES_EDIT_DATA;
+import static com.composum.pages.commons.taglib.ModelTag.PAGES_EDIT_DATA_PATH;
+import static com.composum.pages.commons.taglib.ModelTag.PAGES_EDIT_DATA_TYPE;
 
 /**
  * the general action tag to embed action calls to the edit layer into a page

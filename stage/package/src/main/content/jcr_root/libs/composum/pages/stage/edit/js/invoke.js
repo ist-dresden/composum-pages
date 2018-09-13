@@ -32,13 +32,16 @@
                 element: 'composum-pages-element',
                 action: 'composum-pages-action'
             },
-            event: { // event handling rules and keys (inter frame communication)
-                messagePattern: new RegExp('^([^{\\[]+)([{\\[].*[}\\]])$'),
-                trigger: 'event:trigger',
+            trigger: {
+                event: 'trigger:event',
+                action: 'trigger:action',
                 dialog: {
                     edit: 'dialog:edit',
                     alert: 'dialog:alert'
-                },
+                }
+            },
+            event: { // event handling rules and keys (inter frame communication)
+                messagePattern: new RegExp('^([^{\\[]+)([{\\[].*[}\\]])$'),
                 site: {
                     changed: 'site:changed'         // done.
                 },
@@ -77,7 +80,7 @@
          */
         elements.alertMessage = function (type, title, message, data) {
             if (elements.log.getLevel() <= log.levels.DEBUG) {
-                elements.log.debug('elements.postMessage.' + elements.const.event.dialog.alert + '('
+                elements.log.debug('elements.postMessage.' + elements.const.trigger.dialog.alert + '('
                     + type + ','
                     + title + ','
                     + message + ','
@@ -85,7 +88,7 @@
 
             }
             // call the action in the 'edit' layer of the UI
-            parent.postMessage(elements.const.event.dialog.alert
+            parent.postMessage(elements.const.trigger.dialog.alert
                 + JSON.stringify({
                     type: type,
                     title: title,
@@ -101,16 +104,36 @@
          */
         elements.triggerEvent = function (event, data) {
             if (elements.log.getLevel() <= log.levels.DEBUG) {
-                elements.log.debug('elements.postMessage.' + elements.const.event.trigger + '('
+                elements.log.debug('elements.postMessage.' + elements.const.trigger.event + '('
                     + event + ','
                     + data + ')');
 
             }
             // trigger the event in the 'edit' layer of the UI
-            parent.postMessage(elements.const.event.trigger
+            parent.postMessage(elements.const.trigger.event
                 + JSON.stringify({
                     event: event,
                     data: data
+                }), '*');
+        };
+
+        /**
+         * perform an action in the edit frame
+         * @param event
+         * @param data
+         */
+        elements.triggerAction = function (action, reference) {
+            if (elements.log.getLevel() <= log.levels.DEBUG) {
+                elements.log.debug('elements.postMessage.' + elements.const.trigger.action + '('
+                    + action + ','
+                    + reference + ')');
+
+            }
+            // trigger the action in the 'edit' layer of the UI
+            parent.postMessage(elements.const.trigger.action
+                + JSON.stringify({
+                    action: action,
+                    reference: reference
                 }), '*');
         };
 
@@ -122,14 +145,14 @@
          */
         elements.openEditDialog = function (target, dialog, values) {
             if (elements.log.getLevel() <= log.levels.DEBUG) {
-                elements.log.debug('elements.postMessage.' + elements.const.dialog.edit + '('
+                elements.log.debug('elements.postMessage.' + elements.const.trigger.dialog.edit + '('
                     + target + ','
                     + dialog + ','
                     + values + ')');
 
             }
             // call the action in the 'edit' layer of the UI
-            parent.postMessage(elements.const.event.dialog.edit
+            parent.postMessage(elements.const.trigger.dialog.edit
                 + JSON.stringify({
                     target: target,
                     dialog: dialog,

@@ -5,16 +5,22 @@ import com.composum.pages.commons.model.GenericModel;
 import com.composum.pages.commons.model.Model;
 import com.composum.pages.commons.model.properties.Languages;
 import com.composum.pages.commons.request.DisplayMode;
+import com.composum.pages.commons.service.ResourceManager;
 import com.composum.pages.commons.servlet.EditServlet;
 import com.composum.pages.commons.util.AttributeSet;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.cpnl.ComponentTag;
 import com.composum.sling.cpnl.CpnlElFunctions;
+import com.google.gson.JsonObject;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.DynamicAttributes;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 import static com.composum.pages.commons.util.TagCssClasses.cssOfType;
@@ -25,6 +31,11 @@ import static com.composum.pages.commons.util.TagCssClasses.cssOfType;
 public class ModelTag extends ComponentTag implements DynamicAttributes {
 
     public static final String DEFAULT_VAR_NAME = "target";
+
+    public static final String PAGES_EDIT_DATA = "data-pages-edit";
+    public static final String PAGES_EDIT_DATA_ENCODED = PAGES_EDIT_DATA + "-encoded";
+    public static final String PAGES_EDIT_DATA_PATH = PAGES_EDIT_DATA + "-path";
+    public static final String PAGES_EDIT_DATA_TYPE = PAGES_EDIT_DATA + "-type";
 
     protected String cssBase;
     protected Object test;
@@ -234,6 +245,28 @@ public class ModelTag extends ComponentTag implements DynamicAttributes {
 
     public String i18n(String text) {
         return CpnlElFunctions.i18n(request, text);
+    }
+
+    /**
+     * builds the list of tag attributes for the wrapping tag
+     */
+    protected void addEditAttributes(@Nonnull Map<String, String> attributeSet,
+                                     @Nonnull Resource resource, @Nullable String resourceType) {
+        ResourceManager resourceManager = context.getService(ResourceManager.class);
+        ResourceManager.ResourceReference reference = resourceManager.getReference(resource, resourceType);
+        String name = resource.getName();
+        String path = resource.getPath();
+        String type = reference.getType();
+        String prim = reference.getPrimaryType();
+        JsonObject data = new JsonObject();
+        data.addProperty("name", name);
+        data.addProperty("path", path);
+        data.addProperty("type", type);
+        if (StringUtils.isNotBlank(prim)) {
+            data.addProperty("prim", prim);
+        }
+        attributeSet.put(PAGES_EDIT_DATA_ENCODED,
+                Base64.encodeBase64String(data.toString().getBytes(StandardCharsets.UTF_8)));
     }
 
     //

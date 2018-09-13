@@ -14,10 +14,6 @@ import java.util.Map;
 
 import static com.composum.pages.commons.servlet.EditServlet.EDIT_RESOURCE_KEY;
 import static com.composum.pages.commons.servlet.EditServlet.EDIT_RESOURCE_TYPE_KEY;
-import static com.composum.pages.commons.taglib.ElementTag.PAGES_EDIT_DATA_NAME;
-import static com.composum.pages.commons.taglib.ElementTag.PAGES_EDIT_DATA_PATH;
-import static com.composum.pages.commons.taglib.ElementTag.PAGES_EDIT_DATA_PRIM;
-import static com.composum.pages.commons.taglib.ElementTag.PAGES_EDIT_DATA_TYPE;
 
 /**
  * the EditDialogTag creates the HTML code for an edit dialog of a component
@@ -181,10 +177,7 @@ public abstract class AbstractEditTag extends AbstractWrappingTag {
         Resource resourceToEdit = getReferenceResource();
         if (resourceToEdit != null) {
             // embed reference data as data attributes of the dialog DOM element
-            attributeSet.put(PAGES_EDIT_DATA_NAME, resourceToEdit.getName());
-            attributeSet.put(PAGES_EDIT_DATA_PATH, resourceToEdit.getPath());
-            attributeSet.put(PAGES_EDIT_DATA_TYPE, getResourceType());
-            attributeSet.put(PAGES_EDIT_DATA_PRIM, getPrimaryType());
+            addEditAttributes(attributeSet, resourceToEdit, getResourceType());
         }
     }
 }

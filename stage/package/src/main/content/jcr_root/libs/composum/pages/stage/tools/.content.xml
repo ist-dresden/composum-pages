@@ -67,14 +67,6 @@
             hint="Modified Pages to finalize"
             title="Modified"
             order="{Long}44"/>
-    <pageContext
-            jcr:primaryType="nt:unstructured"
-            sling:resourceType="composum/pages/stage/edit/tools/page/context"
-            categories="[context,edit,develop,page]"
-            iconClass="globe"
-            hint="Page Properties"
-            title="Page"
-            order="{Long}42"/>
     <pageVersions
             jcr:primaryType="nt:unstructured"
             sling:resourceType="composum/pages/stage/edit/tools/page/versions"
@@ -83,6 +75,14 @@
             hint="Versions History"
             title="Versions"
             order="{Long}50"/>
+    <pageContent
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="composum/pages/stage/edit/tools/page/content"
+            _categories="[context,edit,develop,page]"
+            iconClass="cubes"
+            hint="Page Content"
+            title="Content"
+            order="{Long}60"/>
     <pageComments
             jcr:primaryType="nt:unstructured"
             sling:resourceType="composum/pages/stage/edit/tools/page/comments"
@@ -90,7 +90,7 @@
             iconClass="commenting-o"
             hint="Comments"
             title="Comments"
-            order="{Long}60"/>
+            order="{Long}70"/>
     <pageStatistics
             jcr:primaryType="nt:unstructured"
             sling:resourceType="composum/pages/stage/edit/tools/page/statistics"
@@ -98,7 +98,7 @@
             iconClass="bar-chart-o"
             hint="Access Statistics"
             title="Statistics"
-            order="{Long}70"/>
+            order="{Long}80"/>
     <containerElements
             jcr:primaryType="nt:unstructured"
             sling:resourceType="composum/pages/stage/edit/tools/container/elements"
@@ -110,11 +110,11 @@
     <somethingContext
             jcr:primaryType="nt:unstructured"
             sling:resourceType="composum/pages/stage/edit/tools/something/context"
-            categories="[context,edit,develop,something]"
+            _categories="[context,edit,develop,something]"
             iconClass="puzzle-piece"
             hint="Resource Properties"
             title="Resource"
-            order="{Long}48"/>
+            order="{Long}999"/>
     <componentHelp
             jcr:primaryType="nt:unstructured"
             sling:resourceType="composum/pages/stage/edit/tools/main/support"

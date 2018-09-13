@@ -149,7 +149,7 @@ public interface PagesConstants {
         public static ComponentType typeOf(ResourceResolver resolver, Resource resource, String typeHint) {
             if (Site.isSite(resource)) {
                 return site;
-            } else if (Page.isPage(resource)) {
+            } else if (Page.isPage(resource) || Page.isPageContent(resource)) {
                 return page;
             } else if (Container.isContainer(resolver, resource, typeHint)) {
                 return container;
