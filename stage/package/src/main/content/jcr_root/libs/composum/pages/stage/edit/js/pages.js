@@ -42,7 +42,6 @@
             },
             event: {
                 messagePattern: new RegExp('^([^{\\[]+)([{\\[].*[}\\]])$'),
-                trigger: 'event:trigger',
                 ready: 'pages:ready',
                 scope: {
                     changed: 'scope:changed'

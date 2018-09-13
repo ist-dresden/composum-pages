@@ -24,7 +24,7 @@ public class ContainerTag extends ElementTag {
     @Override
     public int doStartTag() throws JspException {
         super.doStartTag();
-        if (isEditMode() && component instanceof Container) {
+        if (isEditMode() && isWithTag() && component instanceof Container) {
             Container container = (Container) component;
             try {
                 out.append("<div class=\"composum-pages-container_start\">");
@@ -47,7 +47,7 @@ public class ContainerTag extends ElementTag {
 
     @Override
     public int doEndTag() throws JspException {
-        if (isEditMode() && component instanceof Container) {
+        if (isEditMode() && isWithTag() && component instanceof Container) {
             Container container = (Container) component;
             try {
                 out.append("<div class=\"composum-pages-container_end\">");

@@ -4,5 +4,5 @@
         jcr:description="an image with collapsible hotspots and short annotations"
         jcr:title="Illustration"
         componentGroup="Images"
-        sling:resourceSuperType="composum/pages/components/container"
+        sling:resourceSuperType="composum/pages/components/container/parsys"
         allowedElements="[composum/pages/components/composed/illustration/annotation]"/>

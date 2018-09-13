@@ -67,8 +67,16 @@ public class ElementTag extends AbstractWrappingTag {
     /**
      * the tag name to render the wrapping tag (default: 'div')
      */
+    public String getTagName() {
+        return tagName;
+    }
+
     public void setTagName(String name) {
         tagName = name;
+    }
+
+    public boolean isWithTag() {
+        return !NONE_TAG.equalsIgnoreCase(getTagName());
     }
 
     /**
@@ -183,7 +191,7 @@ public class ElementTag extends AbstractWrappingTag {
      */
     @Override
     protected void renderTagStart() throws IOException {
-        if (!NONE_TAG.equalsIgnoreCase(tagName)) {
+        if (isWithTag()) {
             out.append("<").append(tagName).append(" ").append(getAttributes()).append(">\n");
         }
     }
@@ -193,7 +201,7 @@ public class ElementTag extends AbstractWrappingTag {
      */
     @Override
     protected void renderTagEnd() throws IOException {
-        if (!NONE_TAG.equalsIgnoreCase(tagName)) {
+        if (isWithTag()) {
             out.append("</").append(tagName).append(">\n");
         }
     }

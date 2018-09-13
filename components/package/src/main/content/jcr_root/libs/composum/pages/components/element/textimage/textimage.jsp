@@ -7,7 +7,7 @@
              cssAdd="@{textImageCssBase}_@{textImage.floatingText?'floating':'block'} @{textImageCssBase}_@{textImage.imagePosition}">
     <c:if test="${!textImage.imageBottom}">
         <div class="${textImageCssBase}_image">
-            <cpp:include path="image" resourceType="composum/pages/components/element/image"/>
+            <cpp:include path="image" resourceType="composum/pages/components/element/image" mode="none"/>
         </div>
     </c:if>
     <c:choose>
