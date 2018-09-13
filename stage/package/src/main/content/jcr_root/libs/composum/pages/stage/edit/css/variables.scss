@@ -30,13 +30,12 @@ $dnd-target-frame-color: rgba(255, 155, 55, 0.5);
 $dnd-target-over-color: rgba(85, 55, 255, 0.8);
 $dnd-target-over-background: rgba(85, 55, 255, 0.1);
 
-$edit-handle-border: 6px;
+$edit-handle-border: 4px;
 $edit-handle-layer: $edit-tools-layer - 4;
-$edit-handle-background: rgba(220, 200, 120, 0.8);
-$edit-handle-foreground: #44a;
+$edit-handle-background: #cc66ff;
 $edit-select-layer: $edit-handle-layer - 2;
-$edit-select-background: rgba(80, 60, 200, 0.8);
-$edit-select-foreground: #ed8;
+$edit-select-background: #3392e3;
+$edit-select-foreground: #eee;
 
 $tools-pane-foreground: #eee;
 $tools-pane-background: rgba(40, 40, 40, 0.9);

@@ -316,6 +316,7 @@
             //
 
             onMessage: function (event) {
+                var t = pages.const.trigger;
                 var e = pages.const.event;
                 var message = e.messagePattern.exec(event.data);
                 if (this.log.frame.getLevel() <= log.levels.TRACE) {
@@ -348,7 +349,17 @@
                             this.log.frame.trace('frame.message.on.' + e.page.containerRefs + '(' + message[2] + ')');
                             $(document).trigger(e.page.containerRefs, [args]);
                             break;
-                        case e.dialog.edit:
+                        case t.event:
+                            // triggers an event in the frame document context
+                            this.log.frame.debug('frame.message.on.' + args.event + '(' + message[2] + ')');
+                            $(document).trigger(args.event, args.data);
+                            break;
+                        case t.action:
+                            // triggers an event in the frame document context
+                            this.log.frame.debug('frame.message.on.' + t.action + '(' + message[2] + ')');
+                            pages.actions.trigger(event, args.action, args.reference);
+                            break;
+                        case t.dialog.edit:
                             // opens an edit dialog to perform editing of the content of the path transmitted
                             this.log.frame.trace('frame.message.on.dialog.edit(' + message[2] + ')');
                             if (args.target) {
@@ -365,12 +376,7 @@
                                     });
                             }
                             break;
-                        case e.trigger:
-                            // triggers an event in the frame document context
-                            this.log.frame.debug('frame.message.on.' + args.event + '(' + message[2] + ')');
-                            $(document).trigger(args.event, args.data);
-                            break;
-                        case e.dialog.alert:
+                        case t.dialog.alert:
                             // displays an alert message by opening an alert dialog
                             this.log.frame.trace('frame.message.on.dialog.alert(' + message[2] + ')');
                             core.alert(args.type, args.title, args.message, args.data);

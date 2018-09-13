@@ -36,11 +36,7 @@
             },
 
             onClick: function (event) {
-                var reference = this.toolbar.reference;
-                var action = eval(this.$el.data('action'));
-                if (_.isFunction(action)) {
-                    action(event, reference.name, reference.path, reference.type);
-                }
+                pages.actions.trigger(event, this.$el.data('action'), this.toolbar.reference);
             }
         });
 

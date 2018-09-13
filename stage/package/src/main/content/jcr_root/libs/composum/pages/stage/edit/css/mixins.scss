@@ -1,5 +1,7 @@
 @charset "UTF-8";
 
+@import "variables";
+
 @mixin font($family, $size) {
     font-family: $family, sans-serif;
     font-size: $size;
@@ -104,7 +106,6 @@
 
 @mixin edit-handle-color {
     background-color: $edit-handle-background;
-    color: $edit-handle-foreground;
     mix-blend-mode: difference;
 }
 
@@ -112,6 +113,12 @@
     background-color: $edit-select-background;
     color: $edit-select-foreground;
     mix-blend-mode: difference;
+}
+
+@mixin edit-select-active-color {
+    background-color: $edit-select-background;
+    color: $edit-select-foreground;
+    mix-blend-mode: normal;
 }
 
 @mixin clear-after {

@@ -32,16 +32,20 @@
                     site: 'site'
                 }
             },
+            trigger:{
+                event: 'trigger:event',
+                action: 'trigger:action',
+                dialog: {
+                    edit: 'dialog:edit',
+                    alert: 'dialog:alert'
+                }
+            },
             event: {
                 messagePattern: new RegExp('^([^{\\[]+)([{\\[].*[}\\]])$'),
                 trigger: 'event:trigger',
                 ready: 'pages:ready',
                 scope: {
                     changed: 'scope:changed'
-                },
-                dialog: {
-                    edit: 'dialog:edit',
-                    alert: 'dialog:alert'
                 },
                 site: {
                     select: 'site:select',          // do it!...

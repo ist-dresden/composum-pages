@@ -14,6 +14,8 @@
                 handles: 'composum-pages-stage-edit-handles',
                 pointer: 'composum-pages-component-handle_pointer',
                 selection: 'composum-pages-component-handle_selection',
+                active: 'composum-pages-active-handle',
+                action: 'composum-pages-stage-edit-toolbar_button',
                 class: {
                     base: 'composum-pages-component-handle',
                     visible: '_visible'
@@ -35,7 +37,8 @@
             },
             edit: { // editing interface urls and keys
                 url: {
-                    targets: '/bin/cpm/pages/edit.targetContainers.json'
+                    targets: '/bin/cpm/pages/edit.targetContainers.json',
+                    toolbar: '/bin/cpm/pages/edit.editToolbar.html'
                 }
             }
         });
@@ -62,9 +65,9 @@
                         .on('dragend', _.bind(this.onDragEnd, this));
                 }
                 // set up the component selection handling
-                this.$el.mouseover(_.bind(this.onMouseOver, this));
-                this.$el.mouseout(_.bind(this.onMouseOver, this));
-                this.$el.click(_.bind(this.onClick, this));
+                this.$el.mouseover(_.bind(this.onMouseOver, this))
+                    .mouseout(_.bind(this.onMouseOver, this))
+                    .click(_.bind(this.onClick, this));
             },
 
             /**
@@ -100,8 +103,7 @@
              * returns the current dimensions for visualization
              */
             getSizeHint: function () {
-                var size = Math.round(this.$el.width()) + 'x' + Math.round(this.$el.height()) + 'px';
-                return size;
+                return Math.round(this.$el.width()) + 'x' + Math.round(this.$el.height()) + 'px';
             },
 
             /**
@@ -135,7 +137,11 @@
                     event.preventDefault();
                 }
                 var component = elements.pageBody.getPointerComponent(event, '.' + elements.const.class.component);
-                elements.pageBody.pointer.setComponent(component);
+                if (elements.pageBody.pointer.setComponent(component)) {
+                    if (elements.pageBody.selection) {
+                        elements.pageBody.selection.setHeadVisibility(elements.pageBody.selection.component === component);
+                    }
+                }
                 return false;
             },
 
@@ -156,6 +162,27 @@
 
             onDragEnd: function (event) {
                 elements.pageBody.onDragEnd(event);
+            },
+
+            // editing
+
+            /**
+             * calls the callback(component,html) function with the toolbar HTML snippet
+             */
+            getToolbar: function (callback) {
+                if (this.toolbar) {
+                    callback(this, this.toolbar);
+                } else {
+                    core.ajaxGet(elements.const.edit.url.toolbar + this.reference.path, {
+                            data: {
+                                type: this.reference.type
+                            }
+                        },
+                        _.bind(function (data) {
+                            this.toolbar = data;
+                            callback(this, this.toolbar);
+                        }, this));
+                }
             }
         });
 
@@ -190,25 +217,17 @@
         elements.Handle = Backbone.View.extend({
 
             initialize: function (options) {
-                this.$head = this.$('.' + elements.const.handle.class.base + '_head');
+                this.$top = this.$('.' + elements.const.handle.class.base + '_top');
                 this.$left = this.$('.' + elements.const.handle.class.base + '_left');
                 this.$right = this.$('.' + elements.const.handle.class.base + '_right');
                 this.$bottom = this.$('.' + elements.const.handle.class.base + '_bottom');
+                this.$head = this.$('.' + elements.const.handle.class.base + '_head');
+                this.$toolbar = this.$('.' + elements.const.handle.class.base + '_toolbar');
                 this.$path = this.$('.' + elements.const.handle.class.base + '_path');
                 this.$name = this.$('.' + elements.const.handle.class.base + '_name');
                 this.$type = this.$('.' + elements.const.handle.class.base + '_type');
                 this.$size = this.$('.' + elements.const.handle.class.base + '_size');
-                this.setupEvents([this.$head, this.$left, this.$right, this.$bottom]);
                 $(window).resize(_.bind(this.onResize, this));
-            },
-
-            setupEvents: function (handles) {
-                for (var i = 0; i < handles.length; i++) {
-                    handles[i].click(_.bind(this.onClick, this));
-                    handles[i].mouseover(_.bind(this.onMouseOver, this));
-                    handles[i].mouseout(_.bind(this.onMouseOver, this));
-                    handles[i][0].addEventListener('dragstart', _.bind(this.onDragStart, this), false);
-                }
             },
 
             /**
@@ -225,11 +244,21 @@
                         this.$size.text(component.getSizeHint());
                         this.$el.addClass(elements.const.handle.class.base + elements.const.handle.class.visible);
                         var isDraggable = core.parseBool(component.getDraggable());
+                        this.$top.attr('draggable', isDraggable);
                         this.$head.attr('draggable', isDraggable);
                         this.$left.attr('draggable', isDraggable);
                         this.$right.attr('draggable', isDraggable);
                         this.$bottom.attr('draggable', isDraggable);
+                        component.getToolbar(_.bind(function (component, html) {
+                            this.$toolbar.html(html);
+                            this.$toolbar.find('.' + elements.const.handle.action)
+                                .mouseover(_.bind(this.onMouseOver, this))
+                                .mouseout(_.bind(this.onMouseOver, this))
+                                .click(_.bind(this.onActionClick, this));
+                        }, this));
+                        return true;
                     }
+                    return false;
                 } else {
                     this.hide();
                 }
@@ -240,22 +269,22 @@
              */
             setBounds: function (component) {
                 var handlePos = elements.pageBody.$handles.offset();
-                var bounds = elements.pageBody.getViewRect(component, {
+                var bounds = elements.pageBody.getViewRect(component.$el, {
                     dx: -handlePos.left,
                     dy: -handlePos.top
                 });
-                this.$head.css('top', bounds.y1);
-                this.$head.css('left', bounds.x1 + 6);
-                this.$head.css('width', bounds.w - 12);
+                this.$top.css('top', bounds.y1);
+                this.$top.css('left', bounds.x1 + 4);
+                this.$top.css('width', bounds.w - 8);
                 this.$left.css('top', bounds.y1);
                 this.$left.css('left', bounds.x1);
                 this.$left.css('height', bounds.h);
                 this.$right.css('top', bounds.y1);
-                this.$right.css('left', bounds.x1 + bounds.w - 6);
+                this.$right.css('left', bounds.x1 + bounds.w - 4);
                 this.$right.css('height', bounds.h);
-                this.$bottom.css('left', bounds.x1 + 6);
-                this.$bottom.css('top', bounds.y1 + bounds.h - 6);
-                this.$bottom.css('width', bounds.w - 12);
+                this.$bottom.css('left', bounds.x1 + 4);
+                this.$bottom.css('top', bounds.y1 + bounds.h - 4);
+                this.$bottom.css('width', bounds.w - 8);
             },
 
             hide: function () {
@@ -271,7 +300,7 @@
              */
             getComponentEl: function (domEl) {
                 if (domEl) {
-                    if (domEl === this.el || domEl === this.$head[0] || domEl === this.$left[0] ||
+                    if (domEl === this.el || domEl === this.$top[0] || domEl === this.$left[0] ||
                         domEl === this.$right[0] || domEl === this.$bottom[0] || domEl === this.$path[0] ||
                         domEl === this.$name[0] || domEl === this.$type[0] || domEl === this.$size[0]) {
                         return this.component.el;
@@ -280,20 +309,34 @@
                 return undefined;
             },
 
-            // event handling
-
-            onClick: function (event) {
-                event.preventDefault();
-                if (this.component) {
-                    elements.pageBody.setSelection(this.component);
+            setHeadVisibility: function (visible) {
+                if (visible) {
+                    elements.pageBody.$handles.addClass(elements.const.handle.active);
+                } else {
+                    elements.pageBody.$handles.removeClass(elements.const.handle.active);
                 }
             },
 
-            onMouseOver: function (event) {
-                event.preventDefault();
-                if (this.component) {
-                    this.component.onMouseOver(event);
+            // event handling
+
+            onActionClick: function (event) {
+                if (event) {
+                    event.preventDefault();
+                    event.stopPropagation();
                 }
+                if (this.component) {
+                    var action = $(event.currentTarget).data('action');
+                    elements.triggerAction(action, this.component.reference);
+                }
+                return false;
+            },
+
+            onMouseOver: function (event) {
+                if (event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                return false;
             },
 
             onResize: function (event) {
@@ -461,9 +504,8 @@
             // move / insert handling
 
             getDragTarget: function (event) {
-                var container = elements.pageBody.getPointerComponent(event,
+                return elements.pageBody.getPointerComponent(event,
                     '.' + elements.const.class.container, _.bind(this.isTarget, this));
-                return container;
             },
 
             setDragTarget: function (container, event) {
@@ -498,14 +540,14 @@
             initInsertMarker: function (container) {
                 this.insert = {
                     handlePos: elements.pageBody.$handles.offset(),
-                    containerRect: elements.pageBody.getViewRect(container),
+                    containerRect: elements.pageBody.getViewRect(container.$el),
                     vertical: true,
                     before: undefined
                 };
                 if (container.elements.length > 0) {
-                    var eRect = elements.pageBody.getViewRect(container.elements[0]);
+                    var eRect = elements.pageBody.getViewRect(container.elements[0].$el);
                     if (container.elements.length > 1) {
-                        var eRect2 = elements.pageBody.getViewRect(container.elements[1]);
+                        var eRect2 = elements.pageBody.getViewRect(container.elements[1].$el);
                         this.insert.vertical = eRect.y2 <= eRect2.y1 || eRect2.y2 <= eRect.y1;
                     } else {
                         this.insert.vertical = Math.abs(this.insert.containerRect.x1 - eRect.x1)
@@ -542,7 +584,7 @@
                 var pointer = elements.pageBody.getPointer(event);
                 for (var i = 0; i < this.dragTarget.elements.length; i++) {
                     var element = this.dragTarget.elements[i];
-                    var eRect = elements.pageBody.getViewRect(element);
+                    var eRect = elements.pageBody.getViewRect(element.$el);
                     if (this.insert.vertical) {
                         if (pointer.y >= eRect.y1 && pointer.y <= eRect.y2) {
                             if (pointer.y > eRect.y1 + eRect.h / 2) {
@@ -742,6 +784,7 @@
                             component.reference.path,
                             component.reference.type
                         ];
+                        elements.pageBody.selection.setHeadVisibility(true);
                         elements.log.debug('elements.trigger.' + elements.const.event.element.selected + '(' + component.reference.path + ')');
                         $(document).trigger(elements.const.event.element.selected, eventData);
                     } else {
@@ -865,8 +908,8 @@
              * @param view    the view instance
              * @param offset  an optional offset (move) {dx,dy} for the rectangle
              */
-            getViewRect: function (view, offset) {
-                var viewPos = view.$el.offset();
+            getViewRect: function ($el, offset) {
+                var viewPos = $el.offset();
                 // FIXME: check this and find the reason... i don't know why but in the bootstrap
                 // context the views rectangle must be relative to the scroll position !?
                 viewPos.top -= $(window).scrollTop();
@@ -874,8 +917,8 @@
                 var rect = {
                     x1: viewPos.left,
                     y1: viewPos.top,
-                    w: view.$el.outerWidth(),
-                    h: view.$el.outerHeight()
+                    w: $el.outerWidth(),
+                    h: $el.outerHeight()
                 };
                 if (offset) {
                     rect.x1 += offset.dx;
@@ -923,7 +966,7 @@
             getPointerView: function (view, pointer, selector, condition) {
                 if (view) {
                     var self = this;
-                    var viewRect = this.getViewRect(view);
+                    var viewRect = this.getViewRect(view.$el);
                     if (elements.log.getLevel() <= log.levels.TRACE) {
                         elements.log.trace('elements.getPointerView(' + view.reference.path + ', '
                             + JSON.stringify(pointer) + ' / ' + JSON.stringify(viewRect) + ', "'
@@ -935,7 +978,7 @@
                         if (!useNested) {
                             var nested = this.view; // use the elements view
                             if (nested) {
-                                var nestedRect = self.getViewRect(nested);
+                                var nestedRect = self.getViewRect(nested.$el);
                                 if (elements.log.getLevel() <= log.levels.TRACE) {
                                     elements.log.trace('elements.getPointerView.try: ' + nested.reference.path + ' ' + JSON.stringify(nestedRect));
                                 }
