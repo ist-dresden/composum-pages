@@ -65,7 +65,7 @@ public abstract class AbstractWidgetTag extends AbstractWrappingTag {
         modelClass = className;
     }
 
-    public boolean isFormWidget () {
+    public boolean isFormWidget() {
         return name == null || !name.startsWith("#");
     }
 
@@ -73,7 +73,7 @@ public abstract class AbstractWidgetTag extends AbstractWrappingTag {
      * @return the name of the form input element probably with a prepended relative path and the i18n path
      */
     public String getName() {
-        return getRelativePath() + getPropertyName();
+        return getPropertyName();
     }
 
     public void setName(String key) {
@@ -133,6 +133,7 @@ public abstract class AbstractWidgetTag extends AbstractWrappingTag {
      */
     public String getPropertyName() {
         String propertyName = name != null ? name : getProperty();
+        propertyName = getRelativePath() + propertyName;
         return isI18n() ? getI18nName(propertyName) : propertyName;
     }
 
