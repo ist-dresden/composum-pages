@@ -14,12 +14,11 @@
 
             &_shape {
                 position: absolute;
-                //z-index: $illustration-annotation-handle-layer;
                 width: $illustration-annotation-shape-size;
                 height: $illustration-annotation-shape-size;
                 margin-top: (- $illustration-annotation-shape-size / 2);
                 margin-left: (- $illustration-annotation-shape-size / 2);
-                background-color: $illustration-annotation-background;
+                padding: 0;
                 text-align: center;
 
                 &.type {
@@ -34,26 +33,35 @@
                 }
 
                 .popover {
-                    min-width: 400px;
+                    min-width: 360px;
+                    @include font($site-default-font-family, $site-default-font-size - 2);
+                    color: $bootstrap-color-default;
+
+                    .popover-title {
+                        @include default-font;
+                    }
+
+                    .popover-content {
+                        padding: 5px 14px;
+
+                        p {
+                            margin: 5px 0;
+                        }
+                    }
                 }
             }
 
             &_link {
                 position: relative;
                 display: block;
-                width: $illustration-annotation-shape-size;
-                height: $illustration-annotation-shape-size;
+                width: $illustration-annotation-shape-size - 2;
+                height: $illustration-annotation-shape-size - 2;
                 font-size: $illustration-annotation-shape-size - 4;
-                line-height: $illustration-annotation-shape-size;
-                color: $illustration-annotation-foreground;
-                font-style: normal;
+                line-height: $illustration-annotation-shape-size - 2;
+                color: inherit;
 
                 &, &:hover, &:active {
                     text-decoration: none;
-                }
-
-                &:hover, &:active {
-                    color: lighten($illustration-annotation-foreground, 20%);
                 }
             }
         }

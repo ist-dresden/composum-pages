@@ -3,9 +3,9 @@
 <%@taglib prefix="cpn" uri="http://sling.composum.com/cpnl/1.0" %>
 <cpp:defineObjects/>
 <cpp:element var="annotation" type="com.composum.pages.components.model.illustration.Annotation"
-             cssSet="@{annotationCssBase}_shape type-@{annotation.shapeType} icon-@{annotation.iconType}"
+             cssSet="@{annotationCssBase}_shape type-@{annotation.shapeType} icon-@{annotation.iconType} btn btn-@{annotation.shapeLevel}"
              style="@{annotation.shapeStyle}" data-id="@{annotationId}">
     <a class="${annotation.iconClasses} ${annotationCssBase}_link" role="button" tabindex="0" data-toggle="popover"
-       data-placement="auto ${annotation.align}" data-content="${cpn:html(slingRequest,annotation.text)}"
+       data-placement="auto ${annotation.placement}" data-content="${cpn:html(slingRequest,annotation.text)}"
        title="${cpn:text(annotation.title)}">${cpn:text(annotation.shapeText)}</a>
 </cpp:element>

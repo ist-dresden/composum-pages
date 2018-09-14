@@ -15,6 +15,7 @@ $bootstrap-spacing-h: 15px;
 
 $bootstrap-color-muted: #777;
 
+$bootstrap-color-default: #333;
 $bootstrap-color-info: #31708f;
 $bootstrap-color-success: #3c763d;
 $bootstrap-color-warning: #8a6d3b;
@@ -31,7 +32,7 @@ $bootstrap-navbar-background: #f8f8f8;
  * general settings
  */
 
-$site-default-text-color: #333;
+$site-default-text-color: $bootstrap-color-default;
 $site-default-link-color: #c33;
 $site-default-link-hover: #e33;
 $site-bright-text-color: #eee;
@@ -66,10 +67,6 @@ $text-title-font-size: $column-subtitle-font-size;
 /** illustration */
 
 $illustration-annotation-shape-size: 26px;
-
-$illustration-annotation-layer: 5;
-$illustration-annotation-handle-layer: $illustration-annotation-layer + 1;
-$illustration-annotation-content-layer: $illustration-annotation-handle-layer + 1;
 
 $illustration-annotation-background: rgba(160, 0, 0, 0.85);
 $illustration-annotation-foreground: #efefef;

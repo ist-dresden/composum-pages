@@ -10,6 +10,7 @@ public class Annotation extends Text {
 
     public static final Float DEFAULT_OFFSET = -15.0f;
 
+    private transient String level;
     private transient String type;
     private transient String iconType;
     private transient String iconClasses;
@@ -22,6 +23,13 @@ public class Annotation extends Text {
 
     private transient Position shapePosition;
     private transient Dimension annotationSize;
+
+    public String getShapeLevel() {
+        if (level == null) {
+            level = getProperty("shape/level", "default");
+        }
+        return level;
+    }
 
     public String getShapeType() {
         if (type == null) {
@@ -94,9 +102,9 @@ public class Annotation extends Text {
         return shapeStyle;
     }
 
-    public String getAlign() {
+    public String getPlacement() {
         if (align == null) {
-            align = getProperty("shape/align", "");
+            align = getProperty("shape/placement", "");
         }
         return align;
     }
