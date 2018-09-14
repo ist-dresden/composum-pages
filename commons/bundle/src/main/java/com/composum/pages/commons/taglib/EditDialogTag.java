@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 
 import static com.composum.pages.commons.taglib.AbstractPageTag.STAGE_COMPONENT_BASE;
-import static com.composum.pages.commons.taglib.ElementTag.PAGES_EDIT_DATA;
 import static com.composum.pages.commons.util.TagCssClasses.cssOfType;
 import static com.composum.platform.models.annotations.InternationalizationStrategy.I18NFOLDER.I18N_PROPERTY_PATH;
 
@@ -277,21 +276,20 @@ public class EditDialogTag extends AbstractEditTag {
     //
     //
 
-    public String getPropertyPath(String name) {
-        return getAction().getPropertyPath(name);
+    public String getPropertyPath(String relativePath, String name) {
+        return getAction().getPropertyPath(relativePath, name);
     }
 
-    protected String getI18nPath(String name) {
-        String path = name;
+    protected String getI18nPath(String relativePath, String name) {
         Languages languages = getLanguages();
         if (languages != null) {
             Language defaultLanguage = languages.getDefaultLanguage();
             if (defaultLanguage != null && !defaultLanguage.isCurrent()) {
                 Language language = languages.getLanguage();
-                path = I18N_PROPERTY_PATH + language.getKey() + "/" + path;
+                return relativePath + I18N_PROPERTY_PATH + language.getKey() + "/" + name;
             }
         }
-        return path;
+        return relativePath + name;
     }
 
     public String getDialogId() {
@@ -389,7 +387,7 @@ public class EditDialogTag extends AbstractEditTag {
 
         String getEncType();
 
-        String getPropertyPath(String name);
+        String getPropertyPath(String relativePath, String name);
     }
 
     public class SlingPostServletAction implements EditDialogAction {
@@ -418,8 +416,8 @@ public class EditDialogTag extends AbstractEditTag {
             return "multipart/form-data";
         }
 
-        public String getPropertyPath(String name) {
-            return getI18nPath(name);
+        public String getPropertyPath(String relativePath, String name) {
+            return getI18nPath(relativePath, name);
         }
     }
 
@@ -447,8 +445,8 @@ public class EditDialogTag extends AbstractEditTag {
             return "multipart/form-data";
         }
 
-        public String getPropertyPath(String name) {
-            return getI18nPath(name);
+        public String getPropertyPath(String relativePath, String name) {
+            return getI18nPath(relativePath, name);
         }
     }
 }

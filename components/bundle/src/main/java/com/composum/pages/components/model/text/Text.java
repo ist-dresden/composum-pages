@@ -3,7 +3,6 @@ package com.composum.pages.components.model.text;
 import com.composum.pages.commons.model.Container;
 import com.composum.pages.commons.model.Element;
 import com.composum.pages.commons.model.Page;
-import com.composum.pages.commons.util.RichTextUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -47,7 +46,7 @@ public class Text extends Element {
     @Nonnull
     public String getText() {
         if (text == null) {
-            text = RichTextUtil.prepareRichText(context.getRequest(), getProperty(PROP_TEXT, ""));
+            text = getProperty(PROP_TEXT, "");
         }
         return text;
     }

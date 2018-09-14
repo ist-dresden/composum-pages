@@ -7,7 +7,7 @@
     <div class="${illustrationCssBase}">
         <c:forEach items="${illustration.elements}" var="element" varStatus="loop">
             <div class="${illustrationCssBase}_element">
-                <cpp:include resource="${element.resource}" replaceSelectors="shape" mode="none"/>
+                <cpp:include resource="${element.resource}" replaceSelectors="shape"/>
             </div>
         </c:forEach>
     </div>
