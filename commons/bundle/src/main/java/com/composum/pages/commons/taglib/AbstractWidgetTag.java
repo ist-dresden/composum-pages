@@ -109,6 +109,9 @@ public abstract class AbstractWidgetTag extends AbstractWrappingTag {
         return resource;
     }
 
+    /**
+     * @return the path to the owning child of the property to edit (for embedded components and their dialogs)
+     */
     public String getRelativePath() {
         String relativePath = context.getAttribute(PROPERTY_PATH_ATTR, String.class);
         if (StringUtils.isBlank(relativePath)) {
@@ -129,20 +132,21 @@ public abstract class AbstractWidgetTag extends AbstractWrappingTag {
     }
 
     /**
-     * @return the name of the property of the resource probably with a prepended i18n path
+     * @return the path of the property of the resource probably with a prepended include path segment and the i18n path
      */
     public String getPropertyName() {
         String propertyName = name != null ? name : getProperty();
-        propertyName = getRelativePath() + propertyName;
-        return isI18n() ? getI18nName(propertyName) : propertyName;
+        return isI18n() ? getI18nName(propertyName) : propertyName; // prepend i18n path if 'i18n' is on
     }
 
     protected String getI18nName(String name) {
         if (isI18n()) {
             EditDialogTag dialog = getDialog();
             if (dialog != null) {
-                return dialog.getPropertyPath(name);
+                return dialog.getPropertyPath(getRelativePath(), name);
             }
+        } else {
+            name = getRelativePath() + name;
         }
         return name;
     }

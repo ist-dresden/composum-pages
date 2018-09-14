@@ -255,6 +255,7 @@
                 }
 
                 &_top {
+                    z-index: $edit-handle-layer;
                     border-color: $edit-select-background;
                     mix-blend-mode: difference;
                     opacity: 0.8;
@@ -265,7 +266,7 @@
                     opacity: 0.8;
                 }
 
-                &_top, &_left, &_right, &_bottom {
+                &_left, &_right, &_bottom {
                     z-index: $edit-select-layer - 1;
                 }
             }
@@ -281,8 +282,15 @@
             }
 
             .composum-pages-component-handle_selection {
+                min-width: 30px;
+                min-height: 20px;
 
                 .composum-pages-component-handle {
+
+                    &_visible, &_top {
+                        min-width: 30px;
+                        min-height: 20px;
+                    }
 
                     &_head {
                         visibility: visible;
