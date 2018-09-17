@@ -47,9 +47,22 @@
 }
 
 /*
+ * self defined -xlg-
+ */
+@media screen and (min-width: 1500px) {
+
+    .composum-pages-components-composed-carousel {
+
+        &_element {
+            @include aspect-ratio-wrapper(4, 1);
+        }
+    }
+}
+
+/*
  * bootstrap -lg-
  */
-@media screen and (min-width: 1200px) {
+@media screen and (min-width: 1200px) and (max-width: 1499px) {
 
     .composum-pages-components-composed-carousel {
 
@@ -62,7 +75,7 @@
 /*
  * bootstrap -xs-
  */
-@media screen and (max-width: 767px) {
+@media screen and (min-width: 481px) and (max-width: 767px) {
 
     .composum-pages-components-composed-carousel {
 
