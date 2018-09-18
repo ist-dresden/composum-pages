@@ -23,6 +23,8 @@ public class TextWidget extends PropertyEditHandle<String> implements WidgetMode
             return DATA_PATTERN_ATTR;
         } else if (PATTERN_HINT_ATTR.equals(attributeKey) || DATA_PATTERN_HINT_ATTR.equals(attributeKey)) {
             return DATA_PATTERN_HINT_ATTR;
+        } else if (PATTERN_HINT_ATTR.equals(attributeKey) || DATA_PATTERN_HINT_ATTR.equals(attributeKey)) {
+            return DATA_PATTERN_HINT_ATTR;
         } else {
             return attributeKey;
         }
