@@ -10,11 +10,13 @@
     <div class="row">
         <div class="col col-xs-6">
             <cpp:widget label="Warning Level" property="level" type="select"
-                        options="none,default,info,success,warning,danger"/>
+                        hint="<a href='https://getbootstrap.com/docs/3.3/components/#panels-alternatives' target='_blank'>'Bootstrap' background</a>"
+                        options="none,default,primary,info,success,warning,danger"/>
         </div>
         <div class="col col-xs-6">
-            <cpp:widget label="Symbol" property="icon" type="combobox"
-                        options="at,asterisk,bookmark,check,exclamation,eye,info-circle:info,lightbulb-o:lightbulb,question-circle-o:qestion,search,warning,wrench"
+            <cpp:widget label="Symbol" property="icon" type="iconcombobox"
+                        hint="<a href='https://fontawesome.com/v4.7.0/icons/' target='_blank'>'FontAwesome'</a> icon key"
+                        options="at,asterisk,bookmark-o:bookmark,check,exclamation,eye,info-circle:info,lightbulb-o:lightbulb,question-circle-o:qestion,search,warning,wrench"
                         typeahead="/bin/cpm/core/system.typeahead.json/libs/fonts/awesome/4.7.0/font-awesome-keys.txt"/>
         </div>
     </div>

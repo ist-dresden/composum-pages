@@ -7,6 +7,7 @@
 <div class="${widgetCssBase}_${widget.widgetType} ${widgetCssBase}_${widget.cssName} form-group">
     <sling:call script="label.jsp"/>
     <div class="${widgetCssBase}_combobox widget combobox-widget widget-name_${widget.cssName} input-group" ${widget.attributes}>
+        <sling:call script="left.jsp"/>
         <input
                 <c:if test="${widget.formWidget}">name="${widget.name}"</c:if> data-label="${widget.label}"
                 class="${widgetCssBase}_input form-control" data-i18n="${widget.i18n}" type="text"
