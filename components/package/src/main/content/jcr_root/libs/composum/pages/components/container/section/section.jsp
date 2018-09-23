@@ -1,8 +1,7 @@
-<%@page session="false" pageEncoding="UTF-8" %><%--
---%><%@taglib prefix="sling" uri="http://sling.apache.org/taglibs/sling/1.2" %><%--
---%><%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %><%--
---%><%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %><%--
---%><cpp:defineObjects/>
+<%@page session="false" pageEncoding="UTF-8" %>
+<%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<cpp:defineObjects/>
 <cpp:container var="carousel" type="com.composum.pages.components.model.container.Carousel"
                tagId="@{carouselId}" cssAdd="@{carousel.editMode?'':'carousel slide'}"
                data-ride="@{carousel.autoStart?'carousel':''}"
@@ -22,7 +21,7 @@
         <c:forEach items="${carousel.elements}" var="element" varStatus="loop">
             <div class="${carouselCssBase}_element item ${loop.index == 0 ? 'active' : ''}" data-path="${element.path}"
                  data-index="${loop.index}">
-                <sling:include resource="${element.resource}"/>
+                <cpp:include resource="${element.resource}"/>
             </div>
         </c:forEach>
     </div>

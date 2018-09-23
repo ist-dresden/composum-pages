@@ -19,7 +19,8 @@
             <div class="col col-xs-12">
                 <cpp:widget label="Button Title" property="hint" type="textfield" i18n="true" rules="optional"
                             hint="Title (i.e., mouseover text) for the button; optional."/>
-                <cpp:widget label="Placeholder Text" property="placeholderText" type="textfield" i18n="true" rules="optional"
+                <cpp:widget label="Placeholder Text" property="placeholderText" type="textfield" i18n="true"
+                            rules="optional"
                             hint="Text for the placeholder that is shown in the search field before any text is put in; optional."/>
             </div>
         </div>
@@ -27,9 +28,11 @@
     <cpp:editDialogGroup label="Search Result" expanded="true">
         <div class="row">
             <div class="col col-xs-12">
-                <cpp:widget label="Search Result Path" property="searchResultPath" type="pathfield" i18n="false" rules="optional"
+                <cpp:widget label="Search Result Path" property="searchResultPath" type="pathfield" i18n="false"
+                            rules="optional"
                             hint="Page in which the search result is shown; optional, default: containing page."/>
-                <cpp:widget label="Search Result Anchor" property="searchResultAnchor" type="textfield" i18n="false" rules="optional"
+                <cpp:widget label="Search Result Anchor" property="searchResultAnchor" type="textfield" i18n="false"
+                            rules="optional"
                             hint="Anchor in the search result page to jump to for displaying the search result; optional."/>
             </div>
         </div>

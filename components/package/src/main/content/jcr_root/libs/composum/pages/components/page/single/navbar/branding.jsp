@@ -1,7 +1,7 @@
-<%@page session="false" pageEncoding="utf-8"%><%--
---%><%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %><%--
---%><%@taglib prefix="cpn" uri="http://sling.composum.com/cpnl/1.0"%><%--
---%><cpp:defineObjects />
+<%@page session="false" pageEncoding="utf-8" %>
+<%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
+<%@taglib prefix="cpn" uri="http://sling.composum.com/cpnl/1.0" %>
+<cpp:defineObjects/>
 <cpp:element var="navbar" type="com.composum.pages.components.model.page.SinglePageMenu" mode="none"
              tagName="none">
     <cpn:link class="${navbarCssBase}_brand navbar-brand"

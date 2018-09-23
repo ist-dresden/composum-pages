@@ -1,8 +1,7 @@
-<%@page session="false" pageEncoding="utf-8"%><%--
---%><%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%><%--
---%><%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %><%--
---%><%@taglib prefix="cpn" uri="http://sling.composum.com/cpnl/1.0"%><%--
---%><cpp:defineObjects />
+<%@page session="false" pageEncoding="utf-8" %>
+<%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
+<%@taglib prefix="cpn" uri="http://sling.composum.com/cpnl/1.0" %>
+<cpp:defineObjects/>
 <cpp:element var="field" type="com.composum.pages.components.model.search.SearchField">
     <cpn:form role="search" action="${field.searchResultLink}" method="GET">
         <input name="_charset_" type="hidden" value="UTF-8" class="${fieldCssBase}_hidden"/>
