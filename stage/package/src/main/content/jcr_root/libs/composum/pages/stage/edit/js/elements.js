@@ -628,6 +628,8 @@
         elements.PageBody = Backbone.View.extend({
 
             initialize: function (options) {
+                var e = elements.const.event;
+                this.params = core.url.getParameters(window.location.search);
                 // determine the editing UI components of the page
                 this.$handles = this.$('.' + elements.const.handle.handles);
                 this.pointer = core.getWidget(this.el, '.' + elements.const.handle.pointer
@@ -639,8 +641,8 @@
                 // init the component sets
                 this.initComponents();
                 // register the handlers for component selection in interaction with the edit frame
-                $(document).on(elements.const.event.element.selected, _.bind(this.onComponentSelected, this));
-                $(document).on(elements.const.event.element.select, _.bind(this.selectElement, this));
+                $(document).on(e.element.selected, _.bind(this.onElementSelected, this));
+                $(document).on(e.element.select, _.bind(this.selectElement, this));
                 window.addEventListener("message", _.bind(this.onMessage, this), false);
                 var id = elements.const.dnd.id;
                 this.$el
@@ -680,6 +682,91 @@
                 // send container references to the edit frame
                 parent.postMessage(elements.const.event.page.containerRefs
                     + JSON.stringify(this.containerRefs), '*');
+            },
+
+            getElementIndex: function (path) {
+                var result = [];
+                var i;
+                for (i = 0; i < this.components.length; i++) {
+                    if (this.components[i].reference.path === path) {
+                        result.push({component: i});
+                    }
+                }
+                for (i = 0; i < this.containers.length; i++) {
+                    if (this.containers[i].reference.path === path) {
+                        result.push({container: i});
+                    }
+                }
+                for (i = 0; i < this.elements.length; i++) {
+                    if (this.elements[i].reference.path === path) {
+                        result.push({element: i});
+                    }
+                }
+                return result;
+            },
+
+            redraw: function (reference) {
+                var selection = elements.pageBody.selection.component;
+                if (selection) {
+                    selection = selection.reference;
+                }
+                var index = this.getElementIndex(reference.path);
+                for (var i = 0; i < index.length; i++) {
+                    if (index[i].component >= 0) {
+                        this.redrawComponent(this.components[index[i].component], _.bind(function () {
+                            this.initComponents();
+                            if (selection) {
+                                this.selectPath(selection.path, true);
+                            }
+                        }, this));
+                    }
+                }
+            },
+
+            redrawComponent: function (component, callback) {
+                core.ajaxGet(component.reference.path + '.html', {
+                    data: _.extend(this.params, {
+                        type: component.reference.type
+                    })
+                }, _.bind(function (content) {
+                    component.$el.replaceWith(content);
+                    if (_.isFunction(callback)) {
+                        callback(this);
+                    }
+                }, this), _.bind(function (content) {
+                    // reload page if an error has been occurred
+                    window.location.reload();
+                }, this));
+            },
+
+            clear: function (reference) {
+                var selection = elements.pageBody.selection.component;
+                if (selection) {
+                    selection = selection.reference;
+                }
+                var index = this.getElementIndex(reference.path);
+                for (var i = 0; i < index.length; i++) {
+                    if (index[i].component >= 0) {
+                        this.components[index[i].component].$el.remove();
+                    }
+                }
+                this.initComponents();
+                if (selection) {
+                    this.selectPath(selection.path, true);
+                }
+            },
+
+            elementInserted: function (event, reference) {
+                var pathAndName = core.getParentAndName(reference.path);
+                this.redraw(new pages.Reference(undefined, pathAndName.path));
+            },
+
+            elementChanged: function (event, reference) {
+                this.redraw(reference);
+            },
+
+            elementDeleted: function (event, reference) {
+                this.clear(reference);
             },
 
             // DnD
@@ -773,20 +860,35 @@
 
             // component selection and edit frame message handling
 
+            selectPath: function (path, force) {
+                var found = false;
+                if (path) {
+                    var $target = $('.' + elements.const.class.component
+                        + '[data-' + elements.const.data.path + '="' + path + '"]');
+                    if ($target && $target.length > 0) {
+                        var component = $target[0].view;
+                        if (component) {
+                            elements.log.debug('pages.elements.selectElement(' + path + ')');
+                            this.setSelection(component, force);
+                            found = true;
+                        }
+                    }
+                }
+                if (!found) {
+                    this.clearSelection();
+                }
+            },
+
             setSelection: function (component, force) {
                 elements.log.debug('pages.elements.setSelection(' + component + ',' + force + ')');
                 if (elements.pageBody.selection.component !== component || force) {
                     if (component) {
+                        var e = elements.const.event;
                         this.dnd.reset();
                         elements.pageBody.selection.setComponent(component);
-                        var eventData = [
-                            component.reference.name,
-                            component.reference.path,
-                            component.reference.type
-                        ];
                         elements.pageBody.selection.setHeadVisibility(true);
-                        elements.log.debug('elements.trigger.' + elements.const.event.element.selected + '(' + component.reference.path + ')');
-                        $(document).trigger(elements.const.event.element.selected, eventData);
+                        elements.log.debug('elements.trigger.' + e.element.selected + '(' + component.reference.path + ')');
+                        $(document).trigger(e.element.selected, component.reference);
                     } else {
                         this.clearSelection();
                     }
@@ -798,44 +900,26 @@
             clearSelection: function () {
                 this.dnd.reset();
                 if (elements.pageBody.selection.component) {
+                    var e = elements.const.event;
                     elements.log.debug('pages.elements.clearSelection(' + elements.pageBody.selection.component + ')');
                     elements.pageBody.selection.setComponent(undefined);
-                    elements.log.debug('elements.trigger.' + elements.const.event.element.selected + '([])');
-                    $(document).trigger(elements.const.event.element.selected, []);
+                    elements.log.debug('elements.trigger.' + e.element.selected + '([])');
+                    $(document).trigger(e.element.selected, []);
                 }
             },
 
-            selectElement: function (event, name, path, type) {
-                if (path) {
-                    var $target = $('.' + elements.const.class.component
-                        + '[data-' + elements.const.data.path + '="' + path + '"]');
-                    var found = false;
-                    if ($target && $target.length > 0) {
-                        var component = $target[0].view;
-                        if (component) {
-                            elements.log.debug('pages.elements.selectElement(' + path + ')');
-                            this.setSelection(component, true);
-                            found = true;
-                        }
-                    }
-                    if (!found) {
-                        elements.log.debug('elements.trigger.' + elements.const.event.element.selected + '([])');
-                        $(document).trigger(elements.const.event.element.selected, []);
-                    }
-                } else {
-                    this.clearSelection();
-                }
+            selectElement: function (event, reference) {
+                this.selectPath(reference ? reference.path : reference, true);
             },
 
-            onComponentSelected: function (event, name, path, type) {
-                if (path) {
-                    elements.log.debug('pages.elements.element.selected(' + path + ')');
-                    parent.postMessage(elements.const.event.element.selected
-                        + JSON.stringify({name: name, path: path, type: type}), '*');
+            onElementSelected: function (event, reference) {
+                var e = elements.const.event;
+                if (reference && reference.path) {
+                    elements.log.debug('pages.elements.' + e.element.selected + '(' + reference.path + ')');
+                    parent.postMessage(e.element.selected + JSON.stringify({reference: reference}), '*');
                 } else {
                     elements.log.debug('pages.elements.selectionCleared()');
-                    parent.postMessage(elements.const.event.element.selected
-                        + JSON.stringify({}), '*');
+                    parent.postMessage(e.element.selected + JSON.stringify({}), '*');
                 }
             },
 
@@ -852,22 +936,35 @@
                             if (elements.log.getLevel() <= log.levels.DEBUG) {
                                 elements.log.debug('elements.message.on.' + e.element.select + JSON.stringify(args));
                             }
-                            if (args.path) {
-                                var eventData = [
-                                    args.name,
-                                    args.path,
-                                    args.type
-                                ];
+                            if (args.reference && args.reference.path) {
                                 if (elements.log.getLevel() <= log.levels.DEBUG) {
-                                    elements.log.debug('elements.trigger.' + e.element.select + '(' + args.path + ')');
+                                    elements.log.debug('elements.trigger.' + e.element.select + '(' + args.reference.path + ')');
                                 }
-                                $(document).trigger(e.element.select, eventData);
+                                $(document).trigger(e.element.select, args.reference);
                             } else {
                                 if (elements.log.getLevel() <= log.levels.DEBUG) {
                                     elements.log.debug('elements.trigger.' + e.element.select + '([])');
                                 }
                                 $(document).trigger(e.element.select, []);
                             }
+                            break;
+                        case e.element.inserted:
+                            if (elements.log.getLevel() <= log.levels.DEBUG) {
+                                elements.log.debug('elements.message.on.' + e.element.inserted + JSON.stringify(args));
+                            }
+                            this.elementInserted(event, args.reference);
+                            break;
+                        case e.element.changed:
+                            if (elements.log.getLevel() <= log.levels.DEBUG) {
+                                elements.log.debug('elements.message.on.' + e.element.changed + JSON.stringify(args));
+                            }
+                            this.elementChanged(event, args.reference);
+                            break;
+                        case e.element.deleted:
+                            if (elements.log.getLevel() <= log.levels.DEBUG) {
+                                elements.log.debug('elements.message.on.' + e.element.deleted + JSON.stringify(args));
+                            }
+                            this.elementDeleted(event, args.reference);
                             break;
                         case e.dnd.object:
                             if (elements.log.getLevel() <= log.levels.DEBUG) {

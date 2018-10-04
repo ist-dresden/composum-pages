@@ -23,24 +23,79 @@
                 core.components.Tree.prototype.initialize.apply(this, [options]);
             },
 
+            /**
+             * change tree selection according to a selected path (tree is secondary view)
+             */
+            selectedNode: function (path, callback) {
+                this.suppressEvent = true;
+                this.selectNode(path, _.bind(function (path) {
+                    this.suppressEvent = false;
+                    if (_.isFunction(callback)) {
+                        callback(path);
+                    }
+                }, this));
+            },
+
+            /**
+             * prevent from fire 'select' if tree is selecting a path as secondary view only
+             */
+            onNodeSelected: function (path, node) {
+                if (!this.suppressEvent) {
+                    core.components.Tree.prototype.onNodeSelected.apply(this, [path, node]);
+                }
+            },
+
             onPathSelectedFailed: function (path) {
                 if (this.log.getLevel() <= log.levels.DEBUG) {
                     this.log.debug(this.nodeIdPrefix + 'tree.onPathSelectedFailed(' + path + ')');
                 }
-                var node = this.getSelectedTreeNode();
-                while (!node && (path = core.getParentPath(path)) && path !== '/') {
-                    var busy = this.busy;
-                    this.busy = true;
-                    this.selectNode(path);
-                    this.busy = busy;
-                    node = this.getSelectedTreeNode();
+                var node;
+                while (!(node = this.getSelectedTreeNode()) && (path = core.getParentPath(path)) && path !== '/') {
+                    this.selectedNode(path);
                 }
-                this.onPathSelected(undefined, path);
             },
 
-            onContentInserted: function (event, path) {
+            onContentSelected: function (event, refOrPath) {
+                this.onPathSelected(event, refOrPath && refOrPath.path ? refOrPath.path : refOrPath);
+            },
+
+            onContentInserted: function (event, refOrPath) {
+                var path = refOrPath && refOrPath.path ? refOrPath.path : refOrPath;
                 var parentAndName = core.getParentAndName(path);
                 this.onPathInserted(event, parentAndName.path, parentAndName.name);
+            },
+
+            onContentMoved: function (event, refOrPath) {
+                this.onPathMoved(event, refOrPath && refOrPath.path ? refOrPath.path : refOrPath);
+            },
+
+            onContentChanged: function (event, refOrPath) {
+                this.onPathChanged(event, refOrPath && refOrPath.path ? refOrPath.path : refOrPath);
+            },
+
+            onContentDeleted: function (event, refOrPath) {
+                this.onPathDeleted(event, refOrPath && refOrPath.path ? refOrPath.path : refOrPath);
+            },
+
+            onElementSelected: function (event, reference) {
+                this.onPathSelected(event, reference ? reference.path : undefined);
+            },
+
+            onElementInserted: function (event, reference) {
+                var parentAndName = core.getParentAndName(reference.path);
+                this.onPathInserted(event, parentAndName.path, parentAndName.name);
+            },
+
+            onElementMoved: function (event, reference) {
+                this.onPathMoved(event, reference ? reference.path : undefined);
+            },
+
+            onElementChanged: function (event, reference) {
+                this.onPathChanged(event, reference ? reference.path : undefined);
+            },
+
+            onElementDeleted: function (event, reference) {
+                this.onPathDeleted(event, reference ? reference.path : undefined);
             }
         });
 
@@ -66,32 +121,32 @@
                 });
                 this.initializeFilter();
                 tree.ToolsTree.prototype.initialize.apply(this, [options]);
-                var c = pages.const.event;
-                //$(document).on(c.element.selected + '.' + id, _.bind(this.onElementSelected, this));
-                $(document).on(c.element.inserted + '.' + id, _.bind(this.onContentInserted, this));
-                $(document).on(c.element.changed + '.' + id, _.bind(this.onPathChanged, this));
-                $(document).on(c.element.deleted + '.' + id, _.bind(this.onPathDeleted, this));
-                $(document).on(c.element.moved + '.' + id, _.bind(this.onPathMoved, this));
-                $(document).on(c.content.selected + '.' + id, _.bind(this.onPathSelected, this));
-                $(document).on(c.content.inserted + '.' + id, _.bind(this.onContentInserted, this));
-                $(document).on(c.content.changed + '.' + id, _.bind(this.onPathChanged, this));
-                $(document).on(c.content.deleted + '.' + id, _.bind(this.onPathDeleted, this));
-                $(document).on(c.content.moved + '.' + id, _.bind(this.onPathMoved, this));
-                $(document).on(c.page.selected + '.' + id, _.bind(this.onPathSelected, this));
-                $(document).on(c.page.inserted + '.' + id, _.bind(this.onContentInserted, this));
-                $(document).on(c.page.changed + '.' + id, _.bind(this.onPathChanged, this));
-                $(document).on(c.page.deleted + '.' + id, _.bind(this.onPathDeleted, this));
-                $(document).on(c.site.created + '.' + id, _.bind(this.onContentInserted, this));
-                $(document).on(c.site.changed + '.' + id, _.bind(this.onPathChanged, this));
-                $(document).on(c.site.deleted + '.' + id, _.bind(this.onPathDeleted, this));
+                var e = pages.const.event;
+                $(document).on(e.element.selected + '.' + id, _.bind(this.onElementSelected, this));
+                $(document).on(e.element.inserted + '.' + id, _.bind(this.onElementInserted, this));
+                $(document).on(e.element.changed + '.' + id, _.bind(this.onElementChanged, this));
+                $(document).on(e.element.deleted + '.' + id, _.bind(this.onElementDeleted, this));
+                $(document).on(e.element.moved + '.' + id, _.bind(this.onElementMoved, this));
+                $(document).on(e.content.selected + '.' + id, _.bind(this.onContentSelected, this));
+                $(document).on(e.content.inserted + '.' + id, _.bind(this.onContentInserted, this));
+                $(document).on(e.content.changed + '.' + id, _.bind(this.onContentChanged, this));
+                $(document).on(e.content.deleted + '.' + id, _.bind(this.onContentDeleted, this));
+                $(document).on(e.content.moved + '.' + id, _.bind(this.onContentMoved, this));
+                $(document).on(e.page.selected + '.' + id, _.bind(this.onContentSelected, this));
+                $(document).on(e.page.inserted + '.' + id, _.bind(this.onContentInserted, this));
+                $(document).on(e.page.changed + '.' + id, _.bind(this.onContentChanged, this));
+                $(document).on(e.page.deleted + '.' + id, _.bind(this.onContentDeleted, this));
+                $(document).on(e.site.created + '.' + id, _.bind(this.onContentInserted, this));
+                $(document).on(e.site.changed + '.' + id, _.bind(this.onContentSelected, this));
+                $(document).on(e.site.deleted + '.' + id, _.bind(this.onContentDeleted, this));
             },
 
-            onElementSelected: function (event, name, path, type) {
-                this.onPathSelected(event, path);
-            },
-
-            setRootPath: function (rootPath) {
-                tree.ToolsTree.prototype.setRootPath.apply(this, [this.adjustRootPath(rootPath)]);
+            setRootPath: function (rootPath, refresh) {
+                rootPath = this.adjustRootPath(rootPath);
+                if (refresh === undefined) {
+                    refresh = (this.rootPath && this.rootPath !== rootPath);
+                }
+                tree.ToolsTree.prototype.setRootPath.apply(this, [rootPath, refresh]);
             },
 
             adjustRootPath: function (rootPath) {
@@ -126,8 +181,10 @@
                         targetPath: targetPath,
                         targetType: targetNode.type,
                         before: before ? before.original.path : undefined
-                    }, {}, function (data) {
-                        $(document).trigger(pages.const.event.element.moved, [oldPath, data.path]);
+                    }, {}, function (result) {
+                        $(document).trigger(pages.const.event.element.moved, [
+                            new pages.Reference(draggedNode.name, draggedNode.path, draggedNode.type),
+                            result.reference]);
                     }, function (xhr) {
                         core.alert('error', 'Error', 'Error on moving element', xhr);
                     });
@@ -139,8 +196,10 @@
                         core.ajaxPost('/bin/cpm/pages/edit.moveContent.json' + core.encodePath(oldPath), {
                             targetPath: targetPath,
                             before: before ? before.original.path : undefined
-                        }, {}, _.bind(function (data) {
-                            $(document).trigger(pages.const.event.content.moved, [oldPath, data.path]);
+                        }, {}, _.bind(function (result) {
+                            $(document).trigger(pages.const.event.content.moved, [
+                                new pages.Reference(draggedNode.name, draggedNode.path, draggedNode.type),
+                                result.reference]);
                         }, this), _.bind(function (xhr) {
                             core.alert('error', 'Error', 'Error on moving content', xhr);
                         }, this));
@@ -206,31 +265,15 @@
                 this.treePanelId = this.tree.nodeIdPrefix + 'treePanel';
             },
 
-            onElementSelected: function (event, name, path, type) {
-                this.onPathSelected(event, path);
-            },
-
-            onPathSelected: function (event, path) {
-                var treePath = this.tree.getSelectedPath();
-                if (this.actions) {
-                    if (treePath && this.actions.data.path === treePath && treePath === path) {
-                        return;
+            onNodeSelected: function (event, path, triggerEvent) {
+                if (this.path !== path) {
+                    pages.log.debug(this.treePanelId + '.onPathSelected(' + path + ')');
+                    this.path = path;
+                    if (!path) {
+                        this.doSelectDefaultNode();
+                    } else {
+                        this.setNodeActions(path);
                     }
-                }
-                pages.log.debug(this.treePanelId + '.onPathSelected(' + path + ') <- ' + treePath);
-                if (!path) {
-                    this.doSelectDefaultNode();
-                } else if (path === treePath) {
-                    this.setNodeActions(path);
-                } else {
-                    this.tree.selectNode(path, _.bind(function () {
-                        var node = this.tree.getSelectedTreeNode();
-                        if (node) {
-                            this.setNodeActions();
-                        } else {
-                            this.doSelectDefaultNode();
-                        }
-                    }, this));
                 }
             },
 
@@ -285,31 +328,30 @@
                 this.$viewToggle.click(_.bind(this.toggleView, this));
                 this.selectFilter(pages.profile.get(p.aspect, p.filter, undefined));
                 this.$('.' + tree.const.pagesCssBase + '_filter-value a').click(_.bind(this.setFilter, this));
-                $(document).on(e.element.selected + '.' + this.treePanelId, _.bind(this.onElementSelected, this));
-                $(document).on(e.path.selected + '.' + this.treePanelId, _.bind(this.onPathSelected, this));
-                $(document).on(e.page.selected + '.' + this.treePanelId, _.bind(this.onPathSelected, this));
+                this.tree.$el.on(e.path.selected + '.' + this.treePanelId, _.bind(this.onNodeSelected, this));
                 $(document).on(e.site.selected + '.' + this.treePanelId, _.bind(this.onSiteSelected, this));
                 $(document).on(e.scope.changed + '.' + this.treePanelId, _.bind(this.onScopeChanged, this));
-                $(document).on(e.ready + '.' + this.treePanelId, _.bind(this.ready, this));
-            },
-
-            ready: function () {
-                var p = pages.const.profile.page.tree;
-                this.tree.setRootPath('/');
-                this.tree.selectNode(pages.profile.get(p.aspect, p.path, "/"));
-                this.onTabSelected();
             },
 
             onScopeChanged: function () {
+                if (this.tree.log.getLevel() <= log.levels.DEBUG) {
+                    this.tree.log.debug(this.tree.nodeIdPrefix + 'treePanel.onScopeChanged()');
+                }
                 this.tree.setRootPath('/');
                 this.searchPanel.onScopeChanged();
             },
 
             onSiteSelected: function () {
+                if (this.tree.log.getLevel() <= log.levels.DEBUG) {
+                    this.tree.log.debug(this.tree.nodeIdPrefix + 'treePanel.onSiteSelected()');
+                }
                 this.onScopeChanged();
             },
 
             onTabSelected: function () {
+                if (this.tree.log.getLevel() <= log.levels.DEBUG) {
+                    this.tree.log.debug(this.tree.nodeIdPrefix + 'treePanel.onTabSelected()');
+                }
                 if (this.currentView === 'search') {
                     this.searchPanel.onShown();
                 }

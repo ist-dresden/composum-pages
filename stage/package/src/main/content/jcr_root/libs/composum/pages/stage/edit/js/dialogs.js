@@ -274,7 +274,8 @@
                     .before('<input name=":operation" type="hidden" value="delete"/>');
                 this.submitForm(_.bind(function () {
                     pages.log.debug('pages.trigger.' + pages.const.event.element.deleted + '(' + this.data.path + ')');
-                    $(document).trigger(pages.const.event.element.deleted, [this.data.path]);
+                    $(document).trigger(pages.const.event.element.deleted, [
+                        new pages.Reference(this.data.name, this.data.path, this.data.type)]);
                 }, this));
             },
 
@@ -292,7 +293,7 @@
                             break;
                         default:
                             pages.log.debug('pages.trigger.' + event[i] + '(' + this.data.path + ')');
-                            $(document).trigger(event[i], [this.data.path]);
+                            $(document).trigger(event[i], [new pages.Reference(this.data.name, this.data.path, this.data.type)]);
                             break;
                     }
                 }
@@ -377,6 +378,10 @@
                         }
                     }
                 }
+            },
+
+            getDefaultSuccessEvents: function () {
+                return pages.const.event.element.inserted;
             }
         });
 
@@ -423,9 +428,9 @@
                                 resourceType: type,
                                 targetPath: path,
                                 targetType: this.data.type
-                            }, {}, _.bind(function () {
-                                pages.log.debug('pages.trigger.' + pages.const.event.element.changed + '(' + path + ')');
-                                $(document).trigger(pages.const.event.element.changed, [path]);
+                            }, {}, _.bind(function (result) {
+                                pages.log.debug('pages.trigger.' + pages.const.event.element.inserted + '(' + path + ')');
+                                $(document).trigger(pages.const.event.element.inserted, [new pages.Reference(result.reference)]);
                             }, this));
                         }, this));
                 }
@@ -446,7 +451,8 @@
             doSubmit: function () {
                 this.submitForm(_.bind(function () {
                     pages.log.debug('pages.trigger.' + pages.const.event.element.deleted + '(' + this.data.path + ')');
-                    $(document).trigger(pages.const.event.element.deleted, [this.data.path]);
+                    $(document).trigger(pages.const.event.element.deleted, [
+                        new pages.Reference(this.data.name, this.data.path, this.data.type)]);
                 }, this));
             }
         });
@@ -496,9 +502,9 @@
                             postData.template = template;
                             // create page as a copy of the template
                             core.ajaxPost(c.base + c._create.page + this.data.path, postData, {},
-                                _.bind(function () {
+                                _.bind(function (result) {
                                     pages.log.debug('pages.trigger.' + pages.const.event.element.changed + '(' + this.data.path + ')');
-                                    $(document).trigger(pages.const.event.element.changed, [this.data.path]);
+                                    $(document).trigger(pages.const.event.element.changed, [new pages.Reference(result.reference)]);
                                 }, this));
                         } else {
                             // create page using resource type by opening the page create dialog of the designated type
@@ -507,9 +513,9 @@
                                 _.bind(function (name, path, type) {
                                     postData.resourceType = type;
                                     core.ajaxPost(c.base + c._create.page + path, postData, {},
-                                        _.bind(function () {
-                                            pages.log.debug('pages.trigger.' + pages.const.event.element.changed + '(' + this.data.path + ')');
-                                            $(document).trigger(pages.const.event.element.changed, [this.data.path]);
+                                        _.bind(function (result) {
+                                            pages.log.debug('pages.trigger.' + pages.const.event.element.changed + '(' + result.reference + ')');
+                                            $(document).trigger(pages.const.event.element.changed, [new pages.Reference(result.reference)]);
                                         }, this));
                                 }, this)
                             )

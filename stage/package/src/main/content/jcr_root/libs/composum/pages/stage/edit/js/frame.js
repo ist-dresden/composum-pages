@@ -40,7 +40,7 @@
                 $(document).on(e.dnd.finished + id, _.bind(this.onDndFinished, this));
                 $(document).on(e.element.select + id, _.bind(this.selectElement, this));
                 $(document).on(e.element.selected + id, _.bind(this.onElementSelected, this));
-                $(document).on(e.element.inserted + id, _.bind(this.onElementChanged, this));
+                $(document).on(e.element.inserted + id, _.bind(this.onElementInserted, this));
                 $(document).on(e.element.changed + id, _.bind(this.onElementChanged, this));
                 $(document).on(e.element.deleted + id, _.bind(this.onElementDeleted, this));
                 $(document).on(e.content.inserted + id, _.bind(this.onElementChanged, this));
@@ -64,18 +64,17 @@
 
             ready: function () {
                 var e = pages.const.event;
-                pages.tools.navigationTabs.ready();
                 var initialPath = this.$el.data('path');
+                if (this.log.frame.getLevel() <= log.levels.DEBUG) {
+                    this.log.frame.debug('frame.trigger.' + e.ready + '(' + initialPath + ')');
+                }
+                $(document).trigger(e.ready);
                 if (initialPath) {
                     if (this.log.frame.getLevel() <= log.levels.DEBUG) {
                         this.log.frame.debug('frame.trigger.' + e.page.select + '(' + initialPath + ')');
                     }
                     $(document).trigger(e.page.select, [initialPath]);
                 }
-                if (this.log.frame.getLevel() <= log.levels.DEBUG) {
-                    this.log.frame.debug('frame.trigger.' + e.ready + '(' + initialPath + ')');
-                }
-                $(document).trigger(e.ready);
                 window.addEventListener("message", _.bind(this.onMessage, this), false);
             },
 
@@ -168,7 +167,6 @@
                     }
                     $(document).trigger(pages.const.event.site.selected, [path]);
                 }
-                this.selectPage(event, path);
             },
 
             selectPage: function (event, path, parameters) {
@@ -176,12 +174,21 @@
                     if (this.log.frame.getLevel() <= log.levels.DEBUG) {
                         this.log.frame.debug('pages.EditFrame.selectPage(' + path + ')');
                     }
-                    pages.current.page = path;
-                    this.reloadPage(parameters);
-                    if (this.log.frame.getLevel() <= log.levels.DEBUG) {
-                        this.log.frame.debug('frame.trigger.' + pages.const.event.page.selected + '(' + path + ')');
-                    }
-                    $(document).trigger(pages.const.event.page.selected, [path]);
+                    pages.getPageData(path, _.bind(function (data) {
+                        if (data.meta && data.meta.site !== pages.current.site) {
+                            pages.current.site = data.meta.site;
+                            if (this.log.frame.getLevel() <= log.levels.DEBUG) {
+                                this.log.frame.debug('frame.trigger.' + pages.const.event.site.selected + '(' + data.meta.site + ')');
+                            }
+                            $(document).trigger(pages.const.event.site.selected, [data.meta.site]);
+                        }
+                        pages.current.page = path;
+                        this.reloadPage(parameters);
+                        if (this.log.frame.getLevel() <= log.levels.DEBUG) {
+                            this.log.frame.debug('frame.trigger.' + pages.const.event.page.selected + '(' + path + ')');
+                        }
+                        $(document).trigger(pages.const.event.page.selected, [path]);
+                    },this));
                 } else {
                     if (this.log.frame.getLevel() <= log.levels.DEBUG) {
                         this.log.frame.debug('frame.trigger.' + pages.const.event.path.selected + '(' + path + ')');
@@ -220,13 +227,13 @@
                 window.location.reload();
             },
 
-            selectElement: function (event, name, path, type) {
+            selectElement: function (event, reference) {
                 if (this.log.frame.getLevel() <= log.levels.DEBUG) {
-                    this.log.frame.debug('pages.EditFrame.selectElement(' + path + ')');
+                    this.log.frame.debug('pages.EditFrame.selectElement(' + (reference ? reference.path : '') + ')');
                 }
-                if (path) {
+                if (reference && reference.path) {
                     this.$frame[0].contentWindow.postMessage(pages.const.event.element.select
-                        + JSON.stringify({name: name, path: path, type: type}), '*');
+                        + JSON.stringify({reference: reference}), '*');
                 } else {
                     this.$frame[0].contentWindow.postMessage(pages.const.event.element.select
                         + JSON.stringify({}), '*');
@@ -234,54 +241,56 @@
             },
 
             onSiteChanged: function (event, path) {
-                if (pages.current.page === path) {
-                    this.reloadPage();
-                }
             },
 
             onViewPage: function (event, path, parameters) {
                 this.reloadPage(parameters, path);
             },
 
-            onElementSelected: function (event, name, path, type) {
-                if (!pages.current.element || pages.current.element.path !== path) {
-                    pages.current.element = new pages.Reference(name, path, type);
+            onElementSelected: function (event, reference) {
+                if (!pages.current.element || !reference || pages.current.element.path !== reference.path) {
                     if (this.log.frame.getLevel() <= log.levels.DEBUG) {
-                        this.log.frame.debug('pages.EditFrame.onElementSelected(' + path + ')');
+                        this.log.frame.debug('pages.EditFrame.onElementSelected(' + (reference ? reference.path : '') + ')');
                     }
-                    if (path) {
+                    if (reference && reference.path) {
+                        pages.current.element = reference;
                         this.$frame[0].contentWindow.postMessage(pages.const.event.element.selected
-                            + JSON.stringify({name: name, path: path, type: type}), '*');
+                            + JSON.stringify({reference: pages.current.element}), '*');
                     } else {
+                        pages.current.element = undefined;
                         this.$frame[0].contentWindow.postMessage(pages.const.event.element.selected
                             + JSON.stringify({}), '*');
                     }
                 }
             },
 
-            onElementChanged: function (event, path) {
-                if (path) {
+            onElementInserted: function (event, reference) {
+                if (reference && reference.path) {
                     if (this.log.frame.getLevel() <= log.levels.DEBUG) {
-                        this.log.frame.debug('pages.EditFrame.onElementChanged(' + path + ')');
+                        this.log.frame.debug('pages.EditFrame.onElementInserted(' + reference.path + "," + reference.name + ')');
                     }
-                    if (path === pages.current.site) {
-                        // FIXME this.reloadFrame();
-                    } else if (path.indexOf(pages.current.page) === 0) {
-                        this.reloadPage();
-                    }
+                    this.$frame[0].contentWindow.postMessage(pages.const.event.element.inserted
+                        + JSON.stringify({reference: reference}), '*');
                 }
             },
 
-            onElementDeleted: function (event, path) {
-                if (path) {
+            onElementChanged: function (event, reference) {
+                if (reference && reference.path) {
                     if (this.log.frame.getLevel() <= log.levels.DEBUG) {
-                        this.log.frame.debug('pages.EditFrame.onElementDeleted(' + path + ')');
+                        this.log.frame.debug('pages.EditFrame.onElementChanged(' + reference.path + ')');
                     }
-                    if (path === pages.current.site || path === pages.current.page) {
-                        // FIXME this.reloadFrame();
-                    } else if (path.indexOf(pages.current.page) === 0) {
-                        this.reloadPage();
+                    this.$frame[0].contentWindow.postMessage(pages.const.event.element.changed
+                        + JSON.stringify({reference: reference}), '*');
+                }
+            },
+
+            onElementDeleted: function (event, reference) {
+                if (reference && reference.path) {
+                    if (this.log.frame.getLevel() <= log.levels.DEBUG) {
+                        this.log.frame.debug('pages.EditFrame.onElementDeleted(' + reference.path + ')');
                     }
+                    this.$frame[0].contentWindow.postMessage(pages.const.event.element.deleted
+                        + JSON.stringify({reference: reference}), '*');
                 }
             },
 
@@ -327,19 +336,10 @@
                     switch (message[1]) {
                         case e.element.selected:
                             // transform selection messages into the corresponding event for the edit frame components
-                            if (args.path) {
-                                this.log.frame.debug('frame.trigger.' + e.path.selected + '(' + args.path + ')');
-                                $(document).trigger(e.path.selected, [args.path]);
-                                var eventData = [
-                                    args.name,
-                                    args.path,
-                                    args.type
-                                ];
-                                this.log.frame.debug('frame.trigger.' + e.element.selected + '(' + args.path + ')');
-                                $(document).trigger(e.element.selected, eventData);
+                            if (args.reference && args.reference.path) {
+                                this.log.frame.debug('frame.trigger.' + e.element.selected + '(' + args.reference.path + ')');
+                                $(document).trigger(e.element.selected, [args.reference]);
                             } else {
-                                this.log.frame.debug('frame.trigger.' + e.path.selected + '()');
-                                $(document).trigger(e.path.selected, []);
                                 this.log.frame.debug('frame.trigger.' + e.element.selected + '()');
                                 $(document).trigger(e.element.selected, []);
                             }
