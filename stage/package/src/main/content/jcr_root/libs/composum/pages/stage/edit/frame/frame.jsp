@@ -53,7 +53,7 @@
         <cpn:clientlib type="js" category="composum.pages.edit.frame"/>
         <script>
             $(document).ready(function () {
-                window.composum.pages.editFrame.ready();
+                window.setTimeout(_.bind(window.composum.pages.editFrame.ready, window.composum.pages.editFrame), 400);
             });
         </script>
         </body>

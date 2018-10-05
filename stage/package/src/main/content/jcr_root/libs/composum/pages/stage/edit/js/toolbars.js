@@ -133,10 +133,6 @@
                 $(document).on(c.element.selected + '.PageToolbar', _.bind(this.onComponentSelected, this));
                 this.loadProfile();
                 this.$el.css('right', this.profile.position + '%');
-                if (pages.current.mode === pages.const.modes.edit ||
-                    pages.current.mode === pages.const.modes.develop) {
-                    this.onComponentSelected();
-                }
             },
 
             initPageView: function (path) {
@@ -196,7 +192,8 @@
                 return this.componentToolbar ? this.componentToolbar.data : undefined;
             },
 
-            onComponentSelected: function (event, name, path, type) {
+            onComponentSelected: function (event, refOrPath) {
+                var path = refOrPath && refOrPath.path ? refOrPath.path : refOrPath;
                 if (this.componentToolbar) {
                     if (this.componentToolbar.data.path === path) {
                         return;
@@ -209,7 +206,7 @@
                 }
                 pages.log.debug('toolbars.PageToolbar.onComponentSelected(' + path + ')');
                 if (path) {
-                    this.loadComponentToolbar(path, type);
+                    this.loadComponentToolbar(path, refOrPath && refOrPath.type ? refOrPath.type : undefined);
                 }
             },
 

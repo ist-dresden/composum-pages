@@ -80,7 +80,7 @@
 
             reload: function () {
                 var c = tools.const.finished.uri;
-                core.getHtml(c.load + this.contextTabs.data.path,
+                core.getHtml(c.load + this.contextTabs.reference.path,
                     undefined, undefined, _.bind(function (data) {
                         if (data.status === 200) {
                             this.$el.html(data.responseText);

@@ -184,9 +184,9 @@
                 this.$goUp.click(_.bind(this.selectContainer, this));
                 this.$select.click(_.bind(this.selectElement, this));
                 $(document).on(e.element.selected + id, _.bind(this.onElementSelected, this));
-                $(document).on(e.element.inserted + id, _.bind(this.onElementChanged, this));
+                $(document).on(e.element.inserted + id, _.bind(this.onElementInserted, this));
                 $(document).on(e.element.changed + id, _.bind(this.onElementChanged, this));
-                $(document).on(e.element.deleted + id, _.bind(this.onElementChanged, this));
+                $(document).on(e.element.deleted + id, _.bind(this.onElementDeleted, this));
                 $(document).on(e.dnd.finished + '.Elements', _.bind(this.onDragFinished, this));
                 this.$el
                     .on('dragenter' + id, _.bind(this.onDragEnter, this))
@@ -251,11 +251,19 @@
                 this.reload();
             },
 
-            onElementSelected: function (event, name, path, type) {
-                this.selectPath(path);
+            onElementSelected: function (event, reference) {
+                this.selectPath(reference ? reference.path : undefined);
             },
 
-            onElementChanged: function (event, path) {
+            onElementInserted: function (event, reference) {
+                this.reload();
+            },
+
+            onElementChanged: function (event, reference) {
+                this.reload();
+            },
+
+            onElementDeleted: function (event, reference) {
                 this.reload();
             },
 
@@ -291,7 +299,7 @@
                 if (this.selection) {
                     var e = pages.const.event;
                     var parentPath = core.getParentPath(this.selection);
-                    $(document).trigger(e.element.select, [undefined, parentPath]);
+                    $(document).trigger(e.element.select, [new pages.Reference(undefined, parentPath)]);
                 }
                 return false;
             },
@@ -300,7 +308,7 @@
                 event.preventDefault();
                 if (this.selection) {
                     var e = pages.const.event;
-                    $(document).trigger(e.element.select, [undefined, this.selection]);
+                    $(document).trigger(e.element.select, [new pages.Reference(undefined, this.selection)]);
                 }
                 return false;
             },

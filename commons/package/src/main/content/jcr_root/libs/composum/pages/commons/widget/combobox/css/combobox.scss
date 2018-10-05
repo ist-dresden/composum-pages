@@ -1,0 +1,27 @@
+@charset "UTF-8";
+
+@import "../../../css/variables";
+@import "../../../css/mixins";
+
+.composum-pages-edit-widget {
+
+    &_combobox {
+
+        .dropdown-toggle {
+            padding: 6px;
+
+            i {
+                display: inline-block;
+                padding: 0 5px;
+                line-height: 20px;
+                font-size: 18px;
+                color: #666;
+            }
+        }
+
+        .dropdown-menu {
+            max-height: 216px;
+            overflow: scroll;
+        }
+    }
+}

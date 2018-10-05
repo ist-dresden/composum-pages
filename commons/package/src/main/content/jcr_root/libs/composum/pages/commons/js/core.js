@@ -2,9 +2,27 @@
 (function (core) {
     'use strict';
 
-    core.parseBool = function(string){
+    core.parseBool = function (string) {
         return (/^(0*1|on|true)$/i).test(string);
     };
+
+    core.url = core.url || {};
+
+    (function (url) {
+
+        url.getParameters = function (query) {
+            var parameters = {};
+            var regex = /[?&;](.+?)=([^&;]+)/g;
+            var match;
+            if (query) {
+                while (match = regex.exec(query)) {
+                    parameters[match[1]] = decodeURIComponent(match[2]);
+                }
+            }
+            return parameters;
+        };
+
+    })(core.url);
 
     core.dnd = core.dnd || {};
 

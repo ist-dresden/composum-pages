@@ -73,8 +73,8 @@
              * check reference data on completeness
              */
             isComplete: function () {
-                return this.name !== undefined && this.path !== undefined &&
-                    this.type !== undefined && this.prim !== undefined;
+                return this.name !== undefined && this.path !== undefined && this.type !== undefined
+                    && this.prim !== undefined && this.synthetic !== undefined;
             },
 
             /**

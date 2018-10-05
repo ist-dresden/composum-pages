@@ -31,6 +31,14 @@
         @include edit-hint-font;
         text-align: right;
         color: $edit-hint-color;
+
+        p {
+            margin: 0;
+        }
+
+        a, a:hover, a:active, a:focus {
+            text-decoration: none;
+        }
     }
 }
 

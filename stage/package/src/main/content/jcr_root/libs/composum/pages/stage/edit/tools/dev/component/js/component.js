@@ -78,7 +78,7 @@
 
             reload: function () {
                 var c = tools.const.component;
-                core.getHtml(c.componentLoadUri + this.contextTabs.data.path,
+                core.getHtml(c.componentLoadUri + this.contextTabs.reference.path,
                     undefined, undefined, _.bind(function (data) {
                         if (data.status == 200) {
                             this.$el.html(data.responseText);

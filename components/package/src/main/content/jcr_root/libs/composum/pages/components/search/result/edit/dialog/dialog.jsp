@@ -25,7 +25,8 @@
         <div class="col col-xs-12">
             <cpp:widget label="Headline" property="headline" type="richtext" i18n="true" rules="optional" height="55px"
                         hint="The head for the search result used as {@link MessageFormat} with the search expression used as argument {0}."/>
-            <cpp:widget label="Error text" property="searchtermErrorText" type="richtext" i18n="true" rules="optional" height="100px"
+            <cpp:widget label="Error text" property="searchtermErrorText" type="richtext" i18n="true" rules="optional"
+                        height="100px"
                         hint="A text to show when the user inputs faulty search terms. Describing the syntax is recommended."/>
         </div>
     </div>

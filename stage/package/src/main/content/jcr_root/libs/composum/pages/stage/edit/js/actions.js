@@ -90,7 +90,7 @@
                         name: sourceName
                     }, {}, _.bind(function (result) {
                         // trigger content change
-                        $(document).trigger(pages.const.event.element.inserted, [path, sourceName]);
+                        $(document).trigger(pages.const.event.element.inserted, [new pages.Reference(result.reference)]);
                     }, this), function (xhr) {
                         var msgs = xhr.responseJSON.messages;
                         if (msgs && msgs.length > 0) {
@@ -125,7 +125,8 @@
                         name: name
                     }, {}, _.bind(function (result) {
                         // trigger content change
-                        $(document).trigger(pages.const.event.content.inserted, [path, name]);
+                        $(document).trigger(pages.const.event.content.inserted, [
+                            new pages.Reference(result.name, result.path, result.type, result.prim)]);
                     }, this), _.bind(function (result) {
                         // on error - display copy dialog initialized with the known data
                         var data = result.responseJSON;
@@ -361,9 +362,9 @@
                                     resourceType: type,
                                     targetPath: path,
                                     targetType: target.container.reference.type
-                                }, {}, _.bind(function () {
-                                    pages.log.debug('pages.trigger.' + pages.const.event.element.changed + '(' + path + ')');
-                                    $(document).trigger(pages.const.event.element.changed, [path]);
+                                }, {}, _.bind(function (result) {
+                                    pages.log.debug('pages.trigger.' + pages.const.event.element.inserted + '(' + path + ')');
+                                    $(document).trigger(pages.const.event.element.inserted, [new pages.Reference(result.reference)]);
                                 }, this));
                             }, this));
                     }
@@ -385,9 +386,9 @@
                     }, {}, function (result) {
                         var oldParentPath = core.getParentPath(object.reference.path);
                         if (oldParentPath !== target.container.reference.path) {
-                            $(document).trigger(pages.const.event.element.changed, [oldParentPath]);
+                            $(document).trigger(pages.const.event.element.changed, [new pages.Reference(undefined, oldParentPath)]);
                         }
-                        $(document).trigger(pages.const.event.element.changed, [target.container.reference.path]);
+                        $(document).trigger(pages.const.event.element.changed, [target.container.reference]);
                     }, function (xhr) {
                         core.alert('error', 'Error', 'Error on moving component', xhr);
                     });

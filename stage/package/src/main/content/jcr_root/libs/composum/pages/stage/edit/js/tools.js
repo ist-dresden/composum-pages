@@ -142,6 +142,7 @@
                 tools.TabPanel.prototype.initialize.apply(this, [options]);
                 var e = pages.const.event;
                 $(document).on(e.path.select + '.Navigation', _.bind(this.selectPath, this));
+                $(document).on(e.ready + '.Navigation', _.bind(this.ready, this));
             },
 
             ready: function () {
@@ -197,20 +198,12 @@
                         case 'element':
                             pages.getPageData(path, _.bind(function (data) {
                                 if (data.path !== pages.current.page) {
-                                    pages.editFrame.selectOnLoad = {
-                                        name: name,
-                                        path: path,
-                                        type: type
-                                    };
                                     pages.log.debug('tools.trigger.' + pages.const.event.page.select + '(' + data.path + ')');
-                                    $(document).trigger(pages.const.event.page.select, [data.path]);
+                                    $(document).trigger(pages.const.event.page.select, [data.path, undefined,
+                                        new pages.Reference(name, path, type)]);
                                 } else {
-                                    // trigger a 'page select again' to adjust all tools
-                                    pages.log.debug('tools.trigger.' + pages.const.event.page.selected + '(' + pages.current.page + ')');
-                                    $(document).trigger(pages.const.event.page.selected, [pages.current.page]);
                                     pages.log.debug('tools.trigger.' + pages.const.event.element.select + '(' + path + ')');
-                                    $(document).trigger(pages.const.event.element.select,
-                                        [name, path, type]);
+                                    $(document).trigger(pages.const.event.element.select, [new pages.Reference(name, path, type)]);
                                 }
                             }, this));
                             break;
@@ -346,44 +339,42 @@
             initialize: function (options) {
                 var c = pages.const.event;
                 $(document).on(c.page.selected + '.Context', _.bind(this.onPageSelected, this));
-                $(document).on(c.element.selected + '.Context', _.bind(this.onComponentSelected, this));
+                $(document).on(c.element.selected + '.Context', _.bind(this.onElementSelected, this));
             },
 
-            onPageSelected: function (event, path, parameters) {
+            onPageSelected: function (event, refOrPath, parameters) {
                 if (pages.contextTools.log.getLevel() <= log.levels.DEBUG) {
                     pages.contextTools.log.debug('tools.Context.onPageSelected(' + path + ')');
                 }
-                this.changeTools(undefined, path, undefined);
+                this.changeTools(refOrPath && refOrPath.path
+                    ? refOrPath : new pages.Reference(undefined, refOrPath, undefined));
             },
 
-            onComponentSelected: function (event, name, path, type) {
+            onElementSelected: function (event, reference) {
                 if (pages.contextTools.log.getLevel() <= log.levels.DEBUG) {
-                    pages.contextTools.log.debug('tools.Context.onComponentSelected(' + path + ')');
+                    pages.contextTools.log.debug('tools.Context.onElementSelected(' + path + ')');
                 }
-                this.changeTools(name, path, type);
+                this.changeTools(reference);
             },
 
-            changeTools: function (name, path, type) {
+            changeTools: function (reference) {
+                var path = reference ? reference.path : undefined;
                 if (!path) {
                     // default view...
                     path = pages.current.page;
+                    reference = new pages.Reference(undefined, path);
                 }
                 if (path) {
+                    var params = reference && reference.type ? {type: reference.type} : {};
                     core.ajaxGet(tools.const.contextLoadUrl + path + '?pages.view=' + pages.current.mode, {
-                            data: {
-                                type: type
-                            }
+                            data: params
                         },
                         _.bind(function (data) {
                             this.closeCurrent();
                             this.$el.html(data);
                             this.contextTabs = core.getWidget(this.el,
                                 '.' + tools.const.contextTabs, tools.ContextTabs);
-                            this.contextTabs.data = {
-                                name: name,
-                                path: path,
-                                type: type
-                            };
+                            this.contextTabs.reference = reference;
                             this.contextTabs.initTools();
                         }, this));
                 } else {

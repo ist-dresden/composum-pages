@@ -5,6 +5,8 @@
                 composum/pages/commons/css/widgets.css,
                 composum/pages/commons/widget/checkbox/css/checkbox.css,
                 composum/pages/commons/widget/codearea/css/codearea.css,
+                composum/pages/commons/widget/combobox/css/combobox.css,
+                composum/pages/commons/widget/iconcombobox/css/iconcombobox.css,
                 composum/pages/commons/widget/multicheck/css/multicheck.css,
                 composum/pages/commons/widget/pathfield/css/pathfield.css,
                 composum/pages/commons/widget/imagefield/css/imagefield.css,

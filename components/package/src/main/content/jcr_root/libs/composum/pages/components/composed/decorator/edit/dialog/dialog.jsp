@@ -9,11 +9,15 @@
                 hint="the default resource type of the embedded element"/>
     <div class="row">
         <div class="col col-xs-6">
-            <cpp:widget label="Warning Level" property="level" type="select" options="none,default,info,success,warning,danger"/>
+            <cpp:widget label="Warning Level" property="level" type="select"
+                        hint="<a href='https://getbootstrap.com/docs/3.3/components/#panels-alternatives' target='_blank'>'Bootstrap' background</a>"
+                        options="none,default,primary,info,success,warning,danger"/>
         </div>
         <div class="col col-xs-6">
-            <cpp:widget label="Symbol" property="icon" type="select"
-                        options=",at,asterisk,bars,bell-o:bell,bolt,bookmark-o:bookmark,bug,bullseye,calendar,caret-right,certificate,check,chevron-right,comment,cube,cubes,exclamation,eye,fire,gift,graduation-cap,info-circle:info,life-ring,lightbulb-o:lightbulb,lock,magic,map-marker,map-pin,pencil,picture-p:picture,power-off,question-circle-o:qestion,search,sliders,tag,times,thumb-o-down:thumbs-down,thumb-o-up:thumbs-up,warning,wrench"/>
+            <cpp:widget label="Symbol" property="icon" type="iconcombobox"
+                        hint="<a href='https://fontawesome.com/v4.7.0/icons/' target='_blank'>'FontAwesome'</a> icon key"
+                        options="at,asterisk,bookmark-o:bookmark,check,exclamation,eye,info-circle:info,lightbulb-o:lightbulb,question-circle-o:qestion,search,warning,wrench"
+                        typeahead="/bin/cpm/core/system.typeahead.json/libs/fonts/awesome/4.7.0/font-awesome-keys.txt"/>
         </div>
     </div>
 </cpp:editDialog>

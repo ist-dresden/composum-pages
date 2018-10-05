@@ -12,4 +12,3 @@
            value="${cpn:text(widget.model.text)}" placeholder="${cpn:text(widget.placeholder)}"
            <c:if test="${widget.disabled}">disabled</c:if> />
 </div>
-

@@ -226,6 +226,7 @@
                 this.$versionContent = this.$('.' + c.cssBase + c.content);
                 this.actions = core.getWidget(this.el, '.' + c.actions, tools.VersionsActions);
                 this.actions.versions = this;
+                this.$slider.slider(c.slider.options);
                 this.$slider.on('slide', _.bind(this.compare, this));
             },
 
@@ -235,7 +236,7 @@
 
             reload: function () {
                 var c = tools.const.versions;
-                pages.getPageData(this.contextTabs.data.path, _.bind(function (data) {
+                pages.getPageData(this.contextTabs.reference.path, _.bind(function (data) {
                     this.data = data;
                     this.state = data.jcrContent.jcrState;
                     if (this.state.checkedOut) {
@@ -246,9 +247,8 @@
                     this.currentVersion = undefined;
                     this.mainSelection = undefined;
                     this.sdrySelection = undefined;
-                    this.$slider.slider(c.slider.options);
                     this.$slider.slider('disable');
-                    core.ajaxGet(c.versionContentUri + this.contextTabs.data.path, {},
+                    core.ajaxGet(c.versionContentUri + this.contextTabs.reference.path, {},
                         undefined, undefined, _.bind(function (data) {
                             if (data.status === 200) {
                                 this.$versionContent.html(data.responseText);

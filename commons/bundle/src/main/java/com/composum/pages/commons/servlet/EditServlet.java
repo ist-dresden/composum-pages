@@ -72,6 +72,7 @@ import static com.composum.pages.commons.util.ResourceTypeUtil.EDIT_TILE_PATH;
 import static com.composum.pages.commons.util.ResourceTypeUtil.EDIT_TOOLBAR_PATH;
 import static com.composum.pages.commons.util.ResourceTypeUtil.NEW_DIALOG_PATH;
 import static com.composum.pages.commons.util.ResourceTypeUtil.TREE_ACTIONS_PATH;
+import static com.composum.pages.commons.util.ResourceTypeUtil.isSyntheticResource;
 
 @Component(service = Servlet.class,
         property = {
@@ -312,10 +313,12 @@ public class EditServlet extends NodeTreeServlet {
                          ResourceHandle resource)
                 throws IOException {
 
-            BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
             Page page = null;
-            if (resource.isValid()) {
-                page = pageManager.createBean(context, pageManager.getContainingPageResource(resource));
+
+            Resource pageResource = pageManager.getContainingPageResource(resource);
+            if (pageResource != null) {
+                BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
+                page = pageManager.createBean(context, pageResource);
             }
 
             if (LOG.isDebugEnabled()) {
@@ -1067,8 +1070,13 @@ public class EditServlet extends NodeTreeServlet {
             JsonWriter jsonWriter = ResponseUtil.getJsonWriter(response);
             response.setStatus(HttpServletResponse.SC_OK);
             jsonWriter.beginObject();
+            jsonWriter.name("reference").beginObject();
             jsonWriter.name("name").value(result.getName());
             jsonWriter.name("path").value(result.getPath());
+            jsonWriter.name("type").value(result.getResourceType());
+            jsonWriter.name("prim").value(result.getValueMap().get(JcrConstants.JCR_PRIMARYTYPE,""));
+            jsonWriter.name("synthetic").value(isSyntheticResource(result));
+            jsonWriter.endObject();
             jsonWriter.endObject();
         }
     }
