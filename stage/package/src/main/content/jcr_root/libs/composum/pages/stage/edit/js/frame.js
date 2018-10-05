@@ -143,7 +143,8 @@
                                     select = pages.toolbars.pageToolbar.getSelectedComponent();
                                 }
                                 if (select) {
-                                    this.selectElement(undefined, select.name, select.path, select.type);
+                                    pages.log.debug('frame.trigger.' + pages.const.event.element.select + '(' + select.path + ')');
+                                    $(document).trigger(pages.const.event.element.select, [new pages.Reference(select)]);
                                 }
                             }
                             this.selectOnLoad = undefined;
@@ -169,7 +170,7 @@
                 }
             },
 
-            selectPage: function (event, path, parameters) {
+            selectPage: function (event, path, parameters, elementRef) {
                 if (pages.current.page !== path) {
                     if (this.log.frame.getLevel() <= log.levels.DEBUG) {
                         this.log.frame.debug('pages.EditFrame.selectPage(' + path + ')');
@@ -183,12 +184,15 @@
                             $(document).trigger(pages.const.event.site.selected, [data.meta.site]);
                         }
                         pages.current.page = path;
+                        if (elementRef) {
+                            this.selectOnLoad = elementRef;
+                        }
                         this.reloadPage(parameters);
                         if (this.log.frame.getLevel() <= log.levels.DEBUG) {
                             this.log.frame.debug('frame.trigger.' + pages.const.event.page.selected + '(' + path + ')');
                         }
                         $(document).trigger(pages.const.event.page.selected, [path]);
-                    },this));
+                    }, this));
                 } else {
                     if (this.log.frame.getLevel() <= log.levels.DEBUG) {
                         this.log.frame.debug('frame.trigger.' + pages.const.event.path.selected + '(' + path + ')');

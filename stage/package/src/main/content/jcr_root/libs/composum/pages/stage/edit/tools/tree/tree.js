@@ -56,46 +56,80 @@
             },
 
             onContentSelected: function (event, refOrPath) {
-                this.onPathSelected(event, refOrPath && refOrPath.path ? refOrPath.path : refOrPath);
+                var path = refOrPath && refOrPath.path ? refOrPath.path : refOrPath;
+                if (this.log.getLevel() <= log.levels.DEBUG) {
+                    this.log.debug(this.nodeIdPrefix + 'tree.onContentSelected(' + path + ')');
+                }
+                this.onPathSelected(event, path);
             },
 
             onContentInserted: function (event, refOrPath) {
                 var path = refOrPath && refOrPath.path ? refOrPath.path : refOrPath;
+                if (this.log.getLevel() <= log.levels.DEBUG) {
+                    this.log.debug(this.nodeIdPrefix + 'tree.onContentInserted(' + path + ')');
+                }
                 var parentAndName = core.getParentAndName(path);
                 this.onPathInserted(event, parentAndName.path, parentAndName.name);
             },
 
             onContentMoved: function (event, refOrPath) {
-                this.onPathMoved(event, refOrPath && refOrPath.path ? refOrPath.path : refOrPath);
+                var path = refOrPath && refOrPath.path ? refOrPath.path : refOrPath;
+                if (this.log.getLevel() <= log.levels.DEBUG) {
+                    this.log.debug(this.nodeIdPrefix + 'tree.onContentMoved(' + path + ')');
+                }
+                this.onPathMoved(event, path);
             },
 
             onContentChanged: function (event, refOrPath) {
-                this.onPathChanged(event, refOrPath && refOrPath.path ? refOrPath.path : refOrPath);
+                var path = refOrPath && refOrPath.path ? refOrPath.path : refOrPath;
+                if (this.log.getLevel() <= log.levels.DEBUG) {
+                    this.log.debug(this.nodeIdPrefix + 'tree.onContentChanged(' + path + ')');
+                }
+                this.onPathChanged(event, path);
             },
 
             onContentDeleted: function (event, refOrPath) {
-                this.onPathDeleted(event, refOrPath && refOrPath.path ? refOrPath.path : refOrPath);
+                var path = refOrPath && refOrPath.path ? refOrPath.path : refOrPath;
+                if (this.log.getLevel() <= log.levels.DEBUG) {
+                    this.log.debug(this.nodeIdPrefix + 'tree.onContentDeleted(' + path + ')');
+                }
+                this.onPathDeleted(event, path);
             },
 
             onElementSelected: function (event, reference) {
+                if (this.log.getLevel() <= log.levels.DEBUG) {
+                    this.log.debug(this.nodeIdPrefix + 'tree.onElementSelected(' + (reference ? reference.path : '') + ')');
+                }
                 this.onPathSelected(event, reference ? reference.path : undefined);
             },
 
             onElementInserted: function (event, reference) {
+                if (this.log.getLevel() <= log.levels.DEBUG) {
+                    this.log.debug(this.nodeIdPrefix + 'tree.onElementSelected(' + (reference ? reference.path : '') + ')');
+                }
                 var parentAndName = core.getParentAndName(reference.path);
                 this.onPathInserted(event, parentAndName.path, parentAndName.name);
             },
 
             onElementMoved: function (event, reference) {
-                this.onPathMoved(event, reference ? reference.path : undefined);
+                if (this.log.getLevel() <= log.levels.DEBUG) {
+                    this.log.debug(this.nodeIdPrefix + 'tree.onElementSelected(' + reference.path + ')');
+                }
+                this.onPathMoved(event, reference.path);
             },
 
             onElementChanged: function (event, reference) {
-                this.onPathChanged(event, reference ? reference.path : undefined);
+                if (this.log.getLevel() <= log.levels.DEBUG) {
+                    this.log.debug(this.nodeIdPrefix + 'tree.onElementChanged(' + reference.path + ')');
+                }
+                this.onPathChanged(event, reference.path);
             },
 
             onElementDeleted: function (event, reference) {
-                this.onPathDeleted(event, reference ? reference.path : undefined);
+                if (this.log.getLevel() <= log.levels.DEBUG) {
+                    this.log.debug(this.nodeIdPrefix + 'tree.onElementDeleted(' + reference.path + ')');
+                }
+                this.onPathDeleted(event, reference.path);
             }
         });
 

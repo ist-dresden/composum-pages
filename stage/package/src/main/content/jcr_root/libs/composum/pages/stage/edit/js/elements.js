@@ -705,24 +705,53 @@
                 return result;
             },
 
+            // change event handling
+
+            elementInserted: function (event, reference) {
+                this.redraw(new pages.Reference(undefined, core.getParentPath(reference.path)));
+            },
+
+            elementChanged: function (event, reference) {
+                this.redraw(reference);
+            },
+
+            elementDeleted: function (event, reference) {
+                this.clear(reference);
+            },
+
+            /**
+             * render a piece of the page content to refresh a (changed) part of the page
+             * @param reference the element to refresh as a reference to the repository
+             */
             redraw: function (reference) {
                 var selection = elements.pageBody.selection.component;
                 if (selection) {
                     selection = selection.reference;
                 }
                 var index = this.getElementIndex(reference.path);
-                for (var i = 0; i < index.length; i++) {
+                var toRefresh = []; // collect the views of the element on the current page...
+                var i;
+                for (i = 0; i < index.length; i++) {
                     if (index[i].component >= 0) {
-                        this.redrawComponent(this.components[index[i].component], _.bind(function () {
-                            this.initComponents();
-                            if (selection) {
-                                this.selectPath(selection.path, true);
-                            }
-                        }, this));
+                        toRefresh.push(this.components[index[i].component]);
                     }
+                }
+                for (i = 0; i < toRefresh.length; i++) {
+                    this.redrawComponent(toRefresh[i], i + 1 < toRefresh.length ? undefined : _.bind(function () {
+                        // reinitialize view after last refresh (hoping that the reload calls are serialized)
+                        this.initComponents();
+                        if (selection) {
+                            this.selectPath(selection.path, true);
+                        }
+                    }, this));
                 }
             },
 
+            /**
+             * refresh the view of one component (element or container)
+             * @param component the component view; this views content is replaced with new HTML code
+             * @param callback some things to do after reload of the HTML code (optional)
+             */
             redrawComponent: function (component, callback) {
                 core.ajaxGet(component.reference.path + '.html', {
                     data: _.extend(this.params, {
@@ -739,6 +768,11 @@
                 }, this));
             },
 
+
+            /**
+             * remove a piece of the page content to drop a (deleted) part of the page
+             * @param reference the element to drop as a reference to the repository
+             */
             clear: function (reference) {
                 var selection = elements.pageBody.selection.component;
                 if (selection) {
@@ -754,19 +788,6 @@
                 if (selection) {
                     this.selectPath(selection.path, true);
                 }
-            },
-
-            elementInserted: function (event, reference) {
-                var pathAndName = core.getParentAndName(reference.path);
-                this.redraw(new pages.Reference(undefined, pathAndName.path));
-            },
-
-            elementChanged: function (event, reference) {
-                this.redraw(reference);
-            },
-
-            elementDeleted: function (event, reference) {
-                this.clear(reference);
             },
 
             // DnD
@@ -863,8 +884,11 @@
             selectPath: function (path, force) {
                 var found = false;
                 if (path) {
-                    var $target = $('.' + elements.const.class.component
-                        + '[data-' + elements.const.data.path + '="' + path + '"]');
+                    var $target;
+                    do { // traverse upwards if 'force' and a path has no editable element on the page
+                        $target = $('.' + elements.const.class.component
+                            + '[data-' + elements.const.data.path + '="' + path + '"]');
+                    } while ((!$target || $target.length < 1) && force && (path = core.getParentPath(path)) && path !== "/");
                     if ($target && $target.length > 0) {
                         var component = $target[0].view;
                         if (component) {
@@ -1040,8 +1064,8 @@
                 var domEl = document.elementFromPoint(pointer.x, pointer.y);
                 if (domEl) {
                     var handleEl;
-                    if ((handleEl = elements.pageBody.pointer.getComponentEl(domEl)) ||
-                        (handleEl = elements.pageBody.selection.getComponentEl(domEl))) {
+                    if ((handleEl = (elements.pageBody.pointer.getComponentEl(domEl))
+                        || elements.pageBody.selection.getComponentEl(domEl))) {
                         domEl = handleEl;
                     }
                     var $target = $(domEl).closest(selector);

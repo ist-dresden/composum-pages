@@ -198,16 +198,13 @@
                         case 'element':
                             pages.getPageData(path, _.bind(function (data) {
                                 if (data.path !== pages.current.page) {
-                                    pages.editFrame.selectOnLoad = {
-                                        name: name,
-                                        path: path,
-                                        type: type
-                                    };
                                     pages.log.debug('tools.trigger.' + pages.const.event.page.select + '(' + data.path + ')');
-                                    $(document).trigger(pages.const.event.page.select, [data.path]);
+                                    $(document).trigger(pages.const.event.page.select, [data.path, undefined,
+                                        new pages.Reference(name, path, type)]);
+                                } else {
+                                    pages.log.debug('tools.trigger.' + pages.const.event.element.select + '(' + path + ')');
+                                    $(document).trigger(pages.const.event.element.select, [new pages.Reference(name, path, type)]);
                                 }
-                                pages.log.debug('tools.trigger.' + pages.const.event.element.select + '(' + path + ')');
-                                $(document).trigger(pages.const.event.element.select, [new pages.Reference(name, path, type)]);
                             }, this));
                             break;
                         default:

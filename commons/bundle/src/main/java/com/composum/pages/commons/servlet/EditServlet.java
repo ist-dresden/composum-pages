@@ -313,10 +313,12 @@ public class EditServlet extends NodeTreeServlet {
                          ResourceHandle resource)
                 throws IOException {
 
-            BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
             Page page = null;
-            if (resource.isValid()) {
-                page = pageManager.createBean(context, pageManager.getContainingPageResource(resource));
+
+            Resource pageResource = pageManager.getContainingPageResource(resource);
+            if (pageResource != null) {
+                BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
+                page = pageManager.createBean(context, pageResource);
             }
 
             if (LOG.isDebugEnabled()) {
