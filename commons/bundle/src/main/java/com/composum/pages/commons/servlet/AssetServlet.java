@@ -1,5 +1,6 @@
 package com.composum.pages.commons.servlet;
 
+import com.composum.pages.commons.AssetsConfiguration;
 import com.composum.pages.commons.PagesConfiguration;
 import com.composum.pages.commons.model.Site;
 import com.composum.pages.commons.service.ResourceManager;
@@ -48,6 +49,9 @@ public class AssetServlet extends PagesContentServlet {
 
     @Reference
     protected PagesConfiguration pagesConfiguration;
+
+    @Reference
+    protected AssetsConfiguration assetsConfiguration;
 
     @Reference
     protected ResourceManager resourceManager;
@@ -156,7 +160,7 @@ public class AssetServlet extends PagesContentServlet {
 
     @Override
     protected ResourceFilter getNodeFilter(SlingHttpServletRequest request) {
-        return pagesConfiguration.getRequestNodeFilter(request, PARAM_FILTER, DEFAULT_FILTER);
+        return assetsConfiguration.getRequestNodeFilter(request, PARAM_FILTER, DEFAULT_FILTER);
     }
 
     //

@@ -126,6 +126,12 @@
                         term: 'term'
                     }
                 },
+                assets: {
+                    tree: {
+                        aspect: 'asset-tree',
+                        path: 'path'
+                    }
+                },
                 develop: {
                     tree: {
                         aspect: 'develop-tree',

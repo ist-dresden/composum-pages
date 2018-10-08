@@ -35,8 +35,8 @@ public class PagesConfigImpl implements PagesConfiguration {
     @Property(
             name = SITE_NODE_FILTER_KEY,
             label = "Sites Filter",
-            description = "the filter configuration to set the scope to the  internet sites",
-            value = "PrimaryType(+'^cpp:(Element|Container|Site)$')"
+            description = "the filter configuration to set the scope to the internet sites",
+            value = "PrimaryType(+'^cpp:(Site)$')"
     )
     private ResourceFilter siteNodeFilter;
 
@@ -79,14 +79,6 @@ public class PagesConfigImpl implements PagesConfiguration {
             value = "PrimaryType(+'^cpp:(PageContent)$')"
     )
     private ResourceFilter componentIntermediateFilter;
-
-    @Property(
-            name = SITE_INTERMEDIATE_FILTER_KEY,
-            label = "Site Configuration Intermediate Filter",
-            description = "the filter configuration to determine all intermediate nodes in the site definition",
-            value = "or{PrimaryType(+'^cpp:(SiteConfiguration)$'),ResourceType(+'^composum/pages/stage/edit/template(/(content|set))?$')}"
-    )
-    private ResourceFilter siteIntermediateFilter;
 
     @Property(
             name = DEV_INTERMEDIATE_FILTER_KEY,
@@ -200,15 +192,10 @@ public class PagesConfigImpl implements PagesConfiguration {
         treeIntermediateFilter = new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.and,
                 REPLICATION_ROOT_FILTER,
                 ResourceFilterMapping.fromString((String) properties.get(TREE_INTERMEDIATE_FILTER_KEY)));
-        siteIntermediateFilter = new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.and,
-                REPLICATION_ROOT_FILTER,
-                new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.or,
-                        ResourceFilterMapping.fromString((String) properties.get(SITE_INTERMEDIATE_FILTER_KEY)),
-                        treeIntermediateFilter));
         siteNodeFilter = buildTreeFilter(new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.and,
                         REPLICATION_ROOT_FILTER,
                         ResourceFilterMapping.fromString((String) properties.get(SITE_NODE_FILTER_KEY))),
-                siteIntermediateFilter);
+                treeIntermediateFilter);
         pageNodeFilter = buildTreeFilter(new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.and,
                         REPLICATION_ROOT_FILTER,
                         ResourceFilterMapping.fromString((String) properties.get(PAGE_NODE_FILTER_KEY))),

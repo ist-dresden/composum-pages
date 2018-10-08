@@ -47,6 +47,11 @@ public class AssetsConfigImpl implements AssetsConfiguration {
                 description = "the filter configuration to set the scope to video files"
         )
         String videoNodeFilterRule() default "and{PrimaryType(+'^nt:(file)$'),MimeType(+'^video/')}";
+
+        @AttributeDefinition(
+                description = "the filter configuration to set the scope to video files"
+        )
+        String treeIntermediateFilterRule() default "and{or{Folder(),PrimaryType(+'^cpp:(Site)$')},Path(-'^/(etc|conf|apps|libs|sightly|htl|var)')}";
     }
 
     @Reference
@@ -114,25 +119,28 @@ public class AssetsConfigImpl implements AssetsConfiguration {
     @Modified
     protected void activate(PagesAssetsConfiguration config) {
         this.config = config;
+        ResourceFilter treeIntermediateFilter = new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.or,
+                pagesConfiguration.getTreeIntermediateFilter(),
+                pagesConfiguration.getSiteNodeFilter());
         assetNodeFilter = buildTreeFilter(new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.and,
                         REPLICATION_ROOT_FILTER,
                         ResourceFilterMapping.fromString(config.assetNodeFilterRule())),
-                pagesConfiguration.getTreeIntermediateFilter());
+                treeIntermediateFilter);
         imageNodeFilter = buildTreeFilter(new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.and,
                         REPLICATION_ROOT_FILTER,
                         ResourceFilterMapping.fromString(config.imageNodeFilterRule())),
-                pagesConfiguration.getTreeIntermediateFilter());
+                treeIntermediateFilter);
         videoNodeFilter = buildTreeFilter(new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.and,
                         REPLICATION_ROOT_FILTER,
                         ResourceFilterMapping.fromString(config.videoNodeFilterRule())),
-                pagesConfiguration.getTreeIntermediateFilter());
+                treeIntermediateFilter);
         anyAssetFilter = buildTreeFilter(new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.and,
                         REPLICATION_ROOT_FILTER,
                         new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.or,
                                 ResourceFilterMapping.fromString(config.assetNodeFilterRule()),
                                 ResourceFilterMapping.fromString(config.imageNodeFilterRule()),
                                 ResourceFilterMapping.fromString(config.videoNodeFilterRule()))),
-                pagesConfiguration.getTreeIntermediateFilter());
+                treeIntermediateFilter);
     }
 
     @Deactivate
