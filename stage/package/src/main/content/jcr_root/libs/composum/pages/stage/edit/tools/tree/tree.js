@@ -43,6 +43,7 @@
                 if (!this.suppressEvent) {
                     core.components.Tree.prototype.onNodeSelected.apply(this, [path, node]);
                 }
+                this.$el.trigger(pages.const.event.path.selected, [path]);
             },
 
             onPathSelectedFailed: function (path) {
@@ -299,9 +300,11 @@
                 this.treePanelId = this.tree.nodeIdPrefix + 'treePanel';
             },
 
-            onNodeSelected: function (event, path, triggerEvent) {
+            onNodeSelected: function (event, path) {
                 if (this.path !== path) {
-                    pages.log.debug(this.treePanelId + '.onPathSelected(' + path + ')');
+                    if (pages.log.getLevel() <= log.levels.DEBUG) {
+                        pages.log.debug(this.treePanelId + '.onNodeSelected(' + path + ')');
+                    }
                     this.path = path;
                     if (!path) {
                         this.doSelectDefaultNode();
