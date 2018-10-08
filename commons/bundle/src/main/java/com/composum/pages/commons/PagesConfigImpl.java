@@ -112,7 +112,7 @@ public class PagesConfigImpl implements PagesConfiguration {
     )
     private ResourceFilter orderableNodesFilter;
 
-    private static final ResourceFilter REPLICATION_ROOT_FILTER =
+    public static final ResourceFilter REPLICATION_ROOT_FILTER =
             new ResourceFilter.PathFilter(new StringFilter.BlackList("^/(public|preview)"));
 
     private Map<String, Boolean> enabledServlets;
