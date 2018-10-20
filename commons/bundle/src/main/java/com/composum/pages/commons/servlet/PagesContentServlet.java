@@ -57,7 +57,7 @@ public abstract class PagesContentServlet extends ContentServlet {
     // TreeNodeServlet...
 
     /**
-     * sort children of orderable nodes
+     * sort children of nodes which are not marked 'orderable'
      */
     @Override
     protected List<Resource> prepareTreeItems(ResourceHandle resource, List<Resource> items) {

@@ -31,6 +31,7 @@ import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Set;
 
 @Component(service = Servlet.class,
         property = {
@@ -93,7 +94,7 @@ public class AssetServlet extends PagesContentServlet {
     }
 
     public enum Operation {
-        assetTree, assetData, resourceInfo,
+        filterSet, assetTree, assetData, resourceInfo,
         targetContainers, isAllowedChild,
         moveContent, renameContent, copyContent,
         versions, restoreVersion, setVersionLabel, checkpoint
@@ -112,6 +113,8 @@ public class AssetServlet extends PagesContentServlet {
         super.init();
 
         // GET
+        operations.setOperation(ServletOperationSet.Method.GET, Extension.json,
+                Operation.filterSet, new GetFilterSet());
         operations.setOperation(ServletOperationSet.Method.GET, Extension.json,
                 Operation.assetTree, new TreeOperation());
         operations.setOperation(ServletOperationSet.Method.GET, Extension.json,
@@ -144,7 +147,6 @@ public class AssetServlet extends PagesContentServlet {
                 Operation.setVersionLabel, new SetVersionLabel());
 
         // DELETE
-
     }
 
     public class PagesAssetOperationSet extends ServletOperationSet<Extension, Operation> {
@@ -157,6 +159,22 @@ public class AssetServlet extends PagesContentServlet {
     //
     // Tree
     //
+
+    protected class GetFilterSet implements ServletOperation {
+
+        @Override
+        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response, ResourceHandle resource)
+                throws IOException {
+            Set<String> filterSet = assetsConfiguration.getNodeFilterKeys();
+            response.setStatus(HttpServletResponse.SC_OK);
+            JsonWriter jsonWriter = ResponseUtil.getJsonWriter(response);
+            jsonWriter.beginArray();
+            for (String key : filterSet) {
+                jsonWriter.value(key);
+            }
+            jsonWriter.endArray();
+        }
+    }
 
     @Override
     protected ResourceFilter getNodeFilter(SlingHttpServletRequest request) {

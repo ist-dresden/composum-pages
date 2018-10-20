@@ -1,5 +1,6 @@
 <%@page session="false" pageEncoding="UTF-8" %>
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
+<%@taglib prefix="cpn" uri="http://sling.composum.com/cpnl/1.0" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <cpp:defineFrameObjects/>
 <cpp:element var="tree" type="com.composum.pages.stage.model.edit.FramePage" mode="none"
@@ -29,8 +30,9 @@
                 <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
                     <button type="button"
                             class="fa fa-search ${treeCssBase}_toggle-view composum-pages-tools_button btn btn-default"
-                            title="Search a page"><span
-                            class="composum-pages-tools_button-label">Search</span></button>
+                            title="${cpn:i18n(slingRequest,'Search a page')}"><cpn:text
+                            tagName="span" tagClass="composum-pages-tools_button-label"
+                            i18n="true">Search</cpn:text></button>
                 </div>
             </div>
         </div>
