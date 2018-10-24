@@ -1,4 +1,9 @@
-package com.composum.pages.commons.servlet;
+/*
+ * copyright (c) 2015ff IST GmbH Dresden, Germany - https://www.ist-software.com
+ *
+ * This software may be modified and distributed under the terms of the MIT license.
+ */
+package com.composum.pages.commons.servlet.search;
 
 import com.composum.pages.commons.util.RequestUtil;
 import com.composum.sling.core.BeanContext;

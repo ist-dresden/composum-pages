@@ -14,7 +14,7 @@
                         class="fa fa-filter composum-pages-tools_button btn btn-default dropdown dropdown-toggle"
                         data-toggle="dropdown" title="Filter"><span
                         class="composum-pages-tools_button-label">Filter</span></button>
-                <ul class="composum-pages-tools_menu dropdown-menu" role="menu">
+                <ul class="${assetsCssBase}_filter composum-pages-tools_menu dropdown-menu" role="menu">
                     <c:forEach items="${assets.assetFilterSet}" var="filter">
                         <li class="${assetsCssBase}_filter-value" data-value="${filter.key}"><a
                                 href="#"
@@ -25,7 +25,7 @@
             </div>
             <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
                 <button type="button"
-                        class="fa fa-search ${assetsCssBase}_search composum-pages-tools_button btn btn-default"
+                        class="fa fa-search ${assetsCssBase}_toggle-view composum-pages-tools_button btn btn-default"
                         title="${cpn:i18n(slingRequest,'Search an asset object')}"><cpn:text
                         tagName="span" tagClass="composum-pages-tools_button-label"
                         i18n="true">Search</cpn:text></button>
@@ -36,5 +36,7 @@
         <div class="composum-pages-tools_tree">
         </div>
     </div>
-    <cpp:include resourceType="composum/pages/stage/edit/tools/search"/>
+    <div class="composum-pages-tools_tree_asset-tile tree-panel-preview">
+    </div>
+    <cpp:include resourceType="composum/pages/stage/edit/tools/search" replaceSelectors="asset"/>
 </cpp:element>

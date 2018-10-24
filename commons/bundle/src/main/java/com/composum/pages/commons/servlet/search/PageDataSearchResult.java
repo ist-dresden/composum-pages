@@ -1,6 +1,11 @@
-package com.composum.pages.commons.servlet;
+/*
+ * copyright (c) 2015ff IST GmbH Dresden, Germany - https://www.ist-software.com
+ *
+ * This software may be modified and distributed under the terms of the MIT license.
+ */
+package com.composum.pages.commons.servlet.search;
 
-import com.composum.pages.commons.service.SearchService;
+import com.composum.pages.commons.service.search.SearchService;
 import com.composum.pages.commons.service.search.SearchTermParseException;
 import com.composum.sling.core.filter.StringFilter;
 import com.composum.sling.core.util.LinkUtil;

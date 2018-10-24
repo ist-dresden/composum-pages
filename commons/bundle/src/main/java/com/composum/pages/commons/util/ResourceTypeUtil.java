@@ -1,3 +1,8 @@
+/*
+ * copyright (c) 2015ff IST GmbH Dresden, Germany - https://www.ist-software.com
+ *
+ * This software may be modified and distributed under the terms of the MIT license.
+ */
 package com.composum.pages.commons.util;
 
 import com.composum.pages.commons.PagesConstants;
@@ -65,6 +70,7 @@ public class ResourceTypeUtil {
     public static final String DEFAULT_CONTAINER_TILE = EDIT_DEFAULT_ROOT + "container/tile";
     public static final String DEFAULT_PAGE_TILE = EDIT_DEFAULT_ROOT + "page/tile";
     public static final String DEFAULT_SITE_TILE = EDIT_DEFAULT_ROOT + "site/tile";
+    public static final String DEFAULT_FILE_TILE = EDIT_DEFAULT_ROOT + "file/tile";
 
     public static final String DEFAULT_ELEMENT_THUMBNAIL = EDIT_DEFAULT_ROOT + "element/thumbnail";
     public static final String DEFAULT_CONTAINER_THUMBNAIL = EDIT_DEFAULT_ROOT + "container/thumbnail";
@@ -81,6 +87,7 @@ public class ResourceTypeUtil {
     public static final String DEFAULT_PAGE_ACTIONS = EDIT_DEFAULT_ROOT + "page/tree";
     public static final String DEFAULT_SITE_ACTIONS = EDIT_DEFAULT_ROOT + "site/tree";
     public static final String DEFAULT_FOLDER_ACTIONS = EDIT_DEFAULT_ROOT + "folder/tree";
+    public static final String DEFAULT_FILE_ACTIONS = EDIT_DEFAULT_ROOT + "file/tree";
     public static final String DEFAULT_NONE_ACTIONS = EDIT_DEFAULT_ROOT + "none/tree";
 
     public static final String DEFAULT_CONTEXT_ACTIONS = EDIT_DEFAULT_ROOT + "element/context/actions";
@@ -100,6 +107,13 @@ public class ResourceTypeUtil {
      */
     public static boolean isFolder(Resource resource) {
         return ResourceFilter.FOLDER.accept(resource);
+    }
+
+    /**
+     * the check to support folders as intermediate nodes in the content tree
+     */
+    public static boolean isFile(ResourceResolver resolver, Resource resource) {
+        return false;// ResourceFilter.FILE.accept(resource);
     }
 
     /**

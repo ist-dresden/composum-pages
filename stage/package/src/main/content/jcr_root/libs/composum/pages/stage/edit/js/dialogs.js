@@ -53,6 +53,9 @@
                         new: '.newDialog',
                         create: '.editDialog.create',
                         delete: '.editDialog.delete'
+                    },
+                    _upload: {
+                        dialog: '/file/dialog/upload.html'
                     }
                 },
                 css: {
@@ -591,6 +594,12 @@
             var c = dialogs.const.edit.url;
             pages.dialogHandler.openEditDialog(c.path + c._add.path + c._add._file,
                 dialogs.NewFileDialog, name, path, type);
+        };
+
+        dialogs.openUploadFileDialog = function (name, path, type) {
+            var c = dialogs.const.edit.url;
+            pages.dialogHandler.openEditDialog(c.path + c._upload.dialog,
+                dialogs.EditDialog, name, path, type);
         };
 
         /**

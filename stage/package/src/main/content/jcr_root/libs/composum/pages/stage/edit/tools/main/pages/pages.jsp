@@ -42,5 +42,5 @@
         <div class="composum-pages-tools_tree">
         </div>
     </div>
-    <cpp:include resourceType="composum/pages/stage/edit/tools/search"/>
+    <cpp:include resourceType="composum/pages/stage/edit/tools/search" replaceSelectors="page"/>
 </cpp:element>

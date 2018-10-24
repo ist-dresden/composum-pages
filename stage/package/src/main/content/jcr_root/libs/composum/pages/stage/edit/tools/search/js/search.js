@@ -17,7 +17,7 @@
                 selected: 'selected'
             },
             http: {
-                uri: '/bin/cpm/pages/search.page.tile.html',
+                uri: '/bin/cpm/pages/search.',
                 q: {
                     term: 'q.term',
                     limit: 'q.limit'
@@ -36,6 +36,13 @@
                 this.$result = this.$('.' + c.base + c._result);
                 this.$scope.val(this.getScope(this.$scope));
                 this.$input.val(pages.profile.get(p.aspect, p.term));
+                this.$input.keypress(_.bind(function (event) {
+                    if (event.which === 13) {
+                        var term = this.$input.val();
+                        var scope = this.$scope.val();
+                        this.search(scope, term ? term : '*');
+                    }
+                }, this));
                 this.$input.change(_.bind(this.onChange, this));
                 this.$scope.change(_.bind(this.onChange, this));
                 $(document).on(e.page.selected + '.' + p.aspect, _.bind(this.onSelected, this));
@@ -101,7 +108,7 @@
                 if (this.path) {
                     var c = search.const.css;
                     var h = search.const.http;
-                    var url = h.uri + this.path
+                    var url = h.uri + this.$el.data('type') + '.tile.html' + this.path
                         + '?' + h.q.term + '=' + encodeURIComponent(term)
                         + '&' + h.q.limit + '=50';
                     this.$el.addClass(c.searching);

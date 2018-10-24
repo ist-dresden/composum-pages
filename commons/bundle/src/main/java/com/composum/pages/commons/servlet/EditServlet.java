@@ -1,5 +1,11 @@
+/*
+ * copyright (c) 2015ff IST GmbH Dresden, Germany - https://www.ist-software.com
+ *
+ * This software may be modified and distributed under the terms of the MIT license.
+ */
 package com.composum.pages.commons.servlet;
 
+import com.composum.pages.commons.AssetsConfiguration;
 import com.composum.pages.commons.PagesConfiguration;
 import com.composum.pages.commons.model.Container;
 import com.composum.pages.commons.model.GenericModel;
@@ -12,6 +18,7 @@ import com.composum.pages.commons.service.ResourceManager;
 import com.composum.pages.commons.service.SiteManager;
 import com.composum.pages.commons.service.VersionsService;
 import com.composum.pages.commons.util.RequestUtil;
+import com.composum.pages.commons.util.ResolverUtil;
 import com.composum.pages.commons.util.ResourceTypeUtil;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.ResourceHandle;
@@ -40,6 +47,8 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.jcr.RepositoryException;
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
@@ -77,6 +86,9 @@ public class EditServlet extends PagesContentServlet {
 
     @Reference
     protected PagesConfiguration pagesConfiguration;
+
+    @Reference
+    protected AssetsConfiguration assetsConfiguration;
 
     @Reference
     protected ResourceManager resourceManager;
@@ -395,7 +407,6 @@ public class EditServlet extends PagesContentServlet {
         public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
                          ResourceHandle resource)
                 throws ServletException, IOException {
-            ResourceResolver resolver = request.getResourceResolver();
 
             Resource contentResource = resource;
             if (Page.isPage(contentResource) || Site.isSite(contentResource)) {
@@ -410,8 +421,7 @@ public class EditServlet extends PagesContentServlet {
                 selectors = getDefaultSelectors();
             }
             String paramType = request.getParameter(PARAM_TYPE);
-            Resource editResource = ResourceTypeUtil.getSubtype(resolver, contentResource, paramType,
-                    getResourcePath(request), selectors);
+            Resource editResource = getEditResource(request, contentResource, selectors, paramType);
 
             if (LOG.isDebugEnabled()) {
                 LOG.debug("GetEditResource(" + contentResource.getPath() + "," + editResource.getPath() + ")...");
@@ -426,6 +436,12 @@ public class EditServlet extends PagesContentServlet {
             } else {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND);
             }
+        }
+
+        protected Resource getEditResource(@Nonnull SlingHttpServletRequest request, @Nonnull Resource contentResource,
+                                           @Nonnull String selectors, @Nullable String type) {
+            ResourceResolver resolver = request.getResourceResolver();
+            return ResourceTypeUtil.getSubtype(resolver, contentResource, type, getResourcePath(request), selectors);
         }
 
         protected String getSelectors(SlingHttpServletRequest request) {
@@ -461,6 +477,17 @@ public class EditServlet extends PagesContentServlet {
         protected String getResourcePath(SlingHttpServletRequest request) {
             return EDIT_TILE_PATH;
         }
+
+        @Override
+        protected Resource getEditResource(@Nonnull SlingHttpServletRequest request, @Nonnull Resource contentResource,
+                                           @Nonnull String selectors, @Nullable String type) {
+            if (assetsConfiguration.getAssetFileFilter().accept(contentResource)) {
+                ResourceResolver resolver = request.getResourceResolver();
+                return ResolverUtil.getResourceType(resolver, ResourceTypeUtil.DEFAULT_FILE_TILE);
+            } else {
+                return super.getEditResource(request, contentResource, selectors, type);
+            }
+        }
     }
 
     protected class GetEditToolbar extends GetEditResource {
@@ -476,6 +503,17 @@ public class EditServlet extends PagesContentServlet {
         @Override
         protected String getResourcePath(SlingHttpServletRequest request) {
             return TREE_ACTIONS_PATH;
+        }
+
+        @Override
+        protected Resource getEditResource(@Nonnull SlingHttpServletRequest request, @Nonnull Resource contentResource,
+                                           @Nonnull String selectors, @Nullable String type) {
+            if (assetsConfiguration.getAssetFileFilter().accept(contentResource)) {
+                ResourceResolver resolver = request.getResourceResolver();
+                return ResolverUtil.getResourceType(resolver, ResourceTypeUtil.DEFAULT_FILE_ACTIONS);
+            } else {
+                return super.getEditResource(request, contentResource, selectors, type);
+            }
         }
     }
 

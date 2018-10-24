@@ -80,6 +80,7 @@ public class AssetsConfigImpl implements AssetsConfiguration {
     private ResourceFilter imageNodeFilter;
     private ResourceFilter videoNodeFilter;
     private ResourceFilter anyAssetFilter;
+    private ResourceFilter assetFileFilter;
 
     private Map<String, ConfigurableFilter> availableFilters;
 
@@ -137,6 +138,12 @@ public class AssetsConfigImpl implements AssetsConfiguration {
         return anyAssetFilter;
     }
 
+    @Nonnull
+    @Override
+    public ResourceFilter getAssetFileFilter() {
+        return assetFileFilter;
+    }
+
     /**
      * Creates a 'tree filter' as combination with the configured filter and the rules for the
      * 'intermediate' nodes (folders) to traverse up to the target nodes.
@@ -176,22 +183,18 @@ public class AssetsConfigImpl implements AssetsConfiguration {
                             replicationRootFilter,
                             ResourceFilterMapping.fromString(config.assetNodeFilterRule())),
                     treeIntermediateFilter);
-            anyAssetFilter = buildTreeFilter(new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.and,
-                            replicationRootFilter,
-                            new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.or,
-                                    ResourceFilterMapping.fromString(config.assetNodeFilterRule()),
-                                    ResourceFilterMapping.fromString(config.imageNodeFilterRule()),
-                                    ResourceFilterMapping.fromString(config.videoNodeFilterRule()))),
-                    treeIntermediateFilter);
+            assetFileFilter = new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.or,
+                    ResourceFilterMapping.fromString(config.assetNodeFilterRule()),
+                    ResourceFilterMapping.fromString(config.imageNodeFilterRule()),
+                    ResourceFilterMapping.fromString(config.videoNodeFilterRule()));
         } else {
             assetNodeFilter = null;
-            anyAssetFilter = buildTreeFilter(new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.and,
-                            replicationRootFilter,
-                            new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.or,
-                                    ResourceFilterMapping.fromString(config.imageNodeFilterRule()),
-                                    ResourceFilterMapping.fromString(config.videoNodeFilterRule()))),
-                    treeIntermediateFilter);
+            assetFileFilter = new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.or,
+                    ResourceFilterMapping.fromString(config.imageNodeFilterRule()),
+                    ResourceFilterMapping.fromString(config.videoNodeFilterRule()));
         }
+        anyAssetFilter = buildTreeFilter(new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.and,
+                replicationRootFilter, assetFileFilter), treeIntermediateFilter);
         availableFilters.put(FILTER_ALL, new ConfigurableFilter(anyAssetFilter,
                 FILTER_ALL, "All", "show all available asset object types"));
         if (assetNodeFilter != null) {

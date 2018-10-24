@@ -87,4 +87,7 @@ public interface AssetsConfiguration {
 
     @Nonnull
     ResourceFilter getAnyAssetFilter();
+
+    @Nonnull
+    public ResourceFilter getAssetFileFilter();
 }

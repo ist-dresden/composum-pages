@@ -203,13 +203,13 @@
         line-height: 24px;
     }
 
-    &_icon{
+    &_icon {
         position: absolute;
         top: $tools-pane-padding;
         left: $tools-pane-padding;
     }
 
-    &_title{
+    &_title {
         padding-left: 30px;
         max-width: 100%;
         overflow: auto;
@@ -236,6 +236,63 @@
     &_icon {
         vertical-align: top;
         width: 30px;
+    }
+}
+
+.composum-pages-stage-file {
+
+    &_tile {
+        position: relative;
+        width: 100%;
+        height: $tile-file-height;
+        background-color: $tile-file-bg-color;
+        overflow: hidden;
+
+        &_image-frame,
+        &_video-frame {
+            display: inline-block;
+        }
+
+        &_image,
+        &_video-player {
+            max-height: $tile-file-height;
+        }
+
+        &.image.svg {
+
+            .composum-pages-stage-file_tile {
+
+                &_image {
+                    height: $tile-file-height;
+                }
+            }
+        }
+
+        &_text {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: $tile-file-text-padding;
+            background-color: $tile-file-text-bg;
+            @include font('robotolight', $hint-font-size);
+            text-align: right;
+            color: $tile-file-text-color;
+        }
+    }
+}
+
+.composum-pages-tools {
+
+    &_tree {
+
+        &_asset-tile {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: $tile-file-height+ $tools-pane-padding * 2;
+            padding: $tools-pane-padding;
+        }
     }
 }
 
@@ -348,6 +405,19 @@
 
         .alert {
             padding: 5px;
+        }
+    }
+
+    .composum-pages-stage-edit-tools-main-assets {
+
+        &.preview-available {
+
+            .composum-pages-tools {
+
+                &_tree-panel {
+                    bottom: $tile-file-height+ $tools-pane-padding * 2;
+                }
+            }
         }
     }
 }

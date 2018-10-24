@@ -129,6 +129,8 @@
                 assets: {
                     tree: {
                         aspect: 'asset-tree',
+                        view: 'view',
+                        filter: 'filter',
                         path: 'path'
                     }
                 },

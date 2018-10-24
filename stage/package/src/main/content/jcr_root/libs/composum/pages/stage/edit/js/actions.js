@@ -285,6 +285,10 @@
 
         actions.file = {
 
+            upload: function (event, name, path, type) {
+                pages.dialogs.openUploadFileDialog(name, path, type);
+            },
+
             rename: function (event, name, path, type) {
                 pages.dialogs.openRenameContentDialog(name, path, type)
             },
@@ -295,10 +299,6 @@
 
             copy: function (event, name, path, type) {
                 actions.content.copy(path);
-            },
-
-            paste: function (event, name, path, type) {
-                actions.content.paste(path);
             },
 
             delete: function (event, name, path, type) {
