@@ -53,6 +53,9 @@
                         new: '.newDialog',
                         create: '.editDialog.create',
                         delete: '.editDialog.delete'
+                    },
+                    _upload: {
+                        dialog: '/file/dialog/upload.html'
                     }
                 },
                 css: {
@@ -593,6 +596,12 @@
                 dialogs.NewFileDialog, name, path, type);
         };
 
+        dialogs.openUploadFileDialog = function (name, path, type) {
+            var c = dialogs.const.edit.url;
+            pages.dialogHandler.openEditDialog(c.path + c._upload.dialog,
+                dialogs.EditDialog, name, path, type);
+        };
+
         /**
          * the dialog to delete a content resource (page, folder, file) from the repository
          */
@@ -674,9 +683,10 @@
                     targetPath: this.newPath.getValue(),
                     name: this.name.getValue(),
                     before: this.before.getValue(),
+
                     index: this.index.getValue()
                 }, {}, _.bind(function (data) {
-                    $(document).trigger(pages.const.event.content.moved, [oldPath, data.path]);
+                    $(document).trigger(pages.const.event.content.moved, [oldPath, data.reference.path]);
                     this.hide();
                 }, this));
             }

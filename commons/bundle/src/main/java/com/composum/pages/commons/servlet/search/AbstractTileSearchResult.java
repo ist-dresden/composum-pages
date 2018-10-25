@@ -1,6 +1,11 @@
-package com.composum.pages.commons.servlet;
+/*
+ * copyright (c) 2015ff IST GmbH Dresden, Germany - https://www.ist-software.com
+ *
+ * This software may be modified and distributed under the terms of the MIT license.
+ */
+package com.composum.pages.commons.servlet.search;
 
-import com.composum.pages.commons.service.SearchService;
+import com.composum.pages.commons.service.search.SearchService;
 import com.composum.pages.commons.util.ResourceTypeUtil;
 import com.composum.sling.core.util.LinkUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -10,8 +15,6 @@ import org.apache.sling.api.request.RequestDispatcherOptions;
 import org.apache.sling.api.request.RequestPathInfo;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
-import org.osgi.framework.Constants;
-import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,27 +24,23 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Collection;
 
-/**
- * the rendering strategy for a search result list which is generating an HTML list with links to the pages and
- * page information rendered by delegation to the page itself using the subtype 'edit/tile' of the page
- */
-@Component(
-        property = {
-                Constants.SERVICE_DESCRIPTION + "=Composum Pages Page Tile Search Result"
-        }
-)
-public class PageTileSearchResult implements SearchResultRenderer {
+public abstract class AbstractTileSearchResult {
 
-    private static final Logger LOG = LoggerFactory.getLogger(PageTileSearchResult.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractTileSearchResult.class);
 
-    public static final String KEY = "page.tile.html";
+    protected abstract String getType();
 
-    public String rendererKey() {
-        return KEY;
+    /**
+     * @return the resource type to render a tile of an item
+     */
+    protected String getTileType(ResourceResolver resolver, Resource content, String selectors) {
+        return ResourceTypeUtil.getSubtypePath(resolver, content, null, "edit/tile", selectors);
     }
 
     public void sendResult(SearchRequest searchRequest, Collection<SearchService.Result> result)
             throws IOException {
+        String type = getType();
+
         ResourceResolver resolver = searchRequest.context.getResolver();
         SlingHttpServletRequest request = searchRequest.context.getRequest();
         SlingHttpServletResponse response = searchRequest.context.getResponse();
@@ -49,28 +48,27 @@ public class PageTileSearchResult implements SearchResultRenderer {
 
         // use additional selectors for rendering of the tiles
         String selectors = pathInfo.getSelectorString();
-        selectors = selectors != null && selectors.startsWith("page.tile.") ? selectors.substring(10) : null;
+        selectors = selectors != null && selectors.startsWith("asset.tile.") ? selectors.substring(10) : "";
 
         response.setCharacterEncoding("UTF-8");
         response.setContentType("text/html");
         PrintWriter writer = response.getWriter();
-        writer.append("<ul class=\"pages-search-page-result\">");
+        writer.append("<ul class=\"pages-search-").append(type).append("-result\">");
 
         for (SearchService.Result item : result) {
             String path = item.getTarget().getPath();
             Resource content = item.getTargetContent();
 
-            // determine the resource type to render a tile of a page
-            String editTileResoutrceType = ResourceTypeUtil.getSubtypePath(resolver, content,
-                    null, "edit/tile", selectors);
+            // determine the resource type to render a tile of an item
+            String tileResourceType = getTileType(resolver, content, selectors);
 
-            if (StringUtils.isNotBlank(editTileResoutrceType)) {
+            if (StringUtils.isNotBlank(tileResourceType)) {
                 String url = LinkUtil.getUrl(request, path);
-                writer.append("<li class=\"pages-search-page-item\"><a href=\"").append(url)
+                writer.append("<li class=\"pages-search-").append(type).append("-item\"><a href=\"").append(url)
                         .append("\" data-path=\"").append(path).append("\">");
 
                 RequestDispatcherOptions options = new RequestDispatcherOptions();
-                options.setForceResourceType(editTileResoutrceType);
+                options.setForceResourceType(tileResourceType);
                 if (selectors != null) {
                     options.setReplaceSelectors(selectors);
                 }

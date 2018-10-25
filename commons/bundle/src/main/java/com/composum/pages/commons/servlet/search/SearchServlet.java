@@ -1,7 +1,13 @@
-package com.composum.pages.commons.servlet;
+/*
+ * copyright (c) 2015ff IST GmbH Dresden, Germany - https://www.ist-software.com
+ *
+ * This software may be modified and distributed under the terms of the MIT license.
+ */
+package com.composum.pages.commons.servlet.search;
 
+import com.composum.pages.commons.AssetsConfiguration;
 import com.composum.pages.commons.PagesConfiguration;
-import com.composum.pages.commons.service.SearchService;
+import com.composum.pages.commons.service.search.SearchService;
 import com.composum.pages.commons.service.search.SearchTermParseException;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.ResourceHandle;
@@ -54,7 +60,8 @@ public class SearchServlet extends AbstractServiceServlet {
     private static final Logger LOG = LoggerFactory.getLogger(SearchServlet.class);
 
     public static final String PARAM_FILTER = "filter";
-    public static final String DEFAULT_FILTER = "page";
+    public static final String DEFAULT_PAGE_FILTER = "page";
+    public static final String DEFAULT_ASSET_FILTER = "all";
 
     //
     // Servlet operations
@@ -72,6 +79,9 @@ public class SearchServlet extends AbstractServiceServlet {
 
     @Reference
     protected PagesConfiguration pagesConfiguration;
+
+    @Reference
+    protected AssetsConfiguration assetsConfiguration;
 
     @Reference
     protected SearchService searchService;
@@ -95,6 +105,7 @@ public class SearchServlet extends AbstractServiceServlet {
 
     protected SearchPageOperation searchPageOperation = new SearchPageOperation();
     protected SearchPageElementOperation searchPageElementOperation = new SearchPageElementOperation();
+    protected SearchAssetOperation searchAssetOperation = new SearchAssetOperation();
 
     /** setup of the servlet operation set for this servlet instance */
     @Override
@@ -110,6 +121,10 @@ public class SearchServlet extends AbstractServiceServlet {
                 Operation.element, searchPageElementOperation);
         operations.setOperation(ServletOperationSet.Method.GET, Extension.html,
                 Operation.element, searchPageElementOperation);
+        operations.setOperation(ServletOperationSet.Method.GET, Extension.json,
+                Operation.asset, searchAssetOperation);
+        operations.setOperation(ServletOperationSet.Method.GET, Extension.html,
+                Operation.asset, searchAssetOperation);
     }
 
     public class PagesSearchOperationSet extends ServletOperationSet<Extension, Operation> {
@@ -155,10 +170,12 @@ public class SearchServlet extends AbstractServiceServlet {
             try {
                 BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
                 SearchRequest searchRequest = new SearchRequest(context, resource.getPath());
+                String selectors = request.getRequestPathInfo().getSelectorString();
 
                 if (searchRequest.isValid()) {
-                    List<SearchService.Result> result = searchService.searchPages(context,
-                            searchRequest.rootPath, searchRequest.term, searchRequest.offset, searchRequest.limit);
+                    List<SearchService.Result> result = searchService.search(context, selectors,
+                            searchRequest.rootPath, searchRequest.term, null,
+                            searchRequest.offset, searchRequest.limit);
                     renderResult(searchRequest, result);
                 }
 
@@ -168,7 +185,9 @@ public class SearchServlet extends AbstractServiceServlet {
         }
     }
 
-    protected class SearchPageElementOperation extends SearchOperation {
+    protected abstract class SearchResourceOperation extends SearchOperation {
+
+        protected abstract ResourceFilter getFilter(SlingHttpServletRequest request);
 
         @Override
         public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response, ResourceHandle resource)
@@ -177,10 +196,11 @@ public class SearchServlet extends AbstractServiceServlet {
             try {
                 BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
                 SearchRequest searchRequest = new SearchRequest(context, resource.getPath());
-                ResourceFilter filter = pagesConfiguration.getRequestNodeFilter(request, PARAM_FILTER, DEFAULT_FILTER);
+                String selectors = request.getRequestPathInfo().getSelectorString();
+                ResourceFilter filter = getFilter(request);
 
                 if (searchRequest.isValid()) {
-                    List<SearchService.Result> result = searchService.search(context,
+                    List<SearchService.Result> result = searchService.search(context, selectors,
                             searchRequest.rootPath, searchRequest.term, filter, searchRequest.offset, searchRequest.limit);
                     renderResult(searchRequest, result);
                 }
@@ -188,6 +208,25 @@ public class SearchServlet extends AbstractServiceServlet {
             } catch (SearchTermParseException | RepositoryException ex) {
                 badRequest(request, response, ex);
             }
+        }
+    }
+
+    protected class SearchPageElementOperation extends SearchResourceOperation {
+
+        @Override
+        protected ResourceFilter getFilter(SlingHttpServletRequest request) {
+            return pagesConfiguration.getRequestNodeFilter(request, PARAM_FILTER, DEFAULT_PAGE_FILTER);
+        }
+    }
+
+
+    protected class SearchAssetOperation extends SearchResourceOperation {
+
+        @Override
+        protected ResourceFilter getFilter(SlingHttpServletRequest request) {
+            return new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.and,
+                    assetsConfiguration.getAssetFileFilter(),
+                    assetsConfiguration.getRequestNodeFilter(request, PARAM_FILTER, DEFAULT_ASSET_FILTER));
         }
     }
 

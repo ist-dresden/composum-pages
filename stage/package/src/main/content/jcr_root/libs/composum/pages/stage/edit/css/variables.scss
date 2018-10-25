@@ -53,7 +53,7 @@ $tools-pane-tabs-tab-active: rgba(55, 55, 55, 0.9);
 $tools-pane-tabs-tab-label: $tools-pane-foreground;
 
 $tools-pane-main-selection-color: #3392e3;
-$tools-pane-dnd-target-color:  rgba(255, 155, 55, 0.8);
+$tools-pane-dnd-target-color: rgba(255, 155, 55, 0.8);
 $tools-pane-sec-selection-color: #929292;
 $tools-pane-main-selection-bg: rgba(255, 255, 255, 0.25);
 $tools-pane-sec-selection-bg: rgba(200, 200, 200, 0.25);
@@ -92,3 +92,10 @@ $dialog-close-icon-size: 25px;
 
 $tile-panel-default-bg: #f8f8f8;
 $tile-panel-info-bg: #f4f8ff;
+
+$tile-file-height: 120px;
+$tile-file-bg-color: #505050;
+$tile-file-text-bg: rgba(60, 60, 60, 0.5);
+$tile-file-text-bg-selected: rgba(51, 146, 227, 0.5);
+$tile-file-text-color: #fff;
+$tile-file-text-padding: 4px;

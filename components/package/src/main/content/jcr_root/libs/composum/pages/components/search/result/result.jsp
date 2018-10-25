@@ -9,7 +9,7 @@
         <div class="alert alert-danger" role="alert">${cpn:rich(slingRequest, model.searchtermErrorText)}</div>
     </c:if>
     <c:forEach items="${model.results}" var="result">
-        <%-- Transfer detail information (com.composum.pages.commons.service.SearchService.Result) to renderers. --%>
+        <%-- Transfer detail information (com.composum.pages.commons.service.search.SearchService.Result) to renderers. --%>
         <c:set var="searchresult" value="${result}" scope="request"/>
         <c:choose>
             <c:when test="${not empty model.template}">

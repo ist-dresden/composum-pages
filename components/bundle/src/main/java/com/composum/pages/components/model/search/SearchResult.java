@@ -1,9 +1,13 @@
+/*
+ * copyright (c) 2015ff IST GmbH Dresden, Germany - https://www.ist-software.com
+ *
+ * This software may be modified and distributed under the terms of the MIT license.
+ */
 package com.composum.pages.components.model.search;
 
 import com.composum.pages.commons.model.Element;
-import com.composum.pages.commons.service.SearchService;
+import com.composum.pages.commons.service.search.SearchService;
 import com.composum.pages.commons.service.search.SearchTermParseException;
-import com.composum.sling.core.BeanContext;
 import com.composum.sling.cpnl.CpnlElFunctions;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.utils.URIBuilder;
@@ -20,6 +24,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import static com.composum.pages.commons.service.search.SearchService.SELECTOR_PAGE;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -27,7 +32,7 @@ import static org.slf4j.LoggerFactory.getLogger;
  * Models the possible configurations for the presentation of a search result. <p>Properties selector (string);
  * optional, default: 'searchItem' template (resourceType:renderer); optional.
  * <p>
- * Caution: this uses the search algorithm {@link SearchService#searchPages(BeanContext, String, String, int, Integer)}
+ * Caution: this uses the search algorithm {@link SearchService#search}
  * for which there has to be aggregation configured in the lucene search (see the documentation of that method).
  */
 public class SearchResult extends Element {
@@ -209,8 +214,8 @@ public class SearchResult extends Element {
                 if (isNotBlank(getSearchTerm())) {
                     SearchService searchService = context.getService(SearchService.class);
                     // easiest way to tell whether there are more pages is to fetch one more result than needed
-                    results = searchService.searchPages(context, getSearchRoot(), getSearchTerm(),
-                            getOffset(), getPageSize() + 1);
+                    results = searchService.search(context, SELECTOR_PAGE, getSearchRoot(), getSearchTerm(),
+                            null, getOffset(), getPageSize() + 1);
                     if (results.size() > getPageSize()) {
                         hasMoreSearchPages = true;
                         results = results.subList(0, getPageSize());

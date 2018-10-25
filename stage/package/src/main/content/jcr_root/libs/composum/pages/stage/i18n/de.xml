@@ -150,4 +150,43 @@
                 sling:message="Gewählter Pfad"/>
     </dialog>
 
+    <navigation jcr:primaryType="sling:Folder"><!-- main navigation -->
+
+        <search jcr:primaryType="sling:MessageEntry"
+                sling:key="Search" sling:message="Suche"/>
+
+        <pagesTree jcr:primaryType="sling:MessageEntry"
+                sling:key="Pages Tree" sling:message="Seitennavigation"/>
+        <searchPageHint jcr:primaryType="sling:MessageEntry"
+                sling:key="Search a page"
+                sling:message="Suche nach Seiten"/>
+
+        <assetSelect jcr:primaryType="sling:MessageEntry"
+                sling:key="Assets Selector" sling:message="Asset-Auswahl"/>
+        <searchAssetHint jcr:primaryType="sling:MessageEntry"
+                sling:key="Search an asset object"
+                sling:message="Suche nach Asset-Objekten"/>
+        <all jcr:primaryType="sling:MessageEntry"
+                sling:key="All"
+                sling:message="Alles"/>
+        <allHint jcr:primaryType="sling:MessageEntry"
+                sling:key="show all available asset object types"
+                sling:message="verwende alle Asset-Objekttypen"/>
+        <assetHint jcr:primaryType="sling:MessageEntry"
+                sling:key="restrict to 'Composum Assets' objects"
+                sling:message="verwende nur 'Composum Assets'-Objekte"/>
+        <image jcr:primaryType="sling:MessageEntry"
+                sling:key="Image"
+                sling:message="Bild"/>
+        <imageHint jcr:primaryType="sling:MessageEntry"
+                sling:key="restrict to image file objects"
+                sling:message="verwende nur Bild-Dateien"/>
+        <videoHint jcr:primaryType="sling:MessageEntry"
+                sling:key="restrict to video file objects"
+                sling:message="verwende nur Video-Dateien"/>
+
+        <componentSelect jcr:primaryType="sling:MessageEntry"
+                sling:key="Component Selector" sling:message="Komponentenauswahl"/>
+    </navigation>
+
 </jcr:root>

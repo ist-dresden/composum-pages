@@ -1,165 +1,108 @@
+/*
+ * copyright (c) 2015ff IST GmbH Dresden, Germany - https://www.ist-software.com
+ *
+ * This software may be modified and distributed under the terms of the MIT license.
+ */
 package com.composum.pages.commons;
 
 import com.composum.pages.commons.util.RequestUtil;
 import com.composum.sling.core.filter.ResourceFilter;
-import com.composum.sling.core.filter.StringFilter;
 import com.composum.sling.core.mapping.jcr.ResourceFilterMapping;
-import com.composum.sling.core.servlet.AbstractServiceServlet;
-import org.apache.felix.scr.annotations.Activate;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Deactivate;
-import org.apache.felix.scr.annotations.Modified;
-import org.apache.felix.scr.annotations.Property;
-import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.api.SlingHttpServletRequest;
+import org.osgi.framework.Constants;
 import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Modified;
+import org.osgi.service.metatype.annotations.AttributeDefinition;
+import org.osgi.service.metatype.annotations.Designate;
+import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
-import java.util.Dictionary;
-import java.util.HashMap;
-import java.util.Map;
-
-import static com.composum.sling.core.CoreConfiguration.TREE_INTERMEDIATE_FILTER_KEY;
+import javax.annotation.Nonnull;
 
 /**
- * The configuration service for all servlets in the pages bundle.
+ * The configuration service for all servlets in the Pages module.
  */
 @Component(
-        label = "Composum Pages Configuration",
-        description = "the configuration service for all servlets in the pages bundles",
-        immediate = true,
-        metatype = true
+        property = {
+                Constants.SERVICE_DESCRIPTION + "=Composum Pages Module Configuration"
+        }
 )
-@Service
+@Designate(ocd = PagesConfigImpl.Configuration.class)
 public class PagesConfigImpl implements PagesConfiguration {
 
-    @Property(
-            name = SITE_NODE_FILTER_KEY,
-            label = "Sites Filter",
-            description = "the filter configuration to set the scope to the  internet sites",
-            value = "PrimaryType(+'^cpp:(Element|Container|Site)$')"
+    @ObjectClassDefinition(
+            name = "Composum Pages Module Configuration"
     )
+    public @interface Configuration {
+
+        @AttributeDefinition(
+                description = "the filter configuration to set the scope to the internet sites"
+        )
+        String siteNodeFilterRule() default "PrimaryType(+'^cpp:(Site)$')";
+
+        @AttributeDefinition(
+                description = "the filter configuration to set the scope to the content pages"
+        )
+        String pageNodeFilterRule() default "PrimaryType(+'^cpp:(Page|Site)$')";
+
+        @AttributeDefinition(
+                description = "the filter configuration to set the scope to the content containers"
+        )
+        String containerNodeFilterRule() default "PrimaryType(+'^cpp:(Container|Page|Site)$')";
+
+        @AttributeDefinition(
+                description = "the filter configuration to set the scope to the content element"
+        )
+        String elementNodeFilterRule() default "PrimaryType(+'^cpp:(Element|Container|Page|Site)$')";
+
+        @AttributeDefinition(
+                description = "the filter configuration to set the scope to component development"
+        )
+        String develomentTreeFilterRule() default "PrimaryType(+'^cpp:(Site|Component|Theme)$')";
+
+        @AttributeDefinition(
+                description = "the filter configuration to determine all intermediate nodes in the content structure"
+        )
+        String componentIntermediateFilterRule() default "PrimaryType(+'^cpp:(PageContent)$')";
+
+        @AttributeDefinition(
+                description = "the filter configuration to determine all intermediate nodes in the development scope"
+        )
+        String devIntermediateFilterRule() default "and{Folder(),Path(+'^/(etc|conf|apps|libs|sightly|htl|var)'";
+
+        @AttributeDefinition(
+                description = "the filter configuration to determine all intermediate nodes in the tree view"
+        )
+        String treeIntermediateFilterRule() default "and{Folder(),Path(-'^/(etc|conf|apps|libs|sightly|htl|var)')}";
+
+        @AttributeDefinition(
+                description = "the filter configuration to detect ordered nodes (prevent from sorting in the tree)"
+        )
+        String orderableNodesFilterRule() default "or{Type(+[node:orderable]),PrimaryType(+'^.*([Oo]rdered|[Pp]age).*$')}";
+
+        @AttributeDefinition(
+                description = "the filter configuration to hide replication paths"
+        )
+        String replicationRootFilterRule() default "Path(-'^/(public|preview)')";
+    }
+
     private ResourceFilter siteNodeFilter;
-
-    @Property(
-            name = PAGE_NODE_FILTER_KEY,
-            label = "Content Page Filter",
-            description = "the filter configuration to set the scope to the content pages",
-            value = "PrimaryType(+'^cpp:(Page|Site)$')"
-    )
     private ResourceFilter pageNodeFilter;
-
-    @Property(
-            name = CONTAINER_NODE_FILTER_KEY,
-            label = "Container resource filter",
-            description = "the filter configuration to set the scope to the content containers",
-            value = "PrimaryType(+'^cpp:(Container|Page|Site)$')"
-    )
     private ResourceFilter containerNodeFilter;
-
-    @Property(
-            name = ELEMENT_NODE_FILTER_KEY,
-            label = "Element resource filter",
-            description = "the filter configuration to set the scope to the content elements",
-            value = "PrimaryType(+'^cpp:(Element|Container|Page|Site)$')"
-    )
     private ResourceFilter elementNodeFilter;
-
-    @Property(
-            name = DEVELOPMENT_TREE_FILTER_KEY,
-            label = "Development tree filter",
-            description = "the filter configuration to set the scope to component development",
-            value = "PrimaryType(+'^cpp:(Site|Component|Theme)$')"
-    )
     private ResourceFilter develomentTreeFilter;
-
-    @Property(
-            name = COMPONENT_INTERMEDIATE_FILTER_KEY,
-            label = "Page Content Intermediate Filter",
-            description = "the filter configuration to determine all intermediate nodes in the content structure",
-            value = "PrimaryType(+'^cpp:(PageContent)$')"
-    )
-    private ResourceFilter componentIntermediateFilter;
-
-    @Property(
-            name = SITE_INTERMEDIATE_FILTER_KEY,
-            label = "Site Configuration Intermediate Filter",
-            description = "the filter configuration to determine all intermediate nodes in the site definition",
-            value = "or{PrimaryType(+'^cpp:(SiteConfiguration)$'),ResourceType(+'^composum/pages/stage/edit/template(/(content|set))?$')}"
-    )
-    private ResourceFilter siteIntermediateFilter;
-
-    @Property(
-            name = DEV_INTERMEDIATE_FILTER_KEY,
-            label = "Development Intermediate Filter",
-            description = "the filter configuration to determine all intermediate nodes in the development scope",
-            value = "and{Folder(),Path(+'^/(etc|conf|apps|libs|sightly|htl|var)')}"
-    )
-    private ResourceFilter devIntermediateFilter;
-
-    @Property(
-            name = TREE_INTERMEDIATE_FILTER_KEY,
-            label = "Tree Intermediate (Folder) Filter",
-            description = "the filter configuration to determine all intermediate nodes in the tree view",
-            value = "and{Folder(),Path(-'^/(etc|conf|apps|libs|sightly|htl|var)')}"
-    )
     private ResourceFilter treeIntermediateFilter;
-
-    @Property(
-            name = ORDERABLE_NODES_FILTER_KEY,
-            label = "Orderable Nodes Filter",
-            description = "the filter configuration to detect ordered nodes (prevent from sorting in the tree)",
-            value = "or{Type(+[node:orderable]),PrimaryType(+'^.*([Oo]rdered|[Pp]age).*$')}"
-    )
     private ResourceFilter orderableNodesFilter;
+    private ResourceFilter replicationRootFilter;
 
-    private static final ResourceFilter REPLICATION_ROOT_FILTER =
-            new ResourceFilter.PathFilter(new StringFilter.BlackList("^/(public|preview)"));
+    protected Configuration config;
 
-    private Map<String, Boolean> enabledServlets;
-
+    @Nonnull
     @Override
-    public boolean isEnabled(AbstractServiceServlet servlet) {
-        Boolean result = enabledServlets.get(servlet.getClass().getSimpleName());
-        return result != null ? result : false;
-    }
-
-    @Override
-    public ResourceFilter getSiteNodeFilter() {
-        return siteNodeFilter;
-    }
-
-    @Override
-    public ResourceFilter getPageNodeFilter() {
-        return pageNodeFilter;
-    }
-
-    @Override
-    public ResourceFilter getContainerNodeFilter() {
-        return containerNodeFilter;
-    }
-
-    @Override
-    public ResourceFilter getElementNodeFilter() {
-        return elementNodeFilter;
-    }
-
-    @Override
-    public ResourceFilter getDevelopmentTreeFilter() {
-        return develomentTreeFilter;
-    }
-
-    @Override
-    public ResourceFilter getTreeIntermediateFilter() {
-        return treeIntermediateFilter;
-    }
-
-    @Override
-    public ResourceFilter getOrderableNodesFilter() {
-        return orderableNodesFilter;
-    }
-
-    @Override
-    public ResourceFilter getRequestNodeFilter(SlingHttpServletRequest request, String paramName, String defaultFilter) {
+    public ResourceFilter getRequestNodeFilter(@Nonnull SlingHttpServletRequest request,
+                                               @Nonnull String paramName, @Nonnull String defaultFilter) {
         String filter = RequestUtil.getParameter(request, paramName, defaultFilter);
         switch (filter) {
             case "element":
@@ -172,12 +115,53 @@ public class PagesConfigImpl implements PagesConfiguration {
         }
     }
 
-
-    public Dictionary getProperties() {
-        return properties;
+    @Nonnull
+    @Override
+    public ResourceFilter getSiteNodeFilter() {
+        return siteNodeFilter;
     }
 
-    protected Dictionary properties;
+    @Nonnull
+    @Override
+    public ResourceFilter getPageNodeFilter() {
+        return pageNodeFilter;
+    }
+
+    @Nonnull
+    @Override
+    public ResourceFilter getContainerNodeFilter() {
+        return containerNodeFilter;
+    }
+
+    @Nonnull
+    @Override
+    public ResourceFilter getElementNodeFilter() {
+        return elementNodeFilter;
+    }
+
+    @Nonnull
+    @Override
+    public ResourceFilter getDevelopmentTreeFilter() {
+        return develomentTreeFilter;
+    }
+
+    @Nonnull
+    @Override
+    public ResourceFilter getTreeIntermediateFilter() {
+        return treeIntermediateFilter;
+    }
+
+    @Nonnull
+    @Override
+    public ResourceFilter getOrderableNodesFilter() {
+        return orderableNodesFilter;
+    }
+
+    @Nonnull
+    @Override
+    public ResourceFilter getReplicationRootFilter() {
+        return replicationRootFilter;
+    }
 
     /**
      * Creates a 'tree filter' as combination with the configured filter and the rules for the
@@ -193,46 +177,39 @@ public class PagesConfigImpl implements PagesConfiguration {
 
     @Activate
     @Modified
-    protected void activate(ComponentContext context) {
-        this.properties = context.getProperties();
-        orderableNodesFilter = ResourceFilterMapping.fromString(
-                (String) properties.get(ORDERABLE_NODES_FILTER_KEY));
+    protected void activate(Configuration config) {
+        this.config = config;
+        orderableNodesFilter = ResourceFilterMapping.fromString(config.orderableNodesFilterRule());
+        replicationRootFilter = ResourceFilterMapping.fromString(config.replicationRootFilterRule());
         treeIntermediateFilter = new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.and,
-                REPLICATION_ROOT_FILTER,
-                ResourceFilterMapping.fromString((String) properties.get(TREE_INTERMEDIATE_FILTER_KEY)));
-        siteIntermediateFilter = new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.and,
-                REPLICATION_ROOT_FILTER,
-                new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.or,
-                        ResourceFilterMapping.fromString((String) properties.get(SITE_INTERMEDIATE_FILTER_KEY)),
-                        treeIntermediateFilter));
+                replicationRootFilter,
+                ResourceFilterMapping.fromString(config.treeIntermediateFilterRule()));
         siteNodeFilter = buildTreeFilter(new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.and,
-                        REPLICATION_ROOT_FILTER,
-                        ResourceFilterMapping.fromString((String) properties.get(SITE_NODE_FILTER_KEY))),
-                siteIntermediateFilter);
-        pageNodeFilter = buildTreeFilter(new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.and,
-                        REPLICATION_ROOT_FILTER,
-                        ResourceFilterMapping.fromString((String) properties.get(PAGE_NODE_FILTER_KEY))),
+                        replicationRootFilter,
+                        ResourceFilterMapping.fromString(config.siteNodeFilterRule())),
                 treeIntermediateFilter);
-        componentIntermediateFilter = new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.or,
-                ResourceFilterMapping.fromString((String) properties.get(COMPONENT_INTERMEDIATE_FILTER_KEY)),
+        pageNodeFilter = buildTreeFilter(new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.and,
+                        replicationRootFilter,
+                        ResourceFilterMapping.fromString(config.pageNodeFilterRule())),
+                treeIntermediateFilter);
+        ResourceFilter componentIntermediateFilter = new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.or,
+                ResourceFilterMapping.fromString(config.componentIntermediateFilterRule()),
                 treeIntermediateFilter);
         containerNodeFilter = buildTreeFilter(new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.and,
-                        REPLICATION_ROOT_FILTER,
-                        ResourceFilterMapping.fromString((String) properties.get(CONTAINER_NODE_FILTER_KEY))),
+                        replicationRootFilter,
+                        ResourceFilterMapping.fromString(config.containerNodeFilterRule())),
                 componentIntermediateFilter);
         elementNodeFilter = buildTreeFilter(new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.and,
-                        REPLICATION_ROOT_FILTER,
-                        ResourceFilterMapping.fromString((String) properties.get(ELEMENT_NODE_FILTER_KEY))),
+                        replicationRootFilter,
+                        ResourceFilterMapping.fromString(config.elementNodeFilterRule())),
                 componentIntermediateFilter);
-        devIntermediateFilter = ResourceFilterMapping.fromString(
-                (String) properties.get(DEV_INTERMEDIATE_FILTER_KEY));
-        develomentTreeFilter = buildTreeFilter(ResourceFilterMapping.fromString(
-                (String) properties.get(DEVELOPMENT_TREE_FILTER_KEY)), devIntermediateFilter);
-        enabledServlets = new HashMap<>();
+        ResourceFilter devIntermediateFilter = ResourceFilterMapping.fromString(config.devIntermediateFilterRule());
+        develomentTreeFilter = buildTreeFilter(
+                ResourceFilterMapping.fromString(config.develomentTreeFilterRule()), devIntermediateFilter);
     }
 
     @Deactivate
     protected void deactivate(ComponentContext context) {
-        this.properties = null;
+        this.config = null;
     }
 }
