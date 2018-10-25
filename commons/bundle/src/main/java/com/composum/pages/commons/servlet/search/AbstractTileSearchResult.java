@@ -48,7 +48,7 @@ public abstract class AbstractTileSearchResult {
 
         // use additional selectors for rendering of the tiles
         String selectors = pathInfo.getSelectorString();
-        selectors = selectors != null && selectors.startsWith("page.tile.") ? selectors.substring(10) : null;
+        selectors = selectors != null && selectors.startsWith("asset.tile.") ? selectors.substring(10) : "";
 
         response.setCharacterEncoding("UTF-8");
         response.setContentType("text/html");

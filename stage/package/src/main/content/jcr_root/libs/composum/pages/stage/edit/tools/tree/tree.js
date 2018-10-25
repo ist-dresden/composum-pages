@@ -87,12 +87,11 @@
                 this.onPathInserted(event, parentAndName.path, parentAndName.name);
             },
 
-            onContentMoved: function (event, refOrPath) {
-                var path = refOrPath && refOrPath.path ? refOrPath.path : refOrPath;
+            onContentMoved: function (event, oldPath, newPath) {
                 if (this.log.getLevel() <= log.levels.DEBUG) {
-                    this.log.debug(this.nodeIdPrefix + 'tree.onContentMoved(' + path + ')');
+                    this.log.debug(this.nodeIdPrefix + 'tree.onContentMoved(' + oldPath + ' ->' + newPath + ')');
                 }
-                this.onPathMoved(event, path);
+                this.onPathMoved(event, oldPath, newPath);
             },
 
             onContentChanged: function (event, refOrPath) {
@@ -241,11 +240,11 @@
                 this.onPathInserted(event, parentAndName.path, parentAndName.name);
             },
 
-            onElementMoved: function (event, reference) {
+            onElementMoved: function (event, oldPath, newPath) {
                 if (this.log.getLevel() <= log.levels.DEBUG) {
-                    this.log.debug(this.nodeIdPrefix + 'tree.onElementSelected(' + reference.path + ')');
+                    this.log.debug(this.nodeIdPrefix + 'tree.onElementSelected(' + oldPath + ' -> ' + newPath + ')');
                 }
-                this.onPathMoved(event, reference.path);
+                this.onPathMoved(event, oldPath, newPath);
             },
 
             onElementChanged: function (event, reference) {
@@ -310,7 +309,7 @@
             nodeIdPrefix: 'PA_',
 
             initialize: function (options) {
-                var p = pages.const.profile.assets.tree;
+                var p = pages.const.profile.asset.tree;
                 var id = this.nodeIdPrefix + 'Tree';
                 options = _.extend(options || {}, {
                     dragAndDrop: {
@@ -328,15 +327,15 @@
                 this.initializeFilter();
                 tree.ContentTree.prototype.initialize.apply(this, [options]);
                 var e = pages.const.event;
+                $(document).on(e.asset.selected + '.' + id, _.bind(this.onAssetSelected, this));
                 $(document).on(e.content.inserted + '.' + id, _.bind(this.onContentInserted, this));
                 $(document).on(e.content.changed + '.' + id, _.bind(this.onContentChanged, this));
                 $(document).on(e.content.deleted + '.' + id, _.bind(this.onContentDeleted, this));
                 $(document).on(e.content.moved + '.' + id, _.bind(this.onContentMoved, this));
-                $(document).on(e.ready + '.' + id, _.bind(this.onReady, this));
             },
 
             initializeFilter: function () {
-                var p = pages.const.profile.assets.tree;
+                var p = pages.const.profile.asset.tree;
                 this.filter = pages.profile.get(p.aspect, p.filter, undefined);
             },
 
@@ -345,17 +344,21 @@
                 return '/bin/cpm/pages/assets.assetTree.json' + path + params;
             },
 
-            onReady: function () {
-                var p = pages.const.profile.assets.tree;
-                var path = pages.profile.get(p.aspect, p.path, '');
-                if (path) {
-                    this.selectNode(path);
+            onNodeSelected: function (path, node) {
+                if (!this.suppressEvent) {
+                    $(document).trigger("asset:select", [path, node.original.name, node.original.type]);
+                } else {
+                    core.components.Tree.prototype.onNodeSelected.apply(this, [path, node]);
                 }
             },
 
-            onNodeSelected: function (path, node) {
-                var p = pages.const.profile.assets.tree;
-                core.components.Tree.prototype.onNodeSelected.apply(this, [path, node]);
+            onAssetSelected: function (event, refOrPath) {
+                var path = refOrPath && refOrPath.path ? refOrPath.path : refOrPath;
+                if (this.log.getLevel() <= log.levels.DEBUG) {
+                    this.log.debug(this.nodeIdPrefix + 'tree.onAssetSelected(' + path + ')');
+                }
+                this.onPathSelected(event, path);
+                var p = pages.const.profile.asset.tree;
                 pages.profile.set(p.aspect, p.path, path);
             }
         });
@@ -473,7 +476,7 @@
                 }
                 if (this.currentView !== key) {
                     this.currentView = key;
-                    var p = pages.const.profile.page.tree;
+                    var p = pages.const.profile[this.type].tree;
                     pages.profile.set(p.aspect, p.view, key);
                     switch (key) {
                         default:
@@ -482,6 +485,7 @@
                             this.searchPanel.$el.addClass('hidden');
                             this.$treePanel.removeClass('hidden');
                             this.$treePanelPreview.removeClass('hidden');
+                            this.searchPanel.onHidden();
                             break;
                         case 'search':
                             this.$viewToggle.addClass('active');
@@ -498,14 +502,26 @@
                 event.preventDefault();
                 this.setView();
                 return false;
+            },
+
+            setFilter: function (event) {
+                event.preventDefault();
+                var p = pages.const.profile[this.type].tree;
+                var $link = $(event.currentTarget);
+                var filter = $link.parent().data('value');
+                this.tree.setFilter(filter);
+                this.searchPanel.setFilter(filter);
+                this.selectFilter(filter);
+                pages.profile.set(p.aspect, p.filter, filter);
             }
         });
 
         tree.PageTreePanel = tree.ContentTreePanel.extend({
 
             initialize: function (options) {
+                this.type = 'page';
                 var e = pages.const.event;
-                var p = pages.const.profile.page.tree;
+                var p = pages.const.profile[this.type].tree;
                 this.tree = core.getWidget(this.el, '.' + tree.const.treeClass, tree.PageTree);
                 this.tree.panel = this;
                 tree.ContentTreePanel.prototype.initialize.apply(this, [options]);
@@ -527,16 +543,6 @@
                 }
             },
 
-            setFilter: function (event) {
-                event.preventDefault();
-                var p = pages.const.profile.page.tree;
-                var $link = $(event.currentTarget);
-                var filter = $link.parent().data('value');
-                this.tree.setFilter(filter);
-                this.selectFilter(filter);
-                pages.profile.set(p.aspect, p.filter, filter);
-            },
-
             selectFilter: function (filter) {
                 this.$('.' + tree.const.pages.css.base + '_filter-value').removeClass('active');
                 if (filter) {
@@ -549,8 +555,9 @@
         tree.AssetsTreePanel = tree.ContentTreePanel.extend({
 
             initialize: function (options) {
+                this.type = 'asset';
                 var e = pages.const.event;
-                var p = pages.const.profile.assets.tree;
+                var p = pages.const.profile[this.type].tree;
                 this.tree = core.getWidget(this.el, '.' + tree.const.treeClass, tree.AssetsTree);
                 this.tree.panel = this;
                 tree.ContentTreePanel.prototype.initialize.apply(this, [options]);
@@ -560,21 +567,27 @@
                 this.selectFilter(pages.profile.get(p.aspect, p.filter, undefined));
                 this.$('.' + tree.const.assets.css.base + '_filter-value a').click(_.bind(this.setFilter, this));
                 this.tree.$el.on('node:selected.' + this.treePanelId, _.bind(this.onNodeSelected, this));
+                $(document).on(e.asset.select + '.' + this.treePanelId, _.bind(this.selectAsset, this));
                 $(document).on(e.site.selected + '.' + this.treePanelId, _.bind(this.onSiteSelected, this));
                 $(document).on(e.scope.changed + '.' + this.treePanelId, _.bind(this.onScopeChanged, this));
+                $(document).on(e.ready + '.' + this.treePanelId, _.bind(this.onReady, this));
+            },
+
+            onReady: function (event) {
+                var p = pages.const.profile.asset.tree;
+                var path = pages.profile.get(p.aspect, p.path, '');
+                if (path) {
+                    this.selectAsset(event, path);
+                }
+            },
+
+            selectAsset: function (event, refOrPath) {
+                var e = pages.const.event;
+                var path = refOrPath && refOrPath.path ? refOrPath.path : refOrPath;
+                $(document).trigger(e.asset.selected, [path]);
             },
 
             selectDefaultNode: function () {
-            },
-
-            setFilter: function (event) {
-                event.preventDefault();
-                var p = pages.const.profile.assets.tree;
-                var $link = $(event.currentTarget);
-                var filter = $link.parent().data('value');
-                this.tree.setFilter(filter);
-                this.selectFilter(filter);
-                pages.profile.set(p.aspect, p.filter, filter);
             },
 
             selectFilter: function (filter) {

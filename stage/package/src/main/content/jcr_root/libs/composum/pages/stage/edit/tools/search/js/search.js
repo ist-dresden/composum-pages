@@ -20,7 +20,8 @@
                 uri: '/bin/cpm/pages/search.',
                 q: {
                     term: 'q.term',
-                    limit: 'q.limit'
+                    limit: 'q.limit',
+                    filter: 'filter'
                 }
             }
         });
@@ -28,9 +29,10 @@
         search.SearchPanel = Backbone.View.extend({
 
             initialize: function (options) {
+                this.type = this.$el.data('type');
                 var c = search.const.css;
                 var e = pages.const.event;
-                var p = pages.const.profile.page.search;
+                var p = pages.const.profile[this.type].search;
                 this.$input = this.$('.' + c.base + c._input);
                 this.$scope = this.$('.' + c.base + c._scope);
                 this.$result = this.$('.' + c.base + c._result);
@@ -45,11 +47,25 @@
                 }, this));
                 this.$input.change(_.bind(this.onChange, this));
                 this.$scope.change(_.bind(this.onChange, this));
-                $(document).on(e.page.selected + '.' + p.aspect, _.bind(this.onSelected, this));
+                $(document).on(e[this.type].selected + '.' + p.aspect, _.bind(this.onSelected, this));
+            },
+
+            setFilter: function(filter) {
+                if (this.filter !== filter) {
+                    this.filter = filter;
+                    if (this.visible) {
+                        this.onChange();
+                    }
+                }
             },
 
             onShown: function () {
+                this.visible = true;
                 this.onChange();
+            },
+
+            onHidden: function () {
+                this.visible = false;
             },
 
             onScopeChanged: function () {
@@ -62,7 +78,7 @@
             },
 
             getScope: function ($select) {
-                var p = pages.const.profile.page.search;
+                var p = pages.const.profile[this.type].search;
                 if ($select) {
                     $select.find('option').removeAttr('disabled');
                 }
@@ -79,7 +95,7 @@
             },
 
             onChange: function (event) {
-                var p = pages.const.profile.page.search;
+                var p = pages.const.profile[this.type].search;
                 var term = this.$input.val();
                 var scope = this.$scope.val();
                 if (term && (term = term.trim()).length > 1) {
@@ -108,9 +124,12 @@
                 if (this.path) {
                     var c = search.const.css;
                     var h = search.const.http;
-                    var url = h.uri + this.$el.data('type') + '.tile.html' + this.path
+                    var url = h.uri + this.type + '.tile.html' + this.path
                         + '?' + h.q.term + '=' + encodeURIComponent(term)
                         + '&' + h.q.limit + '=50';
+                    if (this.filter) {
+                        url += '&' + h.q.filter + '=' + this.filter;
+                    }
                     this.$el.addClass(c.searching);
                     core.ajaxGet(url, {}, _.bind(function (result) {
                         this.$result.html(result);
@@ -127,20 +146,29 @@
                 var $el = $(event.currentTarget);
                 var path = $el.data('path');
                 if (path) {
-                    pages.log.debug('search.trigger.' + pages.const.event.page.select + '(' + path + ')');
-                    $(document).trigger(pages.const.event.page.select, [path]);
+                    if (pages.log.getLevel() <= log.levels.DEBUG) {
+                        pages.log.debug('search.trigger.' + pages.const.event[this.type].select + '(' + path + ')');
+                    }
+                    $(document).trigger(pages.const.event[this.type].select, [path]);
                 }
                 return false;
             },
 
             onSelected: function (event, path) {
+                if (pages.log.getLevel() <= log.levels.DEBUG) {
+                    pages.log.debug('search.selected[' + this.type + ']: ' + path);
+                }
                 this.setSelection(path);
             },
 
             setSelection: function (path) {
                 if (!path) {
-                    path = pages.current.page;
+                    path = this.selected;
+                    if (!path && this.type === 'page') {
+                        path = pages.current.page;
+                    }
                 }
+                this.selected = path;
                 var c = search.const.css;
                 this.$result.find('a').removeClass(c.selected);
                 if (path) {

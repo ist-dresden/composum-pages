@@ -683,9 +683,10 @@
                     targetPath: this.newPath.getValue(),
                     name: this.name.getValue(),
                     before: this.before.getValue(),
+
                     index: this.index.getValue()
                 }, {}, _.bind(function (data) {
-                    $(document).trigger(pages.const.event.content.moved, [oldPath, data.path]);
+                    $(document).trigger(pages.const.event.content.moved, [oldPath, data.reference.path]);
                     this.hide();
                 }, this));
             }

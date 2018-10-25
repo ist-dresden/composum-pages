@@ -80,6 +80,10 @@
                     move: 'element:move',           // do it!...
                     moved: 'element:moved'          // done.
                 },
+                asset: {
+                    select: 'asset:select',         // do it!...
+                    selected: 'asset:selected'      // done.
+                },
                 path: {
                     select: 'path:select',          // do it!...
                     selected: 'path:selected'       // done.
@@ -126,12 +130,17 @@
                         term: 'term'
                     }
                 },
-                assets: {
+                asset: {
                     tree: {
                         aspect: 'asset-tree',
                         view: 'view',
                         filter: 'filter',
                         path: 'path'
+                    },
+                    search: {
+                        aspect: 'asset-search',
+                        scope: 'scope',
+                        term: 'term'
                     }
                 },
                 develop: {

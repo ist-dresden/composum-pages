@@ -282,6 +282,19 @@
     }
 }
 
+.pages-search-asset-item {
+
+    a.selected {
+
+        .composum-pages-stage-file_tile {
+
+            &_text {
+                background-color: $tile-file-text-bg-selected;
+            }
+        }
+    }
+}
+
 .composum-pages-tools {
 
     &_tree {
