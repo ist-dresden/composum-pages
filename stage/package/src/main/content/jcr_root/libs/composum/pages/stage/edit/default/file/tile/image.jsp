@@ -5,7 +5,7 @@
 <cpp:defineFrameObjects/>
 <cpp:model var="file" type="com.composum.pages.commons.model.File" mode="none"
            cssBase="composum-pages-stage-file_tile">
-    <div class="${fileCssBase} ${file.mimeTypeCss}" draggable="true">
+    <div class="${fileCssBase} ${file.mimeTypeCss}" draggable="true" title="${file.filePath}">
         <div class="${fileCssBase}_image-frame">
             <div class="${fileCssBase}_image-background"
                  style="background-image:url(${cpn:unmappedUrl(slingRequest,'/libs/composum/nodes/console/browser/images/image-background-dk.png')})">

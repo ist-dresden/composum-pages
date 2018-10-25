@@ -4,7 +4,7 @@
 <cpp:defineFrameObjects/>
 <cpp:model var="file" type="com.composum.pages.commons.model.File" mode="none"
            cssBase="composum-pages-stage-file_tile">
-    <div class="${fileCssBase} ${file.mimeTypeCss}">
+    <div class="${fileCssBase} ${file.mimeTypeCss}" draggable="true" title="${file.filePath}">
         <div class="${fileCssBase}_frame">
             <div class="${fileCssBase}_properties">
                 <cpn:text value="${file.fileName}" tagClass="${fileCssBase}_name"></cpn:text>

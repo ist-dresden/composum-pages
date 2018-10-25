@@ -55,6 +55,10 @@ public class File extends AbstractModel {
         return (JcrConstants.JCR_CONTENT.equals(getName())) ? getResource().getParent().getName() : getName();
     }
 
+    public String getFilePath() {
+        return (JcrConstants.JCR_CONTENT.equals(getName())) ? getResource().getParent().getPath() : getPath();
+    }
+
     public Type getFileType() {
         if (fileType == null) {
             Resource resource = getResource();
