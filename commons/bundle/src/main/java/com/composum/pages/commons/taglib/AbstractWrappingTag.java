@@ -1,3 +1,8 @@
+/*
+ * copyright (c) 2015ff IST GmbH Dresden, Germany - https://www.ist-software.com
+ *
+ * This software may be modified and distributed under the terms of the MIT license.
+ */
 package com.composum.pages.commons.taglib;
 
 import com.composum.pages.commons.util.TagCssClasses;
@@ -10,7 +15,6 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.jsp.JspException;
 import java.io.IOException;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static com.composum.pages.commons.util.TagCssClasses.cssOfType;
@@ -21,25 +25,6 @@ import static com.composum.pages.commons.util.TagCssClasses.cssOfType;
 public abstract class AbstractWrappingTag extends ModelTag {
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractWrappingTag.class);
-
-    public static final String TAG_ID = "id";
-
-    private transient TagCssClasses tagCssClasses;
-    private transient String attributes;
-
-    @Override
-    protected void clear() {
-        attributes = null;
-        tagCssClasses = null;
-        super.clear();
-    }
-
-    protected TagCssClasses getTagCssClasses() {
-        if (tagCssClasses == null) {
-            tagCssClasses = new TagCssClasses();
-        }
-        return tagCssClasses;
-    }
 
     /**
      * a string with the complete set of CSS classes (prevents from the generation of the default classes)
@@ -61,18 +46,10 @@ public abstract class AbstractWrappingTag extends ModelTag {
     }
 
     /**
-     * builds the complete CSS classes string with the given classes and all collected classes
-     */
-    public String buildCssClasses() {
-        TagCssClasses.CssSet collection = getTagCssClasses().getCssClasses();
-        collectCssClasses(collection);
-        return getTagCssClasses().toString();
-    }
-
-    /**
      * collects the set of CSS classes (extension hook)
      * adds the 'cssBase' itself as CSS class and the transformed resource super type if available
      */
+    @Override
     protected void collectCssClasses(TagCssClasses.CssSet collection) {
         if (StringUtils.isBlank(getTagCssClasses().getCssSet())) {
             collection.add(getCssBase());
@@ -90,23 +67,6 @@ public abstract class AbstractWrappingTag extends ModelTag {
             attributeSet.put("class", cssClasses);
         }
         super.collectAttributes(attributeSet);
-    }
-
-    /**
-     * returns the complete set of attributes as one string value with a leading space
-     * provided to embed all attributes in a template (JSP or something else)
-     */
-    public String getAttributes() {
-        if (attributes == null) {
-            StringBuilder builder = new StringBuilder();
-            Map<String, String> attributeSet = new LinkedHashMap<>();
-            collectAttributes(attributeSet);
-            for (Map.Entry<String, String> attribute : attributeSet.entrySet()) {
-                builder.append(" ").append(attribute.getKey()).append("=\"").append(attribute.getValue()).append("\"");
-            }
-            attributes = builder.toString();
-        }
-        return attributes;
     }
 
     //

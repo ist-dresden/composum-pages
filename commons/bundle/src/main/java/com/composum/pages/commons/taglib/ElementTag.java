@@ -1,3 +1,8 @@
+/*
+ * copyright (c) 2015ff IST GmbH Dresden, Germany - https://www.ist-software.com
+ *
+ * This software may be modified and distributed under the terms of the MIT license.
+ */
 package com.composum.pages.commons.taglib;
 
 import com.composum.pages.commons.model.Container;
@@ -112,6 +117,7 @@ public class ElementTag extends AbstractWrappingTag {
     /**
      * builds the list of tag attributes for the wrapping tag
      */
+    @Override
     protected void collectAttributes(Map<String, String> attributeSet) {
         String value;
         if (StringUtils.isNotBlank(value = getId())) {
@@ -192,7 +198,7 @@ public class ElementTag extends AbstractWrappingTag {
     @Override
     protected void renderTagStart() throws IOException {
         if (isWithTag()) {
-            out.append("<").append(tagName).append(" ").append(getAttributes()).append(">\n");
+            out.append("<").append(tagName).append(getAttributes()).append(">\n");
         }
     }
 

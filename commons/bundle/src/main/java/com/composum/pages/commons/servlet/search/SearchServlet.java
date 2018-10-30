@@ -225,7 +225,7 @@ public class SearchServlet extends AbstractServiceServlet {
         @Override
         protected ResourceFilter getFilter(SlingHttpServletRequest request) {
             return new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.and,
-                    assetsConfiguration.getAssetFileFilter(),
+                    assetsConfiguration.getAnyFileFilter(),
                     assetsConfiguration.getRequestNodeFilter(request, PARAM_FILTER, DEFAULT_ASSET_FILTER));
         }
     }

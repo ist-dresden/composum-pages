@@ -38,8 +38,25 @@
             edit: { // editing interface urls and keys
                 url: {
                     targets: '/bin/cpm/pages/edit.targetContainers.json',
+                    dropzones: '/bin/cpm/pages/edit.filterDropZones.json',
                     toolbar: '/bin/cpm/pages/edit.editToolbar.html'
                 }
+            }
+        });
+
+        //
+        // drop zones
+        //
+
+        elements.DropZone = Backbone.View.extend({
+
+            initialize: function (options) {
+                var d = pages.const.commons.data;
+                // set up the parent component DOM element (container or element)
+                this.$parent = this.$el.parent().closest('.' + elements.const.class.component);
+                // drop zone property data
+                var encoded = this.$el.data(d.encoded);
+                this.data = JSON.parse(atob(encoded));
             }
         });
 
@@ -382,6 +399,7 @@
             },
 
             reset: function () {
+                this.clearDropZones();
                 this.clearTargets();
                 this.$el.removeClass(elements.const.dnd.class.base + elements.const.dnd.class.visible);
                 this.currentReference = undefined;
@@ -395,20 +413,20 @@
                 var reference = object.reference;
                 if (!self.currentReference) {
                     self.currentReference = reference;
+                    var data = object;
                     if (object instanceof elements.Component) {
                         if (elements.log.getLevel() <= log.levels.DEBUG) {
                             elements.log.debug('elements.dnd.onDragStart(' + object.reference.path + ')');
                         }
                         self.reset();
-                        dnd.ev.dataTransfer.setData('application/json', JSON.stringify({
+                        pages.current.dnd.object = data = {
                             type: 'element',
                             reference: reference
-                        }));
+                        };
+                        var jsonData = JSON.stringify(data);
+                        dnd.ev.dataTransfer.setData('application/json', jsonData);
                         dnd.ev.dataTransfer.effectAllowed = 'move';
-                        parent.postMessage(elements.const.event.dnd.object + JSON.stringify({
-                            type: 'element',
-                            reference: reference
-                        }), '*');
+                        parent.postMessage(elements.const.event.dnd.object + jsonData, '*');
                         if (_.isFunction(dnd.ev.dataTransfer.setDragImage)) {
                             var pos = object.$el.offset();
                             self.$image.css({
@@ -417,14 +435,18 @@
                             self.$content.html('').append(object.$el.clone());
                             self.$image.addClass(elements.const.dnd.class.base + elements.const.dnd.class.visible);
                             dnd.ev.dataTransfer.setDragImage(self.$image[0], Math.max(0, dnd.ev.pageX - pos.left), 50);
-                            setTimeout(_.bind(function () {
+                            window.setTimeout(_.bind(function () {
                                 self.$content.html('');
                                 self.$image.removeClass(elements.const.dnd.class.base + elements.const.dnd.class.visible);
                             }, self), 100);
                         }
                     }
-                    setTimeout(_.bind(function () {
-                        self.markTargets(reference);
+                    window.setTimeout(_.bind(function () {
+                        if (data.type === 'component' || data.type === 'element') {
+                            self.markTargets(reference);
+                        } else {
+                            self.markDropZones(reference);
+                        }
                     }, self), 150);
                 }
             },
@@ -440,6 +462,78 @@
 
             onDrop: function (event) {
                 elements.pageBody.onDrop(event);
+            },
+
+            // zone markers
+
+            markDropZones: function (reference) {
+                var candidates = [];
+                elements.pageBody.dropZones.forEach(function (candidate) {
+                    candidates.push({
+                        id: candidate.$el.attr('id'),
+                        path: candidate.data.path,
+                        property: candidate.data.property,
+                        filter: candidate.data.filter
+                    });
+                });
+                var path = reference.path;
+                core.ajaxPut(elements.const.edit.url.dropzones + path, JSON.stringify(candidates), {},
+                    _.bind(function (result) {
+                        this.dropZones = [];
+                        result.forEach(function (dropZone) {
+                            var $target = elements.pageBody.$('.' + elements.const.class.dropzone + '[id="' + dropZone.id + '"]');
+                            if ($target.length === 1) {
+                                var view = $target[0].view;
+                                if (view) {
+                                    this.dropZones.push(view);
+                                    view.$el.addClass(elements.const.dnd.class.base + elements.const.dnd.class.target);
+                                }
+                            }
+                        }, this);
+                    }, this));
+            },
+
+            clearDropZones: function () {
+                this.setDragZone();
+                elements.pageBody.dropZones.forEach(function (dropZone) {
+                    dropZone.$el.removeClass(elements.const.dnd.class.base + elements.const.dnd.class.targetOver);
+                    dropZone.$el.removeClass(elements.const.dnd.class.base + elements.const.dnd.class.target);
+                }, this);
+                this.dropZones = undefined;
+            },
+
+            getDragZone: function (event) {
+                return elements.pageBody.getPointerComponent(event,
+                    '.' + elements.const.class.dropzone, _.bind(this.isDropZone, this));
+            },
+
+            isDropZone: function (view) {
+                if (this.dropZones) {
+                    for (var i = 0; i < this.dropZones.length; i++) {
+                        if (this.dropZones[i].data.path === view.data.path) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            },
+
+            setDragZone: function (zone, event) {
+                if (this.dragZone && this.dragZone !== zone) {
+                    if (elements.log.getLevel() <= log.levels.DEBUG) {
+                        elements.log.debug('elements.dnd.dragZone.clear! (' + this.dragZone.$el.attr('id') + ')');
+                    }
+                    this.dragZone.$el.removeClass(elements.const.dnd.class.base + elements.const.dnd.class.targetOver);
+                    this.dragZone = undefined;
+                }
+                if (zone && this.dragZone !== zone) {
+                    if (elements.log.getLevel() <= log.levels.DEBUG) {
+                        var pointer = elements.pageBody.getPointer(event);
+                        elements.log.debug('elements.dnd.dragZone.set: ' + zone.$el.attr('id') + ' ' + JSON.stringify(pointer));
+                    }
+                    this.dragZone = zone;
+                    zone.$el.addClass(elements.const.dnd.class.base + elements.const.dnd.class.targetOver);
+                }
             },
 
             // target markers
@@ -657,6 +751,7 @@
                 this.containers = [];
                 this.containerRefs = [];
                 this.elements = [];
+                this.dropZones = [];
                 var self = this;
                 this.$('.' + elements.const.class.container).each(function () {
                     var view = core.getView(this, elements.Container);
@@ -679,6 +774,10 @@
                         component.container.elements.push(component);
                     }
                 }, this);
+                this.$('.' + elements.const.class.dropzone).each(function () {
+                    var view = core.getView(this, elements.DropZone);
+                    self.dropZones.push(view);
+                });
                 // send container references to the edit frame
                 parent.postMessage(elements.const.event.page.containerRefs
                     + JSON.stringify(this.containerRefs), '*');
@@ -724,6 +823,7 @@
              * @param reference the element to refresh as a reference to the repository
              */
             redraw: function (reference) {
+                this.dnd.reset();
                 var selection = elements.pageBody.selection.component;
                 if (selection) {
                     selection = selection.reference;
@@ -739,10 +839,12 @@
                 for (i = 0; i < toRefresh.length; i++) {
                     this.redrawComponent(toRefresh[i], i + 1 < toRefresh.length ? undefined : _.bind(function () {
                         // reinitialize view after last refresh (hoping that the reload calls are serialized)
-                        this.initComponents();
-                        if (selection) {
-                            this.selectPath(selection.path, true);
-                        }
+                        window.setTimeout(_.bind(function () {
+                            this.initComponents();
+                            if (selection) {
+                                this.selectPath(selection.path, true);
+                            }
+                        }, this), 200);
                     }, this));
                 }
             },
@@ -774,6 +876,7 @@
              * @param reference the element to drop as a reference to the repository
              */
             clear: function (reference) {
+                this.dnd.reset();
                 var selection = elements.pageBody.selection.component;
                 if (selection) {
                     selection = selection.reference;
@@ -807,8 +910,8 @@
              */
             onDragEnter: function (event) {
                 event.preventDefault();
-                if (elements.log.getLevel() <= log.levels.DEBUG) {
-                    elements.log.debug('elements.dndEnter(' + '' + ')');
+                if (elements.log.getLevel() <= log.levels.TRACE) {
+                    elements.log.trace('elements.dndEnter(' + '' + ')');
                 }
                 if (pages.current.dnd.object) {
                     this.onDragStart(event, pages.current.dnd.object);
@@ -823,13 +926,25 @@
             onDragOver: function (event) {
                 event.preventDefault();
                 var dnd = core.dnd.getDndData(event);
-                var ref = dnd.el.view.reference;
-                var target = this.dnd.getDragTarget(event);
-                if (elements.log.getLevel() <= log.levels.DEBUG) {
-                    elements.log.debug('elements.dndOver(' + (ref ? ref.path : 'body') + '): '
-                        + JSON.stringify(dnd.pos) + " - " + (target ? target.reference.path : '?'));
+                var object = pages.current.dnd.object;
+                if (object) {
+                    if (object.type === 'component' || object.type === 'element') {
+                        var ref = dnd.el.view.reference;
+                        var target = this.dnd.getDragTarget(event);
+                        if (elements.log.getLevel() <= log.levels.TRACE) {
+                            elements.log.trace('elements.dndOver(' + (ref ? ref.path : 'body') + '): '
+                                + JSON.stringify(dnd.pos) + " - " + (target ? target.reference.path : '?'));
+                        }
+                        this.dnd.setDragTarget(target, event);
+                    } else {
+                        var zone = this.dnd.getDragZone(event);
+                        if (elements.log.getLevel() <= log.levels.TRACE) {
+                            elements.log.trace('elements.dndOver('
+                                + JSON.stringify(dnd.pos) + " - " + (zone ? zone.$el.attr('id') : '?'));
+                        }
+                        this.dnd.setDragZone(zone, event);
+                    }
                 }
-                this.dnd.setDragTarget(target, event);
                 return false;
             },
 
@@ -847,9 +962,10 @@
              */
             onDrop: function (event) {
                 event.preventDefault();
+                var object, target;
                 if (this.dnd.dragTarget && this.dnd.insert) {
-                    var object = JSON.parse(event.originalEvent.dataTransfer.getData('application/json'));
-                    var target = this.dnd.dragTarget.reference;
+                    object = JSON.parse(event.originalEvent.dataTransfer.getData('application/json'));
+                    target = this.dnd.dragTarget.reference;
                     var before = this.dnd.insert.before ? this.dnd.insert.before.reference : undefined;
                     if (elements.log.getLevel() <= log.levels.DEBUG) {
                         elements.log.debug('elements.dnd.onDrop(' + this.dnd.dragTarget.reference.path + '): '
@@ -873,6 +989,20 @@
                                     }
                                 } : undefined
                             },
+                            object: object
+                        }), '*');
+                } else if (this.dnd.dragZone) {
+                    object = JSON.parse(event.originalEvent.dataTransfer.getData('application/json'));
+                    target = this.dnd.dragZone.data;
+                    if (elements.log.getLevel() <= log.levels.DEBUG) {
+                        elements.log.debug('elements.dnd.onDrop(' + this.dnd.dragZone.$el.attr('id') + '): '
+                            + JSON.stringify(object) + ' > '
+                            + JSON.stringify(target)
+                        );
+                    }
+                    parent.postMessage(elements.const.event.dnd.drop
+                        + JSON.stringify({
+                            zone: target,
                             object: object
                         }), '*');
                 }
@@ -1089,7 +1219,8 @@
                     var self = this;
                     var viewRect = this.getViewRect(view.$el);
                     if (elements.log.getLevel() <= log.levels.TRACE) {
-                        elements.log.trace('elements.getPointerView(' + view.reference.path + ', '
+                        elements.log.trace('elements.getPointerView('
+                            + (view.reference ? view.reference.path : view.data.path) + ', '
                             + JSON.stringify(pointer) + ' / ' + JSON.stringify(viewRect) + ', "'
                             + selector + '"' + (condition ? ' ++' : '') + ' ...');
                     }
@@ -1101,7 +1232,9 @@
                             if (nested) {
                                 var nestedRect = self.getViewRect(nested.$el);
                                 if (elements.log.getLevel() <= log.levels.TRACE) {
-                                    elements.log.trace('elements.getPointerView.try: ' + nested.reference.path + ' ' + JSON.stringify(nestedRect));
+                                    elements.log.trace('elements.getPointerView.try: '
+                                        + (nested.reference ? nested.reference.path : nested.data.path) + ' '
+                                        + JSON.stringify(nestedRect));
                                 }
                                 if (nestedRect.x1 <= pointer.x && nestedRect.y1 <= pointer.y &&
                                     nestedRect.x2 >= pointer.x && nestedRect.y2 >= pointer.y) {
@@ -1138,7 +1271,8 @@
                     }
                 }
                 if (elements.log.getLevel() <= log.levels.TRACE) {
-                    elements.log.trace('elements.getPointerView: ' + (view ? view.reference.path : 'undefined'));
+                    elements.log.trace('elements.getPointerView: '
+                        + (view ? (view.reference ? view.reference.path : view.data.path) : 'undefined'));
                 }
                 return view;
             }

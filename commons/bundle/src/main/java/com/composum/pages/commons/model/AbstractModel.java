@@ -1,3 +1,8 @@
+/*
+ * copyright (c) 2015ff IST GmbH Dresden, Germany - https://www.ist-software.com
+ *
+ * This software may be modified and distributed under the terms of the MIT license.
+ */
 package com.composum.pages.commons.model;
 
 import com.composum.pages.commons.PagesConstants;
@@ -9,6 +14,7 @@ import com.composum.pages.commons.service.PageManager;
 import com.composum.pages.commons.service.ResourceManager;
 import com.composum.pages.commons.service.SiteManager;
 import com.composum.pages.commons.service.VersionsService;
+import com.composum.pages.commons.util.PagesUtil;
 import com.composum.pages.commons.util.TagCssClasses;
 import com.composum.pages.commons.util.ValueHashMap;
 import com.composum.platform.models.annotations.PropertyDefaults;
@@ -303,6 +309,10 @@ public abstract class AbstractModel implements SlingBean, Model {
             type = resource.getResourceType();
         }
         return type;
+    }
+
+    public String getEncodedReference() {
+        return PagesUtil.getEncodedReference(getResource());
     }
 
     public String getPathHint() {

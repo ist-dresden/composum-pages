@@ -37,6 +37,18 @@
         }
     }
 
+    .composum-pages-edit {
+
+        &_drop-zone {
+            display: inline-block;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            min-width: $dnd-drop-zone-min-size;
+            min-height: $dnd-drop-zone-min-size;
+        }
+    }
+
     .composum-pages-stage-edit-dnd {
 
         &_handle {

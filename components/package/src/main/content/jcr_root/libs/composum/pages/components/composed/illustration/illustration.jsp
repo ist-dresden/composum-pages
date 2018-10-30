@@ -6,7 +6,9 @@
 <cpp:container var="illustration" type="com.composum.pages.components.model.illustration.Illustration"
                data-behavior="@{illustration.behavior}" style="@{illustration.style}">
     <div class="${illustrationCssBase}_image">
-        <cpp:include path="image" resourceType="composum/pages/components/element/image" mode="none"/>
+        <cpp:dropZone property="image/imageRef" filter="asset:image">
+            <cpp:include path="image" resourceType="composum/pages/components/element/image" mode="none"/>
+        </cpp:dropZone>
         <sling:call script="shapes.jsp"/>
     </div>
     <c:if test="${illustration.editMode}">

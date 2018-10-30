@@ -424,12 +424,29 @@
 
     .composum-pages-stage-edit-tools-main-assets {
 
+        .composum-pages-tools {
+
+            &_tree {
+
+                &_asset-tile {
+                    display: none;
+                }
+            }
+        }
+
         &.preview-available {
 
             .composum-pages-tools {
 
                 &_tree-panel {
                     bottom: $tile-file-height+ $tools-pane-padding * 2;
+                }
+
+                &_tree {
+
+                    &_asset-tile {
+                        display: block;
+                    }
                 }
             }
         }

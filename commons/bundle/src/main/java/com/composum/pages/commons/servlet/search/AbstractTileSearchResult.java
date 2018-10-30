@@ -24,9 +24,19 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Collection;
 
+/**
+ * renders a list of links of the search results with a 'tile' of each result as the link content;
+ * the tile is included with the extra selector string appended to the request selector '{type}.tile'
+ * (e.g. 'xtra' of the request selector string 'page.tile.xtra') - if no such selector is specified
+ * the 'search' selector is set in the forward to the tile include; the tile should be decorated with the
+ * necessary meta-data (reference data) for the found item together with the 'draggable' attribute,
+ * this must be rendered by the tile itself (this depends probably on the items type or status)
+ */
 public abstract class AbstractTileSearchResult {
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractTileSearchResult.class);
+
+    public static final String DEFAULT_TILE_SELECTOR = "search";
 
     protected abstract String getType();
 
@@ -47,8 +57,10 @@ public abstract class AbstractTileSearchResult {
         RequestPathInfo pathInfo = request.getRequestPathInfo();
 
         // use additional selectors for rendering of the tiles
+        String tileSelector = type + ".tile";
         String selectors = pathInfo.getSelectorString();
-        selectors = selectors != null && selectors.startsWith("asset.tile.") ? selectors.substring(10) : "";
+        selectors = selectors != null && selectors.startsWith(tileSelector + ".")
+                ? selectors.substring(tileSelector.length() + 1) : DEFAULT_TILE_SELECTOR;
 
         response.setCharacterEncoding("UTF-8");
         response.setContentType("text/html");
@@ -56,7 +68,8 @@ public abstract class AbstractTileSearchResult {
         writer.append("<ul class=\"pages-search-").append(type).append("-result\">");
 
         for (SearchService.Result item : result) {
-            String path = item.getTarget().getPath();
+            Resource resource = item.getTarget();
+            String path = resource.getPath();
             Resource content = item.getTargetContent();
 
             // determine the resource type to render a tile of an item
@@ -69,9 +82,7 @@ public abstract class AbstractTileSearchResult {
 
                 RequestDispatcherOptions options = new RequestDispatcherOptions();
                 options.setForceResourceType(tileResourceType);
-                if (selectors != null) {
-                    options.setReplaceSelectors(selectors);
-                }
+                options.setReplaceSelectors(selectors);
 
                 RequestDispatcher dispatcher = request.getRequestDispatcher(content, options);
                 if (dispatcher != null) {

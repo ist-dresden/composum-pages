@@ -30,6 +30,7 @@
                 component: 'composum-pages-component',
                 container: 'composum-pages-container',
                 element: 'composum-pages-element',
+                dropzone: 'composum-pages-edit_drop-zone',
                 action: 'composum-pages-action'
             },
             trigger: {

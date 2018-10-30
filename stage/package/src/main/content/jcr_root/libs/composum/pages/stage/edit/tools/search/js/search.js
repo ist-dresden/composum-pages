@@ -33,6 +33,10 @@
                 var c = search.const.css;
                 var e = pages.const.event;
                 var p = pages.const.profile[this.type].search;
+                this.log = {
+                    pages: pages.log,
+                    dnd: log.getLogger('dnd')
+                };
                 this.$input = this.$('.' + c.base + c._input);
                 this.$scope = this.$('.' + c.base + c._scope);
                 this.$result = this.$('.' + c.base + c._result);
@@ -50,7 +54,7 @@
                 $(document).on(e[this.type].selected + '.' + p.aspect, _.bind(this.onSelected, this));
             },
 
-            setFilter: function(filter) {
+            setFilter: function (filter) {
                 if (this.filter !== filter) {
                     this.filter = filter;
                     if (this.visible) {
@@ -133,7 +137,10 @@
                     this.$el.addClass(c.searching);
                     core.ajaxGet(url, {}, _.bind(function (result) {
                         this.$result.html(result);
-                        this.$result.find('a').click(_.bind(this.onSelect, this));
+                        this.$result.find('a').click(_.bind(this.onSelect, this))
+                            .find('[draggable="true"]')
+                            .on('dragstart', _.bind(this.onDragStart, this))
+                            .on('dragend', _.bind(this.onDragEnd, this));
                         this.setSelection();
                     }, this), undefined, _.bind(function () {
                         this.$el.removeClass(c.searching);
@@ -174,6 +181,36 @@
                 if (path) {
                     this.$result.find('a[data-path="' + path + '"]').addClass(c.selected);
                 }
+            },
+
+            // DnD (page: link..., asset: reference..., element: move..., component: insert...)
+
+            onDragStart: function (event) {
+                var e = pages.const.event;
+                var $el = $(event.currentTarget);
+                var reference = new pages.Reference($el);
+                if (reference.path) {
+                    var object = {
+                        type: this.type,
+                        reference: reference
+                    };
+                    $(document).trigger(e.dnd.object, [object]);
+                    var jsonData = JSON.stringify(object);
+                    var dndEvent = event.originalEvent;
+                    dndEvent.dataTransfer.setData('application/json', jsonData);
+                    dndEvent.dataTransfer.effectAllowed = 'copy';
+                    if (this.log.dnd.getLevel() <= log.levels.DEBUG) {
+                        this.log.dnd.debug('search.dndStart(' + jsonData + ')');
+                    }
+                }
+            },
+
+            onDragEnd: function (event) {
+                var e = pages.const.event;
+                if (this.log.dnd.getLevel() <= log.levels.DEBUG) {
+                    this.log.dnd.debug('search.trigger.' + e.dnd.finished + '(...)');
+                }
+                $(document).trigger(e.dnd.finished, [event]);
             }
         });
 

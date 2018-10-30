@@ -363,7 +363,9 @@
                                     targetPath: path,
                                     targetType: target.container.reference.type
                                 }, {}, _.bind(function (result) {
-                                    pages.log.debug('pages.trigger.' + pages.const.event.element.inserted + '(' + path + ')');
+                                    if (pages.log.getLevel() <= log.levels.DEBUG) {
+                                        pages.log.debug('actions.dnd.insert.trigger.' + pages.const.event.element.inserted + '(' + path + ')');
+                                    }
                                     $(document).trigger(pages.const.event.element.inserted, [new pages.Reference(result.reference)]);
                                 }, this));
                             }, this));
@@ -386,9 +388,40 @@
                     }, {}, function (result) {
                         var oldParentPath = core.getParentPath(object.reference.path);
                         if (oldParentPath !== target.container.reference.path) {
+                            if (pages.log.getLevel() <= log.levels.DEBUG) {
+                                pages.log.debug('actions.dnd.move.trigger.' + pages.const.event.element.changed + '(' + oldParentPath + ')');
+                            }
                             $(document).trigger(pages.const.event.element.changed, [new pages.Reference(undefined, oldParentPath)]);
                         }
+                        if (pages.log.getLevel() <= log.levels.DEBUG) {
+                            pages.log.debug('actions.dnd.move.trigger.' + pages.const.event.element.changed + '(' + target.container.reference.path + ')');
+                        }
                         $(document).trigger(pages.const.event.element.changed, [target.container.reference]);
+                    }, function (xhr) {
+                        core.alert('error', 'Error', 'Error on moving component', xhr);
+                    });
+                }
+            },
+
+            doZoneDrop: function (zone, object) {
+                if (zone && zone.path && object && object.reference.path) {
+                    var data = {
+                        '_charset_': 'UTF-8'
+                    };
+                    if (zone.type) {
+                        data['sling:resourceType'] = zone.type;
+                    }
+                    if (zone.prim) {
+                        data['jcr:primaryType'] = zone.prim;
+                    }
+                    data[zone.property] = object.reference.path;
+                    core.ajaxPost(zone.path, data, {}, function (result) {
+                        var event = zone.event ? zone.event : pages.const.event.element.changed;
+                        var reference = new pages.Reference(zone);
+                        if (pages.log.getLevel() <= log.levels.DEBUG) {
+                            pages.log.debug('actions.dnd.zone.trigger.' + event + '(' + reference.path + ')');
+                        }
+                        $(document).trigger(event, [reference]);
                     }, function (xhr) {
                         core.alert('error', 'Error', 'Error on moving component', xhr);
                     });
