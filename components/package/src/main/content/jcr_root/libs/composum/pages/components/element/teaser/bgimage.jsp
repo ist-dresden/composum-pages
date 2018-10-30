@@ -5,7 +5,9 @@
 <cpp:element var="teaser" type="com.composum.pages.components.model.teaser.Teaser"
              cssAdd="@{teaserCssBase}_variation_bg-image"
              style="background-image:url(@{teaser.imageUrl})">
-    <c:if test="${teaser.hasLink}"><a class="${teaserCssBase}_link" href="${teaser.linkUrl}"></c:if>
-    <cpp:include replaceSelectors="${teaser.textSelector}"/>
-    <c:if test="${teaser.hasLink}"></a></c:if>
+    <cpp:dropZone property="image/imageRef" filter="asset:image">
+        <c:if test="${teaser.hasLink}"><a class="${teaserCssBase}_link" href="${teaser.linkUrl}"></c:if>
+        <cpp:include replaceSelectors="${teaser.textSelector}"/>
+        <c:if test="${teaser.hasLink}"></a></c:if>
+    </cpp:dropZone>
 </cpp:element>

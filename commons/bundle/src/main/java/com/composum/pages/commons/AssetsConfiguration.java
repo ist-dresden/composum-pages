@@ -86,8 +86,23 @@ public interface AssetsConfiguration {
     ResourceFilter getVideoNodeFilter();
 
     @Nonnull
-    ResourceFilter getAnyAssetFilter();
+    ResourceFilter getAnyNodeFilter();
 
     @Nonnull
-    public ResourceFilter getAssetFileFilter();
+    Set<String> getFileFilterKeys();
+
+    @Nullable
+    ResourceFilter getFileFilter(String key);
+
+    @Nullable
+    ResourceFilter getAssetFileFilter();
+
+    @Nonnull
+    ResourceFilter getImageFileFilter();
+
+    @Nonnull
+    ResourceFilter getVideoFileFilter();
+
+    @Nonnull
+    ResourceFilter getAnyFileFilter();
 }

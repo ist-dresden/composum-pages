@@ -11,13 +11,17 @@ import com.composum.pages.commons.model.Element;
 import com.composum.pages.commons.model.Page;
 import com.composum.pages.commons.model.Site;
 import com.composum.sling.core.filter.ResourceFilter;
+import com.composum.sling.core.util.ResourceUtil;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceWrapper;
 import org.apache.sling.api.resource.SyntheticResource;
+import org.apache.sling.api.resource.ValueMap;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -238,6 +242,59 @@ public class ResourceTypeUtil {
         SUBTYPES.put(TREE_ACTIONS_PATH, new TreeActionsStrategy());
         SUBTYPES.put(CONTEXT_ACTIONS_PATH, new ContextActionsStrategy());
         SUBTYPES.put(CONTEXT_CONTAINER_PATH, new ContextContainerStrategy());
+    }
+
+    /**
+     * retrieves the primary type of a resource; is using the parent if the resource is a content resource
+     */
+    @Nullable
+    public static String getPrimaryType(Resource resource) {
+        String primaryType = null;
+        if (JcrConstants.JCR_CONTENT.equals(resource.getName())) {
+            Resource parent = resource.getParent();
+            if (parent != null) {
+                ValueMap parentValues = parent.getValueMap();
+                primaryType = parentValues.get(JcrConstants.JCR_PRIMARYTYPE, String.class);
+            }
+        }
+        if (StringUtils.isBlank(primaryType)) {
+            ValueMap values = resource.getValueMap();
+            primaryType = values.get(JcrConstants.JCR_PRIMARYTYPE, String.class);
+        }
+        return primaryType;
+    }
+
+    /**
+     * retrieves the resource type of a resource or its content resource with a fallback to the primary type
+     */
+    @Nullable
+    public static String getResourceType(Resource resource) {
+        ValueMap values = resource.getValueMap();
+        String resourceType = values.get(ResourceUtil.PROP_RESOURCE_TYPE, String.class);
+        if (StringUtils.isBlank(resourceType)) {
+            if (JcrConstants.JCR_CONTENT.equals(resource.getName())) {
+                Resource parent = resource.getParent();
+                if (parent != null) {
+                    ValueMap parentValues = parent.getValueMap();
+                    resourceType = parentValues.get(ResourceUtil.PROP_RESOURCE_TYPE, String.class);
+                    if (StringUtils.isBlank(resourceType)) {
+                        resourceType = parentValues.get(JcrConstants.JCR_PRIMARYTYPE, String.class);
+                    }
+                }
+            } else {
+                Resource content = resource.getChild(JcrConstants.JCR_CONTENT);
+                if (content != null) {
+                    ValueMap contentValues = content.getValueMap();
+                    resourceType = contentValues.get(ResourceUtil.PROP_RESOURCE_TYPE, String.class);
+                }
+            }
+            if (StringUtils.isBlank(resourceType)) {
+                resourceType = values.get(JcrConstants.JCR_PRIMARYTYPE, String.class);
+            }
+        }
+        return StringUtils.isNotBlank(resourceType)
+                ? relativeResourceType(resource.getResourceResolver(), resourceType)
+                : null;
     }
 
     /**

@@ -12,6 +12,7 @@ import com.composum.pages.commons.model.GenericModel;
 import com.composum.pages.commons.model.Model;
 import com.composum.pages.commons.model.Page;
 import com.composum.pages.commons.model.Site;
+import com.composum.pages.commons.model.properties.DropZone;
 import com.composum.pages.commons.service.EditService;
 import com.composum.pages.commons.service.PageManager;
 import com.composum.pages.commons.service.ResourceManager;
@@ -142,7 +143,7 @@ public class EditServlet extends PagesContentServlet {
         siteTree, pageTree, developTree,
         resourceInfo, editDialog, newDialog,
         editTile, editToolbar, treeActions,
-        pageComponents, targetContainers, isAllowedElement,
+        pageComponents, targetContainers, isAllowedElement, filterDropZones,
         insertElement, moveElement, copyElement,
         createPage, deletePage, moveContent, renameContent, copyContent,
         createSite, deleteSite,
@@ -227,6 +228,8 @@ public class EditServlet extends PagesContentServlet {
         // PUT
         operations.setOperation(ServletOperationSet.Method.PUT, Extension.html,
                 Operation.pageComponents, new GetPageComponents());
+        operations.setOperation(ServletOperationSet.Method.PUT, Extension.json,
+                Operation.filterDropZones, new FilterDropZones());
         operations.setOperation(ServletOperationSet.Method.PUT, Extension.json,
                 Operation.restoreVersion, new RestoreVersion());
         operations.setOperation(ServletOperationSet.Method.PUT, Extension.json,
@@ -481,7 +484,7 @@ public class EditServlet extends PagesContentServlet {
         @Override
         protected Resource getEditResource(@Nonnull SlingHttpServletRequest request, @Nonnull Resource contentResource,
                                            @Nonnull String selectors, @Nullable String type) {
-            if (assetsConfiguration.getAssetFileFilter().accept(contentResource)) {
+            if (assetsConfiguration.getAnyFileFilter().accept(contentResource)) {
                 ResourceResolver resolver = request.getResourceResolver();
                 return ResolverUtil.getResourceType(resolver, ResourceTypeUtil.DEFAULT_FILE_TILE);
             } else {
@@ -508,7 +511,7 @@ public class EditServlet extends PagesContentServlet {
         @Override
         protected Resource getEditResource(@Nonnull SlingHttpServletRequest request, @Nonnull Resource contentResource,
                                            @Nonnull String selectors, @Nullable String type) {
-            if (assetsConfiguration.getAssetFileFilter().accept(contentResource)) {
+            if (assetsConfiguration.getAnyFileFilter().accept(contentResource)) {
                 ResourceResolver resolver = request.getResourceResolver();
                 return ResolverUtil.getResourceType(resolver, ResourceTypeUtil.DEFAULT_FILE_ACTIONS);
             } else {
@@ -575,8 +578,8 @@ public class EditServlet extends PagesContentServlet {
     }
 
     /**
-     * get a list of allowend components (element type) for one page
-     * (depends on the current content an the hierarchical rules of the pages elements)
+     * get a list of allowed components (element type) for one page
+     * (depends on the current content and the hierarchical rules of the pages elements)
      */
     protected class GetPageComponents implements ServletOperation {
 
@@ -651,6 +654,37 @@ public class EditServlet extends PagesContentServlet {
             targetList.toJson(jsonWriter);
         }
     }
+
+    /**
+     * filter a list of drop zones and return the list of drop zones matching to the requested resource
+     */
+    protected class FilterDropZones implements ServletOperation {
+
+        @Override
+        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
+                         ResourceHandle resource)
+                throws IOException {
+            final BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
+
+            try (final JsonReader reader = new JsonReader(request.getReader())) {
+
+                DropZone.List dropZoneList = new DropZone.List(context, reader);
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("FilterDropZones(" + resource + "," + dropZoneList + ")...");
+                }
+
+                dropZoneList = dropZoneList.getMatchingList(resource);
+
+                JsonWriter jsonWriter = ResponseUtil.getJsonWriter(response);
+                response.setStatus(HttpServletResponse.SC_OK);
+                dropZoneList.toJson(jsonWriter);
+            }
+        }
+    }
+
+    //
+    // element changes
+    //
 
     protected abstract class ElementResourceOperation extends ChangeContentOperation {
 

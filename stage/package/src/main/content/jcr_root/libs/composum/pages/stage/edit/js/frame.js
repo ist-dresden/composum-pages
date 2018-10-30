@@ -398,18 +398,25 @@
                         case e.dnd.drop:
                             // executes the DnD drop operation triggered in the content page using the data from the content
                             this.log.frame.info('frame.message.on.' + e.element.drop + '(' + message[2] + ')');
-                            if (args.object && args.target) {
-                                pages.actions.dnd.doDrop({
-                                    container: {
-                                        reference: new pages.Reference(args.target.container.reference)
-                                    },
-                                    before: args.target.before ? {
-                                        reference: new pages.Reference(args.target.before.reference)
-                                    } : undefined
-                                }, {
-                                    type: args.object.type,
-                                    reference: new pages.Reference(args.object.reference)
-                                });
+                            if (args.object) {
+                                if (args.target) {
+                                    pages.actions.dnd.doDrop({
+                                        container: {
+                                            reference: new pages.Reference(args.target.container.reference)
+                                        },
+                                        before: args.target.before ? {
+                                            reference: new pages.Reference(args.target.before.reference)
+                                        } : undefined
+                                    }, {
+                                        type: args.object.type,
+                                        reference: new pages.Reference(args.object.reference)
+                                    });
+                                } else if (args.zone) {
+                                    pages.actions.dnd.doZoneDrop(args.zone, {
+                                        type: args.object.type,
+                                        reference: new pages.Reference(args.object.reference)
+                                    });
+                                }
                             }
                             break;
                         case e.dnd.finished:

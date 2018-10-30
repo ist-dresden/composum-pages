@@ -5,15 +5,17 @@
 <cpp:defineObjects/>
 <cpp:element var="title" type="com.composum.pages.components.model.title.Title"
              style="@{title.style}" test="@{title.editMode || title.valid}">
-    <c:choose>
-        <c:when test="${title.valid}">
-            <div class="${titleCssBase}_text">
-                <cpn:text tagName="h1" tagClass="${titleCssBase}_title" value="${title.title}"/>
-                <cpn:text tagName="h2" tagClass="${titleCssBase}_subtitle" value="${title.subtitle}"/>
-            </div>
-        </c:when>
-        <c:otherwise>
-            <cpp:include replaceSelectors="placeholder"/>
-        </c:otherwise>
-    </c:choose>
+    <cpp:dropZone property="image/imageRef" i18n="true" filter="asset:image">
+        <c:choose>
+            <c:when test="${title.valid}">
+                <div class="${titleCssBase}_text">
+                    <cpn:text tagName="h1" tagClass="${titleCssBase}_title" value="${title.title}"/>
+                    <cpn:text tagName="h2" tagClass="${titleCssBase}_subtitle" value="${title.subtitle}"/>
+                </div>
+            </c:when>
+            <c:otherwise>
+                <cpp:include replaceSelectors="placeholder"/>
+            </c:otherwise>
+        </c:choose>
+    </cpp:dropZone>
 </cpp:element>

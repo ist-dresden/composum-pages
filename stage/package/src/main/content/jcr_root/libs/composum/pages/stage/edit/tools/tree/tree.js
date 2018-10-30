@@ -76,6 +76,9 @@
 
             initialize: function (options) {
                 tree.ToolsTree.prototype.initialize.apply(this, [options]);
+                this.jstree.element
+                    .on('dragstart.' + this.nodeIdPrefix + 'tree', _.bind(this.onNodeDragStart, this))
+                    .on('dragend.' + this.nodeIdPrefix + 'tree', _.bind(this.onDragEnd, this));
             },
 
             onContentInserted: function (event, refOrPath) {
@@ -126,10 +129,6 @@
                 return rootPath;
             },
 
-            nodeIsDraggable: function (selection, event) {
-                return true;
-            },
-
             renameNode: function (node, oldName, newName) {
                 var nodePath = node.path;
                 var parentPath = core.getParentPath(nodePath);
@@ -154,6 +153,54 @@
 
             isElementType: function (node) {
                 return 'container' === node.type || 'element' === node.type;
+            },
+
+            // DnD (page: move/link..., asset: move/reference..., element: move..., component: move/insert...)
+
+            nodeIsDraggable: function (selection, event) {
+                return true;
+            },
+
+            onNodeDragStart: function (event, a, b, c) {
+                var dnd = core.dnd.getDndData(event);
+                var node = this.jstree.get_node(event.target);
+                if (node) {
+                    this.onDragStart(event, {
+                        name: node.original.name,
+                        path: node.original.path,
+                        type: node.original.type
+                    });
+                }
+            },
+
+            onDragStart: function (event, reference) {
+                var e = pages.const.event;
+                if (!reference) {
+                    var $el = $(event.currentTarget);
+                    reference = new pages.Reference($el);
+                }
+                if (this.type && reference.path) {
+                    var object = {
+                        type: this.type,
+                        reference: reference
+                    };
+                    $(document).trigger(e.dnd.object, [object]);
+                    var jsonData = JSON.stringify(object);
+                    var dndEvent = event.originalEvent;
+                    dndEvent.dataTransfer.setData('application/json', jsonData);
+                    dndEvent.dataTransfer.effectAllowed = 'copy';
+                    if (this.log.getLevel() <= log.levels.DEBUG) {
+                        this.log.debug(this.nodeIdPrefix + 'tree.dndStart(' + jsonData + ')');
+                    }
+                }
+            },
+
+            onDragEnd: function (event) {
+                var e = pages.const.event;
+                if (this.log.getLevel() <= log.levels.DEBUG) {
+                    this.log.debug(this.nodeIdPrefix + 'tree.trigger.' + e.dnd.finished + '(...)');
+                }
+                $(document).trigger(e.dnd.finished, [event]);
             }
         });
 
@@ -162,6 +209,7 @@
             nodeIdPrefix: 'PP_',
 
             initialize: function (options) {
+                this.type = 'page';
                 var p = pages.const.profile.page.tree;
                 var id = this.nodeIdPrefix + 'Tree';
                 options = _.extend(options || {}, {
@@ -174,7 +222,7 @@
                         touch: false, //'selection',
                         large_drag_target: true,
                         large_drop_target: true,
-                        use_html5: false
+                        use_html5: true
                     }
                 });
                 this.initializeFilter();
@@ -309,6 +357,7 @@
             nodeIdPrefix: 'PA_',
 
             initialize: function (options) {
+                this.type = 'asset';
                 var p = pages.const.profile.asset.tree;
                 var id = this.nodeIdPrefix + 'Tree';
                 options = _.extend(options || {}, {
@@ -318,10 +367,10 @@
                         copy: false,
                         check_while_dragging: false,
                         drag_selection: false,
-                        touch: false, //'selection',
+                        touch: 'selected',
                         large_drag_target: true,
                         large_drop_target: true,
-                        use_html5: false
+                        use_html5: true
                     }
                 });
                 this.initializeFilter();
@@ -605,6 +654,9 @@
                             if (data) {
                                 this.$treePanelPreview.html(data);
                                 this.$el.addClass('preview-available');
+                                this.$treePanelPreview.find('[draggable="true"]')
+                                    .on('dragstart', _.bind(this.onPreviewDragStart, this))
+                                    .on('dragend', _.bind(this.tree.onDragEnd, this.tree));
                             } else {
                                 this.$el.removeClass('preview-available');
                                 this.$treePanelPreview.html('');
@@ -613,6 +665,14 @@
                 } else {
                     this.$el.removeClass('preview-available');
                     this.$treePanelPreview.html('');
+                }
+            },
+
+            onPreviewDragStart: function (event) {
+                var $el = $(event.currentTarget);
+                var reference = new pages.Reference($el);
+                if (reference.path) {
+                    this.tree.onDragStart(event, reference);
                 }
             }
         });

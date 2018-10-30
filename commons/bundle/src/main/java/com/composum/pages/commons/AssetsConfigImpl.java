@@ -80,11 +80,56 @@ public class AssetsConfigImpl implements AssetsConfiguration {
     private ResourceFilter imageNodeFilter;
     private ResourceFilter videoNodeFilter;
     private ResourceFilter anyAssetFilter;
+
     private ResourceFilter assetFileFilter;
+    private ResourceFilter imageFileFilter;
+    private ResourceFilter videoFileFilter;
+    private ResourceFilter anyFileFilter;
 
     private Map<String, ConfigurableFilter> availableFilters;
+    private Map<String, ResourceFilter> fileFilters;
 
     protected Configuration config;
+
+    // asset resource filters (file filters)
+
+    @Nonnull
+    @Override
+    public Set<String> getFileFilterKeys() {
+        return fileFilters.keySet();
+    }
+
+    @Nullable
+    @Override
+    public ResourceFilter getFileFilter(String key) {
+        return fileFilters.get(key);
+    }
+
+    @Nullable
+    @Override
+    public ResourceFilter getAssetFileFilter() {
+        return assetFileFilter;
+    }
+
+    @Nonnull
+    @Override
+    public ResourceFilter getImageFileFilter() {
+        return imageFileFilter;
+    }
+
+    @Nonnull
+    @Override
+    public ResourceFilter getVideoFileFilter() {
+        return videoFileFilter;
+    }
+
+    @Nonnull
+    @Override
+    public ResourceFilter getAnyFileFilter() {
+        return anyFileFilter;
+    }
+
+    // tree node filters
 
     @Nonnull
     @Override
@@ -134,14 +179,8 @@ public class AssetsConfigImpl implements AssetsConfiguration {
 
     @Nonnull
     @Override
-    public ResourceFilter getAnyAssetFilter() {
+    public ResourceFilter getAnyNodeFilter() {
         return anyAssetFilter;
-    }
-
-    @Nonnull
-    @Override
-    public ResourceFilter getAssetFileFilter() {
-        return assetFileFilter;
     }
 
     /**
@@ -160,6 +199,7 @@ public class AssetsConfigImpl implements AssetsConfiguration {
     @Modified
     protected void activate(BundleContext bundleContext, Configuration config) {
         this.config = config;
+        this.fileFilters = new LinkedHashMap<>();
         this.availableFilters = new LinkedHashMap<>();
         ResourceFilter replicationRootFilter = pagesConfiguration.getReplicationRootFilter();
         Object assetsModuleConfig = null;
@@ -167,42 +207,44 @@ public class AssetsConfigImpl implements AssetsConfiguration {
         if (serviceReference != null) {
             assetsModuleConfig = bundleContext.getService(serviceReference);
         }
+        imageFileFilter = ResourceFilterMapping.fromString(config.imageNodeFilterRule());
+        videoFileFilter = ResourceFilterMapping.fromString(config.videoNodeFilterRule());
         ResourceFilter treeIntermediateFilter = new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.or,
                 pagesConfiguration.getTreeIntermediateFilter(),
                 pagesConfiguration.getSiteNodeFilter());
         imageNodeFilter = buildTreeFilter(new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.and,
-                        replicationRootFilter,
-                        ResourceFilterMapping.fromString(config.imageNodeFilterRule())),
-                treeIntermediateFilter);
+                replicationRootFilter, imageFileFilter), treeIntermediateFilter);
         videoNodeFilter = buildTreeFilter(new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.and,
-                        replicationRootFilter,
-                        ResourceFilterMapping.fromString(config.videoNodeFilterRule())),
-                treeIntermediateFilter);
+                replicationRootFilter, videoFileFilter), treeIntermediateFilter);
         if (assetsModuleConfig != null) {
+            assetFileFilter = ResourceFilterMapping.fromString(config.assetNodeFilterRule());
             assetNodeFilter = buildTreeFilter(new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.and,
-                            replicationRootFilter,
-                            ResourceFilterMapping.fromString(config.assetNodeFilterRule())),
-                    treeIntermediateFilter);
-            assetFileFilter = new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.or,
+                    replicationRootFilter, assetFileFilter), treeIntermediateFilter);
+            anyFileFilter = new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.or,
                     ResourceFilterMapping.fromString(config.assetNodeFilterRule()),
                     ResourceFilterMapping.fromString(config.imageNodeFilterRule()),
                     ResourceFilterMapping.fromString(config.videoNodeFilterRule()));
         } else {
+            assetFileFilter = null;
             assetNodeFilter = null;
-            assetFileFilter = new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.or,
+            anyFileFilter = new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.or,
                     ResourceFilterMapping.fromString(config.imageNodeFilterRule()),
                     ResourceFilterMapping.fromString(config.videoNodeFilterRule()));
         }
         anyAssetFilter = buildTreeFilter(new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.and,
-                replicationRootFilter, assetFileFilter), treeIntermediateFilter);
+                replicationRootFilter, anyFileFilter), treeIntermediateFilter);
+        fileFilters.put(FILTER_ALL, anyFileFilter);
         availableFilters.put(FILTER_ALL, new ConfigurableFilter(anyAssetFilter,
                 FILTER_ALL, "All", "show all available asset object types"));
         if (assetNodeFilter != null) {
+            fileFilters.put(FILTER_ASSET, assetFileFilter);
             availableFilters.put(FILTER_ASSET, new ConfigurableFilter(assetNodeFilter,
                     FILTER_ASSET, "Asset", "restrict to 'Composum Assets' objects"));
         }
+        fileFilters.put(FILTER_IMAGE, imageFileFilter);
         availableFilters.put(FILTER_IMAGE, new ConfigurableFilter(imageNodeFilter,
                 FILTER_IMAGE, "Image", "restrict to image file objects"));
+        fileFilters.put(FILTER_VIDEO, videoFileFilter);
         availableFilters.put(FILTER_VIDEO, new ConfigurableFilter(videoNodeFilter,
                 FILTER_VIDEO, "Video", "restrict to video file objects"));
     }

@@ -61,7 +61,6 @@
                 if (this.log.dnd.getLevel() <= log.levels.DEBUG) {
                     this.log.dnd.debug(tools.const.components.log.prefix + 'dndStart(' + jsonData + ')');
                 }
-
             },
 
             onDragEnd: function (event) {

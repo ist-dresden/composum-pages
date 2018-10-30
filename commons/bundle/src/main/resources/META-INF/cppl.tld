@@ -479,6 +479,84 @@
 
     <tag>
         <description>
+            the wrapper for a drop target on editing
+        </description>
+        <name>dropZone</name>
+        <tag-class>com.composum.pages.commons.taglib.DropZoneTag</tag-class>
+        <tei-class>com.composum.pages.commons.taglib.DropZoneTagTEI</tei-class>
+        <body-content>JSP</body-content>
+        <attribute>
+            <description>the name of the HTML tag; default: 'div'</description>
+            <name>tagName</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <description>the resource to modify (default is the resoiurce of the enclosing 'element')</description>
+            <name>resource</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>org.apache.sling.api.resource.Resource</type>
+        </attribute>
+        <attribute>
+            <description>the path of the resource to modify (alternative to the 'resource' attribute)</description>
+            <name>resourcePath</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <description>the path (name) of the property relative to the resource</description>
+            <name>property</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <description>use localized property path if 'true'</description>
+            <name>i18n</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.Boolean</type>
+        </attribute>
+        <attribute>
+            <description>the filter key set to determine an appropriate drag operation</description>
+            <name>filter</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <description>the event key of the event to trigger after a successful change request</description>
+            <name>successEvent</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <name>cssBase</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <name>cssSet</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <name>cssAdd</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
+        <dynamic-attributes>true</dynamic-attributes>
+    </tag>
+
+    <tag>
+        <description>
             the wrapper for the edit dialog tag
         </description>
         <name>editDialog</name>

@@ -6,7 +6,8 @@
 /*
  * edit mode: expand carousel content for editing
  */
-.composum-pages-EDIT_body {
+.composum-pages-EDIT_body,
+.composum-pages-DEVELOP_body{
 
     .composum-pages-components-composed-carousel {
 
@@ -16,6 +17,19 @@
 
         &_element {
             @include aspect-ratio-wrapper(5, 1);
+
+            .composum-pages-components-element-teaser {
+                padding: 0; // the drop zone should occupy the entire space
+
+                .composum-pages-edit_drop-zone {
+                    height: 100%;
+                    padding: 2rem 15%; // the delegated padding of the element
+                }
+
+                &_title {
+                    margin-top: 0;
+                }
+            }
         }
 
         &_element-set {
