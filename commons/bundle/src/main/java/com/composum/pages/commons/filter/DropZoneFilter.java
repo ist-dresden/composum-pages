@@ -6,6 +6,7 @@
 package com.composum.pages.commons.filter;
 
 import com.composum.pages.commons.AssetsConfiguration;
+import com.composum.pages.commons.PagesConfiguration;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.filter.ResourceFilter;
 import org.apache.commons.lang3.StringUtils;
@@ -91,16 +92,22 @@ public class DropZoneFilter implements ResourceFilter {
         HashMap<String, ResourceFilter> result = new HashMap<>();
         switch (getType()) {
             case page:
-                // TODO...
+                PagesConfiguration pagesConfig = context.getService(PagesConfiguration.class);
+                for (String key : getKeys()) {
+                    ResourceFilter filter = pagesConfig.getPageFilter(context, key);
+                    if (filter != null) {
+                        result.put(key, filter);
+                    }
+                }
                 break;
             case component:
                 // TODO...
                 break;
             case asset:
             default:
-                AssetsConfiguration config = context.getService(AssetsConfiguration.class);
+                AssetsConfiguration assetsConfig = context.getService(AssetsConfiguration.class);
                 for (String key : getKeys()) {
-                    ResourceFilter filter = config.getFileFilter(key);
+                    ResourceFilter filter = assetsConfig.getFileFilter(context, key);
                     if (filter != null) {
                         result.put(key, filter);
                     }

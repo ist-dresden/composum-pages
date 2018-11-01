@@ -664,7 +664,8 @@ public class EditServlet extends PagesContentServlet {
         public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
                          ResourceHandle resource)
                 throws IOException {
-            final BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
+            final BeanContext context = new BeanContext.Servlet(
+                    getServletContext(), bundleContext, request, response, resource);
 
             try (final JsonReader reader = new JsonReader(request.getReader())) {
 

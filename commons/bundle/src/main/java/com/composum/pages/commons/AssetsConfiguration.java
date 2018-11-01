@@ -1,5 +1,6 @@
 package com.composum.pages.commons;
 
+import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.filter.ResourceFilter;
 import org.apache.sling.api.SlingHttpServletRequest;
 
@@ -62,7 +63,7 @@ public interface AssetsConfiguration {
      * @return the filter instance or a default filter if the instance is not available
      */
     @Nullable
-    public ResourceFilter getNodeFilter(@Nonnull String key);
+    public ResourceFilter getNodeFilter(@Nonnull SlingHttpServletRequest request, @Nonnull String key);
 
     /**
      * @param request       the current rendering request
@@ -92,7 +93,7 @@ public interface AssetsConfiguration {
     Set<String> getFileFilterKeys();
 
     @Nullable
-    ResourceFilter getFileFilter(String key);
+    ResourceFilter getFileFilter(@Nonnull BeanContext context, @Nonnull String key);
 
     @Nullable
     ResourceFilter getAssetFileFilter();
