@@ -6,6 +6,7 @@
 package com.composum.pages.commons;
 
 import com.composum.pages.commons.util.RequestUtil;
+import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.mapping.jcr.ResourceFilterMapping;
 import org.apache.sling.api.SlingHttpServletRequest;
@@ -40,10 +41,10 @@ import java.util.Set;
 @Designate(ocd = AssetsConfigImpl.Configuration.class)
 public class AssetsConfigImpl implements AssetsConfiguration {
 
-    public static final String FILTER_ALL = "all";
-    public static final String FILTER_ASSET = "asset";
-    public static final String FILTER_IMAGE = "image";
-    public static final String FILTER_VIDEO = "video";
+    public static final String ASSET_FILTER_ALL = "all";
+    public static final String ASSET_FILTER_ASSET = "asset";
+    public static final String ASSET_FILTER_IMAGE = "image";
+    public static final String ASSET_FILTER_VIDEO = "video";
 
     public static final String ASSETS_MODULE_CONFIG_CLASS = "com.composum.assets.commons.AssetsConfiguration";
 
@@ -101,7 +102,7 @@ public class AssetsConfigImpl implements AssetsConfiguration {
 
     @Nullable
     @Override
-    public ResourceFilter getFileFilter(String key) {
+    public ResourceFilter getFileFilter(@Nonnull BeanContext context, @Nonnull String key) {
         return fileFilters.get(key);
     }
 
@@ -145,10 +146,10 @@ public class AssetsConfigImpl implements AssetsConfiguration {
 
     @Nonnull
     @Override
-    public ResourceFilter getNodeFilter(@Nonnull String key) {
+    public ResourceFilter getNodeFilter(@Nonnull SlingHttpServletRequest request, @Nonnull String key) {
         ConfigurableFilter filter = availableFilters.get(key);
         return filter != null ? filter.filter
-                : FILTER_ASSET.equals(key) ? imageNodeFilter : anyAssetFilter;
+                : ASSET_FILTER_ASSET.equals(key) ? imageNodeFilter : anyAssetFilter;
     }
 
     @Nonnull
@@ -156,7 +157,7 @@ public class AssetsConfigImpl implements AssetsConfiguration {
     public ResourceFilter getRequestNodeFilter(@Nonnull SlingHttpServletRequest request,
                                                @Nonnull String paramName, @Nonnull String defaultFilter) {
         String filter = RequestUtil.getParameter(request, paramName, defaultFilter);
-        return getNodeFilter(filter);
+        return getNodeFilter(request, filter);
     }
 
     @Nullable
@@ -233,20 +234,20 @@ public class AssetsConfigImpl implements AssetsConfiguration {
         }
         anyAssetFilter = buildTreeFilter(new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.and,
                 replicationRootFilter, anyFileFilter), treeIntermediateFilter);
-        fileFilters.put(FILTER_ALL, anyFileFilter);
-        availableFilters.put(FILTER_ALL, new ConfigurableFilter(anyAssetFilter,
-                FILTER_ALL, "All", "show all available asset object types"));
+        fileFilters.put(ASSET_FILTER_ALL, anyFileFilter);
+        availableFilters.put(ASSET_FILTER_ALL, new ConfigurableFilter(anyAssetFilter,
+                ASSET_FILTER_ALL, "All", "show all available asset object types"));
         if (assetNodeFilter != null) {
-            fileFilters.put(FILTER_ASSET, assetFileFilter);
-            availableFilters.put(FILTER_ASSET, new ConfigurableFilter(assetNodeFilter,
-                    FILTER_ASSET, "Asset", "restrict to 'Composum Assets' objects"));
+            fileFilters.put(ASSET_FILTER_ASSET, assetFileFilter);
+            availableFilters.put(ASSET_FILTER_ASSET, new ConfigurableFilter(assetNodeFilter,
+                    ASSET_FILTER_ASSET, "Asset", "restrict to 'Composum Assets' objects"));
         }
-        fileFilters.put(FILTER_IMAGE, imageFileFilter);
-        availableFilters.put(FILTER_IMAGE, new ConfigurableFilter(imageNodeFilter,
-                FILTER_IMAGE, "Image", "restrict to image file objects"));
-        fileFilters.put(FILTER_VIDEO, videoFileFilter);
-        availableFilters.put(FILTER_VIDEO, new ConfigurableFilter(videoNodeFilter,
-                FILTER_VIDEO, "Video", "restrict to video file objects"));
+        fileFilters.put(ASSET_FILTER_IMAGE, imageFileFilter);
+        availableFilters.put(ASSET_FILTER_IMAGE, new ConfigurableFilter(imageNodeFilter,
+                ASSET_FILTER_IMAGE, "Image", "restrict to image file objects"));
+        fileFilters.put(ASSET_FILTER_VIDEO, videoFileFilter);
+        availableFilters.put(ASSET_FILTER_VIDEO, new ConfigurableFilter(videoNodeFilter,
+                ASSET_FILTER_VIDEO, "Video", "restrict to video file objects"));
     }
 
     @Deactivate

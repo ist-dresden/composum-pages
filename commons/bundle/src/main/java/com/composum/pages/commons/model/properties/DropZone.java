@@ -36,8 +36,10 @@ public class DropZone {
     protected String type;
     protected String prim;
     protected String property;
-    protected DropZoneFilter filter;
+    protected String filter;
     protected String event;
+
+    private transient DropZoneFilter dropZoneFilter;
 
     protected final BeanContext context;
 
@@ -53,7 +55,24 @@ public class DropZone {
      * @return 'true' if the resource is accepted by the filter of the drop zone
      */
     public boolean matches(@Nonnull Resource resource) {
-        return filter.accept(resource);
+        DropZoneFilter filter = getDropZoneFilter();
+        return filter != null && filter.accept(resource);
+    }
+
+    /**
+     * build the resource filter on demand and in the context of the drop target
+     */
+    protected DropZoneFilter getDropZoneFilter() {
+        if (dropZoneFilter == null && StringUtils.isNotBlank(filter) && StringUtils.isNotBlank(path)) {
+            BeanContext dropContext = context;
+            Resource resource = context.getResolver().getResource(path);
+            if (resource != null) {
+                // use drop zone target resource as the filters context
+                dropContext = new BeanContext.Wrapper(context, resource);
+            }
+            dropZoneFilter = new DropZoneFilter(dropContext, filter);
+        }
+        return dropZoneFilter;
     }
 
     public void fromJson(@Nonnull JsonReader reader) throws IOException {
@@ -77,7 +96,7 @@ public class DropZone {
                     property = reader.nextString();
                     break;
                 case FILTER:
-                    filter = new DropZoneFilter(context, reader.nextString());
+                    filter = reader.nextString();
                     break;
                 case EVENT:
                     event = reader.nextString();
@@ -100,7 +119,7 @@ public class DropZone {
             writer.name(PRIM).value(prim);
         }
         writer.name(PROPERTY).value(property);
-        writer.name(FILTER).value(filter.getRule());
+        writer.name(FILTER).value(filter);
         if (StringUtils.isNotBlank(event)) {
             writer.name(EVENT).value(event);
         }

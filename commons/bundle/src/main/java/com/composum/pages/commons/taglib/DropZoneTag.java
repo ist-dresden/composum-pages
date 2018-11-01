@@ -169,6 +169,11 @@ public class DropZoneTag extends ModelTag {
         return propertyPath;
     }
 
+    @Override
+    public String getVar() {
+        return null; // create not a bean (model) for this tag
+    }
+
     @Nonnull
     public String getType() {
         String type = StringUtils.substringBefore(getFilter(), ":");

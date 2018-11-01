@@ -5,10 +5,15 @@
  */
 package com.composum.pages.commons;
 
+import com.composum.pages.commons.filter.SitePageFilter;
+import com.composum.pages.commons.model.Site;
+import com.composum.pages.commons.service.SiteManager;
 import com.composum.pages.commons.util.RequestUtil;
+import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.mapping.jcr.ResourceFilterMapping;
 import org.apache.sling.api.SlingHttpServletRequest;
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
@@ -20,6 +25,9 @@ import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The configuration service for all servlets in the Pages module.
@@ -31,6 +39,9 @@ import javax.annotation.Nonnull;
 )
 @Designate(ocd = PagesConfigImpl.Configuration.class)
 public class PagesConfigImpl implements PagesConfiguration {
+
+    public static final String PAGE_FILTER_ALL = "all";
+    public static final String PAGE_FILTER_SITE = "site";
 
     @ObjectClassDefinition(
             name = "Composum Pages Module Configuration"
@@ -86,6 +97,11 @@ public class PagesConfigImpl implements PagesConfiguration {
                 description = "the filter configuration to hide replication paths"
         )
         String replicationRootFilterRule() default "Path(-'^/(public|preview)')";
+
+        @AttributeDefinition(
+                description = "the filter configuration for page resources"
+        )
+        String pageFilterRule() default "PrimaryType(+'^cpp:Page$')";
     }
 
     private ResourceFilter siteNodeFilter;
@@ -97,7 +113,12 @@ public class PagesConfigImpl implements PagesConfiguration {
     private ResourceFilter orderableNodesFilter;
     private ResourceFilter replicationRootFilter;
 
+    private ResourceFilter pageFilter;
+    private Map<String, ResourceFilter> pageFilters;
+
     protected Configuration config;
+    private transient BundleContext bundleContext;
+    private transient SiteManager siteManager;
 
     @Nonnull
     @Override
@@ -163,6 +184,27 @@ public class PagesConfigImpl implements PagesConfiguration {
         return replicationRootFilter;
     }
 
+    @Nullable
+    @Override
+    public ResourceFilter getPageFilter(@Nonnull BeanContext context, @Nonnull String key) {
+        ResourceFilter filter = pageFilters.get(key);
+        if (PAGE_FILTER_SITE.equals(key)) {
+            Site site = getSiteManager().getContainingSite(context, context.getResource());
+            if (site != null) {
+                filter = new SitePageFilter(site.getPath(), filter);
+            }
+        }
+        return filter;
+    }
+
+    protected SiteManager getSiteManager() {
+        if (siteManager == null) {
+            siteManager = (SiteManager) bundleContext.getService(
+                    bundleContext.getServiceReference(SiteManager.class.getName()));
+        }
+        return siteManager;
+    }
+
     /**
      * Creates a 'tree filter' as combination with the configured filter and the rules for the
      * 'intermediate' nodes (folders) to traverse up to the target nodes.
@@ -177,7 +219,8 @@ public class PagesConfigImpl implements PagesConfiguration {
 
     @Activate
     @Modified
-    protected void activate(Configuration config) {
+    protected void activate(BundleContext bundleContext, Configuration config) {
+        this.bundleContext = bundleContext;
         this.config = config;
         orderableNodesFilter = ResourceFilterMapping.fromString(config.orderableNodesFilterRule());
         replicationRootFilter = ResourceFilterMapping.fromString(config.replicationRootFilterRule());
@@ -206,10 +249,16 @@ public class PagesConfigImpl implements PagesConfiguration {
         ResourceFilter devIntermediateFilter = ResourceFilterMapping.fromString(config.devIntermediateFilterRule());
         develomentTreeFilter = buildTreeFilter(
                 ResourceFilterMapping.fromString(config.develomentTreeFilterRule()), devIntermediateFilter);
+        pageFilter = ResourceFilterMapping.fromString(config.pageFilterRule());
+        pageFilters = new HashMap<>();
+        pageFilters.put(PAGE_FILTER_SITE, pageFilter);
+        pageFilters.put(PAGE_FILTER_ALL, pageFilter);
     }
 
     @Deactivate
     protected void deactivate(ComponentContext context) {
+        this.siteManager = null;
         this.config = null;
+        this.bundleContext = null;
     }
 }
