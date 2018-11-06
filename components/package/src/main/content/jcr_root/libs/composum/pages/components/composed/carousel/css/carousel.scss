@@ -10,7 +10,7 @@
     background: #000;
 
     &_element {
-        @include aspect-ratio-wrapper(16, 9);
+        @include aspect-ratio-wrapper(2, 1);
 
         .composum-pages-components-element-teaser {
             @include aspect-ratio-element;
@@ -31,16 +31,23 @@
                 color: $site-bright-text-hover;
             }
 
+            &_text-block {
+                overflow: scroll;
+            }
+
             &_title {
                 @include title-font;
+                color: $site-bright-text-color;
             }
 
             &_subtitle {
                 @include subtitle-font;
+                color: $site-bright-text-color;
             }
 
             &_text {
                 @include default-font;
+                color: $site-bright-text-color;
             }
         }
     }
@@ -67,7 +74,17 @@
     .composum-pages-components-composed-carousel {
 
         &_element {
-            @include aspect-ratio-wrapper(3, 1);
+            @include aspect-ratio-wrapper(7, 2);
+        }
+    }
+}
+
+@media screen and (min-width: 976px) and (max-width: 1199px) {
+
+    .composum-pages-components-composed-carousel {
+
+        &_element {
+            @include aspect-ratio-wrapper(8, 3);
         }
     }
 }
@@ -75,12 +92,22 @@
 /*
  * bootstrap -xs-
  */
-@media screen and (min-width: 481px) and (max-width: 767px) {
+@media screen and (min-width: 625px) and (max-width: 767px) {
 
     .composum-pages-components-composed-carousel {
 
         &_element {
             @include aspect-ratio-wrapper(3, 2);
+        }
+    }
+}
+
+@media screen and (min-width: 481px) and (max-width: 624px) {
+
+    .composum-pages-components-composed-carousel {
+
+        &_element {
+            @include aspect-ratio-wrapper(1, 1);
         }
     }
 }
@@ -93,7 +120,7 @@
     .composum-pages-components-composed-carousel {
 
         &_element {
-            @include aspect-ratio-wrapper(1, 1);
+            @include aspect-ratio-wrapper(2, 3);
 
             .composum-pages-components-element-teaser {
 

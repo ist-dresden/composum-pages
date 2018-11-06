@@ -8,6 +8,7 @@
     font-weight: normal;
     font-style: normal;
     text-decoration: none;
+    line-height: $size * 1.4;
 }
 
 @mixin default-font {

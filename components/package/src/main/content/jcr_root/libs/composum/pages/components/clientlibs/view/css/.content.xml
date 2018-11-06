@@ -16,6 +16,7 @@
                 composum/pages/components/composed/list/css/list.css,
                 composum/pages/components/element/codeblock/css/codeblock.css,
                 composum/pages/components/element/image/css/image.css,
+                composum/pages/components/element/teaser/css/teaser.css,
                 composum/pages/components/element/text/css/text.css,
                 composum/pages/components/element/textimage/css/textimage.css,
                 composum/pages/components/element/title/css/title.css]"/>

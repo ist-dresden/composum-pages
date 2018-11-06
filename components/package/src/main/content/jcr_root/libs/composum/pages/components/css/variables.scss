@@ -43,6 +43,9 @@ $main-title-background-color: #eee;
 $main-title-text-color: #444;
 $column-title-text-color: $main-title-text-color;
 
+$text-spacing-default: 1rem;
+$section-spacing-default: $text-spacing-default * 2;
+
 $icon-default-font-family: 'FontAwesome';
 $site-default-font-family: 'robotolight';
 $site-title-font-family: 'robotothin';

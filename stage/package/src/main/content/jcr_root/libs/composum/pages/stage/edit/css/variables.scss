@@ -28,6 +28,7 @@ $dnd-insert-layer: $edit-tools-layer - 2;
 
 /* mix-blend-mode: difference... */
 $dnd-source-content-background: rgba(50, 0, 255, 0.5);
+$dnd-disabled-frame-color: rgba(220, 0, 0, 0.5);
 $dnd-target-frame-color: rgba(255, 155, 55, 0.5);
 $dnd-target-over-color: rgba(85, 55, 255, 0.8);
 $dnd-target-over-background: rgba(85, 55, 255, 0.1);

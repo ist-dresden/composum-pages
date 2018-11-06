@@ -26,6 +26,7 @@
                     base: 'composum-pages-stage-edit-dnd',
                     handle: '_handle',
                     visible: '_visible',
+                    disabled: '_disabled',
                     target: '_target',
                     targetOver: '_target-over',
                     insert: {
@@ -467,6 +468,7 @@
             // zone markers
 
             markDropZones: function (reference) {
+                var c = elements.const.dnd.class;
                 var candidates = [];
                 elements.pageBody.dropZones.forEach(function (candidate) {
                     candidates.push({
@@ -475,6 +477,7 @@
                         property: candidate.data.property,
                         filter: candidate.data.filter
                     });
+                    candidate.$el.addClass(c.base + c.disabled);
                 });
                 var path = reference.path;
                 core.ajaxPut(elements.const.edit.url.dropzones + path, JSON.stringify(candidates), {},
@@ -486,7 +489,8 @@
                                 var view = $target[0].view;
                                 if (view) {
                                     this.dropZones.push(view);
-                                    view.$el.addClass(elements.const.dnd.class.base + elements.const.dnd.class.target);
+                                    view.$el.addClass(c.base + c.target);
+                                    view.$el.removeClass(c.base + c.disabled);
                                 }
                             }
                         }, this);
