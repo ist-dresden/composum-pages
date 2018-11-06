@@ -29,9 +29,9 @@ $dnd-insert-layer: $edit-tools-layer - 2;
 /* mix-blend-mode: difference... */
 $dnd-source-content-background: rgba(50, 0, 255, 0.5);
 $dnd-disabled-frame-color: rgba(220, 0, 0, 0.5);
-$dnd-target-frame-color: rgba(255, 155, 55, 0.5);
-$dnd-target-over-color: rgba(85, 55, 255, 0.8);
-$dnd-target-over-background: rgba(85, 55, 255, 0.1);
+$dnd-target-frame-color: rgba(100, 255, 50, 0.6);
+$dnd-target-over-color: rgba(100, 255, 50, 0.9);
+$dnd-target-over-background: rgba(100, 255, 50, 0.2);
 
 $edit-handle-border: 4px;
 $edit-handle-layer: $edit-tools-layer - 4;
@@ -56,7 +56,7 @@ $tools-pane-tabs-tab-active: rgba(55, 55, 55, 0.9);
 $tools-pane-tabs-tab-label: $tools-pane-foreground;
 
 $tools-pane-main-selection-color: #3392e3;
-$tools-pane-dnd-target-color: rgba(255, 155, 55, 0.8);
+$tools-pane-dnd-target-color: $dnd-target-over-color;
 $tools-pane-sec-selection-color: #929292;
 $tools-pane-main-selection-bg: rgba(255, 255, 255, 0.25);
 $tools-pane-sec-selection-bg: rgba(200, 200, 200, 0.25);

@@ -12,7 +12,7 @@
 
         &.drop-into {
             border-bottom: $tools-pane-padding/2 solid $tools-pane-dnd-target-color;
-            padding-bottom: $tools-pane-padding*1.5;
+            padding-bottom: $tools-pane-padding/2;
         }
     }
 
@@ -57,9 +57,13 @@
         }
 
         &.drop-before {
-            margin-top: $tools-pane-padding*1.5;
+            margin-top: -($tools-pane-padding/2);
             border-top: $tools-pane-padding/2 solid $tools-pane-dnd-target-color;
-            padding-top: $tools-pane-padding*1.5;
+            padding-top: $tools-pane-padding/2;
+
+            &:first-child {
+                margin-top: $tools-pane-padding/2;
+            }
         }
 
         &.drop-into:after {
