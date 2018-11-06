@@ -13,10 +13,12 @@ import com.composum.sling.core.servlet.ServletOperation;
 import com.composum.sling.core.servlet.ServletOperationSet;
 import com.composum.sling.core.util.ResponseUtil;
 import com.google.gson.stream.JsonWriter;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.api.servlets.HttpConstants;
 import org.apache.sling.api.servlets.ServletResolverConstants;
 import org.osgi.framework.BundleContext;
@@ -31,6 +33,8 @@ import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Set;
 
 @Component(service = Servlet.class,
@@ -47,6 +51,7 @@ public class AssetServlet extends PagesContentServlet {
     private static final Logger LOG = LoggerFactory.getLogger(AssetServlet.class);
 
     public static final String DEFAULT_FILTER = "page";
+    public static final String TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
     @Reference
     protected PagesConfiguration pagesConfiguration;
@@ -246,11 +251,22 @@ public class AssetServlet extends PagesContentServlet {
         writeJsonNodeData(writer, nodeStrategy, ResourceHandle.use(assetResource), LabelType.name, false);
         Resource contentResource = assetResource.getChild(JcrConstants.JCR_CONTENT);
         if (contentResource != null) {
+            ValueMap values = contentResource.getValueMap();
             writer.name("jcrContent");
             writeJsonNode(writer, nodeStrategy, ResourceHandle.use(contentResource), LabelType.name, false);
             writer.name("meta").beginObject();
             Site site = siteManager.getContainingSite(context, assetResource);
             writer.name("site").value(site != null ? site.getPath() : null);
+            writer.endObject();
+            writer.name("asset").beginObject();
+            String string;
+            Calendar time;
+            if ((time = values.get(JcrConstants.JCR_LASTMODIFIED, Calendar.class)) != null) {
+                writer.name("lastModified").value(new SimpleDateFormat(TIME_FORMAT).format(time.getTime()));
+            }
+            if (StringUtils.isNotBlank(string = values.get(JcrConstants.JCR_MIMETYPE, String.class))) {
+                writer.name("mimeType").value(string);
+            }
             writer.endObject();
         }
         writer.endObject();

@@ -5,14 +5,16 @@
 <cpp:defineFrameObjects/>
 <div class="${widgetCssBase}_${widget.widgetType} ${widgetCssBase}_${widget.cssName} form-group">
     <sling:call script="label.jsp"/>
-    <div class="${widgetCssBase}_path-field input-group widget imagefield-widget widget-name_${widget.cssName}" ${widget.attributes}>
-        <input name="${widget.name}" class="${widgetCssBase}_input form-control"
-               data-label="${widget.label}" data-i18n="${widget.i18n}"
-               type="text" value="${cpn:path(widget.model.path)}" placeholder="${cpn:path(widget.placeholder)}"/>
+    <div class="${widgetCssBase}_path-field widget imagefield-widget widget-name_${widget.cssName}"${widget.attributes}>
+        <sling:call script="preview.jsp"/>
+        <div class="input-group">
+            <input name="${widget.name}" class="${widgetCssBase}_input form-control"
+                   data-label="${widget.label}" data-i18n="${widget.i18n}"
+                   type="text" value="${cpn:path(widget.model.path)}" placeholder="${cpn:path(widget.placeholder)}"/>
             <span class="${widgetCssBase}_popup-button input-group-btn">
                   <button class="${widgetCssBase}_select select btn btn-default" type="button"
-                          title="Select the image path">...</button>
-            </span>
+                          title="Select the image path">...</button></span>
+        </div>
     </div>
 </div>
 
