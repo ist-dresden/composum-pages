@@ -1,0 +1,211 @@
+@charset "UTF-8";
+
+@import "../../../css/variables";
+@import "../../../css/mixins";
+
+.composum-pages-components-element-teaser {
+
+    @include default-font;
+    color: $site-default-text-color;
+
+    a,
+    a:visited {
+        @include default-font;
+        text-decoration: none;
+        color: $site-default-text-color;
+    }
+
+    a:hover {
+        color: $site-default-text-color;
+    }
+
+    &_title {
+        @include inline-title;
+        font-size: $column-title-font-size;
+    }
+
+    &_subtitle {
+        @include inline-title;
+        font-size: $column-subtitle-font-size;
+    }
+
+    &_variation {
+
+        &_default {
+            clear: both;
+            margin: $section-spacing-default 0;
+
+            .composum-pages-components-element-teaser {
+
+                &_image {
+                    width: 40%;
+                    float: left;
+
+                    .composum-pages-components-element {
+
+                        &-image {
+                            margin: 0 0 $text-spacing-default 0;
+                        }
+                    }
+                }
+
+                &_title,
+                &_subtitle {
+                    margin: 0 0 $text-spacing-default 0;
+                }
+
+                &_text-block {
+                    width: 60%;
+                    float: right;
+                    padding-left: $text-spacing-default;
+
+                    &.no-image {
+                        width: 100%;
+                        float: none;
+                        padding: 0;
+                    }
+                }
+
+                &_link {
+
+                    .composum-pages-components-element-teaser {
+
+                        &_title,
+                        &_subtitle {
+                            color: $site-default-link-color;
+                        }
+                    }
+
+                    &:hover {
+
+                        &_title,
+                        &_subtitle {
+                            color: $site-default-link-hover;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    &_text {
+        text-align: left;
+
+        p {
+            margin: $text-spacing-default 0;
+        }
+    }
+
+    &_link-set {
+
+        .composum-pages-components-element {
+
+            &-link {
+                display: inline;
+
+                a,
+                a:visited {
+                    text-decoration: none;
+                    color: $site-default-link-color;
+                }
+
+                a:hover {
+                    color: $site-default-link-hover;
+                }
+
+                &-set {
+                    display: inline-block;
+                    margin: $text-spacing-default 0 0;
+                    padding: 0 30px 0;
+                }
+            }
+        }
+    }
+}
+
+.composum-pages-components-container-row {
+
+    &_column {
+
+        &.col-sm-1,
+        &.col-sm-2,
+        &.col-sm-3,
+        &.col-sm-4,
+        &.col-md-4 {
+
+            .composum-pages-components-element-teaser {
+
+                &_variation {
+
+                    &_default {
+
+                        .composum-pages-components-element-teaser {
+
+                            &_image,
+                            &_text-block {
+                                width: 100%;
+                                float: none;
+                                padding: 0;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media screen and (max-width: $bootstrap-screen-sm-max) {
+
+    .composum-pages-components-container-row {
+
+        &_column {
+
+            &.col-sm-5,
+            &.col-sm-6,
+            &.col-md-3 {
+
+                .composum-pages-components-element-teaser {
+
+                    &_variation {
+
+                        &_default {
+
+                            .composum-pages-components-element-teaser {
+
+                                &_image,
+                                &_text-block {
+                                    width: 100%;
+                                    float: none;
+                                    padding: 0;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media screen and (max-width: $bootstrap-screen-xs-max) {
+
+    .composum-pages-components-element-teaser {
+
+        &_variation {
+
+            &_default {
+
+                .composum-pages-components-element-teaser {
+
+                    &_image,
+                    &_text-block {
+                        width: 100%;
+                        float: none;
+                        padding: 0;
+                    }
+                }
+            }
+        }
+    }
+}

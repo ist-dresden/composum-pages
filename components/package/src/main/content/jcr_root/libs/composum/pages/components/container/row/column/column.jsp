@@ -5,8 +5,6 @@
 <cpp:container var="container" type="com.composum.pages.commons.model.Container"
                cssBase="composum-pages-components-container">
     <c:forEach items="${container.elements}" var="element" varStatus="loop">
-        <div class="${containerCssBase}_element">
-            <cpp:include resource="${element.resource}"/>
-        </div>
+        <cpp:include resource="${element.resource}"/>
     </c:forEach>
 </cpp:container>

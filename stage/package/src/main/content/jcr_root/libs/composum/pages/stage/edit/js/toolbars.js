@@ -23,7 +23,9 @@
                 css: {
                     tbar: {
                         base: 'composum-pages-stage-edit-toolbar',
-                        _open: '_open-page'
+                        _reload: '_reload-page',
+                        _open: '_open-page',
+                        _separate: '_open-separate'
                     }
                 }
             }
@@ -145,6 +147,7 @@
                 this.$('.' + toolbars.const.editAction).attr('href',
                     '?pages.mode=' + pages.profile.get('mode', 'edit', 'edit'));
                 this.$('.' + c.tbar.base + c.tbar._open).click(_.bind(this.openPage, this));
+                this.$('.' + c.tbar.base + c.tbar._reload).click(_.bind(this.reloadPage, this));
                 toolbars.localeSelector = core.getView('.' + toolbars.const.languageMenu, toolbars.LocaleSelector);
                 toolbars.localeSelector.currentPage = this.currentPage;
             },
@@ -165,10 +168,22 @@
                 }
             },
 
+            reloadPage: function (event) {
+                if (event) {
+                    event.preventDefault();
+                }
+                pages.editFrame.reloadPage();
+                return false;
+            },
+
             openPage: function (event) {
+                if (event) {
+                    event.preventDefault();
+                }
                 if (this.currentPage) {
                     pages.editFrame.selectPage(event, this.currentPage);
                 }
+                return false;
             },
 
             onPageSelected: function (event, path) {

@@ -6,7 +6,7 @@
 <cpp:element var="teaser" type="com.composum.pages.components.model.teaser.Teaser"
              tagName="none">
     <cpp:dropZone property="link" filter="page:site">
-        <div class="${teaserCssBase}_text-block">
+        <div class="${teaserCssBase}_text-block${teaser.hasImage?'':' no-image'}">
             <cpn:text tagName="h2" tagClass="${teaserCssBase}_title" value="${teaser.title}"/>
             <cpn:text tagName="h3" tagClass="${teaserCssBase}_subtitle" value="${teaser.subtitle}"/>
             <cpn:text type="rich" tagClass="${teaserCssBase}_text" value="${teaser.text}"/>

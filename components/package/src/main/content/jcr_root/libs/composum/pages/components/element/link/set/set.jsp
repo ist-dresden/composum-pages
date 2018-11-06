@@ -3,11 +3,10 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <cpp:defineObjects/>
 <cpp:container var="container" type="com.composum.pages.commons.model.Container"
-               cssBase="composum-pages-components-container">
+               tagName="ul">
     <c:forEach items="${container.elements}" var="element" varStatus="loop">
-        <cpp:include resource="${element.resource}"/>
-        <c:if test="${container.withSpacing and not loop.last}">
-            <div class="${containerCssBase}_space"></div>
-        </c:if>
+        <li class="${containerCssBase}_item">
+            <cpp:include resource="${element.resource}"/>
+        </li>
     </c:forEach>
 </cpp:container>
