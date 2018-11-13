@@ -6,6 +6,18 @@
 $frame-tree-fg-color: #fff;
 $frame-tree-dnd-border: 1px dashed rgba(255, 255, 255, 0.7);
 
+.composum-pages-EDIT,
+.composum-pages-DEVELOP {
+
+    &_body {
+
+        #jstree-marker {
+            z-index: 3001;
+            color: $frame-tree-fg-color;
+        }
+    }
+}
+
 .composum-pages-tools {
 
     .jstree {

@@ -75,10 +75,14 @@
         tree.ContentTree = tree.ToolsTree.extend({
 
             initialize: function (options) {
+                var e = pages.const.event;
                 tree.ToolsTree.prototype.initialize.apply(this, [options]);
                 this.jstree.element
                     .on('dragstart.' + this.nodeIdPrefix + 'tree', _.bind(this.onNodeDragStart, this))
                     .on('dragend.' + this.nodeIdPrefix + 'tree', _.bind(this.onDragEnd, this));
+                $(document)
+                    .on('dnd_stop.vakata.' + this.nodeIdPrefix + 'tree', _.bind(this.onDragEnd, this))
+                    .on(e.dnd.finished + '.' + this.nodeIdPrefix + 'tree', _.bind(this.onDragFinished, this));
             },
 
             onContentInserted: function (event, refOrPath) {
@@ -170,6 +174,7 @@
                         path: node.original.path,
                         type: node.original.type
                     });
+                    $('#jstree-marker').css('display', 'inherit');
                 }
             },
 
@@ -201,6 +206,12 @@
                     this.log.debug(this.nodeIdPrefix + 'tree.trigger.' + e.dnd.finished + '(...)');
                 }
                 $(document).trigger(e.dnd.finished, [event]);
+            },
+
+            onDragFinished: function () {
+                $.vakata.dnd._clean();
+                this.$('.jstree-dnd-parent').removeClass('jstree-dnd-parent');
+                $('#jstree-marker').css('display', 'none');
             }
         });
 
@@ -219,7 +230,7 @@
                         copy: false,
                         check_while_dragging: false,
                         drag_selection: false,
-                        touch: false, //'selection',
+                        touch: 'selected',
                         large_drag_target: true,
                         large_drop_target: true,
                         use_html5: true
