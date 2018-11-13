@@ -101,22 +101,14 @@
         .composum-pages-components-element {
 
             &-link {
-                display: inline;
 
                 a,
                 a:visited {
-                    text-decoration: none;
                     color: $site-default-link-color;
                 }
 
                 a:hover {
                     color: $site-default-link-hover;
-                }
-
-                &-set {
-                    display: inline-block;
-                    margin: $text-spacing-default 0 0;
-                    padding: 0 30px 0;
                 }
             }
         }

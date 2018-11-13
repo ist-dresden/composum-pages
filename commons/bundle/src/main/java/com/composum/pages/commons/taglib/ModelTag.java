@@ -17,7 +17,6 @@ import com.composum.pages.commons.util.TagCssClasses;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.cpnl.ComponentTag;
 import com.composum.sling.cpnl.CpnlElFunctions;
-import com.google.gson.JsonObject;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
@@ -312,19 +311,8 @@ public class ModelTag extends ComponentTag implements DynamicAttributes {
                                      @Nonnull Resource resource, @Nullable String resourceType) {
         ResourceManager resourceManager = context.getService(ResourceManager.class);
         ResourceManager.ResourceReference reference = resourceManager.getReference(resource, resourceType);
-        String name = resource.getName();
-        String path = resource.getPath();
-        String type = reference.getType();
-        String prim = reference.getPrimaryType();
-        JsonObject data = new JsonObject();
-        data.addProperty("name", name);
-        data.addProperty("path", path);
-        data.addProperty("type", type);
-        if (StringUtils.isNotBlank(prim)) {
-            data.addProperty("prim", prim);
-        }
         attributeSet.put(PAGES_EDIT_DATA_ENCODED,
-                Base64.encodeBase64String(data.toString().getBytes(StandardCharsets.UTF_8)));
+                Base64.encodeBase64String(reference.getEditData().toString().getBytes(StandardCharsets.UTF_8)));
     }
 
     //

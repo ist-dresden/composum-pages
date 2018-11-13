@@ -1,4 +1,4 @@
-package com.composum.pages.components.model.illustration;
+package com.composum.pages.components.model.composed.illustration;
 
 import com.composum.pages.commons.model.properties.Dimension;
 import com.composum.pages.commons.model.properties.Position;

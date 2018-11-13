@@ -1,3 +1,8 @@
+/*
+ * copyright (c) 2015ff IST GmbH Dresden, Germany - https://www.ist-software.com
+ *
+ * This software may be modified and distributed under the terms of the MIT license.
+ */
 package com.composum.pages.commons.service;
 
 import com.composum.pages.commons.PagesConstants;
@@ -18,6 +23,7 @@ import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.filter.StringFilter;
 import com.composum.sling.core.util.PropertyUtil;
 import com.composum.sling.core.util.ResourceUtil;
+import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
@@ -455,6 +461,8 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
         protected String path;
         protected String type;
 
+        private transient JsonObject editData;
+
         /** the resource determined by the path - can be a NonExistingResource */
         private transient Resource resource;
         /** the properties of the resource - an empty map if resource doesn't exist */
@@ -490,6 +498,10 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
             fromJson(reader);
         }
 
+        public boolean istSynthetic() {
+            return ResourceUtil.isSyntheticResource(getResource());
+        }
+
         public boolean isExisting() {
             return !ResourceUtil.isNonExistingResource(getResource());
         }
@@ -511,6 +523,26 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
         @Nonnull
         public String getPrimaryType() {
             return ResolverUtil.getTypeProperty(resolver, getType(), PagesConstants.PROP_COMPONENT_TYPE, "");
+        }
+
+        @Nonnull
+        public JsonObject getEditData() {
+            if (editData == null) {
+                Resource resource = getResource();
+                String name = resource.getName();
+                String path = resource.getPath();
+                String type = getType();
+                String prim = getPrimaryType();
+                editData = new JsonObject();
+                editData.addProperty("name", name);
+                editData.addProperty("path", path);
+                editData.addProperty("type", type);
+                if (StringUtils.isNotBlank(prim)) {
+                    editData.addProperty("prim", prim);
+                }
+                editData.addProperty("synthetic", istSynthetic());
+            }
+            return editData;
         }
 
         /**

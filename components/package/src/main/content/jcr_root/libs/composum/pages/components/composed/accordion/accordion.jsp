@@ -6,7 +6,7 @@
  but if an accordion contains an accordion the accordion object must be replaced!
  --> scope="request" replace="true"
 --%>
-<cpp:container var="accordion" type="com.composum.pages.components.model.accordion.Accordion"
+<cpp:container var="accordion" type="com.composum.pages.components.model.composed.accordion.Accordion"
                tagId="@{accordionId}" scope="request" replace="true" role="tablist"
                cssBase="composum-pages-components-accordion" cssAdd="panel-group">
     <c:forEach items="${accordion.elements}" var="element" varStatus="loop">

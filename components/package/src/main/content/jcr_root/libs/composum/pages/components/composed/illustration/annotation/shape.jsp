@@ -2,7 +2,7 @@
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <%@taglib prefix="cpn" uri="http://sling.composum.com/cpnl/1.0" %>
 <cpp:defineObjects/>
-<cpp:element var="annotation" type="com.composum.pages.components.model.illustration.Annotation"
+<cpp:element var="annotation" type="com.composum.pages.components.model.composed.illustration.Annotation"
              cssSet="@{annotationCssBase}_shape type-@{annotation.shapeType} icon-@{annotation.iconType} btn btn-@{annotation.shapeLevel}"
              style="@{annotation.shapeStyle}" data-id="@{annotationId}">
     <a class="${annotation.iconClasses} ${annotationCssBase}_link" role="button" tabindex="0" data-toggle="popover"

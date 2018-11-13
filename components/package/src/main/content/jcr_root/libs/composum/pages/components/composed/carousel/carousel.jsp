@@ -3,7 +3,7 @@
 <%@taglib prefix="cpn" uri="http://sling.composum.com/cpnl/1.0" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <cpp:defineObjects/>
-<cpp:container var="carousel" type="com.composum.pages.components.model.container.Carousel"
+<cpp:container var="carousel" type="com.composum.pages.components.model.composed.Carousel"
                tagId="@{carouselId}" cssAdd="@{carousel.editMode?'':'carousel slide'}"
                data-ride="@{carousel.autoStart?'carousel':''}"
                data-interval="@{carousel.interval}"
