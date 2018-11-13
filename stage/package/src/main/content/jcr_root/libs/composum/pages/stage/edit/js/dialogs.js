@@ -1,3 +1,8 @@
+/*
+ * copyright (c) 2015ff IST GmbH Dresden, Germany - https://www.ist-software.com
+ *
+ * This software may be modified and distributed under the terms of the MIT license.
+ */
 (function (window) {
     window.composum = window.composum || {};
     window.composum.pages = window.composum.pages || {};
@@ -416,11 +421,7 @@
                 // prepare parent (container) data of the new element for the create dialog
                 // to create the right parent type if the parent is a synthetic resource
                 var context = {
-                    parent: {
-                        path: this.$el.data(d.path),
-                        type: this.$el.data(d.type),
-                        prim: this.$el.data(d.prim)
-                    }
+                    parent: new pages.Reference(this.$el)
                 };
                 if (type) {
                     dialogs.openCreateDialog('*', this.data.path, type, context, undefined, undefined,

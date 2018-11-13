@@ -1,9 +1,15 @@
+/*
+ * copyright (c) 2015ff IST GmbH Dresden, Germany - https://www.ist-software.com
+ *
+ * This software may be modified and distributed under the terms of the MIT license.
+ */
 package com.composum.pages.commons.service;
 
 import com.composum.pages.commons.model.AbstractModel;
 import com.composum.pages.commons.model.properties.PathPatternSet;
 import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.filter.StringFilter;
+import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import org.apache.sling.api.resource.PersistenceException;
@@ -39,6 +45,9 @@ public interface ResourceManager {
 
         @Nonnull
         String getPrimaryType();
+
+        @Nonnull
+        JsonObject getEditData();
 
         @Nonnull
         ResourceResolver getResolver();

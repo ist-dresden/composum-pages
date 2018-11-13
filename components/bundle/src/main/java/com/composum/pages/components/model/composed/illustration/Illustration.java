@@ -1,4 +1,4 @@
-package com.composum.pages.components.model.illustration;
+package com.composum.pages.components.model.composed.illustration;
 
 import com.composum.pages.commons.model.Container;
 import com.composum.pages.commons.model.Image;

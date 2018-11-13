@@ -37,11 +37,13 @@ public class ElementTag extends AbstractWrappingTag {
     protected String id;
     protected String tagId;
     protected String tagName;
+    protected String tagNameValue;
     protected DisplayMode.Value displayMode;
 
     @Override
     protected void clear() {
         displayMode = null;
+        tagNameValue = null;
         tagName = null;
         tagId = null;
         id = null;
@@ -73,7 +75,10 @@ public class ElementTag extends AbstractWrappingTag {
      * the tag name to render the wrapping tag (default: 'div')
      */
     public String getTagName() {
-        return tagName;
+        if (tagNameValue == null) {
+            tagNameValue = eval(tagName, tagName);
+        }
+        return tagNameValue;
     }
 
     public void setTagName(String name) {
@@ -180,8 +185,8 @@ public class ElementTag extends AbstractWrappingTag {
         if (displayMode != null) {
             DisplayMode.get(context).push(displayMode);
         }
-        if (StringUtils.isBlank(tagName)) {
-            tagName = DEFAULT_TAG;
+        if (StringUtils.isBlank(getTagName())) {
+            tagNameValue = DEFAULT_TAG;
         }
         Model model = (Model) getModel();
         if (model != null) {
@@ -198,7 +203,7 @@ public class ElementTag extends AbstractWrappingTag {
     @Override
     protected void renderTagStart() throws IOException {
         if (isWithTag()) {
-            out.append("<").append(tagName).append(getAttributes()).append(">\n");
+            out.append("<").append(getTagName()).append(getAttributes()).append(">\n");
         }
     }
 
@@ -208,7 +213,7 @@ public class ElementTag extends AbstractWrappingTag {
     @Override
     protected void renderTagEnd() throws IOException {
         if (isWithTag()) {
-            out.append("</").append(tagName).append(">\n");
+            out.append("</").append(getTagName()).append(">\n");
         }
     }
 

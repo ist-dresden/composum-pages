@@ -1,4 +1,4 @@
-package com.composum.pages.components.model.accordion;
+package com.composum.pages.components.model.composed.accordion;
 
 import com.composum.pages.commons.model.Container;
 

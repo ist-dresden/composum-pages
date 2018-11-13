@@ -3,7 +3,7 @@
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <cpp:defineObjects/><%-- the 'independent' selector is used to enable multiple open items --%>
-<cpp:container var="item" type="com.composum.pages.components.model.accordion.AccordionItem"
+<cpp:container var="item" type="com.composum.pages.components.model.composed.accordion.AccordionItem"
                cssBase="composum-pages-components-accordion-item" cssAdd="panel panel-default">
     <div id="${itemId}_head" class="panel-heading" role="tab">
         <h4 class="panel-title">

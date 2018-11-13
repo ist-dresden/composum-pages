@@ -3,7 +3,7 @@
 <%@taglib prefix="cpn" uri="http://sling.composum.com/cpnl/1.0" %>
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <cpp:defineFrameObjects/>
-<cpp:editDialog var="decorator" type="com.composum.pages.components.model.decorator.Decorator"
+<cpp:editDialog var="decorator" type="com.composum.pages.components.model.composed.Decorator"
                 title="@{dialog.selector=='create'?'Create a Decorator':'Edit Decorator'}">
     <cpp:widget label="Content Type" property="elementType" type="textfield"
                 hint="the default resource type of the embedded element"/>

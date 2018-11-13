@@ -3,7 +3,7 @@
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <cpp:defineObjects/>
-<cpp:element var="annotation" type="com.composum.pages.components.model.illustration.Annotation"
+<cpp:element var="annotation" type="com.composum.pages.components.model.composed.illustration.Annotation"
              tagId="@{annotationId}">
     <c:choose>
         <c:when test="${annotation.valid}">

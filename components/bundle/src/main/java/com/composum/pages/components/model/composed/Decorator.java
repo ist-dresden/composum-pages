@@ -1,4 +1,4 @@
-package com.composum.pages.components.model.decorator;
+package com.composum.pages.components.model.composed;
 
 import com.composum.pages.commons.model.Container;
 import org.apache.commons.lang3.StringUtils;

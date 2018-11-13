@@ -1,4 +1,4 @@
-package com.composum.pages.components.model.container;
+package com.composum.pages.components.model.composed;
 
 import com.composum.pages.commons.model.Container;
 

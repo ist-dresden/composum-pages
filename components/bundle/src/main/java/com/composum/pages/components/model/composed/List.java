@@ -1,9 +1,9 @@
-package com.composum.pages.components.model.listtype;
+package com.composum.pages.components.model.composed;
 
 import com.composum.pages.commons.model.Container;
 
 
-public class ListType extends Container {
+public class List extends Container {
 
     private transient String listType;
 

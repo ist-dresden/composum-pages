@@ -3,6 +3,6 @@
         jcr:primaryType="cpp:Component"
         jcr:description="a set of link elements"
         jcr:title="Link Set"
-        componentGroup="hidden"
-        sling:resourceSuperType="composum/pages/components/container"
+        componentGroup="General"
+        sling:resourceSuperType="composum/pages/components/composed/list"
         allowedElements="[composum/pages/components/element/link]"/>
