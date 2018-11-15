@@ -52,7 +52,9 @@
                 pos: {
                     x: pos.x, y: pos.y,
                     rx: pos.x / size.w,
-                    ry: pos.y / size.h
+                    ry: pos.y / size.h,
+                    sx: event.screenX,
+                    sy: event.screenY
                 }
             }
         };
