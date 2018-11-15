@@ -287,7 +287,7 @@
 
                     // really inside of the tree?... prevent from move on drag outside of the tree
                     var dnd = core.dnd.getDndData(event);
-                    var domEl = document.elementFromPoint(dnd.pos.sx, dnd.pos.sy);
+                    var domEl = document.elementFromPoint(dnd.pos.px, dnd.pos.py);
                     var $tree = $(domEl).closest('.' + tree.const.treeClass);
                     if ($tree.length === 1) {
 
