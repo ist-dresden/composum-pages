@@ -76,12 +76,26 @@
 
             initialize: function (options) {
                 var e = pages.const.event;
+                options = _.extend(options || {}, {
+                    dragAndDrop: {
+                        check_while_dragging: false,
+                        copy: false,
+                        drag_selection: false,
+                        inside_pos: 'last',
+                        is_draggable: _.bind(this.nodeIsDraggable, this),
+                        large_drag_target: true,
+                        large_drop_target: true,
+                        open_timeout: 0,
+                        touch: 'selected',
+                        use_html5: true
+                    }
+                });
                 tree.ToolsTree.prototype.initialize.apply(this, [options]);
                 this.jstree.element
                     .on('dragstart.' + this.nodeIdPrefix + 'tree', _.bind(this.onNodeDragStart, this))
-                    .on('dragend.' + this.nodeIdPrefix + 'tree', _.bind(this.onDragEnd, this));
+                    .on('dragend.' + this.nodeIdPrefix + 'tree', _.bind(this.onNodeDragEnd, this));
                 $(document)
-                    .on('dnd_stop.vakata.' + this.nodeIdPrefix + 'tree', _.bind(this.onDragEnd, this))
+                    .on('dnd_move.vakata.' + this.nodeIdPrefix + 'tree', _.bind(this.onDragMove, this))
                     .on(e.dnd.finished + '.' + this.nodeIdPrefix + 'tree', _.bind(this.onDragFinished, this));
             },
 
@@ -94,7 +108,9 @@
                 this.onPathInserted(event, parentAndName.path, parentAndName.name);
             },
 
-            onContentMoved: function (event, oldPath, newPath) {
+            onContentMoved: function (event, oldRefOrPath, newRefOrPath) {
+                var oldPath = oldRefOrPath && oldRefOrPath.path ? oldRefOrPath.path : oldRefOrPath;
+                var newPath = newRefOrPath && newRefOrPath.path ? newRefOrPath.path : newRefOrPath;
                 if (this.log.getLevel() <= log.levels.DEBUG) {
                     this.log.debug(this.nodeIdPrefix + 'tree.onContentMoved(' + oldPath + ' ->' + newPath + ')');
                 }
@@ -161,12 +177,42 @@
 
             // DnD (page: move/link..., asset: move/reference..., element: move..., component: move/insert...)
 
+            /**
+             * the general content DnD move
+             */
+            dropNode: function (draggedNode, targetNode, index) {
+                var targetPath = targetNode.path;
+                var oldPath = draggedNode.path;
+                var before = this.getNodeOfIndex(targetNode, index);
+                // move folders, pages, files...
+                var oldParentPath = core.getParentPath(oldPath);
+                if (oldParentPath === targetPath) {
+                    // reordering in the same parent resource - keep that simple...
+                    core.ajaxPost('/bin/cpm/pages/edit.moveContent.json' + core.encodePath(oldPath), {
+                        targetPath: targetPath,
+                        before: before ? before.original.path : undefined
+                    }, {}, _.bind(function (result) {
+                        $(document).trigger(pages.const.event.content.moved, [
+                            new pages.Reference(draggedNode.name, draggedNode.path, draggedNode.type),
+                            new pages.Reference(result.reference)
+                        ]);
+                    }, this), _.bind(function (xhr) {
+                        core.alert('error', 'Error', 'Error on moving content', xhr);
+                    }, this));
+                } else {
+                    // move to another parent - check and confirm...
+                    pages.dialogs.openMoveContentDialog(draggedNode.name, draggedNode.path, draggedNode.type,
+                        _.bind(function (dialog) {
+                            dialog.setValues(draggedNode.path, targetNode.path, before ? before.original.name : undefined);
+                        }, this));
+                }
+            },
+
             nodeIsDraggable: function (selection, event) {
                 return true;
             },
 
-            onNodeDragStart: function (event, a, b, c) {
-                var dnd = core.dnd.getDndData(event);
+            onNodeDragStart: function (event) {
                 var node = this.jstree.get_node(event.target);
                 if (node) {
                     this.onDragStart(event, {
@@ -184,6 +230,7 @@
                     var $el = $(event.currentTarget);
                     reference = new pages.Reference($el);
                 }
+                this.dnd = undefined;
                 if (this.type && reference.path) {
                     var object = {
                         type: this.type,
@@ -200,7 +247,83 @@
                 }
             },
 
-            onDragEnd: function (event) {
+            /**
+             * adopted from jstree to synchronize the designated move and the tree state in HTML5 DnD mode
+             */
+            onDragMove: function (event, data) {
+                var $target = $(data.event.target).closest('.jstree-node').children('.jstree-anchor');
+                if ($target.length === 1 && $target[0] !== data.element) {
+                    var offset = $target.offset();
+                    var relPos = (data.event.pageY !== undefined
+                        ? data.event.pageY : data.event.originalEvent.pageY) - offset.top;
+                    var height = $target.outerHeight();
+                    var move = 'into';
+                    if (relPos < height / 3) {
+                        move = 'before';
+                    }
+                    else if (relPos > height - height / 3) {
+                        move = 'after';
+                    }
+                    this.dnd = {
+                        object: data.element,
+                        target: this.jstree.get_node(data.event.target, true),
+                        move: move
+                    };
+                    if (this.log.getLevel() <= log.levels.DEBUG) {
+                        var node = this.jstree.get_node(data.event.target);
+                        this.log.debug(this.nodeIdPrefix + 'tree.dndMove('
+                            + (node.original ? node.original.path : node.id) + ')');
+                    }
+                } else {
+                    this.dnd = undefined;
+                    if (this.log.getLevel() <= log.levels.DEBUG) {
+                        this.log.debug(this.nodeIdPrefix + 'tree.dndMove(?)');
+                    }
+                }
+            },
+
+            onNodeDragEnd: function (event) {
+                if (this.dnd) {
+
+                    // really inside of the tree?... prevent from move on drag outside of the tree
+                    var dnd = core.dnd.getDndData(event);
+                    var domEl = document.elementFromPoint(dnd.pos.px, dnd.pos.py);
+                    var $tree = $(domEl).closest('.' + tree.const.treeClass);
+                    if ($tree.length === 1) {
+
+                        var object = this.jstree.get_node(this.dnd.object);
+                        var target = this.jstree.get_node(this.dnd.target);
+                        var index = -1;
+                        switch (this.dnd.move) {
+                            case 'before':
+                                index = this.getNodeIndex(target);
+                                break;
+                            case 'after':
+                                index = this.getNodeIndex(target) + 1;
+                                break;
+                        }
+                        switch (this.dnd.move) {
+                            case 'before':
+                            case 'after':
+                                var parentId = this.jstree.get_parent(target);
+                                if (parentId) {
+                                    target = this.jstree.get_node(parentId);
+                                }
+                                break;
+                        }
+                        if (target.original.path.indexOf(object.original.path) < 0) {
+                            var reorder = (target.original.path === core.getParentPath(object.original.path));
+                            if (!reorder || index !== this.getNodeIndex(object)) {
+                                this.dropNode(object.original, target.original, index, reorder);
+                            }
+                        }
+                    }
+                    this.dnd = undefined;
+                }
+                this.onDragEnd(event);
+            },
+
+            onDragEnd: function (event, data) {
                 var e = pages.const.event;
                 if (this.log.getLevel() <= log.levels.DEBUG) {
                     this.log.debug(this.nodeIdPrefix + 'tree.trigger.' + e.dnd.finished + '(...)');
@@ -223,19 +346,6 @@
                 this.type = 'page';
                 var p = pages.const.profile.page.tree;
                 var id = this.nodeIdPrefix + 'Tree';
-                options = _.extend(options || {}, {
-                    dragAndDrop: {
-                        is_draggable: _.bind(this.nodeIsDraggable, this),
-                        inside_pos: 'last',
-                        copy: false,
-                        check_while_dragging: false,
-                        drag_selection: false,
-                        touch: 'selected',
-                        large_drag_target: true,
-                        large_drop_target: true,
-                        use_html5: true
-                    }
-                });
                 this.initializeFilter();
                 tree.ContentTree.prototype.initialize.apply(this, [options]);
                 var e = pages.const.event;
@@ -284,40 +394,46 @@
                 this.onPathSelected(event, path);
             },
 
-            onElementSelected: function (event, reference) {
+            onElementSelected: function (event, refOrPath) {
+                var path = refOrPath && refOrPath.path ? refOrPath.path : refOrPath;
                 if (this.log.getLevel() <= log.levels.DEBUG) {
-                    this.log.debug(this.nodeIdPrefix + 'tree.onElementSelected(' + (reference ? reference.path : '') + ')');
+                    this.log.debug(this.nodeIdPrefix + 'tree.onElementSelected(' + path + ')');
                 }
-                this.onPathSelected(event, reference ? reference.path : undefined);
+                this.onPathSelected(event, path);
             },
 
-            onElementInserted: function (event, reference) {
+            onElementInserted: function (event, refOrPath) {
+                var path = refOrPath && refOrPath.path ? refOrPath.path : refOrPath;
                 if (this.log.getLevel() <= log.levels.DEBUG) {
-                    this.log.debug(this.nodeIdPrefix + 'tree.onElementSelected(' + (reference ? reference.path : '') + ')');
+                    this.log.debug(this.nodeIdPrefix + 'tree.onElementSelected(' + path + ')');
                 }
-                var parentAndName = core.getParentAndName(reference.path);
+                var parentAndName = core.getParentAndName(path);
                 this.onPathInserted(event, parentAndName.path, parentAndName.name);
             },
 
-            onElementMoved: function (event, oldPath, newPath) {
+            onElementMoved: function (event, oldRefOrPath, newRefOrPath) {
+                var oldPath = oldRefOrPath && oldRefOrPath.path ? oldRefOrPath.path : oldRefOrPath;
+                var newPath = newRefOrPath && newRefOrPath.path ? newRefOrPath.path : newRefOrPath;
                 if (this.log.getLevel() <= log.levels.DEBUG) {
                     this.log.debug(this.nodeIdPrefix + 'tree.onElementSelected(' + oldPath + ' -> ' + newPath + ')');
                 }
                 this.onPathMoved(event, oldPath, newPath);
             },
 
-            onElementChanged: function (event, reference) {
+            onElementChanged: function (event, refOrPath) {
+                var path = refOrPath && refOrPath.path ? refOrPath.path : refOrPath;
                 if (this.log.getLevel() <= log.levels.DEBUG) {
-                    this.log.debug(this.nodeIdPrefix + 'tree.onElementChanged(' + reference.path + ')');
+                    this.log.debug(this.nodeIdPrefix + 'tree.onElementChanged(' + path + ')');
                 }
-                this.onPathChanged(event, reference.path);
+                this.onPathChanged(event, path);
             },
 
-            onElementDeleted: function (event, reference) {
+            onElementDeleted: function (event, refOrPath) {
+                var path = refOrPath && refOrPath.path ? refOrPath.path : refOrPath;
                 if (this.log.getLevel() <= log.levels.DEBUG) {
-                    this.log.debug(this.nodeIdPrefix + 'tree.onElementDeleted(' + reference.path + ')');
+                    this.log.debug(this.nodeIdPrefix + 'tree.onElementDeleted(' + path + ')');
                 }
-                this.onPathDeleted(event, reference.path);
+                this.onPathDeleted(event, path);
             },
 
             dropNode: function (draggedNode, targetNode, index) {
@@ -333,32 +449,13 @@
                     }, {}, function (result) {
                         $(document).trigger(pages.const.event.element.moved, [
                             new pages.Reference(draggedNode.name, draggedNode.path, draggedNode.type),
-                            result.reference]);
+                            new pages.Reference(result.reference)
+                        ]);
                     }, function (xhr) {
                         core.alert('error', 'Error', 'Error on moving element', xhr);
                     });
                 } else {
-                    // move folders, pages, files...
-                    var oldParentPath = core.getParentPath(oldPath);
-                    if (oldParentPath === targetPath) {
-                        // reordering in the same parent resource - keep that simple...
-                        core.ajaxPost('/bin/cpm/pages/edit.moveContent.json' + core.encodePath(oldPath), {
-                            targetPath: targetPath,
-                            before: before ? before.original.path : undefined
-                        }, {}, _.bind(function (result) {
-                            $(document).trigger(pages.const.event.content.moved, [
-                                new pages.Reference(draggedNode.name, draggedNode.path, draggedNode.type),
-                                result.reference]);
-                        }, this), _.bind(function (xhr) {
-                            core.alert('error', 'Error', 'Error on moving content', xhr);
-                        }, this));
-                    } else {
-                        // move to another parent - check and confirm...
-                        pages.dialogs.openMoveContentDialog(draggedNode.name, draggedNode.path, draggedNode.type,
-                            _.bind(function (dialog) {
-                                dialog.setValues(draggedNode.path, targetNode.path, before ? before.original.name : undefined);
-                            }, this));
-                    }
+                    tree.ContentTree.prototype.dropNode.apply(this, [draggedNode, targetNode, index]);
                 }
             }
         });
@@ -371,19 +468,6 @@
                 this.type = 'asset';
                 var p = pages.const.profile.asset.tree;
                 var id = this.nodeIdPrefix + 'Tree';
-                options = _.extend(options || {}, {
-                    dragAndDrop: {
-                        is_draggable: _.bind(this.nodeIsDraggable, this),
-                        inside_pos: 'last',
-                        copy: false,
-                        check_while_dragging: false,
-                        drag_selection: false,
-                        touch: 'selected',
-                        large_drag_target: true,
-                        large_drop_target: true,
-                        use_html5: true
-                    }
-                });
                 this.initializeFilter();
                 tree.ContentTree.prototype.initialize.apply(this, [options]);
                 var e = pages.const.event;

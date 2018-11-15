@@ -42,6 +42,7 @@
                 $(document).on(e.element.selected + id, _.bind(this.onElementSelected, this));
                 $(document).on(e.element.inserted + id, _.bind(this.onElementInserted, this));
                 $(document).on(e.element.changed + id, _.bind(this.onElementChanged, this));
+                $(document).on(e.element.moved + id, _.bind(this.onElementMoved, this));
                 $(document).on(e.element.deleted + id, _.bind(this.onElementDeleted, this));
                 $(document).on(e.content.inserted + id, _.bind(this.onElementChanged, this));
                 $(document).on(e.content.changed + id, _.bind(this.onElementChanged, this));
@@ -285,6 +286,27 @@
                     }
                     this.$frame[0].contentWindow.postMessage(pages.const.event.element.changed
                         + JSON.stringify({reference: reference}), '*');
+                }
+            },
+
+            onElementMoved: function (event, oldRefOrPath, newRefOrPath) {
+                var oldPath = oldRefOrPath && oldRefOrPath.path ? oldRefOrPath.path : oldRefOrPath;
+                var newPath = newRefOrPath && newRefOrPath.path ? newRefOrPath.path : newRefOrPath;
+                if (this.log.frame.getLevel() <= log.levels.DEBUG) {
+                    this.log.frame.debug('pages.EditFrame.onElementMoved(' + oldPath + ' -> ' + newPath + ')');
+                }
+                var oldParent = core.getParentPath(oldPath);
+                var newParent = core.getParentPath(newPath);
+                if (oldParent.indexOf(newParent) < 0) {
+                    if (newParent.indexOf(oldParent) < 0) {
+                        this.$frame[0].contentWindow.postMessage(pages.const.event.element.changed
+                            + JSON.stringify({reference: {path: newParent}}), '*');
+                    }
+                    this.$frame[0].contentWindow.postMessage(pages.const.event.element.changed
+                        + JSON.stringify({reference: {path: oldParent}}), '*');
+                } else {
+                    this.$frame[0].contentWindow.postMessage(pages.const.event.element.changed
+                        + JSON.stringify({reference: {path: newParent}}), '*');
                 }
             },
 
