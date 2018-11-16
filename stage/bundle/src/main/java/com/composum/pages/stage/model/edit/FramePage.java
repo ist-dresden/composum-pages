@@ -3,7 +3,7 @@ package com.composum.pages.stage.model.edit;
 import com.composum.pages.commons.model.Page;
 import com.composum.pages.commons.model.properties.Language;
 import com.composum.pages.commons.request.DisplayMode;
-import com.composum.sling.core.util.LinkUtil;
+import com.composum.pages.commons.util.LinkUtil;
 import com.composum.sling.core.util.ResourceUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;

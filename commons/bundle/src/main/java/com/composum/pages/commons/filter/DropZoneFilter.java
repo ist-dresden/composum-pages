@@ -11,11 +11,16 @@ import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.filter.ResourceFilter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * a filter implementation which is using resource filter keys of the set of filters
@@ -24,25 +29,38 @@ import java.util.Map;
  */
 public class DropZoneFilter implements ResourceFilter {
 
-    enum Type {page, component, asset}
+    private static final Logger LOG = LoggerFactory.getLogger(DropZoneFilter.class);
 
-    protected Type type;
-    protected Collection<String> keys;
+    public enum Type {page, component, asset}
+
+    protected Map<Type, Collection<String>> rules;
 
     protected final BeanContext context;
-    private transient Map<String, ResourceFilter> filterMap;
+    private transient Collection<ResourceFilter> filters;
 
-    public DropZoneFilter(BeanContext context, String rule) {
+    /**
+     * construct a filter by parsing a string containg rules like 'page:site;file:document,text'
+     */
+    public DropZoneFilter(BeanContext context, String filterRules) {
         this.context = context;
-        type = Type.valueOf(StringUtils.substringBefore(rule, ":").toLowerCase());
-        keys = Arrays.asList(StringUtils.split(StringUtils.substringAfter(rule, ":"), ","));
+        rules = new LinkedHashMap<>();
+        for (String rule : filterRules.split(";")) {
+            try {
+                Type type = Type.valueOf(StringUtils.substringBefore(rule, ":").toLowerCase());
+                Collection<String> keys = Arrays.asList(StringUtils.split(
+                        StringUtils.substringAfter(rule, ":"), ","));
+                rules.put(type, keys);
+            } catch (IllegalArgumentException ex) {
+                LOG.error(ex.getMessage(), ex);
+            }
+        }
     }
 
     // ResourceFilter
 
     @Override
     public boolean accept(Resource resource) {
-        for (ResourceFilter filter : getFilterMap().values()) {
+        for (ResourceFilter filter : getFilters()) {
             if (filter.accept(resource)) {
                 return true;
             }
@@ -57,62 +75,67 @@ public class DropZoneFilter implements ResourceFilter {
 
     @Override
     public void toString(StringBuilder builder) {
-        builder.append("DropZone").append("(").append(getRule()).append(")");
+        builder.append("DropZone").append("(");
+        for (Iterator<Type> it = getTypes().iterator(); it.hasNext(); ) {
+            builder.append(getRule(it.next()));
+            if (it.hasNext()) {
+                builder.append(';');
+            }
+        }
+        builder.append(")");
     }
 
     // edit model
 
-    public Type getType() {
-        return type;
+    public Set<Type> getTypes() {
+        return rules.keySet();
     }
 
-    public Collection<String> getKeys() {
-        return keys;
+    public Collection<String> getKeys(Type type) {
+        return rules.get(type);
     }
 
-    public boolean matches(String key) {
-        return getKeys().contains(key);
-    }
-
-    public String getRule() {
-        return new StringBuilder().append(getType()).append(":")
-                .append(StringUtils.join(getKeys(), ",")).toString();
+    public String getRule(Type type) {
+        return new StringBuilder().append(getTypes()).append(":")
+                .append(StringUtils.join(getKeys(type), ",")).toString();
     }
 
     // filter configuration
 
-    protected Map<String, ResourceFilter> getFilterMap() {
-        if (filterMap == null) {
-            filterMap = buildFilterMap();
+    protected Collection<ResourceFilter> getFilters() {
+        if (filters == null) {
+            filters = buildFilterSet();
         }
-        return filterMap;
+        return filters;
     }
 
-    protected Map<String, ResourceFilter> buildFilterMap() {
-        HashMap<String, ResourceFilter> result = new HashMap<>();
-        switch (getType()) {
-            case page:
-                PagesConfiguration pagesConfig = context.getService(PagesConfiguration.class);
-                for (String key : getKeys()) {
-                    ResourceFilter filter = pagesConfig.getPageFilter(context, key);
-                    if (filter != null) {
-                        result.put(key, filter);
+    protected Collection<ResourceFilter> buildFilterSet() {
+        Collection<ResourceFilter> result = new ArrayList<>();
+        for (Type type : getTypes()) {
+            switch (type) {
+                case page:
+                    PagesConfiguration pagesConfig = context.getService(PagesConfiguration.class);
+                    for (String key : getKeys(type)) {
+                        ResourceFilter filter = pagesConfig.getPageFilter(context, key);
+                        if (filter != null) {
+                            result.add(filter);
+                        }
                     }
-                }
-                break;
-            case component:
-                // TODO...
-                break;
-            case asset:
-            default:
-                AssetsConfiguration assetsConfig = context.getService(AssetsConfiguration.class);
-                for (String key : getKeys()) {
-                    ResourceFilter filter = assetsConfig.getFileFilter(context, key);
-                    if (filter != null) {
-                        result.put(key, filter);
+                    break;
+                case component:
+                    // TODO...
+                    break;
+                case asset:
+                default:
+                    AssetsConfiguration assetsConfig = context.getService(AssetsConfiguration.class);
+                    for (String key : getKeys(type)) {
+                        ResourceFilter filter = assetsConfig.getFileFilter(context, key);
+                        if (filter != null) {
+                            result.add(filter);
+                        }
                     }
-                }
-                break;
+                    break;
+            }
         }
         return result;
     }

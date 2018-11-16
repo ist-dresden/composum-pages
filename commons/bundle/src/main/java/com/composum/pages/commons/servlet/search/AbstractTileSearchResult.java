@@ -7,7 +7,7 @@ package com.composum.pages.commons.servlet.search;
 
 import com.composum.pages.commons.service.search.SearchService;
 import com.composum.pages.commons.util.ResourceTypeUtil;
-import com.composum.sling.core.util.LinkUtil;
+import com.composum.pages.commons.util.LinkUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;

@@ -90,6 +90,9 @@ public interface AssetsConfiguration {
     ResourceFilter getAnyNodeFilter();
 
     @Nonnull
+    ResourceFilter getDocumentNodeFilter();
+
+    @Nonnull
     Set<String> getFileFilterKeys();
 
     @Nullable
@@ -103,6 +106,9 @@ public interface AssetsConfiguration {
 
     @Nonnull
     ResourceFilter getVideoFileFilter();
+
+    @Nonnull
+    ResourceFilter getDocumentFileFilter();
 
     @Nonnull
     ResourceFilter getAnyFileFilter();

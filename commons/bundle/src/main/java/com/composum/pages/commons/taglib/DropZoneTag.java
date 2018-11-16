@@ -218,8 +218,10 @@ public class DropZoneTag extends ModelTag {
             collection.add(cssBase);
             collection.add(DROP_ZONE_CSS_CLASS);
             DropZoneFilter filter = new DropZoneFilter(context, getFilter());
-            for (String key : filter.getKeys()) {
-                collection.add(DROP_ZONE_CSS_CLASS + "_" + filter.getType() + "-" + key);
+            for (DropZoneFilter.Type type : filter.getTypes()) {
+                for (String key : filter.getKeys(type)) {
+                    collection.add(DROP_ZONE_CSS_CLASS + "_" + type + "-" + key);
+                }
             }
         }
     }

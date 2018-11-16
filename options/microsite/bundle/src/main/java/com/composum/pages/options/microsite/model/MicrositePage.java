@@ -1,7 +1,7 @@
 package com.composum.pages.options.microsite.model;
 
 import com.composum.pages.commons.model.Page;
-import com.composum.sling.core.util.LinkUtil;
+import com.composum.pages.commons.util.LinkUtil;
 
 public class MicrositePage extends Page {
 

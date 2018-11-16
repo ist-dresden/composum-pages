@@ -1,7 +1,7 @@
 package com.composum.pages.commons.model;
 
 import com.composum.sling.core.BeanContext;
-import com.composum.sling.core.util.LinkUtil;
+import com.composum.pages.commons.util.LinkUtil;
 import com.composum.sling.core.util.ResourceUtil;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;

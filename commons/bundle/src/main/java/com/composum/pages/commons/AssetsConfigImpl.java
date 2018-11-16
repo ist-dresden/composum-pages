@@ -45,6 +45,7 @@ public class AssetsConfigImpl implements AssetsConfiguration {
     public static final String ASSET_FILTER_ASSET = "asset";
     public static final String ASSET_FILTER_IMAGE = "image";
     public static final String ASSET_FILTER_VIDEO = "video";
+    public static final String ASSET_FILTER_DOCUMENT = "document";
 
     public static final String ASSETS_MODULE_CONFIG_CLASS = "com.composum.assets.commons.AssetsConfiguration";
 
@@ -69,6 +70,11 @@ public class AssetsConfigImpl implements AssetsConfiguration {
         String videoNodeFilterRule() default "and{PrimaryType(+'^nt:(file)$'),MimeType(+'^video/')}";
 
         @AttributeDefinition(
+                description = "the filter configuration to set the scope to document files"
+        )
+        String documentNodeFilterRule() default "and{PrimaryType(+'^nt:(file)$'),MimeType(+'^application/pdf')}";
+
+        @AttributeDefinition(
                 description = "the filter configuration to set the scope to video files"
         )
         String treeIntermediateFilterRule() default "and{or{Folder(),PrimaryType(+'^cpp:(Site)$')},Path(-'^/(etc|conf|apps|libs|sightly|htl|var)')}";
@@ -80,11 +86,13 @@ public class AssetsConfigImpl implements AssetsConfiguration {
     private ResourceFilter assetNodeFilter;
     private ResourceFilter imageNodeFilter;
     private ResourceFilter videoNodeFilter;
+    private ResourceFilter documentNodeFilter;
     private ResourceFilter anyAssetFilter;
 
     private ResourceFilter assetFileFilter;
     private ResourceFilter imageFileFilter;
     private ResourceFilter videoFileFilter;
+    private ResourceFilter documentFileFilter;
     private ResourceFilter anyFileFilter;
 
     private Map<String, ConfigurableFilter> availableFilters;
@@ -122,6 +130,12 @@ public class AssetsConfigImpl implements AssetsConfiguration {
     @Override
     public ResourceFilter getVideoFileFilter() {
         return videoFileFilter;
+    }
+
+    @Nonnull
+    @Override
+    public ResourceFilter getDocumentFileFilter() {
+        return documentFileFilter;
     }
 
     @Nonnull
@@ -180,6 +194,12 @@ public class AssetsConfigImpl implements AssetsConfiguration {
 
     @Nonnull
     @Override
+    public ResourceFilter getDocumentNodeFilter() {
+        return documentNodeFilter;
+    }
+
+    @Nonnull
+    @Override
     public ResourceFilter getAnyNodeFilter() {
         return anyAssetFilter;
     }
@@ -210,6 +230,7 @@ public class AssetsConfigImpl implements AssetsConfiguration {
         }
         imageFileFilter = ResourceFilterMapping.fromString(config.imageNodeFilterRule());
         videoFileFilter = ResourceFilterMapping.fromString(config.videoNodeFilterRule());
+        documentFileFilter = ResourceFilterMapping.fromString(config.documentNodeFilterRule());
         ResourceFilter treeIntermediateFilter = new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.or,
                 pagesConfiguration.getTreeIntermediateFilter(),
                 pagesConfiguration.getSiteNodeFilter());
@@ -217,6 +238,8 @@ public class AssetsConfigImpl implements AssetsConfiguration {
                 replicationRootFilter, imageFileFilter), treeIntermediateFilter);
         videoNodeFilter = buildTreeFilter(new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.and,
                 replicationRootFilter, videoFileFilter), treeIntermediateFilter);
+        documentNodeFilter = buildTreeFilter(new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.and,
+                replicationRootFilter, documentFileFilter), treeIntermediateFilter);
         if (assetsModuleConfig != null) {
             assetFileFilter = ResourceFilterMapping.fromString(config.assetNodeFilterRule());
             assetNodeFilter = buildTreeFilter(new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.and,
@@ -224,13 +247,15 @@ public class AssetsConfigImpl implements AssetsConfiguration {
             anyFileFilter = new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.or,
                     ResourceFilterMapping.fromString(config.assetNodeFilterRule()),
                     ResourceFilterMapping.fromString(config.imageNodeFilterRule()),
-                    ResourceFilterMapping.fromString(config.videoNodeFilterRule()));
+                    ResourceFilterMapping.fromString(config.videoNodeFilterRule()),
+                    ResourceFilterMapping.fromString(config.documentNodeFilterRule()));
         } else {
             assetFileFilter = null;
             assetNodeFilter = null;
             anyFileFilter = new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.or,
                     ResourceFilterMapping.fromString(config.imageNodeFilterRule()),
-                    ResourceFilterMapping.fromString(config.videoNodeFilterRule()));
+                    ResourceFilterMapping.fromString(config.videoNodeFilterRule()),
+                    ResourceFilterMapping.fromString(config.documentNodeFilterRule()));
         }
         anyAssetFilter = buildTreeFilter(new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.and,
                 replicationRootFilter, anyFileFilter), treeIntermediateFilter);
@@ -248,6 +273,9 @@ public class AssetsConfigImpl implements AssetsConfiguration {
         fileFilters.put(ASSET_FILTER_VIDEO, videoFileFilter);
         availableFilters.put(ASSET_FILTER_VIDEO, new ConfigurableFilter(videoNodeFilter,
                 ASSET_FILTER_VIDEO, "Video", "restrict to video file objects"));
+        fileFilters.put(ASSET_FILTER_DOCUMENT, documentFileFilter);
+        availableFilters.put(ASSET_FILTER_DOCUMENT, new ConfigurableFilter(documentNodeFilter,
+                ASSET_FILTER_DOCUMENT, "Document", "restrict to document file objects"));
     }
 
     @Deactivate
