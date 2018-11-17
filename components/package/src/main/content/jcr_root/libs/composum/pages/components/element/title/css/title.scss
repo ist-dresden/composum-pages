@@ -24,6 +24,21 @@
         margin: $column-subtitle-margin 0;
         font-size: $column-subtitle-font-size;
     }
+
+    &_bg-image {
+        background: transparent center;
+        background-size: 100%;
+
+        .composum-pages-components-element-title {
+
+            &_title,
+            &_subtitle,
+            &_text {
+                color: $site-bright-text-color;
+                mix-blend-mode: difference;
+            }
+        }
+    }
 }
 
 .composum-pages-components-page {

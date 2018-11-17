@@ -78,9 +78,52 @@
 
                     &:hover {
 
+                        .composum-pages-components-element-teaser {
+
+                            &_title,
+                            &_subtitle {
+                                color: $site-default-link-hover;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        &_bg-image {
+            background-position: center;
+            background-size: 100%;
+
+            .composum-pages-components-element-teaser {
+
+                &_link {
+
+                    .composum-pages-components-element-teaser {
+
+                        &_text-block {
+                            padding: $text-spacing-default;
+                            color: $site-bright-text-color;
+                            mix-blend-mode: difference;
+                        }
+
                         &_title,
                         &_subtitle {
-                            color: $site-default-link-hover;
+                            color: $site-bright-text-color;
+                        }
+                    }
+
+                    &:hover {
+
+                        .composum-pages-components-element-teaser {
+
+                            &_text-block {
+                                color: $site-bright-text-hover;
+                            }
+
+                            &_title,
+                            &_subtitle {
+                                color: $site-bright-text-hover;
+                            }
                         }
                     }
                 }

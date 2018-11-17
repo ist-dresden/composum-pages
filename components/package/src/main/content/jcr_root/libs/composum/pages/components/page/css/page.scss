@@ -77,6 +77,10 @@
 
         &_top {
             min-height: $bootstrap-spacing-v*4;
+
+            .composum-pages-components-container-row {
+                margin: 0;
+            }
         }
 
         &_main {

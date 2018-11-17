@@ -24,7 +24,8 @@ public class ElementFilter implements ResourceFilter {
 
     @Override
     public boolean accept(@Nonnull final Resource resource) {
-        return typeFilter.isAllowedElement(resourceManager.getReference(resource, null));
+        return !resource.getName().startsWith("_") // assuming that '_' elements are static included
+                && typeFilter.isAllowedElement(resourceManager.getReference(resource, null));
     }
 
     @Override

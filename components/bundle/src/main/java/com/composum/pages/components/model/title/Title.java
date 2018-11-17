@@ -6,6 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 public class Title extends ImageRelatedElement {
 
     private transient String subtitle;
+    private transient String cssType;
     private transient String style;
 
     public boolean isValid() {
@@ -17,6 +18,16 @@ public class Title extends ImageRelatedElement {
             subtitle = getProperty("subtitle", "");
         }
         return subtitle;
+    }
+
+    public String getTypeClass() {
+        if (cssType == null) {
+            String imageUrl = getImageUrl();
+            if (StringUtils.isNotBlank(imageUrl)) {
+                cssType = getCssBase() + "_bg-image";
+            }
+        }
+        return cssType;
     }
 
     public String getStyle() {

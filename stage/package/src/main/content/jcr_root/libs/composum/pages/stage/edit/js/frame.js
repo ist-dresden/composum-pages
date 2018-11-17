@@ -169,6 +169,7 @@
                     }
                     $(document).trigger(pages.const.event.site.selected, [path]);
                 }
+                this.selectPage(event, path);
             },
 
             selectPage: function (event, path, parameters, elementRef) {
