@@ -12,10 +12,12 @@ public class Link extends Element {
 
     public static final String PROP_LINK = "link";
     public static final String PROP_LINK_TITLE = "linkTitle";
+    public static final String PROP_TARGET = "target";
 
     private transient String link;
     private transient String linkTitle;
     private transient String linkUrl;
+    private transient String target;
 
     public boolean isValid() {
         return StringUtils.isNotBlank(getLinkUrl());
@@ -54,5 +56,12 @@ public class Link extends Element {
             }
         }
         return linkUrl;
+    }
+
+    public String getTarget() {
+        if (target == null) {
+            target = getProperty(PROP_TARGET, "");
+        }
+        return target;
     }
 }

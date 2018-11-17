@@ -5,7 +5,7 @@
 <cpp:element var="link" type="com.composum.pages.commons.model.Link"
              test="@{link.valid||link.editMode}">
     <cpp:dropZone property="link" filter="page:site;asset:document">
-        <cpn:link classes="${linkCssBase}_link" href="${link.linkUrl}"
+        <cpn:link classes="${linkCssBase}_link" href="${link.linkUrl}" target="${link.target}"
                   title="${cpn:text(link.linkTitle)}">${cpn:text(link.title)}</cpn:link>
     </cpp:dropZone>
 </cpp:element>
