@@ -6,4 +6,4 @@
 <cpp:treeAction icon="copy" label="Copy" title="Copy this microsite page and its content"
                 action="window.composum.pages.actions.page.copy"/>
 <cpp:treeAction icon="trash" label="Delete" title="Delete the entire microsite"
-                action="window.composum.pages.actions.element.delete"/>
+                action="window.composum.pages.actions.page.delete"/>

@@ -1,5 +1,6 @@
 package com.composum.pages.options.microsite.servlet;
 
+import com.composum.pages.commons.request.DisplayMode;
 import com.composum.pages.options.microsite.MicrositeConstants;
 import com.composum.pages.options.microsite.service.MicrositeImportService;
 import com.composum.pages.options.microsite.service.MicrositeImportStatus;
@@ -54,6 +55,9 @@ public class MicrositeServlet extends SlingAllMethodsServlet implements Microsit
 
     private static final Logger LOG = LoggerFactory.getLogger(MicrositeServlet.class);
 
+    public static final String SELECTOR_EMBEDDED = "embedded";
+
+    public static final String DATA_FORWARD_TYPE = "composum/pages/options/microsite/page/metadata";
     public static final String POST_FORWARD_TYPE = "composum/pages/components/page";
 
     protected BundleContext bundleContext;
@@ -66,39 +70,50 @@ public class MicrositeServlet extends SlingAllMethodsServlet implements Microsit
      */
     @Override
     public void doGet(@Nonnull SlingHttpServletRequest request, @Nonnull SlingHttpServletResponse response)
-            throws IOException {
-        RequestPathInfo pathInfo = request.getRequestPathInfo();
-        String suffix = pathInfo.getSuffix();
-        if (StringUtils.isNotBlank(suffix)) {
-            suffix = suffix.substring(1); /* skip leading '/' */
-        }
-        Resource pageContent = request.getResource();
-        ValueMap pageProperties = pageContent.getValueMap();
-        String indexPath = pageProperties.get(PN_INDEX_PATH, "");
-        Resource contentResource = null;
-        if (StringUtils.isNotBlank(suffix)) {
-            contentResource = pageContent.getChild(suffix);
-            if (contentResource == null && StringUtils.isNotBlank(indexPath)) {
-                String intermediatePath = StringUtils.substringBeforeLast(indexPath, "/");
-                if (StringUtils.isNotBlank(intermediatePath)) {
-                    contentResource = pageContent.getChild(intermediatePath + suffix);
+            throws IOException, ServletException {
+        BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
+        if (DisplayMode.isEditMode(context)) {
+            forward(request, response, DATA_FORWARD_TYPE);
+        } else {
+            RequestPathInfo pathInfo = request.getRequestPathInfo();
+            String suffix = pathInfo.getSuffix();
+            if (StringUtils.isNotBlank(suffix)) {
+                suffix = suffix.substring(1); /* skip leading '/' */
+            }
+            Resource pageContent = request.getResource();
+            ValueMap pageProperties = pageContent.getValueMap();
+            String indexPath = pageProperties.get(PN_INDEX_PATH, "");
+            Resource contentResource = null;
+            if (StringUtils.isNotBlank(suffix)) {
+                contentResource = pageContent.getChild(suffix);
+                if (contentResource == null && StringUtils.isNotBlank(indexPath)) {
+                    String intermediatePath = StringUtils.substringBeforeLast(indexPath, "/");
+                    if (StringUtils.isNotBlank(intermediatePath)) {
+                        contentResource = pageContent.getChild(intermediatePath + suffix);
+                    }
+                }
+            } else {
+                if (StringUtils.isNotBlank(indexPath)) {
+                    contentResource = pageContent.getChild(indexPath);
                 }
             }
-        } else {
-            if (StringUtils.isNotBlank(indexPath)) {
-                contentResource = pageContent.getChild(indexPath);
+            if (contentResource != null && contentResource.isResourceType(JcrConstants.NT_FILE)) {
+                contentResource = contentResource.getChild(JcrConstants.JCR_CONTENT);
             }
-        }
-        if (contentResource != null && contentResource.isResourceType(JcrConstants.NT_FILE)) {
-            contentResource = contentResource.getChild(JcrConstants.JCR_CONTENT);
-        }
-        if (contentResource != null) {
-            ValueMap properties = contentResource.getValueMap();
-            InputStream contentStream = (InputStream) properties.get(JcrConstants.JCR_DATA);
-            response.setContentType("text/html");
-            IOUtils.copy(contentStream, response.getOutputStream());
-        } else {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            if (contentResource != null) {
+                ValueMap properties = contentResource.getValueMap();
+                InputStream contentStream = (InputStream) properties.get(JcrConstants.JCR_DATA);
+                response.setContentType("text/html");
+                IOUtils.copy(contentStream, response.getOutputStream());
+            } else {
+                List<String> selectors = Arrays.asList(pathInfo.getSelectors());
+                if (selectors.contains(SELECTOR_EMBEDDED)) {
+                    response.setContentLength(0);
+                    response.setStatus(HttpServletResponse.SC_OK);
+                } else {
+                    response.sendError(HttpServletResponse.SC_NOT_FOUND);
+                }
+            }
         }
     }
 
@@ -145,10 +160,21 @@ public class MicrositeServlet extends SlingAllMethodsServlet implements Microsit
             }
         } else {
             // forward to normal POST handling (e.g. for the default edit dialog of a page)...
-            final RequestDispatcherOptions forwardOptions = new RequestDispatcherOptions();
-            forwardOptions.setForceResourceType(POST_FORWARD_TYPE);
-            RequestDispatcher dispatcher = request.getRequestDispatcher(request.getResource(), forwardOptions);
+            forward(request, response, POST_FORWARD_TYPE);
+        }
+    }
+
+    protected void forward(@Nonnull final SlingHttpServletRequest request, @Nonnull final SlingHttpServletResponse response,
+                           @Nonnull String resourceType)
+            throws ServletException, IOException {
+        Resource resource = request.getResource();
+        final RequestDispatcherOptions forwardOptions = new RequestDispatcherOptions();
+        forwardOptions.setForceResourceType(resourceType);
+        RequestDispatcher dispatcher = request.getRequestDispatcher(resource, forwardOptions);
+        if (dispatcher != null) {
             dispatcher.forward(request, response);
+        } else {
+            LOG.error("no dispatcher available for '{}'", resource.getPath());
         }
     }
 

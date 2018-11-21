@@ -13,7 +13,8 @@
                 ^(.*/)?pages/components/templates/site/.*$
             ]"
             allowedChildTemplates="[
-                ^(.*/)?pages/components/templates/page/.*$
+                ^(.*/)?pages/components/templates/page/.*$,
+                ^(.*/)?pages/options/.*/template(s(/page)?(/.+)?)?$
             ]">
         <logo
                 jcr:primaryType="nt:unstructured"

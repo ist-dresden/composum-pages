@@ -3,6 +3,9 @@ package com.composum.pages.options.microsite.model;
 import com.composum.pages.commons.model.Page;
 import com.composum.pages.commons.util.LinkUtil;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 public class MicrositePage extends Page {
 
     /**
@@ -10,5 +13,14 @@ public class MicrositePage extends Page {
      */
     public String getContentUploadUrl() {
         return LinkUtil.getUrl(getContext().getRequest(), getContent().getPath(), "upload", null);
+    }
+
+    public String getEmbeddedPreviewUrl() {
+        return LinkUtil.getUrl(getContext().getRequest(), getPath(), "embedded", null);
+    }
+
+    public String getLastImportTime() {
+        Calendar calendar = getProperty("lastImportTime", Calendar.class);
+        return calendar != null ? new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(calendar.getTime()) : "";
     }
 }
