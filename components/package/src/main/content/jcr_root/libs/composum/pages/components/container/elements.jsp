@@ -4,10 +4,7 @@
 <cpp:defineObjects/>
 <cpp:model var="container" type="com.composum.pages.commons.model.Container"
            cssBase="composum-pages-components-container">
-    <c:forEach items="${container.elements}" var="element" varStatus="loop">
+    <c:forEach items="${container.elements}" var="element">
         <cpp:include resource="${element.resource}"/>
-        <c:if test="${container.withSpacing and not loop.last}">
-            <div class="${containerCssBase}_space"></div>
-        </c:if>
     </c:forEach>
 </cpp:model>

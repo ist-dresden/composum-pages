@@ -5,7 +5,8 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <cpp:defineObjects/>
 <cpp:element var="title" type="com.composum.pages.components.model.title.Title"
-             style="@{title.style}" test="@{title.editMode || title.valid}">
+             test="@{title.editMode || title.valid}"
+             cssAdd="@{title.typeClass}" style="@{title.style}">
     <cpp:dropZone property="image/imageRef" i18n="true" filter="asset:image">
         <c:choose>
             <c:when test="${title.valid}">

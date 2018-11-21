@@ -7,7 +7,7 @@
     <cpp:model var="frame" type="com.composum.pages.stage.model.edit.FramePage" scope="request">
         <html data-context-path="${slingRequest.contextPath}">
         <head>
-            <meta name="viewport" content="width=device-width, minimum-scale=1, maximum-scale=1, user-scalable=no"/>
+            <meta name="viewport" content="width=device-width, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"/>
             <meta name="format-detection" content="telephone=no">
             <cpn:clientlib type="link" category="composum.pages.edit.frame"/>
             <cpn:clientlib type="css" category="composum.pages.edit.frame"/>

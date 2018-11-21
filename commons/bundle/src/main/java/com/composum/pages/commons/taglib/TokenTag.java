@@ -1,7 +1,7 @@
 package com.composum.pages.commons.taglib;
 
 import com.composum.pages.commons.service.TrackingService;
-import com.composum.sling.core.util.LinkUtil;
+import com.composum.pages.commons.util.LinkUtil;
 import com.composum.sling.cpnl.CpnlTagSupport;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;

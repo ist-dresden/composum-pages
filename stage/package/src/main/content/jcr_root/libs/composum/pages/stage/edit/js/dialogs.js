@@ -434,7 +434,7 @@
                                 targetType: this.data.type
                             }, {}, _.bind(function (result) {
                                 pages.log.debug('pages.trigger.' + pages.const.event.element.inserted + '(' + path + ')');
-                                $(document).trigger(pages.const.event.element.inserted, [new pages.Reference(result.reference)]);
+                                $(document).trigger(pages.const.event.element.inserted, [new pages.Reference(result.name, result.path)]);
                             }, this));
                         }, this));
                 }
@@ -507,8 +507,8 @@
                             // create page as a copy of the template
                             core.ajaxPost(c.base + c._create.page + this.data.path, postData, {},
                                 _.bind(function (result) {
-                                    pages.log.debug('pages.trigger.' + pages.const.event.element.changed + '(' + this.data.path + ')');
-                                    $(document).trigger(pages.const.event.element.changed, [new pages.Reference(result.reference)]);
+                                    pages.log.debug('pages.trigger.' + pages.const.event.content.inserted + '(' + this.data.path + ')');
+                                    $(document).trigger(pages.const.event.content.inserted, [new pages.Reference(result.name, result.path)]);
                                 }, this));
                         } else {
                             // create page using resource type by opening the page create dialog of the designated type
@@ -518,8 +518,8 @@
                                     postData.resourceType = type;
                                     core.ajaxPost(c.base + c._create.page + path, postData, {},
                                         _.bind(function (result) {
-                                            pages.log.debug('pages.trigger.' + pages.const.event.element.changed + '(' + result.reference + ')');
-                                            $(document).trigger(pages.const.event.element.changed, [new pages.Reference(result.reference)]);
+                                            pages.log.debug('pages.trigger.' + pages.const.event.content.inserted + '(' + result.reference + ')');
+                                            $(document).trigger(pages.const.event.content.inserted, [new pages.Reference(result.name, result.path)]);
                                         }, this));
                                 }, this)
                             )

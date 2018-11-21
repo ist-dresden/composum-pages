@@ -3,20 +3,21 @@
  *
  * This software may be modified and distributed under the terms of the MIT license.
  */
-package com.composum.pages.components.model.link;
+package com.composum.pages.commons.model;
 
-import com.composum.pages.commons.model.Element;
-import com.composum.sling.core.util.LinkUtil;
+import com.composum.pages.commons.util.LinkUtil;
 import org.apache.commons.lang3.StringUtils;
 
 public class Link extends Element {
 
     public static final String PROP_LINK = "link";
     public static final String PROP_LINK_TITLE = "linkTitle";
+    public static final String PROP_TARGET = "target";
 
     private transient String link;
     private transient String linkTitle;
     private transient String linkUrl;
+    private transient String target;
 
     public boolean isValid() {
         return StringUtils.isNotBlank(getLinkUrl());
@@ -29,9 +30,20 @@ public class Link extends Element {
         return link;
     }
 
+    @Override
+    public String getTitle() {
+        if (title == null) {
+            title = super.getTitle();
+            if (StringUtils.isBlank(title)) {
+                title = LinkUtil.toText(getContext().getRequest(), getLink());
+            }
+        }
+        return title;
+    }
+
     public String getLinkTitle() {
         if (linkTitle == null) {
-            linkTitle = getProperty(PROP_LINK_TITLE, "");
+            linkTitle = getProperty(PROP_LINK_TITLE, getTitle());
         }
         return linkTitle;
     }
@@ -44,5 +56,12 @@ public class Link extends Element {
             }
         }
         return linkUrl;
+    }
+
+    public String getTarget() {
+        if (target == null) {
+            target = getProperty(PROP_TARGET, "");
+        }
+        return target;
     }
 }

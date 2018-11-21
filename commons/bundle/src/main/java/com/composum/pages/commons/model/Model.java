@@ -4,7 +4,7 @@ import com.composum.pages.commons.PagesConstants;
 import com.composum.pages.commons.model.properties.Language;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.SlingBean;
-import com.composum.sling.core.util.LinkUtil;
+import com.composum.pages.commons.util.LinkUtil;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
 

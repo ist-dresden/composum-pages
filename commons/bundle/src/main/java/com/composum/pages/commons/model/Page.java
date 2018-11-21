@@ -1,3 +1,8 @@
+/*
+ * copyright (c) 2015ff IST GmbH Dresden, Germany - https://www.ist-software.com
+ *
+ * This software may be modified and distributed under the terms of the MIT license.
+ */
 package com.composum.pages.commons.model;
 
 import com.composum.pages.commons.model.properties.Language;
@@ -9,7 +14,7 @@ import com.composum.platform.models.annotations.DetermineResourceStategy;
 import com.composum.platform.models.annotations.PropertyDetermineResourceStrategy;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.filter.ResourceFilter;
-import com.composum.sling.core.util.LinkUtil;
+import com.composum.pages.commons.util.LinkUtil;
 import com.composum.sling.core.util.ResourceUtil;
 import com.composum.sling.platform.security.AccessMode;
 import org.apache.commons.lang3.StringUtils;
@@ -204,7 +209,7 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
      */
     public Page getParentPage() {
         if (parent == null) {
-            Resource parentRes = isHome() ? resource : resource.getParent();
+            Resource parentRes = isHome() ? null : resource.getParent();
             while (parent == null && parentRes != null) {
                 if (isPage(parentRes)) {
                     parent = new Page(context, parentRes);

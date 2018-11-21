@@ -6,6 +6,6 @@
 <cpp:container var="section" type="com.composum.pages.components.model.container.Section"
                tagName="section">
     <cpn:anchor test="${not empty section.anchor}" name="${section.anchor}"/>
-    <cpp:include resourceType="composum/pages/components/element/title" replaceSelectors="embedded"/>
+    <cpp:include path="_title" resourceType="composum/pages/components/element/title"/>
     <sling:call script="elements.jsp"/>
 </cpp:container>

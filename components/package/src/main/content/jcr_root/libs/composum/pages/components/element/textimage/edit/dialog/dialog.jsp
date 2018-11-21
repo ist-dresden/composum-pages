@@ -8,7 +8,7 @@
         <sling:call script="embedded.jsp"/>
     </cpp:editDialogTab>
     <cpp:editDialogTab tabId="image" label="Image">
-        <sling:include path="image" replaceSelectors="embedded"
-                       resourceType="composum/pages/components/element/image/edit/dialog"/>
+        <cpp:include path="image" resourceType="composum/pages/components/element/image" subtype="edit/dialog"
+                     replaceSelectors="embedded"/>
     </cpp:editDialogTab>
 </cpp:editDialog>

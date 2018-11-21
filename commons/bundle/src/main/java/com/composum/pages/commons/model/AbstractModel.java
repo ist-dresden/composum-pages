@@ -24,7 +24,7 @@ import com.composum.sling.core.SlingBean;
 import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.filter.StringFilter;
 import com.composum.sling.core.request.DomIdentifiers;
-import com.composum.sling.core.util.LinkUtil;
+import com.composum.pages.commons.util.LinkUtil;
 import com.composum.sling.core.util.PropertyUtil;
 import com.composum.sling.core.util.ResourceUtil;
 import com.composum.sling.platform.security.AccessMode;
@@ -128,7 +128,7 @@ public abstract class AbstractModel implements SlingBean, Model {
     protected transient String type;
 
     private transient String url;
-    private transient String title;
+    protected transient String title;
     private transient String description;
 
     private transient PagesConstants.ComponentType componentType;

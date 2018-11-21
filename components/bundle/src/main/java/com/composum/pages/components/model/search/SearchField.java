@@ -2,7 +2,7 @@ package com.composum.pages.components.model.search;
 
 import com.composum.pages.commons.PagesConstants;
 import com.composum.pages.commons.model.Element;
-import com.composum.sling.core.util.LinkUtil;
+import com.composum.pages.commons.util.LinkUtil;
 import org.apache.sling.api.request.RequestParameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
