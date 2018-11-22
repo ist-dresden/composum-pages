@@ -50,7 +50,7 @@ import java.util.List;
                 ServletResolverConstants.SLING_SERVLET_METHODS + "=" + HttpConstants.METHOD_POST,
                 ServletResolverConstants.SLING_SERVLET_EXTENSIONS + "=html",
                 ServletResolverConstants.SLING_SERVLET_EXTENSIONS + "=json"
-        })
+        }, immediate = true)
 public class MicrositeServlet extends SlingAllMethodsServlet implements MicrositeConstants {
 
     private static final Logger LOG = LoggerFactory.getLogger(MicrositeServlet.class);
@@ -72,10 +72,12 @@ public class MicrositeServlet extends SlingAllMethodsServlet implements Microsit
     public void doGet(@Nonnull SlingHttpServletRequest request, @Nonnull SlingHttpServletResponse response)
             throws IOException, ServletException {
         BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
-        if (DisplayMode.isEditMode(context)) {
+        RequestPathInfo pathInfo = request.getRequestPathInfo();
+        List<String> selectors = Arrays.asList(pathInfo.getSelectors());
+        boolean embedded = selectors.contains(SELECTOR_EMBEDDED);
+        if (!embedded && DisplayMode.isEditMode(context)) {
             forward(request, response, DATA_FORWARD_TYPE);
         } else {
-            RequestPathInfo pathInfo = request.getRequestPathInfo();
             String suffix = pathInfo.getSuffix();
             if (StringUtils.isNotBlank(suffix)) {
                 suffix = suffix.substring(1); /* skip leading '/' */
@@ -106,8 +108,7 @@ public class MicrositeServlet extends SlingAllMethodsServlet implements Microsit
                 response.setContentType("text/html");
                 IOUtils.copy(contentStream, response.getOutputStream());
             } else {
-                List<String> selectors = Arrays.asList(pathInfo.getSelectors());
-                if (selectors.contains(SELECTOR_EMBEDDED)) {
+                if (embedded) {
                     response.setContentLength(0);
                     response.setStatus(HttpServletResponse.SC_OK);
                 } else {
