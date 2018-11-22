@@ -37,6 +37,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -175,11 +176,11 @@ public class MicrositeImportServiceImpl implements MicrositeImportService, Micro
     public MicrositeImportRequest importSiteContent(BeanContext context, Resource pageContent, RequestParameter importFile) {
         MicrositeImportRequest importRequest = new MicrositeImportRequest(context, pageContent, importFile);
         if (config.enabled()) {
-            try (ZipInputStream zipStream = new ZipInputStream(importFile.getInputStream())) {
+            try (ZipInputStream zipStream = new ZipInputStream(Objects.requireNonNull(importFile.getInputStream()))) {
                 if (LOG.isInfoEnabled()) {
                     LOG.info("importSiteContent({},{})...", pageContent.getPath(), importFile.getFileName());
                 }
-                String rootPageName = pageContent.getParent().getName();
+                String rootPageName = Objects.requireNonNull(pageContent.getParent()).getName();
                 MicrositeSourceTransformer sourceTransformer = new MicrositeSourceTransformer(
                         rootPageName + PAGE_EXTENSION, rootPageName + PAGE_CONTENT_URL_SEGMENT);
                 importRequest.startImport(sourceTransformer, zipStream);
@@ -192,7 +193,10 @@ public class MicrositeImportServiceImpl implements MicrositeImportService, Micro
                 timestamp.setTime(new Date());
                 String user = importProvider.getCurrentUser(pageContent);
                 ModifiableValueMap valueMap = pageContent.adaptTo(ModifiableValueMap.class);
-                String indexPath = valueMap.get(PN_INDEX_PATH, "");
+                String indexPath = null;
+                if (valueMap != null) {
+                    indexPath = valueMap.get(PN_INDEX_PATH, "");
+                }
                 if (StringUtils.isNotBlank(indexPath)) {
                     valueMap.put(PN_LAST_IMPORT_TIME, timestamp);
                     valueMap.put(PN_LAST_IMPORT_FILE, importFile.getFileName());
@@ -277,7 +281,14 @@ public class MicrositeImportServiceImpl implements MicrositeImportService, Micro
         boolean isIndex = INDEX_FILE.equals(name);
         String relativeBase = importRequest.getRelativeBase(parentResource);
         if (isIndex) {
-            String indexPath = parentResource.getPath().substring(contentResource.getPath().length() + 1) + "/" + name;
+            String parentPath = parentResource.getPath();
+            String contentPath = contentResource.getPath();
+            String indexPath;
+            if (StringUtils.equals(parentPath, contentPath)) {
+                indexPath = name;
+            } else {
+                indexPath = parentPath.substring(contentPath.length() + 1) + "/" + name;
+            }
             if (StringUtils.isNotBlank(currentIndex)) {
                 importRequest.addMessage(new MicrositeImportStatus.Message(MicrositeImportStatus.MessageLevel.error,
                         "More than one entry point ('" + INDEX_FILE + "') found ({0}, {1}) - must be unique!", currentIndex, indexPath));
@@ -346,10 +357,12 @@ public class MicrositeImportServiceImpl implements MicrositeImportService, Micro
         @Override
         public void setProperty(Resource resource, String name, Object value) {
             ModifiableValueMap valueMap = resource.adaptTo(ModifiableValueMap.class);
-            if (value != null) {
-                valueMap.put(name, value);
-            } else {
-                valueMap.remove(name);
+            if (valueMap != null) {
+                if (value != null) {
+                    valueMap.put(name, value);
+                } else {
+                    valueMap.remove(name);
+                }
             }
         }
 
@@ -365,12 +378,14 @@ public class MicrositeImportServiceImpl implements MicrositeImportService, Micro
             timestamp.setTime(new Date());
             String user = resolver.getUserID();
             ModifiableValueMap valueMap = contentRoot.adaptTo(ModifiableValueMap.class);
-            valueMap.remove(PN_INDEX_PATH);
-            valueMap.remove(PN_LAST_IMPORT_TIME);
-            valueMap.remove(PN_LAST_IMPORT_FILE);
-            valueMap.remove(PN_LAST_IMPORT_SIZE);
-            valueMap.put(JcrConstants.JCR_LASTMODIFIED, timestamp);
-            valueMap.put(JcrConstants.JCR_LAST_MODIFIED_BY, user);
+            if (valueMap != null) {
+                valueMap.remove(PN_INDEX_PATH);
+                valueMap.remove(PN_LAST_IMPORT_TIME);
+                valueMap.remove(PN_LAST_IMPORT_FILE);
+                valueMap.remove(PN_LAST_IMPORT_SIZE);
+                valueMap.put(JcrConstants.JCR_LASTMODIFIED, timestamp);
+                valueMap.put(JcrConstants.JCR_LAST_MODIFIED_BY, user);
+            }
         }
 
         @Override

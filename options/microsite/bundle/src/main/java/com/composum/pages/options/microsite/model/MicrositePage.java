@@ -2,6 +2,7 @@ package com.composum.pages.options.microsite.model;
 
 import com.composum.pages.commons.model.Page;
 import com.composum.pages.commons.util.LinkUtil;
+import com.composum.sling.core.util.LinkMapper;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -16,7 +17,7 @@ public class MicrositePage extends Page {
     }
 
     public String getEmbeddedPreviewUrl() {
-        return LinkUtil.getUrl(getContext().getRequest(), getPath(), "embedded", null);
+        return LinkUtil.getUrl(getContext().getRequest(), getPath(), "embedded", null, LinkMapper.CONTEXT);
     }
 
     public String getLastImportTime() {

@@ -17,6 +17,8 @@ public class MicrositeSourceTransformer {
             .compile("(<\\s*(a|link)\\s+([^>]+\\s+)?href\\s*=\\s*[\"'])([^\"'#]+)([\"'][^>]*>)");
     public static final Pattern PTN_HTML_SRC = Pattern
             .compile("(<\\s*(img|script|frame)\\s+([^>]+\\s+)?src\\s*=\\s*[\"'])([^\"']+)([\"'][^>]*>)");
+    public static final Pattern PTN_HTML_DATA = Pattern
+            .compile("(<\\s*(div)\\s+([^>]+\\s+)?data-file\\s*=\\s*[\"'])([^\"']+)([\"'][^>]*>)");
     public static final Pattern PTN_CSS_URL = Pattern
             .compile("((background|background-image)\\s*:\\s*([^;}]+\\s+)?url\\s*\\(\\s*[\"']?)([^'\")]+)([\"']?\\s*\\))");
 
@@ -89,6 +91,7 @@ public class MicrositeSourceTransformer {
         String result = source;
         result = transform(relBase, result, isIndex, indexPath, PTN_HTML_HREF);
         result = transform(relBase, result, isIndex, indexPath, PTN_HTML_SRC);
+        result = transform(relBase, result, isIndex, indexPath, PTN_HTML_DATA);
         return result;
     }
 
