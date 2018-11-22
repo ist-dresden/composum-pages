@@ -125,6 +125,21 @@ public interface PagesConstants {
     String PROP_LAST_MODIFIED_BY = "jcr:lastModifiedBy";
     String TIMESTAMP_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
+    /** date & time */
+
+    String PP_FORMAT = "format/";
+    String PP_SETTINGS = "settings/";
+
+    String SP_DAY_FMT = PP_FORMAT + "day";
+    String SP_TIME_FMT = PP_FORMAT + "time";
+    String SP_DATE_FMT = PP_FORMAT + "value";
+    String SP_DATETIME_FMT = PP_FORMAT + "datetime";
+
+    String DEF_DAY_FMT = "d";
+    String DEF_TIME_FMT = "HH:mm";
+    String DEF_DATE_FMT = "yyyy-MM-dd";
+    String DEF_DATETIME_FMT = DEF_DATE_FMT + " " + DEF_TIME_FMT;
+
     /** */
 
     enum ComponentType {

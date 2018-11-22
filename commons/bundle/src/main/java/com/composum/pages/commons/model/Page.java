@@ -302,6 +302,16 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
         return defaultLanguagePage;
     }
 
+    // settings
+
+    public <T> T getSettingsProperty(String key, Class<T> type) {
+        return getSite().getContent().getSettingsProperty(key, type);
+    }
+
+    public <T> T getSettingsProperty(String key, T defaultValue) {
+        return getSite().getContent().getSettingsProperty(key, defaultValue);
+    }
+
     // date / time properties
 
     public String getLastModifiedString() {
