@@ -25,10 +25,11 @@ public class DateTimeField extends PropertyEditHandle<Calendar> implements Widge
     public static final String ICON_TIME = "clock-o";
     public static final String ICON_DATE = "calendar";
 
+    public static final String ATTR_LOCALE = "locale";
     public static final String ATTR_WEEKS = "weeks";
-    public static final String DATA_ATTR_WEEKS = DATA_PREFIX + ATTR_WEEKS;
 
     private transient FieldType fieldType;
+    private transient String inputLocale;
     private transient String icon;
     private transient String format;
 
@@ -44,8 +45,10 @@ public class DateTimeField extends PropertyEditHandle<Calendar> implements Widge
 
     @Override
     public String getWidgetAttributeKey(String attributeKey) {
-        if (ATTR_WEEKS.equalsIgnoreCase(attributeKey)) {
-            return DATA_ATTR_WEEKS;
+        if (ATTR_LOCALE.equalsIgnoreCase(attributeKey)) {
+            return DATA_PREFIX + ATTR_LOCALE;
+        } else if (ATTR_WEEKS.equalsIgnoreCase(attributeKey)) {
+            return DATA_PREFIX + ATTR_WEEKS;
         }
         return attributeKey;
     }

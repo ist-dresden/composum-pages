@@ -7,7 +7,7 @@
 <div class="${widgetCssBase}_${widget.widgetType} ${widgetCssBase}_${widget.cssName} form-group">
     <sling:call script="label.jsp"/>
     <div class="${widgetCssBase}_datetime-field input-group widget date-time-widget widget-name_${widget.cssName}"
-         data-locale="${widget.model.languageKey}" data-format="${widget.model.momentFormat}" ${widget.attributes}>
+         data-format="${widget.model.momentFormat}" ${widget.attributes}>
         <input name="${widget.name}" class="${widgetCssBase}_input form-control"
                data-label="${widget.label}" data-i18n="${widget.i18n}" type="text" value="${widget.model.dateValue}"
                <c:if test="${widget.disabled}">disabled</c:if> />
