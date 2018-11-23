@@ -173,6 +173,7 @@
                 }
                 this.form.prepare();
                 this.doValidate(_.bind(function () {
+                    this.form.finalize();
                     this.doSubmit();
                 }, this), _.bind(function () {
                     this.messages('warning', this.validationHints.length < 1 ? 'validation error' : undefined,
