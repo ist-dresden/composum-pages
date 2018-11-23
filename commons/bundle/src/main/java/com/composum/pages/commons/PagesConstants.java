@@ -125,10 +125,11 @@ public interface PagesConstants {
     String PROP_LAST_MODIFIED_BY = "jcr:lastModifiedBy";
     String TIMESTAMP_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
+    String NP_SETTINGS = "settings";
+
     /** date & time */
 
     String PP_FORMAT = "format/";
-    String PP_SETTINGS = "settings/";
 
     String SP_DAY_FMT = PP_FORMAT + "day";
     String SP_TIME_FMT = PP_FORMAT + "time";

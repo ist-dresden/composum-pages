@@ -304,12 +304,12 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
 
     // settings
 
-    public <T> T getSettingsProperty(String key, Class<T> type) {
-        return getSite().getContent().getSettingsProperty(key, type);
+    public <T> T getSettingsProperty(String key, Locale locale, Class<T> type) {
+        return getSite().getContent().getSettingsProperty(key, locale, type);
     }
 
-    public <T> T getSettingsProperty(String key, T defaultValue) {
-        return getSite().getContent().getSettingsProperty(key, defaultValue);
+    public <T> T getSettingsProperty(String key, Locale locale, T defaultValue) {
+        return getSite().getContent().getSettingsProperty(key, locale, defaultValue);
     }
 
     // date / time properties

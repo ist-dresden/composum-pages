@@ -25,6 +25,9 @@ public class DateTimeField extends PropertyEditHandle<Calendar> implements Widge
     public static final String ICON_TIME = "clock-o";
     public static final String ICON_DATE = "calendar";
 
+    public static final String ATTR_WEEKS = "weeks";
+    public static final String DATA_ATTR_WEEKS = DATA_PREFIX + ATTR_WEEKS;
+
     private transient FieldType fieldType;
     private transient String icon;
     private transient String format;
@@ -41,6 +44,9 @@ public class DateTimeField extends PropertyEditHandle<Calendar> implements Widge
 
     @Override
     public String getWidgetAttributeKey(String attributeKey) {
+        if (ATTR_WEEKS.equalsIgnoreCase(attributeKey)) {
+            return DATA_ATTR_WEEKS;
+        }
         return attributeKey;
     }
 
@@ -90,24 +96,27 @@ public class DateTimeField extends PropertyEditHandle<Calendar> implements Widge
 
     @Nonnull
     public String getDateFormat() {
-        Page page = getCurrentPage();
-        return page != null ? page.getSettingsProperty(SP_DATE_FMT, DEF_DATE_FMT) : DEF_DATE_FMT;
+        return getFormat(SP_DATE_FMT, DEF_DATE_FMT);
     }
 
     @Nonnull
     public String getTimeFormat() {
-        Page page = getCurrentPage();
-        return page != null ? page.getSettingsProperty(SP_TIME_FMT, DEF_TIME_FMT) : DEF_TIME_FMT;
+        return getFormat(SP_TIME_FMT, DEF_TIME_FMT);
     }
 
     @Nonnull
     public String getDateTimeFormat() {
-        Page page = getCurrentPage();
-        return page != null ? page.getSettingsProperty(SP_DATETIME_FMT, DEF_DATETIME_FMT) : DEF_DATETIME_FMT;
+        return getFormat(SP_DATETIME_FMT, DEF_DATETIME_FMT);
     }
 
     @Nonnull
-    public String toMomentFormat(String format) {
-        return format.replaceAll("yy", "YY").replaceAll("dd", "DD");
+    protected String getFormat(String fmtKey, String defFmt) {
+        Page page = getCurrentPage();
+        return page != null ? page.getSettingsProperty(fmtKey, getLocale(), defFmt) : defFmt;
+    }
+
+    @Nonnull
+    protected String toMomentFormat(String format) {
+        return format.replaceAll("yy", "YY").replaceAll("d", "D");
     }
 }
