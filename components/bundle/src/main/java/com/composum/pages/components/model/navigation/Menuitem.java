@@ -8,13 +8,14 @@ import org.apache.sling.api.resource.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.composum.pages.commons.PagesConstants.PN_TITLE;
 import static com.composum.pages.commons.PagesConstants.PROP_NAV_TITLE;
 
 public class Menuitem extends Page {
 
     private static final Logger LOG = LoggerFactory.getLogger(Menuitem.class);
 
-    public static final String[] PROP_TITLE_KEYS = new String[]{PROP_NAV_TITLE, ResourceUtil.PROP_TITLE, PROP_TITLE};
+    public static final String[] PROP_TITLE_KEYS = new String[]{PROP_NAV_TITLE, ResourceUtil.PROP_TITLE, PN_TITLE};
 
     public static final String MENU_ITEM_CSS_BASE_TYPE = "composum/pages/components/navigation/menuitem";
 

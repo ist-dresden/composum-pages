@@ -19,21 +19,27 @@
     @include font($site-title-font-family, $site-default-font-size);
 }
 
-@mixin title-font {
-    @include font($site-title-font-family, $site-title-font-size);
+@mixin small-font {
+    @include font($site-default-font-family, $site-small-font-size);
+}
+
+@mixin a-title-font ($size) {
+    @include font($site-title-font-family, $size);
     opacity: 0.8;
 }
 
+@mixin title-font {
+    @include a-title-font($site-title-font-size);
+}
+
 @mixin subtitle-font {
-    @include font($site-title-font-family, $site-subtitle-font-size);
-    opacity: 0.8;
+    @include a-title-font($site-subtitle-font-size);
 }
 
 @mixin inline-title {
     margin: $column-subtitle-margin 0;
-    @include font($site-title-font-family, $column-subtitle-font-size);
+    @include a-title-font($column-subtitle-font-size);
     color: $column-title-text-color;
-    opacity: 0.8;
 }
 
 @mixin clear-after {

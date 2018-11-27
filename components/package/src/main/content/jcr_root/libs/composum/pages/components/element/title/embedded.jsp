@@ -6,6 +6,6 @@
            test="@{title.valid}">
     <div class="${titleCssBase}_text">
         <cpn:text tagName="h1" tagClass="${titleCssBase}_title" value="${title.title}"/>
-        <cpn:text tagName="h2" tagClass="${titleCssBase}_subtitle" value="${title.subtitle}"/>
+        <cpn:text tagClass="${titleCssBase}_subtitle" value="${title.subtitle}"/>
     </div>
 </cpp:model>

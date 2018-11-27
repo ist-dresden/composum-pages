@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+        jcr:primaryType="cpp:Widget"
+        jcr:title="Time field"
+        jcr:description="&lt;p>This a simple restriction of the genaral 'datetimefield'.&lt;/p>"
+        sling:resourceType="composum/pages/commons/widget/timefield"
+        sling:resourceSuperType="composum/pages/commons/widget/datetimefield"/>

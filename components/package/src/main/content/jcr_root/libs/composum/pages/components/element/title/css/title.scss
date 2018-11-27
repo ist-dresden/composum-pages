@@ -128,7 +128,7 @@
                     padding: 6px 24px 12px;
 
                     &_title {
-                        font-size: $site-title-font-size * (3/4);
+                        @include a-title-font($main-title-font-size / 2);
                     }
                 }
             }
@@ -138,15 +138,17 @@
                 .composum-pages-components-element-title {
 
                     &_text {
-                        padding: $main-title-padding * (2/3);
+                        padding: $main-title-padding  / 2;
                     }
 
                     &_title {
-                        font-size: $main-title-font-size * (2/3);
+                        margin: 0;
+                        @include a-title-font($main-title-font-size / 2);
                     }
 
                     &_subtitle {
-                        font-size: $main-subtitle-font-size * (2/3);
+                        margin: 0;
+                        @include a-title-font($main-subtitle-font-size / 2);
                     }
                 }
             }

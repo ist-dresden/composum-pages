@@ -43,6 +43,8 @@
                 sling:key="Column" sling:message="Spalte"/>
         <content jcr:primaryType="sling:MessageEntry"
                 sling:key="Content" sling:message="Inhalt"/>
+        <date jcr:primaryType="sling:MessageEntry"
+                sling:key="Date" sling:message="Datum"/>
         <default-language jcr:primaryType="sling:MessageEntry"
                 sling:key="Default Language" sling:message="Standardsprache"/>
         <description jcr:primaryType="sling:MessageEntry"
@@ -85,6 +87,8 @@
                 sling:key="Text Alignment" sling:message="Text-Ausrichtung"/>
         <title jcr:primaryType="sling:MessageEntry"
                 sling:key="Title" sling:message="Titel"/>
+        <to jcr:primaryType="sling:MessageEntry"
+                sling:key="to" sling:message="bis"/>
         <type jcr:primaryType="sling:MessageEntry"
                 sling:key="Type" sling:message="Typ"/>
         <with-space jcr:primaryType="sling:MessageEntry"

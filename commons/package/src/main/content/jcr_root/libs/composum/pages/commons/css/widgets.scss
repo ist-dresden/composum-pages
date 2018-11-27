@@ -8,6 +8,10 @@
     &_input {
         @include dialog-input-font;
     }
+
+    .input-group-addon &_select.fa {
+        font-size: 110%;
+    }
 }
 
 .composum-pages-edit-widget,

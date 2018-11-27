@@ -1,0 +1,18 @@
+@charset "UTF-8";
+
+@import "../../../../css/variables";
+@import "../../../../css/mixins";
+
+.composum-pages-EDIT_body,
+.composum-pages-DEVELOP_body {
+
+    .composum-pages-components-element-map-google {
+
+        &_wrapper {
+
+            iframe {
+                pointer-events: none;
+            }
+        }
+    }
+}

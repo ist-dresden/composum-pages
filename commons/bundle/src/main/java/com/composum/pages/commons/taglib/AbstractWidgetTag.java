@@ -151,6 +151,10 @@ public abstract class AbstractWidgetTag extends AbstractWrappingTag {
         return name;
     }
 
+    public String getRequestLanguage() {
+        return request.getLocale().getLanguage();
+    }
+
     public EditDialogTag getDialog() {
         return (EditDialogTag) pageContext.findAttribute(EditDialogTag.DIALOG_VAR);
     }

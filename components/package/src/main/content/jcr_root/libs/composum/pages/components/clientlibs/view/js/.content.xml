@@ -9,4 +9,5 @@
                   jslibs/bootstrap/3.3.7/js/bootstrap.js,
                   jslibs/highlight/9.8.0/clientlib,
                   composum/pages/components/composed/illustration/js/illustration.js,
-                  composum/pages/components/element/codeblock/js/codeblock.js"/>
+                  composum/pages/components/element/codeblock/js/codeblock.js,
+                composum/pages/components/element/map/google/js/google.js"/>

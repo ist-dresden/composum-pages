@@ -46,7 +46,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
+import static com.composum.pages.commons.PagesConstants.PN_DESCRIPTION;
+import static com.composum.pages.commons.PagesConstants.PN_TITLE_KEYS;
 import static com.composum.pages.commons.taglib.DefineObjectsTag.CURRENT_PAGE;
 import static com.composum.platform.models.annotations.InternationalizationStrategy.I18NFOLDER;
 import static com.composum.sling.platform.security.PlatformAccessFilter.ACCESS_MODE_KEY;
@@ -59,11 +62,6 @@ import static com.composum.sling.platform.security.PlatformAccessFilter.ACCESS_M
 public abstract class AbstractModel implements SlingBean, Model {
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractModel.class);
-
-    /** general property names */
-    public static final String PROP_TITLE = "title";
-    public static final String[] PROP_TITLE_KEYS = new String[]{PROP_TITLE, ResourceUtil.PROP_TITLE};
-    public static final String PROP_DESCRIPTION = "description";
 
     /** the property name for placeholder values (content hints) */
     public static final String PROP_PLACEHOLDER = "placeholder";
@@ -223,13 +221,11 @@ public abstract class AbstractModel implements SlingBean, Model {
     }
 
     public boolean isPublicMode() {
-        AccessMode accessMode = getAccessMode();
-        return accessMode != null && accessMode == AccessMode.PUBLIC;
+        return AccessMode.PUBLIC == getAccessMode();
     }
 
     public boolean isAuthorMode() {
-        AccessMode accessMode = getAccessMode();
-        return accessMode != null && accessMode == AccessMode.AUTHOR;
+        return AccessMode.AUTHOR == getAccessMode();
     }
 
     public AccessMode getAccessMode() {
@@ -340,7 +336,7 @@ public abstract class AbstractModel implements SlingBean, Model {
 
     public static String getTypeHint(String type) {
         if (type != null) {
-            type = type.replaceAll("^/(sites|apps|libs)/(.*)$", "$2");
+            type = type.replaceAll("^/(sites|apps|libs)/", "");
             type = type.replaceAll("^(.*/)?composum/(.*/)?pages/", "$2");
             type = type.replaceAll("/components?/", "/");
             type = type.replaceAll("/containers?/", "/");
@@ -354,7 +350,8 @@ public abstract class AbstractModel implements SlingBean, Model {
         if (referrers == null) {
             referrers = new ArrayList<>();
             getResourceManager().changeReferences(ResourceFilter.ALL, StringFilter.ALL,
-                    getContext().getResolver().getResource("/content"), referrers, true, getPath(), "");
+                    Objects.requireNonNull(getContext().getResolver().getResource("/content")),
+                    referrers, true, getPath(), "");
         }
         return referrers;
     }
@@ -385,12 +382,12 @@ public abstract class AbstractModel implements SlingBean, Model {
     }
 
     protected String[] getTitleKeys() {
-        return PROP_TITLE_KEYS;
+        return PN_TITLE_KEYS;
     }
 
     public String getDescription() {
         if (description == null) {
-            description = getProperty(getLocale(), "", ResourceUtil.PROP_DESCRIPTION, PROP_DESCRIPTION);
+            description = getProperty(getLocale(), "", PN_DESCRIPTION, ResourceUtil.PROP_DESCRIPTION);
         }
         return description;
     }
@@ -413,7 +410,7 @@ public abstract class AbstractModel implements SlingBean, Model {
 
     public Locale getLocale() {
         if (locale == null) {
-            locale = context.getRequest().adaptTo(PagesLocale.class).getLocale();
+            locale = Objects.requireNonNull(context.getRequest().adaptTo(PagesLocale.class)).getLocale();
         }
         return locale;
     }

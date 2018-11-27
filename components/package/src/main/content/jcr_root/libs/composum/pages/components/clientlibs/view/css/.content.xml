@@ -15,9 +15,11 @@
                 composum/pages/components/composed/illustration/css/illustration.css,
                 composum/pages/components/composed/list/css/list.css,
                 composum/pages/components/element/codeblock/css/codeblock.css,
+                composum/pages/components/element/map/google/css/google.css,
                 composum/pages/components/element/image/css/image.css,
                 composum/pages/components/element/link/css/link.css,
                 composum/pages/components/element/teaser/css/teaser.css,
                 composum/pages/components/element/text/css/text.css,
                 composum/pages/components/element/textimage/css/textimage.css,
-                composum/pages/components/element/title/css/title.css]"/>
+                composum/pages/components/element/title/css/title.css,
+                composum/pages/components/time/event/css/event.css]"/>
