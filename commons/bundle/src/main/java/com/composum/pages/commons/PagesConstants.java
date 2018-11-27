@@ -1,3 +1,8 @@
+/*
+ * copyright (c) 2015ff IST GmbH Dresden, Germany - https://www.ist-software.com
+ *
+ * This software may be modified and distributed under the terms of the MIT license.
+ */
 package com.composum.pages.commons;
 
 import com.composum.pages.commons.model.Container;
@@ -120,6 +125,12 @@ public interface PagesConstants {
 
     /** general properties */
 
+    String PN_TITLE = "title";
+    String PN_JCR_TITLE = ResourceUtil.PROP_TITLE;
+    String[] PN_TITLE_KEYS = new String[]{PN_TITLE, PN_JCR_TITLE};
+    String PN_SUBTITLE = "subtitle";
+    String PN_DESCRIPTION = "description";
+
     String PROP_CREATION_DATE = "jcr:created";
     String PROP_LAST_MODIFIED = ResourceUtil.PROP_LAST_MODIFIED;
     String PROP_LAST_MODIFIED_BY = "jcr:lastModifiedBy";
@@ -141,8 +152,9 @@ public interface PagesConstants {
     String DEF_DATE_FMT = "yyyy-MM-dd";
     String DEF_DATETIME_FMT = DEF_DATE_FMT + " " + DEF_TIME_FMT;
 
-    /** */
-
+    /**
+     *
+     */
     enum ComponentType {
 
         site, page, container, element, something;

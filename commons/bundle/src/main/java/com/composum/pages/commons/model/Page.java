@@ -25,6 +25,7 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 import static com.composum.pages.commons.PagesConstants.DEFAULT_EDIT_CATEGORY;
 import static com.composum.pages.commons.PagesConstants.DEFAULT_VIEW_CATEGORY;
@@ -33,6 +34,7 @@ import static com.composum.pages.commons.PagesConstants.LANGUAGE_NAME_SEPARATOR;
 import static com.composum.pages.commons.PagesConstants.NODE_TYPE_PAGE;
 import static com.composum.pages.commons.PagesConstants.NODE_TYPE_PAGE_CONTENT;
 import static com.composum.pages.commons.PagesConstants.PAGES_PREFIX;
+import static com.composum.pages.commons.PagesConstants.PN_SUBTITLE;
 import static com.composum.pages.commons.PagesConstants.PROP_EDIT_CATEGORY;
 import static com.composum.pages.commons.PagesConstants.PROP_PAGE_LANGUAGES;
 import static com.composum.pages.commons.PagesConstants.PROP_SLING_TARGET;
@@ -87,7 +89,7 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
 
         public DefaultPageFilter(BeanContext context) {
             this.context = context;
-            locale = context.getRequest().adaptTo(PagesLocale.class).getLocale();
+            locale = Objects.requireNonNull(context.getRequest().adaptTo(PagesLocale.class)).getLocale();
             language = Languages.get(context).getLanguage(locale);
         }
 
@@ -127,6 +129,8 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
 
     private transient Site site;
     private transient Page parent;
+
+    private transient String subtitle;
 
     private transient PageLanguages pageLanguages;
     private transient Boolean isDefaultLangPage;
@@ -283,7 +287,7 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
         if (defaultLanguagePage == null) {
             if (!isDefaultLanguagePage()) {
                 String baseName = StringUtils.substringBeforeLast(getName(), LANGUAGE_NAME_SEPARATOR);
-                for (Resource sibling : getResource().getParent().getChildren()) {
+                for (Resource sibling : Objects.requireNonNull(getResource().getParent()).getChildren()) {
                     if (Page.isPage(sibling)) {
                         Page page = getPageManager().createBean(context, sibling);
                         if (page.isValid()
@@ -302,6 +306,19 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
         return defaultLanguagePage;
     }
 
+    // properties
+
+    public String getSubtitle() {
+        if (subtitle == null){
+            subtitle = getProperty(PN_SUBTITLE, "");
+        }
+        return subtitle;
+    }
+
+    public String getLastModifiedString() {
+        return getContent().getLastModifiedString();
+    }
+
     // settings
 
     public <T> T getSettingsProperty(String key, Locale locale, Class<T> type) {
@@ -310,12 +327,6 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
 
     public <T> T getSettingsProperty(String key, Locale locale, T defaultValue) {
         return getSite().getContent().getSettingsProperty(key, locale, defaultValue);
-    }
-
-    // date / time properties
-
-    public String getLastModifiedString() {
-        return getContent().getLastModifiedString();
     }
 
     // rendering

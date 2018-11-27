@@ -1,0 +1,20 @@
+@charset "UTF-8";
+
+@import "../../../css/variables";
+@import "../../../css/mixins";
+
+.composum-pages-EDIT_body,
+.composum-pages-DEVELOP_body {
+
+    .composum-pages-components-element-image-background {
+
+        .composum-pages-components-element-image-background_drop-zone,
+        .composum-pages-edit_drop-zone {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+    }
+}

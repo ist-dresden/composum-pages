@@ -1,5 +1,8 @@
 @charset "UTF-8";
 
+@import "../../../css/variables";
+@import "../../../css/mixins";
+
 .composum-pages-components-element-image {
     display: table;
     margin: 10px auto;
@@ -12,5 +15,24 @@
 
     &_picture {
         width: 100%;
+    }
+
+    &-background {
+        width: 100%;
+        @include aspect-ratio-wrapper(4, 1);
+
+        &_frame {
+            @include aspect-ratio-element;
+        }
+
+        &_picture {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-position: center;
+            background-size: 100%;
+        }
     }
 }

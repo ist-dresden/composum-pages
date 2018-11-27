@@ -259,6 +259,10 @@ public class ModelTag extends ComponentTag implements DynamicAttributes {
         return resource;
     }
 
+    public String getRequestLanguage(){
+        return request.getLocale().getLanguage();
+    }
+
     public Languages getLanguages() {
         return Languages.get(context);
     }

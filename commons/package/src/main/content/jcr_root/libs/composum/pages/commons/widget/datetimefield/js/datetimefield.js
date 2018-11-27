@@ -20,7 +20,7 @@
         widgets.DateTimeFieldWidget = core.components.DateTimeWidget.extend({
 
             /**
-             * retrieves the hidden 'submit' input field 'lazy' (triggered during 'core.Widget.initialize()'
+             * retrieves the hidden 'submit' input field 'lazy' (triggered during 'core.Widget.initialize()')
              */
             hiddenSubmit: function () {
                 if (!this.$submit) {
