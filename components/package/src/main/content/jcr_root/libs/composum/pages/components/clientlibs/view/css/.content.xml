@@ -5,7 +5,8 @@
                   fonts/roboto/2014/roboto.css,
                   jslibs/bootstrap/3.3.7/css/bootstrap.css,
                   jslibs/highlight/9.8.0/clientlib]"
-        embed="[composum/pages/components/page/css/page.css,
+        embed="[composum/pages/components/css/general.css,
+                composum/pages/components/page/css/page.css,
                 composum/pages/components/css/token.css,
                 composum/pages/components/search/field/css/field.css,
                 composum/pages/components/navigation/navbar/css/navbar.css,
@@ -14,6 +15,7 @@
                 composum/pages/components/composed/decorator/css/decorator.css,
                 composum/pages/components/composed/illustration/css/illustration.css,
                 composum/pages/components/composed/list/css/list.css,
+                composum/pages/components/composed/table/css/table.css,
                 composum/pages/components/element/codeblock/css/codeblock.css,
                 composum/pages/components/element/map/google/css/google.css,
                 composum/pages/components/element/image/css/image.css,

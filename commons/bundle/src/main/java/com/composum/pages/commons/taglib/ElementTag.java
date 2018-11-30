@@ -38,11 +38,15 @@ public class ElementTag extends AbstractWrappingTag {
     protected String tagId;
     protected String tagName;
     protected String tagNameValue;
+    protected String tagAttributes;
+    protected String tagAttributesValue;
     protected DisplayMode.Value displayMode;
 
     @Override
     protected void clear() {
         displayMode = null;
+        tagAttributesValue = null;
+        tagAttributes = null;
         tagNameValue = null;
         tagName = null;
         tagId = null;
@@ -83,6 +87,17 @@ public class ElementTag extends AbstractWrappingTag {
 
     public void setTagName(String name) {
         tagName = name;
+    }
+
+    public String getTagAttributes() {
+        if (tagAttributesValue == null) {
+            tagAttributesValue = eval(tagAttributes, tagAttributes);
+        }
+        return tagAttributesValue;
+    }
+
+    public void setTagAttributes(String attributes) {
+        tagAttributes = attributes;
     }
 
     public boolean isWithTag() {
@@ -136,6 +151,16 @@ public class ElementTag extends AbstractWrappingTag {
                 attributeSet.put("draggable", "true");
             }
         }
+    }
+
+    @Override
+    public String getAttributes() {
+        String attributes = super.getAttributes();
+        String tagAttrs = getTagAttributes();
+        if (StringUtils.isNotBlank(tagAttrs)) {
+            attributes += tagAttrs.startsWith(" ") ? tagAttrs : " " + tagAttrs;
+        }
+        return attributes;
     }
 
     // hierarchy

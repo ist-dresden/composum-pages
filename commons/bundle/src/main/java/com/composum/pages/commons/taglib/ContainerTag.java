@@ -16,6 +16,18 @@ public class ContainerTag extends ElementTag {
 
     public static final String CONTAINER_EDIT_CSS_CLASS = "composum-pages-container";
 
+    protected boolean decoration = true;
+
+    public void setDecoration(boolean decoration) {
+        this.decoration = decoration;
+    }
+
+    @Override
+    protected void clear() {
+        decoration = true;
+        super.clear();
+    }
+
     @Override
     protected String getElementCssClass() {
         return CONTAINER_EDIT_CSS_CLASS;
@@ -24,7 +36,7 @@ public class ContainerTag extends ElementTag {
     @Override
     public int doStartTag() throws JspException {
         super.doStartTag();
-        if (isEditMode() && isWithTag() && component instanceof Container) {
+        if (decoration && isEditMode() && isWithTag() && component instanceof Container) {
             Container container = (Container) component;
             try {
                 out.append("<div class=\"composum-pages-container_start\">");
@@ -47,7 +59,7 @@ public class ContainerTag extends ElementTag {
 
     @Override
     public int doEndTag() throws JspException {
-        if (isEditMode() && isWithTag() && component instanceof Container) {
+        if (decoration && isEditMode() && isWithTag() && component instanceof Container) {
             Container container = (Container) component;
             try {
                 out.append("<div class=\"composum-pages-container_end\">");

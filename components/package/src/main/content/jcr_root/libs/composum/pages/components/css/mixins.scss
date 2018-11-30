@@ -15,6 +15,10 @@
     @include font($site-default-font-family, $site-default-font-size);
 }
 
+@mixin bold-font {
+    @include font($site-bold-font-family, $site-default-font-size);
+}
+
 @mixin bright-font {
     @include font($site-title-font-family, $site-default-font-size);
 }
