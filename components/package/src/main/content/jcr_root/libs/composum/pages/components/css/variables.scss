@@ -14,7 +14,6 @@ $bootstrap-spacing-v: 10px;
 $bootstrap-spacing-h: 15px;
 
 $bootstrap-color-muted: #777;
-
 $bootstrap-color-default: #333;
 $bootstrap-color-info: #31708f;
 $bootstrap-color-primary: #fff;
@@ -29,6 +28,7 @@ $bootstrap-background-warning: #fcf8e3;
 $bootstrap-background-danger: #f2dede;
 
 $bootstrap-navbar-background: #f8f8f8;
+$bootstrap-table-border-color: #ddd;
 
 /**
  * general settings
@@ -43,13 +43,14 @@ $main-title-background-color: #eee;
 $main-title-text-color: #444;
 $column-title-text-color: $main-title-text-color;
 
-$text-spacing-default: 1rem;
-$section-spacing-default: $text-spacing-default * 2;
+$text-spacing-default: 2rem;
+$section-spacing-default: 3rem;
 
 $icon-default-font-family: 'FontAwesome';
-$site-default-font-family: 'robotolight';
-$site-title-font-family: 'robotothin';
-$site-symbol-font-family: 'robotomedium';
+$site-default-font-family: 'robotolight', sans-serif;
+$site-bold-font-family: 'robotomedium', sans-serif;
+$site-title-font-family: 'robotothin', sans-serif;
+$site-symbol-font-family: $site-bold-font-family;
 
 $site-small-font-size: 14px;
 $site-default-font-size: 16px;
