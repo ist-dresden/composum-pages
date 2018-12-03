@@ -102,6 +102,9 @@
 
                     <filters>
                         <filter>
+                            <root>/conf/composum/pages/stage</root>
+                        </filter>
+                        <filter>
                             <root>/libs/jslibs/chartist/0.11.0</root>
                         </filter>
                         <filter>
