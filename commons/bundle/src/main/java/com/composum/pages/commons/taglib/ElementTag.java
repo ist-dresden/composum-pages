@@ -193,15 +193,6 @@ public class ElementTag extends AbstractWrappingTag {
     // rendering
 
     /**
-     * if this returns 'false' nothing is rendered, no wrapping tag and no content within
-     * this is used if the option 'test' attribute is set; if the test fails this returns 'false'...
-     */
-    @Override
-    protected boolean renderTag() {
-        return getTestResult();
-    }
-
-    /**
      * setup before the rendering starts - sets the display mode if specified
      */
     @Override

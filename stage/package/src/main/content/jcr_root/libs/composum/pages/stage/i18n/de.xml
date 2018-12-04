@@ -45,6 +45,12 @@
                 sling:key="Site Properties" sling:message="Site-Einstellungen"/>
         <site-title jcr:primaryType="sling:MessageEntry"
                 sling:key="Site Title" sling:message="Site-Titel"/>
+        <manage-sites jcr:primaryType="sling:MessageEntry"
+                sling:key="Manage Sites" sling:message="Sites Verwalten"/>
+        <select-or-create-site jcr:primaryType="sling:MessageEntry"
+                sling:key="Select or create a Site" sling:message="Site auswählen oder anlegen"/>
+        <site-without-template jcr:primaryType="sling:MessageEntry"
+                sling:key="&lt;p>Create a new site without a template.&lt;/p>" sling:message="&lt;p>Eine Website ohne Vorlage anlegen.&lt;/p>"/>
     </site>
 
     <page jcr:primaryType="sling:Folder"><!-- Page operations -->
@@ -139,6 +145,10 @@
                 sling:key="Rename" sling:message="Umbenennen"/>
         <select jcr:primaryType="sling:MessageEntry"
                 sling:key="Select" sling:message="Auswählen"/>
+        <select-template jcr:primaryType="sling:MessageEntry"
+                sling:key="Select a template" sling:message="Vorlage auswählen"/>
+        <no-template jcr:primaryType="sling:MessageEntry"
+                sling:key="no template" sling:message="keine Vorlage"/>
         <select-in-tree jcr:primaryType="sling:MessageEntry"
                 sling:key="Select in Tree"
                 sling:message="Im Baum Auswählen"/>

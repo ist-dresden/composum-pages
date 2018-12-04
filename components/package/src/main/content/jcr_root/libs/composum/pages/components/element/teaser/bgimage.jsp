@@ -7,7 +7,7 @@
              style="background-image:url(@{teaser.imageUrl})">
     <cpp:dropZone property="image/imageRef" filter="asset:image">
         <cpn:link test="${teaser.hasLink}" body="true" classes="${teaserCssBase}_link"
-                  href="${teaser.linkUrl}" title="${cpn:text(teaser.linkTitle)}">
+                  href="${teaser.linkUrl}" target="${teaser.linkTarget}" title="${cpn:text(teaser.linkTitle)}">
             <cpp:include replaceSelectors="${teaser.textSelector}"/>
         </cpn:link>
     </cpp:dropZone>

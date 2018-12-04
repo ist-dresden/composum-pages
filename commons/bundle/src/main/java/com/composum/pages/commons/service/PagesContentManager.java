@@ -14,7 +14,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.jcr.RepositoryException;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 
 import static org.apache.jackrabbit.JcrConstants.JCR_NAME;
 
@@ -41,9 +41,9 @@ public abstract class PagesContentManager<ModelType extends ContentDriven> imple
         return bean;
     }
 
-    protected Collection<ModelType> getModels(@Nonnull BeanContext context, @Nonnull String primaryType,
-                                              @Nullable Resource searchRoot, @Nonnull ResourceFilter filter) {
-        Collection<ModelType> result = new ArrayList<>();
+    protected List<ModelType> getModels(@Nonnull BeanContext context, @Nonnull String primaryType,
+                                        @Nullable Resource searchRoot, @Nonnull ResourceFilter filter) {
+        List<ModelType> result = new ArrayList<>();
         try {
             ResourceResolver resolver = context.getResolver();
             String queryRoot = searchRoot != null ? searchRoot.getPath() : "/";

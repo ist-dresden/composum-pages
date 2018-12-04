@@ -258,18 +258,24 @@
                 }, this));
             },
 
-            toggleScope: function () {
+            toggleScope: function (event) {
+                event.preventDefault();
                 pages.setScope(pages.getScope() === 'site' ? 'content' : 'site');
+                return false;
             },
 
-            selectSite: function () {
+            selectSite: function (event) {
+                event.preventDefault();
                 if (this.sitePath) {
-                    pages.log.debug('tools.trigger.' + pages.const.event.site.select + '(' + this.sitePath + ')');
-                    $(document).trigger(pages.const.event.site.select, [this.sitePath]);
+                    pages.actions.site.open(event, undefined, this.sitePath);
                 }
+                return false;
             },
 
-            manageSites: function () {
+            manageSites: function (event) {
+                event.preventDefault();
+                pages.actions.site.manage(event);
+                return false;
             }
         });
 

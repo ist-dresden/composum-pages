@@ -1,4 +1,4 @@
-package com.composum.pages.components.model.title;
+package com.composum.pages.components.model.text;
 
 import com.composum.pages.components.model.ImageRelatedElement;
 import org.apache.commons.lang3.StringUtils;

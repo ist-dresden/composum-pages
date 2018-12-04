@@ -3,7 +3,7 @@
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <cpp:defineObjects/>
-<cpp:element var="textImage" type="com.composum.pages.components.model.textimage.TextImage"
+<cpp:element var="textImage" type="com.composum.pages.components.model.text.TextImage"
              cssAdd="@{textImageCssBase}_@{textImage.floatingText?'floating':'block'} @{textImageCssBase}_@{textImage.imagePosition}">
     <c:if test="${!textImage.imageBottom}">
         <div class="${textImageCssBase}_image">

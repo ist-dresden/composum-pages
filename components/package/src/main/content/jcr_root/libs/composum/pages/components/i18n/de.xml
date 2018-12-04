@@ -70,7 +70,7 @@
         <offset jcr:primaryType="sling:MessageEntry"
                 sling:key="Offset" sling:message="Versatz"/>
         <open jcr:primaryType="sling:MessageEntry"
-                sling:key="Open" sling:message="geöffnet"/>
+                sling:key="open" sling:message="geöffnet"/>
         <page-title jcr:primaryType="sling:MessageEntry"
                 sling:key="Page Title" sling:message="Seitentitel"/>
         <properties jcr:primaryType="sling:MessageEntry"

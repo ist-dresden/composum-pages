@@ -1,5 +1,6 @@
 package com.composum.pages.commons.service;
 
+import com.composum.pages.commons.PagesConfiguration;
 import com.composum.pages.commons.PagesConstants;
 import com.composum.pages.commons.filter.TemplateFilter;
 import com.composum.pages.commons.model.Model;
@@ -23,6 +24,7 @@ import javax.jcr.RepositoryException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.composum.pages.commons.PagesConstants.NODE_TYPE_SITE;
@@ -52,6 +54,9 @@ public class PagesSiteManager extends PagesContentManager<Site> implements SiteM
         SITE_ASSETS_PROPERTIES = new HashMap<>();
         SITE_ASSETS_PROPERTIES.put(JcrConstants.JCR_PRIMARYTYPE, "sling:Folder");
     }
+
+    @Reference
+    protected PagesConfiguration pagesConfig;
 
     @Reference
     protected ResourceManager resourceManager;
@@ -97,18 +102,20 @@ public class PagesSiteManager extends PagesContentManager<Site> implements SiteM
     public Resource getSiteBase(@Nonnull BeanContext context, String tenant)
             throws PersistenceException {
         ResourceResolver resolver = context.getResolver();
-        Resource tenantsContent = resolver.getResource("/content");
-        Resource siteBase = StringUtils.isNotBlank(tenant)
-                ? resolver.getResource(tenantsContent, tenant)
-                : tenantsContent;
+        Resource tenantsBase = resolver.getResource(pagesConfig.getConfig().tenantsBase());
+        if (tenantsBase == null) {
+            throw new PersistenceException("tenants base node doesn't exist");
+        }
+        Resource siteBase = resolver.getResource(tenantsBase,
+                StringUtils.isNotBlank(tenant) ? tenant : pagesConfig.getConfig().sitesRoot());
         if (siteBase == null) {
-            siteBase = resolver.create(tenantsContent, tenant, SITE_ROOT_PROPERTIES);
+            siteBase = resolver.create(tenantsBase, tenant, SITE_ROOT_PROPERTIES);
         }
         return siteBase;
     }
 
     @Override
-    public Collection<Site> getSites(@Nonnull BeanContext context, String tenant) {
+    public List<Site> getSites(@Nonnull BeanContext context, String tenant) {
         try {
             return getSites(context, getSiteBase(context, tenant), ResourceFilter.ALL);
         } catch (PersistenceException ex) {
@@ -118,7 +125,7 @@ public class PagesSiteManager extends PagesContentManager<Site> implements SiteM
     }
 
     @Override
-    public Collection<Site> getSiteTemplates(@Nonnull BeanContext context, String tenant) {
+    public List<Site> getSiteTemplates(@Nonnull BeanContext context, String tenant) {
         UniqueSiteList result = new UniqueSiteList();
         ResourceResolver resolver = context.getResolver();
         for (String root : resolver.getSearchPath()) {
@@ -131,8 +138,10 @@ public class PagesSiteManager extends PagesContentManager<Site> implements SiteM
     }
 
     @Override
-    public Collection<Site> getSites(@Nonnull BeanContext context, @Nullable Resource searchRoot, @Nonnull ResourceFilter filter) {
-        return getModels(context, NODE_TYPE_SITE, searchRoot, filter);
+    public List<Site> getSites(@Nonnull BeanContext context, @Nullable Resource searchRoot, @Nonnull ResourceFilter filter) {
+        List<Site> sites = getModels(context, NODE_TYPE_SITE, searchRoot, filter);
+        Collections.sort(sites);
+        return sites;
     }
 
     @Override

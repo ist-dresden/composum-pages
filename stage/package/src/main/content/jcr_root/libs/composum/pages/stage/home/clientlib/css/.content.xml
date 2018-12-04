@@ -2,8 +2,8 @@
 <jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
         jcr:primaryType="sling:OrderedFolder"
         depends="[fonts/awesome/4.7.0/css/font-awesome.css,
-                  fonts/roboto/2014/roboto.css,
-                  category:composum.pages.widgets]"
-        embed="[composum/pages/stage/edit/css/dialogs.css,
+                  fonts/roboto/2014/roboto.css]"
+        embed="[category:composum.pages.widgets,
+                composum/pages/stage/edit/css/dialogs.css,
                 composum/pages/stage/home/css/home.css]">
 </jcr:root>

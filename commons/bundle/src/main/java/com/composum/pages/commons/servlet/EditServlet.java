@@ -851,7 +851,7 @@ public class EditServlet extends PagesContentServlet {
                 jsonWriter.name("editUrl").value(page.getEditUrl());
                 jsonWriter.endObject();
 
-            } catch (RepositoryException | PersistenceException ex) {
+            } catch (Exception ex) {
                 LOG.error(ex.getMessage(), ex);
                 response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ex.getMessage());
             }

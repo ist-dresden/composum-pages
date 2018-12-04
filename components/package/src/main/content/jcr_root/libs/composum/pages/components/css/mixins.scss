@@ -121,3 +121,91 @@
     margin-right: (- $width);
     margin-top: (- $height / 2);
 }
+
+/*
+ * media queries
+ */
+
+@mixin screen-size-xl {
+    @media (min-width: #{$screen-size-xl}) {
+        @content;
+    }
+}
+
+@mixin screen-size-l-xl {
+    @media (min-width: #{$screen-size-l}) and (max-width: #{$screen-size-xl - 1px}) {
+        @content;
+    }
+}
+
+@mixin screen-size-l {
+    @media (min-width: #{$screen-size-l}) {
+        @content;
+    }
+}
+
+@mixin screen-size-m-l {
+    @media (min-width: #{$screen-size-m}) and (max-width: #{$screen-size-l - 1px}) {
+        @content;
+    }
+}
+
+@mixin screen-size-m {
+    @media (min-width: #{$screen-size-m}) {
+        @content;
+    }
+}
+
+@mixin screen-size-s-m {
+    @media (min-width: #{$screen-size-s}) and (max-width: #{$screen-size-m - 1px}) {
+        @content;
+    }
+}
+
+@mixin screen-size-s {
+    @media (max-width: #{$screen-size-s}) {
+        @content;
+    }
+}
+
+@mixin screen-size-xs-s {
+    @media (min-width: #{$screen-size-xs}) and (max-width: #{$screen-size-s - 1px}) {
+        @content;
+    }
+}
+
+@mixin screen-size-xs {
+    @media (max-width: #{$screen-size-xs}) {
+        @content;
+    }
+}
+
+@mixin screen-size-xxs-xs {
+    @media (min-width: #{$screen-size-xxs}) and (max-width: #{$screen-size-xs - 1px}) {
+        @content;
+    }
+}
+
+@mixin screen-size-xxs {
+    @media (max-width: #{$screen-size-xxs}) {
+        @content;
+    }
+}
+
+@mixin desktop {
+    @include screen-size-m {
+        @content;
+    }
+}
+
+@mixin tablet {
+    @include screen-size-s {
+        @content;
+    }
+}
+
+@mixin mobile {
+    @include screen-size-xs {
+        @content;
+    }
+}

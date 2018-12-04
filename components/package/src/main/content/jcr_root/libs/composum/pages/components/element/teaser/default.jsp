@@ -5,10 +5,10 @@
 <cpp:element var="teaser" type="com.composum.pages.components.model.teaser.Teaser"
              cssAdd="@{teaserCssBase}_variation_default">
     <cpn:link test="${teaser.hasLink}" body="true" classes="${teaserCssBase}_link"
-              href="${teaser.linkUrl}" title="${cpn:text(teaser.linkTitle)}">
-        <div test="${teaser.hasImage}" class="${teaserCssBase}_image">
+              href="${teaser.linkUrl}" target="${teaser.linkTarget}" title="${cpn:text(teaser.linkTitle)}">
+        <cpn:div test="${teaser.hasImage}" class="${teaserCssBase}_image">
             <cpp:include path="image" resourceType="composum/pages/components/element/image"/>
-        </div>
+        </cpn:div>
         <cpp:include replaceSelectors="${teaser.textSelector}"/>
         <cpp:include path="links" resourceType="composum/pages/components/element/link/set"/>
     </cpn:link>

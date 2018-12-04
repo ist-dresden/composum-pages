@@ -1,4 +1,4 @@
-package com.composum.pages.components.model.textimage;
+package com.composum.pages.components.model.text;
 
 import com.composum.pages.components.model.ImageRelatedElement;
 import com.composum.pages.components.model.text.Text;

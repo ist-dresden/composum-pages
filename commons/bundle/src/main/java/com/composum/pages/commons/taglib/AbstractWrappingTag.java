@@ -75,10 +75,10 @@ public abstract class AbstractWrappingTag extends ModelTag {
 
     /**
      * if this returns 'false' nothing is rendered, no wrapping tag and no content within
-     * (extension hook; returns 'true')
+     * this is used if the option 'test' attribute is set; if the test fails this returns 'false'...
      */
     protected boolean renderTag() {
-        return true;
+        return getTestResult();
     }
 
     protected abstract void prepareTagStart();

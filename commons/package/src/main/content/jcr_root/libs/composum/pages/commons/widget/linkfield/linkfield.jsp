@@ -15,4 +15,3 @@
                       title="Select the repository path">...</button></span>
     </div>
 </div>
-

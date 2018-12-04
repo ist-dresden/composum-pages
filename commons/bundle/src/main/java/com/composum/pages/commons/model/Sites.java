@@ -17,6 +17,10 @@ public class Sites extends AbstractModel {
         initialize(context, resource);
     }
 
+    public boolean isTenantsSupported() {
+        return false;
+    }
+
     public Collection<Site> getSites() {
         if (sites == null) {
             sites = getSiteManager().getSites(context, "");

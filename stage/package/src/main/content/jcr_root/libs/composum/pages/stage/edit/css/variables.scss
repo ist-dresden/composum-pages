@@ -1,5 +1,18 @@
 @charset "UTF-8";
 
+/*
+ * screen sizes (potential breakpoints)
+ */
+$screen-size-xl: 1500px;
+$screen-size-l: 1200px; // bootstrap -lg-
+$screen-size-m: 976px; // bootstrap -md-
+$screen-size-s: 768px; // bootstrap -sm-
+$screen-size-xs: 624px;
+$screen-size-xxs: 480px;
+
+/*
+ * extracted bootstrap values
+ */
 $bootstrap-color-danger: #a94442;
 $bootstrap-color-info: #337ab7;
 $bootstrap-color-mute: #777;
@@ -8,6 +21,9 @@ $bootstrap-btn-menu-active-bg: #e6e6e6;
 $bootstrap-spacing-v: 10px;
 $bootstrap-spacing-h: 15px;
 
+/*
+ * stage settings
+ */
 $dnd-drop-zone-min-size: 30px;
 
 $tabbed-widget-tab-height: 28px;

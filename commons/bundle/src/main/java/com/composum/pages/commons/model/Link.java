@@ -10,9 +10,9 @@ import org.apache.commons.lang3.StringUtils;
 
 public class Link extends Element {
 
-    public static final String PROP_LINK = "link";
-    public static final String PROP_LINK_TITLE = "linkTitle";
-    public static final String PROP_TARGET = "target";
+    public static final String PN_LINK = "link";
+    public static final String PN_LINK_TITLE = "linkTitle";
+    public static final String PN_LINK_TARGET = "linkTarget";
 
     private transient String link;
     private transient String linkTitle;
@@ -20,12 +20,16 @@ public class Link extends Element {
     private transient String target;
 
     public boolean isValid() {
-        return StringUtils.isNotBlank(getLinkUrl());
+        return isHasLink();
+    }
+
+    public boolean isHasLink() {
+        return StringUtils.isNotBlank(getLink());
     }
 
     public String getLink() {
         if (link == null) {
-            link = getProperty(PROP_LINK, "");
+            link = getProperty(PN_LINK, "");
         }
         return link;
     }
@@ -43,7 +47,7 @@ public class Link extends Element {
 
     public String getLinkTitle() {
         if (linkTitle == null) {
-            linkTitle = getProperty(PROP_LINK_TITLE, getTitle());
+            linkTitle = getProperty(PN_LINK_TITLE, getTitle());
         }
         return linkTitle;
     }
@@ -58,9 +62,9 @@ public class Link extends Element {
         return linkUrl;
     }
 
-    public String getTarget() {
+    public String getLinkTarget() {
         if (target == null) {
-            target = getProperty(PROP_TARGET, "");
+            target = getProperty(PN_LINK_TARGET, "");
         }
         return target;
     }

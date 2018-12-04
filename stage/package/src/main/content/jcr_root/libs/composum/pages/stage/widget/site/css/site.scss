@@ -15,10 +15,6 @@
                 padding-left: 30px;
                 background: #eee;
 
-                &_text {
-                    margin-left: 200px;
-                }
-
                 &_title,
                 &_description,
                 &_path {
@@ -50,6 +46,7 @@
 
             &_no-template {
                 margin: 0;
+                padding-top: 5px;
 
                 .composum-pages-stage-site {
 

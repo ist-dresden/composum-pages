@@ -194,6 +194,9 @@
                             this.log.frame.debug('frame.trigger.' + pages.const.event.page.selected + '(' + path + ')');
                         }
                         $(document).trigger(pages.const.event.page.selected, [path]);
+                    }, this), _.bind(function () {
+                        $(document).trigger(pages.const.event.content.selected, ["/"]);
+                        $(document).trigger(pages.const.event.site.selected);
                     }, this));
                 } else {
                     if (this.log.frame.getLevel() <= log.levels.DEBUG) {

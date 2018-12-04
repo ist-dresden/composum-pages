@@ -49,6 +49,16 @@ public class PagesConfigImpl implements PagesConfiguration {
     public @interface Configuration {
 
         @AttributeDefinition(
+                description = "the 'base' node of the tenants; default: '/content'"
+        )
+        String tenantsBase() default "/content";
+
+        @AttributeDefinition(
+                description = "the default root name for sites not assigend to a tenant"
+        )
+        String sitesRoot() default "sites";
+
+        @AttributeDefinition(
                 description = "the filter configuration to set the scope to the internet sites"
         )
         String siteNodeFilterRule() default "PrimaryType(+'^cpp:(Site)$')";
@@ -134,6 +144,12 @@ public class PagesConfigImpl implements PagesConfiguration {
             default:
                 return getPageNodeFilter();
         }
+    }
+
+    @Nonnull
+    @Override
+    public Configuration getConfig() {
+        return config;
     }
 
     @Nonnull

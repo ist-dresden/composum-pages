@@ -31,6 +31,7 @@ import static org.apache.sling.api.resource.Resource.RESOURCE_TYPE_NON_EXISTING;
  * the utility to determine resource types for the rendering of editing subtypes of a component
  * (e.g. to find the dialogs, actions, tiles, ... of a component tu render this pieces of a component in the edit frame)
  */
+@SuppressWarnings("Duplicates")
 public class ResourceTypeUtil {
 
     public static final String EDIT_PATH = "edit"; // the base 'edit' folder name in a component implementation
@@ -45,6 +46,7 @@ public class ResourceTypeUtil {
     public static final String NEW_DIALOG_PATH = EDIT_DIALOG_PATH + "/new";
     public static final String CREATE_DIALOG_PATH = EDIT_DIALOG_PATH + "/create";
     public static final String DELETE_DIALOG_PATH = EDIT_DIALOG_PATH + "/delete";
+    public static final String MANAGE_DIALOG_PATH = EDIT_DIALOG_PATH + "/manage";
     public static final String EDIT_TILE_PATH = EDIT_PATH + "/tile";
     public static final String EDIT_THUMBNAIL_PATH = EDIT_PATH + "/thumbnail";
     public static final String EDIT_TOOLBAR_PATH = EDIT_PATH + "/toolbar";
@@ -58,6 +60,7 @@ public class ResourceTypeUtil {
     public static final String DEFAULT_ELEMENT_DIALOG = EDIT_DEFAULT_ROOT + "element/dialog";
     public static final String DEFAULT_CREATE_DIALOG = DEFAULT_ELEMENT_DIALOG + "/create";
     public static final String DEFAULT_DELETE_DIALOG = DEFAULT_ELEMENT_DIALOG + "/delete";
+    public static final String DEFAULT_MANAGE_DIALOG = DEFAULT_ELEMENT_DIALOG + "/manage";
 
     public static final String DEFAULT_CONTAINER_DIALOG = EDIT_DEFAULT_ROOT + "container/dialog";
     public static final String DEFAULT_NEW_DIALOG = DEFAULT_CONTAINER_DIALOG + "/new";
@@ -69,6 +72,7 @@ public class ResourceTypeUtil {
     public static final String DEFAULT_SITE_DIALOG = EDIT_DEFAULT_ROOT + "site/dialog";
     public static final String DEFAULT_SITE_CREATE_DIALOG = DEFAULT_SITE_DIALOG + "/create";
     public static final String DEFAULT_SITE_DELETE_DIALOG = DEFAULT_SITE_DIALOG + "/delete";
+    public static final String DEFAULT_SITE_MANAGE_DIALOG = DEFAULT_SITE_DIALOG + "/manage";
 
     public static final String DEFAULT_ELEMENT_TILE = EDIT_DEFAULT_ROOT + "element/tile";
     public static final String DEFAULT_CONTAINER_TILE = EDIT_DEFAULT_ROOT + "container/tile";
@@ -186,6 +190,13 @@ public class ResourceTypeUtil {
         }
     }
 
+    public static class ManageDialogStrategy extends EditDialogStrategy {
+
+        public String getDefaultResourcePath(ResourceResolver resolver, Resource resource, String type) {
+            return DEFAULT_SITE_MANAGE_DIALOG;
+        }
+    }
+
     public static class EditToolbarStrategy implements SubtypeStrategy {
 
         public String getDefaultResourcePath(ResourceResolver resolver, Resource resource, String type) {
@@ -238,6 +249,7 @@ public class ResourceTypeUtil {
         SUBTYPES.put(NEW_DIALOG_PATH, new NewDialogStrategy());
         SUBTYPES.put(CREATE_DIALOG_PATH, new CreateDialogStrategy());
         SUBTYPES.put(DELETE_DIALOG_PATH, new DeleteDialogStrategy());
+        SUBTYPES.put(MANAGE_DIALOG_PATH, new ManageDialogStrategy());
         SUBTYPES.put(EDIT_TOOLBAR_PATH, new EditToolbarStrategy());
         SUBTYPES.put(TREE_ACTIONS_PATH, new TreeActionsStrategy());
         SUBTYPES.put(CONTEXT_ACTIONS_PATH, new ContextActionsStrategy());

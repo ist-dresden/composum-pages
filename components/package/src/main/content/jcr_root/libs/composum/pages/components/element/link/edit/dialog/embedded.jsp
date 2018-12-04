@@ -9,6 +9,6 @@
                     hint="the text for the link tooltip (optional)"/>
     </div>
     <div class="col col-xs-4">
-        <cpp:widget label="Link Target" property="target" type="combobox" options="_blank,_parent,_top,_self"/>
+        <cpp:widget label="Link Target" property="linkTarget" type="combobox" options="_blank,_parent,_top,_self"/>
     </div>
 </div>
