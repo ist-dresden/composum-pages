@@ -3,14 +3,31 @@
 @import "../../../css/variables";
 @import "../../../css/mixins";
 
-/*
- * default (bootstrap -sm,md-)
- */
 .composum-pages-components-composed-carousel {
     background: #000;
 
     &_element {
         @include aspect-ratio-wrapper(2, 1);
+
+        @include screen-size-xl {
+            @include aspect-ratio-wrapper(4, 1);
+        }
+
+        @include screen-size-l-xl {
+            @include aspect-ratio-wrapper(7, 2);
+        }
+
+        @include screen-size-m-l {
+            @include aspect-ratio-wrapper(8, 3);
+        }
+
+        @include screen-size-xs-s {
+            @include aspect-ratio-wrapper(3, 2);
+        }
+
+        @include mobile {
+            @include aspect-ratio-wrapper(7, 8);
+        }
 
         .composum-pages-components-element-teaser {
             @include aspect-ratio-element;
@@ -38,102 +55,27 @@
             &_title {
                 @include title-font;
                 color: $site-bright-text-color;
+
+                @include screen-size-xxs {
+                    font-size: $site-title-font-size * (3/4);
+                }
             }
 
             &_subtitle {
                 @include subtitle-font;
                 color: $site-bright-text-color;
+
+                @include screen-size-xxs {
+                    font-size: $site-subtitle-font-size * (5/6);
+                }
             }
 
             &_text {
                 @include default-font;
                 color: $site-bright-text-color;
-            }
-        }
-    }
-}
 
-/*
- * self defined -xlg-
- */
-@media screen and (min-width: 1500px) {
-
-    .composum-pages-components-composed-carousel {
-
-        &_element {
-            @include aspect-ratio-wrapper(4, 1);
-        }
-    }
-}
-
-/*
- * bootstrap -lg-
- */
-@media screen and (min-width: 1200px) and (max-width: 1499px) {
-
-    .composum-pages-components-composed-carousel {
-
-        &_element {
-            @include aspect-ratio-wrapper(7, 2);
-        }
-    }
-}
-
-@media screen and (min-width: 976px) and (max-width: 1199px) {
-
-    .composum-pages-components-composed-carousel {
-
-        &_element {
-            @include aspect-ratio-wrapper(8, 3);
-        }
-    }
-}
-
-/*
- * bootstrap -xs-
- */
-@media screen and (min-width: 625px) and (max-width: 767px) {
-
-    .composum-pages-components-composed-carousel {
-
-        &_element {
-            @include aspect-ratio-wrapper(3, 2);
-        }
-    }
-}
-
-@media screen and (min-width: 481px) and (max-width: 624px) {
-
-    .composum-pages-components-composed-carousel {
-
-        &_element {
-            @include aspect-ratio-wrapper(1, 1);
-        }
-    }
-}
-
-/*
- * self defined -xxs-
- */
-@media screen and (max-width: 480px) {
-
-    .composum-pages-components-composed-carousel {
-
-        &_element {
-            @include aspect-ratio-wrapper(2, 3);
-
-            .composum-pages-components-element-teaser {
-
-                &_title {
-                    font-size: $site-title-font-size * (3/4);
-                }
-
-                &_subtitle {
-                    font-size: $site-subtitle-font-size * (5/6);
-                }
-
-                &_text {
-                    font-size: $site-default-font-size * (4/5);
+                @include screen-size-xxs {
+                    font-size: $site-default-font-size * (9/10);
                 }
             }
         }

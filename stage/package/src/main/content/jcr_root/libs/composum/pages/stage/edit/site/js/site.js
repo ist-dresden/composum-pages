@@ -21,6 +21,10 @@
             initialize: function (options) {
                 this.$createSite = this.$('.' + site.const.css.base + site.const.css._create);
                 this.$createSite.click(_.bind(this.createSite, this));
+                $(document).on('site:created.Home', _.bind(function (event, pathOrRef) {
+                    var path = pathOrRef.path ? pathOrRef.path : pathOrRef;
+                    window.location.href = core.getContextUrl('/bin/pages.html' + path);
+                }, this));
             },
 
             createSite: function (event) {

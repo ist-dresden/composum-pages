@@ -254,8 +254,8 @@
             return pages.current.mode === 'EDIT' || pages.current.mode === 'DEVELOP';
         };
 
-        pages.getPageData = function (path, callback) {
-            core.ajaxGet(pages.const.url.get.pageData + path, {}, callback);
+        pages.getPageData = function (path, callback, failure) {
+            core.ajaxGet(pages.const.url.get.pageData + path, {}, callback, failure);
         };
 
         pages.versionsVisible = function () {

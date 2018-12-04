@@ -1,9 +1,9 @@
 package com.composum.pages.components.model;
 
-import com.composum.pages.commons.model.Element;
 import com.composum.pages.commons.model.Image;
+import com.composum.pages.commons.model.Link;
 
-public abstract class ImageRelatedElement extends Element {
+public abstract class ImageRelatedElement extends Link {
 
     public static final String IMAGE_PATH = "image";
 

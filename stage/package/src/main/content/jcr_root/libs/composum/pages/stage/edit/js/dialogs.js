@@ -57,10 +57,14 @@
                         load: '.editDialog',
                         new: '.newDialog',
                         create: '.editDialog.create',
-                        delete: '.editDialog.delete'
+                        delete: '.editDialog.delete',
+                        manage: '.editDialog.manage'
                     },
                     _upload: {
                         dialog: '/file/dialog/upload.html'
+                    },
+                    sites: {
+                        list: '/libs/composum/pages/stage/edit/site/manager.html'
                     }
                 },
                 css: {
@@ -75,10 +79,23 @@
                     _parentResType: '_parent-resourceType',
                     _order: '_child-order',
                     _pathField: '_path',
+                    _addButton: '_button-add',
+                    _removeButton: '_button-remove',
+                    _openButton: '_button-open',
                     _deleteButton: '_button-delete',
                     _submitButton: '_button-submit',
                     _prevButton: '_button-prev',
-                    _nextButton: '_button-next'
+                    _nextButton: '_button-next',
+                    site: {
+                        base: 'composum-pages-stage-site',
+                        _tile: '_tile'
+                    },
+                    sites: {
+                        base: 'composum-pages-stage-sites',
+                        _list: '_sites-list',
+                        _radio: '_radio',
+                        _site: '_site'
+                    }
                 },
                 data: {
                     name: 'pages-edit-name',
@@ -790,6 +807,78 @@
         dialogs.openDeleteSiteDialog = function (name, path, type) {
             pages.dialogHandler.openEditDialog(dialogs.getEditDialogUrl('delete'),
                 dialogs.DeleteSiteDialog, name, path, type);
+        };
+
+        /**
+         * Manage Sites
+         */
+        dialogs.ManageSitesDialog = core.components.Dialog.extend({
+
+            initialize: function (options) {
+                var c = dialogs.const.edit.css;
+                core.components.Dialog.prototype.initialize.apply(this, [options]);
+                this.$list = this.$('.' + c.base + c.sites._list);
+                this.$('.' + c.base + c._addButton).click(_.bind(this.onCreate, this));
+                this.$('.' + c.base + c._removeButton).click(_.bind(this.onDelete, this));
+                this.$('.' + c.base + c._openButton).click(_.bind(this.onOpen, this));
+                this.initContent();
+                var id = '.SiteManager';
+                var e = pages.const.event;
+                $(document).on(e.site.created + id, _.bind(this.reloadContent, this));
+                $(document).on(e.site.changed + id, _.bind(this.reloadContent, this));
+                $(document).on(e.site.deleted + id, _.bind(this.reloadContent, this));
+            },
+
+            initContent: function () {
+                var c = dialogs.const.edit.css;
+                this.$list.find('a.' + c.sites.base + c.sites._radio).click(_.bind(this.selectSite, this));
+                this.$list.find('a.' + c.site.base + c.site._tile).click(_.bind(this.selectSite, this));
+            },
+
+            reloadContent: function () {
+                core.ajaxGet(dialogs.const.edit.url.sites.list, {}, _.bind(function (content) {
+                    this.$list.html(content);
+                    this.initContent();
+                }, this));
+            },
+
+            selectSite: function (event) {
+                event.preventDefault();
+                var c = dialogs.const.edit.css.sites;
+                var $link = $(event.currentTarget);
+                var $radio = $link.closest('.' + c.base + c._site).find('.' + c.base + c._radio);
+                $radio.prop("checked", true);
+                this.selectedSite = $radio.length === 1 ? $radio.val() : undefined;
+                return false;
+            },
+
+            onCreate: function (event) {
+                event.preventDefault();
+                pages.actions.site.create(event);
+                return false;
+            },
+
+            onDelete: function (event) {
+                event.preventDefault();
+                if (this.selectedSite) {
+                    pages.actions.site.delete(event, undefined, this.selectedSite);
+                }
+                return false;
+            },
+
+            onOpen: function (event) {
+                event.preventDefault();
+                if (this.selectedSite) {
+                    pages.actions.site.open(event, undefined, this.selectedSite);
+                }
+                this.hide();
+                return false;
+            }
+        });
+
+        dialogs.openManageSitesDialog = function () {
+            pages.dialogHandler.openEditDialog(dialogs.getEditDialogUrl('manage'),
+                dialogs.ManageSitesDialog);
         };
 
     })(window.composum.pages.dialogs, window.composum.pages, window.core);

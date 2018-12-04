@@ -13,6 +13,7 @@ import javax.jcr.RepositoryException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 public interface SiteManager extends ContentManager<Site> {
 
@@ -101,7 +102,7 @@ public interface SiteManager extends ContentManager<Site> {
      * @param tenant  the tenants name (key); maybe &gt;null&lt; if tenants are not supported
      * @return the collection of all sites found (not &gt;null&lt;)
      */
-    Collection<Site> getSites(@Nonnull BeanContext context, @Nullable String tenant);
+    List<Site> getSites(@Nonnull BeanContext context, @Nullable String tenant);
 
     /**
      * Determines all usable site templates in the context of a specific tenant.
@@ -112,7 +113,7 @@ public interface SiteManager extends ContentManager<Site> {
      * @param tenant  the tenants name (key); maybe &gt;null&lt; if tenants are not supported
      * @return the collection of all site templates found (not &gt;null&lt;)
      */
-    Collection<Site> getSiteTemplates(@Nonnull BeanContext context, @Nullable String tenant);
+    List<Site> getSiteTemplates(@Nonnull BeanContext context, @Nullable String tenant);
 
     /**
      * Determines all Sites which a children of a search root in any depth of the hierarchy.

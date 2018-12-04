@@ -517,6 +517,30 @@
             top: 2px;
             right: 2px;
             z-index: 1;
+
+            .fa-database:before {
+                font-size: 84%;
+            }
+        }
+
+        .composum-pages-stage-edit-sidebar-navigation-context {
+
+            &_no-site {
+
+                .composum-pages-stage-site {
+
+                    &_tile {
+
+                        &_title {
+                            min-height: 50px;
+                            right: 40px;
+                            bottom: 10px;
+                            white-space: normal;
+                            cursor: pointer;
+                        }
+                    }
+                }
+            }
         }
 
         .composum-pages-stage-site {

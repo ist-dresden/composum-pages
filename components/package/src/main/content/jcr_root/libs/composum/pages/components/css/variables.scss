@@ -1,7 +1,18 @@
 @charset "UTF-8";
 
-/** bootstrap settings */
+/*
+ * screen sizes (potential breakpoints)
+ */
+$screen-size-xl: 1500px;
+$screen-size-l: 1200px; // bootstrap -lg-
+$screen-size-m: 976px; // bootstrap -md-
+$screen-size-s: 768px; // bootstrap -sm-
+$screen-size-xs: 624px;
+$screen-size-xxs: 480px;
 
+/*
+ * bootstrap settings
+ */
 $bootstrap-screen-sm-min: 768px !default;
 $bootstrap-screen-md-min: 992px !default;
 $bootstrap-screen-lg-min: 1200px !default;

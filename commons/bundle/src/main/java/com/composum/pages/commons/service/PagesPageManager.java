@@ -152,7 +152,9 @@ public class PagesPageManager extends PagesContentManager<Page> implements PageM
                 Resource pageResource = getContainingPageResource(target);
                 String result = value.replaceAll("\\$\\{path}", target.getPath());
                 result = result.replaceAll("\\$\\{page}", pageResource.getPath());
-                result = result.replaceAll("\\$\\{site}", siteResource.getPath());
+                if (siteResource != null) {
+                    result = result.replaceAll("\\$\\{site}", siteResource.getPath());
+                }
                 if (!value.equals(result)) {
                     result = result.replaceAll("/[^/]+/\\.\\./", "/");
                 }

@@ -91,6 +91,7 @@ public interface PagesConstants {
 
     /** Site */
 
+    String DEFAULT_SITES_ROOT = "sites";
     String NODE_TYPE_SITE = CPP_PREFIX + "Site";
     String NODE_TYPE_SITE_CONFIGURATION = CPP_PREFIX + "SiteConfiguration";
     String PROP_HOMEPAGE = "homepage";

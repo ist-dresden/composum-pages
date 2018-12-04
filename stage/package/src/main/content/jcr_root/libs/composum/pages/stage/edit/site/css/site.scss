@@ -53,7 +53,7 @@
         }
 
         &_text {
-            margin-left: 170px;
+            @include full-size;
             @include font('robotolight', 17px);
         }
 
@@ -72,6 +72,10 @@
         &_path {
             left: 170px;
             right: 40px;
+
+            @include mobile {
+                left: 15px;
+            }
         }
 
         &_title {
@@ -144,6 +148,21 @@
         background-color: rgba(255, 255, 255, 0.4);
     }
 
+    &_manager {
+
+        .composum-pages-stage-sites {
+
+            &_list {
+                max-height: 65%;
+            }
+
+            &_radio {
+                pointer-events: none;
+            }
+        }
+    }
+
+    &_manager,
     &_templates {
 
         .composum-pages-stage-site {
@@ -151,10 +170,6 @@
             &_tile {
                 padding-left: 30px;
                 background: #eee;
-
-                &_text {
-                    margin-left: 200px;
-                }
 
                 &_title,
                 &_description,
@@ -171,7 +186,6 @@
         .composum-pages-stage-sites {
 
             &_list {
-                max-height: 300px;
                 margin-bottom: 0;
             }
 

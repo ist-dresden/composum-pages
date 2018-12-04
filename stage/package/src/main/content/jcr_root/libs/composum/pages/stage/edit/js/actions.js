@@ -147,6 +147,12 @@
 
         actions.page = {
 
+            open: function (event, name, path, type) {
+                var e = pages.const.event.page;
+                pages.log.debug('actions.trigger.' + e.select + '(' + path + ')');
+                $(document).trigger(e.select, [path]);
+            },
+
             edit: function (event, name, path, type) {
                 actions.element.edit(event, name, path, type);
             },
@@ -202,6 +208,12 @@
 
         actions.site = {
 
+            open: function (event, name, path, type) {
+                var e = pages.const.event.site;
+                pages.log.debug('actions.trigger.' + e.select + '(' + path + ')');
+                $(document).trigger(e.select, [path]);
+            },
+
             edit: function (event, name, path, type) {
                 actions.element.edit(event, name, path, type);
             },
@@ -240,6 +252,10 @@
 
             delete: function (event, name, path, type) {
                 pages.dialogs.openDeleteSiteDialog(name, path, type);
+            },
+
+            manage: function (event) {
+                pages.dialogs.openManageSitesDialog();
             }
         };
 

@@ -5,6 +5,14 @@
         jcr:primaryType="sling:Folder"
         sling:basename="composum-pages">
 
+    <general jcr:primaryType="sling:Folder"><!-- Pages entities -->
+
+        <create jcr:primaryType="sling:MessageEntry"
+                sling:key="Create" sling:message="Anlegen"/>
+        <open jcr:primaryType="sling:MessageEntry"
+                sling:key="Open" sling:message="Öffnen"/>
+    </general>
+
     <entity jcr:primaryType="sling:Folder"><!-- Pages entities -->
 
         <tenant jcr:primaryType="sling:MessageEntry"

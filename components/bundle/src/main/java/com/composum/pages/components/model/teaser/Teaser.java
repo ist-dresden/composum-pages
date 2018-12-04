@@ -6,7 +6,6 @@
 package com.composum.pages.components.model.teaser;
 
 import com.composum.pages.components.model.ImageRelatedElement;
-import com.composum.pages.commons.util.LinkUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 
@@ -33,10 +32,6 @@ public class Teaser extends ImageRelatedElement {
 
     private transient String variation;
 
-    private transient String link;
-    private transient String linkTitle;
-    private transient String linkUrl;
-
     private transient String subtitle;
     private transient String text;
 
@@ -48,34 +43,6 @@ public class Teaser extends ImageRelatedElement {
             }
         }
         return variation;
-    }
-
-    public boolean isHasLink() {
-        return StringUtils.isNotBlank(getLink());
-    }
-
-    public String getLink() {
-        if (link == null) {
-            link = getProperty(PROP_LINK, "");
-        }
-        return link;
-    }
-
-    public String getLinkTitle() {
-        if (linkTitle == null) {
-            linkTitle = getProperty(PROP_LINK_TITLE, "");
-        }
-        return linkTitle;
-    }
-
-    public String getLinkUrl() {
-        if (linkUrl == null) {
-            linkUrl = getLink();
-            if (StringUtils.isNotBlank(linkUrl)) {
-                linkUrl = LinkUtil.getUrl(context.getRequest(), linkUrl);
-            }
-        }
-        return linkUrl;
     }
 
     public boolean isHasImage() {

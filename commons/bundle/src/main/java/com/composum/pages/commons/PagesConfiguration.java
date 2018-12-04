@@ -17,6 +17,9 @@ public interface PagesConfiguration {
                                         @Nonnull String paramaName, @Nonnull String defaultFilter);
 
     @Nonnull
+    PagesConfigImpl.Configuration getConfig();
+
+    @Nonnull
     ResourceFilter getSiteNodeFilter();
 
     @Nonnull

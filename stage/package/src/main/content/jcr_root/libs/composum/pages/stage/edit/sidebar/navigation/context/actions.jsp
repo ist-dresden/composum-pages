@@ -13,7 +13,7 @@
                     class="fa fa-bullseye composum-pages-tools_button btn btn-default goto-site"
                     title="${cpn:i18n(slingRequest,'Go to Site page')}..."></button>
             <button type="button"
-                    class="fa fa-bars composum-pages-tools_button btn btn-default manage-sites"
+                    class="fa fa-database composum-pages-tools_button btn btn-default manage-sites"
                     title="${cpn:i18n(slingRequest,'Manage Sites')}..."></button>
         </div>
     </div>

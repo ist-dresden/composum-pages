@@ -1,8 +1,8 @@
-<%@page session="false" pageEncoding="UTF-8" %><%--
---%><%@taglib prefix="cpn" uri="http://sling.composum.com/cpnl/1.0" %><%--
---%><%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %><%--
---%><%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%><%--
---%><cpp:defineFrameObjects/>
+<%@page session="false" pageEncoding="UTF-8" %>
+<%@taglib prefix="cpn" uri="http://sling.composum.com/cpnl/1.0" %>
+<%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<cpp:defineFrameObjects/>
 <cpp:element var="sites" type="com.composum.pages.commons.model.Sites" mode="none"
              cssBase="composum-pages-stage-sites">
     <c:choose>
