@@ -3,5 +3,5 @@
         jcr:primaryType="cpp:Component"
         jcr:description="an embedded google map"
         jcr:title="Google Map"
-        componentGroup="Images"
+        category="[Image,Blueprint]"
         sling:resourceSuperType="composum/pages/components/element"/>

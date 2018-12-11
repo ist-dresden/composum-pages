@@ -129,7 +129,7 @@ public abstract class AbstractModel implements SlingBean, Model {
     protected transient String title;
     private transient String description;
 
-    private transient PagesConstants.ComponentType componentType;
+    protected transient PagesConstants.ComponentType componentType;
     private transient Component component;
 
     private transient List<Resource> referrers;
@@ -336,6 +336,7 @@ public abstract class AbstractModel implements SlingBean, Model {
 
     public static String getTypeHint(String type) {
         if (type != null) {
+            type = type.replaceAll("/edit/(dialog|tile|tree|toolbar|context)(/.+)?$", "");
             type = type.replaceAll("^/(sites|apps|libs)/", "");
             type = type.replaceAll("^(.*/)?composum/(.*/)?pages/", "$2");
             type = type.replaceAll("/components?/", "/");

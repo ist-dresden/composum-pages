@@ -3,6 +3,6 @@
         jcr:primaryType="cpp:Component"
         jcr:description="a layout row which controls a set of columns defined by a column setup rule property"
         jcr:title="Row"
-        componentGroup="Layout"
+        category="[Layout,Blueprint]"
         sling:resourceSuperType="composum/pages/components/container"
         allowedElements="[composum/pages/components/container/row/column]"/>

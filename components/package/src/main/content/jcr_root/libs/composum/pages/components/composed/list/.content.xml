@@ -3,6 +3,6 @@
         jcr:primaryType="cpp:Component"
         jcr:description="a list of containers rendered with list markup"
         jcr:title="List"
-        componentGroup="Layout"
+        category="[Layout,Blueprint]"
         sling:resourceSuperType="composum/pages/components/composed"
         allowedElements="[composum/pages/components/element/.*]"/>

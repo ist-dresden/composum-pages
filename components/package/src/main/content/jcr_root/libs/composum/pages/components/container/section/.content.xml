@@ -2,5 +2,5 @@
 <jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
         jcr:primaryType="cpp:Component"
         jcr:title="Content Section"
-        componentGroup="Layout"
+        category="[Layout,Blueprint]"
         sling:resourceSuperType="composum/pages/components/container/parsys"/>

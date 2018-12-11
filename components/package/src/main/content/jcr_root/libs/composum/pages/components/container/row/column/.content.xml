@@ -3,7 +3,7 @@
         jcr:primaryType="cpp:Component"
         jcr:description="a column of a row"
         jcr:title="Column"
-        componentGroup="Layout"
+        category="[Layout,Blueprint]"
         sling:resourceSuperType="composum/pages/components/container"
         allowedContainers="[composum/pages/components/container/row]"
         allowedElements="[composum/pages/components/element/.*,

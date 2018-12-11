@@ -5,10 +5,12 @@
  */
 package com.composum.pages.commons;
 
+import com.composum.pages.commons.model.Component;
 import com.composum.pages.commons.model.Container;
 import com.composum.pages.commons.model.Element;
 import com.composum.pages.commons.model.Page;
 import com.composum.pages.commons.model.Site;
+import com.composum.pages.commons.util.ResolverUtil;
 import com.composum.sling.core.util.ResourceUtil;
 import com.composum.sling.platform.security.PlatformAccessFilter;
 import org.apache.commons.lang3.StringUtils;
@@ -50,8 +52,9 @@ public interface PagesConstants {
 
     /** Component declarations */
 
-    String NODE_TYPE_COMPONENT = CPP_PREFIX + "Component";
-    String PROP_COMPONENT_TYPE = "componentType";
+    String NT_COMPONENT = CPP_PREFIX + "Component";
+    String PN_COMPONENT_TYPE = "componentType";
+    String PN_CATEGORY = "category";
 
     /** Content elements */
 
@@ -184,6 +187,8 @@ public interface PagesConstants {
                 return container;
             } else if (Element.isElement(resolver, resource, typeHint)) {
                 return element;
+            } else if (Component.isComponent(resource)) {
+                return typeOf(ResolverUtil.getTypeProperty(resource, PN_COMPONENT_TYPE, ""));
             } else {
                 return something;
             }

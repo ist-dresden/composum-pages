@@ -47,10 +47,10 @@ public class Container extends Element {
     public static boolean isContainer(ResourceResolver resolver, Resource resource, String type) {
         return (resource != null && (resource.isResourceType(NODE_TYPE_CONTAINER) ||
                 NODE_TYPE_CONTAINER.equals(ResolverUtil.getTypeProperty(
-                        resource, type, PagesConstants.PROP_COMPONENT_TYPE, "")))) ||
+                        resource, type, PagesConstants.PN_COMPONENT_TYPE, "")))) ||
                 (StringUtils.isNotBlank(type) &&
                         NODE_TYPE_CONTAINER.equals(ResolverUtil.getTypeProperty(
-                                resolver, type, PagesConstants.PROP_COMPONENT_TYPE, "")));
+                                resolver, type, PagesConstants.PN_COMPONENT_TYPE, "")));
     }
 
     public Container() {

@@ -147,7 +147,7 @@ public class PagesEditService implements EditService {
             if (parent != null) {
                 String resourceType = reference.getType();
                 String primaryType = ResolverUtil.getTypeProperty(resolver, resourceType,
-                        PagesConstants.PROP_COMPONENT_TYPE, "");
+                        PagesConstants.PN_COMPONENT_TYPE, "");
                 Map<String, Object> properties = new HashMap<>();
                 properties.put(JcrConstants.JCR_PRIMARYTYPE, StringUtils.isNotBlank(primaryType)
                         ? primaryType : JcrConstants.NT_UNSTRUCTURED);

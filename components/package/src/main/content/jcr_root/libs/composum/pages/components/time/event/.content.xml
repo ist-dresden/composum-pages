@@ -3,5 +3,5 @@
         jcr:primaryType="cpp:Component"
         jcr:description="an event page"
         jcr:title="Event"
-        componentGroup="Time Related"
+        category="[Time Related,Blueprint]"
         sling:resourceSuperType="composum/pages/components/page"/>

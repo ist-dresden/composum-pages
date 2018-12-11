@@ -3,5 +3,5 @@
         jcr:primaryType="cpp:Component"
         jcr:description="a search result list component"
         jcr:title="Search Result"
-        componentGroup="Meta"
+        category="[Meta,Blueprint]"
         sling:resourceSuperType="composum/pages/components/element"/>

@@ -3,5 +3,5 @@
         jcr:primaryType="cpp:Component"
         jcr:description="a single image element"
         jcr:title="Image"
-        componentGroup="Images"
+        category="[Image,Blueprint]"
         sling:resourceSuperType="composum/pages/components/element"/>

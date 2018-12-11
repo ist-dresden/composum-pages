@@ -3,5 +3,5 @@
         jcr:primaryType="cpp:Component"
         jcr:description="properties editing test component"
         jcr:title="Properties Edit Test"
-        componentGroup="Test"
+        category="[Test,Blueprint]"
         sling:resourceSuperType="composum/pages/components/element"/>
