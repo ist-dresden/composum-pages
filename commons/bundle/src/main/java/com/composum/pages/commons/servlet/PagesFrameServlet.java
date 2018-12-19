@@ -11,6 +11,7 @@ import org.osgi.service.component.annotations.Component;
 
 import javax.servlet.Servlet;
 import javax.servlet.http.HttpSession;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 import static com.composum.pages.commons.PagesConstants.DISPLAY_MODE_ATTR;
@@ -34,6 +35,12 @@ public class PagesFrameServlet extends AbstractConsoleServlet {
 
     public static final Pattern PATH_PATTERN = Pattern.compile("^(" + PAGES_FRAME_PATH + "(\\.[^/]+)?\\.html)(/.*)?$");
 
+    @Override
+    protected String getServletPath(BeanContext context) {
+        return PAGES_FRAME_PATH;
+    }
+
+    @Override
     protected Pattern getPathPattern(BeanContext context) {
         return PATH_PATTERN;
     }
@@ -44,7 +51,9 @@ public class PagesFrameServlet extends AbstractConsoleServlet {
     protected String getResourceType(BeanContext context) {
         SlingHttpServletRequest request = context.getRequest();
         DisplayMode.Value mode = getDisplayMode(context);
-        request.adaptTo(DisplayMode.class).reset(mode); // yset the selected mode for the frame rendering
+        // set the selected mode for the frame rendering
+        Objects.requireNonNull(request.adaptTo(DisplayMode.class)).reset(mode);
+        //noinspection SwitchStatementWithTooFewBranches
         switch (mode) {
             case DEVELOP: // no extra view for the 'develop' mode
                 mode = DisplayMode.Value.EDIT;

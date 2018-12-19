@@ -3,34 +3,133 @@
 @import "../../../../css/variables";
 @import "../../../../css/mixins";
 
-.composum-pages-stage-edit-tools-main-components {
+.composum-pages-stage-edit-sidebar {
 
-    &_list {
-        list-style: none;
-        margin: 0 0 $tools-pane-padding*2;
-        padding: 0;
-    }
+    .composum-pages-stage-edit-tools-main-components {
 
-    &_item {
-        position: relative;
-        margin: 0 0 $tools-pane-padding;
-        padding: 0;
+        .composum-pages-tools {
 
-        &:last-child {
-            margin-bottom: 0;
-        }
+            &_actions {
+                top: 6px;
+                height: 38px;
 
-        &.selected {
+                .composum-pages-tools {
 
-            .composum-pages-component-tile {
-                background-color: $tools-pane-main-selection-color;
+                    &_left-actions, &_right-actions {
+                        display: inline-block;
+                        margin: 0;
+                    }
+
+                    &_left-actions {
+                        width: 70%;
+                    }
+                }
+
+                .composum-pages-stage-edit-tools-main-components {
+
+                    &_filter {
+                        display: none;
+                    }
+                }
+
+                .popover {
+
+                    .popover-title {
+                        display: none;
+                    }
+
+                    .popover-content {
+                        padding-top: 0;
+                        padding-bottom: 0;
+                    }
+
+                    .composum-pages-stage-edit-tools-main-components {
+
+                        &_category, &_label {
+                            color: $bootstrap-default-color;
+                        }
+
+                        &_category {
+                            white-space: nowrap;
+                        }
+
+                        &_label {
+                            margin: 0;
+                        }
+                    }
+                }
             }
         }
 
-        &.dragging {
+        &_categories {
+            margin: 0 0 $tools-pane-padding*2;
+            padding: 0;
+        }
 
-            .composum-pages-component-tile {
-                background-color: $tools-pane-sec-selection-color;
+        &_category {
+
+            &:first-child {
+
+                .composum-pages-stage-edit-tools-main-components {
+
+                    &_label {
+                        margin-top: 0;
+                    }
+                }
+            }
+        }
+
+        &_label {
+            display: inline-block;
+            width: 100%;
+            margin: $tools-pane-padding 0 $tools-pane-padding/2;
+
+            &, &:hover, &:focus, &:active {
+                @include edit-hint-font;
+                color: $tools-pane-foreground;
+                text-decoration: none;
+            }
+
+            .fa {
+                display: inline-block;
+                width: 20px;
+            }
+
+            &.collapsed {
+
+                .fa:before {
+                    content: "\f105";
+                }
+            }
+        }
+
+        &_list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        &_item {
+            position: relative;
+            margin: 0 0 $tools-pane-padding;
+            padding: 0;
+
+            &:last-child {
+                margin-bottom: 0;
+            }
+
+            &.selected {
+
+                .composum-pages-component-tile {
+                    background-color: $tools-pane-main-selection-color;
+                }
+            }
+
+            &.dragging {
+
+                .composum-pages-component-tile {
+                    background-color: $tools-pane-sec-selection-color;
+                }
             }
         }
     }

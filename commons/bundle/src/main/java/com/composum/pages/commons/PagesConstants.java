@@ -55,6 +55,7 @@ public interface PagesConstants {
     String NT_COMPONENT = CPP_PREFIX + "Component";
     String PN_COMPONENT_TYPE = "componentType";
     String PN_CATEGORY = "category";
+    String CATEGORY_OTHER = "other";
 
     /** Content elements */
 

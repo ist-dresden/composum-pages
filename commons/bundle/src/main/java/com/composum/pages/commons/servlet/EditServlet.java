@@ -13,6 +13,7 @@ import com.composum.pages.commons.model.Model;
 import com.composum.pages.commons.model.Page;
 import com.composum.pages.commons.model.Site;
 import com.composum.pages.commons.model.properties.DropZone;
+import com.composum.pages.commons.service.ComponentManager;
 import com.composum.pages.commons.service.EditService;
 import com.composum.pages.commons.service.PageManager;
 import com.composum.pages.commons.service.ResourceManager;
@@ -56,6 +57,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import static com.composum.pages.commons.util.ResourceTypeUtil.CONTEXT_ACTIONS_PATH;
 import static com.composum.pages.commons.util.ResourceTypeUtil.CONTEXT_CONTAINER_PATH;
@@ -92,19 +95,22 @@ public class EditServlet extends PagesContentServlet {
     protected AssetsConfiguration assetsConfiguration;
 
     @Reference
+    protected ComponentManager componentManager;
+
+    @Reference
     protected ResourceManager resourceManager;
+
+    @Reference
+    protected PageManager pageManager;
 
     @Reference
     protected SiteManager siteManager;
 
     @Reference
-    protected VersionsService versionsService;
-
-    @Reference
     protected EditService editService;
 
     @Reference
-    protected PageManager pageManager;
+    protected VersionsService versionsService;
 
     protected MoveElementOperation moveElementOperation;
 
@@ -143,7 +149,7 @@ public class EditServlet extends PagesContentServlet {
         siteTree, pageTree, developTree,
         resourceInfo, editDialog, newDialog,
         editTile, editToolbar, treeActions,
-        pageComponents, targetContainers, isAllowedElement, filterDropZones,
+        pageComponents, targetContainers, isAllowedElement, filterDropZones, componentCategories,
         insertElement, moveElement, copyElement,
         createPage, deletePage, moveContent, renameContent, copyContent,
         createSite, deleteSite,
@@ -160,6 +166,7 @@ public class EditServlet extends PagesContentServlet {
 
     /** setup of the servlet operation set for this servlet instance */
     @Override
+    @SuppressWarnings("Duplicates")
     public void init() throws ServletException {
         super.init();
 
@@ -196,6 +203,8 @@ public class EditServlet extends PagesContentServlet {
                 Operation.isAllowedElement, new CheckIsAllowedElement());
         operations.setOperation(ServletOperationSet.Method.GET, Extension.json,
                 Operation.targetContainers, new GetTargetContainers());
+        operations.setOperation(ServletOperationSet.Method.GET, Extension.json,
+                Operation.componentCategories, new GetComponentCategories());
         operations.setOperation(ServletOperationSet.Method.GET, Extension.html,
                 Operation.versions, new GetVersions());
 
@@ -527,6 +536,7 @@ public class EditServlet extends PagesContentServlet {
             return RequestUtil.getSelectorString(request, null, 2);
         }
 
+        @SuppressWarnings("SwitchStatementWithTooFewBranches")
         @Override
         protected String getResourcePath(SlingHttpServletRequest request) {
             switch (RequestUtil.getSelectorString(request, null, 1, 1)) {
@@ -603,8 +613,12 @@ public class EditServlet extends PagesContentServlet {
                 // forward request with 'GET'! for right component rendering
                 request = new RequestUtil.GetWrapper(request);
 
-                final java.util.List allowedElements =
-                        editService.getAllowedElementTypes(context.getResolver(), containerRefs, true);
+                final List<String> allowedElements =
+                        editService.getAllowedElementTypes(context.getResolver(),
+                                new ComponentManager.ComponentScope(
+                                        RequestUtil.getParameter(request, PARAM_FILTER,
+                                                ""), request.getParameter(PARAM_QUERY)),
+                                containerRefs, true);
                 request.setAttribute(PAGE_COMPONENT_TYPES, allowedElements);
 
                 final RequestDispatcherOptions options = new RequestDispatcherOptions();
@@ -679,6 +693,31 @@ public class EditServlet extends PagesContentServlet {
                 JsonWriter jsonWriter = ResponseUtil.getJsonWriter(response);
                 response.setStatus(HttpServletResponse.SC_OK);
                 dropZoneList.toJson(jsonWriter);
+            }
+        }
+    }
+
+    /**
+     * collects a list of all component categories
+     */
+    protected class GetComponentCategories implements ServletOperation {
+
+        @Override
+        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
+                         ResourceHandle resource)
+                throws IOException {
+
+            try (final JsonReader reader = new JsonReader(request.getReader())) {
+
+                Collection<String> categories = componentManager.getComponentCategories(request.getResourceResolver());
+
+                JsonWriter jsonWriter = ResponseUtil.getJsonWriter(response);
+                response.setStatus(HttpServletResponse.SC_OK);
+                jsonWriter.beginArray();
+                for (String key : categories) {
+                    jsonWriter.value(key);
+                }
+                jsonWriter.endArray();
             }
         }
     }

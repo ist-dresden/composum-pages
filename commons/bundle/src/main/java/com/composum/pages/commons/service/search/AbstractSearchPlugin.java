@@ -1,12 +1,17 @@
+/*
+ * copyright (c) 2015ff IST GmbH Dresden, Germany - https://www.ist-software.com
+ *
+ * This software may be modified and distributed under the terms of the MIT license.
+ */
 package com.composum.pages.commons.service.search;
 
+import com.composum.pages.commons.util.LinkUtil;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.ResourceHandle;
 import com.composum.sling.core.filter.ResourceFilter;
-import com.composum.pages.commons.util.LinkUtil;
 import com.composum.sling.platform.staging.query.Query;
 import com.composum.sling.platform.staging.query.QueryBuilder;
-import org.apache.commons.lang3.StringUtils;
+import com.composum.sling.platform.staging.query.QueryConditionDsl;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.exception.ContextedRuntimeException;
 import org.apache.commons.lang3.tuple.Pair;
@@ -30,6 +35,7 @@ import java.util.Set;
 import static com.composum.pages.commons.service.search.SearchService.PARAMETER_SEARCHTERM;
 import static com.composum.pages.commons.service.search.SearchTermParseException.Kind.Empty;
 import static com.composum.pages.commons.service.search.SearchTermParseException.Kind.NoPositivePhrases;
+import static com.composum.pages.commons.service.search.SearchUtil.nameAndTextCondition;
 import static com.composum.sling.core.util.ResourceUtil.CONTENT_NODE;
 import static com.composum.sling.core.util.ResourceUtil.PROP_TITLE;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -60,18 +66,10 @@ public abstract class AbstractSearchPlugin implements SearchPlugin {
 
     protected void buildQuery(Query query, String root, String searchExpression) {
         query.path(root).orderBy(JCR_SCORE).descending();
-        if (StringUtils.isNotBlank(searchExpression)) {
-            String namePattern = searchExpression.replace('*', '%');
-            if (!namePattern.startsWith("%")) {
-                namePattern = "%" + namePattern;
-            }
-            if (!namePattern.endsWith("%")) {
-                namePattern = namePattern + "%";
-            }
-            query.condition(query.conditionBuilder()
-                    .name().like().val(namePattern)
-                    .or()
-                    .contains(searchExpression));
+        QueryConditionDsl.QueryCondition condition =
+                nameAndTextCondition(query.conditionBuilder(), searchExpression);
+        if (condition != null) {
+            query.condition(condition);
         }
     }
 

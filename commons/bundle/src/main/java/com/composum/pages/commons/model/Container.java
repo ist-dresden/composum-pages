@@ -228,7 +228,7 @@ public class Container extends Element {
     public List<String> getElementTypes() {
         if (elementTypes == null) {
             EditService editService = context.getService(EditService.class);
-            elementTypes = editService.getAllowedElementTypes(resolver,
+            elementTypes = editService.getAllowedElementTypes(resolver, null,
                     getResourceManager().getReferenceList(getResourceManager().getReference(this)), true);
         }
         return elementTypes;
