@@ -1,3 +1,8 @@
+/*
+ * copyright (c) 2015ff IST GmbH Dresden, Germany - https://www.ist-software.com
+ *
+ * This software may be modified and distributed under the terms of the MIT license.
+ */
 package com.composum.pages.commons.service;
 
 import com.composum.pages.commons.model.ElementTypeFilter;
@@ -6,6 +11,7 @@ import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.jcr.RepositoryException;
 import java.util.List;
 
@@ -31,25 +37,31 @@ public interface EditService {
     /**
      * Determines the list of resource types (nodes of type 'cpp:Component') for any of the containers.
      *
-     * @param resolver   the requests resolver (session)
-     * @param containers the set of designated container references
+     * @param resolver         the requests resolver (session)
+     * @param scope            the search filter configuration
+     * @param containers       the set of designated container references
+     * @param resourceTypePath return the component path instead of resource type if 'true'
      * @return the result of a component type query filtered by the filter object
      */
-    List<String> getAllowedElementTypes(ResourceResolver resolver,
-                                        ResourceManager.ReferenceList containers,
+    List<String> getAllowedElementTypes(@Nonnull ResourceResolver resolver,
+                                        @Nullable ComponentManager.ComponentScope scope,
+                                        @Nonnull ResourceManager.ReferenceList containers,
                                         boolean resourceTypePath);
 
     /**
      * Determines the list of resource types (nodes of type 'cpp:Component') which are accepted by the filter.
      *
-     * @param resolver   the requests resolver (session)
-     * @param containers the set of designated container references
-     * @param filter     the filter instance (resource type pattern filter)
+     * @param resolver         the requests resolver (session)
+     * @param scope            the search filter configuration
+     * @param containers       the set of designated container references
+     * @param filter           the filter instance (resource type pattern filter)
+     * @param resourceTypePath return the component path instead of resource type if 'true'
      * @return the result of a component type query filtered by the filter object
      */
-    List<String> getAllowedElementTypes(ResourceResolver resolver,
-                                        ResourceManager.ReferenceList containers,
-                                        ElementTypeFilter filter,
+    List<String> getAllowedElementTypes(@Nonnull ResourceResolver resolver,
+                                        @Nullable ComponentManager.ComponentScope scope,
+                                        @Nonnull ResourceManager.ReferenceList containers,
+                                        @Nonnull ElementTypeFilter filter,
                                         boolean resourceTypePath);
 
     /**

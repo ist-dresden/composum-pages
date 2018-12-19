@@ -3,5 +3,5 @@
         jcr:primaryType="cpp:Component"
         jcr:description="a single title element"
         jcr:title="Title"
-        componentGroup="General"
+        category="[General,Blueprint]"
         sling:resourceSuperType="composum/pages/components/element"/>

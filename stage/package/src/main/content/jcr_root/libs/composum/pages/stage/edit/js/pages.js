@@ -32,7 +32,7 @@
                     site: 'site'
                 }
             },
-            trigger:{
+            trigger: {
                 event: 'trigger:event',
                 action: 'trigger:action',
                 dialog: {
@@ -147,6 +147,13 @@
                     tree: {
                         aspect: 'develop-tree',
                         path: 'path'
+                    }
+                },
+                components: {
+                    list: {
+                        aspect: 'components-list',
+                        filter: 'filter',
+                        search: 'search'
                     }
                 }
             },

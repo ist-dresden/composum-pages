@@ -3,5 +3,5 @@
         jcr:primaryType="cpp:Component"
         jcr:description="a search term input field"
         jcr:title="Search Field"
-        componentGroup="Meta"
+        category="[Meta,Blueprint]"
         sling:resourceSuperType="composum/pages/components/element"/>

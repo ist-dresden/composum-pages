@@ -14,10 +14,14 @@ import org.apache.sling.api.resource.NonExistingResource;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.composum.pages.commons.PagesConstants.NODE_TYPE_COMPONENT;
+import static com.composum.pages.commons.PagesConstants.NT_COMPONENT;
+import static com.composum.pages.commons.PagesConstants.PN_CATEGORY;
+import static com.composum.pages.commons.PagesConstants.PN_COMPONENT_TYPE;
 import static com.composum.pages.commons.servlet.EditServlet.EDIT_RESOURCE_TYPE_KEY;
 import static com.composum.pages.commons.util.ResourceTypeUtil.isSyntheticResource;
 
@@ -38,7 +42,7 @@ public class Component extends AbstractModel {
      * check the 'cpp:Component' type for a resource
      */
     public static boolean isComponent(Resource resource) {
-        return ResourceUtil.isResourceType(resource, NODE_TYPE_COMPONENT);
+        return ResourceUtil.isResourceType(resource, NT_COMPONENT);
     }
 
     /**
@@ -104,6 +108,7 @@ public class Component extends AbstractModel {
     private transient EditTile editTile;
 
     private transient String type;
+    private transient List<String> category;
 
     /** delegate initialization */
 
@@ -114,7 +119,6 @@ public class Component extends AbstractModel {
         initialize(context, resource);
     }
 
-
     /**
      * determine the components resource even if the initial resource is an instance of the component
      */
@@ -124,15 +128,7 @@ public class Component extends AbstractModel {
         if (Component.isComponent(initialResource)) {
             typeResource = initialResource;
         } else {
-            String resourceType = initialResource.getResourceType();
-            Matcher matcher = EDIT_SUBTYPE_PATTERN.matcher(resourceType);
-            if (matcher.matches()) {
-                // if type is a subtype use the component type instead
-                typeResource = resolver.getResource(matcher.group(1));
-            }
-            if (typeResource == null) {
-                typeResource = getTypeResource(initialResource);
-            }
+            typeResource = getTypeResource(initialResource);
         }
         return typeResource != null ? typeResource : initialResource;
     }
@@ -166,7 +162,7 @@ public class Component extends AbstractModel {
                 // ignore all resource types modified by resource wrappers
                 typeResource = resolver.getResource(resource.getPath());
                 if (typeResource != null &&
-                        !typeResource.isResourceType(PagesConstants.NODE_TYPE_COMPONENT)) {
+                        !typeResource.isResourceType(PagesConstants.NT_COMPONENT)) {
                     // the initialResource is probably an instance of a component not a component itself
                     // in this case we have to switch to the resource of the resource type
                     String resourceType = typeResource.getResourceType();
@@ -186,6 +182,11 @@ public class Component extends AbstractModel {
                         }
                     }
                     if (StringUtils.isNotBlank(resourceType)) {
+                        Matcher matcher = EDIT_SUBTYPE_PATTERN.matcher(resourceType);
+                        if (matcher.matches()) {
+                            // if type is a subtype use the component type instead
+                            resourceType = matcher.group(1);
+                        }
                         typeResource = ResolverUtil.getResourceType(typeResource, resourceType);
                     }
                 }
@@ -205,7 +206,6 @@ public class Component extends AbstractModel {
             }
             return typeResource;
         }
-
     }
 
     public static String getTypeOfSubtype(String resourceType) {
@@ -217,12 +217,11 @@ public class Component extends AbstractModel {
         return resourceType;
     }
 
-    /** the type of a component is the the components resource path relative to the resolver root path */
-    public String getType() {
-        if (type == null) {
-            type = ResourceTypeUtil.relativeResourceType(getContext().getResolver(), getPath());
+    public List<String> getCategory() {
+        if (category == null) {
+            category = Arrays.asList(getProperty(PN_CATEGORY, null, new String[0]));
         }
-        return type;
+        return category;
     }
 
     public EditDialog getEditDialog() {
@@ -237,5 +236,30 @@ public class Component extends AbstractModel {
             editTile = new EditTile();
         }
         return editTile;
+    }
+
+    // component aspect of AbstractModel
+
+    /** the type of a component is the the components resource path relative to the resolver root path */
+    @Override
+    public String getType() {
+        if (type == null) {
+            type = ResourceTypeUtil.relativeResourceType(getContext().getResolver(), getPath());
+        }
+        return type;
+    }
+
+    @Override
+    public Component getComponent() {
+        return this;
+    }
+
+    @Override
+    public PagesConstants.ComponentType getComponentType() {
+        if (componentType == null) {
+            componentType = PagesConstants.ComponentType.typeOf(
+                    ResolverUtil.getTypeProperty(getResource(), PN_COMPONENT_TYPE, ""));
+        }
+        return componentType;
     }
 }

@@ -5,6 +5,42 @@
 
 .composum-pages-tools {
 
+    &_actions {
+
+        .input-group-addon {
+            padding: 0 8px;
+            height: 28px;
+            line-height: 24px;
+            color: $tools-input-foreground;
+            background-color: $tools-input-background;
+            border-color: $tools-input-border-color;
+
+            &.composum-pages-tools {
+
+                &_search-reset {
+                    padding: 0 6px;
+
+                    &:before {
+                        opacity: 0.7;
+                    }
+                }
+            }
+        }
+
+        .composum-pages-tools {
+
+            &_search-field {
+                padding-top: 0;
+                padding-bottom: 0;
+                height: 28px;
+                line-height: 26px;
+                color: $tools-input-foreground;
+                background-color: $tools-input-background;
+                border-color: $tools-input-border-color;
+            }
+        }
+    }
+
     &_search-panel {
 
         .composum-pages-tools {

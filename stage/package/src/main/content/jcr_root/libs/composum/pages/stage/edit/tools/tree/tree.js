@@ -655,7 +655,7 @@
                 var filter = $link.parent().data('value');
                 this.tree.setFilter(filter);
                 this.searchPanel.setFilter(filter);
-                this.selectFilter(filter);
+                this.setFilter(filter);
                 pages.profile.set(p.aspect, p.filter, filter);
             }
         });
@@ -672,7 +672,7 @@
                 this.$viewToggle = this.$('.' + tree.const.pages.css.base + '_toggle-view');
                 this.$viewToggle.click(_.bind(this.toggleView, this));
                 this.setView(pages.profile.get(p.aspect, p.view, 'tree'));
-                this.selectFilter(pages.profile.get(p.aspect, p.filter, undefined));
+                this.setFilter(pages.profile.get(p.aspect, p.filter, undefined));
                 this.$('.' + tree.const.pages.css.base + '_filter-value a').click(_.bind(this.setFilter, this));
                 this.tree.$el.on('node:selected.' + this.treePanelId, _.bind(this.onNodeSelected, this));
                 $(document).on(e.site.selected + '.' + this.treePanelId, _.bind(this.onSiteSelected, this));
@@ -687,7 +687,7 @@
                 }
             },
 
-            selectFilter: function (filter) {
+            setFilter: function (filter) {
                 this.$('.' + tree.const.pages.css.base + '_filter-value').removeClass('active');
                 if (filter) {
                     this.$('.' + tree.const.pages.css.base + '_filter-value[data-value="' + filter + '"]')
@@ -708,7 +708,7 @@
                 this.$viewToggle = this.$('.' + tree.const.assets.css.base + '_toggle-view');
                 this.$viewToggle.click(_.bind(this.toggleView, this));
                 this.setView(pages.profile.get(p.aspect, p.view, 'tree'));
-                this.selectFilter(pages.profile.get(p.aspect, p.filter, undefined));
+                this.setFilter(pages.profile.get(p.aspect, p.filter, undefined));
                 this.$('.' + tree.const.assets.css.base + '_filter-value a').click(_.bind(this.setFilter, this));
                 this.tree.$el.on('node:selected.' + this.treePanelId, _.bind(this.onNodeSelected, this));
                 $(document).on(e.asset.select + '.' + this.treePanelId, _.bind(this.selectAsset, this));
@@ -734,7 +734,7 @@
             selectDefaultNode: function () {
             },
 
-            selectFilter: function (filter) {
+            setFilter: function (filter) {
                 this.$('.' + tree.const.assets.css.base + '_filter-value').removeClass('active');
                 if (filter) {
                     this.$('.' + tree.const.assets.css.base + '_filter-value[data-value="' + filter + '"]')

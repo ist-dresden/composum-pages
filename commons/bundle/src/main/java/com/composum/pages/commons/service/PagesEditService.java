@@ -1,3 +1,8 @@
+/*
+ * copyright (c) 2015ff IST GmbH Dresden, Germany - https://www.ist-software.com
+ *
+ * This software may be modified and distributed under the terms of the MIT license.
+ */
 package com.composum.pages.commons.service;
 
 import com.composum.pages.commons.PagesConstants;
@@ -7,6 +12,7 @@ import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.util.ResourceUtil;
 import com.composum.sling.platform.staging.query.Query;
 import com.composum.sling.platform.staging.query.QueryBuilder;
+import com.composum.sling.platform.staging.query.QueryConditionDsl;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.resource.PersistenceException;
@@ -19,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
@@ -28,6 +35,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static com.composum.pages.commons.PagesConstants.NT_COMPONENT;
 
 @Component(
         property = {
@@ -90,36 +99,49 @@ public class PagesEditService implements EditService {
     /**
      * Determines the list of resource types (nodes of type 'cpp:Component') for any of the containers.
      *
-     * @param resolver   the requests resolver (session)
-     * @param containers the set of designated container references
+     * @param resolver         the requests resolver (session)
+     * @param scope            the search filter configuration
+     * @param containers       the set of designated container references
+     * @param resourceTypePath return the component path instead of resource type if 'true'
      * @return the result of a component type query filtered by the filter object
      */
     @Override
-    public List<String> getAllowedElementTypes(ResourceResolver resolver,
-                                               ResourceManager.ReferenceList containers,
+    public List<String> getAllowedElementTypes(@Nonnull ResourceResolver resolver,
+                                               @Nullable ComponentManager.ComponentScope scope,
+                                               @Nonnull ResourceManager.ReferenceList containers,
                                                boolean resourceTypePath) {
         ElementTypeFilter filter = new ElementTypeFilter(resolver, containers);
-        return getAllowedElementTypes(resolver, containers, filter, resourceTypePath);
+        return getAllowedElementTypes(resolver, scope, containers, filter, resourceTypePath);
     }
 
     /**
      * Determines the list of resource types (nodes of type 'cpp:Component') which are accepted by the filter.
      *
-     * @param resolver   the requests resolver (session)
-     * @param containers the set of designated container references
-     * @param filter     the filter instance (resource type pattern filter)
+     * @param resolver         the requests resolver (session)
+     * @param scope            the search filter configuration
+     * @param containers       the set of designated container references
+     * @param filter           the filter instance (resource type pattern filter)
+     * @param resourceTypePath return the component path instead of resource type if 'true'
      * @return the result of a component type query filtered by the filter object
      */
     @Override
-    public List<String> getAllowedElementTypes(ResourceResolver resolver,
-                                               ResourceManager.ReferenceList containers,
-                                               ElementTypeFilter filter,
+    public List<String> getAllowedElementTypes(@Nonnull ResourceResolver resolver,
+                                               @Nullable ComponentManager.ComponentScope scope,
+                                               @Nonnull ResourceManager.ReferenceList containers,
+                                               @Nonnull ElementTypeFilter filter,
                                                boolean resourceTypePath) {
         List<String> allowedTypes = new ArrayList<>();
         QueryBuilder queryBuilder = resolver.adaptTo(QueryBuilder.class);
         if (queryBuilder != null) {
             for (String path : resolver.getSearchPath()) {
-                Query query = queryBuilder.createQuery().path(path).type("cpp:Component");
+                Query query = queryBuilder.createQuery().path(path).type(NT_COMPONENT);
+                QueryConditionDsl.QueryCondition condition = null;
+                if (scope != null) {
+                    condition = scope.queryCondition(query.conditionBuilder());
+                }
+                if (condition != null) {
+                    query.condition(condition);
+                }
                 try {
                     for (Resource component : query.execute()) {
                         String type = component.getPath().substring(path.length());
@@ -147,7 +169,7 @@ public class PagesEditService implements EditService {
             if (parent != null) {
                 String resourceType = reference.getType();
                 String primaryType = ResolverUtil.getTypeProperty(resolver, resourceType,
-                        PagesConstants.PROP_COMPONENT_TYPE, "");
+                        PagesConstants.PN_COMPONENT_TYPE, "");
                 Map<String, Object> properties = new HashMap<>();
                 properties.put(JcrConstants.JCR_PRIMARYTYPE, StringUtils.isNotBlank(primaryType)
                         ? primaryType : JcrConstants.NT_UNSTRUCTURED);

@@ -33,10 +33,10 @@ public class Element extends AbstractModel {
                                     @Nullable Resource resource, @Nullable String type) {
         return (resource != null && (resource.isResourceType(NODE_TYPE_ELEMENT) ||
                 NODE_TYPE_ELEMENT.equals(ResolverUtil.getTypeProperty(
-                        resource, type, PagesConstants.PROP_COMPONENT_TYPE, "")))) ||
+                        resource, type, PagesConstants.PN_COMPONENT_TYPE, "")))) ||
                 (StringUtils.isNotBlank(type) &&
                         NODE_TYPE_ELEMENT.equals(ResolverUtil.getTypeProperty(
-                                resolver, type, PagesConstants.PROP_COMPONENT_TYPE, "")));
+                                resolver, type, PagesConstants.PN_COMPONENT_TYPE, "")));
     }
 
     // transient attributes

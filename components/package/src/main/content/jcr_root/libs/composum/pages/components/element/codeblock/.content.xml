@@ -3,5 +3,5 @@
         jcr:primaryType="cpp:Component"
         jcr:description="a code snippet with syntax highlighting"
         jcr:title="Code Block"
-        componentGroup="Documentation"
+        category="[Documentation,Blueprint]"
         sling:resourceSuperType="composum/pages/components/element"/>

@@ -522,7 +522,7 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
 
         @Nonnull
         public String getPrimaryType() {
-            return ResolverUtil.getTypeProperty(resolver, getType(), PagesConstants.PROP_COMPONENT_TYPE, "");
+            return ResolverUtil.getTypeProperty(resolver, getType(), PagesConstants.PN_COMPONENT_TYPE, "");
         }
 
         @Nonnull

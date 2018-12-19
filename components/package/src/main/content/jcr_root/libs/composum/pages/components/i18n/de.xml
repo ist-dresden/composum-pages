@@ -9,7 +9,19 @@
 
         <medium jcr:primaryType="sling:MessageEntry"
                 sling:key="medium" sling:message="mittel"/>
+        <other jcr:primaryType="sling:MessageEntry"
+                sling:key="other" sling:message="sonstige"/>
     </general>
+
+    <category jcr:primaryType="sling:Folder">
+
+        <General jcr:primaryType="sling:MessageEntry"
+                sling:key="General" sling:message="Allgemein"/>
+        <Documentation jcr:primaryType="sling:MessageEntry"
+                sling:key="Documentation" sling:message="Dokumentation"/>
+        <Image jcr:primaryType="sling:MessageEntry"
+                sling:key="Image" sling:message="Bild"/>
+    </category>
 
     <element jcr:primaryType="sling:Folder"><!-- element labels -->
 
