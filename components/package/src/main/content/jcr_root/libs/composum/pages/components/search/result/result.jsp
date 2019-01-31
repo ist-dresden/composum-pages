@@ -4,7 +4,7 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <cpp:defineObjects/>
 <cpp:element var="model" type="com.composum.pages.components.model.search.SearchResult">
-    ${model.headFormatted}
+    <cpn:text tagName="h3">${model.head}</cpn:text>
     <c:if test="${model.hasError}">
         <div class="alert alert-danger" role="alert">${cpn:rich(slingRequest, model.searchtermErrorText)}</div>
     </c:if>

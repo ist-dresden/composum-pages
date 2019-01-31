@@ -110,6 +110,8 @@ public class Component extends AbstractModel {
     private transient String type;
     private transient List<String> category;
 
+    private transient String quickHelp;
+
     /** delegate initialization */
 
     public Component() {
@@ -247,6 +249,13 @@ public class Component extends AbstractModel {
             type = ResourceTypeUtil.relativeResourceType(getContext().getResolver(), getPath());
         }
         return type;
+    }
+
+    public String getQuickHelp() {
+        if (quickHelp == null) {
+            quickHelp = ResolverUtil.getTypeProperty(getResource(), "quickHelp", "");
+        }
+        return quickHelp;
     }
 
     @Override

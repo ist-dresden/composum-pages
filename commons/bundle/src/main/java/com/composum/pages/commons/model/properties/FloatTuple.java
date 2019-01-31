@@ -50,7 +50,7 @@ public abstract class FloatTuple extends ValueSet<FloatTuple.Value> {
     }
 
     public FloatTuple(Resource resource, String name) {
-        ValueMap values = resource.adaptTo(ValueMap.class);
+        ValueMap values = resource.getValueMap();
         if (!initialize(values.get(name + getKeyOne(), String.class),
                 values.get(name + getKeyTwo(), String.class))) {
             initialize(values.get(name + getKeyOne(), String[].class),

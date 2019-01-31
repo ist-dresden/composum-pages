@@ -213,6 +213,9 @@
                     if (parameters) {
                         frameUrl.parameters = parameters;
                     }
+                    if (!frameUrl.parameters['cpm.access']) {
+                        frameUrl.parameters['cpm.access'] = 'AUTHOR'; // inside edit frame use always 'AUTHOR' mode
+                    }
                     if (!frameUrl.parameters['pages.view']) {
                         frameUrl.parameters['pages.view'] = pages.current.mode.toLowerCase();
                     }

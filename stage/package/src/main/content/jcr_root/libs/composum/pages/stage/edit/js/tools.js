@@ -350,17 +350,18 @@
 
             onPageSelected: function (event, refOrPath, parameters) {
                 if (pages.contextTools.log.getLevel() <= log.levels.DEBUG) {
-                    pages.contextTools.log.debug('tools.Context.onPageSelected(' + path + ')');
+                    pages.contextTools.log.debug('tools.Context.onPageSelected(' + refOrPath + ')');
                 }
                 this.changeTools(refOrPath && refOrPath.path
                     ? refOrPath : new pages.Reference(undefined, refOrPath, undefined));
             },
 
-            onElementSelected: function (event, reference) {
+            onElementSelected: function (event, refOrPath) {
                 if (pages.contextTools.log.getLevel() <= log.levels.DEBUG) {
-                    pages.contextTools.log.debug('tools.Context.onElementSelected(' + path + ')');
+                    pages.contextTools.log.debug('tools.Context.onElementSelected(' + refOrPath + ')');
                 }
-                this.changeTools(reference);
+                this.changeTools(refOrPath && refOrPath.path
+                    ? refOrPath : new pages.Reference(undefined, refOrPath, undefined));
             },
 
             changeTools: function (reference) {

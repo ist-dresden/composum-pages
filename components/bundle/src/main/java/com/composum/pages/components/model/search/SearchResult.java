@@ -6,9 +6,10 @@
 package com.composum.pages.components.model.search;
 
 import com.composum.pages.commons.model.Element;
+import com.composum.pages.commons.service.PlaceholderService;
 import com.composum.pages.commons.service.search.SearchService;
 import com.composum.pages.commons.service.search.SearchTermParseException;
-import com.composum.sling.cpnl.CpnlElFunctions;
+import com.composum.sling.core.BeanContext;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.sling.api.SlingHttpServletRequest;
@@ -55,7 +56,7 @@ public class SearchResult extends Element {
     public static final String PROP_TEMPLATE = "template";
     /** Property for the default number of items per page. */
     public static final int DEFAULT_PAGESIZE = 25;
-    /** Property for the number of items per page, if not overridden by {@link #PROP_PAGESIZE}. */
+    /** Property for the number of items per page, if not overridden by {PROP_PAGESIZE}. */
     public static final String PROP_PAGESIZE = "pagesize";
     /** Property name for {@link #getSearchtermErrorText()}. */
     public static final String PROP_SEARCHTERM_ERROR_TEXT = "searchtermErrorText";
@@ -71,7 +72,7 @@ public class SearchResult extends Element {
     /** @see #getSearchTerm() */
     private transient String searchTerm;
     /** @see #getHead() */
-    private transient MessageFormat head;
+    private transient String head;
     /** @see #getOffset() */
     private transient Integer offset;
     /** @see #getPageSize() */
@@ -110,20 +111,14 @@ public class SearchResult extends Element {
      * The head for the search result (HTML) used as {@link MessageFormat} with the search expression used as argument
      * {0}.
      */
-    public MessageFormat getHead() {
+    public String getHead() {
         if (head == null) {
-            head = new MessageFormat(getProperty(PROP_HEADLINE, ""));
+            BeanContext context = getContext();
+            Map<String, Object> values = Collections.<String, Object>singletonMap("term", getSearchTerm());
+            head = context.getService(PlaceholderService.class)
+                    .applyPlaceholders(context, getProperty(PROP_HEADLINE, ""), values);
         }
         return head;
-    }
-
-    /**
-     * The head for the search result, formatted.
-     *
-     * @see #getHead()
-     */
-    public String getHeadFormatted() {
-        return CpnlElFunctions.rich(getContext().getRequest(), getHead().format(new Object[]{getSearchTerm()}));
     }
 
     /**
@@ -303,8 +298,7 @@ public class SearchResult extends Element {
                 }
             }
             builder.setParameter(PARAMETER_OFFSET, String.valueOf(getPageSize() * (number - 1)));
-            URI build = builder.build();
-            return build;
+            return builder.build();
         }
     }
 }

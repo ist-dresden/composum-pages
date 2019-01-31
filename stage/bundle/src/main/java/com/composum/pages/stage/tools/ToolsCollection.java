@@ -6,6 +6,7 @@ import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
 
+import javax.annotation.Nonnull;
 import javax.jcr.query.Query;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,7 +33,7 @@ public class ToolsCollection {
 
         public Component(Resource resource) {
             this.resource = resource;
-            this.values = resource.adaptTo(ValueMap.class);
+            this.values = resource.getValueMap();
         }
 
         public String getIconClass() {
@@ -70,7 +71,7 @@ public class ToolsCollection {
         }
 
         @Override
-        public int compareTo(Component other) {
+        public int compareTo(@Nonnull Component other) {
             return getOrder() - other.getOrder();
         }
     }
@@ -94,6 +95,7 @@ public class ToolsCollection {
 
     protected void findComponents(List<Component> list, String query) {
 
+        @SuppressWarnings("deprecation")
         Iterator<Resource> toolsContentResources = resolver.findResources(query, Query.XPATH);
 
         ResourceFilter toolsFilter = new ToolsFilter();
@@ -113,8 +115,8 @@ public class ToolsCollection {
 
         @Override
         public boolean accept(Resource resource) {
-            ValueMap values = resource.adaptTo(ValueMap.class);
-            List<String> categories = Arrays.asList(values.get(CATEGORIES, new String[0]));
+            ValueMap values = resource.getValueMap();
+            String[] categories = values.get(CATEGORIES, new String[0]);
             for (String category : ToolsCollection.this.categories) {
                 boolean matches = false;
                 for (String pattern : categories) {

@@ -5,6 +5,7 @@ import com.composum.pages.options.microsite.MicrositeConstants;
 import com.composum.pages.options.microsite.service.MicrositeImportService;
 import com.composum.pages.options.microsite.service.MicrositeImportStatus;
 import com.composum.sling.core.BeanContext;
+import com.composum.sling.core.filter.StringFilter;
 import com.composum.sling.cpnl.CpnlElFunctions;
 import com.google.gson.stream.JsonWriter;
 import org.apache.commons.io.IOUtils;
@@ -56,9 +57,10 @@ public class MicrositeServlet extends SlingAllMethodsServlet implements Microsit
     private static final Logger LOG = LoggerFactory.getLogger(MicrositeServlet.class);
 
     public static final String SELECTOR_EMBEDDED = "embedded";
+    public static final StringFilter SELECTOR_FILTER = new StringFilter.BlackList("searchItem");
 
     public static final String DATA_FORWARD_TYPE = "composum/pages/options/microsite/page/metadata";
-    public static final String POST_FORWARD_TYPE = "composum/pages/components/page";
+    public static final String PAGE_FORWARD_TYPE = "composum/pages/components/page";
 
     protected BundleContext bundleContext;
 
@@ -74,6 +76,13 @@ public class MicrositeServlet extends SlingAllMethodsServlet implements Microsit
         BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
         RequestPathInfo pathInfo = request.getRequestPathInfo();
         List<String> selectors = Arrays.asList(pathInfo.getSelectors());
+        for (String selector : selectors) {
+            if (!SELECTOR_FILTER.accept(selector)) {
+                // unsupported, probably page related selector - render as default Page...
+                include(request, response, PAGE_FORWARD_TYPE);
+                return;
+            }
+        }
         boolean embedded = selectors.contains(SELECTOR_EMBEDDED);
         if (!embedded && DisplayMode.isEditMode(context)) {
             forward(request, response, DATA_FORWARD_TYPE);
@@ -161,22 +170,38 @@ public class MicrositeServlet extends SlingAllMethodsServlet implements Microsit
             }
         } else {
             // forward to normal POST handling (e.g. for the default edit dialog of a page)...
-            forward(request, response, POST_FORWARD_TYPE);
+            forward(request, response, PAGE_FORWARD_TYPE);
         }
     }
 
     protected void forward(@Nonnull final SlingHttpServletRequest request, @Nonnull final SlingHttpServletResponse response,
                            @Nonnull String resourceType)
             throws ServletException, IOException {
+        final RequestDispatcher dispatcher = getDispatcher(request, resourceType);
+        if (dispatcher != null) {
+            dispatcher.forward(request, response);
+        }
+    }
+
+    protected void include(@Nonnull final SlingHttpServletRequest request, @Nonnull final SlingHttpServletResponse response,
+                           @Nonnull String resourceType)
+            throws ServletException, IOException {
+        final RequestDispatcher dispatcher = getDispatcher(request, resourceType);
+        if (dispatcher != null) {
+            dispatcher.include(request, response);
+        }
+    }
+
+    protected RequestDispatcher getDispatcher(@Nonnull final SlingHttpServletRequest request,
+                                              @Nonnull final String resourceType) {
         Resource resource = request.getResource();
         final RequestDispatcherOptions forwardOptions = new RequestDispatcherOptions();
         forwardOptions.setForceResourceType(resourceType);
-        RequestDispatcher dispatcher = request.getRequestDispatcher(resource, forwardOptions);
-        if (dispatcher != null) {
-            dispatcher.forward(request, response);
-        } else {
-            LOG.error("no dispatcher available for '{}'", resource.getPath());
+        final RequestDispatcher dispatcher = request.getRequestDispatcher(resource, forwardOptions);
+        if (dispatcher == null) {
+            LOG.error("no dispatcher available for '{}'", request.getResource().getPath());
         }
+        return dispatcher;
     }
 
     @Activate

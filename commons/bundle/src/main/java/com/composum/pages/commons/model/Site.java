@@ -158,7 +158,7 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
         if (releases != null) {
             category = category.toLowerCase();
             for (Resource release : releases.getChildren()) {
-                ValueMap values = release.adaptTo(ValueMap.class);
+                ValueMap values = release.getValueMap();
                 String key = values.get("key", "");
                 if (StringUtils.isNotBlank(key)) {
                     if (key.equals(category)) {

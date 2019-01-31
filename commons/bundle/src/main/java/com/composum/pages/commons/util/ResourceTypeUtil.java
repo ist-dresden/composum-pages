@@ -48,6 +48,7 @@ public class ResourceTypeUtil {
     public static final String DELETE_DIALOG_PATH = EDIT_DIALOG_PATH + "/delete";
     public static final String MANAGE_DIALOG_PATH = EDIT_DIALOG_PATH + "/manage";
     public static final String EDIT_TILE_PATH = EDIT_PATH + "/tile";
+    public static final String EDIT_HELP_PATH = EDIT_PATH + "/help";
     public static final String EDIT_THUMBNAIL_PATH = EDIT_PATH + "/thumbnail";
     public static final String EDIT_TOOLBAR_PATH = EDIT_PATH + "/toolbar";
     public static final String TREE_ACTIONS_PATH = EDIT_PATH + "/tree";
@@ -79,6 +80,11 @@ public class ResourceTypeUtil {
     public static final String DEFAULT_PAGE_TILE = EDIT_DEFAULT_ROOT + "page/tile";
     public static final String DEFAULT_SITE_TILE = EDIT_DEFAULT_ROOT + "site/tile";
     public static final String DEFAULT_FILE_TILE = EDIT_DEFAULT_ROOT + "file/tile";
+
+    public static final String DEFAULT_ELEMENT_HELP = EDIT_DEFAULT_ROOT + "element/help";
+    public static final String DEFAULT_CONTAINER_HELP = EDIT_DEFAULT_ROOT + "container/help";
+    public static final String DEFAULT_PAGE_HELP = EDIT_DEFAULT_ROOT + "page/help";
+    public static final String DEFAULT_SITE_HELP = EDIT_DEFAULT_ROOT + "site/help";
 
     public static final String DEFAULT_ELEMENT_THUMBNAIL = EDIT_DEFAULT_ROOT + "element/thumbnail";
     public static final String DEFAULT_CONTAINER_THUMBNAIL = EDIT_DEFAULT_ROOT + "container/thumbnail";
@@ -140,6 +146,16 @@ public class ResourceTypeUtil {
                     : Page.isPage(resource) || Page.isPageContent(resource) ? DEFAULT_PAGE_TILE
                     : Container.isContainer(resolver, resource, type) ? DEFAULT_CONTAINER_TILE
                     : DEFAULT_ELEMENT_TILE;
+        }
+    }
+
+    public static class ComponentHelpStrategy implements SubtypeStrategy {
+
+        public String getDefaultResourcePath(ResourceResolver resolver, Resource resource, String type) {
+            return Site.isSite(resource) || Site.isSiteConfiguration(resource) ? DEFAULT_SITE_HELP
+                    : Page.isPage(resource) || Page.isPageContent(resource) ? DEFAULT_PAGE_HELP
+                    : Container.isContainer(resolver, resource, type) ? DEFAULT_CONTAINER_HELP
+                    : DEFAULT_ELEMENT_HELP;
         }
     }
 
@@ -244,6 +260,7 @@ public class ResourceTypeUtil {
     static {
         SUBTYPES = new HashMap<>();
         SUBTYPES.put(EDIT_TILE_PATH, new ComponentTileStrategy());
+        SUBTYPES.put(EDIT_HELP_PATH, new ComponentHelpStrategy());
         SUBTYPES.put(EDIT_THUMBNAIL_PATH, new ComponentThumbnailStrategy());
         SUBTYPES.put(EDIT_DIALOG_PATH, new EditDialogStrategy());
         SUBTYPES.put(NEW_DIALOG_PATH, new NewDialogStrategy());

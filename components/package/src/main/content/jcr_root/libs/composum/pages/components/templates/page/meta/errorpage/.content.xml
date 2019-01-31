@@ -9,9 +9,7 @@
             jcr:title="Pages Components Error Page"
             jcr:description="A custom error page derived from the n ormal content page."
             sling:resourceType="composum/pages/components/page/errorpage"
-            allowedChildTemplates="[
-                NONE
-            ]">
+            allowedChildTemplates="[]">
         <main
                 jcr:primaryType="cpp:Container"
                 sling:resourceType="composum/pages/components/container/parsys">

@@ -197,7 +197,7 @@ public class EditWidgetTag extends AbstractWidgetTag implements LoopTag {
         if (StringUtils.isBlank(modelClass)) {
             Resource widget = ResolverUtil.getResourceType(resourceResolver, getSnippetResourceType());
             while (StringUtils.isBlank(modelClass) && widget != null) {
-                ValueMap widgetValues = widget.adaptTo(ValueMap.class);
+                ValueMap widgetValues = widget.getValueMap();
                 modelClass = widgetValues.get(MODEL_CLASS, DEFAULT_MODEL_CLASS);
                 widget = ResolverUtil.getResourceType(resourceResolver, widget.getResourceSuperType());
             }
