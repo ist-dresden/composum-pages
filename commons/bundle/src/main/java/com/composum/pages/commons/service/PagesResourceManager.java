@@ -604,7 +604,7 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
                 if (ResourceUtil.isNonExistingResource(resource)) {
                     resourceValues = new ValueHashMap();
                 } else {
-                    resourceValues = resource.adaptTo(ValueMap.class);
+                    resourceValues = resource.getValueMap();
                 }
             }
             return resourceValues;

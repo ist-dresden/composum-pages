@@ -3,5 +3,6 @@
         jcr:primaryType="cpp:Component"
         jcr:description="a rotating set of elements"
         jcr:title="Carousel"
+        category="[Teaser,Blueprint]"
         sling:resourceSuperType="composum/pages/components/container/parsys"
         allowedElements="[composum/pages/components/element/teaser]"/>

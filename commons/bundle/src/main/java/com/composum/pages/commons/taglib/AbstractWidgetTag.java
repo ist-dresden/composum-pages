@@ -19,8 +19,11 @@ public abstract class AbstractWidgetTag extends AbstractWrappingTag {
     protected boolean i18n = false;
     protected String modelClass;
 
+    private transient String propertyName;
+
     @Override
     protected void clear() {
+        propertyName = null;
         modelClass = null;
         i18n = false;
         name = null;
@@ -135,20 +138,19 @@ public abstract class AbstractWidgetTag extends AbstractWrappingTag {
      * @return the path of the property of the resource probably with a prepended include path segment and the i18n path
      */
     public String getPropertyName() {
-        String propertyName = name != null ? name : getProperty();
-        return isI18n() ? getI18nName(propertyName) : propertyName; // prepend i18n path if 'i18n' is on
-    }
-
-    protected String getI18nName(String name) {
-        if (isI18n()) {
-            EditDialogTag dialog = getDialog();
-            if (dialog != null) {
-                return dialog.getPropertyPath(getRelativePath(), name);
+        if (propertyName == null) {
+            propertyName = name != null ? name : getProperty();
+            // prepend relative path and i18n path if 'i18n' is on
+            if (isI18n()) {
+                EditDialogTag dialog = getDialog();
+                if (dialog != null) {
+                    return dialog.getPropertyPath(getRelativePath(), propertyName);
+                }
+            } else {
+                propertyName = getRelativePath() + propertyName;
             }
-        } else {
-            name = getRelativePath() + name;
         }
-        return name;
+        return propertyName;
     }
 
     public String getRequestLanguage() {

@@ -3,5 +3,6 @@
         jcr:primaryType="cpp:Component"
         jcr:description="a table entry, a text element"
         jcr:title="Table Column"
+        category="[Table,General,Blueprint]"
         sling:resourceSuperType="composum/pages/components/element"
         allowedContainers="[composum/pages/components/composed/table/row]"/>

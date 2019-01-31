@@ -35,7 +35,7 @@ public class ResolverUtil {
         if (typeResource != null) {
             ResourceResolver resolver = typeResource.getResourceResolver();
             while (typeResource != null && value == null) {
-                ValueMap values = typeResource.adaptTo(ValueMap.class);
+                ValueMap values = typeResource.getValueMap();
                 value = values.get(name, type);
                 typeResource = getResourceType(resolver, typeResource.getResourceSuperType());
             }

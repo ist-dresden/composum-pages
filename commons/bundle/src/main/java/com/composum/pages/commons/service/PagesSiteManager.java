@@ -106,10 +106,10 @@ public class PagesSiteManager extends PagesContentManager<Site> implements SiteM
         if (tenantsBase == null) {
             throw new PersistenceException("tenants base node doesn't exist");
         }
-        Resource siteBase = resolver.getResource(tenantsBase,
-                StringUtils.isNotBlank(tenant) ? tenant : pagesConfig.getConfig().sitesRoot());
+        String sitePath = StringUtils.isNotBlank(tenant) ? tenant : pagesConfig.getConfig().sitesRoot();
+        Resource siteBase = resolver.getResource(tenantsBase, sitePath);
         if (siteBase == null) {
-            siteBase = resolver.create(tenantsBase, tenant, SITE_ROOT_PROPERTIES);
+            siteBase = resolver.create(tenantsBase, sitePath, SITE_ROOT_PROPERTIES);
         }
         return siteBase;
     }
