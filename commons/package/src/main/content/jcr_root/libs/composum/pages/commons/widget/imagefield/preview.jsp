@@ -5,7 +5,7 @@
 <div class="${widgetCssBase}_preview">
     <div class="${widgetCssBase}_wrapper">
         <div class="${widgetCssBase}_frame"
-             style="background-image:url(${cpn:unmappedUrl(slingRequest,'/libs/composum/nodes/console/browser/images/image-background.png')})">
+             style="background-image:url(${cpn:unmappedUrl(slingRequest,'/libs/composum/nodes/commons/images/image-background.png')})">
             <img class="${widgetCssBase}_picture" src="${cpn:path(widget.model.path)}"/>
         </div>
     </div>
