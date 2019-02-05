@@ -55,8 +55,8 @@
         <sling.password>admin</sling.password>
         <bundle.status.skip>true</bundle.status.skip>
         <source.encoding>UTF-8</source.encoding>
-        <java.source>1.7</java.source>
-        <java.target>1.7</java.target>
+        <java.source>1.8</java.source>
+        <java.target>1.8</java.target>
     </properties>
 
     <scm>
