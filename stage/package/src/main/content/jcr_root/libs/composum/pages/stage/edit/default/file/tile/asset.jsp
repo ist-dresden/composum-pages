@@ -9,7 +9,7 @@
          draggable="true" data-pages-edit-encoded="${file.encodedReference}">
         <div class="${fileCssBase}_image-frame">
             <div class="${fileCssBase}_image-background"
-                 style="background-image:url(${cpn:unmappedUrl(slingRequest,'/libs/composum/nodes/console/browser/images/image-background-dk.png')})">
+                 style="background-image:url(${cpn:unmappedUrl(slingRequest,'/libs/composum/nodes/commons/images/image-background-dk.png')})">
                 <cpn:image classes="${fileCssBase}_image" src="${file.path}" draggable="false"/>
             </div>
         </div>
