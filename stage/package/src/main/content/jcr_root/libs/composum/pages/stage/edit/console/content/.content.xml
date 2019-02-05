@@ -7,8 +7,9 @@
             jcr:primaryType="nt:unstructured"
             jcr:mixinTypes="[sling:Redirect]"
             jcr:title="Pages"
+            description="/libs/composum/pages/stage/edit/console/description"
             sling:redirect="/bin/pages.html${path}"
             categories="[nodes,pages]"
-            order="{Long}70"
+            order="{Long}150"
             target="pages"/>
 </jcr:root>
