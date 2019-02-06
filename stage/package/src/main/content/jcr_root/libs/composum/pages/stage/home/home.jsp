@@ -12,18 +12,14 @@
         <cpn:clientlib type="css" category="composum.pages.stage.home"/>
     </head>
     <body class="composum-pages-stage-home">
-    <div class="composum-pages-stage-home_wrapper">
-        <div class="composum-pages-stage-home_top">
-            <cpn:text tagName="h1" tagClass="composum-pages-stage-home_title"
-                      value="${home.properties.pageHeadline}"/>
-            <cpn:text tagName="h4" tagClass="composum-pages-stage-home_subtitle"
-                      value="${home.properties.pageSubheadline}"/>
-        </div>
-        <div class="composum-pages-stage-home-sites">
+    <div class="composum-platform-public_content">
+        <sling:include path="/libs/composum/platform/public/page" replaceSelectors="header"/>
+        <div class="composum-pages-stage-home-sites composum-platform-public_panel panel panel-default">
             <cpn:text tagName="h2" tagClass="composum-pages-stage-home-sites_title" value="${home.title}"/>
             <cpp:include resourceType="composum/pages/stage/edit/site/list"/>
             <cpp:include resourceType="composum/pages/stage/home/tools"/>
         </div>
+        <sling:include path="/libs/composum/platform/public/page" replaceSelectors="footer"/>
     </div>
     <sling:include resourceType="composum/pages/stage/edit/frame" replaceSelectors="dialogs"/>
     <cpn:clientlib type="js" category="composum.pages.stage.home"/>

@@ -30,7 +30,6 @@
     &-sites {
         width: 80%;
         max-width: 600px;
-        margin: 140px auto;
         padding: 20px;
         background-color: rgba(120, 180, 100, 0.4);
         @include font('robotolight', 17px);
@@ -71,13 +70,5 @@
             flex-grow: 1;
             opacity: 0.6;
         }
-    }
-
-    &_wrapper {
-        position: relative;
-        background: #fff url(/libs/composum/platform/security/login/bg-ist-w-rg.png) 60% 50% no-repeat;
-        max-width: 1000px;
-        margin: 0 auto;
-        padding: 10px;
     }
 }
