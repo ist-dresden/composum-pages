@@ -17,15 +17,16 @@ import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.jcr.RepositoryException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import static com.composum.pages.commons.PagesConstants.NODE_TYPE_SITE;
 
@@ -38,14 +39,11 @@ public class PagesSiteManager extends PagesContentManager<Site> implements SiteM
 
     public static final String SITE_RESOURCE_TYPE = "composum/pages/stage/edit/site";
 
-    public static final Map<String, Object> SITE_ROOT_PROPERTIES;
     public static final Map<String, Object> SITE_PROPERTIES;
     public static final Map<String, Object> SITE_CONTENT_PROPERTIES;
     public static final Map<String, Object> SITE_ASSETS_PROPERTIES;
 
     static {
-        SITE_ROOT_PROPERTIES = new HashMap<>();
-        SITE_ROOT_PROPERTIES.put(JcrConstants.JCR_PRIMARYTYPE, "sling:Folder");
         SITE_PROPERTIES = new HashMap<>();
         SITE_PROPERTIES.put(JcrConstants.JCR_PRIMARYTYPE, NODE_TYPE_SITE);
         SITE_CONTENT_PROPERTIES = new HashMap<>();
@@ -57,6 +55,9 @@ public class PagesSiteManager extends PagesContentManager<Site> implements SiteM
 
     @Reference
     protected PagesConfiguration pagesConfig;
+
+    @Reference(cardinality = ReferenceCardinality.OPTIONAL)
+    protected PagesTenantSupport tenantSupport;
 
     @Reference
     protected ResourceManager resourceManager;
@@ -98,34 +99,34 @@ public class PagesSiteManager extends PagesContentManager<Site> implements SiteM
     }
 
     @Override
-    @Nonnull
-    public Resource getSiteBase(@Nonnull BeanContext context, String tenant)
-            throws PersistenceException {
+    public Resource getSitesRoot(@Nonnull final BeanContext context, @Nullable final String tenantId) {
         ResourceResolver resolver = context.getResolver();
-        Resource tenantsBase = resolver.getResource(pagesConfig.getConfig().tenantsBase());
-        if (tenantsBase == null) {
-            throw new PersistenceException("tenants base node doesn't exist");
+        String sitesRootPath = null;
+        if (StringUtils.isNotBlank(tenantId) && tenantSupport != null) {
+            sitesRootPath = tenantSupport.getContentRoot(context, tenantId);
         }
-        String sitePath = StringUtils.isNotBlank(tenant) ? tenant : pagesConfig.getConfig().sitesRoot();
-        Resource siteBase = resolver.getResource(tenantsBase, sitePath);
-        if (siteBase == null) {
-            siteBase = resolver.create(tenantsBase, sitePath, SITE_ROOT_PROPERTIES);
+        if (StringUtils.isBlank(sitesRootPath)) {
+            sitesRootPath = pagesConfig.getConfig().defaultSitesRoot();
         }
-        return siteBase;
+        return resolver.getResource(sitesRootPath);
     }
 
     @Override
-    public List<Site> getSites(@Nonnull BeanContext context, String tenant) {
-        try {
-            return getSites(context, getSiteBase(context, tenant), ResourceFilter.ALL);
-        } catch (PersistenceException ex) {
-            LOG.error(ex.getMessage(), ex);
-            return Collections.emptyList();
+    @Nonnull
+    public Collection<Site> getSites(@Nonnull final BeanContext context) {
+        Set<Site> sites = new HashSet<>();
+        if (tenantSupport == null) {
+            sites.addAll(getSites(context, getSitesRoot(context, null), ResourceFilter.ALL));
+        } else {
+            for (String tenantId : tenantSupport.getTenantIds(context)) {
+                sites.addAll(getSites(context, getSitesRoot(context, tenantId), ResourceFilter.ALL));
+            }
         }
+        return sites;
     }
 
     @Override
-    public List<Site> getSiteTemplates(@Nonnull BeanContext context, String tenant) {
+    public Collection<Site> getSiteTemplates(@Nonnull BeanContext context, String tenant) {
         UniqueSiteList result = new UniqueSiteList();
         ResourceResolver resolver = context.getResolver();
         for (String root : resolver.getSearchPath()) {
@@ -137,18 +138,15 @@ public class PagesSiteManager extends PagesContentManager<Site> implements SiteM
         return result;
     }
 
-    @Override
-    public List<Site> getSites(@Nonnull BeanContext context, @Nullable Resource searchRoot, @Nonnull ResourceFilter filter) {
-        List<Site> sites = getModels(context, NODE_TYPE_SITE, searchRoot, filter);
-        Collections.sort(sites);
-        return sites;
+    protected Collection<Site> getSites(@Nonnull BeanContext context, @Nullable Resource searchRoot, @Nonnull ResourceFilter filter) {
+        return getModels(context, NODE_TYPE_SITE, searchRoot, filter);
     }
 
     @Override
     public Site createSite(@Nonnull BeanContext context, String tenant, @Nonnull String siteName,
                            @Nullable String homepageType, boolean commit)
             throws RepositoryException, PersistenceException {
-        return createSite(context, getSiteBase(context, tenant), siteName, homepageType, commit);
+        return createSite(context, getSitesRoot(context, tenant), siteName, homepageType, commit);
     }
 
     @Override
@@ -183,7 +181,7 @@ public class PagesSiteManager extends PagesContentManager<Site> implements SiteM
                            @Nullable String siteTitle, @Nullable String description,
                            @Nullable Resource siteTemplate, boolean commit)
             throws RepositoryException, PersistenceException {
-        return createSite(context, getSiteBase(context, tenant),
+        return createSite(context, getSitesRoot(context, tenant),
                 siteName, siteTitle, description, siteTemplate, commit);
     }
 

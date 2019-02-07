@@ -21,7 +21,7 @@ public class SiteSelect extends PropertyEditHandle<String> implements WidgetMode
 
     public Collection<Site> getSites() {
         if (sites == null) {
-            sites = getSiteManager().getSites(context, "");
+            sites = getSiteManager().getSites(context);
         }
         return sites;
     }

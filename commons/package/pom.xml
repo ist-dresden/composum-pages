@@ -102,6 +102,9 @@
 
                     <filters>
                         <filter>
+                            <root>/conf/composum/pages/commons</root>
+                        </filter>
+                        <filter>
                             <root>/libs/composum/pages/commons</root>
                         </filter>
                         <filter>
