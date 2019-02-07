@@ -86,23 +86,20 @@ public interface SiteManager extends ContentManager<Site> {
     /**
      * Returns the sites root resource to place new sites for a specific tenant.
      *
-     * @param context the current request context
-     * @param tenant  the tenants name (key); maybe &gt;null&lt; if tenants are not supported
+     * @param context  the current request context
+     * @param tenantId the id of the tenant to use; maybe &gt;null&lt; if tenants are not known
      * @return the root resource to create site child resources
-     * @throws PersistenceException if the root has to be created and an error has occurred during creation
      */
-    @Nonnull
-    Resource getSiteBase(@Nonnull BeanContext context, @Nullable String tenant)
-            throws PersistenceException;
+    Resource getSitesRoot(@Nonnull BeanContext context, @Nullable String tenantId);
 
     /**
      * Determines all sites of a specific tenant.
      *
      * @param context the current request context
-     * @param tenant  the tenants name (key); maybe &gt;null&lt; if tenants are not supported
-     * @return the collection of all sites found (not &gt;null&lt;)
+     * @return the collection of all sites available for the user
      */
-    List<Site> getSites(@Nonnull BeanContext context, @Nullable String tenant);
+    @Nonnull
+    List<Site> getSites(@Nonnull BeanContext context);
 
     /**
      * Determines all usable site templates in the context of a specific tenant.
@@ -110,7 +107,7 @@ public interface SiteManager extends ContentManager<Site> {
      * Overlayed site resources are not in the result.
      *
      * @param context the current request context
-     * @param tenant  the tenants name (key); maybe &gt;null&lt; if tenants are not supported
+     * @param tenant  the tenants name (key); maybe &gt;null&lt; if tenants are not known
      * @return the collection of all site templates found (not &gt;null&lt;)
      */
     List<Site> getSiteTemplates(@Nonnull BeanContext context, @Nullable String tenant);

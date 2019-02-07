@@ -110,7 +110,7 @@
             },
             login: {
                 id: 'composum-platform-commons-login-dialog',
-                url: '/libs/composum/platform/security/login/dialog.html'
+                url: '/libs/composum/platform/public/login/dialog.html'
             },
             profile: {
                 pages: {
