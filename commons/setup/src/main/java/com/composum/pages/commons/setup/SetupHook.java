@@ -1,21 +1,15 @@
 package com.composum.pages.commons.setup;
 
-import com.composum.sling.core.usermanagement.core.UserManagementService;
-import org.apache.jackrabbit.api.JackrabbitSession;
-import org.apache.jackrabbit.api.security.user.Authorizable;
-import org.apache.jackrabbit.api.security.user.Group;
-import org.apache.jackrabbit.api.security.user.UserManager;
+import com.composum.sling.core.service.RepositorySetupService;
+import com.composum.sling.core.setup.util.SetupUtil;
 import org.apache.jackrabbit.vault.packaging.InstallContext;
 import org.apache.jackrabbit.vault.packaging.InstallHook;
-import org.apache.jackrabbit.vault.packaging.PackageException;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -23,9 +17,12 @@ import java.util.Map;
 
 import static java.util.Arrays.asList;
 
+@SuppressWarnings({"Duplicates"})
 public class SetupHook implements InstallHook {
 
     private static final Logger LOG = LoggerFactory.getLogger(SetupHook.class);
+
+    private static final String SETUP_ACLS = "/conf/composum/pages/commons/acl/setup.json";
 
     public static final String PAGES_USERS_PATH = "composum/pages/";
     public static final String PAGES_SYSTEM_USERS_PATH = "system/composum/pages/";
@@ -52,64 +49,33 @@ public class SetupHook implements InstallHook {
                 "admin",
                 PAGES_SERVICE_USER
         ));
-        PAGES_GROUPS.put(PAGES_USERS_PATH + PAGES_AUTHORS, new ArrayList<String>());
+        PAGES_GROUPS.put(PAGES_USERS_PATH + PAGES_AUTHORS, new ArrayList<>());
     }
 
-    @SuppressWarnings("Duplicates")
     @Override
-    public void execute(InstallContext ctx) throws PackageException {
+    public void execute(InstallContext ctx) {
         switch (ctx.getPhase()) {
+            case PREPARE:
+                LOG.info("prepare: execute...");
+                SetupUtil.setupGroupsAndUsers(ctx, PAGES_GROUPS, PAGES_SYSTEM_USERS, PAGES_USERS);
+                LOG.info("prepare: execute ends.");
+                break;
             case INSTALLED:
                 LOG.info("installed: execute...");
-
-                setupGroupsAndUsers(ctx);
-
+                setupAcls(ctx);
                 LOG.info("installed: execute ends.");
+                break;
         }
     }
 
-    protected void setupGroupsAndUsers(InstallContext ctx) {
-        UserManagementService userManagementService = getService(UserManagementService.class);
+    protected void setupAcls(InstallContext ctx) {
+        RepositorySetupService setupService = SetupUtil.getService(RepositorySetupService.class);
         try {
-            JackrabbitSession session = (JackrabbitSession) ctx.getSession();
-            UserManager userManager = session.getUserManager();
-            for (Map.Entry<String, List<String>> entry : PAGES_GROUPS.entrySet()) {
-                Group group = userManagementService.getOrCreateGroup(session, userManager, entry.getKey());
-                if (group != null) {
-                    for (String memberName : entry.getValue()) {
-                        userManagementService.assignToGroup(session, userManager, memberName, group);
-                    }
-                }
-            }
+            Session session = ctx.getSession();
+            setupService.addJsonAcl(session, SETUP_ACLS, null);
             session.save();
-            for (Map.Entry<String, List<String>> entry : PAGES_SYSTEM_USERS.entrySet()) {
-                Authorizable user = userManagementService.getOrCreateUser(session, userManager, entry.getKey(), true);
-                if (user != null) {
-                    for (String groupName : entry.getValue()) {
-                        userManagementService.assignToGroup(session, userManager, user, groupName);
-                    }
-                }
-            }
-            session.save();
-            for (Map.Entry<String, List<String>> entry : PAGES_USERS.entrySet()) {
-                Authorizable user = userManagementService.getOrCreateUser(session, userManager, entry.getKey(), false);
-                if (user != null) {
-                    for (String groupName : entry.getValue()) {
-                        userManagementService.assignToGroup(session, userManager, user, groupName);
-                    }
-                }
-            }
-            session.save();
-        } catch (RepositoryException rex) {
+        } catch (RepositoryException | IOException rex) {
             LOG.error(rex.getMessage(), rex);
         }
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T> T getService(Class<T> type)  {
-        Bundle serviceBundle = FrameworkUtil.getBundle(type);
-        BundleContext serviceBundleContext = serviceBundle.getBundleContext();
-        ServiceReference serviceReference = serviceBundleContext.getServiceReference(type.getName());
-        return (T) serviceBundleContext.getService(serviceReference);
     }
 }

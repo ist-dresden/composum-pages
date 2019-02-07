@@ -22,12 +22,11 @@ import org.osgi.service.component.annotations.ReferenceCardinality;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.jcr.RepositoryException;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import static com.composum.pages.commons.PagesConstants.NODE_TYPE_SITE;
 
@@ -40,14 +39,11 @@ public class PagesSiteManager extends PagesContentManager<Site> implements SiteM
 
     public static final String SITE_RESOURCE_TYPE = "composum/pages/stage/edit/site";
 
-    public static final Map<String, Object> SITE_ROOT_PROPERTIES;
     public static final Map<String, Object> SITE_PROPERTIES;
     public static final Map<String, Object> SITE_CONTENT_PROPERTIES;
     public static final Map<String, Object> SITE_ASSETS_PROPERTIES;
 
     static {
-        SITE_ROOT_PROPERTIES = new HashMap<>();
-        SITE_ROOT_PROPERTIES.put(JcrConstants.JCR_PRIMARYTYPE, "sling:Folder");
         SITE_PROPERTIES = new HashMap<>();
         SITE_PROPERTIES.put(JcrConstants.JCR_PRIMARYTYPE, NODE_TYPE_SITE);
         SITE_CONTENT_PROPERTIES = new HashMap<>();
@@ -117,8 +113,8 @@ public class PagesSiteManager extends PagesContentManager<Site> implements SiteM
 
     @Override
     @Nonnull
-    public List<Site> getSites(@Nonnull final BeanContext context) {
-        List<Site> sites = new ArrayList<>();
+    public Collection<Site> getSites(@Nonnull final BeanContext context) {
+        Set<Site> sites = new HashSet<>();
         if (tenantSupport == null) {
             sites.addAll(getSites(context, getSitesRoot(context, null), ResourceFilter.ALL));
         } else {
@@ -130,7 +126,7 @@ public class PagesSiteManager extends PagesContentManager<Site> implements SiteM
     }
 
     @Override
-    public List<Site> getSiteTemplates(@Nonnull BeanContext context, String tenant) {
+    public Collection<Site> getSiteTemplates(@Nonnull BeanContext context, String tenant) {
         UniqueSiteList result = new UniqueSiteList();
         ResourceResolver resolver = context.getResolver();
         for (String root : resolver.getSearchPath()) {
@@ -142,11 +138,8 @@ public class PagesSiteManager extends PagesContentManager<Site> implements SiteM
         return result;
     }
 
-    @Override
-    public List<Site> getSites(@Nonnull BeanContext context, @Nullable Resource searchRoot, @Nonnull ResourceFilter filter) {
-        List<Site> sites = getModels(context, NODE_TYPE_SITE, searchRoot, filter);
-        Collections.sort(sites);
-        return sites;
+    protected Collection<Site> getSites(@Nonnull BeanContext context, @Nullable Resource searchRoot, @Nonnull ResourceFilter filter) {
+        return getModels(context, NODE_TYPE_SITE, searchRoot, filter);
     }
 
     @Override

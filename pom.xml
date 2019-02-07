@@ -436,6 +436,14 @@
                 <scope>provided</scope>
             </dependency>
 
+            <!-- Setup utilities -->
+            <dependency>
+                <groupId>com.composum.sling.core</groupId>
+                <artifactId>composum-sling-core-setup-util</artifactId>
+                <version>${composum.core.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
             <!-- Apache Sling -->
             <dependency>
                 <groupId>org.apache.sling</groupId>
