@@ -25,9 +25,7 @@ public class SetupHook implements InstallHook {
         switch (ctx.getPhase()) {
             case INSTALLED:
                 LOG.info("installed: execute...");
-
-                setupIndexPage(ctx);
-
+                //setupIndexPage(ctx);
                 LOG.info("installed: execute ends.");
         }
     }
