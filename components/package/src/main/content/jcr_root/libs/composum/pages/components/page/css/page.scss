@@ -3,6 +3,13 @@
 @import "../../css/variables";
 @import "../../css/mixins";
 
+html {
+    width: 100%;
+    height: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
 .composum-pages-components-navigation-navbar,
 .composum-pages-components-page-subsite-navbar {
     @include default-font;

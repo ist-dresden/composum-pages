@@ -15,8 +15,6 @@ import org.apache.sling.api.resource.ValueMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.jcr.Node;
-import javax.jcr.RepositoryException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -310,7 +308,7 @@ public abstract class InPlaceReplicationStrategy implements ReplicationStrategy,
         config = manager.getConfig();
         contentPath = config.contentPath();
         contentPathPattern = Pattern.compile("^" + contentPath + "(/.*)$");
-        contentLinkPattern = Pattern.compile("<(a\\s+(.+\\s+)?href=['\"])" + contentPath + "(/[^'\"]+)(['\"])");
+        contentLinkPattern = Pattern.compile("(<a\\s+(.+\\s+)?href=['\"])" + contentPath + "(/[^'\"]+)(['\"])");
     }
 
     @Override
