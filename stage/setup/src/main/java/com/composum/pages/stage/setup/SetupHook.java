@@ -2,6 +2,7 @@ package com.composum.pages.stage.setup;
 
 import org.apache.jackrabbit.vault.packaging.InstallContext;
 import org.apache.jackrabbit.vault.packaging.InstallHook;
+import org.apache.jackrabbit.vault.packaging.PackageException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +31,7 @@ public class SetupHook implements InstallHook {
         }
     }
 
-    protected void setupIndexPage(InstallContext ctx) {
+    protected void setupIndexPage(InstallContext ctx) throws PackageException {
         try {
             Session session = ctx.getSession();
             Node rootNode = session.getNode("/");
@@ -40,8 +41,9 @@ public class SetupHook implements InstallHook {
                 rootNode.setProperty(PROP_SLING_TARGET, PAGES_STAGE_INDEX);
                 session.save();
             }
-        } catch (RepositoryException rex) {
+        } catch (RepositoryException | RuntimeException rex) {
             LOG.error(rex.getMessage(), rex);
+            throw new PackageException(rex);
         }
     }
 }
