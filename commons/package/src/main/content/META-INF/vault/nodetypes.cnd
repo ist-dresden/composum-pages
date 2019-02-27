@@ -14,11 +14,13 @@
 [cpp:PageContent] > nt:unstructured, mix:versionable, mix:lastModified
 
 [cpp:Page] > sling:OrderedFolder
+  orderable
   + jcr:content (cpp:PageContent) = cpp:PageContent *
 
 [cpp:SiteConfiguration] > nt:unstructured
 
 [cpp:Site] > sling:OrderedFolder
+  orderable
   + jcr:content (cpp:SiteConfiguration) = cpp:SiteConfiguration *
 
 [cpp:Component] > sling:Folder
