@@ -19,7 +19,7 @@
             margin: 0;
             padding: 0 10px;
             white-space: nowrap;
-            @include scrolloption($tools-pane-tabs-background);
+            @include scrolloption-x($tools-pane-tabs-background);
             background-color: $tools-pane-tabs-background;
 
             &.right {
@@ -193,7 +193,7 @@
     &_type,
     &_description {
         white-space: nowrap;
-        overflow: auto;
+        overflow: hidden;
     }
 
     &_icon,
@@ -212,7 +212,7 @@
     &_title {
         padding-left: 30px;
         max-width: 100%;
-        overflow: auto;
+        overflow: hidden;
     }
 
     &_name {

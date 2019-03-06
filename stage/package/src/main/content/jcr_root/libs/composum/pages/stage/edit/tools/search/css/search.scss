@@ -64,6 +64,8 @@
             &_search-scope {
                 margin-left: 8px;
                 width: auto;
+                min-width: 115px;
+                padding: 0 6px;
             }
 
             &_search-result {
@@ -72,7 +74,8 @@
                 bottom: 0;
                 left: 0;
                 right: 0;
-                overflow: scroll;
+                overflow-x: hidden;
+                overflow-y: auto;
 
                 li {
                     margin: $tools-pane-padding 0;

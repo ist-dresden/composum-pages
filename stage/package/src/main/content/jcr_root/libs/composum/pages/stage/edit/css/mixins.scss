@@ -262,6 +262,15 @@
     }
 }
 
+@mixin scrolloption-x($color) {
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    &::-webkit-scrollbar-thumb {
+        background: $color;
+    }
+}
+
 @mixin scrolldark {
     @include scrolloption($tools-pane-background);
 }
