@@ -7,18 +7,23 @@
 [cpp:MetaData] > sling:Resource, nt:unstructured
 
 [cpp:Element] > sling:Resource, nt:unstructured
+  orderable
 
 [cpp:Container] > cpp:Element
   orderable
 
 [cpp:PageContent] > nt:unstructured, mix:versionable, mix:lastModified
+  orderable
 
 [cpp:Page] > sling:OrderedFolder
+  orderable
   + jcr:content (cpp:PageContent) = cpp:PageContent *
 
 [cpp:SiteConfiguration] > nt:unstructured
+  orderable
 
 [cpp:Site] > sling:OrderedFolder
+  orderable
   + jcr:content (cpp:SiteConfiguration) = cpp:SiteConfiguration *
 
 [cpp:Component] > sling:Folder

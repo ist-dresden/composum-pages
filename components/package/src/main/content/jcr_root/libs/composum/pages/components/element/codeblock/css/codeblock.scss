@@ -41,7 +41,7 @@
         margin: 0;
         border: none;
         padding: 0;
-        overflow: scroll;
+        overflow: auto;
         background: transparent;
 
         code {
@@ -57,7 +57,7 @@
 
     &_footer {
         white-space: nowrap;
-        overflow: auto;
+        overflow: hidden;
     }
 
     &.wrap-lines {

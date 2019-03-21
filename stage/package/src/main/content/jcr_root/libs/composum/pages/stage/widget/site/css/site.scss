@@ -34,7 +34,8 @@
                 max-height: 300px;
                 padding: 0;
                 margin-bottom: 0;
-                overflow: scroll;
+                overflow-x: hidden;
+                overflow-y: auto;
             }
 
             &_site {

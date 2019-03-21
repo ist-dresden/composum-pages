@@ -61,7 +61,7 @@
             position: absolute;
             margin: 0;
             padding: 0;
-            overflow: scroll;
+            overflow: hidden;
         }
 
         &_title,
@@ -129,7 +129,8 @@
                 max-height: 300px;
                 padding: 0;
                 margin-bottom: 0;
-                overflow: scroll;
+                overflow-x: hidden;
+                overflow-y: auto;
             }
 
             &_page {

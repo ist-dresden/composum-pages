@@ -16,7 +16,8 @@
         &_start, &_end {
             width: 100%;
             white-space: nowrap;
-            overflow: scroll;
+            overflow-x: auto;
+            overflow-y: hidden;
             @include edit-hint-font;
             color: $edit-hint-color;
 
