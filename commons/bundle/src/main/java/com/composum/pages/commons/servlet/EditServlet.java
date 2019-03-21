@@ -119,14 +119,17 @@ public class EditServlet extends PagesContentServlet {
         this.bundleContext = bundleContext;
     }
 
+    @Override
     protected PagesConfiguration getPagesConfiguration() {
         return pagesConfiguration;
     }
 
+    @Override
     protected VersionsService getVersionsService() {
         return versionsService;
     }
 
+    @Override
     protected ResourceManager getResourceManager() {
         return resourceManager;
     }
@@ -436,7 +439,8 @@ public class EditServlet extends PagesContentServlet {
             Resource editResource = getEditResource(request, contentResource, selectors, paramType);
 
             if (LOG.isDebugEnabled()) {
-                LOG.debug("GetEditResource(" + contentResource.getPath() + "," + editResource.getPath() + ")...");
+                LOG.debug("GetEditResource(" + contentResource.getPath() + "," +
+                        (editResource != null ? editResource.getPath() : "null") + ")...");
             }
 
             if (editResource != null) {
