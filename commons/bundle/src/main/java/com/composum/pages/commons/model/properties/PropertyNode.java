@@ -2,13 +2,15 @@ package com.composum.pages.commons.model.properties;
 
 import com.composum.pages.commons.model.GenericModel;
 import com.composum.pages.commons.model.Model;
-import com.composum.pages.commons.util.ValueHashMap;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.SlingBean;
 import com.composum.sling.core.util.ResourceUtil;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ValueMap;
+import org.apache.sling.api.wrappers.ValueMapDecorator;
+
+import java.util.HashMap;
 
 /**
  * a simple model for a subnode of a content element which declares a simple structured type
@@ -59,7 +61,7 @@ public abstract class PropertyNode implements SlingBean {
         this.context = context;
         this.resource = resource;
         values = ResourceUtil.isNonExistingResource(resource)
-                ? new ValueHashMap() : resource.getValueMap();
+                ? new ValueMapDecorator(new HashMap<>()) : resource.getValueMap();
         model = determineElementModel();
         initialize();
     }

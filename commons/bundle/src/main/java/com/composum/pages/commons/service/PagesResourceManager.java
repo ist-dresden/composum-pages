@@ -15,7 +15,6 @@ import com.composum.pages.commons.model.Page;
 import com.composum.pages.commons.model.Site;
 import com.composum.pages.commons.model.properties.PathPatternSet;
 import com.composum.pages.commons.util.ResolverUtil;
-import com.composum.pages.commons.util.ValueHashMap;
 import com.composum.platform.cache.service.CacheConfiguration;
 import com.composum.platform.cache.service.CacheManager;
 import com.composum.platform.cache.service.impl.CacheServiceImpl;
@@ -34,6 +33,7 @@ import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
+import org.apache.sling.api.wrappers.ValueMapDecorator;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -602,7 +602,7 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
             if (resourceValues == null) {
                 Resource resource = getResource();
                 if (ResourceUtil.isNonExistingResource(resource)) {
-                    resourceValues = new ValueHashMap();
+                    resourceValues = new ValueMapDecorator(new HashMap<>());
                 } else {
                     resourceValues = resource.getValueMap();
                 }
