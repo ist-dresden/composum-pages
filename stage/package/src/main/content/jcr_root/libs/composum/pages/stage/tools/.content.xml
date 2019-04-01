@@ -3,14 +3,6 @@
         jcr:primaryType="nt:unstructured"
         jcr:description="the tools collection declaration for all tools shipped with Composum Pages"
         sling:resourceType="composum/pages/tools/collection">
-    <userView
-            jcr:primaryType="nt:unstructured"
-            sling:resourceType="composum/pages/stage/edit/tools/main/user"
-            _categories="[navigation,browse,edit,develop]"
-            iconClass="user"
-            hint="Users Things"
-            title="User"
-            order="{Long}20"/>
     <pagesTree
             jcr:primaryType="nt:unstructured"
             sling:resourceType="composum/pages/stage/edit/tools/main/pages"
