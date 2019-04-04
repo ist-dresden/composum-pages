@@ -8,9 +8,7 @@ import org.apache.jackrabbit.vault.packaging.PackageException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -75,7 +73,7 @@ public class SetupHook implements InstallHook {
             Session session = ctx.getSession();
             setupService.addJsonAcl(session, SETUP_ACLS, null);
             session.save();
-        } catch (RepositoryException | IOException | RuntimeException rex) {
+        } catch (Exception rex) {
             LOG.error(rex.getMessage(), rex);
             throw new PackageException(rex);
         }
