@@ -46,7 +46,7 @@ public abstract class PagesContentManager<ModelType extends ContentDriven> imple
         Set<ModelType> result = new LinkedHashSet<>();
         try {
             ResourceResolver resolver = context.getResolver();
-            String queryRoot = searchRoot != null ? searchRoot.getPath() : "/";
+            String queryRoot = searchRoot != null ? searchRoot.getPath() : "/content";
             Query query = resolver.adaptTo(QueryBuilder.class).createQuery();
             query.path(queryRoot).type(primaryType).orderBy(JCR_NAME);
             Iterable<Resource> found = query.execute();

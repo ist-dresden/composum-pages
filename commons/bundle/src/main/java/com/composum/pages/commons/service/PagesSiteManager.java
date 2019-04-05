@@ -108,7 +108,12 @@ public class PagesSiteManager extends PagesContentManager<Site> implements SiteM
         if (StringUtils.isBlank(sitesRootPath)) {
             sitesRootPath = pagesConfig.getConfig().defaultSitesRoot();
         }
-        return resolver.getResource(sitesRootPath);
+        Resource sitesRoot = resolver.getResource(sitesRootPath);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getSitesRoot({},{}): {}", context.getResolver().getUserID(), tenantId,
+                    sitesRoot != null ? sitesRoot.getPath() : "NULL");
+        }
+        return sitesRoot;
     }
 
     @Override
@@ -121,6 +126,9 @@ public class PagesSiteManager extends PagesContentManager<Site> implements SiteM
             for (String tenantId : tenantSupport.getTenantIds(context)) {
                 sites.addAll(getSites(context, getSitesRoot(context, tenantId), ResourceFilter.ALL));
             }
+        }
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getSites({}): [{}]", context.getResolver().getUserID(), StringUtils.join(sites.toArray(), ", "));
         }
         return sites;
     }

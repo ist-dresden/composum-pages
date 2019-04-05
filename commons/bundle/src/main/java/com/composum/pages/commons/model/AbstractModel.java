@@ -666,6 +666,13 @@ public abstract class AbstractModel implements SlingBean, Model {
 
     // Object
 
+    public String toString() {
+        String ref = super.toString();
+        StringBuilder builder = new StringBuilder(ref.substring(ref.lastIndexOf(".") + 1));
+        builder.append("{").append(getPath()).append("}");
+        return builder.toString();
+    }
+
     @Override
     public int hashCode() {
         return getPath().hashCode();
