@@ -116,6 +116,7 @@
                                 <include>.*/composum-sling-pages-commons-bundle.*\.jar</include>
                                 <include>.*/com.composum.platform.commons.sling.PlatformErrorHandler.config</include>
                                 <include>.*/org.apache.sling.serviceusermapping.impl.ServiceUserMapperImpl.amended-pages.config</include>
+                                <include>.*/org.apache.sling.serviceusermapping.impl.ServiceUserMapperImpl.amended-pages-token.config</include>
                             </includes>
                         </filter>
                     </filters>

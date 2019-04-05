@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.jcr.Session;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,7 @@ public class SetupHook implements InstallHook {
     public static final String PAGES_SYSTEM_USERS_PATH = "system/composum/pages/";
 
     public static final String PAGES_SERVICE_USER = "composum-pages-service";
+    public static final String PAGES_TOKEN_SERVICE_USER = "composum-pages-token-service";
 
     public static final String ADMINISTRATORS_GROUP = "administrators";
     public static final String PAGES_ADMINISTRATORS = "composum-pages-administrators";
@@ -42,6 +44,9 @@ public class SetupHook implements InstallHook {
         PAGES_SYSTEM_USERS.put(PAGES_SYSTEM_USERS_PATH + PAGES_SERVICE_USER, asList(
                 ADMINISTRATORS_GROUP,
                 PAGES_ADMINISTRATORS
+        ));
+        PAGES_SYSTEM_USERS.put(PAGES_SYSTEM_USERS_PATH + PAGES_TOKEN_SERVICE_USER, Collections.singletonList(
+                "composum-platform-users"
         ));
         PAGES_GROUPS = new LinkedHashMap<>();
         PAGES_GROUPS.put(PAGES_USERS_PATH + PAGES_ADMINISTRATORS, asList(

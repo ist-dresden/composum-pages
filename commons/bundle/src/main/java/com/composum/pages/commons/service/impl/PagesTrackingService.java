@@ -1,7 +1,9 @@
-package com.composum.pages.commons.service;
+package com.composum.pages.commons.service.impl;
 
 import com.composum.pages.commons.model.Page;
 import com.composum.pages.commons.replication.ReplicationManager;
+import com.composum.pages.commons.service.PageManager;
+import com.composum.pages.commons.service.TrackingService;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.util.ResourceUtil;
 import com.composum.sling.platform.security.AccessMode;
@@ -147,11 +149,11 @@ public class PagesTrackingService implements TrackingService {
                            String path,
                            String referer)
             throws LoginException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("trackToken(" + path + ")");
-        }
-        try (ResourceResolver resolver = resolverFactory.getServiceResourceResolver(null)) {
+        try (ResourceResolver resolver = resolverFactory.getServiceResourceResolver(SERVICE_AUTH)) {
 
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("trackToken({},{},{})...", resolver.getUserID(), path, referer);
+            }
             context = new BeanContext.Wrapper(context, resolver);
 
             Resource resource = resolver.getResource(path);
