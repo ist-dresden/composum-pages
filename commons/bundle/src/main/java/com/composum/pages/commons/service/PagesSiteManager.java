@@ -14,6 +14,7 @@ import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.tenant.Tenant;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -23,6 +24,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.jcr.RepositoryException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -57,7 +59,7 @@ public class PagesSiteManager extends PagesContentManager<Site> implements SiteM
     protected PagesConfiguration pagesConfig;
 
     @Reference(cardinality = ReferenceCardinality.OPTIONAL)
-    protected PagesTenantSupport tenantSupport;
+    protected volatile PagesTenantSupport tenantSupport;
 
     @Reference
     protected ResourceManager resourceManager;
@@ -98,6 +100,23 @@ public class PagesSiteManager extends PagesContentManager<Site> implements SiteM
         return null;
     }
 
+    /**
+     * @return 'true' if tenants are supported on the platform
+     */
+    @Override
+    public boolean isTenantSupport() {
+        return tenantSupport != null;
+    }
+
+    /**
+     * @return the list of id/tenant pairs of the joined tenants in the context of the current request
+     */
+    @Override
+    @Nonnull
+    public Map<String, Tenant> getTenants(@Nonnull BeanContext context) {
+        return tenantSupport != null ? tenantSupport.getTenants(context) : Collections.emptyMap();
+    }
+
     @Override
     public Resource getSitesRoot(@Nonnull final BeanContext context, @Nullable final String tenantId) {
         ResourceResolver resolver = context.getResolver();
@@ -123,7 +142,7 @@ public class PagesSiteManager extends PagesContentManager<Site> implements SiteM
         if (tenantSupport == null) {
             sites.addAll(getSites(context, getSitesRoot(context, null), ResourceFilter.ALL));
         } else {
-            for (String tenantId : tenantSupport.getTenantIds(context)) {
+            for (String tenantId : tenantSupport.getTenants(context).keySet()) {
                 sites.addAll(getSites(context, getSitesRoot(context, tenantId), ResourceFilter.ALL));
             }
         }

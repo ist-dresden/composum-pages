@@ -8,11 +8,17 @@
         <cpp:widget label="Select a template" name="template" type="site-template"/>
     </cpp:editDialogTab>
     <cpp:editDialogTab tabId="site" label="Site">
-        <cpp:widget test="${sites.tenantsSupported}"
-                    label="Tenant" name="tenant" value="sites" type="textfield" disabled="true"/>
-        <cpp:widget label="Name" name="name" placeholder="the repository name" type="textfield"
-                    rules="mandatory" pattern="^[A-Za-z_][\\- \\w]*$"/>
-        <cpp:widget label="Title" name="jcr:title" placeholder="the more readable title" type="textfield" i18n="false"/>
-        <cpp:widget label="Description" name="jcr:description" type="richtext" i18n="false"/>
+        <div class="row">
+            <cpn:div test="${sites.tenantSupport}" class="col col-xs-5">
+                <cpp:widget label="Tenant" name="tenant" type="select" rules="mandatory"
+                            options="${sites.tenantOptions}"/>
+            </cpn:div>
+            <div class="col col-xs-${sites.tenantSupport?'7':'12'}">
+                <cpp:widget label="Name" name="name" placeholder="the repository name" type="textfield"
+                            rules="mandatory" pattern="^[A-Za-z_][\\- \\w]*$"/>
+            </div>
+        </div>
+        <cpp:widget label="Title" name="jcr:title" placeholder="the more readable title" type="textfield"/>
+        <cpp:widget label="Description" name="jcr:description" type="richtext"/>
     </cpp:editDialogTab>
 </cpp:editDialog>

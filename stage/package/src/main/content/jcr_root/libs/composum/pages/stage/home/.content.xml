@@ -3,4 +3,16 @@
         xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
         jcr:primaryType="nt:unstructured"
         sling:resourceType="composum/pages/stage/home"
-        sling:resourceSuperType="composum/platform/public/page"/>
+        sling:resourceSuperType="composum/platform/public/page"
+        title="Your Sites"
+        createSiteLabel="Create a new Site"
+        noSitesMessage="There are no Sites available for you."
+        noSitesCreateLinkLabel="Create your first site now!">
+    <i18n jcr:primaryType="nt:unstructured">
+        <de jcr:primaryType="nt:unstructured"
+                title="Ihre Sites"
+                createSiteLabel="Eine neue Site anlegen"
+                noSitesMessage="Derzeit gibt es keine verfügbaren Sites für Sie."
+                noSitesCreateLinkLabel="Legen Sie Ihre erste Site jetzt an!"/>
+    </i18n>
+</jcr:root>
