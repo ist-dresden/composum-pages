@@ -221,6 +221,7 @@ public class ReleaseServlet extends AbstractServiceServlet {
                 resourceResolver.delete(resource);
                 resourceResolver.commit();
             } catch (Exception e) {
+                LOG.error("error deleting release: " + e.getMessage(), e);
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
             }
         }
@@ -258,7 +259,7 @@ public class ReleaseServlet extends AbstractServiceServlet {
 
                 List<StagingReleaseManager.ReleasedVersionable> versionables = new ArrayList<>();
                 for (String versionablePath : objectsString.split(",")) {
-                    Resource versionable = resourceResolver.getResource(versionablePath);
+                    Resource versionable = resourceResolver.getResource(versionablePath).getChild(ResourceUtil.CONTENT_NODE);
                     versionables.add(StagingReleaseManager.ReleasedVersionable.forBaseVersion(versionable));
                 }
 
@@ -288,6 +289,7 @@ public class ReleaseServlet extends AbstractServiceServlet {
                 releaseNode.setProperty("jcr:description", description);
                 resourceResolver.commit();
             } catch (Exception e) {
+                LOG.error("error creating release: " + e.getMessage(), e);
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
             }
         }

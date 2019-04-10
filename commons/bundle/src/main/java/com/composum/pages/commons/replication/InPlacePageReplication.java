@@ -4,6 +4,7 @@ import com.composum.pages.commons.model.Page;
 import com.composum.pages.commons.model.Site;
 import com.composum.pages.commons.service.SiteManager;
 import com.composum.sling.platform.staging.service.StagingReleaseManager;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -59,7 +60,8 @@ public class InPlacePageReplication extends InPlaceReplicationStrategy {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("'{}': using staging resolver of release '{}'...", resource.getPath(), releaseLabel);
             }
-            StagingReleaseManager.Release release = releaseManager.findRelease(context.site.getResource(), releaseLabel);
+            StagingReleaseManager.Release release = releaseManager.findRelease(context.site.getResource(),
+                    StringUtils.removeStart(releaseLabel, Site.RELEASE_LABEL_PREFIX));
             return releaseManager.getResolverForRelease(release, this);
         }
         return defaultResolver;
