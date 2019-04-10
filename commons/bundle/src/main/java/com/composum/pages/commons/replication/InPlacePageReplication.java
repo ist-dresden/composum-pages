@@ -3,11 +3,10 @@ package com.composum.pages.commons.replication;
 import com.composum.pages.commons.model.Page;
 import com.composum.pages.commons.model.Site;
 import com.composum.pages.commons.service.SiteManager;
-import com.composum.sling.platform.staging.StagingResourceResolver;
+import com.composum.sling.platform.staging.service.StagingReleaseManager;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -26,7 +25,7 @@ public class InPlacePageReplication extends InPlaceReplicationStrategy {
     private static final Logger LOG = LoggerFactory.getLogger(InPlacePageReplication.class);
 
     @Reference
-    protected ResourceResolverFactory resolverFactory;
+    protected StagingReleaseManager releaseManager;
 
     @Reference
     protected SiteManager siteManager;
@@ -60,7 +59,8 @@ public class InPlacePageReplication extends InPlaceReplicationStrategy {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("'{}': using staging resolver of release '{}'...", resource.getPath(), releaseLabel);
             }
-            return new StagingResourceResolver(resolverFactory, defaultResolver, releaseLabel, this);
+            StagingReleaseManager.Release release = releaseManager.findRelease(context.site.getResource(), releaseLabel);
+            return releaseManager.getResolverForRelease(release, this);
         }
         return defaultResolver;
     }

@@ -9,8 +9,11 @@ import com.composum.sling.core.ResourceHandle;
 import com.composum.sling.core.servlet.AbstractServiceServlet;
 import com.composum.sling.core.servlet.ServletOperation;
 import com.composum.sling.core.servlet.ServletOperationSet;
+import com.composum.sling.core.util.ResourceUtil;
 import com.composum.sling.platform.security.AccessMode;
-import com.composum.sling.platform.staging.service.ReleaseManager;
+import com.composum.sling.platform.staging.impl.SiblingOrderUpdateStrategy;
+import com.composum.sling.platform.staging.service.ReleaseNumberCreator;
+import com.composum.sling.platform.staging.service.StagingReleaseManager;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
@@ -32,15 +35,12 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.jcr.Node;
+import javax.jcr.PropertyType;
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -71,7 +71,7 @@ public class ReleaseServlet extends AbstractServiceServlet {
     private SiteManager siteManager;
 
     @Reference
-    private ReleaseManager releaseManager;
+    private StagingReleaseManager releaseManager;
 
     @Reference
     private ReplicationManager replicationManager;
@@ -179,6 +179,7 @@ public class ReleaseServlet extends AbstractServiceServlet {
     }
 
     private class SetPublicRelease extends SetReleaseCategory {
+        @Override
         @Nonnull
         protected String getCategoryString() {
             return "public";
@@ -186,6 +187,7 @@ public class ReleaseServlet extends AbstractServiceServlet {
     }
 
     private class SetPreviewRelease extends SetReleaseCategory {
+        @Override
         @Nonnull
         protected String getCategoryString() {
             return "preview";
@@ -212,11 +214,10 @@ public class ReleaseServlet extends AbstractServiceServlet {
                     releaseName = pathMatcher.group(2);
                 }
 
-                List<String> rootPaths = new ArrayList<>();
-                rootPaths.add(sitePath);
+                StagingReleaseManager.Release release = releaseManager.findRelease(resource, releaseName);
+                releaseManager.removeRelease(release);
 
                 final ResourceResolver resourceResolver = request.getResourceResolver();
-                releaseManager.removeRelease(resourceResolver, rootPaths, releaseName, false);
                 resourceResolver.delete(resource);
                 resourceResolver.commit();
             } catch (Exception e) {
@@ -253,19 +254,34 @@ public class ReleaseServlet extends AbstractServiceServlet {
                     objectsString = "";
                 }
 
-                List<String> rootPaths = new ArrayList<>();
-                final String[] split = objectsString.split(",");
-                Collections.addAll(rootPaths, split);
-
                 final ResourceResolver resourceResolver = request.getResourceResolver();
-                releaseManager.createRelease(resourceResolver, rootPaths, releaseName);
-                releaseManager.updateToRelease(resourceResolver, sitePath, releaseName);
 
+                List<StagingReleaseManager.ReleasedVersionable> versionables = new ArrayList<>();
+                for (String versionablePath : objectsString.split(",")) {
+                    Resource versionable = resourceResolver.getResource(versionablePath);
+                    versionables.add(StagingReleaseManager.ReleasedVersionable.forBaseVersion(versionable));
+                }
+
+                // FIXME hps 2019-04-10 introduce parameter for release number type and base release
+                StagingReleaseManager.Release release = releaseManager.createRelease(resourceResolver.getResource(path), ReleaseNumberCreator.MAJOR);
+                LOG.info("Release created {}", release);
+                Map<String, SiblingOrderUpdateStrategy.Result> result = releaseManager.updateRelease(release, versionables);
+                LOG.info("Release update result: {}", result);
+
+                ResourceHandle metaData = ResourceHandle.use(release.getMetaDataNode());
+                metaData.setProperty(ResourceUtil.PROP_TITLE, title);
+                metaData.setProperty(ResourceUtil.PROP_DESCRIPTION, description);
+                metaData.setProperty(ResourceUtil.PROP_LAST_MODIFIED, Calendar.getInstance());
+                metaData.setProperty("jcr:lastModifiedBy", resourceResolver.getUserID());
+                // releaseName will be obsolete
+
+                // FIXME hps 2019-04-10 rework metadata - what belongs into jcr:content/releases, if at all?
                 final Resource site = resourceResolver.getResource(sitePath);
                 final Resource releases = resourceResolver.getResource(site, "jcr:content/releases");
                 final Node releasesNode = releases.adaptTo(Node.class);
-                final Node releaseNode = releasesNode.addNode("release-" + releaseName, "nt:unstructured");
-                releaseNode.setProperty("key", releaseName);
+                final Node releaseNode = releasesNode.addNode("release-" + release.getNumber(), "nt:unstructured");
+                releaseNode.setProperty("key", release.getNumber());
+                releaseNode.setProperty("release-uuid", release.getUuid(), PropertyType.REFERENCE);
                 releaseNode.setProperty("jcr:title", title);
                 releaseNode.setProperty("jcr:created", Calendar.getInstance());
                 releaseNode.setProperty("jcr:createdBy", resourceResolver.getUserID());
