@@ -7,6 +7,7 @@ package com.composum.pages.commons.service;
 
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.util.ValueEmbeddingReader;
+import org.apache.commons.io.IOUtils;
 import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.api.wrappers.ValueMapDecorator;
 import org.osgi.framework.Constants;
@@ -20,9 +21,12 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -31,6 +35,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static com.composum.sling.core.util.ValueEmbeddingReader.TYPE_RESOURE;
 
 /**
  * The service to replace placeholders ('${...}') in text properties.
@@ -113,7 +119,22 @@ public class PagesPlaceholderService implements PlaceholderService {
             while (matcher.find(pos)) {
                 String key = matcher.group(2);
                 writer.write(text, pos, matcher.start() - pos);
-                writer.write(valueMap.get(key, ""));
+                if (key.startsWith(TYPE_RESOURE)) {
+                    InputStream stream = getClass().getResourceAsStream(
+                            key.substring(TYPE_RESOURE.length()));
+                    if (stream != null) {
+                        try (Reader reader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
+                            IOUtils.copy(reader, writer);
+                        }
+                    }
+                } else {
+                    Object value = valueMap.get(key);
+                    if (value instanceof Reader) {
+                        IOUtils.copy((Reader) value, writer);
+                    } else if (value != null) {
+                        writer.write(value.toString());
+                    }
+                }
                 pos = matcher.end();
             }
             if (pos >= 0 && pos < len) {

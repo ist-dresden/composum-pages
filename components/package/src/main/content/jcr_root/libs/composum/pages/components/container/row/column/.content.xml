@@ -10,4 +10,5 @@
                           composum/pages/components/composed/.*,
                           composum/pages/components/search/(field|result),
                           composum/pages/options/.*/components/.*,
+                          composum/platform/content/components/.*,
                           .*/pages/components/demo/.*]"/>
