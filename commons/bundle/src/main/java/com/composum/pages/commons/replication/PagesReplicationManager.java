@@ -149,4 +149,15 @@ public class PagesReplicationManager implements ReplicationManager {
             strategy.deactivate(this);
         }
     }
+
+    @Override
+    public boolean releaseMappingAllowed(String path, String uri) {
+        return releaseMappingAllowed(path);
+    }
+
+    @Override
+    public boolean releaseMappingAllowed(String path) {
+        return path.startsWith(getConfig().contentPath());
+    }
+
 }

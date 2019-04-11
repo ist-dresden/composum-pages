@@ -1,5 +1,6 @@
 package com.composum.pages.commons.servlet;
 
+import com.composum.pages.commons.model.Page;
 import com.composum.pages.commons.model.Site;
 import com.composum.pages.commons.replication.ReplicationContext;
 import com.composum.pages.commons.replication.ReplicationManager;
@@ -154,12 +155,18 @@ public class ReleaseServlet extends AbstractServiceServlet {
                 }
 
                 Site site = siteManager.getContainingSite(beanContext, resource);
+
                 AccessMode accessMode = AccessMode.valueOf(accessCategory.toUpperCase());
-                if (LOG.isInfoEnabled()) {
-                    LOG.info("replication of '{}' for {}...", site.getPath(), accessMode);
-                }
+                LOG.info("replication of '{}' for {}...", site.getPath(), accessMode);
+                String releaseLabel = site.getReleaseLabel(accessMode.name());
+                LOG.debug("'{}': using staging resolver of release '{}'...", resource.getPath(), releaseLabel);
+                StagingReleaseManager.Release release = releaseManager.findRelease(site.getResource(),
+                        StringUtils.removeStart(releaseLabel, Site.RELEASE_LABEL_PREFIX));
+                ResourceResolver stagedResolver = releaseManager.getResolverForRelease(release, replicationManager);
+                Resource stagedSiteResource = stagedResolver.getResource(site.getResource().getPath());
+
                 ReplicationContext replicationContext = new ReplicationContext(beanContext, site, accessMode);
-                replicationManager.replicateResource(replicationContext, site.getResource(), true);
+                replicationManager.replicateResource(replicationContext, stagedSiteResource, true);
                 replicationManager.replicateReferences(replicationContext);
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("replication of '{}' for {} done.", resource.getPath(), accessMode);

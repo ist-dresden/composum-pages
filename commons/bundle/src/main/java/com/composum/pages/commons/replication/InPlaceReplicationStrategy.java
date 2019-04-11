@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
 /**
  * the general implementation base for an in-place replication strategy
  */
-public abstract class InPlaceReplicationStrategy implements ReplicationStrategy, ReleaseMapper {
+public abstract class InPlaceReplicationStrategy implements ReplicationStrategy {
 
     private static final Logger LOG = LoggerFactory.getLogger(InPlaceReplicationStrategy.class);
 
@@ -40,16 +40,6 @@ public abstract class InPlaceReplicationStrategy implements ReplicationStrategy,
         return replicationManager.getConfig();
     }
 
-    @Override
-    public boolean releaseMappingAllowed(String path, String uri) {
-        return releaseMappingAllowed(path);
-    }
-
-    @Override
-    public boolean releaseMappingAllowed(String path) {
-        return path.startsWith(getConfig().contentPath());
-    }
-
     protected String getTargetPath(ReplicationContext context) {
         switch (context.accessMode) {
             case PREVIEW:
@@ -60,11 +50,6 @@ public abstract class InPlaceReplicationStrategy implements ReplicationStrategy,
                 return null;
         }
     }
-
-    /**
-     * @return the resolver to use for traversing the released content (the replication source)
-     */
-    protected abstract ResourceResolver getReleaseResolver(ReplicationContext context, Resource resource);
 
     /**
      * the general 'canReplicate' check for all InPlace replication strategy implementations
@@ -91,11 +76,8 @@ public abstract class InPlaceReplicationStrategy implements ReplicationStrategy,
         Resource targetRoot;
         if (StringUtils.isNotBlank(targetPath) && (targetRoot = replicateResolver.getResource(targetPath)) != null) {
             String relativePath = resource.getPath().replaceAll("^" + config.contentPath() + "/", "");
-            // the 'releaseResolver' is probably a version controlled resolver
-            ResourceResolver releaseResolver = getReleaseResolver(context, resource);
-            Resource released = releaseResolver.getResource(resource.getPath());
             // delegation to the extension hook...
-            replicate(context, targetRoot, released, relativePath, recursive, false);
+            replicate(context, targetRoot, resource, relativePath, recursive, false);
         }
     }
 

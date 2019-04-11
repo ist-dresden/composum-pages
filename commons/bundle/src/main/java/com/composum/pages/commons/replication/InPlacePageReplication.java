@@ -36,11 +36,8 @@ public class InPlacePageReplication extends InPlaceReplicationStrategy {
         boolean result = canReplicateSite(context, resource);
         if (result) {
             if (Page.isPage(resource)) {
-                // the content of a page must be available in the staging resolvers context (version available)
-                ResourceResolver releaseResolver = getReleaseResolver(context, resource);
-                Resource released = releaseResolver.getResource(resource.getPath());
-                result = released != null &&
-                        (Page.isPage(released) && released.getChild(JcrConstants.JCR_CONTENT) != null);
+                result = resource != null &&
+                        (Page.isPage(resource) && resource.getChild(JcrConstants.JCR_CONTENT) != null);
             } else {
                 result = (Site.isSite(resource));
             }
@@ -51,19 +48,4 @@ public class InPlacePageReplication extends InPlaceReplicationStrategy {
         return result;
     }
 
-    @Override
-    protected ResourceResolver getReleaseResolver(ReplicationContext context, Resource resource) {
-        ResourceResolver defaultResolver = context.getResolver();
-        if (Page.isPage(resource)) {
-            // for a page the version based resolver has to be used...
-            String releaseLabel = context.site.getReleaseLabel(context.accessMode.name());
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("'{}': using staging resolver of release '{}'...", resource.getPath(), releaseLabel);
-            }
-            StagingReleaseManager.Release release = releaseManager.findRelease(context.site.getResource(),
-                    StringUtils.removeStart(releaseLabel, Site.RELEASE_LABEL_PREFIX));
-            return releaseManager.getResolverForRelease(release, this);
-        }
-        return defaultResolver;
-    }
 }
