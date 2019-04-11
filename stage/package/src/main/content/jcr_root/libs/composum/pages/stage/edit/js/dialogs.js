@@ -342,7 +342,7 @@
                 }
             },
 
-            doSubmit: function (type) {
+            doSubmit: function (event, type) {
                 var u = dialogs.const.edit.url;
                 var d = dialogs.const.edit.data;
                 if (!type) {

@@ -648,7 +648,7 @@
                 return false;
             },
 
-            setFilter: function (event) {
+            selectFilter: function (event) {
                 event.preventDefault();
                 var p = pages.const.profile[this.type].tree;
                 var $link = $(event.currentTarget);
@@ -673,7 +673,7 @@
                 this.$viewToggle.click(_.bind(this.toggleView, this));
                 this.setView(pages.profile.get(p.aspect, p.view, 'tree'));
                 this.setFilter(pages.profile.get(p.aspect, p.filter, undefined));
-                this.$('.' + tree.const.pages.css.base + '_filter-value a').click(_.bind(this.setFilter, this));
+                this.$('.' + tree.const.pages.css.base + '_filter-value a').click(_.bind(this.selectFilter, this));
                 this.tree.$el.on('node:selected.' + this.treePanelId, _.bind(this.onNodeSelected, this));
                 $(document).on(e.site.selected + '.' + this.treePanelId, _.bind(this.onSiteSelected, this));
                 $(document).on(e.scope.changed + '.' + this.treePanelId, _.bind(this.onScopeChanged, this));
@@ -709,7 +709,7 @@
                 this.$viewToggle.click(_.bind(this.toggleView, this));
                 this.setView(pages.profile.get(p.aspect, p.view, 'tree'));
                 this.setFilter(pages.profile.get(p.aspect, p.filter, undefined));
-                this.$('.' + tree.const.assets.css.base + '_filter-value a').click(_.bind(this.setFilter, this));
+                this.$('.' + tree.const.assets.css.base + '_filter-value a').click(_.bind(this.selectFilter, this));
                 this.tree.$el.on('node:selected.' + this.treePanelId, _.bind(this.onNodeSelected, this));
                 $(document).on(e.asset.select + '.' + this.treePanelId, _.bind(this.selectAsset, this));
                 $(document).on(e.site.selected + '.' + this.treePanelId, _.bind(this.onSiteSelected, this));

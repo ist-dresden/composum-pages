@@ -6,7 +6,7 @@
 .composum-pages-stage-edit-tools {
 
     .fa {
-        font-family: FontAwesome;
+        font-family: FontAwesome, monospace;
         text-rendering: auto;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
@@ -149,12 +149,12 @@
     }
 
     &_title {
-        font-family: 'robotothin_italic';
+        font-family: 'robotothin_italic', sans-serif;
         font-size: 14px;
     }
 
     &_subtitle {
-        font-family: 'robotoregular';
+        font-family: 'robotoregular', sans-serif;
         font-size: 13px;
     }
 }
@@ -239,6 +239,96 @@
     }
 }
 
+.composum-pages-tools_search-result {
+
+    .composum-pages-stage-page {
+
+        &_tile {
+            position: relative;
+            width: 100%;
+            height: $tile-file-height;
+            background-color: $tile-file-bg-color;
+            color: $tile-file-text-color;
+            overflow: hidden;
+
+            &:hover, &:visited, &:focus {
+                color: $tile-file-text-color;
+            }
+
+            .composum-pages-stage-page {
+
+                &_thumbnail {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 160px;
+
+                    &_wrapper {
+                        @include aspect-ratio-wrapper(4, 3);
+                    }
+
+                    &_picture {
+                        @include aspect-ratio-element();
+                    }
+
+                    &_image {
+                        width: 100%;
+                    }
+
+                    &_placeholder {
+                        width: 100%;
+                        height: 100%;
+                        padding: 7px 14px;
+                        background: rgba(255, 255, 255, 0.4);
+                        color: #ddd;
+                        font-size: 72px;
+                    }
+                }
+
+                &_tile {
+
+                    &_text {
+                        position: relative;
+                        pointer-events: none;
+                        height: 100%;
+                        padding: $tile-file-text-padding;
+                        background-color: $tile-file-text-bg;
+                        @include font('robotolight', $hint-font-size);
+                        text-align: right;
+                        color: $tile-file-text-color;
+                    }
+
+                    &_title, &_description, &_path {
+                        text-overflow-ellipsis: ellipsis;
+                        overflow: hidden;
+                    }
+
+                    &_title, &_path {
+                        white-space: nowrap;
+                    }
+
+                    &_title {
+                        margin: 4px 0 8px;
+                        font-size: $default-font-size;
+                    }
+
+                    &_description {
+                        max-height: 60px;
+                    }
+
+                    &_path {
+                        position: absolute;
+                        right: 4px;
+                        bottom: 4px;
+                        margin: 0;
+                        font-size: $hint-font-size;
+                    }
+                }
+            }
+        }
+    }
+}
+
 .composum-pages-stage-file {
 
     &_tile {
@@ -278,7 +368,18 @@
             background-color: $tile-file-text-bg;
             @include font('robotolight', $hint-font-size);
             text-align: right;
+            white-space: nowrap;
+            text-overflow-ellipsis: ellipsis;
+            overflow: hidden;
             color: $tile-file-text-color;
+        }
+
+        &_name {
+            font-size: $default-font-size;
+        }
+
+        &_date {
+            float: left;
         }
     }
 }

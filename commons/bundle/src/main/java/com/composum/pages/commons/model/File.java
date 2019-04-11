@@ -11,13 +11,18 @@ import com.composum.sling.core.util.ResourceUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ValueMap;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
 public class File extends AbstractModel {
 
     enum Type {asset, document, file, image, video}
+
+    public static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
     public static final Map<String, Type> TYPE_MAP;
 
@@ -53,6 +58,16 @@ public class File extends AbstractModel {
 
     public String getFileName() {
         return (JcrConstants.JCR_CONTENT.equals(getName())) ? getResource().getParent().getName() : getName();
+    }
+
+    public String getFileDate() {
+        Resource content = JcrConstants.JCR_CONTENT.equals(getName()) ? getResource().getParent() : getResource();
+        ValueMap values = content.getValueMap();
+        Calendar date = values.get(JcrConstants.JCR_LASTMODIFIED, Calendar.class);
+        if (date == null) {
+            date = values.get(JcrConstants.JCR_CREATED, Calendar.class);
+        }
+        return date != null ? new SimpleDateFormat(DATE_FORMAT).format(date.getTime()) : "";
     }
 
     public String getFilePath() {

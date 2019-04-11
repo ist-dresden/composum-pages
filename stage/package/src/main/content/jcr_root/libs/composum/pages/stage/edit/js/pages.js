@@ -316,7 +316,7 @@
                                 setupDialog(dialog);
                             }
                             if (dialog.useDefault) {
-                                dialog.doSubmit(dialog.useDefault);
+                                dialog.doSubmit(undefined, dialog.useDefault);
                             } else {
                                 dialog.show();
                             }
