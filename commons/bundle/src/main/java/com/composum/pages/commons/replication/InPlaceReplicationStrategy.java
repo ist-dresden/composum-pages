@@ -241,7 +241,9 @@ public abstract class InPlaceReplicationStrategy implements ReplicationStrategy 
      */
     protected String transformStringProperty(ReplicationContext context, String targetRoot, String value) {
         Matcher contentPathMatcher = contentPathPattern.matcher(value);
-        if (contentPathMatcher.matches() && context.getResolver().getResource(value) != null) {
+        Resource referencedResource;
+        if (contentPathMatcher.matches() && (referencedResource = context.releaseResolver.getResource(value)) != null &&
+                context.releaseFilter.accept(referencedResource)) {
             // the the value is a reference transform the value to the replication path
             String path = contentPathMatcher.group(1);
             context.references.add(contentPath + path);
@@ -257,7 +259,6 @@ public abstract class InPlaceReplicationStrategy implements ReplicationStrategy 
      * transforms embedded references of a rich text from 'content' to the replication path
      */
     public String transformTextProperty(ReplicationContext context, String targetRoot, String value) {
-        ResourceResolver resolver = context.getResolver();
         StringBuilder result = new StringBuilder();
         Matcher matcher = contentLinkPattern.matcher(value);
         int len = value.length();
@@ -266,7 +267,8 @@ public abstract class InPlaceReplicationStrategy implements ReplicationStrategy 
             result.append(value, pos, matcher.start());
             String path = matcher.group(3);
             // check for a resolvable resource
-            if (resolver.getResource(contentPath + path) != null) {
+            Resource referencedResource = context.releaseResolver.getResource(contentPath + path);
+            if (referencedResource != null && context.releaseFilter.accept(referencedResource)) {
                 context.references.add(contentPath + path);
                 result.append(matcher.group(1));
                 result.append(targetRoot);

@@ -1,5 +1,6 @@
 package com.composum.pages.commons.servlet;
 
+import com.composum.pages.commons.filter.SitePageFilter;
 import com.composum.pages.commons.model.Page;
 import com.composum.pages.commons.model.Site;
 import com.composum.pages.commons.replication.ReplicationContext;
@@ -7,6 +8,7 @@ import com.composum.pages.commons.replication.ReplicationManager;
 import com.composum.pages.commons.service.SiteManager;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.ResourceHandle;
+import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.servlet.AbstractServiceServlet;
 import com.composum.sling.core.servlet.ServletOperation;
 import com.composum.sling.core.servlet.ServletOperationSet;
@@ -165,7 +167,8 @@ public class ReleaseServlet extends AbstractServiceServlet {
                 ResourceResolver stagedResolver = releaseManager.getResolverForRelease(release, replicationManager);
                 Resource stagedSiteResource = stagedResolver.getResource(site.getResource().getPath());
 
-                ReplicationContext replicationContext = new ReplicationContext(beanContext, site, accessMode);
+                ResourceFilter releaseFilter = new SitePageFilter(site.getPath(), ResourceFilter.ALL);
+                ReplicationContext replicationContext = new ReplicationContext(beanContext, site, accessMode, releaseFilter, stagedResolver);
                 replicationManager.replicateResource(replicationContext, stagedSiteResource, true);
                 replicationManager.replicateReferences(replicationContext);
                 if (LOG.isDebugEnabled()) {
