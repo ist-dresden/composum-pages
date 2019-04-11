@@ -78,6 +78,8 @@ public abstract class InPlaceReplicationStrategy implements ReplicationStrategy 
             String relativePath = resource.getPath().replaceAll("^" + config.contentPath() + "/", "");
             // delegation to the extension hook...
             replicate(context, targetRoot, resource, relativePath, recursive, false);
+        } else {
+            throw new IllegalStateException("Target path not found: " + targetPath);
         }
     }
 
