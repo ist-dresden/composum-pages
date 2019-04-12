@@ -3,6 +3,11 @@ package com.composum.pages.stage.model.edit;
 import com.composum.pages.commons.PagesConstants;
 import com.composum.pages.commons.model.Component;
 import com.composum.pages.commons.model.GenericModel;
+import com.composum.pages.commons.request.DisplayMode;
+import com.composum.pages.commons.service.PageManager;
+import com.composum.pages.commons.service.PagesTenantSupport;
+import com.composum.pages.commons.service.ResourceManager;
+import com.composum.pages.commons.service.SiteManager;
 import com.composum.pages.commons.util.ResolverUtil;
 import com.composum.pages.commons.util.ResourceTypeUtil;
 import com.composum.pages.commons.util.TagCssClasses;
@@ -26,6 +31,14 @@ public class FrameModel extends GenericModel {
     private transient Resource typeResource;
     private transient PagesConstants.ComponentType componentType;
     private transient Component component;
+
+    private transient DisplayMode.Value displayMode;
+
+    // OSGi services
+
+    private transient SiteManager siteManager;
+    private transient PageManager pageManager;
+    private transient ResourceManager resourceManager;
 
     public PagesConstants.ComponentType getComponentType() {
         if (componentType == null) {
@@ -111,9 +124,67 @@ public class FrameModel extends GenericModel {
         return type != null ? type.getPath() : "";
     }
 
+    // view mode
+
+    public boolean isEditMode() {
+        DisplayMode.Value mode = getDisplayMode();
+        return mode == DisplayMode.Value.EDIT || mode == DisplayMode.Value.DEVELOP;
+    }
+
+    public boolean isDevelopMode() {
+        return getDisplayMode() == DisplayMode.Value.DEVELOP;
+    }
+
+    public DisplayMode.Value getDisplayMode() {
+        if (displayMode == null) {
+            displayMode = DisplayMode.requested(getContext());
+        }
+        return displayMode;
+    }
+
     // Tile rendering
 
     public String getTileResourceType() {
         return ResourceTypeUtil.getSubtypePath(getContext().getResolver(), getResource(), getPath(), EDIT_TILE_PATH, null);
+    }
+
+    // Tenants
+
+    public boolean isTenantSupport() {
+        return getSiteManager().isTenantSupport();
+    }
+
+    // User context
+
+    public String getUserId() {
+        return getContext().getResolver().getUserID();
+    }
+
+    public boolean isDevelopModeAllowed() {
+        PagesTenantSupport tenantSupport = getSiteManager().getTenantSupport();
+        return tenantSupport == null || tenantSupport.isDevelopModeAllowed(getContext(), getResource());
+    }
+
+    // Services...
+
+    public PageManager getPageManager() {
+        if (pageManager == null) {
+            pageManager = getContext().getService(PageManager.class);
+        }
+        return pageManager;
+    }
+
+    public SiteManager getSiteManager() {
+        if (siteManager == null) {
+            siteManager = getContext().getService(SiteManager.class);
+        }
+        return siteManager;
+    }
+
+    public ResourceManager getResourceManager() {
+        if (resourceManager == null) {
+            resourceManager = getContext().getService(ResourceManager.class);
+        }
+        return resourceManager;
     }
 }

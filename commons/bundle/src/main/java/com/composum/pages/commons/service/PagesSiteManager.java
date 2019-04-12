@@ -109,6 +109,15 @@ public class PagesSiteManager extends PagesContentManager<Site> implements SiteM
     }
 
     /**
+     * @return the tenant support implementation if available
+     */
+    @Override
+    @Nullable
+    public PagesTenantSupport getTenantSupport() {
+        return tenantSupport;
+    }
+
+    /**
      * @return the list of id/tenant pairs of the joined tenants in the context of the current request
      */
     @Override

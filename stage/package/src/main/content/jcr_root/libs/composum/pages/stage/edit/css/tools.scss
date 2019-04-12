@@ -180,10 +180,24 @@
             text-align: right;
         }
 
+        &_username {
+            @include dialog-label-font;
+        }
+
         &_logout {
             font-size: $hint-font-size;
             line-height: $hint-font-size;
             color: $bootstrap-color-mute;
+        }
+
+        &_actions {
+            margin: 8px 0 -8px;
+            text-align: right;
+
+            .btn-sm {
+                font-size: 17px;
+                padding: 1px 7px;
+            }
         }
 
         &_consoles {

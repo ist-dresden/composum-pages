@@ -286,6 +286,17 @@
             }
         };
 
+        pages.loadFrameContent = function (uri, callback) {
+            var target = pages.current.page || pages.current.site;
+            if (target) {
+                uri += target;
+            }
+            uri += '?pages.view=' + pages.current.mode;
+            core.getHtml(uri, _.bind(function (content) {
+                callback(content);
+            }, this));
+        };
+
         //
         // Dialog container
         //

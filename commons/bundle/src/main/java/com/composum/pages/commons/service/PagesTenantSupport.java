@@ -1,6 +1,7 @@
 package com.composum.pages.commons.service;
 
 import com.composum.sling.core.BeanContext;
+import org.apache.sling.api.resource.Resource;
 import org.apache.sling.tenant.Tenant;
 
 import javax.annotation.Nonnull;
@@ -26,4 +27,9 @@ public interface PagesTenantSupport {
      */
     @Nullable
     String getApplicationRoot(@Nonnull BeanContext context, @Nonnull String tenantId);
+
+    /**
+     * @return 'true' if development mode is available and the contexts user can use it
+     */
+    boolean isDevelopModeAllowed(@Nonnull BeanContext context, @Nullable Resource focus);
 }

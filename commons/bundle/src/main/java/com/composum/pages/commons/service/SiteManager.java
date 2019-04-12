@@ -89,6 +89,12 @@ public interface SiteManager extends ContentManager<Site> {
     boolean isTenantSupport();
 
     /**
+     * @return the tenant support implementation if available
+     */
+    @Nullable
+    PagesTenantSupport getTenantSupport();
+
+    /**
      * @return the list of id/tenant pairs of the joined tenants in the context of the current request
      */
     @Nonnull

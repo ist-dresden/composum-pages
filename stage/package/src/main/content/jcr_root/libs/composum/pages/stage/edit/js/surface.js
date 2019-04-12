@@ -365,7 +365,7 @@
             initPopover: function (event) {
                 event.preventDefault();
                 if (!this.popover) {
-                    core.getHtml('/libs/composum/pages/stage/edit/sidebar/logo/popover.html',
+                    pages.loadFrameContent('/libs/composum/pages/stage/edit/sidebar/logo/popover.html',
                         _.bind(function (content) {
                             this.$link.popover({
                                 placement: 'bottom',
