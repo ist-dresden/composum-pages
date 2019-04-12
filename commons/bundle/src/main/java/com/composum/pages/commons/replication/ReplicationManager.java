@@ -3,7 +3,7 @@ package com.composum.pages.commons.replication;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.filter.StringFilter;
 import com.composum.sling.platform.security.AccessMode;
-import com.composum.sling.platform.staging.service.ReleaseMapper;
+import com.composum.sling.platform.staging.ReleaseMapper;
 import org.apache.sling.api.resource.Resource;
 
 public interface ReplicationManager extends ReleaseMapper {

@@ -1,7 +1,6 @@
 package com.composum.pages.commons.servlet;
 
 import com.composum.pages.commons.filter.SitePageFilter;
-import com.composum.pages.commons.model.Page;
 import com.composum.pages.commons.model.Site;
 import com.composum.pages.commons.replication.ReplicationContext;
 import com.composum.pages.commons.replication.ReplicationManager;
@@ -15,8 +14,8 @@ import com.composum.sling.core.servlet.ServletOperationSet;
 import com.composum.sling.core.util.ResourceUtil;
 import com.composum.sling.platform.security.AccessMode;
 import com.composum.sling.platform.staging.impl.SiblingOrderUpdateStrategy;
-import com.composum.sling.platform.staging.service.ReleaseNumberCreator;
-import com.composum.sling.platform.staging.service.StagingReleaseManager;
+import com.composum.sling.platform.staging.ReleaseNumberCreator;
+import com.composum.sling.platform.staging.StagingReleaseManager;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;

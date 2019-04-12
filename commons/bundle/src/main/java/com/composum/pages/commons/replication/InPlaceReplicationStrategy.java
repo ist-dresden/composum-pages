@@ -4,7 +4,6 @@ import com.composum.pages.commons.model.Site;
 import com.composum.sling.core.JcrResource;
 import com.composum.sling.core.ResourceHandle;
 import com.composum.sling.platform.security.AccessMode;
-import com.composum.sling.platform.staging.service.ReleaseMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.resource.ModifiableValueMap;

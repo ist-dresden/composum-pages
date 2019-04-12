@@ -41,8 +41,8 @@ import java.util.regex.Pattern;
 
 import static com.composum.pages.commons.PagesConstants.COMPOSUM_PREFIX;
 import static com.composum.platform.commons.request.service.InternalRequestService.RA_IS_INTERNAL_REQUEST;
-import static com.composum.sling.platform.staging.ResourceResolverChangeFilter.ATTRIBUTE_NAME;
-import static com.composum.sling.platform.staging.ResourceResolverChangeFilter.PARAMETER_NAME;
+import static com.composum.sling.platform.staging.impl.ResourceResolverChangeFilter.ATTRIBUTE_NAME;
+import static com.composum.sling.platform.staging.impl.ResourceResolverChangeFilter.PARAMETER_NAME;
 
 @Component(
         service = {Filter.class},
@@ -128,6 +128,7 @@ public class PagesReleaseFilter implements Filter {
      * <dd>no check, render author content as is as public content</dd>
      * </dl>
      */
+    @Override
     public void doFilter(ServletRequest request, ServletResponse response,
                          FilterChain chain)
             throws IOException, ServletException {
@@ -296,10 +297,12 @@ public class PagesReleaseFilter implements Filter {
         slingResponse.sendError(HttpServletResponse.SC_NOT_FOUND);
     }
 
+    @Override
     public void init(FilterConfig filterConfig) {
         servletContext = filterConfig.getServletContext();
     }
 
+    @Override
     public void destroy() {
     }
 

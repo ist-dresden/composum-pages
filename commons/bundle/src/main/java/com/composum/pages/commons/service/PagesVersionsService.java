@@ -4,7 +4,7 @@ import com.composum.pages.commons.model.Folder;
 import com.composum.pages.commons.model.Page;
 import com.composum.pages.commons.model.Release;
 import com.composum.sling.core.BeanContext;
-import com.composum.sling.platform.staging.StagingUtils;
+import com.composum.sling.platform.staging.impl.StagingUtils;
 import org.apache.jackrabbit.api.JackrabbitSession;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.NonExistingResource;
