@@ -132,10 +132,26 @@
 
 .composum-pages-stage-edit-sidebar-logo {
 
-    &_image {
+    .popover {
+        left: 4px !important;
+        right: 4px;
+        max-width: inherit;
+        color: $bootstrap-default-color;
+
+        &.bottom > .arrow {
+            left: 31px !important;
+        }
+
+        .popover-content {
+            @include default-font;
+        }
+    }
+
+    &_link {
         position: absolute;
         top: 2px;
         left: 5px;
+        z-index: 1;
     }
 
     &_text {
@@ -156,6 +172,33 @@
     &_subtitle {
         font-family: 'robotoregular', sans-serif;
         font-size: 13px;
+    }
+
+    &-popover {
+
+        &_user {
+            text-align: right;
+        }
+
+        &_logout {
+            font-size: $hint-font-size;
+            line-height: $hint-font-size;
+            color: $bootstrap-color-mute;
+        }
+
+        &_consoles {
+
+            h3 {
+                margin: 15px 0 5px;
+                @include dialog-label-font;
+            }
+
+            p {
+                font-size: $hint-font-size;
+                line-height: $hint-font-size + 2;
+                color: $bootstrap-color-mute;
+            }
+        }
     }
 }
 
@@ -555,6 +598,13 @@
 }
 
 .composum-pages-stage-edit-sidebar-navigation {
+
+    &_tabs {
+
+        &.tabbed-widget_tabs {
+            padding-left: 65px;
+        }
+    }
 
     .composum-pages-tools {
 

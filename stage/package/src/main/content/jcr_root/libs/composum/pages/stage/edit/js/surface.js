@@ -9,6 +9,7 @@
         surface.const = _.extend(surface.const || {}, {
             toolsPanelClass: 'composum-pages-stage-edit-tools',
             sidebarClass: 'composum-pages-stage-edit-sidebar',
+            logoClass: 'composum-pages-stage-edit-sidebar-logo',
             navigationClass: 'composum-pages-stage-edit-tools_navigation',
             contextToolsClass: 'composum-pages-stage-edit-tools_context',
             handleClass: 'composum-pages-stage-edit-sidebar_handle',
@@ -353,6 +354,33 @@
             }
         });
 
+        surface.Logo = Backbone.View.extend({
+
+            initialize: function (options) {
+                this.popover = false;
+                this.$link = this.$('.' + surface.const.logoClass + '_link');
+                this.$link.click(_.bind(this.initPopover, this));
+            },
+
+            initPopover: function (event) {
+                event.preventDefault();
+                if (!this.popover) {
+                    core.getHtml('/libs/composum/pages/stage/edit/sidebar/logo/popover.html',
+                        _.bind(function (content) {
+                            this.$link.popover({
+                                placement: 'bottom',
+                                animation: false,
+                                html: true,
+                                content: content
+                            });
+                            this.$link.popover('show');
+                            this.popover = true;
+                        }, this));
+                }
+                return false;
+            }
+        });
+
         surface.Navigation = surface.Sidebar.extend({
 
             initialize: function (options) {
@@ -383,6 +411,7 @@
             }
         });
 
+        surface.logo = core.getView('.' + surface.const.logoClass, surface.Logo);
         surface.navigation = core.getView('.' + surface.const.navigationClass, surface.Navigation);
         surface.contextTools = core.getView('.' + surface.const.contextToolsClass, surface.ContextTools);
         surface.surface = core.getView('.' + surface.const.toolsPanelClass, surface.Surface);
