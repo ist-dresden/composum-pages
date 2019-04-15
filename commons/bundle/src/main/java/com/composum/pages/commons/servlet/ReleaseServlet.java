@@ -163,7 +163,7 @@ public class ReleaseServlet extends AbstractServiceServlet {
                 LOG.debug("'{}': using staging resolver of release '{}'...", resource.getPath(), releaseLabel);
                 StagingReleaseManager.Release release = releaseManager.findRelease(site.getResource(),
                         StringUtils.removeStart(releaseLabel, Site.RELEASE_LABEL_PREFIX));
-                ResourceResolver stagedResolver = releaseManager.getResolverForRelease(release, replicationManager);
+                ResourceResolver stagedResolver = releaseManager.getResolverForRelease(release, replicationManager, false);
                 Resource stagedSiteResource = stagedResolver.getResource(site.getResource().getPath());
 
                 ResourceFilter releaseFilter = new SitePageFilter(site.getPath(), ResourceFilter.ALL);
