@@ -3,6 +3,13 @@
 @import "variables";
 @import "mixins";
 
+html {
+    width: 100%;
+    height: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
 body {
     margin: 0;
     border: none;

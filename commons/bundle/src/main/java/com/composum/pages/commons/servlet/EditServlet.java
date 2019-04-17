@@ -149,7 +149,7 @@ public class EditServlet extends PagesContentServlet {
 
     public enum Operation {
         pageData, isTemplate, isAllowedChild,
-        siteTree, pageTree, developTree,
+        siteTree, pageTree,
         resourceInfo, editDialog, newDialog,
         editTile, editToolbar, treeActions,
         pageComponents, targetContainers, isAllowedElement, filterDropZones, componentCategories,
@@ -178,8 +178,6 @@ public class EditServlet extends PagesContentServlet {
                 Operation.pageTree, new PageTreeOperation());
         operations.setOperation(ServletOperationSet.Method.GET, Extension.json,
                 Operation.siteTree, new SiteTreeOperation());
-        operations.setOperation(ServletOperationSet.Method.GET, Extension.json,
-                Operation.developTree, new DevTreeOperation());
         operations.setOperation(ServletOperationSet.Method.GET, Extension.json,
                 Operation.resourceInfo, new GetResourceInfo());
         operations.setOperation(ServletOperationSet.Method.GET, Extension.json,
@@ -401,14 +399,6 @@ public class EditServlet extends PagesContentServlet {
         @Override
         protected ResourceFilter getNodeFilter(SlingHttpServletRequest request) {
             return pagesConfiguration.getRequestNodeFilter(request, PARAM_FILTER, DEFAULT_FILTER);
-        }
-    }
-
-    public class DevTreeOperation extends TreeOperation {
-
-        @Override
-        protected ResourceFilter getNodeFilter(SlingHttpServletRequest request) {
-            return pagesConfiguration.getDevelopmentTreeFilter();
         }
     }
 

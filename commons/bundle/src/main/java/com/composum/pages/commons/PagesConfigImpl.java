@@ -76,7 +76,7 @@ public class PagesConfigImpl implements PagesConfiguration {
         @AttributeDefinition(
                 description = "the filter configuration to set the scope to component development"
         )
-        String develomentTreeFilterRule() default "PrimaryType(+'^cpp:(Site|Component|Theme)$')";
+        String develomentTreeFilterRule() default "Path(+'^/(etc|conf|apps|libs|sightly|htl|var)/+')";
 
         @AttributeDefinition(
                 description = "the filter configuration to determine all intermediate nodes in the content structure"
@@ -86,7 +86,7 @@ public class PagesConfigImpl implements PagesConfiguration {
         @AttributeDefinition(
                 description = "the filter configuration to determine all intermediate nodes in the development scope"
         )
-        String devIntermediateFilterRule() default "and{Folder(),Path(+'^/(etc|conf|apps|libs|sightly|htl|var)'";
+        String devIntermediateFilterRule() default "and{Folder(),Path(+'^/(etc|conf|apps|libs|sightly|htl|var)(/.+)?')}";
 
         @AttributeDefinition(
                 description = "the filter configuration to determine all intermediate nodes in the tree view"
@@ -118,7 +118,6 @@ public class PagesConfigImpl implements PagesConfiguration {
     private ResourceFilter orderableNodesFilter;
     private ResourceFilter replicationRootFilter;
 
-    private ResourceFilter pageFilter;
     private Map<String, ResourceFilter> pageFilters;
 
     protected Configuration config;
@@ -260,7 +259,7 @@ public class PagesConfigImpl implements PagesConfiguration {
         ResourceFilter devIntermediateFilter = ResourceFilterMapping.fromString(config.devIntermediateFilterRule());
         develomentTreeFilter = buildTreeFilter(
                 ResourceFilterMapping.fromString(config.develomentTreeFilterRule()), devIntermediateFilter);
-        pageFilter = ResourceFilterMapping.fromString(config.pageFilterRule());
+        ResourceFilter pageFilter = ResourceFilterMapping.fromString(config.pageFilterRule());
         pageFilters = new HashMap<>();
         pageFilters.put(PAGE_FILTER_SITE, pageFilter);
         pageFilters.put(PAGE_FILTER_ALL, pageFilter);

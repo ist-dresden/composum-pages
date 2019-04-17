@@ -521,7 +521,7 @@
             },
 
             dataUrlForPath: function (path) {
-                return '/bin/cpm/pages/edit.developTree.json' + path;
+                return '/bin/cpm/pages/develop.tree.json' + path;
             }
         });
 

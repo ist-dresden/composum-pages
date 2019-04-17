@@ -10,6 +10,8 @@ import com.google.gson.JsonObject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -40,20 +42,23 @@ public abstract class OptionsWidget<T> extends PropertyEditHandle<T> {
         private final String value;
         private final Object data;
 
-        public Option(String label, String value, Object data) {
+        public Option(@Nonnull final String label, @Nonnull final String value, @Nullable final Object data) {
             this.label = label;
             this.value = value;
             this.data = data;
         }
 
+        @Nonnull
         public String getLabel() {
             return CpnlElFunctions.i18n(context.getRequest(), label);
         }
 
+        @Nonnull
         public String getValue() {
             return value;
         }
 
+        @Nullable
         public Object getData() {
             return data;
         }
@@ -69,20 +74,24 @@ public abstract class OptionsWidget<T> extends PropertyEditHandle<T> {
         super.setWidget(tag);
         options = retrieveOptions(); // consume the options attribute
     }
-    
+
     public void setOptions(List<Option> options) {
         this.options = options;
     }
 
     public List<Option> getOptions() {
+        if (options == null) {
+            options = retrieveOptions(); // lazy load if not configured during initialization
+        }
         return options;
     }
-    
+
     protected abstract Option newOption(String label, String value, Object data);
 
     /**
      * @return the configured options as a JSON array
      */
+    @Nonnull
     public String getOptionsData() {
         JsonArray data = new JsonArray();
         for (Option option : getOptions()) {
@@ -94,6 +103,8 @@ public abstract class OptionsWidget<T> extends PropertyEditHandle<T> {
         return data.toString();
     }
 
+    @Nonnull
+    @SuppressWarnings("unchecked")
     protected List<Option> retrieveOptions() {
         List<Option> options;
         Object optionsObject = widget.consumeDynamicAttribute(ATTR_OPTIONS, Object.class);
@@ -115,6 +126,7 @@ public abstract class OptionsWidget<T> extends PropertyEditHandle<T> {
         return options;
     }
 
+    @Nonnull
     protected List<Option> useString(String string, String listSeparator, String keySeparator) {
         Resource resource = resolver.getResource(string);
         if (resource != null) {
@@ -130,6 +142,7 @@ public abstract class OptionsWidget<T> extends PropertyEditHandle<T> {
         return options;
     }
 
+    @Nonnull
     protected List<Option> useMap(Map<String, Object> map) {
         List<Option> options = new ArrayList<>();
         for (Map.Entry<String, Object> entry : map.entrySet()) {
@@ -138,6 +151,7 @@ public abstract class OptionsWidget<T> extends PropertyEditHandle<T> {
         return options;
     }
 
+    @Nonnull
     protected List<Option> useList(List<String> list) {
         List<Option> options = new ArrayList<>();
         for (String value : list) {
@@ -146,6 +160,7 @@ public abstract class OptionsWidget<T> extends PropertyEditHandle<T> {
         return options;
     }
 
+    @Nonnull
     protected List<Option> useResource(Resource resource) {
         List<Option> options = new ArrayList<>();
         for (Resource node : resource.getChildren()) {
@@ -154,6 +169,7 @@ public abstract class OptionsWidget<T> extends PropertyEditHandle<T> {
         return options;
     }
 
+    @Nonnull
     protected List<Option> useLanguages(Languages languages) {
         List<Option> options = new ArrayList<>();
         for (Language language : languages.getLanguageList()) {
@@ -162,6 +178,7 @@ public abstract class OptionsWidget<T> extends PropertyEditHandle<T> {
         return options;
     }
 
+    @Nonnull
     protected String getLabel(Resource resource) {
         String label;
         if (StringUtils.isBlank(label = "label")) {
