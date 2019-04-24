@@ -47,7 +47,7 @@ import static com.composum.sling.platform.staging.impl.ResourceResolverChangeFil
 @Component(
         service = {Filter.class},
         property = {
-                Constants.SERVICE_DESCRIPTION + "=Composum Platform Release Filter",
+                Constants.SERVICE_DESCRIPTION + "=Composum Pages Release Filter",
                 "sling.filter.scope=REQUEST",
                 "service.ranking:Integer=" + 5070
         },
