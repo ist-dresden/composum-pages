@@ -23,7 +23,7 @@
 
                     <sling:include resourceType="composum/pages/stage/edit/site/page/finished"/>
 
-                    <sling:include path="releases" resourceType="composum/pages/stage/edit/site/releases"/>
+                    <sling:include path="cpl:releases" resourceType="composum/pages/stage/edit/site/releases"/>
 
                 </div>
                 <div role="tabpanel" class="tab-pane fade" id="settings-tab">
