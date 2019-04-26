@@ -1,10 +1,11 @@
-<%@page session="false" pageEncoding="UTF-8"%><%--
---%><%@taglib prefix="sling" uri="http://sling.apache.org/taglibs/sling/1.2" %><%--
---%><%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %><%--
---%><%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%><%--
---%><cpp:defineFrameObjects/>
+<%@page session="false" pageEncoding="UTF-8" %>
+<%@taglib prefix="sling" uri="http://sling.apache.org/taglibs/sling/1.2" %>
+<%@taglib prefix="cpn" uri="http://sling.composum.com/cpnl/1.0" %>
+<%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<cpp:defineFrameObjects/>
 <cpp:element var="versions" type="com.composum.pages.stage.model.edit.page.Versions" mode="none"
-               cssClasses="composum-pages-tools composum-pages-tools_context">
+             cssClasses="composum-pages-tools composum-pages-tools_context">
     <div class="composum-pages-tools_actions btn-toolbar">
         <div class="composum-pages-tools_left-actions">
             <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
@@ -17,36 +18,36 @@
         <div class="composum-pages-tools_right-actions">
             <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
                 <button type="button"
+                        class="fa fa-play ${versionsCssBase}_action_activate composum-pages-tools_button btn btn-default"
+                        title="${cpn:i18n(slingRequest,'Activate')}"><span
+                        class="composum-pages-tools_button-label">${cpn:i18n(slingRequest,'Activate')}</span></button>
+                <button type="button"
+                        class="fa fa-stop ${versionsCssBase}_action_deactivate composum-pages-tools_button btn btn-default"
+                        title="${cpn:i18n(slingRequest,'Deactivate')}"><span
+                        class="composum-pages-tools_button-label">${cpn:i18n(slingRequest,'Deactivate')}</span></button>
+                <button type="button"
                         class="fa fa-circle-o ${versionsCssBase}_action_checkpoint composum-pages-tools_button btn btn-default"
-                        title="Checkpoint (In/Out)"><span
-                        class="composum-pages-tools_button-label">Checkpoint</span></button>
-                <button type="button"
-                        class="fa fa-sign-in ${versionsCssBase}_action_check-in composum-pages-tools_button btn btn-default"
-                        title="Check in the selected page"><span
-                        class="composum-pages-tools_button-label">Check In</span></button>
-                <button type="button"
-                        class="fa fa-sign-out ${versionsCssBase}_action_check-out composum-pages-tools_button btn btn-default"
-                        title="Check out the selected page"><span
-                        class="composum-pages-tools_button-label">Check Out</span></button>
-                <button type="button"
-                        class="fa fa-undo ${versionsCssBase}_action_restore composum-pages-tools_button btn btn-default"
-                        title="Restore the selected version"><span
-                        class="composum-pages-tools_button-label">Restore</span></button>
+                        title="${cpn:i18n(slingRequest,'Checkpoint (In/Out)')}"><span
+                        class="composum-pages-tools_button-label">${cpn:i18n(slingRequest,'Checkpoint')}</span></button>
             </div>
             <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
                 <button type="button"
                         class="fa fa-navicon composum-pages-tools_button btn btn-default dropdown-toggle"
                         data-toggle="dropdown" title="More actions..."><span
                         class="composum-pages-tools_button-label">More...</span></button>
-                <ul class="composum-pages-tools_menu dropdown-menu" role="menu">
-                    <!--
-                    <li><a href="#" class="${versionsCssBase}_action_delete"
-                           title="Delete Version">Delete Version</a></li>
-                    <li><a href="#" class="${versionsCssBase}_action_add-label"
-                           title="Add version label">Add Label</a></li>
-                    <li><a href="#" class="${versionsCssBase}_action_remove-label"
-                           title="Remove version label">Remove Label</a></li>
-                    -->
+                <ul class="composum-pages-stage-edit-toolbar_more composum-pages-tools_menu dropdown-menu" role="menu">
+                    <li><a href="#" class="${versionsCssBase}_action_purge"
+                           title="${cpn:i18n(slingRequest,'Purge Versions of the selected page')}"><i
+                            class="fa fa-trash-o"></i>${cpn:i18n(slingRequest,'Purge Versions')}</a></li>
+                    <li><a href="#" class="${versionsCssBase}_action_check-in"
+                           title="${cpn:i18n(slingRequest,'Check in the selected page')}"><i
+                            class="fa fa-sign-in"></i>${cpn:i18n(slingRequest,'Check In')}</a></li>
+                    <li><a href="#" class="${versionsCssBase}_action_check-out"
+                           title="${cpn:i18n(slingRequest,'Check out the selected page')}"><i
+                            class="fa fa-sign-out"></i>${cpn:i18n(slingRequest,'Check Out')}</a></li>
+                    <li><a href="#" class="${versionsCssBase}_action_restore"
+                           title="${cpn:i18n(slingRequest,'Restore the selected version')}"><i
+                            class="fa fa-undo"></i>${cpn:i18n(slingRequest,'Restore')}</a></li>
                 </ul>
             </div>
         </div>
@@ -66,7 +67,7 @@
                    data-slider-min="0" data-slider-max="100" data-slider-step="1" data-slider-value="0"/>
         </div>
         <div class="${versionsCssBase}_content">
-            <%-- <sling:call script="versionList.jsp"/> - load after init via Ajax --%>
+                <%-- <sling:call script="versionList.jsp"/> - load after init via Ajax --%>
         </div>
     </div>
 </cpp:element>

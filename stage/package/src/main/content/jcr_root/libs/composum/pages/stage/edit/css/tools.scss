@@ -611,49 +611,50 @@
     }
 }
 
+.composum-pages-stage-edit-sidebar-navigation,
+.composum-pages-stage-edit-sidebar-context {
+
+    .composum-pages-tools {
+
+        &_actions {
+
+            .composum-pages-tools {
+
+                &_menu {
+                    background-color: $edit-actions-menu-bg;
+
+                    li {
+                        a {
+                            padding: 3px 12px;
+
+                            &:hover, &:focus {
+                                background-color: #b8b8b8;
+                                background-image: -webkit-linear-gradient(top, #e5e5e5 0%, #b8b8b8 100%);
+                                background-image: -o-linear-gradient(top, #e5e5e5 0%, #b8b8b8 100%);
+                                background-image: -webkit-gradient(linear, left top, left bottom, from(#e5e5e5), to(#b8b8b8));
+                                background-image: linear-gradient(to bottom, #e5e5e5 0%, #b8b8b8 100%);
+                                filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#e5e5e5', endColorstr='#fb8b8b8', GradientType=0);
+                            }
+                        }
+
+                        i {
+                            width: 20px;
+                            margin-right: 6px;
+                            text-align: center;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 .composum-pages-stage-edit-sidebar-navigation {
 
     &_tabs {
 
         &.tabbed-widget_tabs {
             padding-left: 65px;
-        }
-    }
-
-    .composum-pages-tools {
-
-        &_actions {
-
-            .composum-pages-stage-edit-toolbar {
-
-                .composum-pages-tools {
-
-                    &_menu {
-                        background-color: $edit-actions-menu-bg;
-
-                        li {
-                            a {
-                                padding: 3px 12px;
-
-                                &:hover, &:focus {
-                                    background-color: #b8b8b8;
-                                    background-image: -webkit-linear-gradient(top, #e5e5e5 0%, #b8b8b8 100%);
-                                    background-image: -o-linear-gradient(top, #e5e5e5 0%, #b8b8b8 100%);
-                                    background-image: -webkit-gradient(linear, left top, left bottom, from(#e5e5e5), to(#b8b8b8));
-                                    background-image: linear-gradient(to bottom, #e5e5e5 0%, #b8b8b8 100%);
-                                    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#e5e5e5', endColorstr='#fb8b8b8', GradientType=0);
-                                }
-                            }
-
-                            i {
-                                width: 20px;
-                                margin-right: 6px;
-                                text-align: center;
-                            }
-                        }
-                    }
-                }
-            }
         }
     }
 

@@ -34,16 +34,17 @@
                 actionKey: '_action_',
                 viewAction: 'view',
                 compareAction: 'compare',
+                activateAction: 'activate',
+                deactivateAction: 'deactivate',
                 checkpointAction: 'checkpoint',
+                purgeAction: 'purge',
                 checkInAction: 'check-in',
                 checkOutAction: 'check-out',
                 restoreAction: 'restore',
-                deleteAction: 'delete',
-                addLabelAction: 'add-label',
-                removeLabelAction: 'remove-label',
                 versionContentUri: '/bin/cpm/pages/edit.versions.versionList.html',
                 versionRestoreUri: '/bin/cpm/pages/edit.restoreVersion.json',
-                versionServiceUri: '/bin/cpm/nodes/version.',
+                platformVersionsUri: '/bin/cpm/platform/version.',
+                nodesVersionsUri: '/bin/cpm/nodes/version.',
                 disabled: 'disabled',
                 hidden: 'hidden'
             }
@@ -77,21 +78,21 @@
             initialize: function (options) {
                 var c = tools.const.versions;
                 this.$viewAction = this.$('.' + c.cssBase + c.actionKey + c.viewAction);
+                this.$activateAction = this.$('.' + c.cssBase + c.actionKey + c.activateAction);
+                this.$deactivateAction = this.$('.' + c.cssBase + c.actionKey + c.deactivateAction);
                 this.$checkpointAction = this.$('.' + c.cssBase + c.actionKey + c.checkpointAction);
+                this.$purgeAction = this.$('.' + c.cssBase + c.actionKey + c.purgeAction);
                 this.$checkInAction = this.$('.' + c.cssBase + c.actionKey + c.checkInAction);
                 this.$checkOutAction = this.$('.' + c.cssBase + c.actionKey + c.checkOutAction);
                 this.$restoreAction = this.$('.' + c.cssBase + c.actionKey + c.restoreAction);
-                this.$deleteAction = this.$('.' + c.cssBase + c.actionKey + c.deleteAction);
-                this.$addLabelAction = this.$('.' + c.cssBase + c.actionKey + c.addLabelAction);
-                this.$removeLabelAction = this.$('.' + c.cssBase + c.actionKey + c.removeLabelAction);
                 this.$viewAction.click(_.bind(this.toggleView, this));
+                this.$activateAction.click(_.bind(this.activatePage, this));
+                this.$deactivateAction.click(_.bind(this.deactivatePage, this));
                 this.$checkpointAction.click(_.bind(this.createCheckpoint, this));
+                this.$purgeAction.click(_.bind(this.purgeVersion, this));
                 this.$checkInAction.click(_.bind(this.checkIn, this));
                 this.$checkOutAction.click(_.bind(this.checkOut, this));
                 this.$restoreAction.click(_.bind(this.restoreVersion, this));
-                this.$deleteAction.click(_.bind(this.deleteVersion, this));
-                this.$addLabelAction.click(_.bind(this.addVersionLabel, this));
-                this.$removeLabelAction.click(_.bind(this.removeVersionLabel, this));
             },
 
             setActionsState: function () {
@@ -112,18 +113,8 @@
                 }
                 if (this.versions.mainSelection) {
                     this.$restoreAction.prop(c.disabled, false);
-                    if (this.versions.mainSelection !== this.versions.currentVersion) {
-                        this.$deleteAction.prop(c.disabled, false);
-                    } else {
-                        this.$deleteAction.prop(c.disabled, true);
-                    }
-                    this.$addLabelAction.prop(c.disabled, false);
-                    this.$removeLabelAction.prop(c.disabled, false);
                 } else {
                     this.$restoreAction.prop(c.disabled, true);
-                    this.$deleteAction.prop(c.disabled, true);
-                    this.$addLabelAction.prop(c.disabled, true);
-                    this.$removeLabelAction.prop(c.disabled, true);
                 }
             },
 
@@ -134,16 +125,58 @@
                 this.versions.toggleVersionsView();
             },
 
+            activatePage: function (event) {
+                if (event) {
+                    event.preventDefault();
+                }
+                var path = this.versions.data.jcrContent.path;
+                core.ajaxPost(tools.const.versions.platformVersionsUri + 'activate.json' + path, {}, {},
+                    _.bind(function (result) {
+                        this.versions.reload();
+                    }, this), _.bind(function (result) {
+                        this.error('on activate page', result);
+                    }, this)
+                );
+            },
+
+            deactivatePage: function (event) {
+                if (event) {
+                    event.preventDefault();
+                }
+                var path = this.versions.data.jcrContent.path;
+                core.ajaxPost(tools.const.versions.platformVersionsUri + 'deactivate.json' + path, {}, {},
+                    _.bind(function (result) {
+                        this.versions.reload();
+                    }, this), _.bind(function (result) {
+                        this.error('on deactivate page', result);
+                    }, this)
+                );
+            },
+
             createCheckpoint: function (event) {
                 if (event) {
                     event.preventDefault();
                 }
                 var path = this.versions.data.jcrContent.path;
-                core.ajaxPost(tools.const.versions.versionServiceUri + 'checkpoint.json' + path, {}, {},
+                core.ajaxPost(tools.const.versions.nodesVersionsUri + 'checkpoint.json' + path, {}, {},
                     _.bind(function (result) {
                         this.versions.reload();
                     }, this), _.bind(function (result) {
                         this.error('on creating checkpoint', result);
+                    }, this)
+                );
+            },
+
+            purgeVersion: function (event) {
+                if (event) {
+                    event.preventDefault();
+                }
+                var path = this.versions.data.jcrContent.path;
+                core.ajaxPost(tools.const.versions.platformVersionsUri + 'purge.json' + path, {}, {},
+                    _.bind(function (result) {
+                        this.versions.reload();
+                    }, this), _.bind(function (result) {
+                        this.error('on versions purge', result);
                     }, this)
                 );
             },
@@ -153,7 +186,7 @@
                     event.preventDefault();
                 }
                 var path = this.versions.data.jcrContent.path;
-                core.ajaxPost(tools.const.versions.versionServiceUri + 'checkin.json' + path, {}, {},
+                core.ajaxPost(tools.const.versions.nodesVersionsUri + 'checkin.json' + path, {}, {},
                     _.bind(function (result) {
                         this.versions.reload();
                     }, this), _.bind(function (result) {
@@ -167,7 +200,7 @@
                     event.preventDefault();
                 }
                 var path = this.versions.data.jcrContent.path;
-                core.ajaxPost(tools.const.versions.versionServiceUri + 'checkout.json' + path, {}, {},
+                core.ajaxPost(tools.const.versions.nodesVersionsUri + 'checkout.json' + path, {}, {},
                     _.bind(function (result) {
                         this.versions.reload();
                     }, this), _.bind(function (result) {
@@ -191,24 +224,6 @@
                         this.error('on restoring version', result);
                     }, this)
                 );
-            },
-
-            deleteVersion: function (event) {
-                if (event) {
-                    event.preventDefault();
-                }
-            },
-
-            addVersionLabel: function (event) {
-                if (event) {
-                    event.preventDefault();
-                }
-            },
-
-            removeVersionLabel: function (event) {
-                if (event) {
-                    event.preventDefault();
-                }
             },
 
             error: function (hint, result) {

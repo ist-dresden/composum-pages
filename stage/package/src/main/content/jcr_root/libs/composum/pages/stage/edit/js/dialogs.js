@@ -129,6 +129,13 @@
                 this.$submitButton = this.$('.' + c.base + c._submitButton);
                 this.initTabs();
                 this.$('.' + c.base + c._deleteButton).click(_.bind(this.doDelete, this));
+                var init = this.$el.data('init');
+                if (init) {
+                    init = eval(init);
+                    if (_.isFunction(init)) {
+                        init.call(this);
+                    }
+                }
             },
 
             initTabs: function () {
