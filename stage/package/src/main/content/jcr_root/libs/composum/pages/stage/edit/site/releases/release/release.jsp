@@ -7,7 +7,7 @@
                tagName="tr">
     <c:if test="${release.editMode}">
         <td><input type="radio" class="${releaseCssBase}_select" name="${releaseCssBase}_select"
-                   value="${release.name}" data-path="${release.path}"/></td>
+                   value="${release.key}" data-path="${release.path}"/></td>
     </c:if>
     <td class="${releaseCssBase}_key">${release.key}</td>
     <td class="${releaseCssBase}_title">${release.title}</td>

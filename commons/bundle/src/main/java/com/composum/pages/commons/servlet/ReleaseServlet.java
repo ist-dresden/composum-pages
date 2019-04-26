@@ -20,10 +20,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.request.RequestParameter;
-import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.api.servlets.HttpConstants;
 import org.apache.sling.api.servlets.ServletResolverConstants;
 import org.osgi.framework.BundleContext;
@@ -36,8 +34,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.jcr.Node;
-import javax.jcr.PropertyType;
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
@@ -132,37 +128,21 @@ public class ReleaseServlet extends AbstractServiceServlet {
             try {
                 BeanContext beanContext = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
 
-                String releaseName = getStringParameter(request, response, "releaseName", "release name is required");
-                if (releaseName == null) return;
+                String releaseNumber = getStringParameter(request, response, "releaseName", "release name is required");
 
                 final String accessCategory = getCategoryString();
-                final ResourceResolver resourceResolver = request.getResourceResolver();
-                final Resource releases = resourceResolver.getResource(resource, "jcr:content/releases");
-                for (Resource releaseResource : releases.getChildren()) {
-                    final ValueMap valueMap = releaseResource.adaptTo(ModifiableValueMap.class);
-                    final String[] categories = valueMap.get("categories", new String[0]);
-                    final List<String> cs = new ArrayList<>(Arrays.asList(categories));
-                    if (releaseResource.getName().equals(releaseName)) {
-                        // set categories to release
-                        if (!cs.contains(accessCategory)) {
-                            cs.add(accessCategory);
-                        }
-                        valueMap.put("categories", cs.toArray(new String[0]));
-                    } else {
-                        //remove release if set
-                        cs.remove(accessCategory);
-                        valueMap.put("categories", cs.toArray(new String[0]));
-                    }
-                }
+
+                StagingReleaseManager.Release release = releaseManager.findRelease(resource, releaseNumber);
 
                 Site site = siteManager.getContainingSite(beanContext, resource);
 
                 AccessMode accessMode = AccessMode.valueOf(accessCategory.toUpperCase());
+                releaseManager.setMark(accessMode.name().toLowerCase(), release);
+
                 LOG.info("replication of '{}' for {}...", site.getPath(), accessMode);
-                String releaseLabel = site.getReleaseLabel(accessMode.name());
+                String releaseLabel = site.getReleaseNumber(accessMode.name());
                 LOG.debug("'{}': using staging resolver of release '{}'...", resource.getPath(), releaseLabel);
-                StagingReleaseManager.Release release = releaseManager.findRelease(site.getResource(),
-                        StringUtils.removeStart(releaseLabel, Site.RELEASE_LABEL_PREFIX));
+
                 ResourceResolver stagedResolver = releaseManager.getResolverForRelease(release, replicationManager, false);
                 Resource stagedSiteResource = stagedResolver.getResource(site.getResource().getPath());
 
@@ -174,7 +154,7 @@ public class ReleaseServlet extends AbstractServiceServlet {
                     LOG.debug("replication of '{}' for {} done.", resource.getPath(), accessMode);
                 }
 
-                resourceResolver.commit();
+                request.getResourceResolver().commit();
 
             } catch (Exception e) {
                 LOG.error("error setting release category: " + e.getMessage(), e);
@@ -191,7 +171,7 @@ public class ReleaseServlet extends AbstractServiceServlet {
         @Override
         @Nonnull
         protected String getCategoryString() {
-            return "public";
+            return AccessMode.ACCESS_MODE_PUBLIC.toLowerCase();
         }
     }
 
@@ -199,7 +179,7 @@ public class ReleaseServlet extends AbstractServiceServlet {
         @Override
         @Nonnull
         protected String getCategoryString() {
-            return "preview";
+            return AccessMode.ACCESS_MODE_PREVIEW.toLowerCase();
         }
     }
 
@@ -272,8 +252,15 @@ public class ReleaseServlet extends AbstractServiceServlet {
                     versionables.add(StagingReleaseManager.ReleasedVersionable.forBaseVersion(versionable));
                 }
 
-                // FIXME hps 2019-04-10 introduce parameter for release number type and base release
-                StagingReleaseManager.Release release = releaseManager.createRelease(resourceResolver.getResource(path), ReleaseNumberCreator.MAJOR);
+                ReleaseNumberCreator releaseType;
+                try {
+                    releaseType = ReleaseNumberCreator.valueOf(releaseName);
+                } catch (IllegalArgumentException e) {
+                    releaseType = ReleaseNumberCreator.MAJOR;
+                }
+
+                // FIXME hps 2019-04-10 introduce actual parameter for release number type and base release
+                StagingReleaseManager.Release release = releaseManager.createRelease(resourceResolver.getResource(path), releaseType);
                 LOG.info("Release created {}", release);
                 Map<String, SiblingOrderUpdateStrategy.Result> result = releaseManager.updateRelease(release, versionables);
                 LOG.info("Release update result: {}", result);
@@ -283,19 +270,6 @@ public class ReleaseServlet extends AbstractServiceServlet {
                 metaData.setProperty(ResourceUtil.PROP_DESCRIPTION, description);
                 metaData.setProperty(ResourceUtil.PROP_LAST_MODIFIED, Calendar.getInstance());
                 metaData.setProperty("jcr:lastModifiedBy", resourceResolver.getUserID());
-                // releaseName will be obsolete
-
-                // FIXME hps 2019-04-10 rework metadata - what belongs into jcr:content/releases, if at all?
-                final Resource site = resourceResolver.getResource(sitePath);
-                final Resource releases = resourceResolver.getResource(site, "jcr:content/releases");
-                final Node releasesNode = releases.adaptTo(Node.class);
-                final Node releaseNode = releasesNode.addNode("release-" + release.getNumber(), "nt:unstructured");
-                releaseNode.setProperty("key", release.getNumber());
-                releaseNode.setProperty("release-uuid", release.getUuid(), PropertyType.REFERENCE);
-                releaseNode.setProperty("jcr:title", title);
-                releaseNode.setProperty("jcr:created", Calendar.getInstance());
-                releaseNode.setProperty("jcr:createdBy", resourceResolver.getUserID());
-                releaseNode.setProperty("jcr:description", description);
                 resourceResolver.commit();
             } catch (Exception e) {
                 LOG.error("error creating release: " + e.getMessage(), e);

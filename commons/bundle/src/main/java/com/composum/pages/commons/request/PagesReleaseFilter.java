@@ -199,7 +199,7 @@ public class PagesReleaseFilter implements Filter {
                                 }
                                 break;
                             case Site.PUBLIC_MODE_VERSIONS:
-                                release = site.getReleaseLabel(accessMode.name());
+                                release = site.getReleaseNumber(accessMode.name());
                                 if (StringUtils.isBlank(release)) {
                                     sendReject(response, "no appropriate release found", uri, resource);
                                     return;
@@ -238,7 +238,7 @@ public class PagesReleaseFilter implements Filter {
                     } else {
                         if (site != null && !release.startsWith(COMPOSUM_PREFIX)) {
                             // assuming that an access mode is set for the requested release
-                            String mapped = site.getReleaseLabel(release);
+                            String mapped = site.getReleaseNumber(release);
                             if (StringUtils.isNotBlank(mapped)) {
                                 release = mapped;
                             }

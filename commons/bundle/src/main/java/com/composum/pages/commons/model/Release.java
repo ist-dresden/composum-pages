@@ -2,6 +2,7 @@ package com.composum.pages.commons.model;
 
 import com.composum.pages.commons.request.DisplayMode;
 import com.composum.sling.core.BeanContext;
+import com.composum.sling.platform.staging.StagingReleaseManager;
 import org.apache.sling.api.resource.Resource;
 
 import javax.annotation.Nonnull;
@@ -14,11 +15,16 @@ import java.util.List;
  */
 public class Release extends AbstractModel implements Comparable<Release> {
 
-    protected String key;
-    protected List<String> categories;
+    protected StagingReleaseManager.Release stagingRelease;
     protected Calendar created;
 
     public Release() {
+        // empty default constructor
+    }
+
+    public Release(BeanContext context, StagingReleaseManager.Release release) {
+        this.stagingRelease = release;
+        initialize(context, release.getMetaDataNode());
     }
 
     public Release(BeanContext context, Resource resource) {
@@ -26,10 +32,17 @@ public class Release extends AbstractModel implements Comparable<Release> {
     }
 
     @Override
-    protected void initializeWithResource(Resource resource) {
-        super.initializeWithResource(resource);
-        key = getProperty("key", "");
-        categories = Arrays.asList(getProperty("categories", new String[0]));
+    protected Resource determineResource(Resource initialResource) {
+        if (stagingRelease == null) {
+            StagingReleaseManager releaseManager = context.getService(StagingReleaseManager.class);
+            stagingRelease = releaseManager.findReleaseByReleaseResource(initialResource);
+        }
+        return stagingRelease.getMetaDataNode();
+    }
+
+    @Override
+    protected void initializeWithResource(Resource releaseMetadataNode) {
+        super.initializeWithResource(releaseMetadataNode);
         created = getProperty("jcr:created", Calendar.class);
     }
 
@@ -43,15 +56,16 @@ public class Release extends AbstractModel implements Comparable<Release> {
     }
 
     public String getKey() {
-        return key;
+        return stagingRelease.getNumber();
     }
 
+    /** The label that is set on a document version when it is in a release. */
     public String getLabel() {
-        return "composum-release-" + key;
+        return stagingRelease.getReleaseLabel();
     }
 
     public List<String> getCategories() {
-        return categories;
+        return stagingRelease.getMarks();
     }
 
     @Override
