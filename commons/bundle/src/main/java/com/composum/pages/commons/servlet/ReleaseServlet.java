@@ -20,10 +20,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.request.RequestParameter;
-import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.api.servlets.HttpConstants;
 import org.apache.sling.api.servlets.ServletResolverConstants;
 import org.osgi.framework.BundleContext;
@@ -36,8 +34,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.jcr.Node;
-import javax.jcr.PropertyType;
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
@@ -144,7 +140,7 @@ public class ReleaseServlet extends AbstractServiceServlet {
                 releaseManager.setMark(accessMode.name().toLowerCase(), release);
 
                 LOG.info("replication of '{}' for {}...", site.getPath(), accessMode);
-                String releaseLabel = site.getReleaseLabel(accessMode.name());
+                String releaseLabel = site.getReleaseNumber(accessMode.name());
                 LOG.debug("'{}': using staging resolver of release '{}'...", resource.getPath(), releaseLabel);
 
                 ResourceResolver stagedResolver = releaseManager.getResolverForRelease(release, replicationManager, false);

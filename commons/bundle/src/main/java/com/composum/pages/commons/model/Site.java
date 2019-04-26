@@ -7,6 +7,7 @@ import com.composum.platform.models.annotations.DetermineResourceStategy;
 import com.composum.platform.models.annotations.PropertyDetermineResourceStrategy;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.util.ResourceUtil;
+import com.composum.sling.platform.staging.StagingReleaseManager;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ValueMap;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.composum.pages.commons.PagesConstants.DEFAULT_HOMEPAGE_PATH;
 import static com.composum.pages.commons.PagesConstants.NODE_TYPE_SITE;
@@ -153,40 +155,21 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
      * retrieves the release label for a release category ('public', 'preview')
      * the content of this release is delivered if a public request in the category is performed
      */
-    public String getReleaseLabel(String category) {
-        Resource releases = content.resource.getChild("releases");
-        if (releases != null) {
-            category = category.toLowerCase();
-            for (Resource release : releases.getChildren()) {
-                ValueMap values = release.getValueMap();
-                String key = values.get("key", "");
-                if (StringUtils.isNotBlank(key)) {
-                    if (key.equals(category)) {
-                        return RELEASE_LABEL_PREFIX + key;
-                    } else {
-                        List<String> categories = Arrays.asList(values.get("categories", new String[0]));
-                        if (categories.contains(category)) {
-                            return RELEASE_LABEL_PREFIX + key;
-                        }
-                    }
-                }
-            }
-        }
-        return null;
+    public String getReleaseNumber(String category) {
+        StagingReleaseManager releaseManager = context.getService(StagingReleaseManager.class);
+        StagingReleaseManager.Release release = releaseManager.findReleaseByMark(resource, category);
+        return release != null ? release.getNumber() : null;
     }
 
     /**
      * return the list of content releases of this site
      */
     public List<Release> getReleases() {
-        List<Release> result = new ArrayList<>();
-        Resource releases = content.resource.getChild("releases");
-        if (releases != null) {
-            for (Resource releaseResource : releases.getChildren()) {
-                final Release release = new Release(context, releaseResource);
-                result.add(release);
-            }
-        }
+        StagingReleaseManager releaseManager = context.getService(StagingReleaseManager.class);
+        List<StagingReleaseManager.Release> stagingReleases = releaseManager.getReleases(resource);
+        List<Release> result = stagingReleases.stream()
+                .map(r -> new Release(context, r))
+                .collect(Collectors.toList());
         return result;
     }
 
