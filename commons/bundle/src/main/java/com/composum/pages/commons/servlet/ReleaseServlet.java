@@ -13,6 +13,7 @@ import com.composum.sling.core.servlet.ServletOperation;
 import com.composum.sling.core.servlet.ServletOperationSet;
 import com.composum.sling.core.util.ResourceUtil;
 import com.composum.sling.platform.security.AccessMode;
+import com.composum.sling.platform.staging.ReleasedVersionable;
 import com.composum.sling.platform.staging.impl.SiblingOrderUpdateStrategy;
 import com.composum.sling.platform.staging.ReleaseNumberCreator;
 import com.composum.sling.platform.staging.StagingReleaseManager;
@@ -246,10 +247,10 @@ public class ReleaseServlet extends AbstractServiceServlet {
 
                 final ResourceResolver resourceResolver = request.getResourceResolver();
 
-                List<StagingReleaseManager.ReleasedVersionable> versionables = new ArrayList<>();
+                List<ReleasedVersionable> versionables = new ArrayList<>();
                 for (String versionablePath : objectsString.split(",")) {
                     Resource versionable = resourceResolver.getResource(versionablePath).getChild(ResourceUtil.CONTENT_NODE);
-                    versionables.add(StagingReleaseManager.ReleasedVersionable.forBaseVersion(versionable));
+                    versionables.add(ReleasedVersionable.forBaseVersion(versionable));
                 }
 
                 ReleaseNumberCreator releaseType;
