@@ -43,6 +43,40 @@ $frame-tree-dnd-border: 1px dashed rgba(255, 255, 255, 0.7);
             font-family: 'robotolight_italic', sans-serif;
         }
 
+        &-node {
+
+            &.release-status {
+
+                &_initial {
+
+                    .jstree-icon {
+                        color: $release-status-initial;
+                    }
+                }
+
+                &_activated {
+
+                    .jstree-icon {
+                        color: $release-status-activated;
+                    }
+                }
+
+                &_modified {
+
+                    .jstree-icon {
+                        color: $release-status-modified;
+                    }
+                }
+
+                &_deactivated {
+
+                    .jstree-icon {
+                        color: $release-status-deactivated;
+                    }
+                }
+            }
+        }
+
         &-wholerow {
             height: 23px;
             margin-top: 2px; /* important gap for */

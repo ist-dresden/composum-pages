@@ -260,8 +260,7 @@
                     var move = 'into';
                     if (relPos < height / 3) {
                         move = 'before';
-                    }
-                    else if (relPos > height - height / 3) {
+                    } else if (relPos > height - height / 3) {
                         move = 'after';
                     }
                     this.dnd = {
@@ -376,6 +375,17 @@
             dataUrlForPath: function (path) {
                 var params = this.filter ? '?filter=' + this.filter : '';
                 return '/bin/cpm/pages/edit.pageTree.json' + path + params;
+            },
+
+            /**
+             * add the release status CSS class for the page
+             */
+            refreshNodeState: function ($node, node) {
+                node = tree.ContentTree.prototype.refreshNodeState.apply(this, [$node, node]);
+                if (node.original.release && node.original.release.status) {
+                    $node.addClass('release-status_' + node.original.release.status);
+                }
+                return node;
             },
 
             onNodeSelected: function (path, node) {

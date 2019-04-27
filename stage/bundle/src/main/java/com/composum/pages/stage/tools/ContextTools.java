@@ -9,10 +9,26 @@ import java.util.List;
 
 public class ContextTools extends FrameModel {
 
+    private transient ToolsCollection.Component status;
     private transient ToolsCollection tools;
 
     public String getComponentTypeName() {
         return getComponentType().name();
+    }
+
+    public ToolsCollection.Component getStatus() {
+        if (status == null) {
+            BeanContext context = getDelegate().getContext();
+            ResourceResolver resolver = context.getResolver();
+            ToolsCollection statusCollection = new ToolsCollection(resolver,
+                    "status",
+                    DisplayMode.requested(context).name().toLowerCase(),
+                    getComponentTypeName());
+            if (statusCollection.getComponentList().size() > 0) {
+                status = statusCollection.getComponentList().get(0);
+            }
+        }
+        return status;
     }
 
     public ToolsCollection getTools() {

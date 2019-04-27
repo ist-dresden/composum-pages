@@ -109,6 +109,35 @@
                         @include main-selection-background();
                     }
                 }
+
+                .release-status {
+
+                    &_icon {
+                        position: absolute;
+                        top: $tools-pane-padding;
+                        left: $tools-pane-padding;
+                        background: none;
+
+                        &.release-status {
+
+                            &_initial {
+                                color: $release-status-initial;
+                            }
+
+                            &_activated {
+                                color: $release-status-activated;
+                            }
+
+                            &_modified {
+                                color: $release-status-modified;
+                            }
+
+                            &_deactivated {
+                                color: $release-status-deactivated;
+                            }
+                        }
+                    }
+                }
             }
 
             &_search-searching {

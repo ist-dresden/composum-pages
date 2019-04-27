@@ -10,18 +10,23 @@ import com.composum.pages.commons.model.properties.Languages;
 import com.composum.pages.commons.request.DisplayMode;
 import com.composum.pages.commons.request.PagesLocale;
 import com.composum.pages.commons.service.PageManager;
+import com.composum.pages.commons.util.LinkUtil;
 import com.composum.platform.models.annotations.DetermineResourceStategy;
 import com.composum.platform.models.annotations.PropertyDetermineResourceStrategy;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.filter.ResourceFilter;
-import com.composum.pages.commons.util.LinkUtil;
 import com.composum.sling.core.util.ResourceUtil;
 import com.composum.sling.platform.security.AccessMode;
+import com.composum.sling.platform.staging.versions.PlatformVersionsService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
+import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
+import javax.jcr.RepositoryException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -42,6 +47,8 @@ import static com.composum.pages.commons.PagesConstants.PROP_VIEW_CATEGORY;
 
 @PropertyDetermineResourceStrategy(Page.ContainingPageResourceStrategy.class)
 public class Page extends ContentDriven<PageContent> implements Comparable<Page> {
+
+    private static final Logger LOG = LoggerFactory.getLogger(Page.class);
 
     public static final String DISPLAY_MODE_CSS_CLASS = PAGES_PREFIX + "display-mode";
 
@@ -135,6 +142,9 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
     private transient PageLanguages pageLanguages;
     private transient Boolean isDefaultLangPage;
     private transient Page defaultLanguagePage;
+
+    private transient PlatformVersionsService.Status releaseStatus;
+    private transient PlatformVersionsService versionsService;
 
     public Page() {
     }
@@ -309,7 +319,7 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
     // properties
 
     public String getSubtitle() {
-        if (subtitle == null){
+        if (subtitle == null) {
             subtitle = getProperty(PN_SUBTITLE, "");
         }
         return subtitle;
@@ -359,7 +369,7 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
     }
 
     public String getHtmlClasses() {
-        return StringUtils.join(collectHtmlClasses(new ArrayList<String>()), " ");
+        return StringUtils.join(collectHtmlClasses(new ArrayList<>()), " ");
     }
 
     protected List<String> collectHtmlClasses(List<String> classes) {
@@ -402,5 +412,25 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
             targetUrl = LinkUtil.getUrl(request, targetUrl);
         }
         return targetUrl;
+    }
+
+    // releases
+
+    public PlatformVersionsService.Status getReleaseStatus() {
+        if (releaseStatus == null) {
+            try {
+                releaseStatus = getPlatformVersionsService().getStatus(getResource(), null);
+            } catch (PersistenceException | RepositoryException ex) {
+                LOG.error(ex.getMessage(), ex);
+            }
+        }
+        return releaseStatus;
+    }
+
+    protected PlatformVersionsService getPlatformVersionsService() {
+        if (versionsService == null) {
+            versionsService = context.getService(PlatformVersionsService.class);
+        }
+        return versionsService;
     }
 }

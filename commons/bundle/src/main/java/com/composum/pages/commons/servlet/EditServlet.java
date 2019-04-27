@@ -29,6 +29,7 @@ import com.composum.sling.core.servlet.NodeTreeServlet;
 import com.composum.sling.core.servlet.ServletOperation;
 import com.composum.sling.core.servlet.ServletOperationSet;
 import com.composum.sling.core.util.ResponseUtil;
+import com.composum.sling.platform.staging.versions.PlatformVersionsService;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import org.apache.commons.lang3.StringUtils;
@@ -108,6 +109,9 @@ public class EditServlet extends PagesContentServlet {
 
     @Reference
     protected EditService editService;
+
+    @Reference
+    protected PlatformVersionsService platformVersionsService;
 
     @Reference
     protected VersionsService versionsService;
@@ -399,6 +403,23 @@ public class EditServlet extends PagesContentServlet {
         @Override
         protected ResourceFilter getNodeFilter(SlingHttpServletRequest request) {
             return pagesConfiguration.getRequestNodeFilter(request, PARAM_FILTER, DEFAULT_FILTER);
+        }
+    }
+
+    @Override
+    public void writeNodeTreeType(JsonWriter writer, ResourceFilter filter,
+                                  ResourceHandle resource, boolean isVirtual)
+            throws IOException {
+        super.writeNodeTreeType(writer, filter, resource, isVirtual);
+        if (Page.isPage(resource)) {
+            try {
+                PlatformVersionsService.Status status = platformVersionsService.getStatus(resource, null);
+                writer.name("release").beginObject();
+                writer.name("status").value(status.getActivationState().name());
+                writer.endObject();
+            } catch (RepositoryException ex) {
+                LOG.error(ex.getMessage(), ex);
+            }
         }
     }
 

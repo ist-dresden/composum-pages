@@ -264,6 +264,25 @@
         position: absolute;
         top: $tools-pane-padding;
         left: $tools-pane-padding;
+
+        &.release-status {
+
+            &_initial {
+                color: $release-status-initial;
+            }
+
+            &_activated {
+                color: $release-status-activated;
+            }
+
+            &_modified {
+                color: $release-status-modified;
+            }
+
+            &_deactivated {
+                color: $release-status-deactivated;
+            }
+        }
     }
 
     &_title {
@@ -768,6 +787,42 @@
 }
 
 .composum-pages-stage-edit-sidebar-context {
+
+    .tabbed-widget {
+
+        &_status {
+            position: absolute;
+            top: 0;
+            right: 0;
+
+            .composum-pages-stage-edit-tools-page-status {
+
+                &_icon {
+                    padding: $tools-pane-padding;
+                    font-size: $edit-actions-icon-font-size;
+
+                    &.release-status {
+
+                        &_initial {
+                            color: $release-status-initial;
+                        }
+
+                        &_activated {
+                            color: $release-status-activated;
+                        }
+
+                        &_modified {
+                            color: $release-status-modified;
+                        }
+
+                        &_deactivated {
+                            color: $release-status-deactivated;
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     .composum-pages-component-tile {
         position: absolute;

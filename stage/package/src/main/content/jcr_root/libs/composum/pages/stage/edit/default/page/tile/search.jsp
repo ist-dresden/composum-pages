@@ -7,5 +7,6 @@
            cssBase="composum-pages-stage-page_tile">
     <div class="${tilepageCssBase}" draggable="true" data-pages-edit-encoded="${tilepage.encodedReference}">
         <sling:call script="_page.jsp"/>
+        <i class="release-status_icon release-status_${tilepage.releaseStatus.activationState} fa fa-circle"></i>
     </div>
 </cpp:model>
