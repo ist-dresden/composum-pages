@@ -13,7 +13,7 @@
 [cpp:Container] > cpp:Element
   orderable
 
-[cpp:PageContent] > nt:unstructured, mix:versionable, mix:lastModified
+[cpp:PageContent] > nt:unstructured, mix:versionable, mix:created, mix:lastModified
   orderable
 
 [cpp:Page] > sling:OrderedFolder
