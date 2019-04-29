@@ -159,6 +159,16 @@
             }
         }
 
+        &_tabbed-content {
+
+            .form-group {
+
+                &:last-child {
+                    margin-bottom: 0;
+                }
+            }
+        }
+
         .alert {
 
             &-hidden {

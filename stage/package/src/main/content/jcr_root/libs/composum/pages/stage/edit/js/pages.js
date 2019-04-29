@@ -326,11 +326,7 @@
                             if (_.isFunction(setupDialog)) {
                                 setupDialog(dialog);
                             }
-                            if (dialog.useDefault) {
-                                dialog.doSubmit(undefined, dialog.useDefault);
-                            } else {
-                                dialog.show();
-                            }
+                            dialog.show();
                         }
                     }, this), _.bind(function (xhr) {
                         if (xhr.status === 404) {

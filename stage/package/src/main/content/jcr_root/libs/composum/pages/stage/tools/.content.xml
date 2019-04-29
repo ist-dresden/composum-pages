@@ -80,15 +80,7 @@
             hint="Page Content"
             title="Content"
             order="{Long}60"/>
-    <pageComments
-            jcr:primaryType="nt:unstructured"
-            sling:resourceType="composum/pages/stage/edit/tools/page/comments"
-            _categories="[context,edit,develop,page]"
-            iconClass="commenting-o"
-            hint="Comments"
-            title="Comments"
-            order="{Long}70"/>
-    <pageStatistics
+     <pageStatistics
             jcr:primaryType="nt:unstructured"
             sling:resourceType="composum/pages/stage/edit/tools/page/statistics"
             categories="[context,edit,develop,page]"

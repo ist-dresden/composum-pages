@@ -85,7 +85,9 @@ public class EditServlet extends PagesContentServlet {
     public static final String DEFAULT_FILTER = "page";
 
     public static final String PAGE_COMPONENTS_RES_TYPE = "composum/pages/stage/edit/tools/main/components";
+    public static final String PAGE_COMPONENTS_SEL_TYPE = "composum/pages/stage/widget/element/type/select";
     public static final String PAGE_COMPONENT_TYPES = "composum-pages-page-component-types";
+    public static final String PAGE_COMPONENT_TYPES_SCOPE = PAGE_COMPONENT_TYPES + "_scope";
 
     public static final String CONTEXT_TOOLS_RES_TYPE = "composum/pages/stage/edit/sidebar/context";
 
@@ -156,7 +158,7 @@ public class EditServlet extends PagesContentServlet {
         siteTree, pageTree,
         resourceInfo, editDialog, newDialog,
         editTile, editToolbar, treeActions,
-        pageComponents, targetContainers, isAllowedElement, filterDropZones, componentCategories,
+        pageComponents, elementTypes, targetContainers, isAllowedElement, filterDropZones, componentCategories,
         insertElement, moveElement, copyElement,
         createPage, deletePage, moveContent, renameContent, copyContent,
         createSite, deleteSite,
@@ -242,6 +244,8 @@ public class EditServlet extends PagesContentServlet {
         // PUT
         operations.setOperation(ServletOperationSet.Method.PUT, Extension.html,
                 Operation.pageComponents, new GetPageComponents());
+        operations.setOperation(ServletOperationSet.Method.PUT, Extension.html,
+                Operation.elementTypes, new GetElementTypes());
         operations.setOperation(ServletOperationSet.Method.PUT, Extension.json,
                 Operation.filterDropZones, new FilterDropZones());
         operations.setOperation(ServletOperationSet.Method.PUT, Extension.json,
@@ -605,6 +609,7 @@ public class EditServlet extends PagesContentServlet {
     /**
      * get a list of allowed components (element type) for one page
      * (depends on the current content and the hierarchical rules of the pages elements)
+     * see: com.composum.pages.stage.model.edit.page.Components
      */
     protected class GetPageComponents implements ServletOperation {
 
@@ -628,16 +633,35 @@ public class EditServlet extends PagesContentServlet {
                 // forward request with 'GET'! for right component rendering
                 request = new RequestUtil.GetWrapper(request);
 
-                final List<String> allowedElements =
+                List<String> allowedElements =
                         editService.getAllowedElementTypes(context.getResolver(),
                                 new ComponentManager.ComponentScope(
                                         RequestUtil.getParameter(request, PARAM_FILTER,
                                                 ""), request.getParameter(PARAM_QUERY)),
                                 containerRefs, true);
+
+                if (allowedElements.size() < 1 && isFallbackAllowed()) {
+
+                    // mark the request: 'scope not useful' for a response status '200'
+                    request.setAttribute(PAGE_COMPONENT_TYPES_SCOPE, Boolean.FALSE);
+                    allowedElements = editService.getAllowedElementTypes(context.getResolver(),
+                            new ComponentManager.ComponentScope("", request.getParameter(PARAM_QUERY)),
+                            containerRefs, true);
+                    if (allowedElements.size() < 1) {
+                        allowedElements = editService.getAllowedElementTypes(context.getResolver(),
+                                null, containerRefs, true);
+                    }
+
+                } else {
+                    // mark the request: 'scope useful' for a response status '202' (ACCEPTED)
+                    request.setAttribute(PAGE_COMPONENT_TYPES_SCOPE, Boolean.TRUE);
+                }
+
+                // store the result in the request for the rendering template...
                 request.setAttribute(PAGE_COMPONENT_TYPES, allowedElements);
 
                 final RequestDispatcherOptions options = new RequestDispatcherOptions();
-                options.setForceResourceType(PAGE_COMPONENTS_RES_TYPE);
+                options.setForceResourceType(getRenderResourceType());
                 if (StringUtils.isBlank(selectors)) {
                     selectors = getDefaultSelectors();
                 }
@@ -647,8 +671,30 @@ public class EditServlet extends PagesContentServlet {
             }
         }
 
+        protected boolean isFallbackAllowed() {
+            return false;
+        }
+
+        protected String getRenderResourceType() {
+            return PAGE_COMPONENTS_RES_TYPE;
+        }
+
         protected String getDefaultSelectors() {
             return "content";
+        }
+    }
+
+    /**
+     * the derived operation for the element type select wirget
+     */
+    protected class GetElementTypes extends GetPageComponents {
+
+        protected boolean isFallbackAllowed() {
+            return true;
+        }
+
+        protected String getRenderResourceType() {
+            return PAGE_COMPONENTS_SEL_TYPE;
         }
     }
 

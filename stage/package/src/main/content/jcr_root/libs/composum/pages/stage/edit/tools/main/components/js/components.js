@@ -22,7 +22,7 @@
                         search: '_search-field',
                         searchRes: '_search-reset',
                         searchAct: '_search-action',
-                        filter: '_filter',
+                        filter: '_filter-menu',
                         category: '_category'
                     },
                     filterBtn: 'filter-toggle'
@@ -107,7 +107,7 @@
                 this.items = [];
                 core.ajaxPut(url, JSON.stringify(this.containerRefs), {}, undefined, undefined,
                     _.bind(function (data) {
-                        if (data.status === 200) {
+                        if (data.status >= 200 && data.status < 300) {
                             this.$el.html(data.responseText);
                         } else {
                             this.$el.html("");

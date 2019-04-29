@@ -21,7 +21,7 @@ public class SiteTemplate extends PropertyEditHandle<String> implements WidgetMo
      * transforms a tag attribute name (dynamic attribute) into the key expected by the widgets view
      */
     @Override
-    public String getWidgetAttributeKey(String attributeKey) {
+    public String filterWidgetAttribute(String attributeKey, String attributeValue) {
         return attributeKey;
     }
 

@@ -151,7 +151,7 @@ public class EditWidgetTag extends AbstractWidgetTag implements LoopTag {
     protected void useDynamicAttribute(Map<String, String> attributeSet, String key, String value) {
         Object model = getModel();
         if (model instanceof WidgetModel) {
-            String widgetKey = ((WidgetModel) model).getWidgetAttributeKey(key);
+            String widgetKey = ((WidgetModel) model).filterWidgetAttribute(key, value);
             if (widgetKey != null) {
                 attributeSet.put(widgetKey, value);
             }

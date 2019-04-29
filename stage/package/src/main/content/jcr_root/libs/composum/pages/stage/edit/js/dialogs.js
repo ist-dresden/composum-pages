@@ -343,10 +343,37 @@
         dialogs.NewElementDialog = dialogs.ElementDialog.extend({
 
             initView: function () {
-                this.elementType = core.getWidget(this.el, '.element-type-select-widget', pages.widgets.ElementTypeSelectWidget);
+                this.elementType = core.getWidget(this.el, '.element-type-select-widget',
+                    pages.widgets.ElementTypeSelectWidget, {
+                        callback: _.bind(this.showOrDefault, this)
+                    });
+                // after initialization of the element-type-select-widget to set up the reload callback
+                dialogs.ElementDialog.prototype.setUpWidgets.apply(this);
+                this.elementType.reload();
+            },
+
+            setUpWidgets: function (root) {
+                // avoid initializing during construction; widget initialization is done later - see: initView()
+            },
+
+            show: function () {
+                // the show() is suppressed if only one type is allowed; create an instance of this type immediately
+            },
+
+            showOrDefault: function () {
+                this.elementType.callback = undefined; // reset 'show' callback
                 if (this.elementType.getCount() === 1) {
-                    this.useDefault = this.elementType.getOnlyOne();
+                    var selection = this.elementType.getOnlyOne();
+                    // use the one option instead of show and select if no more options are available
+                    if (selection) {
+                        this.doSubmit(undefined, selection);
+                        // dispose the dialog to avoid reuse of a dialog which is not initialized during shown
+                        this.onClose();
+                        return;
+                    }
                 }
+                // the normal show() if more than one option available or the filter is used...
+                dialogs.ElementDialog.prototype.show.apply(this);
             },
 
             doSubmit: function (event, type) {

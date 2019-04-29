@@ -35,14 +35,15 @@ public abstract class OptionsWidget<T> extends PropertyEditHandle<T> {
     public static final String DEFAULT_SEPARATORS = ", :";
 
     private transient List<Option> options;
+    private transient List<T> optionValues;
 
     public abstract class Option {
 
         private final String label;
-        private final String value;
+        private final T value;
         private final Object data;
 
-        public Option(@Nonnull final String label, @Nonnull final String value, @Nullable final Object data) {
+        public Option(@Nonnull final String label, @Nonnull final T value, @Nullable final Object data) {
             this.label = label;
             this.value = value;
             this.data = data;
@@ -54,7 +55,7 @@ public abstract class OptionsWidget<T> extends PropertyEditHandle<T> {
         }
 
         @Nonnull
-        public String getValue() {
+        public T getValue() {
             return value;
         }
 
@@ -86,6 +87,16 @@ public abstract class OptionsWidget<T> extends PropertyEditHandle<T> {
         return options;
     }
 
+    public List<T> getOptionValues() {
+        if (optionValues == null) {
+            optionValues = new ArrayList<>();
+            for (Option option : getOptions()) {
+                optionValues.add(option.getValue());
+            }
+        }
+        return optionValues;
+    }
+
     protected abstract Option newOption(String label, String value, Object data);
 
     /**
@@ -96,7 +107,7 @@ public abstract class OptionsWidget<T> extends PropertyEditHandle<T> {
         JsonArray data = new JsonArray();
         for (Option option : getOptions()) {
             JsonObject item = new JsonObject();
-            item.addProperty("value", option.getValue());
+            item.addProperty("value", option.getValue().toString());
             item.addProperty("label", option.getLabel());
             data.add(item);
         }

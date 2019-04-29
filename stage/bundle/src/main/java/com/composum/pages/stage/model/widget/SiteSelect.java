@@ -15,7 +15,7 @@ public class SiteSelect extends PropertyEditHandle<String> implements WidgetMode
     }
 
     @Override
-    public String getWidgetAttributeKey(String attributeKey) {
+    public String filterWidgetAttribute(String attributeKey, String attributeValue) {
         return attributeKey;
     }
 
