@@ -14,7 +14,7 @@
                 dialog: '-dialog',
                 dialogEdit: '-dialog_edit',
                 dialogThumbnail: '-dialog_thumbnail',
-                componentLoadUri: '/libs/composum/pages/stage/edit/tools/dev/component.content.html',
+                componentLoadUri: '/libs/composum/pages/stage/edit/tools/component/edit.content.html',
                 thumbnailWidth: 600.0,
                 maxThumbnailScale: 0.5
             }

@@ -16,6 +16,8 @@ public class FramePage extends Page {
     private transient Resource pageResource;
     private transient String pagePath;
 
+    private transient DisplayMode.Value displayMode;
+
     public FramePage() {
         super();
     }
@@ -101,6 +103,27 @@ public class FramePage extends Page {
         return language != null ? language.getKey().toLowerCase().replace('_', '.') : "";
     }
 
+    // view mode
+
+    public boolean isEditMode() {
+        DisplayMode.Value mode = getDisplayMode();
+        return mode == DisplayMode.Value.EDIT || mode == DisplayMode.Value.DEVELOP;
+    }
+
+    public boolean isDevelopMode() {
+        return getDisplayMode() == DisplayMode.Value.DEVELOP;
+    }
+
+    /**
+     * @return the requested display mode (the current could be overloaded during 'include')
+     */
+    public DisplayMode.Value getDisplayMode() {
+        if (displayMode == null) {
+            displayMode = DisplayMode.requested(getContext());
+        }
+        return displayMode;
+    }
+
     /**
      * @return a readable string of the current display mode
      */
@@ -120,13 +143,5 @@ public class FramePage extends Page {
      */
     public String getDisplayModeSelector() {
         return getDisplayModeHint().toLowerCase();
-    }
-
-    /**
-     * @return the requested display mode (the current could be overloaded during 'include')
-     */
-    @Override
-    public DisplayMode.Value getDisplayMode() {
-        return DisplayMode.requested(context);
     }
 }

@@ -106,7 +106,7 @@
             order="{Long}999"/>
     <componentHelp
             jcr:primaryType="nt:unstructured"
-            sling:resourceType="composum/pages/stage/edit/tools/main/support"
+            sling:resourceType="composum/pages/stage/edit/tools/component/help/context"
             categories="[context,edit,develop,page,container,element]"
             iconClass="question-circle-o"
             hint="Component Help"
@@ -114,7 +114,7 @@
             order="{Long}80"/>
     <componentContext
             jcr:primaryType="nt:unstructured"
-            sling:resourceType="composum/pages/stage/edit/tools/dev/component"
+            sling:resourceType="composum/pages/stage/edit/tools/component/edit"
             categories="[context,develop,page,container,element]"
             iconClass="wrench"
             hint="Component Implementation"

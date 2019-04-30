@@ -1,0 +1,48 @@
+@charset "UTF-8";
+
+@import "../../../../css/variables";
+@import "../../../../css/mixins";
+
+$help-text-default-size: $default-font-size;
+$help-text-title-size: $default-font-size + 5;
+
+$help-text-default-margin: $tools-pane-padding 0;
+$help-text-title-margin: $tools-pane-padding*1.5 0 $tools-pane-padding;
+
+.composum-pages-tools {
+
+    &_help-context {
+
+        &.pages-mode {
+
+            &_EDIT {
+                top: 0;
+            }
+        }
+
+        .composum-pages-components {
+
+            &-element {
+
+                &-title {
+                    margin: $help-text-title-margin;
+                    font-size: $help-text-title-size;
+                }
+
+                &-text {
+                    margin: $help-text-default-margin;
+                    font-size: $help-text-default-size;
+
+                    &_title {
+                        margin: $help-text-title-margin;
+                        font-size: $help-text-title-size;
+                    }
+                }
+
+                &-image {
+                    margin: $help-text-default-margin;
+                }
+            }
+        }
+    }
+}

@@ -43,7 +43,7 @@
                 restoreAction: 'restore',
                 versionContentUri: '/bin/cpm/pages/edit.versions.versionList.html',
                 versionRestoreUri: '/bin/cpm/pages/edit.restoreVersion.json',
-                platformVersionsUri: '/bin/cpm/platform/version.',
+                platformVersionsUri: '/bin/cpm/platform/versions.',
                 nodesVersionsUri: '/bin/cpm/nodes/version.',
                 disabled: 'disabled',
                 hidden: 'hidden'

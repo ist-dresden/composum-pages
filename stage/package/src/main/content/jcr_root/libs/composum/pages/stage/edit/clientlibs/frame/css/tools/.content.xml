@@ -9,5 +9,6 @@
             jslibs/chartist/0.11.0/chartist.css,
             composum/pages/stage/edit/tools/page/statistics/css/statistics.css,
             composum/pages/stage/edit/tools/container/elements/css/elements.css,
-            composum/pages/stage/edit/tools/dev/component/css/component.css
+            composum/pages/stage/edit/tools/component/help/css/help.css,
+            composum/pages/stage/edit/tools/component/edit/css/edit.css
         ]"/>

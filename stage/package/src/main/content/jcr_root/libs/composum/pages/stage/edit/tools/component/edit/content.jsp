@@ -15,6 +15,6 @@
     </div>
     <span class="${componentCssBase}_type ${componentCssBase}_path alert alert-info">${component.pathHint}</span>
     <div class="${componentCssBase}_dialog">
-        <sling:include resourceType="composum/pages/stage/edit/tools/dev/component/dialog"/>
+        <sling:include resourceType="composum/pages/stage/edit/tools/component/edit/dialog"/>
     </div>
 </cpp:element>

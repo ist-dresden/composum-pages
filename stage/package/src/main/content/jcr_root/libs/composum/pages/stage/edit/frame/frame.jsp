@@ -11,6 +11,8 @@
             <meta name="format-detection" content="telephone=no">
             <cpn:clientlib type="link" category="composum.pages.edit.frame"/>
             <cpn:clientlib type="css" category="composum.pages.edit.frame"/>
+            <cpn:clientlib test="${frame.developMode}" type="link" category="composum.pages.develop.frame"/>
+            <cpn:clientlib test="${frame.developMode}" type="css" category="composum.pages.develop.frame"/>
         </head>
         <body class="composum-pages-${frame.displayModeHint}_body" data-path="${frame.pagePath}"
               data-pages-mode="${frame.displayMode}" data-pages-locale="${frame.locale}">
@@ -51,6 +53,7 @@
         </div>
         <sling:call script="dialogs.jsp"/>
         <cpn:clientlib type="js" category="composum.pages.edit.frame"/>
+        <cpn:clientlib test="${frame.developMode}" type="js" category="composum.pages.develop.frame"/>
         <script>
             $(document).ready(function () {
                 window.setTimeout(_.bind(window.composum.pages.editFrame.ready, window.composum.pages.editFrame), 400);

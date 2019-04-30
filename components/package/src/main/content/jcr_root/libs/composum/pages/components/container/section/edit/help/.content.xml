@@ -4,11 +4,11 @@
         sling:resourceType="composum/pages/stage/edit/tools/component/help/parsys">
     <text_01 jcr:primaryType="cpp:Element"
             sling:resourceType="composum/pages/components/element/text"
-            title="Teaser"
-            text="a 'Teaser' is a quick view to a link target to animate a visitor to follow the link">
+            title="Section"
+            text="a section declares a named part of a page with an anchor to support a local in-page navigation">
         <i18n jcr:primaryType="nt:unstructured">
             <de jcr:primaryType="nt:unstructured"
-                    text="ein 'Teaser' ist eine schnelle Sicht auf ein Link-Ziel um einen Besucher zu animieren, dem Link zu folgen"/>
+                    text="eine 'Section' ist ein benannter Teil einer Seite mit einer ID zur Bereitstellung einer seiteninternen Navigation"/>
         </i18n>
     </text_01>
 </jcr:root>
