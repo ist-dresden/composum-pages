@@ -49,28 +49,28 @@ $frame-tree-dnd-border: 1px dashed rgba(255, 255, 255, 0.7);
 
                 &_initial {
 
-                    .jstree-icon {
+                    > .jstree-anchor > .jstree-icon {
                         color: $release-status-initial;
                     }
                 }
 
                 &_activated {
 
-                    .jstree-icon {
+                    > .jstree-anchor > .jstree-icon {
                         color: $release-status-activated;
                     }
                 }
 
                 &_modified {
 
-                    .jstree-icon {
+                    > .jstree-anchor > .jstree-icon {
                         color: $release-status-modified;
                     }
                 }
 
                 &_deactivated {
 
-                    .jstree-icon {
+                    > .jstree-anchor > .jstree-icon {
                         color: $release-status-deactivated;
                     }
                 }
