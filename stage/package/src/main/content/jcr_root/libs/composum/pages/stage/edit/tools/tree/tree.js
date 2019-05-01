@@ -69,6 +69,32 @@
                 if (core.components.Tree.prototype.onPathSelected.apply(this, [event, path])) {
                     this.$el.trigger("node:selected", [path]);
                 }
+            },
+
+            /**
+             * refresh the data and tree node state of one node (no structure change refresh!)
+             * @param refOrPath the reference or the path of the repository resource
+             */
+            refreshTreeNodeState: function (refOrPath) {
+                if (refOrPath) {
+                    var path = refOrPath.path ? refOrPath.path : refOrPath;
+                    // load data and replace the 'original' data store of the node
+                    core.getJson(this.dataUrlForPath(path), _.bind(function (data) {
+                        var nodeId = this.nodeId(path);
+                        var node = this.jstree.get_node(nodeId);
+                        if (this.log.getLevel() <= log.levels.DEBUG) {
+                            this.log.debug(this.nodeIdPrefix + 'tree.refreshTreeNodeState(' + path + ')');
+                        }
+                        if (node) {
+                            if (data.children) {
+                                // drop children - not for structure change refresh!
+                                delete data.children;
+                            }
+                            node.original = data; // replace 'original' data store and redraw...
+                            this.refreshNodeState(this.jstree.get_node(nodeId, true), node);
+                        }
+                    }, this));
+                }
             }
         });
 
@@ -404,6 +430,40 @@
                 this.onPathSelected(event, path);
             },
 
+            /**
+             * returns a reference to the Page of a content element
+             * @param elementPath
+             * @returns {Window.composum.pages.Reference|undefined|*}
+             */
+            getPageOfElement: function (elementPath) {
+                if (elementPath && elementPath !== '/') {
+                    var elementNode = this.getTreeNode(elementPath);
+                    if (elementNode) {
+                        switch (elementNode.original.type) {
+                            case 'pagecontent':
+                                var pagePath = core.getParentPath(elementPath);
+                                return new pages.Reference(core.getNameFromPath(pagePath),
+                                    pagePath, elementNode.original.resourceType, 'cpp:Page');
+                            case 'page':
+                                return pages.Reference(elementNode.original.name,
+                                    elementPath, undefined, elementNode.original.resourceType);
+                        }
+                    }
+                    return this.getPageOfElement(core.getParentPath(elementPath));
+                }
+                return undefined;
+            },
+
+            /**
+             * triggers a node state refresh for the page node of the changed content element
+             * @param event the element change event
+             * @param refOrPath the reference or the path of the changed element
+             */
+            onPageElementChanged: function (event, refOrPath) {
+                var pageRef = this.getPageOfElement(refOrPath && refOrPath.path ? refOrPath.path : refOrPath);
+                this.refreshTreeNodeState(pageRef);
+            },
+
             onElementSelected: function (event, refOrPath) {
                 var path = refOrPath && refOrPath.path ? refOrPath.path : refOrPath;
                 if (this.log.getLevel() <= log.levels.DEBUG) {
@@ -419,6 +479,7 @@
                 }
                 var parentAndName = core.getParentAndName(path);
                 this.onPathInserted(event, parentAndName.path, parentAndName.name);
+                this.onPageElementChanged(event, parentAndName.path);
             },
 
             onElementMoved: function (event, oldRefOrPath, newRefOrPath) {
@@ -428,6 +489,14 @@
                     this.log.debug(this.nodeIdPrefix + 'tree.onElementSelected(' + oldPath + ' -> ' + newPath + ')');
                 }
                 this.onPathMoved(event, oldPath, newPath);
+                var oldPageRef = this.getPageOfElement(oldPath);
+                var newPageRef = this.getPageOfElement(newPath);
+                if (oldPageRef) {
+                    this.refreshTreeNodeState(oldPageRef);
+                }
+                if (newPageRef && (!oldPageRef || newPageRef.path !== oldPageRef.path)) {
+                    this.refreshTreeNodeState(newPageRef);
+                }
             },
 
             onElementChanged: function (event, refOrPath) {
@@ -436,6 +505,7 @@
                     this.log.debug(this.nodeIdPrefix + 'tree.onElementChanged(' + path + ')');
                 }
                 this.onPathChanged(event, path);
+                this.onPageElementChanged(event, path);
             },
 
             onElementDeleted: function (event, refOrPath) {
@@ -444,6 +514,7 @@
                     this.log.debug(this.nodeIdPrefix + 'tree.onElementDeleted(' + path + ')');
                 }
                 this.onPathDeleted(event, path);
+                this.onPageElementChanged(event, path);
             },
 
             dropNode: function (draggedNode, targetNode, index) {

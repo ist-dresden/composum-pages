@@ -132,7 +132,8 @@
                 var path = this.versions.data.jcrContent.path;
                 core.ajaxPost(tools.const.versions.platformVersionsUri + 'activate.json' + path, {}, {},
                     _.bind(function (result) {
-                        this.versions.reload();
+                        $(document).trigger(pages.const.event.page.changed,
+                            [new pages.Reference(this.versions.data.reference)]);
                     }, this), _.bind(function (result) {
                         this.error('on activate page', result);
                     }, this)
@@ -146,7 +147,8 @@
                 var path = this.versions.data.jcrContent.path;
                 core.ajaxPost(tools.const.versions.platformVersionsUri + 'deactivate.json' + path, {}, {},
                     _.bind(function (result) {
-                        this.versions.reload();
+                        $(document).trigger(pages.const.event.page.changed,
+                            [new pages.Reference(this.versions.data.reference)]);
                     }, this), _.bind(function (result) {
                         this.error('on deactivate page', result);
                     }, this)
@@ -160,7 +162,8 @@
                 var path = this.versions.data.jcrContent.path;
                 core.ajaxPost(tools.const.versions.nodesVersionsUri + 'checkpoint.json' + path, {}, {},
                     _.bind(function (result) {
-                        this.versions.reload();
+                        $(document).trigger(pages.const.event.page.changed,
+                            [new pages.Reference(this.versions.data.reference)]);
                     }, this), _.bind(function (result) {
                         this.error('on creating checkpoint', result);
                     }, this)
@@ -188,7 +191,8 @@
                 var path = this.versions.data.jcrContent.path;
                 core.ajaxPost(tools.const.versions.nodesVersionsUri + 'checkin.json' + path, {}, {},
                     _.bind(function (result) {
-                        this.versions.reload();
+                        $(document).trigger(pages.const.event.page.changed,
+                            [new pages.Reference(this.versions.data.reference)]);
                     }, this), _.bind(function (result) {
                         this.error('on checkin', result);
                     }, this)
@@ -202,7 +206,8 @@
                 var path = this.versions.data.jcrContent.path;
                 core.ajaxPost(tools.const.versions.nodesVersionsUri + 'checkout.json' + path, {}, {},
                     _.bind(function (result) {
-                        this.versions.reload();
+                        $(document).trigger(pages.const.event.page.changed,
+                            [new pages.Reference(this.versions.data.reference)]);
                     }, this), _.bind(function (result) {
                         this.error('on checkout', result);
                     }, this)

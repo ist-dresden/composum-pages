@@ -19,6 +19,7 @@ import com.composum.pages.commons.service.PageManager;
 import com.composum.pages.commons.service.ResourceManager;
 import com.composum.pages.commons.service.SiteManager;
 import com.composum.pages.commons.service.VersionsService;
+import com.composum.pages.commons.util.PagesUtil;
 import com.composum.pages.commons.util.RequestUtil;
 import com.composum.pages.commons.util.ResolverUtil;
 import com.composum.pages.commons.util.ResourceTypeUtil;
@@ -1128,6 +1129,8 @@ public class EditServlet extends PagesContentServlet {
         if (page.isValid()) {
             TreeNodeStrategy nodeStrategy = new DefaultTreeNodeStrategy(filter);
             writeJsonNodeData(writer, nodeStrategy, ResourceHandle.use(page.getResource()), LabelType.name, false);
+            writer.name("reference");
+            PagesUtil.write(writer, PagesUtil.getReference(page.getResource()));
             Resource contentResource = page.getContent().getResource();
             writer.name("jcrContent");
             writeJsonNode(writer, nodeStrategy, ResourceHandle.use(contentResource), LabelType.name, false);

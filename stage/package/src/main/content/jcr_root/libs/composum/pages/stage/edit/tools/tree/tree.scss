@@ -4,6 +4,7 @@
 @import "../../css/mixins";
 
 $frame-tree-fg-color: #fff;
+$frame-tree-icon-color: $release-status-initial;
 $frame-tree-dnd-border: 1px dashed rgba(255, 255, 255, 0.7);
 
 .composum-pages-EDIT,
@@ -31,6 +32,10 @@ $frame-tree-dnd-border: 1px dashed rgba(255, 255, 255, 0.7);
             color: $frame-tree-fg-color;
             text-decoration: none;
             font-size: $default-font-size;
+        }
+
+        &-icon {
+            color: $frame-tree-icon-color;
         }
 
         &-node,
