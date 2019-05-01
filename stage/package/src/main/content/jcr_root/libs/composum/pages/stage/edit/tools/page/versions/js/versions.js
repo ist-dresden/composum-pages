@@ -89,7 +89,7 @@
                 this.$activateAction.click(_.bind(this.activatePage, this));
                 this.$deactivateAction.click(_.bind(this.deactivatePage, this));
                 this.$checkpointAction.click(_.bind(this.createCheckpoint, this));
-                this.$purgeAction.click(_.bind(this.purgeVersion, this));
+                this.$purgeAction.click(_.bind(this.purgeVersions, this));
                 this.$checkInAction.click(_.bind(this.checkIn, this));
                 this.$checkOutAction.click(_.bind(this.checkOut, this));
                 this.$restoreAction.click(_.bind(this.restoreVersion, this));
@@ -129,11 +129,10 @@
                 if (event) {
                     event.preventDefault();
                 }
-                var path = this.versions.data.jcrContent.path;
-                core.ajaxPost(tools.const.versions.platformVersionsUri + 'activate.json' + path, {}, {},
+                var ref = this.versions.data.reference;
+                core.ajaxPost(tools.const.versions.platformVersionsUri + 'activate.json' + ref.path, {}, {},
                     _.bind(function (result) {
-                        $(document).trigger(pages.const.event.page.changed,
-                            [new pages.Reference(this.versions.data.reference)]);
+                        $(document).trigger(pages.const.event.page.state, [new pages.Reference(ref)]);
                     }, this), _.bind(function (result) {
                         this.error('on activate page', result);
                     }, this)
@@ -144,11 +143,10 @@
                 if (event) {
                     event.preventDefault();
                 }
-                var path = this.versions.data.jcrContent.path;
-                core.ajaxPost(tools.const.versions.platformVersionsUri + 'deactivate.json' + path, {}, {},
+                var ref = this.versions.data.reference;
+                core.ajaxPost(tools.const.versions.platformVersionsUri + 'deactivate.json' + ref.path, {}, {},
                     _.bind(function (result) {
-                        $(document).trigger(pages.const.event.page.changed,
-                            [new pages.Reference(this.versions.data.reference)]);
+                        $(document).trigger(pages.const.event.page.state, [new pages.Reference(ref)]);
                     }, this), _.bind(function (result) {
                         this.error('on deactivate page', result);
                     }, this)
@@ -162,7 +160,7 @@
                 var path = this.versions.data.jcrContent.path;
                 core.ajaxPost(tools.const.versions.nodesVersionsUri + 'checkpoint.json' + path, {}, {},
                     _.bind(function (result) {
-                        $(document).trigger(pages.const.event.page.changed,
+                        $(document).trigger(pages.const.event.page.state,
                             [new pages.Reference(this.versions.data.reference)]);
                     }, this), _.bind(function (result) {
                         this.error('on creating checkpoint', result);
@@ -170,12 +168,12 @@
                 );
             },
 
-            purgeVersion: function (event) {
+            purgeVersions: function (event) {
                 if (event) {
                     event.preventDefault();
                 }
-                var path = this.versions.data.jcrContent.path;
-                core.ajaxPost(tools.const.versions.platformVersionsUri + 'purge.json' + path, {}, {},
+                var ref = this.versions.data.reference;
+                core.ajaxPost(tools.const.versions.platformVersionsUri + 'purge.json' + ref.path, {}, {},
                     _.bind(function (result) {
                         this.versions.reload();
                     }, this), _.bind(function (result) {
@@ -191,7 +189,7 @@
                 var path = this.versions.data.jcrContent.path;
                 core.ajaxPost(tools.const.versions.nodesVersionsUri + 'checkin.json' + path, {}, {},
                     _.bind(function (result) {
-                        $(document).trigger(pages.const.event.page.changed,
+                        $(document).trigger(pages.const.event.page.state,
                             [new pages.Reference(this.versions.data.reference)]);
                     }, this), _.bind(function (result) {
                         this.error('on checkin', result);

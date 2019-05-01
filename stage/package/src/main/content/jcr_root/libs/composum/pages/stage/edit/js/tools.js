@@ -51,11 +51,14 @@
 
             findTabKey: function ($element) {
                 var $panel = $element.closest('.' + tools.const.panelClass);
-                var classes = $panel.attr('class').split(/\s+/);
-                for (var i = 0; i < classes.length; i++) {
-                    var $handle = this.$tabs.find('[data-tab="' + classes[i] + '"]');
-                    if ($handle.length === 1) {
-                        return classes[i];
+                var classes = $panel.attr('class');
+                if (classes) {
+                    var keys = classes.split(/\s+/);
+                    for (var i = 0; i < keys.length; i++) {
+                        var $handle = this.$tabs.find('[data-tab="' + keys[i] + '"]');
+                        if ($handle.length === 1) {
+                            return keys[i];
+                        }
                     }
                 }
                 return undefined;

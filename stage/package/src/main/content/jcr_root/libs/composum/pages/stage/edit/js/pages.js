@@ -60,6 +60,7 @@
                     inserted: 'page:inserted',      // done.
                     changed: 'page:changed',        // done.
                     deleted: 'page:deleted',        // done.
+                    state: 'page:state',            // changed state of the page itself only (no structure change)
                     containerRefs: 'page:containerRefs'
                 },
                 content: {

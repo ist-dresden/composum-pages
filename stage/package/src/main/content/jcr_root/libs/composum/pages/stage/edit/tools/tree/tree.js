@@ -385,6 +385,7 @@
                 $(document).on(e.content.deleted + '.' + id, _.bind(this.onContentDeleted, this));
                 $(document).on(e.content.moved + '.' + id, _.bind(this.onContentMoved, this));
                 $(document).on(e.page.selected + '.' + id, _.bind(this.onContentSelected, this));
+                $(document).on(e.page.state + '.' + id, _.bind(this.onPageStateChanged, this));
                 $(document).on(e.page.inserted + '.' + id, _.bind(this.onContentInserted, this));
                 $(document).on(e.page.changed + '.' + id, _.bind(this.onContentChanged, this));
                 $(document).on(e.page.deleted + '.' + id, _.bind(this.onContentDeleted, this));
@@ -409,6 +410,9 @@
             refreshNodeState: function ($node, node) {
                 node = tree.ContentTree.prototype.refreshNodeState.apply(this, [$node, node]);
                 if (node.original.release && node.original.release.status) {
+                    ['initial', 'activated', 'modified', 'deactivated'].forEach(function (value) {
+                        $node.removeClass('release-status_' + value);
+                    });
                     $node.addClass('release-status_' + node.original.release.status);
                 }
                 return node;
@@ -428,6 +432,14 @@
                     this.log.debug(this.nodeIdPrefix + 'tree.onContentSelected(' + path + ')');
                 }
                 this.onPathSelected(event, path);
+            },
+
+            onPageStateChanged: function (event, refOrPath) {
+                var path = refOrPath && refOrPath.path ? refOrPath.path : refOrPath;
+                if (this.log.getLevel() <= log.levels.DEBUG) {
+                    this.log.debug(this.nodeIdPrefix + 'tree.onPageStateChanged(' + path + ')');
+                }
+                this.refreshTreeNodeState(path);
             },
 
             /**
