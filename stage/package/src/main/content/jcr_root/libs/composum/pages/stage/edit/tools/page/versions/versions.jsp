@@ -11,8 +11,9 @@
             <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
                 <button type="button"
                         class="fa fa-desktop ${versionsCssBase}_action_view composum-pages-tools_button btn btn-default"
-                        title="View Version"><span
-                        class="composum-pages-tools_button-label">View</span></button>
+                        title="Show Version"><span
+                        class="composum-pages-tools_button-label">${cpn:i18n(slingRequest,'Show Version')}</span>
+                </button>
             </div>
         </div>
         <div class="composum-pages-tools_right-actions">
@@ -20,11 +21,13 @@
                 <button type="button"
                         class="fa fa-play ${versionsCssBase}_action_activate composum-pages-tools_button btn btn-default"
                         title="${cpn:i18n(slingRequest,'Activate Page')}"><span
-                        class="composum-pages-tools_button-label">${cpn:i18n(slingRequest,'Activate')}</span></button>
+                        class="composum-pages-tools_button-label">${cpn:i18n(slingRequest,'Activate Page')}</span>
+                </button>
                 <button type="button"
                         class="fa fa-stop ${versionsCssBase}_action_deactivate composum-pages-tools_button btn btn-default"
                         title="${cpn:i18n(slingRequest,'Deactivate Page')}"><span
-                        class="composum-pages-tools_button-label">${cpn:i18n(slingRequest,'Deactivate')}</span></button>
+                        class="composum-pages-tools_button-label">${cpn:i18n(slingRequest,'Deactivate Page')}</span>
+                </button>
                 <button type="button"
                         class="fa fa-circle-o ${versionsCssBase}_action_checkpoint composum-pages-tools_button btn btn-default"
                         title="${cpn:i18n(slingRequest,'Checkpoint (In/Out) - new version')}"><span

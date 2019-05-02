@@ -37,12 +37,15 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 import static com.composum.pages.commons.PagesConstants.COMPOSUM_PREFIX;
 import static com.composum.platform.commons.request.service.InternalRequestService.RA_IS_INTERNAL_REQUEST;
-import static com.composum.sling.platform.staging.impl.ResourceResolverChangeFilter.ATTRIBUTE_NAME;
-import static com.composum.sling.platform.staging.impl.ResourceResolverChangeFilter.PARAMETER_NAME;
+import static com.composum.sling.platform.staging.impl.ResourceResolverChangeFilter.ATTR_CPM_RELEASE;
+import static com.composum.sling.platform.staging.impl.ResourceResolverChangeFilter.ATTR_CPM_VERSION;
+import static com.composum.sling.platform.staging.impl.ResourceResolverChangeFilter.PARAM_CPM_RELEASE;
+import static com.composum.sling.platform.staging.impl.ResourceResolverChangeFilter.PARAM_CPM_VERSION;
 
 @Component(
         service = {Filter.class},
@@ -223,11 +226,11 @@ public class PagesReleaseFilter implements Filter {
 
                 // if Author or unspecific mode use requested release...
 
-                release = request.getParameter(PARAMETER_NAME);
+                release = request.getParameter(PARAM_CPM_RELEASE);
                 if (StringUtils.isBlank(release)) {
                     HttpSession session = slingRequest.getSession(false);
                     if (session != null) {
-                        release = (String) session.getAttribute(ATTRIBUTE_NAME);
+                        release = (String) session.getAttribute(ATTR_CPM_RELEASE);
                     }
                 }
 
@@ -244,6 +247,20 @@ public class PagesReleaseFilter implements Filter {
                             }
                         }
                     }
+
+                } else {
+
+                    // for version compare a version of a page can be requested...
+                    String version = request.getParameter(PARAM_CPM_VERSION);
+
+                    if (StringUtils.isNotBlank(version)) {
+                        if (LOG.isDebugEnabled()) {
+                            LOG.debug("{} access mode, version '{}' selected", accessMode, version);
+                        }
+                        request.setAttribute(ATTR_CPM_VERSION, version);
+                        // disable editing for release requests
+                        Objects.requireNonNull(slingRequest.adaptTo(DisplayMode.class)).reset(DisplayMode.Value.NONE);
+                    }
                 }
             }
 
@@ -251,9 +268,9 @@ public class PagesReleaseFilter implements Filter {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("{} access mode, release '{}' selected", accessMode, release);
                 }
-                request.setAttribute(ATTRIBUTE_NAME, release);
+                request.setAttribute(ATTR_CPM_RELEASE, release);
                 // disable editing for release requests
-                slingRequest.adaptTo(DisplayMode.class).reset(DisplayMode.Value.NONE);
+                Objects.requireNonNull(slingRequest.adaptTo(DisplayMode.class)).reset(DisplayMode.Value.NONE);
             }
 
             // disable component caching if in edit context ('edit', 'preview', 'browse', 'develop')
@@ -271,6 +288,7 @@ public class PagesReleaseFilter implements Filter {
         chain.doFilter(request, response);
     }
 
+    @SuppressWarnings("Duplicates")
     protected boolean isUnreleasedPublicAccessAllowed(String hostname, String uri, String path) {
         for (Pattern pattern : ignoredHostPatterns) {
             if (pattern.matcher(hostname).matches()) {
