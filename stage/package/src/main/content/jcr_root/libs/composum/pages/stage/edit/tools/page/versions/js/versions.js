@@ -246,6 +246,10 @@
                 this.actions.versions = this;
                 this.$slider.slider(c.slider.options);
                 this.$slider.on('slide', _.bind(this.compare, this));
+                var id = 'Versions';
+                var e = pages.const.event;
+                $(document).on(e.page.state + '.' + id, _.bind(this.reload, this));
+                $(document).on(e.page.changed + '.' + id, _.bind(this.reload, this));
             },
 
             onTabSelected: function () {

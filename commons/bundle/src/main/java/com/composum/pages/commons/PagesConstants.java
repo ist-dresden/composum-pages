@@ -17,6 +17,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 
+import java.util.regex.Pattern;
+
 public interface PagesConstants {
 
     String ENCODING = "UTF-8";
@@ -142,6 +144,11 @@ public interface PagesConstants {
     String TIMESTAMP_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
     String NP_SETTINGS = "settings";
+
+    /** release & version */
+
+    String VERSION_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
+    Pattern RELEASE_LABEL_PATTERN = Pattern.compile("^composum-release-(.+)$");
 
     /** date & time */
 

@@ -14,6 +14,10 @@
     @include font('robotolight', $default-font-size);
 }
 
+@mixin hint-font {
+    @include font('robotolight', $hint-font-size);
+}
+
 @mixin dialog-font {
     @include font('robotolight', $dialog-default-font-size);
 }

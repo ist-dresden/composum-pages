@@ -17,7 +17,8 @@
                 uri: {
                     base: '/libs/composum/pages/stage/edit/tools/page/status',
                     _: {
-                        release: '.releaseStatus.html'
+                        release: '.releaseStatus.html',
+                        popover: '.releasePopover.html'
                     }
                 }
             }
@@ -26,22 +27,45 @@
         tools.PageStatus = Backbone.View.extend({
 
             initialize: function (options) {
-                var c = tools.const.pageStatus.css;
                 var id = 'PageStatus';
                 var e = pages.const.event;
                 $(document).on(e.page.state + '.' + id, _.bind(this.reload, this));
                 $(document).on(e.page.changed + '.' + id, _.bind(this.reload, this));
+                this.reload();
             },
 
             reload: function () {
+                delete this.$icon;
+                delete this.popover;
                 if (pages.current.page) {
                     var u = tools.const.pageStatus.uri;
                     core.getHtml(u.base + u._.release + pages.current.page, _.bind(function (content) {
                         this.$el.html(content);
+                        var c = tools.const.pageStatus.css;
+                        this.$icon = this.$('.' + c.base + c._.icon);
+                        this.$icon.click(_.bind(this.initPopover, this));
                     }, this));
                 } else {
                     this.$el.html('');
                 }
+            },
+
+            initPopover: function (event) {
+                event.preventDefault();
+                if (!this.popover) {
+                    var u = tools.const.pageStatus.uri;
+                    core.getHtml(u.base + u._.popover + pages.current.page, _.bind(function (content) {
+                        this.popover = true;
+                        this.$icon.popover({
+                            placement: 'bottom',
+                            animation: false,
+                            html: true,
+                            content: content
+                        });
+                        this.$icon.popover('show');
+                    }, this));
+                }
+                return false;
             }
         });
 

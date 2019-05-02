@@ -19,15 +19,15 @@
             <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
                 <button type="button"
                         class="fa fa-play ${versionsCssBase}_action_activate composum-pages-tools_button btn btn-default"
-                        title="${cpn:i18n(slingRequest,'Activate')}"><span
+                        title="${cpn:i18n(slingRequest,'Activate Page')}"><span
                         class="composum-pages-tools_button-label">${cpn:i18n(slingRequest,'Activate')}</span></button>
                 <button type="button"
                         class="fa fa-stop ${versionsCssBase}_action_deactivate composum-pages-tools_button btn btn-default"
-                        title="${cpn:i18n(slingRequest,'Deactivate')}"><span
+                        title="${cpn:i18n(slingRequest,'Deactivate Page')}"><span
                         class="composum-pages-tools_button-label">${cpn:i18n(slingRequest,'Deactivate')}</span></button>
                 <button type="button"
                         class="fa fa-circle-o ${versionsCssBase}_action_checkpoint composum-pages-tools_button btn btn-default"
-                        title="${cpn:i18n(slingRequest,'Checkpoint (In/Out)')}"><span
+                        title="${cpn:i18n(slingRequest,'Checkpoint (In/Out) - new version')}"><span
                         class="composum-pages-tools_button-label">${cpn:i18n(slingRequest,'Checkpoint')}</span></button>
             </div>
             <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
@@ -37,17 +37,17 @@
                         class="composum-pages-tools_button-label">More...</span></button>
                 <ul class="composum-pages-stage-edit-toolbar_more composum-pages-tools_menu dropdown-menu" role="menu">
                     <li><a href="#" class="${versionsCssBase}_action_purge"
-                           title="${cpn:i18n(slingRequest,'Purge Versions of the selected page')}"><i
-                            class="fa fa-trash-o"></i>${cpn:i18n(slingRequest,'Purge Versions')}</a></li>
+                           title="${cpn:i18n(slingRequest,'purge unused versions of the current page')}"><i
+                            class="fa fa-trash-o"></i>${cpn:i18n(slingRequest,'Purge Versions (unused)')}</a></li>
                     <li><a href="#" class="${versionsCssBase}_action_check-in"
-                           title="${cpn:i18n(slingRequest,'Check in the selected page')}"><i
+                           title="${cpn:i18n(slingRequest,'check in the current page')}"><i
                             class="fa fa-sign-in"></i>${cpn:i18n(slingRequest,'Check In')}</a></li>
                     <li><a href="#" class="${versionsCssBase}_action_check-out"
-                           title="${cpn:i18n(slingRequest,'Check out the selected page')}"><i
+                           title="${cpn:i18n(slingRequest,'check out the current page')}"><i
                             class="fa fa-sign-out"></i>${cpn:i18n(slingRequest,'Check Out')}</a></li>
                     <li><a href="#" class="${versionsCssBase}_action_restore"
-                           title="${cpn:i18n(slingRequest,'Restore the selected version')}"><i
-                            class="fa fa-undo"></i>${cpn:i18n(slingRequest,'Restore')}</a></li>
+                           title="${cpn:i18n(slingRequest,'restore the selected version ot the current page')}"><i
+                            class="fa fa-undo"></i>${cpn:i18n(slingRequest,'Restore Version')}</a></li>
                 </ul>
             </div>
         </div>

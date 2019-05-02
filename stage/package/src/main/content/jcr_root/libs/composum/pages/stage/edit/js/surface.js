@@ -367,6 +367,7 @@
                 if (!this.popover) {
                     pages.loadFrameContent('/libs/composum/pages/stage/edit/sidebar/logo/popover.html',
                         _.bind(function (content) {
+                            this.popover = true;
                             this.$link.popover({
                                 placement: 'bottom',
                                 animation: false,
@@ -374,7 +375,6 @@
                                 content: content
                             });
                             this.$link.popover('show');
-                            this.popover = true;
                         }, this));
                 }
                 return false;

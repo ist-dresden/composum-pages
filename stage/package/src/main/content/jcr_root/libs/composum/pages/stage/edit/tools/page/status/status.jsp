@@ -4,6 +4,6 @@
 <cpp:defineFrameObjects/>
 <cpp:model var="model" type="com.composum.pages.stage.model.edit.FrameModel">
     <div class="${modelCssBase}" data-path="${model.frameResource.path}">
-        <sling:call script="releaseStatus.jsp"/>
+        <%-- AJAX: <sling:call script="releaseStatus.jsp"/> --%>
     </div>
 </cpp:model>

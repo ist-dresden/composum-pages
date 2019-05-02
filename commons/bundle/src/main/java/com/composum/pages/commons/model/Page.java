@@ -5,6 +5,7 @@
  */
 package com.composum.pages.commons.model;
 
+import com.composum.pages.commons.PagesConstants;
 import com.composum.pages.commons.model.properties.Language;
 import com.composum.pages.commons.model.properties.Languages;
 import com.composum.pages.commons.request.DisplayMode;
@@ -27,10 +28,13 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.jcr.RepositoryException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.regex.Matcher;
 
 import static com.composum.pages.commons.PagesConstants.DEFAULT_EDIT_CATEGORY;
 import static com.composum.pages.commons.PagesConstants.DEFAULT_VIEW_CATEGORY;
@@ -44,6 +48,7 @@ import static com.composum.pages.commons.PagesConstants.PROP_EDIT_CATEGORY;
 import static com.composum.pages.commons.PagesConstants.PROP_PAGE_LANGUAGES;
 import static com.composum.pages.commons.PagesConstants.PROP_SLING_TARGET;
 import static com.composum.pages.commons.PagesConstants.PROP_VIEW_CATEGORY;
+import static com.composum.pages.commons.PagesConstants.VERSION_DATE_FORMAT;
 
 @PropertyDetermineResourceStrategy(Page.ContainingPageResourceStrategy.class)
 public class Page extends ContentDriven<PageContent> implements Comparable<Page> {
@@ -143,7 +148,7 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
     private transient Boolean isDefaultLangPage;
     private transient Page defaultLanguagePage;
 
-    private transient PlatformVersionsService.Status releaseStatus;
+    private transient StatusModel releaseStatus;
     private transient PlatformVersionsService versionsService;
 
     public Page() {
@@ -416,10 +421,55 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
 
     // releases
 
-    public PlatformVersionsService.Status getReleaseStatus() {
+    public class StatusModel {
+
+        protected final PlatformVersionsService.Status releaseStatus;
+
+        public StatusModel() throws RepositoryException, PersistenceException {
+            releaseStatus = getPlatformVersionsService().getStatus(getResource(), null);
+        }
+
+        public PlatformVersionsService.ActivationState getActivationState() {
+            return releaseStatus.getActivationState();
+        }
+
+        public String getLastModified() {
+            return new SimpleDateFormat(VERSION_DATE_FORMAT).format(releaseStatus.getLastModified().getTime());
+        }
+
+        public String getLastModifiedBy() {
+            return releaseStatus.getLastModifiedBy();
+        }
+
+        public String getReleaseLabel() {
+            String label = releaseStatus.release().getReleaseLabel();
+            Matcher matcher = PagesConstants.RELEASE_LABEL_PATTERN.matcher(label);
+            return matcher.matches() ? matcher.group(1) : label;
+        }
+
+        public String getLastActivated() {
+            Calendar calendar = releaseStatus.getLastActivated();
+            return calendar != null ? new SimpleDateFormat(VERSION_DATE_FORMAT).format(calendar.getTime()) : "";
+        }
+
+        public String getLastActivatedBy() {
+            return releaseStatus.getLastActivatedBy();
+        }
+
+        public String getLastDeactivated() {
+            Calendar calendar = releaseStatus.getLastDeactivated();
+            return calendar != null ? new SimpleDateFormat(VERSION_DATE_FORMAT).format(calendar.getTime()) : "";
+        }
+
+        public String getLastDeactivatedBy() {
+            return releaseStatus.getLastDeactivatedBy();
+        }
+    }
+
+    public StatusModel getReleaseStatus() {
         if (releaseStatus == null) {
             try {
-                releaseStatus = getPlatformVersionsService().getStatus(getResource(), null);
+                releaseStatus = new StatusModel();
             } catch (PersistenceException | RepositoryException ex) {
                 LOG.error(ex.getMessage(), ex);
             }

@@ -101,13 +101,15 @@
     }
 
     &_version-list {
-        list-style: none;
         margin: 0;
         padding: 0;
     }
 
     &_version {
+        clear: both;
         position: relative;
+        display: inline-block;
+        width: 100%;
         margin: 4px 0;
         padding: 0 4px;
         background-color: $tools-pane-tabs-background;

@@ -791,6 +791,7 @@
     .tabbed-widget {
 
         &_status {
+            z-index: 2;
             position: absolute;
             top: 0;
             right: 0;
@@ -798,8 +799,9 @@
             .composum-pages-stage-edit-tools-page-status {
 
                 &_icon {
-                    padding: $tools-pane-padding;
+                    padding: $tools-pane-padding $tools-pane-padding 0;
                     font-size: $edit-actions-icon-font-size;
+                    cursor: pointer;
 
                     &.release-status {
 
@@ -817,6 +819,54 @@
 
                         &_deactivated {
                             color: $release-status-deactivated;
+                        }
+                    }
+                }
+
+                .popover {
+                    min-width: 300px;
+
+                    .popover-content {
+                        padding: $tools-pane-padding;
+                    }
+                }
+
+                &_popover {
+                    @include hint-font;
+                    color: $bootstrap-default-color;
+
+                    hr {
+                        margin: $tools-pane-padding 0;
+                    }
+
+                    .name {
+                        margin-right: $tools-pane-padding;
+                    }
+
+                    .space {
+                        margin: 0 $tools-pane-padding;
+                    }
+
+                    .text, .state, .timestamp, .user {
+                        font-weight: bold;
+                    }
+
+                    .line {
+                        clear: both;
+                        display: inline-block;
+                        width: 100%;
+
+                        .label, .timestamp, .user {
+                            display: block;
+                            white-space: nowrap;
+                        }
+
+                        .name {
+                            float: left;
+                        }
+
+                        .timestamp, .user {
+                            float: right;
                         }
                     }
                 }
