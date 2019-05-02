@@ -9,8 +9,7 @@
             versionCssBase: 'composum-pages-stage-version-frame',
             _wrapper: '_wrapper',
             _main: '_main',
-            _secondary: '_secondary',
-            setVersionLabelUri: '/bin/cpm/pages/edit.setVersionLabel.json'
+            _secondary: '_secondary'
         });
 
         pages.VersionFrame = pages.PageView.extend({
@@ -23,30 +22,15 @@
                 return pages.const.versionCssBase;
             },
 
-            getVersionLabel: function () {
-                return undefined;
-            },
-
             reset: function () {
-                this.$frame.attr('src', '');
                 this.$el.addClass('hidden');
+                this.$frame.attr('src', '');
             },
 
             view: function (path, version) {
-                var label = this.getVersionLabel();
-                if (path && version && label) {
-                    core.ajaxPut(pages.const.setVersionLabelUri + path, JSON.stringify({
-                            path: path + '/jcr:content',
-                            version: version,
-                            label: label
-                        }), {}, _.bind(function (result) {
-                            this.$frame.attr('src', core.getContextUrl(path + ".html?cpm.release=" + label));
-                            this.$el.removeClass('hidden');
-                        }, this), _.bind(function (result) {
-                            this.error('on set display label', result);
-                            this.reset();
-                        }, this)
-                    );
+                if (path && version && version) {
+                    this.$frame.attr('src', core.getContextUrl(path + ".html?cpm.version=" + version));
+                    this.$el.removeClass('hidden');
                 } else {
                     this.reset();
                 }
@@ -63,11 +47,7 @@
                 pages.VersionFrame.prototype.initialize.apply(this, [options]);
             },
 
-            getVersionLabel: function () {
-                return 'composum-pages-show-version-primary';
-            },
-
-            setOpacity: function(value) {
+            setOpacity: function (value) {
                 if (value < 0.0) {
                     value = 0.0;
                 }
@@ -82,10 +62,6 @@
 
             initialize: function (options) {
                 pages.VersionFrame.prototype.initialize.apply(this, [options]);
-            },
-
-            getVersionLabel: function () {
-                return 'composum-pages-show-version-secondary';
             }
         });
 

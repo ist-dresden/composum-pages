@@ -102,7 +102,7 @@ public class AssetServlet extends PagesContentServlet {
         filterSet, assetTree, assetData, resourceInfo,
         targetContainers, isAllowedChild,
         moveContent, renameContent, copyContent,
-        versions, restoreVersion, setVersionLabel, checkpoint
+        versions, restoreVersion, checkpoint
     }
 
     protected PagesAssetOperationSet operations = new PagesAssetOperationSet();
@@ -148,8 +148,6 @@ public class AssetServlet extends PagesContentServlet {
         // PUT
         operations.setOperation(ServletOperationSet.Method.PUT, Extension.json,
                 Operation.restoreVersion, new RestoreVersion());
-        operations.setOperation(ServletOperationSet.Method.PUT, Extension.json,
-                Operation.setVersionLabel, new SetVersionLabel());
 
         // DELETE
     }

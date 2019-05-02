@@ -164,7 +164,7 @@ public class EditServlet extends PagesContentServlet {
         createPage, deletePage, moveContent, renameContent, copyContent,
         createSite, deleteSite,
         contextTools, context,
-        versions, restoreVersion, setVersionLabel, checkpoint
+        versions, restoreVersion, checkpoint
     }
 
     protected PagesEditOperationSet operations = new PagesEditOperationSet();
@@ -251,8 +251,6 @@ public class EditServlet extends PagesContentServlet {
                 Operation.filterDropZones, new FilterDropZones());
         operations.setOperation(ServletOperationSet.Method.PUT, Extension.json,
                 Operation.restoreVersion, new RestoreVersion());
-        operations.setOperation(ServletOperationSet.Method.PUT, Extension.json,
-                Operation.setVersionLabel, new SetVersionLabel());
 
         // DELETE
 
