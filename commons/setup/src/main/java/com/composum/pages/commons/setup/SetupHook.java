@@ -8,6 +8,8 @@ import org.apache.jackrabbit.vault.packaging.PackageException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.jcr.Node;
+import javax.jcr.Property;
 import javax.jcr.Session;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -67,6 +69,7 @@ public class SetupHook implements InstallHook {
             case INSTALLED:
                 LOG.info("installed: execute...");
                 setupAcls(ctx);
+                refreshLucene(ctx);
                 LOG.info("installed: execute ends.");
                 break;
         }
@@ -83,4 +86,18 @@ public class SetupHook implements InstallHook {
             throw new PackageException(rex);
         }
     }
+
+    /** Sets the 'refresh' property for the lucene index since we updated some settings. */
+    protected void refreshLucene(InstallContext ctx) throws PackageException {
+        try {
+            Session session = ctx.getSession();
+            Node lucenecfg = session.getNode("/oak:index/lucene");
+            lucenecfg.setProperty("refresh", true);
+            session.save();
+        } catch (Exception rex) {
+            LOG.error(rex.getMessage(), rex);
+            throw new PackageException(rex);
+        }
+    }
+
 }
