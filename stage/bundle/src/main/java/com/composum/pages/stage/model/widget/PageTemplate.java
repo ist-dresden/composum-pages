@@ -38,7 +38,7 @@ public class PageTemplate extends PropertyEditHandle<String> implements WidgetMo
      * transforms a tag attribute name (dynamic attribute) into the key expected by the widgets view
      */
     @Override
-    public String filterWidgetAttribute(String attributeKey, String attributeValue) {
+    public String filterWidgetAttribute(String attributeKey, Object attributeValue) {
         return attributeKey;
     }
 

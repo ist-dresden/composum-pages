@@ -63,6 +63,17 @@
                     _upload: {
                         dialog: '/file/dialog/upload.html'
                     },
+                    version: {
+                        base: '/bin/cpm/platform/versions',
+                        activate: {
+                            _dialog: '/page/dialog/activate.html',
+                            _action: '.activate.json'
+                        },
+                        deactivate: {
+                            _dialog: '/page/dialog/deactivate.html',
+                            _action: '.deactivate.json'
+                        }
+                    },
                     sites: {
                         list: '/libs/composum/pages/stage/edit/site/manager.html'
                     }
@@ -713,6 +724,104 @@
             var c = dialogs.const.edit.url;
             pages.dialogHandler.openEditDialog(c.path + c._copy.dialog,
                 dialogs.CopyContentDialog, name, path, type, undefined/*context*/, setupDialog);
+        };
+
+        //
+        // Releases & Versions...
+        //
+
+        dialogs.ActivatePageDialog = dialogs.ElementDialog.extend({
+
+            initialize: function () {
+                dialogs.ElementDialog.prototype.initialize.apply(this);
+                this.refs = {
+                    page: core.getWidget(this.el, '.widget-name_page-references', pages.widgets.PageReferencesWidget),
+                    asset: core.getWidget(this.el, '.widget-name_asset-references', pages.widgets.PageReferencesWidget)
+                };
+            },
+
+            hasReferences: function () {
+                return (this.refs.page && this.refs.page.isNotEmpty()) ||
+                    (this.refs.asset && this.refs.asset.isNotEmpty());
+            },
+
+            show: function () {
+                if (this.hasReferences()) {
+                    // the normal show() if unresolved references found
+                    dialogs.ElementDialog.prototype.show.apply(this);
+                } else {
+                    // the show() is suppressed if no unresolved references found
+                    this.doSubmit();
+                    this.onClose();
+                }
+            },
+
+            doSubmit: function () {
+                var u = dialogs.const.edit.url.version;
+                var data = {};
+                if (this.refs.page && this.refs.page.isNotEmpty()) {
+                    data.pageRef = this.refs.page.getValue();
+                }
+                if (this.refs.asset && this.refs.asset.isNotEmpty()) {
+                    data.assetRef = this.refs.asset.getValue();
+                }
+                core.ajaxPost(u.base + u.activate._action + this.data.path, data, {},
+                    _.bind(function (result) {
+                        var e = pages.const.event;
+                        $(document).trigger(e.page.state, [new pages.Reference(undefined, this.data.path)]);
+                        if (data.pageRef) {
+                            data.pageRef.forEach(function (path) {
+                                $(document).trigger(e.page.state, [new pages.Reference(undefined, path)]);
+                            });
+                        }
+                        this.hide();
+                    }, this));
+            }
+        });
+
+        dialogs.openActivatePageDialog = function (name, path, type, setupDialog) {
+            var c = dialogs.const.edit.url;
+            pages.dialogHandler.openEditDialog(c.path + c.version.activate._dialog,
+                dialogs.ActivatePageDialog, name, path, type, undefined/*context*/, setupDialog);
+        };
+
+        dialogs.DeactivatePageDialog = dialogs.EditDialog.extend({
+
+            initialize: function () {
+                dialogs.ElementDialog.prototype.initialize.apply(this);
+                this.refs = {
+                    page: core.getWidget(this.el, '.widget-name_page-referrers', pages.widgets.PageReferrersWidget)
+                };
+            },
+
+            hasReferrers: function () {
+                return this.refs.page && this.refs.page.isNotEmpty();
+            },
+
+            doSubmit: function () {
+                var u = dialogs.const.edit.url.version;
+                var data = {};
+                if (this.refs.page && this.refs.page.isNotEmpty()) {
+                    data.pageRef = this.refs.page.getValue();
+                }
+                core.ajaxPost(u.base + u.deactivate._action + this.data.path, data, {},
+                    _.bind(function (result) {
+                        var e = pages.const.event;
+                        $(document).trigger(e.page.state, [new pages.Reference(undefined, this.data.path)]);
+                        if (data.pageRef) {
+                            data.pageRef.forEach(function (path) {
+                                $(document).trigger(e.page.state, [new pages.Reference(undefined, path)]);
+                            });
+                        }
+                        this.hide();
+                    }, this));
+            }
+        });
+
+        dialogs.openDeactivatePageDialog = function (name, path, type, setupDialog) {
+            var c = dialogs.const.edit.url;
+            pages.dialogHandler.openEditDialog(c.path + c.version.deactivate._dialog,
+                dialogs.DeactivatePageDialog, name, path, type, undefined/*context*/, setupDialog);
         };
 
         //

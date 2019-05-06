@@ -13,7 +13,7 @@
 
     &_page-template {
         width: 100%;
-        @include font('robotolight', 17px);
+        @include default-font;
 
         .composum-pages-stage-page {
 
@@ -156,6 +156,83 @@
                 position: absolute;
                 top: 45px;
                 left: 8px;
+            }
+        }
+    }
+}
+
+.composum-pages-edit-widget {
+
+    &_page-references, &_page-referrers {
+
+        .page-references-widget, .page-referrers-widget {
+            position: relative;
+            width: 100%;
+            height: 200px;
+
+            &.empty {
+                height: auto;
+                border-bottom: none;
+            }
+        }
+
+        .page-references-widget, .page-referrers-widget, thead {
+            border-bottom: 1px solid #eee;
+        }
+
+        &, & table {
+            @include dialog-font;
+        }
+
+        thead, tbody {
+            position: absolute;
+            left: 0;
+            right: 0;
+            overflow: auto;
+        }
+
+        thead {
+            top: 0;
+        }
+
+        tbody {
+            top: 22px;
+            bottom: 0;
+        }
+
+        td {
+            vertical-align: top;
+        }
+
+        tbody {
+
+            .composum-pages-edit-widget {
+
+                &_input {
+                    pointer-events: none;
+                }
+            }
+        }
+
+        .composum-pages-edit-widget {
+
+            &_checkbox {
+                width: 14px;
+                min-width: 14px;
+            }
+
+            &_title, &_path {
+                padding-left: 10px;
+            }
+
+            &_title {
+                width: 43%;
+                min-width: 240px;
+            }
+
+            &_path {
+                width: 53%;
+                min-width: 314px;
             }
         }
     }

@@ -126,46 +126,19 @@
             },
 
             activatePage: function (event) {
-                if (event) {
-                    event.preventDefault();
-                }
                 var ref = this.versions.data.reference;
-                core.ajaxPost(tools.const.versions.platformVersionsUri + 'activate.json' + ref.path, {}, {},
-                    _.bind(function (result) {
-                        $(document).trigger(pages.const.event.page.state, [new pages.Reference(ref)]);
-                    }, this), _.bind(function (result) {
-                        this.error('on activate page', result);
-                    }, this)
-                );
+                pages.actions.page.activate(event, ref.name, ref.path, ref.type);
             },
 
             deactivatePage: function (event) {
-                if (event) {
-                    event.preventDefault();
-                }
                 var ref = this.versions.data.reference;
-                core.ajaxPost(tools.const.versions.platformVersionsUri + 'deactivate.json' + ref.path, {}, {},
-                    _.bind(function (result) {
-                        $(document).trigger(pages.const.event.page.state, [new pages.Reference(ref)]);
-                    }, this), _.bind(function (result) {
-                        this.error('on deactivate page', result);
-                    }, this)
-                );
+                pages.actions.page.deactivate(event, ref.name, ref.path, ref.type);
             },
 
             createCheckpoint: function (event) {
-                if (event) {
-                    event.preventDefault();
-                }
+                var ref = this.versions.data.reference;
                 var path = this.versions.data.jcrContent.path;
-                core.ajaxPost(tools.const.versions.nodesVersionsUri + 'checkpoint.json' + path, {}, {},
-                    _.bind(function (result) {
-                        $(document).trigger(pages.const.event.page.state,
-                            [new pages.Reference(this.versions.data.reference)]);
-                    }, this), _.bind(function (result) {
-                        this.error('on creating checkpoint', result);
-                    }, this)
-                );
+                pages.actions.page.checkpoint(event, ref.name, path, ref.type);
             },
 
             purgeVersions: function (event) {
@@ -183,33 +156,15 @@
             },
 
             checkIn: function (event) {
-                if (event) {
-                    event.preventDefault();
-                }
+                var ref = this.versions.data.reference;
                 var path = this.versions.data.jcrContent.path;
-                core.ajaxPost(tools.const.versions.nodesVersionsUri + 'checkin.json' + path, {}, {},
-                    _.bind(function (result) {
-                        $(document).trigger(pages.const.event.page.state,
-                            [new pages.Reference(this.versions.data.reference)]);
-                    }, this), _.bind(function (result) {
-                        this.error('on checkin', result);
-                    }, this)
-                );
+                pages.actions.page.checkin(event, ref.name, path, ref.type);
             },
 
             checkOut: function (event) {
-                if (event) {
-                    event.preventDefault();
-                }
+                var ref = this.versions.data.reference;
                 var path = this.versions.data.jcrContent.path;
-                core.ajaxPost(tools.const.versions.nodesVersionsUri + 'checkout.json' + path, {}, {},
-                    _.bind(function (result) {
-                        $(document).trigger(pages.const.event.page.changed,
-                            [new pages.Reference(this.versions.data.reference)]);
-                    }, this), _.bind(function (result) {
-                        this.error('on checkout', result);
-                    }, this)
-                );
+                pages.actions.page.checkout(event, ref.name, path, ref.type);
             },
 
             restoreVersion: function (event) {

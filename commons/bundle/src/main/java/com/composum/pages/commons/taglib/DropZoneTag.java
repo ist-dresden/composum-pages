@@ -229,7 +229,7 @@ public class DropZoneTag extends ModelTag {
     /**
      * builds the list of tag attributes for the wrapping tag
      */
-    protected void addEditAttributes(@Nonnull Map<String, String> attributeSet) {
+    protected void addEditAttributes(@Nonnull Map<String, Object> attributeSet) {
         Resource resource = getPropertyResource();
         attributeSet.put(TAG_ID, getTagId());
         attributeSet.put(PAGES_EDIT_DATA_ENCODED,
@@ -261,7 +261,7 @@ public class DropZoneTag extends ModelTag {
      * builds the list of tag attributes for the wrapping tag
      */
     @Override
-    protected void collectAttributes(Map<String, String> attributeSet) {
+    protected void collectAttributes(Map<String, Object> attributeSet) {
         String cssClasses = buildCssClasses();
         if (StringUtils.isNotBlank(cssClasses)) {
             attributeSet.put("class", cssClasses);

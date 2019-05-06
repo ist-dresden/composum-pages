@@ -30,9 +30,9 @@ public class ElementTypeSelect extends RadioGroup implements WidgetModel {
     }
 
     @Override
-    public String filterWidgetAttribute(String attributeKey, String attributeValue) {
+    public String filterWidgetAttribute(String attributeKey, Object attributeValue) {
         if (ATTR_CONTAINER.equals(attributeKey)) {
-            containerRef = attributeValue;
+            containerRef = (String) attributeValue;
             return null;
         }
         return attributeKey;

@@ -143,12 +143,12 @@ public class EditWidgetTag extends AbstractWidgetTag implements LoopTag {
     }
 
     @Override
-    protected void collectAttributes(Map<String, String> attributeSet) {
+    protected void collectAttributes(Map<String, Object> attributeSet) {
         collectDynamicAttributes(attributeSet);
     }
 
     @Override
-    protected void useDynamicAttribute(Map<String, String> attributeSet, String key, String value) {
+    protected void useDynamicAttribute(Map<String, Object> attributeSet, String key, Object value) {
         Object model = getModel();
         if (model instanceof WidgetModel) {
             String widgetKey = ((WidgetModel) model).filterWidgetAttribute(key, value);
@@ -227,6 +227,7 @@ public class EditWidgetTag extends AbstractWidgetTag implements LoopTag {
             cssBase = DEFAULT_CSS_BASE;
         }
         super.doStartTag();
+        getAttributes(); // ensure that all attributes are processed before body rendering
         return SKIP_BODY;
     }
 

@@ -71,6 +71,24 @@
                 sling:key="restore the selected version ot the current page"
                 sling:message="Wiederherstellen der selektieren Version der aktuellen Seite"/>
 
+        <Page-References
+                jcr:primaryType="sling:MessageEntry"
+                sling:key="Page References"
+                sling:message="Seitenverweise"/>
+        <Page-References-hint jcr:primaryType="sling:MessageEntry"
+                sling:key="select unresolved page references for activation"
+                sling:message="Auswahl offener Seitenverweise zur gleichzeitigen Aktivierung"/>
+        <Asset-References
+                jcr:primaryType="sling:MessageEntry"
+                sling:key="Asset References"
+                sling:message="referenzierte Assets"/>
+        <Asset-References-hint jcr:primaryType="sling:MessageEntry"
+                sling:key="select unresolved assets references for activation"
+                sling:message="Auswahl offener Asset-Referenzen zur gleichzeitigen Aktivierung"/>
+        <activate-references-hint jcr:primaryType="sling:MessageEntry"
+                sling:key="The elements listed above are referenced by this page and not part of the designated release (probaly modified but not activated yet). All selected references will be activated together with this page."
+                sling:message="Die oben angezeigten Elemente werden durch diese Seite referenziert und sind nicht im vorgesehenen Release enthalten (möglichweise geändert und nicht aktiviert). Alle selektierten Referenzen werden zusammen mit dieser Seite aktiviert."/>
+
     </versions>
     <site jcr:primaryType="sling:Folder"><!-- Site actions -->
 
