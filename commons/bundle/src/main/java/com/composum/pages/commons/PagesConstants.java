@@ -220,4 +220,6 @@ public interface PagesConstants {
             return null;
         }
     }
+
+    enum ReferenceType {page, asset}
 }

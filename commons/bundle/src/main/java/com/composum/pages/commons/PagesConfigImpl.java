@@ -5,6 +5,7 @@
  */
 package com.composum.pages.commons;
 
+import com.composum.pages.commons.PagesConstants.ReferenceType;
 import com.composum.pages.commons.filter.SitePageFilter;
 import com.composum.pages.commons.model.Site;
 import com.composum.pages.commons.service.SiteManager;
@@ -104,9 +105,14 @@ public class PagesConfigImpl implements PagesConfiguration {
         String replicationRootFilterRule() default "Path(-'^/(public|preview)')";
 
         @AttributeDefinition(
-                description = "the filter configuration for page resources"
+                description = "the filter configuration for page resources (reference type 'page')"
         )
         String pageFilterRule() default "PrimaryType(+'^cpp:Page$')";
+
+        @AttributeDefinition(
+                description = "the filter configuration for asset resources (reference type 'asset')"
+        )
+        String assetFilterRule() default "PrimaryType(+'^(cpp:Asset|nt:file)$')";
     }
 
     private ResourceFilter siteNodeFilter;
@@ -207,6 +213,21 @@ public class PagesConfigImpl implements PagesConfiguration {
         return filter;
     }
 
+    protected ResourceFilter pageFilter;
+    protected ResourceFilter assetFilter;
+
+    @Nonnull
+    @Override
+    public ResourceFilter getReferenceFilter(@Nonnull ReferenceType type) {
+        switch (type) {
+            case asset:
+                return assetFilter;
+            case page:
+            default:
+                return pageFilter;
+        }
+    }
+
     protected SiteManager getSiteManager() {
         if (siteManager == null) {
             siteManager = (SiteManager) bundleContext.getService(
@@ -259,7 +280,8 @@ public class PagesConfigImpl implements PagesConfiguration {
         ResourceFilter devIntermediateFilter = ResourceFilterMapping.fromString(config.devIntermediateFilterRule());
         develomentTreeFilter = buildTreeFilter(
                 ResourceFilterMapping.fromString(config.develomentTreeFilterRule()), devIntermediateFilter);
-        ResourceFilter pageFilter = ResourceFilterMapping.fromString(config.pageFilterRule());
+        pageFilter = ResourceFilterMapping.fromString(config.pageFilterRule());
+        assetFilter = ResourceFilterMapping.fromString(config.assetFilterRule());
         pageFilters = new HashMap<>();
         pageFilters.put(PAGE_FILTER_SITE, pageFilter);
         pageFilters.put(PAGE_FILTER_ALL, pageFilter);

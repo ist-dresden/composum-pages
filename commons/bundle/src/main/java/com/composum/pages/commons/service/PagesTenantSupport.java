@@ -11,6 +11,12 @@ import java.util.Map;
 public interface PagesTenantSupport {
 
     /**
+     * @return the tenant of the resource
+     */
+    @Nullable
+    String getTenantId(@Nonnull Resource resource);
+
+    /**
      * @return the list of id/tenant pairs of the joined tenants in the context of the current request
      */
     @Nonnull

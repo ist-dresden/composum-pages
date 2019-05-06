@@ -1,5 +1,6 @@
 package com.composum.pages.commons;
 
+import com.composum.pages.commons.PagesConstants.ReferenceType;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.filter.ResourceFilter;
 import org.apache.sling.api.SlingHttpServletRequest;
@@ -44,5 +45,8 @@ public interface PagesConfiguration {
     ResourceFilter getReplicationRootFilter();
 
     @Nullable
-    public ResourceFilter getPageFilter(@Nonnull BeanContext context, @Nonnull String key);
+    ResourceFilter getPageFilter(@Nonnull BeanContext context, @Nonnull String key);
+
+    @Nonnull
+    ResourceFilter getReferenceFilter(@Nonnull ReferenceType type);
 }
