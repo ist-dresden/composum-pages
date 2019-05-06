@@ -41,6 +41,9 @@
             reload: function () {
                 delete this.$icon;
                 delete this.popover;
+                if (pages.contextTools.log.getLevel() <= log.levels.DEBUG) {
+                    pages.contextTools.log.debug('status.reload(' + pages.current.page + ')');
+                }
                 if (pages.current.page) {
                     var u = tools.const.pageStatus.uri;
                     core.getHtml(u.base + u._.release + pages.current.page, _.bind(function (content) {
