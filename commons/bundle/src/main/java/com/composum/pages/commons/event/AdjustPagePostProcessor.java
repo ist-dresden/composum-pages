@@ -11,27 +11,17 @@ import org.apache.sling.servlets.post.Modification;
 import org.apache.sling.servlets.post.SlingPostProcessor;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 /**
- * adjust type of column containers created on demand (include of synthetic column component)
+ * adjust 'jcr:lastModified' of the containing page on element modification
  */
 @Component
 public class AdjustPagePostProcessor implements SlingPostProcessor {
-
-    private static final Logger LOG = LoggerFactory.getLogger(AdjustPagePostProcessor.class);
-
-    public static final String RESOURCE_TYPE_ROW = "composum/pages/components/container/row";
-    public static final String RESOURCE_TYPE_COLUMN = "composum/pages/components/container/row/column";
-
-    public static final String COLUMN_BASE_NAME = "column-";
 
     @Reference
     protected PageManager pageManager;
@@ -45,21 +35,18 @@ public class AdjustPagePostProcessor implements SlingPostProcessor {
             registerPage(context, modifiedPages, modification.getSource());
             registerPage(context, modifiedPages, modification.getDestination());
         }
-        Calendar now = new GregorianCalendar();
-        now.setTimeInMillis(System.currentTimeMillis());
+        Calendar now = Calendar.getInstance();
         for (Page page : modifiedPages) {
             pageManager.touch(context, page, now, false);
         }
     }
 
-    protected void registerPage (BeanContext context, Set<Page> pageSet , String path) {
+    protected void registerPage(BeanContext context, Set<Page> pageSet, String path) {
         if (StringUtils.isNotBlank(path)) {
-            Resource resource = context.getResolver().getResource(path);
-            if (resource != null) {
-                Page page = pageManager.getContainingPage(context, resource);
-                if (page != null) {
-                    pageSet.add(page);
-                }
+            Resource resource = context.getResolver().resolve(path); // probably deleted
+            Page page = pageManager.getContainingPage(context, resource);
+            if (page != null) {
+                pageSet.add(page);
             }
         }
     }

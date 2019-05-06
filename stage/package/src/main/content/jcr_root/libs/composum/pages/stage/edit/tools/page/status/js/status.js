@@ -31,6 +31,10 @@
                 var e = pages.const.event;
                 $(document).on(e.page.state + '.' + id, _.bind(this.reload, this));
                 $(document).on(e.page.changed + '.' + id, _.bind(this.reload, this));
+                $(document).on(e.element.inserted + '.' + id, _.bind(this.reload, this));
+                $(document).on(e.element.changed + '.' + id, _.bind(this.reload, this));
+                $(document).on(e.element.moved + '.' + id, _.bind(this.reload, this));
+                $(document).on(e.element.deleted + '.' + id, _.bind(this.reload, this));
                 this.reload();
             },
 
