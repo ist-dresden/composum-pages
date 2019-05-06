@@ -20,7 +20,7 @@ public class CodeArea extends PropertyEditHandle<String> implements WidgetModel 
     }
 
     @Override
-    public String filterWidgetAttribute(String attributeKey, String attributeValue) {
+    public String filterWidgetAttribute(String attributeKey, Object attributeValue) {
         if (LANGUAGE_ATTR.equals(attributeKey) || DATA_LANGUAGE_ATTR.equals(attributeKey)) {
             return DATA_LANGUAGE_ATTR;
         }

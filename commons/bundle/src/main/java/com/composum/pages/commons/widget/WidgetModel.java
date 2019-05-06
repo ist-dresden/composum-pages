@@ -13,5 +13,5 @@ public interface WidgetModel {
      * @return the attribute key for the widget tag (or the tag template) to use the attribute value;
      * return 'null' is the tag should not use the attribute (used by the model only)
      */
-    String filterWidgetAttribute(String attributeKey, String attributeValue);
+    String filterWidgetAttribute(String attributeKey, Object attributeValue);
 }
