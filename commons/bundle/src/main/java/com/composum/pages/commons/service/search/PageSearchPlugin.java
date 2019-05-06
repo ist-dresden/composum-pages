@@ -33,6 +33,7 @@ import java.util.Set;
 import static com.composum.pages.commons.PagesConstants.NODE_TYPE_PAGE;
 import static com.composum.pages.commons.PagesConstants.NODE_TYPE_PAGE_CONTENT;
 import static com.composum.pages.commons.service.search.SearchService.SELECTOR_PAGE;
+import static com.composum.pages.commons.service.search.SearchUtil.nameAndTextCondition;
 import static com.composum.sling.platform.staging.query.Query.COLUMN_PATH;
 import static com.composum.sling.platform.staging.query.Query.COLUMN_SCORE;
 import static com.composum.sling.platform.staging.query.Query.JoinCondition.Descendant;
@@ -66,6 +67,7 @@ public class PageSearchPlugin extends AbstractSearchPlugin {
         return selectors.startsWith(SELECTOR_PAGE) ? 9 : 0;
     }
 
+    @Nonnull
     @Override
     protected ResourceFilter getTargetFilter() {
         return TARGET_FILTER;
@@ -73,56 +75,14 @@ public class PageSearchPlugin extends AbstractSearchPlugin {
 
     @Nonnull
     @Override
-    public List<SearchService.Result> search(@Nonnull final BeanContext context, @Nonnull final String root,
-                                             @Nonnull final String searchExpression, @Nullable final ResourceFilter filter,
-                                             final int offset, @Nullable final Integer limit)
-            throws RepositoryException, SearchTermParseException {
-        if (isBlank(searchExpression)) throw new SearchTermParseException(Kind.Empty,
-                searchExpression, searchExpression);
-        final Set<String> positiveTerms = new SearchtermParser(searchExpression).getPositiveSearchterms();
-        if (positiveTerms.isEmpty()) throw new SearchTermParseException(Kind.NoPositivePhrases,
-                searchExpression, searchExpression);
-        final ResourceFilter searchFilter = filter != null ? filter : new SearchPageFilter(context);
-
-        SearchService.LimitedQuery limitedQuery = new SearchService.LimitedQuery() {
-            @Override
-            public Pair<Boolean, List<SearchService.Result>> execQuery(int matchLimit) throws RepositoryException {
-                Query q = context.getResolver().adaptTo(QueryBuilder.class).createQuery();
-                q.path(root).type(NODE_TYPE_PAGE_CONTENT).orderBy(JCR_SCORE).descending();
-                QueryConditionDsl.QueryCondition matchJoin = q.joinConditionBuilder()
-                        .contains(StringUtils.join(positiveTerms, " OR "));
-                q.condition(q.conditionBuilder().contains(searchExpression));
-                q.join(LeftOuter, Descendant, matchJoin);
-                q.limit(matchLimit);
-                final int neededResults = null != limit ? offset + limit : Integer.MAX_VALUE;
-
-                List<SearchService.Result> results = new ArrayList<>();
-                Map<String, SubmatchResultImpl> targetToResultMap = new HashMap<>();
-                Iterable<QueryValueMap> rows = q.selectAndExecute(COLUMN_PATH, COLUMN_SCORE,
-                        matchJoin.joinSelector(COLUMN_PATH));
-                int rowcount = 0;
-
-                for (QueryValueMap row : rows) {
-                    rowcount++;
-                    String path = row.get(COLUMN_PATH, String.class);
-                    SubmatchResultImpl result = targetToResultMap.get(path);
-                    if (null == result) {
-                        result = new SubmatchResultImpl(context, row.getResource().getParent(),
-                                row.get(COLUMN_SCORE, Float.class),
-                                new ArrayList<>(Arrays.asList(row.getResource())),
-                                searchExpression, positiveTerms);
-                        targetToResultMap.put(path, result);
-                        if (searchFilter.accept(result.getTarget())) {
-                            if (results.size() >= neededResults) return Pair.of(true, results);
-                            results.add(result);
-                        }
-                    }
-                    Resource match = row.getJoinResource(matchJoin.getSelector());
-                    if (null != match) result.getMatches().add(match);
-                }
-                return Pair.of(rowcount < matchLimit, results);
-            }
-        };
-        return searchService.executeQueryWithRaisingLimits(limitedQuery, offset, limit);
+    protected ResourceFilter getDefaultTargetAcceptFilter(BeanContext context) {
+        return new SearchPageFilter(context);
     }
+
+    @Override
+    protected void buildQuery(Query query, String root, String searchExpression) {
+        super.buildQuery(query, root, searchExpression);
+        query.type(NODE_TYPE_PAGE_CONTENT);
+    }
+
 }

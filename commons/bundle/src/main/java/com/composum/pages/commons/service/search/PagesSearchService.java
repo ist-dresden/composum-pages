@@ -9,12 +9,7 @@ import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.filter.ResourceFilter;
 import org.apache.commons.lang3.tuple.Pair;
 import org.osgi.framework.Constants;
-import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Modified;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
+import org.osgi.service.component.annotations.*;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
@@ -109,6 +104,7 @@ public class PagesSearchService implements SearchService {
         plugin.setService(null);
     }
 
+    /** Returns list of matching plugins sorted ascending by their rating, so that the plugin with best rating is last. */
     protected List<SearchPlugin> getMatchingPlugins(String selectors) {
         List<SearchPlugin> result = new ArrayList<>();
         for (SearchPlugin plugin : searchPlugins) {
