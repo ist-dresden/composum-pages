@@ -54,6 +54,7 @@
 
             initialize: function (options) {
                 var c = tools.const.versions;
+                this.id = this.$el.data('id');
                 this.name = this.$('.' + c.cssBase + c.version + c._name).text();
                 this.time = this.$('.' + c.cssBase + c.version + c._time).text();
                 this.timeHint = c.timeHint.exec(this.time)[1];
@@ -334,10 +335,10 @@
                     var primary = undefined;
                     var secondary = undefined;
                     if (this.mainSelection) {
-                        primary = this.mainSelection.name;
+                        primary = this.mainSelection.id;
                     }
                     if (this.sndySelection) {
-                        secondary = this.sndySelection.name;
+                        secondary = this.sndySelection.id;
                     }
                     pages.versionsView.showVersions(path, primary, secondary);
                     this.actions.$viewAction.addClass('active');

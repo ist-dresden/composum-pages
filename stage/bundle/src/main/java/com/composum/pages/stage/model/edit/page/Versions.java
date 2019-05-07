@@ -36,6 +36,15 @@ public class Versions extends PageModel {
             this.version = version;
         }
 
+        public String getId() {
+            try {
+                return version.getIdentifier();
+            } catch (RepositoryException rex) {
+                LOG.error(rex.getMessage(), rex);
+                return null;
+            }
+        }
+
         public String getName() {
             try {
                 return version.getName();
