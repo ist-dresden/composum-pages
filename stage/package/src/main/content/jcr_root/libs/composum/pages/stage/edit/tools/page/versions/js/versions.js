@@ -37,6 +37,7 @@
                 activateAction: 'activate',
                 deactivateAction: 'deactivate',
                 checkpointAction: 'checkpoint',
+                menuKey: '_menu',
                 purgeAction: 'purge',
                 checkInAction: 'check-in',
                 checkOutAction: 'check-out',
@@ -82,10 +83,17 @@
                 this.$activateAction = this.$('.' + c.cssBase + c.actionKey + c.activateAction);
                 this.$deactivateAction = this.$('.' + c.cssBase + c.actionKey + c.deactivateAction);
                 this.$checkpointAction = this.$('.' + c.cssBase + c.actionKey + c.checkpointAction);
+                this.$moreMenu = this.$('.' + c.cssBase + c.menuKey);
                 this.$purgeAction = this.$('.' + c.cssBase + c.actionKey + c.purgeAction);
                 this.$checkInAction = this.$('.' + c.cssBase + c.actionKey + c.checkInAction);
                 this.$checkOutAction = this.$('.' + c.cssBase + c.actionKey + c.checkOutAction);
                 this.$restoreAction = this.$('.' + c.cssBase + c.actionKey + c.restoreAction);
+                this.right = [
+                    this.$activateAction,
+                    this.$deactivateAction,
+                    this.$checkpointAction,
+                    this.$moreMenu
+                ];
                 this.$viewAction.click(_.bind(this.toggleView, this));
                 this.$activateAction.click(_.bind(this.activatePage, this));
                 this.$deactivateAction.click(_.bind(this.deactivatePage, this));
@@ -323,12 +331,19 @@
             },
 
             toggleVersionsView: function () {
+                var c = tools.const.versions;
                 if (this.versionsVisible) {
                     this.versionsVisible = false;
                     pages.versionsView.reset();
                     this.actions.$viewAction.removeClass('active');
                     this.contextTabs.lockTabs(false);
+                    this.actions.right.forEach(function ($el) {
+                        $el.prop(c.disabled, false);
+                    });
                 } else {
+                    this.actions.right.forEach(function ($el) {
+                        $el.prop(c.disabled, true);
+                    });
                     this.contextTabs.lockTabs(true);
                     this.versionsVisible = true;
                     var path = this.data.path;

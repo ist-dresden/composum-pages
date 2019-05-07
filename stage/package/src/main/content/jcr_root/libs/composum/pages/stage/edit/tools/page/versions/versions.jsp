@@ -35,7 +35,7 @@
             </div>
             <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
                 <button type="button"
-                        class="fa fa-navicon composum-pages-tools_button btn btn-default dropdown-toggle"
+                        class="fa fa-navicon ${versionsCssBase}_menu composum-pages-tools_button btn btn-default dropdown-toggle"
                         data-toggle="dropdown" title="More actions..."><span
                         class="composum-pages-tools_button-label">More...</span></button>
                 <ul class="composum-pages-stage-edit-toolbar_more composum-pages-tools_menu dropdown-menu" role="menu">
