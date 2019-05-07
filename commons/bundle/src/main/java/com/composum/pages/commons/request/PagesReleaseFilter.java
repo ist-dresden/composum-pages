@@ -4,8 +4,8 @@ import com.composum.pages.commons.model.Site;
 import com.composum.pages.commons.replication.PagesReplicationConfig;
 import com.composum.pages.commons.replication.ReplicationManager;
 import com.composum.pages.commons.service.SiteManager;
-import com.composum.sling.core.BeanContext;
 import com.composum.pages.commons.util.LinkUtil;
+import com.composum.sling.core.BeanContext;
 import com.composum.sling.platform.security.AccessMode;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
@@ -16,7 +16,6 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
@@ -53,8 +52,7 @@ import static com.composum.sling.platform.staging.impl.ResourceResolverChangeFil
                 Constants.SERVICE_DESCRIPTION + "=Composum Pages Release Filter",
                 "sling.filter.scope=REQUEST",
                 "service.ranking:Integer=" + 5070
-        },
-        configurationPolicy = ConfigurationPolicy.REQUIRE
+        }
 )
 @Designate(ocd = PagesReleaseFilter.Config.class)
 public class PagesReleaseFilter implements Filter {
@@ -66,40 +64,42 @@ public class PagesReleaseFilter implements Filter {
     public static final String ATTR_CACHE_DISABLED = "com.composum.platform.cache.component.ComponentCacheService#cacheDisabled";
 
     @ObjectClassDefinition(
-            name = "Composum Platform Release Filter Configuration"
+            name = "Composum Pages Release Filter Configuration"
     )
     @interface Config {
 
         @AttributeDefinition(
-                name = "release.filter.enabled",
+                name = "enabled",
                 description = "the on/off switch for the Release Filter"
         )
-        boolean enabled() default true;
+        boolean release_filter_enabled() default true;
 
         @AttributeDefinition(
-                name = "unreleased.host.allow",
+                name = "unreleased Hosts",
                 description = "the hostname patterns for general (unreleased) artifacts"
         )
-        String[] ignoredHostPatterns() default {};
+        String[] unreleased_host_allow() default {};
 
         @AttributeDefinition(
-                name = "unreleased.uri.allow",
+                name = "unreleased URIs",
                 description = "the URI patterns for general (unreleased) artifacts"
         )
-        String[] ignoredUriPatterns() default {
+        String[] unreleased_uri_allow() default {
                 "^/(apps|libs)/.*\\.(css|js|jpg|jpeg|gif|png|ttf|woff)$",
                 "^/bin/public/clientlibs\\.(min\\.)?(css|js)(/.*)?$",
                 "^/j_security_check$"
         };
 
         @AttributeDefinition(
-                name = "unreleased.path.allow",
+                name = "unreleased Paths",
                 description = "the path patterns for general (unreleased) artifacts"
         )
-        String[] ignoredPathPatterns() default {"^/(apps|libs)/.*\\.(css|js|jpg|jpeg|gif|png|ttf|woff)$",
+        String[] unreleased_path_allow() default {
+                "^/(apps|libs)/.*\\.(css|js|jpg|jpeg|gif|png|ttf|woff)$",
                 "^/libs/sling/servlet/errorhandler/.*$",
                 "^/libs/(themes|fonts|jslibs|composum|sling)/.*$",
-                "^/libs(/composum/platform/security)?/login.*$"};
+                "^/libs(/composum/platform/security)?/login.*$"
+        };
     }
 
     private PagesReleaseFilter.Config config;
@@ -136,7 +136,7 @@ public class PagesReleaseFilter implements Filter {
                          FilterChain chain)
             throws IOException, ServletException {
 
-        if (config.enabled()) {
+        if (config.release_filter_enabled()) {
             String release = null;
 
             SlingHttpServletRequest slingRequest = (SlingHttpServletRequest) request;
@@ -329,15 +329,15 @@ public class PagesReleaseFilter implements Filter {
     public void activate(final PagesReleaseFilter.Config config) {
         this.config = config;
         ignoredHostPatterns = new ArrayList<>();
-        for (String rule : PropertiesUtil.toStringArray(config.ignoredHostPatterns())) {
+        for (String rule : PropertiesUtil.toStringArray(config.unreleased_host_allow())) {
             if (StringUtils.isNotBlank(rule = rule.trim())) ignoredHostPatterns.add(Pattern.compile(rule));
         }
         ignoredUriPatterns = new ArrayList<>();
-        for (String rule : PropertiesUtil.toStringArray(config.ignoredUriPatterns())) {
+        for (String rule : PropertiesUtil.toStringArray(config.unreleased_uri_allow())) {
             if (StringUtils.isNotBlank(rule = rule.trim())) ignoredUriPatterns.add(Pattern.compile(rule));
         }
         ignoredPathPatterns = new ArrayList<>();
-        for (String rule : PropertiesUtil.toStringArray(config.ignoredPathPatterns())) {
+        for (String rule : PropertiesUtil.toStringArray(config.unreleased_path_allow())) {
             if (StringUtils.isNotBlank(rule = rule.trim())) ignoredPathPatterns.add(Pattern.compile(rule));
         }
     }

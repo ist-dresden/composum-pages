@@ -112,7 +112,7 @@
                     this.$viewAction.prop(c.disabled, true);
                 }
                 if (this.versions.state.checkedOut) {
-                    this.$checkpointAction.prop(c.disabled, false);
+                    this.$checkpointAction.prop(c.disabled, this.versions.versionsVisible);
                     this.$checkOutAction.addClass(c.hidden);
                     this.$checkInAction.removeClass(c.hidden);
                 } else {
@@ -282,7 +282,7 @@
                     this.mainSelection = version;
                     this.mainSelection.$el.addClass(tools.const.versions.selectedMain);
                     if (this.versionsVisible) {
-                        pages.versionsView.mainView.view(this.data.path, version.name);
+                        pages.versionsView.mainView.view(this.data.path, version.id);
                     }
                 }
                 this.showSelection();
@@ -299,7 +299,7 @@
                     this.sdrySelection = version;
                     this.sdrySelection.$el.addClass(tools.const.versions.selectedSecondary);
                     if (this.versionsVisible) {
-                        pages.versionsView.sdryView.view(this.data.path, version.name);
+                        pages.versionsView.sdryView.view(this.data.path, version.id);
                     }
                 }
                 this.showSelection();
