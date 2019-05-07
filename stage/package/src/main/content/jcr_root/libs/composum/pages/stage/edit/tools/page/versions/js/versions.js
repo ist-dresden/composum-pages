@@ -61,7 +61,7 @@
                 this.$mainSelector = this.$('.' + c.cssBase + c.selectionMain);
                 this.$sdrySelector = this.$('.' + c.cssBase + c.selectionSecondary);
                 this.$mainSelector.click(_.bind(this.toggleMainSelection, this));
-                this.$sdrySelector.click(_.bind(this.toggleSndySelection, this));
+                this.$sdrySelector.click(_.bind(this.toggleSdrySelection, this));
             },
 
             toggleMainSelection: function (event) {
@@ -69,9 +69,9 @@
                 this.versions.toggleMainSelection(this);
             },
 
-            toggleSndySelection: function (event) {
+            toggleSdrySelection: function (event) {
                 event.preventDefault();
-                this.versions.toggleSndySelection(this);
+                this.versions.toggleSdrySelection(this);
             }
         });
 
@@ -280,7 +280,7 @@
                 this.showSelection();
             },
 
-            toggleSndySelection: function (version) {
+            toggleSdrySelection: function (version) {
                 this.$versionList.removeClass(tools.const.versions.selectedSecondary);
                 if (this.sdrySelection === version) {
                     this.sdrySelection = undefined;
