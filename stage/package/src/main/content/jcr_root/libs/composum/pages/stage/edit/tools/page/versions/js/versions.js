@@ -59,9 +59,9 @@
                 this.time = this.$('.' + c.cssBase + c.version + c._time).text();
                 this.timeHint = c.timeHint.exec(this.time)[1];
                 this.$mainSelector = this.$('.' + c.cssBase + c.selectionMain);
-                this.$sndySelector = this.$('.' + c.cssBase + c.selectionSecondary);
+                this.$sdrySelector = this.$('.' + c.cssBase + c.selectionSecondary);
                 this.$mainSelector.click(_.bind(this.toggleMainSelection, this));
-                this.$sndySelector.click(_.bind(this.toggleSndySelection, this));
+                this.$sdrySelector.click(_.bind(this.toggleSndySelection, this));
             },
 
             toggleMainSelection: function (event) {
@@ -195,7 +195,7 @@
             initialize: function (options) {
                 var c = tools.const.versions;
                 this.$mainSelection = this.$('.' + c.cssBase + c.mainSelection);
-                this.$sndySelection = this.$('.' + c.cssBase + c.secondarySelection);
+                this.$sdrySelection = this.$('.' + c.cssBase + c.secondarySelection);
                 this.$slider = this.$('.' + c.cssBase + c.slider.cssKey);
                 this.$versionContent = this.$('.' + c.cssBase + c.content);
                 this.actions = core.getWidget(this.el, '.' + c.actions, tools.VersionsActions);
@@ -224,7 +224,7 @@
                     }
                     this.currentVersion = undefined;
                     this.mainSelection = undefined;
-                    this.sndySelection = undefined;
+                    this.sdrySelection = undefined;
                     this.$slider.slider('disable');
                     core.ajaxGet(c.versionContentUri + this.contextTabs.reference.path, {},
                         undefined, undefined, _.bind(function (data) {
@@ -252,7 +252,7 @@
             },
 
             setComparable: function () {
-                if (this.mainSelection && this.sndySelection && this.mainSelection !== this.sndySelection) {
+                if (this.mainSelection && this.sdrySelection && this.mainSelection !== this.sdrySelection) {
                     this.$el.addClass(tools.const.versions.versionsComparable);
                     this.$slider.slider('enable');
                     pages.versionsView.mainView.setOpacity(100 - this.$slider.slider('getValue'));
@@ -282,16 +282,16 @@
 
             toggleSndySelection: function (version) {
                 this.$versionList.removeClass(tools.const.versions.selectedSecondary);
-                if (this.sndySelection === version) {
-                    this.sndySelection = undefined;
+                if (this.sdrySelection === version) {
+                    this.sdrySelection = undefined;
                     if (this.versionsVisible) {
-                        pages.versionsView.sndyView.reset();
+                        pages.versionsView.sdryView.reset();
                     }
                 } else {
-                    this.sndySelection = version;
-                    this.sndySelection.$el.addClass(tools.const.versions.selectedSecondary);
+                    this.sdrySelection = version;
+                    this.sdrySelection.$el.addClass(tools.const.versions.selectedSecondary);
                     if (this.versionsVisible) {
-                        pages.versionsView.sndyView.view(this.data.path, version.name);
+                        pages.versionsView.sdryView.view(this.data.path, version.name);
                     }
                 }
                 this.showSelection();
@@ -300,7 +300,7 @@
             showSelection: function () {
                 var c = tools.const.versions;
                 this.showSelectionValues(this.$mainSelection, this.mainSelection, c.mainAvailable);
-                this.showSelectionValues(this.$sndySelection, this.sndySelection);
+                this.showSelectionValues(this.$sdrySelection, this.sdrySelection);
                 this.actions.setActionsState();
                 this.setComparable();
             },
@@ -337,8 +337,8 @@
                     if (this.mainSelection) {
                         primary = this.mainSelection.id;
                     }
-                    if (this.sndySelection) {
-                        secondary = this.sndySelection.id;
+                    if (this.sdrySelection) {
+                        secondary = this.sdrySelection.id;
                     }
                     pages.versionsView.showVersions(path, primary, secondary);
                     this.actions.$viewAction.addClass('active');
