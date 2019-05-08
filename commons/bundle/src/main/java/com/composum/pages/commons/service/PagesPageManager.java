@@ -8,11 +8,11 @@ import com.composum.pages.commons.model.ContentTypeFilter;
 import com.composum.pages.commons.model.Model;
 import com.composum.pages.commons.model.Page;
 import com.composum.pages.commons.model.PageContent;
+import com.composum.pages.commons.replication.ReplicationManager;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.filter.StringFilter;
 import com.composum.sling.core.util.ResourceUtil;
-import com.composum.sling.platform.staging.StagingReleaseManager;
 import com.composum.sling.platform.staging.versions.PlatformVersionsService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
@@ -73,6 +73,9 @@ public class PagesPageManager extends PagesContentManager<Page> implements PageM
 
     @Reference
     protected ResourceManager resourceManager;
+
+    @Reference
+    protected ReplicationManager replicationManager;
 
     @Reference
     protected PlatformVersionsService versionsService;
@@ -283,7 +286,7 @@ public class PagesPageManager extends PagesContentManager<Page> implements PageM
     @Nonnull
     public Collection<Resource> getReferrers(@Nonnull final Page page, @Nonnull final Resource searchRoot, boolean resolved) {
         Map<String, Resource> referrers = new TreeMap<>();
-        ResourceFilter resolvedInReleaseFilter = versionsService.releaseVersionablesAsResourceFilter(searchRoot, null);
+        ResourceFilter resolvedInReleaseFilter = versionsService.releaseAsResourceFilter(searchRoot, null, replicationManager);
         StringFilter propertyFilter = StringFilter.ALL;
         List<Resource> referringResources = new ArrayList<>();
         resourceManager.changeReferences(resolvedInReleaseFilter, propertyFilter, searchRoot, referringResources,
@@ -310,7 +313,7 @@ public class PagesPageManager extends PagesContentManager<Page> implements PageM
     public Collection<Resource> getReferences(@Nonnull final Page page, @Nullable final ReferenceType type,
                                               boolean unresolved) {
         Map<String, Resource> references = new TreeMap<>();
-        ResourceFilter resolvedInReleaseFilter = versionsService.releaseVersionablesAsResourceFilter(page.getResource(), null);
+        ResourceFilter resolvedInReleaseFilter = versionsService.releaseAsResourceFilter(page.getResource(), null, replicationManager);
         ResourceFilter unresolvedFilter = new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.none, resolvedInReleaseFilter);
         ResourceFilter resourceFilter = type != null
                 ? new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.and,
