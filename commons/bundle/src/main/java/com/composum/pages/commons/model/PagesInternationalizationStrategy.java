@@ -18,7 +18,7 @@ import java.util.Locale;
  */
 public class PagesInternationalizationStrategy extends InternationalizationStrategy.I18NFOLDER {
 
-    // FIXME @Override
+    @Override
     protected Locale getLocale(BeanContext beanContext, SlingHttpServletRequest request, Locale locale) {
         return request != null ? request.adaptTo(PagesLocale.class).getLocale() : null;
     }

@@ -113,7 +113,7 @@ public abstract class AbstractSearchPlugin implements SearchPlugin {
                         SubmatchResultImpl result = targetToResultMap.get(target.getPath());
                         if (null == result) {
                             result = new SubmatchResultImpl(context, target, row.get(COLUMN_SCORE, Float.class),
-                                    Collections.singletonList(row.getResource()),
+                                    new ArrayList<>(),
                                     searchExpression, positiveTerms);
                             targetToResultMap.put(target.getPath(), result);
                             if (results.size() >= neededResults) return Pair.of(true, results);
