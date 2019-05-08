@@ -59,6 +59,7 @@ body {
         &_secondary {
             position: fixed;
             background: transparent;
+            pointer-events: none;
 
             &.hidden {
                 display: none;

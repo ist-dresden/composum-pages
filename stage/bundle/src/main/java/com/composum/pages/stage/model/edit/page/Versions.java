@@ -41,8 +41,23 @@ public class Versions extends PageModel {
                 return version.getIdentifier();
             } catch (RepositoryException rex) {
                 LOG.error(rex.getMessage(), rex);
-                return null;
+                return "";
             }
+        }
+
+        public String getRelease() {
+            try {
+                String[] versionLabels = versionHistory.getVersionLabels(version);
+                for (String label : versionLabels) {
+                    Matcher matcher = PagesConstants.RELEASE_LABEL_PATTERN.matcher(label);
+                    if (matcher.matches()) {
+                        return matcher.group(1);
+                    }
+                }
+            } catch (RepositoryException rex) {
+                LOG.error(rex.getMessage(), rex);
+            }
+            return "";
         }
 
         public String getName() {

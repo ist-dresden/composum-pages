@@ -8,7 +8,7 @@
                tagName="none" cssBase="composum-pages-stage-edit-tools-page-versions">
     <ul class="${versionsCssBase}_version-list">
         <c:forEach items="${versions.versionList}" var="version">
-            <li class="${versionsCssBase}_version" data-id="${version.id}">
+            <li class="${versionsCssBase}_version" data-version="${version.id}" data-release="${version.release}">
                 <div class="${versionsCssBase}_version-head">
                     <span class="${versionsCssBase}_version-name">${version.name}</span>
                     <span class="${versionsCssBase}_version-time">${version.time}</span>

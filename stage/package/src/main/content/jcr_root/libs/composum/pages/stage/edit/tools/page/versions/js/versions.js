@@ -55,7 +55,8 @@
 
             initialize: function (options) {
                 var c = tools.const.versions;
-                this.id = this.$el.data('id');
+                this.id = this.$el.data('version');
+                this.release = this.$el.data('release');
                 this.name = this.$('.' + c.cssBase + c.version + c._name).text();
                 this.time = this.$('.' + c.cssBase + c.version + c._time).text();
                 this.timeHint = c.timeHint.exec(this.time)[1];
@@ -282,7 +283,10 @@
                     this.mainSelection = version;
                     this.mainSelection.$el.addClass(tools.const.versions.selectedMain);
                     if (this.versionsVisible) {
-                        pages.versionsView.mainView.view(this.data.path, version.id);
+                        pages.versionsView.mainView.view(this.data.path, {
+                            release: version.release,
+                            version: version.id
+                        });
                     }
                 }
                 this.showSelection();
@@ -299,7 +303,10 @@
                     this.sdrySelection = version;
                     this.sdrySelection.$el.addClass(tools.const.versions.selectedSecondary);
                     if (this.versionsVisible) {
-                        pages.versionsView.sdryView.view(this.data.path, version.id);
+                        pages.versionsView.sdryView.view(this.data.path, {
+                            release: version.release,
+                            version: version.id
+                        });
                     }
                 }
                 this.showSelection();
@@ -350,10 +357,16 @@
                     var primary = undefined;
                     var secondary = undefined;
                     if (this.mainSelection) {
-                        primary = this.mainSelection.id;
+                        primary = {
+                            release: this.mainSelection.release,
+                            version: this.mainSelection.id
+                        };
                     }
                     if (this.sdrySelection) {
-                        secondary = this.sdrySelection.id;
+                        secondary = {
+                            release: this.sdrySelection.release,
+                            version: this.sdrySelection.id
+                        };
                     }
                     pages.versionsView.showVersions(path, primary, secondary);
                     this.actions.$viewAction.addClass('active');
