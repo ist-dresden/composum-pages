@@ -11,7 +11,7 @@ import javax.annotation.Nonnull;
 /**
  * accepts resources of allowed element types of a container instance
  */
-public class ElementFilter implements ResourceFilter {
+public class ElementFilter extends ResourceFilter.AbstractResourceFilter {
 
     protected final ResourceManager resourceManager;
     protected final ElementTypeFilter typeFilter;

@@ -111,7 +111,7 @@ public class ToolsCollection {
         }
     }
 
-    public class ToolsFilter implements ResourceFilter {
+    public class ToolsFilter extends ResourceFilter.AbstractResourceFilter {
 
         @Override
         public boolean accept(Resource resource) {
