@@ -15,7 +15,7 @@
                 </div>
                 <cpn:text tagName="div" class="${versionsCssBase}_version-labels">${version.labelsString}</cpn:text>
                 <div class="${versionsCssBase}_selection">
-                    <div class="${versionsCssBase}_selection-main">
+                    <div class="${versionsCssBase}_selection-primary">
                     </div>
                     <div class="${versionsCssBase}_selection-secondary">
                     </div>

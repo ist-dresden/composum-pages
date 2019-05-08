@@ -23,7 +23,7 @@
             <div class="composum-pages-stage-version-frame_secondary">
                 <iframe class="composum-pages-stage-version-frame"></iframe>
             </div>
-            <div class="composum-pages-stage-version-frame_main">
+            <div class="composum-pages-stage-version-frame_primary">
                 <iframe class="composum-pages-stage-version-frame"></iframe>
             </div>
         </div>

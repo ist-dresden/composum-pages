@@ -16,13 +16,13 @@
                 _time: '-time',
                 timeHint: new RegExp('^..(.*):..$'),
                 isCheckedOut: 'is-checked-out',
-                mainAvailable: 'main-available',
+                primaryAvailable: 'primary-available',
                 versionsComparable: 'versions-comparable',
-                selectedMain: 'selected-main',
+                selectedPrimary: 'selected-primary',
                 selectedSecondary: 'selected-secondary',
-                selectionMain: '_selection-main',
+                selectionPrimary: '_selection-primary',
                 selectionSecondary: '_selection-secondary',
-                mainSelection: '_main-selection',
+                primarySelection: '_primary-selection',
                 secondarySelection: '_secondary-selection',
                 slider: {
                     cssKey: '_version-slider',
@@ -60,15 +60,15 @@
                 this.name = this.$('.' + c.cssBase + c.version + c._name).text();
                 this.time = this.$('.' + c.cssBase + c.version + c._time).text();
                 this.timeHint = c.timeHint.exec(this.time)[1];
-                this.$mainSelector = this.$('.' + c.cssBase + c.selectionMain);
+                this.$primSelector = this.$('.' + c.cssBase + c.selectionPrimary);
                 this.$sdrySelector = this.$('.' + c.cssBase + c.selectionSecondary);
-                this.$mainSelector.click(_.bind(this.toggleMainSelection, this));
+                this.$primSelector.click(_.bind(this.togglePrimSelection, this));
                 this.$sdrySelector.click(_.bind(this.toggleSdrySelection, this));
             },
 
-            toggleMainSelection: function (event) {
+            togglePrimSelection: function (event) {
                 event.preventDefault();
-                this.versions.toggleMainSelection(this);
+                this.versions.togglePrimSelection(this);
             },
 
             toggleSdrySelection: function (event) {
@@ -107,7 +107,7 @@
 
             setActionsState: function () {
                 var c = tools.const.versions;
-                if (this.versions.mainSelection || this.versions.versionsVisible) {
+                if (this.versions.primSelection || this.versions.versionsVisible) {
                     this.$viewAction.prop(c.disabled, false);
                 } else {
                     this.$viewAction.prop(c.disabled, true);
@@ -121,7 +121,7 @@
                     this.$checkOutAction.removeClass(c.hidden);
                     this.$checkInAction.addClass(c.hidden);
                 }
-                if (this.versions.mainSelection) {
+                if (this.versions.primSelection) {
                     this.$restoreAction.prop(c.disabled, false);
                 } else {
                     this.$restoreAction.prop(c.disabled, true);
@@ -182,7 +182,7 @@
                     event.preventDefault();
                 }
                 var path = this.versions.data.jcrContent.path;
-                var version = this.versions.mainSelection.name;
+                var version = this.versions.primSelection.name;
                 core.ajaxPut(tools.const.versions.versionRestoreUri + path, JSON.stringify({
                         path: path,
                         version: version
@@ -203,7 +203,7 @@
 
             initialize: function (options) {
                 var c = tools.const.versions;
-                this.$mainSelection = this.$('.' + c.cssBase + c.mainSelection);
+                this.$primSelection = this.$('.' + c.cssBase + c.primarySelection);
                 this.$sdrySelection = this.$('.' + c.cssBase + c.secondarySelection);
                 this.$slider = this.$('.' + c.cssBase + c.slider.cssKey);
                 this.$versionContent = this.$('.' + c.cssBase + c.content);
@@ -232,7 +232,7 @@
                         this.$el.removeClass(c.isCheckedOut);
                     }
                     this.currentVersion = undefined;
-                    this.mainSelection = undefined;
+                    this.primSelection = undefined;
                     this.sdrySelection = undefined;
                     this.$slider.slider('disable');
                     core.ajaxGet(c.versionContentUri + this.contextTabs.reference.path, {},
@@ -257,33 +257,33 @@
             },
 
             compare: function (event) {
-                pages.versionsView.mainView.setOpacity(100 - event.value);
+                pages.versionsView.primView.setOpacity(100 - event.value);
             },
 
             setComparable: function () {
-                if (this.mainSelection && this.sdrySelection && this.mainSelection !== this.sdrySelection) {
+                if (this.primSelection && this.sdrySelection && this.primSelection !== this.sdrySelection) {
                     this.$el.addClass(tools.const.versions.versionsComparable);
                     this.$slider.slider('enable');
-                    pages.versionsView.mainView.setOpacity(100 - this.$slider.slider('getValue'));
+                    pages.versionsView.primView.setOpacity(100 - this.$slider.slider('getValue'));
                 } else {
                     this.$slider.slider('disable');
                     this.$el.removeClass(tools.const.versions.versionsComparable);
-                    pages.versionsView.mainView.setOpacity(100);
+                    pages.versionsView.primView.setOpacity(100);
                 }
             },
 
-            toggleMainSelection: function (version) {
-                this.$versionList.removeClass(tools.const.versions.selectedMain);
-                if (this.mainSelection === version) {
-                    this.mainSelection = undefined;
+            togglePrimSelection: function (version) {
+                this.$versionList.removeClass(tools.const.versions.selectedPrimary);
+                if (this.primSelection === version) {
+                    this.primSelection = undefined;
                     if (this.versionsVisible) {
-                        pages.versionsView.mainView.reset();
+                        pages.versionsView.primView.reset();
                     }
                 } else {
-                    this.mainSelection = version;
-                    this.mainSelection.$el.addClass(tools.const.versions.selectedMain);
+                    this.primSelection = version;
+                    this.primSelection.$el.addClass(tools.const.versions.selectedPrimary);
                     if (this.versionsVisible) {
-                        pages.versionsView.mainView.view(this.data.path, {
+                        pages.versionsView.primView.view(this.data.path, {
                             release: version.release,
                             version: version.id
                         });
@@ -314,7 +314,7 @@
 
             showSelection: function () {
                 var c = tools.const.versions;
-                this.showSelectionValues(this.$mainSelection, this.mainSelection, c.mainAvailable);
+                this.showSelectionValues(this.$primSelection, this.primSelection, c.primaryAvailable);
                 this.showSelectionValues(this.$sdrySelection, this.sdrySelection);
                 this.actions.setActionsState();
                 this.setComparable();
@@ -356,10 +356,10 @@
                     var path = this.data.path;
                     var primary = undefined;
                     var secondary = undefined;
-                    if (this.mainSelection) {
+                    if (this.primSelection) {
                         primary = {
-                            release: this.mainSelection.release,
-                            version: this.mainSelection.id
+                            release: this.primSelection.release,
+                            version: this.primSelection.id
                         };
                     }
                     if (this.sdrySelection) {

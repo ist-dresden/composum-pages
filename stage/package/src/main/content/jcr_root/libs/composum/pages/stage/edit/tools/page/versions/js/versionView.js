@@ -11,7 +11,7 @@
                     base: 'composum-pages-stage-version-frame',
                     _: {
                         wrapper: '_wrapper',
-                        main: '_main',
+                        primary: '_primary',
                         secondary: '_secondary'
                     }
                 },
@@ -62,6 +62,7 @@
                         width: this.$body.width(),
                         height: this.$body.height()
                     };
+                    this.$body.css('pointer-events', 'none'); // no interaction in version view but document scroll
                     var e = pages.const.versionView.event;
                     this.$document.on(e.scroll, _.bind(pages.versionsView.scroll, pages.versionsView));
                 } else {
@@ -77,7 +78,7 @@
             }
         });
 
-        pages.MainVersion = pages.VersionFrame.extend({
+        pages.PrimaryVersion = pages.VersionFrame.extend({
 
             initialize: function (options) {
                 pages.VersionFrame.prototype.initialize.apply(this, [options]);
@@ -105,13 +106,13 @@
 
             initialize: function (options) {
                 var c = pages.const.versionView.css;
-                this.mainView = core.getWidget(this.el, '.' + c.base + c._.main, pages.MainVersion);
+                this.primView = core.getWidget(this.el, '.' + c.base + c._.primary, pages.PrimaryVersion);
                 this.sdryView = core.getWidget(this.el, '.' + c.base + c._.secondary, pages.SecondaryVersion);
             },
 
             reset: function () {
                 this.sdryView.reset();
-                this.mainView.reset();
+                this.primView.reset();
                 this.hide();
             },
 
@@ -125,19 +126,25 @@
                 pages.surface.surface.bodySync();
             },
 
-            showVersions: function (path, mainScope, sdryScope) {
+            /**
+             * switch version compare 'on'
+             * @param path the page to show
+             * @param primScope the { release: <key>, version: <id>> } of the primary view
+             * @param sdryScope the { release: <key>, version: <id>> } of the secondary view
+             */
+            showVersions: function (path, primScope, sdryScope) {
                 this.sdryView.view(path, sdryScope);
-                this.mainView.view(path, mainScope);
+                this.primView.view(path, primScope);
                 this.show();
             },
 
             /**
-             * sync scroll position of secondary view to the main view (which the events target)
+             * sync scroll position of secondary view to the primary view (which is the events target)
              */
             scroll: function () {
-                if (this.sdryView.$document && this.mainView.$document) {
-                    this.sdryView.$document.scrollTop(this.mainView.$document.scrollTop());
-                    this.sdryView.$document.scrollLeft(this.mainView.$document.scrollLeft());
+                if (this.sdryView.$document && this.primView.$document) {
+                    this.sdryView.$document.scrollTop(this.primView.$document.scrollTop());
+                    this.sdryView.$document.scrollLeft(this.primView.$document.scrollLeft());
                 }
             },
 
@@ -145,11 +152,11 @@
              * sync both views width and height for synchronous scroll up to the end
              */
             onLoad: function () {
-                var width = Math.max(this.mainView.size.width, this.sdryView.size.width);
-                var height = Math.max(this.mainView.size.height, this.sdryView.size.height);
-                if (this.mainView.$body) {
-                    this.mainView.$body.css('width', width + 'px');
-                    this.mainView.$body.css('height', height + 'px');
+                var width = Math.max(this.primView.size.width, this.sdryView.size.width);
+                var height = Math.max(this.primView.size.height, this.sdryView.size.height);
+                if (this.primView.$body) {
+                    this.primView.$body.css('width', width + 'px');
+                    this.primView.$body.css('height', height + 'px');
                 }
                 if (this.sdryView.$body) {
                     this.sdryView.$body.css('width', width + 'px');

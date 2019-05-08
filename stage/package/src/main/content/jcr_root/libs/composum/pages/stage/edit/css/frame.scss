@@ -42,7 +42,7 @@ body {
 
         &,
         &_wrapper,
-        &_main,
+        &_primary,
         &_secondary {
             width: 100%;
             height: 100%;
@@ -55,11 +55,10 @@ body {
             overflow: auto;
         }
 
-        &_main,
+        &_primary,
         &_secondary {
             position: fixed;
             background: transparent;
-            pointer-events: none;
 
             &.hidden {
                 display: none;

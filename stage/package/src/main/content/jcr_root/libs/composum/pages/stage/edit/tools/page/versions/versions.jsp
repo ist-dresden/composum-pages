@@ -58,7 +58,7 @@
     <div class="${versionsCssBase}_panel composum-pages-tools_panel">
         <div class="${versionsCssBase}_versions-head">
             <i class="${versionsCssBase}_selection-icon fa fa-chevron-right"></i>
-            <div class="${versionsCssBase}_main-selection">
+            <div class="${versionsCssBase}_primary-selection">
                 <div class="${versionsCssBase}_selection-name"></div>
                 <div class="${versionsCssBase}_selection-time"></div>
             </div>

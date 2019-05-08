@@ -16,14 +16,14 @@
             handleIconClass: 'composum-pages-stage-edit-sidebar_handle-icon',
             modeIconClass: 'composum-pages-stage-edit-sidebar_mode-icon',
             modeOverlapClass: 'composum-pages-stage-edit-sidebar_overlap',
-            versionMainClass: 'composum-pages-stage-version-frame_main',
+            versionPrimaryClass: 'composum-pages-stage-version-frame_primary',
             versionSecondaryClass: 'composum-pages-stage-version-frame_secondary'
         });
 
         surface.Surface = Backbone.View.extend({
 
             initialize: function (options) {
-                this.$versionMain = $('.' + surface.const.versionMainClass);
+                this.$versionPrimary = $('.' + surface.const.versionPrimaryClass);
                 this.$versionSecondary = $('.' + surface.const.versionSecondaryClass);
                 window.addEventListener('resize', _.bind(function () {
                     this.bodySync();
@@ -41,8 +41,8 @@
                 if (this.$body) {
                     this.$body.css('margin-left', 0);
                     this.$body.css('width', '100%');
-                    this.$versionMain.css('left', 0);
-                    this.$versionMain.css('width', '100%');
+                    this.$versionPrimary.css('left', 0);
+                    this.$versionPrimary.css('width', '100%');
                     this.$versionSecondary.css('left', 0);
                     this.$versionSecondary.css('width', '100%');
                     this.$body = undefined;
@@ -75,8 +75,8 @@
                         }
                         this.$body.css('margin-left', margin + 'px');
                         this.$body.css('width', width + 'px');
-                        this.$versionMain.css('left', margin + 'px');
-                        this.$versionMain.css('width', width + 'px');
+                        this.$versionPrimary.css('left', margin + 'px');
+                        this.$versionPrimary.css('width', width + 'px');
                         this.$versionSecondary.css('left', margin + 'px');
                         this.$versionSecondary.css('width', width + 'px');
                     }

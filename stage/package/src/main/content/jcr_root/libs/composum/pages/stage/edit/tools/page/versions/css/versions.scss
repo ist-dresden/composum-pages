@@ -40,7 +40,7 @@
 
         .composum-pages-stage-edit-tools-page-versions {
 
-            &_main-selection,
+            &_primary-selection,
             &_secondary-selection {
                 position: absolute;
                 top: 0;
@@ -56,7 +56,7 @@
                 color: rgba(160, 160, 160, 0.5);
             }
 
-            &_main-selection {
+            &_primary-selection {
                 left: 10%;
                 text-align: left;
             }
@@ -76,7 +76,7 @@
             }
         }
 
-        .main-available & {
+        .primary-available & {
 
             .composum-pages-stage-edit-tools-page-versions {
 
@@ -114,11 +114,11 @@
         padding: 0 4px;
         background-color: $tools-pane-tabs-background;
 
-        &.selected-main {
+        &.selected-primary {
 
             .composum-pages-stage-edit-tools-page-versions {
 
-                &_selection-main {
+                &_selection-primary {
                     background: $tools-pane-main-selection-bg;
                 }
             }
@@ -160,7 +160,7 @@
     }
 
     &_selection,
-    &_selection-main,
+    &_selection-primary,
     &_selection-secondary {
         position: absolute;
         top: 0;
@@ -170,7 +170,7 @@
         background: none;
     }
 
-    &_selection-main {
+    &_selection-primary {
         right: 45%;
     }
 
