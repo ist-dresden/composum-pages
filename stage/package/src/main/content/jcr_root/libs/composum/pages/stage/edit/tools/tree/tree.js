@@ -372,6 +372,7 @@
                 var p = pages.const.profile.page.tree;
                 var id = this.nodeIdPrefix + 'Tree';
                 this.initializeFilter();
+                this.suppressEvent = true; // suppress page select events during initialization
                 tree.ContentTree.prototype.initialize.apply(this, [options]);
                 var e = pages.const.event;
                 $(document).on(e.element.selected + '.' + id, _.bind(this.onElementSelected, this));
@@ -392,6 +393,14 @@
                 $(document).on(e.site.created + '.' + id, _.bind(this.onContentInserted, this));
                 $(document).on(e.site.changed + '.' + id, _.bind(this.onContentSelected, this));
                 $(document).on(e.site.deleted + '.' + id, _.bind(this.onContentDeleted, this));
+                $(document).on(e.ready + '.' + id, _.bind(this.ready, this));
+            },
+
+            /**
+             * switch to 'normal'; page select events no longer suppressed
+             */
+            ready: function () {
+                this.suppressEvent = false;
             },
 
             initializeFilter: function () {

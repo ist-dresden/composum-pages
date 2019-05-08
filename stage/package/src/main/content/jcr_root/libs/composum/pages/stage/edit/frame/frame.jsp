@@ -56,7 +56,7 @@
         <cpn:clientlib test="${frame.developMode}" type="js" category="composum.pages.develop.frame"/>
         <script>
             $(document).ready(function () {
-                window.setTimeout(_.bind(window.composum.pages.editFrame.ready, window.composum.pages.editFrame), 400);
+                window.composum.pages.editFrame.ready();
             });
         </script>
         </body>
