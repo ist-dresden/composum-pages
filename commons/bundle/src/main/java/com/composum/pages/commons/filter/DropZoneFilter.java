@@ -27,7 +27,7 @@ import java.util.Set;
  * configured in the module configuration to support the determination of the right
  * DnD target drop zones for a dragged resource (asset or component)
  */
-public class DropZoneFilter implements ResourceFilter {
+public class DropZoneFilter extends ResourceFilter.AbstractResourceFilter {
 
     private static final Logger LOG = LoggerFactory.getLogger(DropZoneFilter.class);
 

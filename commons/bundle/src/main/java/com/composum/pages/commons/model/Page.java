@@ -93,7 +93,7 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
 
     // child pages filter base
 
-    public static class DefaultPageFilter implements ResourceFilter {
+    public static class DefaultPageFilter extends ResourceFilter.AbstractResourceFilter {
 
         protected final BeanContext context;
         protected final Locale locale;
@@ -350,6 +350,7 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
      * @return the URL to reference this page;
      * this can be the URL of the default language sibling if this page itself is a language variation instance
      */
+    @Override
     public String getUrl() {
         return LinkUtil.getUrl(getContext().getRequest(), getDefaultLanguagePage().getPath());
     }

@@ -166,6 +166,7 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
         /**
          * @return the path of the template itself; the templates reference value
          */
+        @Override
         @Nonnull
         public String getPath() {
             return templatePath;
@@ -174,6 +175,7 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
         /**
          * @return the resource type of the template itself (of the jcr:content child)
          */
+        @Override
         @Nonnull
         public String getResourceType() {
             return resourceType;
@@ -191,6 +193,7 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
         /**
          * @return the templates resource of the current resolver (not able to cache)
          */
+        @Override
         @Nonnull
         public Resource getTemplateResource(ResourceResolver resolver) {
             return resolver.getResource(templatePath);
@@ -199,6 +202,7 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
         /**
          * @return the list od regex resource type patterns from a template property (the list is cached)
          */
+        @Override
         @Nonnull
         public PathPatternSet getTypePatterns(@Nonnull ResourceResolver resolver, @Nonnull String propertyName) {
             PathPatternSet types = typePatternMap.get(propertyName);
@@ -391,6 +395,7 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
     /**
      * @return the template instance of a template resource
      */
+    @Override
     @Nonnull
     public Template toTemplate(@Nonnull Resource resource) {
         return new TemplateImpl(resource);
@@ -399,6 +404,7 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
     /**
      * @return the template referenced by the containing page of a resource
      */
+    @Override
     @Nullable
     public Template getTemplateOf(@Nullable Resource resource) {
         Template template = null;
@@ -502,10 +508,12 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
             return ResourceUtil.isSyntheticResource(getResource());
         }
 
+        @Override
         public boolean isExisting() {
             return !ResourceUtil.isNonExistingResource(getResource());
         }
 
+        @Override
         @Nonnull
         public String getPath() {
             return path;
@@ -515,16 +523,19 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
          * @return the resource type if such a type is part of the reference, determines the type for
          * non existing resources or overlays the type of the referenced resource
          */
+        @Override
         @Nonnull
         public String getType() {
             return type;
         }
 
+        @Override
         @Nonnull
         public String getPrimaryType() {
             return ResolverUtil.getTypeProperty(resolver, getType(), PagesConstants.PN_COMPONENT_TYPE, "");
         }
 
+        @Override
         @Nonnull
         public JsonObject getEditData() {
             if (editData == null) {
@@ -549,6 +560,7 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
          * returns the property value using the cascade: resource - design - resource type;
          * no 18n support for this property value retrieval
          */
+        @Override
         @Nonnull
         public <T extends Serializable> T getProperty(@Nonnull String name, @Nonnull T defaultValue) {
             Class<T> type = PropertyUtil.getType(defaultValue);
@@ -560,6 +572,7 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
          * returns the property value using the cascade: resource - design - resource type;
          * no 18n support for this property value retrieval
          */
+        @Override
         @Nullable
         public <T extends Serializable> T getProperty(@Nonnull String name, @Nonnull Class<T> type) {
             T value = getResourceValues().get(name, type);
@@ -610,6 +623,7 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
             return resourceValues;
         }
 
+        @Override
         @Nonnull
         public Resource getResource() {
             if (resource == null) {
@@ -618,6 +632,7 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
             return resource;
         }
 
+        @Override
         @Nonnull
         public ResourceResolver getResolver() {
             return resolver;
@@ -650,6 +665,7 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
             writer.endObject();
         }
 
+        @Override
         public String toString() {
             return path + ":" + type;
         }
@@ -680,6 +696,7 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
             fromJson(resolver, reader);
         }
 
+        @Override
         public void fromJson(ResourceResolver resolver, JsonReader reader) throws IOException {
             reader.beginArray();
             while (reader.peek() != JsonToken.END_ARRAY) {
@@ -688,6 +705,7 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
             reader.endArray();
         }
 
+        @Override
         public void toJson(JsonWriter writer) throws IOException {
             writer.beginArray();
             for (ResourceManager.ResourceReference reference : this) {
@@ -696,6 +714,7 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
             writer.endArray();
         }
 
+        @Override
         public String toString() {
             StringBuilder builder = new StringBuilder();
             builder.append("[");
@@ -715,11 +734,13 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
     //
 
     /** the reference of the (existing) resource of a model instance */
+    @Override
     public ResourceReference getReference(AbstractModel model) {
         return new ReferenceImpl(model);
     }
 
     /** a resource and a probably overlayed type (type can be 'null') */
+    @Override
     public ResourceReference getReference(@Nonnull Resource resource, @Nullable String type) {
         return new ReferenceImpl(resource, type);
     }
@@ -728,29 +749,35 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
      * a resource referenced by the path and a probably overlayed type; the type can be 'null' if the addressed
      * resource exists, the type should be present if the path is pointing to a non existing resource
      */
+    @Override
     public ResourceReference getReference(@Nonnull ResourceResolver resolver,
                                           @Nonnull String path, @Nullable String type) {
         return new ReferenceImpl(resolver, path, type);
     }
 
     /** a reference translated from a JSON object (transferred reference) */
+    @Override
     public ResourceReference getReference(ResourceResolver resolver, JsonReader reader) throws IOException {
         return new ReferenceImpl(resolver, reader);
     }
 
+    @Override
     public ReferenceList getReferenceList() {
         return new ReferenceListImpl();
 
     }
 
+    @Override
     public ReferenceList getReferenceList(ResourceManager.ResourceReference... references) {
         return new ReferenceListImpl(references);
     }
 
+    @Override
     public ReferenceList getReferenceList(ResourceResolver resolver, String jsonValue) throws IOException {
         return new ReferenceListImpl(resolver, jsonValue);
     }
 
+    @Override
     public ReferenceList getReferenceList(ResourceResolver resolver, JsonReader reader) throws IOException {
         return new ReferenceListImpl(resolver, reader);
     }
@@ -758,6 +785,7 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
     /**
      * @return the resource of the containing page of a pages content element
      */
+    @Override
     @Nullable
     public Resource findContainingPageResource(Resource resource) {
         if (resource != null) {
@@ -1117,7 +1145,7 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
     /**
      * the node filter to prevent from copying template rules and meta data to content targets
      */
-    public static class TemplateCopyFilter implements ResourceFilter {
+    public static class TemplateCopyFilter extends ResourceFilter.AbstractResourceFilter {
 
         @Override
         public boolean accept(Resource resource) {
@@ -1348,6 +1376,7 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
         super.activate(cacheManager, new CacheConfig());
     }
 
+    @Override
     @Deactivate
     public void deactivate() {
         super.deactivate();

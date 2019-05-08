@@ -11,7 +11,7 @@ import org.apache.sling.api.resource.Resource;
 /**
  * a page filter to restrict page resources to pages of a defined (current) site
  */
-public class SitePageFilter implements ResourceFilter {
+public class SitePageFilter extends ResourceFilter.AbstractResourceFilter {
 
     protected final String sitePath;
     protected final ResourceFilter pageFilter;

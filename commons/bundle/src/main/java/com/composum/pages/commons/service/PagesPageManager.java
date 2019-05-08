@@ -8,10 +8,12 @@ import com.composum.pages.commons.model.ContentTypeFilter;
 import com.composum.pages.commons.model.Model;
 import com.composum.pages.commons.model.Page;
 import com.composum.pages.commons.model.PageContent;
+import com.composum.pages.commons.replication.ReplicationManager;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.filter.StringFilter;
 import com.composum.sling.core.util.ResourceUtil;
+import com.composum.sling.platform.staging.versions.PlatformVersionsService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.resource.ModifiableValueMap;
@@ -72,15 +74,23 @@ public class PagesPageManager extends PagesContentManager<Page> implements PageM
     @Reference
     protected ResourceManager resourceManager;
 
+    @Reference
+    protected ReplicationManager replicationManager;
+
+    @Reference
+    protected PlatformVersionsService versionsService;
+
     @Override
     public Page createBean(BeanContext context, Resource resource) {
         return new Page(this, context, resource);
     }
 
+    @Override
     public Page getContainingPage(Model element) {
         return getContainingPage(element.getContext(), element.getResource());
     }
 
+    @Override
     public Page getContainingPage(BeanContext context, Resource resource) {
         Page page = null;
         Resource pageResource = resourceManager.findContainingPageResource(resource);
@@ -90,6 +100,7 @@ public class PagesPageManager extends PagesContentManager<Page> implements PageM
         return page;
     }
 
+    @Override
     public Resource getContainingPageResource(Resource resource) {
         Resource pageResource = resourceManager.findContainingPageResource(resource);
         // fallback to resource itself if no 'page' found
@@ -275,10 +286,10 @@ public class PagesPageManager extends PagesContentManager<Page> implements PageM
     @Nonnull
     public Collection<Resource> getReferrers(@Nonnull final Page page, @Nonnull final Resource searchRoot, boolean resolved) {
         Map<String, Resource> referrers = new TreeMap<>();
-        ResourceFilter resourceFilter = ResourceFilter.ALL; // FIXME set filter for 'resolved'
+        ResourceFilter resolvedInReleaseFilter = versionsService.releaseAsResourceFilter(searchRoot, null, replicationManager);
         StringFilter propertyFilter = StringFilter.ALL;
         List<Resource> referringResources = new ArrayList<>();
-        resourceManager.changeReferences(resourceFilter, propertyFilter, searchRoot, referringResources,
+        resourceManager.changeReferences(resolvedInReleaseFilter, propertyFilter, searchRoot, referringResources,
                 true, page.getPath(), "");
         for (Resource resource : referringResources) {
             Resource referreringPage = getContainingPageResource(resource);
@@ -302,7 +313,8 @@ public class PagesPageManager extends PagesContentManager<Page> implements PageM
     public Collection<Resource> getReferences(@Nonnull final Page page, @Nullable final ReferenceType type,
                                               boolean unresolved) {
         Map<String, Resource> references = new TreeMap<>();
-        ResourceFilter unresolvedFilter = ResourceFilter.ALL;   // FIXME use filter for 'unresolved'
+        ResourceFilter resolvedInReleaseFilter = versionsService.releaseAsResourceFilter(page.getResource(), null, replicationManager);
+        ResourceFilter unresolvedFilter = new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.none, resolvedInReleaseFilter);
         ResourceFilter resourceFilter = type != null
                 ? new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.and,
                 pagesConfig.getReferenceFilter(type), unresolvedFilter)
