@@ -16,11 +16,7 @@ import com.composum.sling.core.util.ResourceUtil;
 import com.composum.sling.platform.staging.versions.PlatformVersionsService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
-import org.apache.sling.api.resource.ModifiableValueMap;
-import org.apache.sling.api.resource.PersistenceException;
-import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.resource.ValueMap;
+import org.apache.sling.api.resource.*;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -30,15 +26,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -286,10 +274,15 @@ public class PagesPageManager extends PagesContentManager<Page> implements PageM
     @Nonnull
     public Collection<Resource> getReferrers(@Nonnull final Page page, @Nonnull final Resource searchRoot, boolean resolved) {
         Map<String, Resource> referrers = new TreeMap<>();
-        ResourceFilter resolvedInReleaseFilter = versionsService.releaseAsResourceFilter(searchRoot, null, replicationManager);
+        // FIXME(hps,2019-05-09) fix this
+        ResourceFilter resourceFilter = ResourceFilter.ALL;
+        if (resolved) {
+            ResourceFilter.ContentNodeFilter contentNodeFilter = new ResourceFilter.ContentNodeFilter(pagesConfig.getReferenceFilter(ReferenceType.page), ResourceFilter.ALL);
+            resourceFilter = versionsService.releaseAsResourceFilter(searchRoot, null, replicationManager, contentNodeFilter);
+        }
         StringFilter propertyFilter = StringFilter.ALL;
         List<Resource> referringResources = new ArrayList<>();
-        resourceManager.changeReferences(resolvedInReleaseFilter, propertyFilter, searchRoot, referringResources,
+        resourceManager.changeReferences(resourceFilter, propertyFilter, searchRoot, referringResources,
                 true, page.getPath(), "");
         for (Resource resource : referringResources) {
             Resource referreringPage = getContainingPageResource(resource);
@@ -313,8 +306,13 @@ public class PagesPageManager extends PagesContentManager<Page> implements PageM
     public Collection<Resource> getReferences(@Nonnull final Page page, @Nullable final ReferenceType type,
                                               boolean unresolved) {
         Map<String, Resource> references = new TreeMap<>();
-        ResourceFilter resolvedInReleaseFilter = versionsService.releaseAsResourceFilter(page.getResource(), null, replicationManager);
-        ResourceFilter unresolvedFilter = new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.none, resolvedInReleaseFilter);
+        // FIXME(hps,2019-05-09) test this
+        ResourceFilter.ContentNodeFilter contentNodeFilter = new ResourceFilter.ContentNodeFilter(pagesConfig.getReferenceFilter(type), ResourceFilter.ALL);
+        ResourceFilter releaseAsResourceFilter = ResourceFilter.ALL;
+        if (unresolved) {
+            releaseAsResourceFilter = versionsService.releaseAsResourceFilter(page.getResource(), null, replicationManager, contentNodeFilter);
+        }
+        ResourceFilter unresolvedFilter = new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.none, releaseAsResourceFilter);
         ResourceFilter resourceFilter = type != null
                 ? new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.and,
                 pagesConfig.getReferenceFilter(type), unresolvedFilter)
