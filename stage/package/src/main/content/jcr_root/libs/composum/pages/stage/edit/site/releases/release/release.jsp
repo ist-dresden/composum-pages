@@ -3,8 +3,8 @@
 --%><%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %><%--
 --%><%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%><%--
 --%><cpp:defineFrameObjects/>
-<cpp:element var="release" type="com.composum.pages.commons.model.Release"
-               tagName="tr">
+<cpp:element var="release" type="com.composum.pages.commons.model.SiteRelease"
+             tagName="tr">
     <c:if test="${release.editMode}">
         <td><input type="radio" class="${releaseCssBase}_select" name="${releaseCssBase}_select"
                    value="${release.key}" data-path="${release.path}"/></td>

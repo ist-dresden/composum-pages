@@ -2,7 +2,7 @@ package com.composum.pages.commons.service;
 
 import com.composum.pages.commons.model.Folder;
 import com.composum.pages.commons.model.Page;
-import com.composum.pages.commons.model.Release;
+import com.composum.pages.commons.model.SiteRelease;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.platform.staging.impl.StagingUtils;
 import org.apache.jackrabbit.api.JackrabbitSession;
@@ -125,14 +125,14 @@ public class PagesVersionsService implements VersionsService {
     }
 
     @Override
-    public Collection<Page> findUnreleasedPages(final BeanContext context, final Resource root, final Release release)
+    public Collection<Page> findUnreleasedPages(final BeanContext context, final Resource root, final SiteRelease release)
             throws RepositoryException {
         List<Page> result = new ArrayList<>();
-        findUnreleasedPages(context, root, release != null ? release : new NoRelease(context, root.getPath()), result);
+        findUnreleasedPages(context, root, release != null ? release : new NoSiteRelease(context, root.getPath()), result);
         return result;
     }
 
-    protected void findUnreleasedPages(final BeanContext context, final Resource parent, final Release release,
+    protected void findUnreleasedPages(final BeanContext context, final Resource parent, final SiteRelease release,
                                        List<Page> result)
             throws RepositoryException {
         final Iterable<Resource> children = parent.getChildren();
@@ -181,9 +181,9 @@ public class PagesVersionsService implements VersionsService {
         return getVersionManager(context).getVersionHistory(path);
     }
 
-    protected class NoRelease extends Release {
+    protected class NoSiteRelease extends SiteRelease {
 
-        NoRelease(BeanContext context, String path) {
+        NoSiteRelease(BeanContext context, String path) {
             super(context, new NonExistingResource(context.getResolver(), path));
         }
 
