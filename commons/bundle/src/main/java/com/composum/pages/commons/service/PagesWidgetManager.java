@@ -3,6 +3,7 @@ package com.composum.pages.commons.service;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.platform.staging.query.Query;
 import com.composum.sling.platform.staging.query.QueryBuilder;
+import org.apache.sling.api.SlingException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.framework.Constants;
@@ -33,6 +34,7 @@ public class PagesWidgetManager implements WidgetManager {
 
     protected Map<String, String> widgetTypes;
 
+    @Override
     public synchronized String getWidgetTypeResourcePath(BeanContext context, String widgetType) {
         String typePath = widgetTypes.get(widgetType);
         if (typePath == null) {
@@ -48,16 +50,15 @@ public class PagesWidgetManager implements WidgetManager {
                         widgetTypes.put(widgetType, typePath);
                         return typePath;
                     }
-                } catch (RepositoryException ex) {
-                    LOG.error(ex.getMessage(), ex);
+                } catch (SlingException ex) {
+                    LOG.error("On path {} : {}", root, ex.toString(), ex);
                 }
             }
         }
         return typePath;
     }
 
-    protected Resource findByName(ResourceResolver resolver, String widgetType, String root)
-            throws RepositoryException {
+    protected Resource findByName(ResourceResolver resolver, String widgetType, String root) {
         Query query = resolver.adaptTo(QueryBuilder.class).createQuery();
         query.path(root).type(NODE_TYPE_WIDGET).element(widgetType);
         Iterator<Resource> found = query.execute().iterator();
@@ -67,8 +68,7 @@ public class PagesWidgetManager implements WidgetManager {
         return null;
     }
 
-    protected Resource findByProperty(ResourceResolver resolver, String widgetType, String root)
-            throws RepositoryException {
+    protected Resource findByProperty(ResourceResolver resolver, String widgetType, String root) {
         Query query = resolver.adaptTo(QueryBuilder.class).createQuery();
         query.path(root).type(NODE_TYPE_WIDGET).condition(query.conditionBuilder().in(PROP_WIDGET_TYPE, widgetType));
         Iterator<Resource> found = query.execute().iterator();

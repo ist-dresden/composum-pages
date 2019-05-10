@@ -84,7 +84,7 @@ public abstract class AbstractSearchPlugin implements SearchPlugin {
     public List<SearchService.Result> search(@Nonnull final BeanContext context, @Nonnull final String root,
                                              @Nonnull final String searchExpression, @Nullable final ResourceFilter filter,
                                              final int offset, @Nullable final Integer limit)
-            throws RepositoryException, SearchTermParseException {
+            throws SearchTermParseException {
         if (isBlank(searchExpression)) throw new SearchTermParseException(Empty,
                 searchExpression, searchExpression);
         final Set<String> positiveTerms = new SearchtermParser(searchExpression).getPositiveSearchterms();
@@ -94,7 +94,7 @@ public abstract class AbstractSearchPlugin implements SearchPlugin {
 
         SearchService.LimitedQuery limitedQuery = new SearchService.LimitedQuery() {
             @Override
-            public Pair<Boolean, List<SearchService.Result>> execQuery(int matchLimit) throws RepositoryException {
+            public Pair<Boolean, List<SearchService.Result>> execQuery(int matchLimit) {
                 Query query = context.getResolver().adaptTo(QueryBuilder.class).createQuery();
                 buildQuery(query, root, searchExpression);
                 query.limit(matchLimit);
