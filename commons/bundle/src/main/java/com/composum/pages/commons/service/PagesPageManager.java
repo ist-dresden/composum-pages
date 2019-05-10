@@ -274,19 +274,22 @@ public class PagesPageManager extends PagesContentManager<Page> implements PageM
     @Nonnull
     public Collection<Resource> getReferrers(@Nonnull final Page page, @Nonnull final Resource searchRoot, boolean resolved) {
         Map<String, Resource> referrers = new TreeMap<>();
-        // FIXME(hps,2019-05-09) fix this
-        ResourceFilter resourceFilter = ResourceFilter.ALL;
-        if (resolved) {
-            ResourceFilter.ContentNodeFilter contentNodeFilter = new ResourceFilter.ContentNodeFilter(pagesConfig.getReferenceFilter(ReferenceType.page), ResourceFilter.ALL);
-            resourceFilter = versionsService.releaseAsResourceFilter(searchRoot, null, replicationManager, contentNodeFilter);
-        }
         StringFilter propertyFilter = StringFilter.ALL;
+        ResourceFilter resourceFilter = ResourceFilter.ALL;
         List<Resource> referringResources = new ArrayList<>();
         resourceManager.changeReferences(resourceFilter, propertyFilter, searchRoot, referringResources,
                 true, page.getPath(), "");
+
+        ResourceFilter referringPageFilter = ResourceFilter.ALL;
+        if (resolved) {
+            ResourceFilter.ContentNodeFilter contentNodeFilter = new ResourceFilter.ContentNodeFilter(true, pagesConfig.getReferenceFilter(ReferenceType.page), ResourceFilter.ALL);
+            referringPageFilter = versionsService.releaseAsResourceFilter(searchRoot, null, replicationManager, contentNodeFilter);
+        }
         for (Resource resource : referringResources) {
             Resource referreringPage = getContainingPageResource(resource);
-            if (referreringPage != null) {
+            // this filtering does not work when pages are renamed wrt. to the release. But there is currently no good way to handle this - you'll run into path problems,
+            // anyway. :-(  We also have to do this filtering after the reference finding, since otherwise it stops on pages not yet in the release.
+            if (referreringPage != null && referringPageFilter.accept(referreringPage)) {
                 referrers.putIfAbsent(referreringPage.getPath(), referreringPage);
             }
         }
@@ -306,16 +309,16 @@ public class PagesPageManager extends PagesContentManager<Page> implements PageM
     public Collection<Resource> getReferences(@Nonnull final Page page, @Nullable final ReferenceType type,
                                               boolean unresolved) {
         Map<String, Resource> references = new TreeMap<>();
-        // FIXME(hps,2019-05-09) test this
-        ResourceFilter.ContentNodeFilter contentNodeFilter = new ResourceFilter.ContentNodeFilter(pagesConfig.getReferenceFilter(type), ResourceFilter.ALL);
+        ResourceFilter.ContentNodeFilter contentNodeFilter = new ResourceFilter.ContentNodeFilter(true, pagesConfig.getReferenceFilter(type), ResourceFilter.ALL);
         ResourceFilter releaseAsResourceFilter = ResourceFilter.ALL;
         if (unresolved) {
+            // this filtering does not work when pages are renamed wrt. to the release. But there is currently no good way to handle this - you'll run into path problems,
+            // anyway. :-(
             releaseAsResourceFilter = versionsService.releaseAsResourceFilter(page.getResource(), null, replicationManager, contentNodeFilter);
         }
-        ResourceFilter unresolvedFilter = new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.none, releaseAsResourceFilter);
+        ResourceFilter unresolvedFilter = ResourceFilter.FilterSet.Rule.none.of(releaseAsResourceFilter);
         ResourceFilter resourceFilter = type != null
-                ? new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.and,
-                pagesConfig.getReferenceFilter(type), unresolvedFilter)
+                ? ResourceFilter.FilterSet.Rule.and.of(pagesConfig.getReferenceFilter(type), unresolvedFilter)
                 : unresolvedFilter;
         StringFilter propertyFilter = StringFilter.ALL;
         Resource content = page.getContent().getResource();
