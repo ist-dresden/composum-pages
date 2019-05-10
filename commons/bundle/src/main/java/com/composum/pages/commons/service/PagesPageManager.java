@@ -286,11 +286,11 @@ public class PagesPageManager extends PagesContentManager<Page> implements PageM
             referringPageFilter = versionsService.releaseAsResourceFilter(searchRoot, null, replicationManager, contentNodeFilter);
         }
         for (Resource resource : referringResources) {
-            Resource referreringPage = getContainingPageResource(resource);
+            Resource referringPage = getContainingPageResource(resource);
             // this filtering does not work when pages are renamed wrt. to the release. But there is currently no good way to handle this - you'll run into path problems,
             // anyway. :-(  We also have to do this filtering after the reference finding, since otherwise it stops on pages not yet in the release.
-            if (referreringPage != null && referringPageFilter.accept(referreringPage)) {
-                referrers.putIfAbsent(referreringPage.getPath(), referreringPage);
+            if (referringPage != null && !StringUtils.equals(page.getPath(), referringPage.getPath()) && referringPageFilter.accept(referringPage)) {
+                referrers.putIfAbsent(referringPage.getPath(), referringPage);
             }
         }
         return referrers.values();
