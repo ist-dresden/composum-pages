@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+        jcr:primaryType="cpp:Container"
+        sling:resourceType="composum/pages/stage/edit/tools/component/help/parsys">
+    <text_01 jcr:primaryType="cpp:Element"
+            sling:resourceType="composum/pages/components/element/text"
+            title="Reference"
+            text="a reference points to another content path in the repository and embeds the content of that path as the content of the reference element">
+        <i18n jcr:primaryType="nt:unstructured">
+            <de jcr:primaryType="nt:unstructured"
+                    text="eine 'Reference' zeigt auf ein anderes Element im Repository und bettet dessen Inhalt an der Position des Referenzelementes ein"/>
+        </i18n>
+    </text_01>
+</jcr:root>

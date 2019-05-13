@@ -61,6 +61,11 @@ public interface PagesConstants {
 
     /** Content elements */
 
+    /** the reference path property name of a reference component (for the referrers query) */
+    String PN_CONTENT_REFERENCE = "contentReference";
+    /** the key part of a reference component type (for the referrers query) */
+    String RES_TYPE_KEY_REFERENCE = "/reference";
+
     String NODE_TYPE_SOMETHING = "nt:unstructured";
     String NODE_TYPE_ELEMENT = CPP_PREFIX + "Element";
     String NODE_TYPE_CONTAINER = CPP_PREFIX + "Container";
