@@ -10,14 +10,12 @@ import com.composum.sling.core.util.ResourceUtil;
 import com.composum.sling.platform.staging.StagingReleaseManager;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ValueMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.jcr.RepositoryException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -164,11 +162,11 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
     /**
      * return the list of content releases of this site
      */
-    public List<Release> getReleases() {
+    public List<SiteRelease> getReleases() {
         StagingReleaseManager releaseManager = context.getService(StagingReleaseManager.class);
         List<StagingReleaseManager.Release> stagingReleases = releaseManager.getReleases(resource);
-        List<Release> result = stagingReleases.stream()
-                .map(r -> new Release(context, r))
+        List<SiteRelease> result = stagingReleases.stream()
+                .map(r -> new SiteRelease(context, r))
                 .collect(Collectors.toList());
         return result;
     }
@@ -182,14 +180,14 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
 
     public Collection<Page> getUnreleasedPages() {
         if (unreleasedPages == null) {
-            final List<Release> releases = getReleases();
-            final Release release = releases.isEmpty() ? null : releases.get(releases.size() - 1);
+            final List<SiteRelease> releases = getReleases();
+            final SiteRelease release = releases.isEmpty() ? null : releases.get(releases.size() - 1);
             unreleasedPages = getUnreleasedPages(release);
         }
         return unreleasedPages;
     }
 
-    public Collection<Page> getUnreleasedPages(Release releaseToCheck) {
+    public Collection<Page> getUnreleasedPages(SiteRelease releaseToCheck) {
         Collection<Page> result;
         try {
             result = getVersionsService().findUnreleasedPages(getContext(), getResource(), releaseToCheck);

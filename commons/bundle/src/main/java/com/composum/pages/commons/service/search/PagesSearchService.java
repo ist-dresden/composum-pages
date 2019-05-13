@@ -133,8 +133,7 @@ public class PagesSearchService implements SearchService {
      */
     @Nonnull
     @Override
-    public List<Result> executeQueryWithRaisingLimits(LimitedQuery limitedQuery, int offset, Integer limit)
-            throws RepositoryException {
+    public List<Result> executeQueryWithRaisingLimits(LimitedQuery limitedQuery, int offset, Integer limit) {
         Pair<Boolean, List<Result>> result;
         int neededResults = Integer.MAX_VALUE;
         int currentLimit = Integer.MAX_VALUE;

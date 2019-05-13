@@ -6,28 +6,27 @@ import com.composum.sling.platform.staging.StagingReleaseManager;
 import org.apache.sling.api.resource.Resource;
 
 import javax.annotation.Nonnull;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
 /**
  * Created by rw on 22.01.17.
  */
-public class Release extends AbstractModel implements Comparable<Release> {
+public class SiteRelease extends AbstractModel implements Comparable<SiteRelease> {
 
     protected StagingReleaseManager.Release stagingRelease;
     protected Calendar created;
 
-    public Release() {
+    public SiteRelease() {
         // empty default constructor
     }
 
-    public Release(BeanContext context, StagingReleaseManager.Release release) {
+    public SiteRelease(BeanContext context, StagingReleaseManager.Release release) {
         this.stagingRelease = release;
         initialize(context, release.getMetaDataNode());
     }
 
-    public Release(BeanContext context, Resource resource) {
+    public SiteRelease(BeanContext context, Resource resource) {
         initialize(context, resource);
     }
 
@@ -69,7 +68,7 @@ public class Release extends AbstractModel implements Comparable<Release> {
     }
 
     @Override
-    public int compareTo(@Nonnull Release o) {
+    public int compareTo(@Nonnull SiteRelease o) {
         return created != null
                 ? (o.created != null ? created.compareTo(o.created) : -1)
                 : (o.created != null ? 1 : 0);

@@ -326,8 +326,9 @@ public class PagesReleaseFilter implements Filter {
 
     @Activate
     @Modified
-    public void activate(final PagesReleaseFilter.Config config) {
+    public void activate(final PagesReleaseFilter.Config config, final BundleContext bundleContext) {
         this.config = config;
+        this.bundleContext = bundleContext;
         ignoredHostPatterns = new ArrayList<>();
         for (String rule : PropertiesUtil.toStringArray(config.unreleased_host_allow())) {
             if (StringUtils.isNotBlank(rule = rule.trim())) ignoredHostPatterns.add(Pattern.compile(rule));

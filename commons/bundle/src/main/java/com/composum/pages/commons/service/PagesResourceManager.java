@@ -975,11 +975,11 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
             if (resourceChanged) {
                 foundReferrers.add(resource);
             }
+        }
 
-            // recursive traversal
-            for (Resource child : resource.getChildren()) {
-                changeReferences(resourceFilter, propertyFilter, child, foundReferrers, scanOnly, oldPath, newPath);
-            }
+        // recursive traversal
+        for (Resource child : resource.getChildren()) {
+            changeReferences(resourceFilter, propertyFilter, child, foundReferrers, scanOnly, oldPath, newPath);
         }
     }
 

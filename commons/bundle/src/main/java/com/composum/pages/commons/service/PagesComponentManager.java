@@ -7,6 +7,8 @@ package com.composum.pages.commons.service;
 
 import com.composum.sling.platform.staging.query.Query;
 import com.composum.sling.platform.staging.query.QueryBuilder;
+import org.apache.sling.api.SlingException;
+import org.apache.sling.api.resource.QuerySyntaxException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
@@ -52,8 +54,8 @@ public class PagesComponentManager implements ComponentManager {
                             categories.addAll(Arrays.asList(values.get(PN_CATEGORY, new String[0])));
                         }
                     }
-                } catch (RepositoryException ex) {
-                    LOG.error(ex.getMessage(), ex);
+                } catch (SlingException ex) {
+                    LOG.error("On path {} : {}", path, ex.toString(), ex);
                 }
             }
         }

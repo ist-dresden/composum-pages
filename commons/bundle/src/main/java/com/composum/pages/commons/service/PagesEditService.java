@@ -15,6 +15,7 @@ import com.composum.sling.platform.staging.query.QueryBuilder;
 import com.composum.sling.platform.staging.query.QueryConditionDsl;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
+import org.apache.sling.api.SlingException;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -149,8 +150,8 @@ public class PagesEditService implements EditService {
                             allowedTypes.add(resourceTypePath ? path + type : type);
                         }
                     }
-                } catch (RepositoryException ex) {
-                    LOG.error(ex.getMessage(), ex);
+                } catch (SlingException ex) {
+                    LOG.error("On path {} : {}", path, ex.toString(), ex);
                 }
             }
         }

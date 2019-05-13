@@ -4,23 +4,18 @@ import com.composum.pages.commons.PagesConfiguration;
 import com.composum.pages.commons.PagesConstants;
 import com.composum.pages.commons.PagesConstants.ReferenceType;
 import com.composum.pages.commons.filter.TemplateFilter;
-import com.composum.pages.commons.model.ContentTypeFilter;
-import com.composum.pages.commons.model.Model;
-import com.composum.pages.commons.model.Page;
-import com.composum.pages.commons.model.PageContent;
+import com.composum.pages.commons.model.*;
 import com.composum.pages.commons.replication.ReplicationManager;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.filter.StringFilter;
+import com.composum.sling.core.util.CoreConstants;
 import com.composum.sling.core.util.ResourceUtil;
+import com.composum.sling.core.util.SlingResourceUtil;
 import com.composum.sling.platform.staging.versions.PlatformVersionsService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
-import org.apache.sling.api.resource.ModifiableValueMap;
-import org.apache.sling.api.resource.PersistenceException;
-import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.resource.ValueMap;
+import org.apache.sling.api.resource.*;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -30,19 +25,12 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.composum.pages.commons.PagesConstants.NODE_TYPE_PAGE;
+import static com.composum.sling.core.util.SlingResourceUtil.isSameOrDescendant;
 
 @Component(
         property = {
@@ -286,15 +274,24 @@ public class PagesPageManager extends PagesContentManager<Page> implements PageM
     @Nonnull
     public Collection<Resource> getReferrers(@Nonnull final Page page, @Nonnull final Resource searchRoot, boolean resolved) {
         Map<String, Resource> referrers = new TreeMap<>();
-        ResourceFilter resolvedInReleaseFilter = versionsService.releaseAsResourceFilter(searchRoot, null, replicationManager);
         StringFilter propertyFilter = StringFilter.ALL;
+        ResourceFilter resourceFilter = ResourceFilter.ALL;
         List<Resource> referringResources = new ArrayList<>();
-        resourceManager.changeReferences(resolvedInReleaseFilter, propertyFilter, searchRoot, referringResources,
+        resourceManager.changeReferences(resourceFilter, propertyFilter, searchRoot, referringResources,
                 true, page.getPath(), "");
+
+        ResourceFilter referringPageFilter = PlatformVersionsService.ACTIVATABLE_FILTER;
+        if (resolved) {
+            ResourceFilter.ContentNodeFilter contentNodeFilter = new ResourceFilter.ContentNodeFilter(true, pagesConfig.getReferenceFilter(ReferenceType.page), ResourceFilter.ALL);
+            referringPageFilter =
+                    ResourceFilter.FilterSet.Rule.and.of(referringPageFilter, versionsService.releaseAsResourceFilter(searchRoot, null, replicationManager, contentNodeFilter));
+        }
         for (Resource resource : referringResources) {
-            Resource referreringPage = getContainingPageResource(resource);
-            if (referreringPage != null) {
-                referrers.putIfAbsent(referreringPage.getPath(), referreringPage);
+            Resource referringPage = getContainingPageResource(resource);
+            // this filtering does not work when pages are renamed wrt. to the release. But there is currently no good way to handle this - you'll run into path problems,
+            // anyway. :-(  We also have to do this filtering after the reference finding, since otherwise it stops on pages not yet in the release.
+            if (referringPage != null && !StringUtils.equals(page.getPath(), referringPage.getPath()) && referringPageFilter.accept(referringPage)) {
+                referrers.putIfAbsent(referringPage.getPath(), referringPage);
             }
         }
         return referrers.values();
@@ -313,22 +310,42 @@ public class PagesPageManager extends PagesContentManager<Page> implements PageM
     public Collection<Resource> getReferences(@Nonnull final Page page, @Nullable final ReferenceType type,
                                               boolean unresolved) {
         Map<String, Resource> references = new TreeMap<>();
-        ResourceFilter resolvedInReleaseFilter = versionsService.releaseAsResourceFilter(page.getResource(), null, replicationManager);
-        ResourceFilter unresolvedFilter = new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.none, resolvedInReleaseFilter);
+        ResourceFilter.ContentNodeFilter contentNodeFilter = new ResourceFilter.ContentNodeFilter(true, pagesConfig.getReferenceFilter(type), ResourceFilter.ALL);
+        ResourceFilter releaseAsResourceFilter = ResourceFilter.ALL;
+        if (unresolved) {
+            // this filtering does not work when pages are renamed wrt. to the release. But there is currently no good way to handle this - you'll run into path problems,
+            // anyway. :-(
+            releaseAsResourceFilter = versionsService.releaseAsResourceFilter(page.getResource(), null, replicationManager, contentNodeFilter);
+        }
+        ResourceFilter unresolvedFilter = ResourceFilter.FilterSet.Rule.none.of(releaseAsResourceFilter);
         ResourceFilter resourceFilter = type != null
-                ? new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.and,
-                pagesConfig.getReferenceFilter(type), unresolvedFilter)
+                ? ResourceFilter.FilterSet.Rule.and.of(pagesConfig.getReferenceFilter(type), unresolvedFilter)
                 : unresolvedFilter;
+        resourceFilter = ResourceFilter.FilterSet.Rule.and.of(resourceFilter, PlatformVersionsService.ACTIVATABLE_FILTER);
         StringFilter propertyFilter = StringFilter.ALL;
         Resource content = page.getContent().getResource();
-        retrieveReferences(references, resourceFilter, propertyFilter, content);
+        retrieveReferences(references, resourceFilter, propertyFilter, content, page.getSite(), new HashSet<>());
         return references.values();
     }
 
+    /**
+     * Retrieves references of a resource recursively.
+     *
+     * @param references     collection where we put all references - maps the property value, which references, to the referenced resource
+     * @param resourceFilter restricts the resources we accept as references
+     * @param propertyFilter restricts the properties that are checked for containing references
+     * @param resource       the resource to check for references
+     * @param site           the site to which we restrict the ancestor search
+     * @param visited        keeps track of which resources we already checked
+     */
     protected void retrieveReferences(@Nonnull Map<String, Resource> references,
                                       @Nonnull final ResourceFilter resourceFilter,
                                       @Nonnull final StringFilter propertyFilter,
-                                      @Nonnull final Resource resource) {
+                                      @Nonnull final Resource resource,
+                                      @Nonnull Site site,
+                                      @Nonnull final Set<String> visited) {
+        if (visited.contains(resource.getPath())) return;
+        visited.add(resource.getPath());
 
         ResourceResolver resolver = resource.getResourceResolver();
         ValueMap values = resource.getValueMap();
@@ -340,18 +357,27 @@ public class PagesPageManager extends PagesContentManager<Page> implements PageM
 
                 Object value = entry.getValue();
                 if (value instanceof String) {
-                    retrieveReferences(references, resolver, resourceFilter, (String) value);
+                    retrieveReferencesFromValue(references, resolver, resourceFilter, (String) value);
 
                 } else if (value instanceof String[]) {
                     for (String val : (String[]) value) {
-                        retrieveReferences(references, resolver, resourceFilter, val);
+                        retrieveReferencesFromValue(references, resolver, resourceFilter, val);
                     }
                 }
             }
         }
         // recursive traversal
         for (Resource child : resource.getChildren()) {
-            retrieveReferences(references, resourceFilter, propertyFilter, child);
+            retrieveReferences(references, resourceFilter, propertyFilter, child, site, visited);
+        }
+        // Parent pages also count as references since otherwise the page isn't displayed in the navigation tree
+        Resource parent = resource.getParent();
+        while (parent != null && isSameOrDescendant(site.getPath(), parent.getPath())) {
+            Resource contentNode = parent.getChild(CoreConstants.CONTENT_NODE);
+            if (contentNode != null && !isSameOrDescendant(contentNode.getPath(), resource.getPath())) {
+                retrieveReferences(references, resourceFilter, propertyFilter, contentNode, site, visited);
+            }
+            parent = parent.getParent();
         }
     }
 
@@ -359,10 +385,10 @@ public class PagesPageManager extends PagesContentManager<Page> implements PageM
     /**
      * adds all references found in the value to the set
      */
-    protected void retrieveReferences(@Nonnull final Map<String, Resource> references,
-                                      @Nonnull final ResourceResolver resolver,
-                                      @Nonnull final ResourceFilter filter,
-                                      @Nonnull final String value) {
+    protected void retrieveReferencesFromValue(@Nonnull final Map<String, Resource> references,
+                                               @Nonnull final ResourceResolver resolver,
+                                               @Nonnull final ResourceFilter filter,
+                                               @Nonnull final String value) {
         Resource resource;
         if (REF_VALUE_PATTERN.matcher(value).matches()) {
             // simple path value...

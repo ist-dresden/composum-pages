@@ -1,7 +1,7 @@
 package com.composum.pages.commons.service;
 
 import com.composum.pages.commons.model.Page;
-import com.composum.pages.commons.model.Release;
+import com.composum.pages.commons.model.SiteRelease;
 import com.composum.sling.core.BeanContext;
 import org.apache.sling.api.resource.Resource;
 
@@ -26,6 +26,6 @@ public interface VersionsService {
 
     Collection<Page> findModifiedPages(BeanContext context, Resource root);
 
-    Collection<Page> findUnreleasedPages(BeanContext context, Resource root, Release release)
+    Collection<Page> findUnreleasedPages(BeanContext context, Resource root, SiteRelease release)
             throws RepositoryException;
 }

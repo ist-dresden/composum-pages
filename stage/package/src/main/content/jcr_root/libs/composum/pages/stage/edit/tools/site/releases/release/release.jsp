@@ -2,7 +2,7 @@
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <cpp:defineFrameObjects/>
-<cpp:model var="release" type="com.composum.pages.commons.model.Release" mode="none"
+<cpp:model var="release" type="com.composum.pages.commons.model.SiteRelease" mode="none"
            cssBase="composum-pages-stage-edit-site-releases-release">
     <li class="${releaseCssBase} ${releaseCssBase}_listentry">
         <input type="radio" class="${releaseCssBase}_select" name="${releaseCssBase}_select"

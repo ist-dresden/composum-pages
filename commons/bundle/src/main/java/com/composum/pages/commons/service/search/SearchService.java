@@ -110,7 +110,7 @@ public interface SearchService {
          * Executes the query with the given limit; returns a pair of a boolean that is true when we are sure that all
          * results have been found in spite of the limit, and the results themselves.
          */
-        Pair<Boolean, List<Result>> execQuery(int matchLimit) throws RepositoryException;
+        Pair<Boolean, List<Result>> execQuery(int matchLimit);
     }
 
     /**
@@ -122,6 +122,5 @@ public interface SearchService {
      * @return up to limit elements of the result list with the offset first elements skipped.
      */
     @Nonnull
-    List<Result> executeQueryWithRaisingLimits(PagesSearchService.LimitedQuery limitedQuery, int offset, Integer limit)
-            throws RepositoryException;
+    List<Result> executeQueryWithRaisingLimits(PagesSearchService.LimitedQuery limitedQuery, int offset, Integer limit);
 }
