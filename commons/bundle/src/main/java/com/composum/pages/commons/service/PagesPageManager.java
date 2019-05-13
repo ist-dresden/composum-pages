@@ -4,15 +4,14 @@ import com.composum.pages.commons.PagesConfiguration;
 import com.composum.pages.commons.PagesConstants;
 import com.composum.pages.commons.PagesConstants.ReferenceType;
 import com.composum.pages.commons.filter.TemplateFilter;
-import com.composum.pages.commons.model.ContentTypeFilter;
-import com.composum.pages.commons.model.Model;
-import com.composum.pages.commons.model.Page;
-import com.composum.pages.commons.model.PageContent;
+import com.composum.pages.commons.model.*;
 import com.composum.pages.commons.replication.ReplicationManager;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.filter.StringFilter;
+import com.composum.sling.core.util.CoreConstants;
 import com.composum.sling.core.util.ResourceUtil;
+import com.composum.sling.core.util.SlingResourceUtil;
 import com.composum.sling.platform.staging.versions.PlatformVersionsService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
@@ -31,6 +30,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.composum.pages.commons.PagesConstants.NODE_TYPE_PAGE;
+import static com.composum.sling.core.util.SlingResourceUtil.isSameOrDescendant;
 
 @Component(
         property = {
@@ -280,10 +280,11 @@ public class PagesPageManager extends PagesContentManager<Page> implements PageM
         resourceManager.changeReferences(resourceFilter, propertyFilter, searchRoot, referringResources,
                 true, page.getPath(), "");
 
-        ResourceFilter referringPageFilter = ResourceFilter.ALL;
+        ResourceFilter referringPageFilter = PlatformVersionsService.ACTIVATABLE_FILTER;
         if (resolved) {
             ResourceFilter.ContentNodeFilter contentNodeFilter = new ResourceFilter.ContentNodeFilter(true, pagesConfig.getReferenceFilter(ReferenceType.page), ResourceFilter.ALL);
-            referringPageFilter = versionsService.releaseAsResourceFilter(searchRoot, null, replicationManager, contentNodeFilter);
+            referringPageFilter =
+                    ResourceFilter.FilterSet.Rule.and.of(referringPageFilter, versionsService.releaseAsResourceFilter(searchRoot, null, replicationManager, contentNodeFilter));
         }
         for (Resource resource : referringResources) {
             Resource referringPage = getContainingPageResource(resource);
@@ -320,16 +321,31 @@ public class PagesPageManager extends PagesContentManager<Page> implements PageM
         ResourceFilter resourceFilter = type != null
                 ? ResourceFilter.FilterSet.Rule.and.of(pagesConfig.getReferenceFilter(type), unresolvedFilter)
                 : unresolvedFilter;
+        resourceFilter = ResourceFilter.FilterSet.Rule.and.of(resourceFilter, PlatformVersionsService.ACTIVATABLE_FILTER);
         StringFilter propertyFilter = StringFilter.ALL;
         Resource content = page.getContent().getResource();
-        retrieveReferences(references, resourceFilter, propertyFilter, content);
+        retrieveReferences(references, resourceFilter, propertyFilter, content, page.getSite(), new HashSet<>());
         return references.values();
     }
 
+    /**
+     * Retrieves references of a resource recursively.
+     *
+     * @param references     collection where we put all references - maps the property value, which references, to the referenced resource
+     * @param resourceFilter restricts the resources we accept as references
+     * @param propertyFilter restricts the properties that are checked for containing references
+     * @param resource       the resource to check for references
+     * @param site           the site to which we restrict the ancestor search
+     * @param visited        keeps track of which resources we already checked
+     */
     protected void retrieveReferences(@Nonnull Map<String, Resource> references,
                                       @Nonnull final ResourceFilter resourceFilter,
                                       @Nonnull final StringFilter propertyFilter,
-                                      @Nonnull final Resource resource) {
+                                      @Nonnull final Resource resource,
+                                      @Nonnull Site site,
+                                      @Nonnull final Set<String> visited) {
+        if (visited.contains(resource.getPath())) return;
+        visited.add(resource.getPath());
 
         ResourceResolver resolver = resource.getResourceResolver();
         ValueMap values = resource.getValueMap();
@@ -341,18 +357,27 @@ public class PagesPageManager extends PagesContentManager<Page> implements PageM
 
                 Object value = entry.getValue();
                 if (value instanceof String) {
-                    retrieveReferences(references, resolver, resourceFilter, (String) value);
+                    retrieveReferencesFromValue(references, resolver, resourceFilter, (String) value);
 
                 } else if (value instanceof String[]) {
                     for (String val : (String[]) value) {
-                        retrieveReferences(references, resolver, resourceFilter, val);
+                        retrieveReferencesFromValue(references, resolver, resourceFilter, val);
                     }
                 }
             }
         }
         // recursive traversal
         for (Resource child : resource.getChildren()) {
-            retrieveReferences(references, resourceFilter, propertyFilter, child);
+            retrieveReferences(references, resourceFilter, propertyFilter, child, site, visited);
+        }
+        // Parent pages also count as references since otherwise the page isn't displayed in the navigation tree
+        Resource parent = resource.getParent();
+        while (parent != null && isSameOrDescendant(site.getPath(), parent.getPath())) {
+            Resource contentNode = parent.getChild(CoreConstants.CONTENT_NODE);
+            if (contentNode != null && !isSameOrDescendant(contentNode.getPath(), resource.getPath())) {
+                retrieveReferences(references, resourceFilter, propertyFilter, contentNode, site, visited);
+            }
+            parent = parent.getParent();
         }
     }
 
@@ -360,10 +385,10 @@ public class PagesPageManager extends PagesContentManager<Page> implements PageM
     /**
      * adds all references found in the value to the set
      */
-    protected void retrieveReferences(@Nonnull final Map<String, Resource> references,
-                                      @Nonnull final ResourceResolver resolver,
-                                      @Nonnull final ResourceFilter filter,
-                                      @Nonnull final String value) {
+    protected void retrieveReferencesFromValue(@Nonnull final Map<String, Resource> references,
+                                               @Nonnull final ResourceResolver resolver,
+                                               @Nonnull final ResourceFilter filter,
+                                               @Nonnull final String value) {
         Resource resource;
         if (REF_VALUE_PATTERN.matcher(value).matches()) {
             // simple path value...
