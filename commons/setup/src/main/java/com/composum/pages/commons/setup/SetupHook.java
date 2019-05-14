@@ -2,20 +2,22 @@ package com.composum.pages.commons.setup;
 
 import com.composum.sling.core.service.RepositorySetupService;
 import com.composum.sling.core.setup.util.SetupUtil;
+import com.composum.sling.platform.staging.StagingConstants;
+import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.commons.cnd.CndImporter;
 import org.apache.jackrabbit.vault.fs.io.Archive;
-import org.apache.jackrabbit.vault.fs.spi.NodeTypeSet;
 import org.apache.jackrabbit.vault.packaging.InstallContext;
 import org.apache.jackrabbit.vault.packaging.InstallHook;
 import org.apache.jackrabbit.vault.packaging.PackageException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.jcr.Node;
-import javax.jcr.Property;
-import javax.jcr.Session;
+import javax.jcr.*;
 import javax.jcr.nodetype.NodeType;
 import javax.jcr.nodetype.NodeTypeManager;
+import javax.jcr.query.Query;
+import javax.jcr.query.QueryManager;
+import javax.jcr.query.QueryResult;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.*;
@@ -42,6 +44,8 @@ public class SetupHook implements InstallHook {
     public static final Map<String, List<String>> PAGES_USERS;
     public static final Map<String, List<String>> PAGES_SYSTEM_USERS;
     public static final Map<String, List<String>> PAGES_GROUPS;
+
+    public static final String SITE_CONFIGURATION_QUERY = "/jcr:root//element(*,cpp:SiteConfiguration)";
 
     static {
         PAGES_USERS = new LinkedHashMap<>();
@@ -73,6 +77,7 @@ public class SetupHook implements InstallHook {
                 LOG.info("installed: execute...");
                 setupAcls(ctx);
                 refreshLucene(ctx);
+                // updateNodeTypes should be the last actions since we need a session.save() there.
                 updateNodeTypes(ctx);
                 LOG.info("installed: execute ends.");
                 break;
@@ -111,18 +116,17 @@ public class SetupHook implements InstallHook {
             NodeType siteType = nodeTypeManager.getNodeType("cpp:Site");
             if (!siteType.isNodeType("cpl:releaseRoot")) {
                 LOG.warn("cpp:Site does not contain cpl:releaseRoot even after package installation - updating it.");
+                createCplReleaseNodes(ctx);
+
                 Archive archive = ctx.getPackage().getArchive();
-                Archive.Entry root = archive.getRoot();
-                Archive.Entry metainf = root.getChild("META-INF");
-                Archive.Entry vault = metainf.getChild("vault");
-                Archive.Entry nodetypes = vault.getChild("nodetypes.cnd");
                 try (InputStream stream = archive.openInputStream(archive.getEntry("/META-INF/vault/nodetypes.cnd"))) {
                     InputStreamReader cndReader = new InputStreamReader(stream);
                     CndImporter.registerNodeTypes(cndReader, session, true);
                 }
+
                 siteType = nodeTypeManager.getNodeType("cpp:Site");
                 if (!siteType.isNodeType("cpl:releaseRoot")) {
-                    LOG.warn("OK - we migrated the nodetypes so that cpp:Site does now contain cpl:releaseRoot");
+                    LOG.error("cpp:Site does still not contain cpl:releaseRoot even after attempted migration!");
                 }
             } else {
                 LOG.info("OK: cpp:Site contains cpl:releaseRoot");
@@ -133,5 +137,28 @@ public class SetupHook implements InstallHook {
         }
     }
 
+    /**
+     * An update of the nodetypes cannot create autocreated nodes - for instance the cpl:releases node below a cpp:SiteConfiguration.
+     * So we have to do that by hand.
+     */
+    protected void createCplReleaseNodes(InstallContext ctx) throws RepositoryException {
+        Session session = ctx.getSession();
+        QueryManager queryManager = session.getWorkspace().getQueryManager();
+        Query query = queryManager.createQuery(SITE_CONFIGURATION_QUERY, Query.XPATH);
+        QueryResult result = query.execute();
+        NodeIterator it = result.getNodes();
+        while (it.hasNext()) {
+            Node node = it.nextNode();
+            try {
+                node.getNode(StagingConstants.NODE_RELEASES);
+            } catch (PathNotFoundException e) {
+                Node releasenode = node.addNode(StagingConstants.NODE_RELEASES, JcrConstants.NT_UNSTRUCTURED);
+                LOG.info("Added " + StagingConstants.NODE_RELEASES + " node at " + releasenode.getPath());
+            }
+        }
+
+        // we need to do a session.save, since otherwise the node type reimport fails, because that's probably not transactional
+        session.save();
+    }
 
 }
