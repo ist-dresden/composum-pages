@@ -417,9 +417,11 @@ public class EditServlet extends PagesContentServlet {
         if (Page.isPage(resource)) {
             try {
                 PlatformVersionsService.Status status = platformVersionsService.getStatus(resource, null);
-                writer.name("release").beginObject();
-                writer.name("status").value(status.getActivationState().name());
-                writer.endObject();
+                if (null != status) {
+                    writer.name("release").beginObject();
+                    writer.name("status").value(status.getActivationState().name());
+                    writer.endObject();
+                }
             } catch (RepositoryException ex) {
                 LOG.error(ex.getMessage(), ex);
             }
@@ -688,10 +690,12 @@ public class EditServlet extends PagesContentServlet {
      */
     protected class GetElementTypes extends GetPageComponents {
 
+        @Override
         protected boolean isFallbackAllowed() {
             return true;
         }
 
+        @Override
         protected String getRenderResourceType() {
             return PAGE_COMPONENTS_SEL_TYPE;
         }
