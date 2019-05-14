@@ -70,6 +70,12 @@
             <artifactId>composum-sling-user-management</artifactId>
         </dependency>
 
+        <!-- Composum Platform -->
+        <dependency>
+            <groupId>com.composum.sling.platform</groupId>
+            <artifactId>composum-sling-platform-staging-bundle</artifactId>
+        </dependency>
+
         <!-- Setup utilities -->
         <dependency>
             <groupId>com.composum.sling.core</groupId>
