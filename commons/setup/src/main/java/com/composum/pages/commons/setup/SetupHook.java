@@ -2,6 +2,9 @@ package com.composum.pages.commons.setup;
 
 import com.composum.sling.core.service.RepositorySetupService;
 import com.composum.sling.core.setup.util.SetupUtil;
+import org.apache.jackrabbit.commons.cnd.CndImporter;
+import org.apache.jackrabbit.vault.fs.io.Archive;
+import org.apache.jackrabbit.vault.fs.spi.NodeTypeSet;
 import org.apache.jackrabbit.vault.packaging.InstallContext;
 import org.apache.jackrabbit.vault.packaging.InstallHook;
 import org.apache.jackrabbit.vault.packaging.PackageException;
@@ -11,11 +14,11 @@ import org.slf4j.LoggerFactory;
 import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.Session;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import javax.jcr.nodetype.NodeType;
+import javax.jcr.nodetype.NodeTypeManager;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.*;
 
 import static java.util.Arrays.asList;
 
@@ -70,6 +73,7 @@ public class SetupHook implements InstallHook {
                 LOG.info("installed: execute...");
                 setupAcls(ctx);
                 refreshLucene(ctx);
+                updateNodeTypes(ctx);
                 LOG.info("installed: execute ends.");
                 break;
         }
@@ -99,5 +103,35 @@ public class SetupHook implements InstallHook {
             throw new PackageException(rex);
         }
     }
+
+    protected void updateNodeTypes(InstallContext ctx) throws PackageException {
+        try {
+            Session session = ctx.getSession();
+            NodeTypeManager nodeTypeManager = session.getWorkspace().getNodeTypeManager();
+            NodeType siteType = nodeTypeManager.getNodeType("cpp:Site");
+            if (!siteType.isNodeType("cpl:releaseRoot")) {
+                LOG.warn("cpp:Site does not contain cpl:releaseRoot even after package installation - updating it.");
+                Archive archive = ctx.getPackage().getArchive();
+                Archive.Entry root = archive.getRoot();
+                Archive.Entry metainf = root.getChild("META-INF");
+                Archive.Entry vault = metainf.getChild("vault");
+                Archive.Entry nodetypes = vault.getChild("nodetypes.cnd");
+                try (InputStream stream = archive.openInputStream(archive.getEntry("/META-INF/vault/nodetypes.cnd"))) {
+                    InputStreamReader cndReader = new InputStreamReader(stream);
+                    CndImporter.registerNodeTypes(cndReader, session, true);
+                }
+                siteType = nodeTypeManager.getNodeType("cpp:Site");
+                if (!siteType.isNodeType("cpl:releaseRoot")) {
+                    LOG.warn("OK - we migrated the nodetypes so that cpp:Site does now contain cpl:releaseRoot");
+                }
+            } else {
+                LOG.info("OK: cpp:Site contains cpl:releaseRoot");
+            }
+        } catch (Exception rex) {
+            LOG.error(rex.getMessage(), rex);
+            throw new PackageException(rex);
+        }
+    }
+
 
 }
