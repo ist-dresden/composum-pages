@@ -13,14 +13,14 @@
         <div class="composum-pages-tools_right-actions">
             <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
                 <button type="button"
-                        class="fa fa-check-square composum-pages-tools_button btn btn-default release-public"
-                        title="Public Release..."></button>
+                        class="fa fa-globe composum-pages-tools_button btn btn-default release-public"
+                        title="${cpn:i18n(slingRequest,'Public Release')}..."></button>
                 <button type="button"
                         class="fa fa-eye composum-pages-tools_button btn btn-default release-preview"
-                        title="Preview Release..."></button>
+                        title="${cpn:i18n(slingRequest,'Preview Release')}..."></button>
                 <button type="button"
                         class="fa fa-trash composum-pages-tools_button btn btn-default release-delete"
-                        title="Delete Release..."></button>
+                        title="${cpn:i18n(slingRequest,'Delete Release')}..."></button>
             </div>
         </div>
     </div>

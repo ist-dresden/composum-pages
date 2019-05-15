@@ -10,19 +10,19 @@
             <h4 class="panel-title">
                 <a class="collapsed" role="button" data-toggle="collapse"
                    href="#modifiedPagesPanel" aria-expanded="false"
-                   aria-controls="modifiedPagesPanel">${cpn:i18n(slingRequest, 'Modified Pages')}</a>
+                   aria-controls="modifiedPagesPanel">${cpn:i18n(slingRequest,'Modified Pages')}</a>
             </h4>
             <c:if test="${site.editMode}">
                 <div class="btn-group" role="group" aria-label="...">
-                    <cpn:text tagName="button" tagClass="btn btn-default checkpoint"
-                              i18n="true">Do Finalize...</cpn:text>
+                    <button class="btn btn-default release" i18n="true"><i
+                            class="fa fa-plaY"></i>${cpn:i18n(slingRequest,'Activate')}</button>
                 </div>
             </c:if>
         </div>
         <div id="modifiedPagesPanel" class="panel-collapse collapse in" role="tabpanel"
              aria-labelledby="modifiedPagesHead">
             <div class="panel-body">
-                <table class="${siteCssBase}_table table">
+                <table class="${siteCssBase}_table table table-condensed">
                     <thead class="${siteCssBase}_thead">
                     <tr>
                         <c:if test="${site.editMode}">

@@ -1,7 +1,7 @@
-<%@page session="false" pageEncoding="UTF-8"%>
+<%@page session="false" pageEncoding="UTF-8" %>
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <%@taglib prefix="cpn" uri="http://sling.composum.com/cpnl/1.0" %>
-<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <cpp:defineFrameObjects/>
 <cpp:element var="site" type="com.composum.pages.stage.model.edit.site.SiteModel" mode="none"
              cssBase="composum-pages-stage-edit-site-page-modified" data-path="@{site.site.path}">
@@ -13,9 +13,9 @@
         <div class="composum-pages-tools_right-actions">
             <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
                 <button type="button"
-                        class="fa fa-circle-o checkpoint composum-pages-tools_button btn btn-default"
-                        title="Do Finalize...">
-                    <span class="composum-pages-tools_button-label">Finalize</span></button>
+                        class="fa fa-play checkpoint composum-pages-tools_button btn btn-default"
+                        title="${cpn:i18n(slingRequest,'Activate selected pages')}...">
+                    <span class="composum-pages-tools_button-label">${cpn:i18n(slingRequest,'Activate')}</span></button>
             </div>
         </div>
     </div>

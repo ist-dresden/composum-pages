@@ -10,6 +10,10 @@
         text-rendering: auto;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
+
+        &.fa-play, &.fa-pause, &.fa-stop{
+            font-size: 95%;
+        }
     }
 
     .tabbed-widget {

@@ -24,6 +24,11 @@
                         class="composum-pages-tools_button-label">${cpn:i18n(slingRequest,'Activate Page')}</span>
                 </button>
                 <button type="button"
+                        class="fa fa-pause ${versionsCssBase}_action_unactivate composum-pages-tools_button btn btn-default"
+                        title="${cpn:i18n(slingRequest,'Unactivate Page')}"><span
+                        class="composum-pages-tools_button-label">${cpn:i18n(slingRequest,'Unactivate Page')}</span>
+                </button>
+                <button type="button"
                         class="fa fa-stop ${versionsCssBase}_action_deactivate composum-pages-tools_button btn btn-default"
                         title="${cpn:i18n(slingRequest,'Deactivate Page')}"><span
                         class="composum-pages-tools_button-label">${cpn:i18n(slingRequest,'Deactivate Page')}</span>

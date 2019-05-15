@@ -3,7 +3,7 @@
         jcr:primaryType="sling:OrderedFolder"
         embed="[
             composum/pages/stage/edit/tools/site/releases/css/releases.css,
-            composum/pages/stage/edit/tools/site/finished/css/finished.css,
+            composum/pages/stage/edit/tools/site/activated/css/activated.css,
             composum/pages/stage/edit/tools/site/modified/css/modified.css,
             composum/pages/stage/edit/tools/page/versions/css/versions.css,
             jslibs/chartist/0.11.0/chartist.css,

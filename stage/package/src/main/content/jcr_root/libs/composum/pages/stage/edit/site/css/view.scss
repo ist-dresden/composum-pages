@@ -17,13 +17,14 @@
             .btn-group {
                 float: right;
                 margin-top: -6px;
+                margin-left: 10px;
 
                 .btn {
                     padding-top: 3px;
                     padding-bottom: 3px;
 
-                    &.release-delete {
-                        margin-right: 10px;
+                    .fa {
+                        margin-right: 8px;
                     }
                 }
             }
@@ -34,7 +35,7 @@
     .composum-pages-stage-edit-site {
 
         &-page-modified,
-        &-page-finished {
+        &-page-activated {
 
             &_page {
 

@@ -10,7 +10,7 @@
             css: { // edit UI CSS selector keys
                 page: {
                     base: 'composum-pages-stage-edit-site-page',
-                    _finished: '-finished',
+                    _activated: '-activated',
                     _modified: '-modified',
                     _selectAll: '_page-select-all',
                     _select: '_page-select'
@@ -92,21 +92,21 @@
 
         // release creation
 
-        releases.FinishedPages = Backbone.View.extend({
+        releases.ActivatedPages = Backbone.View.extend({
 
             initialize: function () {
                 var c = releases.const.css.page;
                 this.sitePath = this.$el.data('path');
                 this.$button = this.$('button.release');
                 this.$button.click(_.bind(this.doRelease, this));
-                this.$selectAllBox = this.$('.' + c.base + c._finished + c._selectAll);
+                this.$selectAllBox = this.$('.' + c.base + c._activated + c._selectAll);
                 this.$selectAllBox.on("change", _.bind(this.selectAll, this));
             },
 
             selectAll: function (event) {
                 var c = releases.const.css.page;
                 event.preventDefault();
-                this.$('.' + c.base + c._finished + c._select).each(function (index, value) {
+                this.$('.' + c.base + c._activated + c._select).each(function (index, value) {
                     value.checked = event.currentTarget.checked;
                 });
             },
@@ -116,7 +116,7 @@
                 var u = releases.const.url.release;
                 event.preventDefault();
                 if (this.sitePath) {
-                    var objects = $('.' + c.base + c._finished + c._select)
+                    var objects = $('.' + c.base + c._activated + c._select)
                         .filter(function (index, element) {
                             return element.checked;
                         })
@@ -148,7 +148,7 @@
 
         });
 
-        releases.finishedPages = core.getView('.finishedPages', releases.FinishedPages);
+        releases.activatedPages = core.getView('.activatedPages', releases.ActivatedPages);
 
         // release manipulation
 

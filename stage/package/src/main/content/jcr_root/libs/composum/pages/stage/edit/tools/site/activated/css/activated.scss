@@ -3,7 +3,7 @@
 @import "../../../../css/variables";
 @import "../../../../css/mixins";
 
-.composum-pages-stage-edit-tools-site-finished {
+.composum-pages-stage-edit-tools-site-activated {
 
     &_tools-panel {
         position: absolute;
@@ -14,7 +14,7 @@
         @include scrolldark;
     }
 
-    .composum-pages-stage-edit-site-page-finished {
+    .composum-pages-stage-edit-site-page-activated {
 
         &_page-select-all {
             margin: $edit-actions-spacing-v 0 $edit-actions-spacing-v $edit-actions-spacing-h*4
