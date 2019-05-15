@@ -114,7 +114,7 @@ public class SetupHook implements InstallHook {
             Session session = ctx.getSession();
             NodeTypeManager nodeTypeManager = session.getWorkspace().getNodeTypeManager();
             NodeType siteType = nodeTypeManager.getNodeType("cpp:Site");
-            if (1 == 1 || !siteType.isNodeType("cpl:releaseRoot")) {
+            if (!siteType.isNodeType("cpl:releaseRoot")) {
                 LOG.warn("cpp:Site does not contain cpl:releaseRoot even after package installation - updating it.");
                 createCplReleaseNodes(ctx);
 
@@ -125,7 +125,7 @@ public class SetupHook implements InstallHook {
                 }
 
                 siteType = nodeTypeManager.getNodeType("cpp:Site");
-                if (siteType.isNodeType("cpl:releaseRoot")) {
+                if (!siteType.isNodeType("cpl:releaseRoot")) {
                     LOG.error("cpp:Site does still not contain cpl:releaseRoot even after attempted migration!");
                 }
             } else {
