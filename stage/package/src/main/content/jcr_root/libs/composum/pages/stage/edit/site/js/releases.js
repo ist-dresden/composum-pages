@@ -160,42 +160,27 @@
                 this.$buttonPublic = this.$('button.release-public');
                 this.$buttonPreview = this.$('button.release-preview');
                 this.$buttonDelete = this.$('button.release-delete');
+                this.$buttonFinalize = this.$('button.release-finalize');
                 this.$buttonPublic.click(_.bind(this.publicRelease, this));
                 this.$buttonPreview.click(_.bind(this.previewRelease, this));
                 this.$buttonDelete.click(_.bind(this.deleteRelease, this));
+                this.$buttonFinalize.click(_.bind(this.doFinalize, this));
             },
 
-            doFinish: function (event) {
+            doFinalize: function (event) {
                 var c = releases.const.css.page;
                 var u = releases.const.url.release;
                 event.preventDefault();
                 if (this.sitePath) {
-                    var objects = $('.' + c.base + c._activated + c._select)
-                        .filter(function (index, element) {
-                            return element.checked;
-                        })
-                        .map(function (index, element) {
-                            return element.dataset.path;
-                        })
-                        .toArray().toString();
                     if (pages.elements) { // context is a page
                         pages.elements.openEditDialog({
                             path: this.sitePath
                         }, {
                             url: u.root + u._finalize
-                        }, {
-                            objects: objects
                         });
                     } else { // context is the stage edit frame
                         pages.dialogs.openEditDialog(undefined, this.sitePath, undefined, undefined/*context*/,
-                            u.root + u._finalize,
-                            function (dialog) {
-                                if (objects) {
-                                    dialog.applyData({
-                                        objects: objects
-                                    });
-                                }
-                            });
+                            u.root + u._finalize);
                     }
                 }
             },

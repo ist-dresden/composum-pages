@@ -15,6 +15,8 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.version.Version;
@@ -99,6 +101,17 @@ public class PagesVersionsService implements VersionsService {
             history.removeVersion(version.getName());
         }
         manager.checkout(path);
+    }
+
+    /**
+     * @return a collection of all versionables which are changed in a release in comparision to the release before
+     */
+    @Override
+    public Collection<Page> findReleaseChanges(@Nonnull final BeanContext context, @Nonnull final Resource root,
+                                               @Nullable final SiteRelease release) {
+        List<Page> result = new ArrayList<>();
+        //findReleaseChanges(context, root, result); // TODO implementation
+        return result;
     }
 
     @Override

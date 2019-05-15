@@ -228,15 +228,10 @@ public class ReleaseServlet extends AbstractServiceServlet {
                 if (path == null) return;
                 final String sitePath = path.endsWith("/jcr:content") ? path.substring(0, path.lastIndexOf('/')) : path;
 
-                final String releaseName = getStringParameter(request, response, "releaseName", "release name is required");
-                if (releaseName == null) return;
-
-                final String title = getStringParameter(request, response, "title", "release title is required");
-                if (title == null) return;
-
-                final String description = getStringParameter(request, response, "description", "release description is required");
-                if (description == null) return;
-
+                final String numberPolicy = getStringParameter(request, response, "number", "release number policy");
+                if (numberPolicy == null) return;
+                final String title = request.getParameter("title");
+                final String description = request.getParameter("description");
                 final RequestParameter objectsParameter = request.getRequestParameter("objects");
                 final String objectsString;
                 if (objectsParameter != null) {
@@ -255,7 +250,7 @@ public class ReleaseServlet extends AbstractServiceServlet {
 
                 ReleaseNumberCreator releaseType;
                 try {
-                    releaseType = ReleaseNumberCreator.valueOf(releaseName);
+                    releaseType = ReleaseNumberCreator.valueOf(numberPolicy);
                 } catch (IllegalArgumentException e) {
                     releaseType = ReleaseNumberCreator.MAJOR;
                 }
@@ -267,8 +262,12 @@ public class ReleaseServlet extends AbstractServiceServlet {
                 LOG.info("Release update result: {}", result);
 
                 ResourceHandle metaData = ResourceHandle.use(release.getMetaDataNode());
-                metaData.setProperty(ResourceUtil.PROP_TITLE, title);
-                metaData.setProperty(ResourceUtil.PROP_DESCRIPTION, description);
+                if (StringUtils.isNotBlank(title)) {
+                    metaData.setProperty(ResourceUtil.PROP_TITLE, title);
+                }
+                if (StringUtils.isNotBlank(description)) {
+                    metaData.setProperty(ResourceUtil.PROP_DESCRIPTION, description);
+                }
                 metaData.setProperty(ResourceUtil.PROP_LAST_MODIFIED, Calendar.getInstance());
                 metaData.setProperty("jcr:lastModifiedBy", resourceResolver.getUserID());
                 resourceResolver.commit();

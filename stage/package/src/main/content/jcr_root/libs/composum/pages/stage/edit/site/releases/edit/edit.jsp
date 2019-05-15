@@ -7,7 +7,7 @@
     <input name="path" type="hidden" value="${site.path}" class="${siteCssBase}_path"/>
     <div class="row">
         <div class="col col-xs-4">
-            <cpp:widget name="number" label="Number" type="select" options="major,minor,bugfix" rules="mandatory"/>
+            <cpp:widget label="Number" type="static"/>
         </div>
         <div class="col col-xs-8">
             <cpp:widget name="title" label="Title" type="textfield"/>

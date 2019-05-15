@@ -6,10 +6,11 @@
                 successEvent="site:changed">
     <input name="path" type="hidden" value="${site.path}" class="${siteCssBase}_path"/>
     <div class="row">
-        <div class="col col-xs-4">
-            <cpp:widget label="Number" type="static"/>
+        <div class="col col-xs-3">
+            <cpp:widget name="number" label="Number" type="select" rules="mandatory"
+                        options="MAJOR:major (X.y.z),MINOR:minor (x.Y.z),BUGFIX:bugfix (x.y.Z)"/>
         </div>
-        <div class="col col-xs-8">
+        <div class="col col-xs-9">
             <cpp:widget name="title" label="Title" type="textfield"/>
         </div>
     </div>

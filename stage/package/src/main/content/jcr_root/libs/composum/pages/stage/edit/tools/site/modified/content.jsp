@@ -8,12 +8,13 @@
     <div class="composum-pages-tools_actions btn-toolbar">
         <div class="composum-pages-tools_left-actions">
             <input type="checkbox" class="composum-pages-stage-edit-site-page-modified_page-select-all"/>
-            <cpn:text tagName="label" value="Modified Pages" i18n="true"/>
+            <cpn:text tagName="label" value="Modified Pages" i18n="true"
+                      title="${cpn:i18n(slingRequest,'modified but last changes not activated yet')}"/>
         </div>
         <div class="composum-pages-tools_right-actions">
             <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
                 <button type="button"
-                        class="fa fa-play checkpoint composum-pages-tools_button btn btn-default"
+                        class="fa fa-play activate composum-pages-tools_button btn btn-default"
                         title="${cpn:i18n(slingRequest,'Activate selected pages')}...">
                     <span class="composum-pages-tools_button-label">${cpn:i18n(slingRequest,'Activate')}</span></button>
             </div>

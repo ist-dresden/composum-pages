@@ -5,6 +5,8 @@ import com.composum.pages.commons.model.SiteRelease;
 import com.composum.sling.core.BeanContext;
 import org.apache.sling.api.resource.Resource;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.jcr.RepositoryException;
 import java.util.Collection;
 
@@ -23,6 +25,12 @@ public interface VersionsService {
 
     void restoreVersion(BeanContext context, String path, String versionName)
             throws RepositoryException;
+
+    /**
+     * @return a collection of all versionables which are changed in a release in comparision to the release before
+     */
+    Collection<Page> findReleaseChanges(@Nonnull BeanContext context, @Nonnull Resource root,
+                                        @Nullable SiteRelease release);
 
     Collection<Page> findModifiedPages(BeanContext context, Resource root);
 
