@@ -1,8 +1,10 @@
 package com.composum.pages.stage.model.widget;
 
 import com.composum.pages.commons.PagesConstants.ReferenceType;
+import com.composum.pages.commons.model.Page;
 import org.apache.sling.api.resource.Resource;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -17,11 +19,11 @@ public class PageReferences extends ReferencesWidget {
     private transient ReferenceType scope;
     private transient Boolean unresolved;
 
-    protected List<Reference> retrieveReferences() {
+    protected List<Reference> retrieveReferences(@Nonnull final Page referrer) {
         List<Reference> references = new ArrayList<>();
-        Collection<Resource> resources = getPageManager().getReferences(getPage(), getScope(), isUnresolved());
+        Collection<Resource> resources = getPageManager().getReferences(referrer, getScope(), isUnresolved());
         for (Resource resource : resources) {
-            references.add(new Reference(resource));
+            references.add(new Reference(referrer, resource));
         }
         return references;
     }

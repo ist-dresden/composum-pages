@@ -22,13 +22,19 @@
                 }
             },
             url: { // servlet URLs for GET and change requests
-                modified: {
-                    checkpoint: '/bin/cpm/pages/edit.checkpoint.json'
+                edit: {
+                    servlet: '/bin/cpm/pages/edit',
+                    _resource: '.editResource.html',
+                    _params: '?attr=pages'
+                },
+                dialog: {
+                    activate: '/libs/composum/pages/stage/edit/default/page/dialog/activate'
                 },
                 release: {
                     servlet: '/bin/cpm/pages/release.',
                     root: '/libs/composum/pages/stage/edit/site/releases/',
-                    _create: 'create.html',
+                    _edit: 'edit.html',
+                    _finalize: 'finalize.html',
                     _delete: 'delete.html'
                 }
             }
@@ -41,8 +47,8 @@
             initialize: function () {
                 var c = releases.const.css.page;
                 this.sitePath = this.$el.data('path');
-                this.$button = this.$('button.checkpoint');
-                this.$button.click(_.bind(this.doCheckpoint, this));
+                this.$button = this.$('button.activate');
+                this.$button.click(_.bind(this.doActivate, this));
                 this.$selectAllBox = this.$('.' + c.base + c._modified + c._selectAll);
                 this.$selectAllBox.on("change", _.bind(this.selectAll, this));
             },
@@ -55,9 +61,9 @@
                 });
             },
 
-            doCheckpoint: function (event) {
+            doActivate: function (event) {
                 var c = releases.const.css.page;
-                var u = releases.const.url.modified;
+                var u = releases.const.url;
                 event.preventDefault();
                 if (this.sitePath) {
                     var objects = $('.' + c.base + c._modified + c._select)
@@ -65,27 +71,22 @@
                             return element.checked;
                         })
                         .map(function (index, element) {
-                            return element.dataset.path;
+                            return {path: element.dataset.path};
                         })
-                        .toArray().toString();
-                    core.ajaxPost(u.checkpoint, {
-                            paths: objects
-                        }, {},
-                        _.bind(function () {
-                            if (pages.elements) {
-                                pages.elements.triggerEvent(pages.elements.const.event.site.changed, [this.sitePath]);
-                            } else {
-                                pages.log.debug('site.trigger.' + pages.const.event.site.changed + '(' + this.sitePath + ')');
-                                $(document).trigger(pages.const.event.site.changed, [this.sitePath]);
-                            }
-                        }, this), _.bind(function (result) {
-                            var fn = pages.elements ? pages.elements.alertMessage : core.alert;
-                            fn.call(this, 'danger', 'Error', 'Error on creating checkpoint', result);
-                        }, this)
-                    );
+                        .toArray();
+                    var url = u.edit.servlet + u.edit._resource + u.dialog.activate + u.edit._params;
+                    if (pages.elements) { // context is a page
+                        pages.elements.openGenericDialog({
+                            path: this.sitePath
+                        }, {
+                            url: url,
+                            type: 'pages.dialogs.ActivatePageDialog'
+                        }, objects);
+                    } else { // context is the stage edit frame
+                        pages.dialogs.openGenericDialog(url, pages.dialogs.ActivatePageDialog, objects);
+                    }
                 }
             }
-
         });
 
         releases.modifiedPages = core.getView('.modifiedPages', releases.ModifiedPages);
@@ -98,7 +99,7 @@
                 var c = releases.const.css.page;
                 this.sitePath = this.$el.data('path');
                 this.$button = this.$('button.release');
-                this.$button.click(_.bind(this.doRelease, this));
+                this.$button.click(_.bind(this.doRevert, this));
                 this.$selectAllBox = this.$('.' + c.base + c._activated + c._selectAll);
                 this.$selectAllBox.on("change", _.bind(this.selectAll, this));
             },
@@ -111,7 +112,7 @@
                 });
             },
 
-            doRelease: function (event) {
+            doRevert: function (event) {
                 var c = releases.const.css.page;
                 var u = releases.const.url.release;
                 event.preventDefault();
@@ -128,13 +129,13 @@
                         pages.elements.openEditDialog({
                             path: this.sitePath
                         }, {
-                            url: u.root + u._create
+                            url: u.root + u._finalize
                         }, {
                             objects: objects
                         });
                     } else { // context is the stage edit frame
                         pages.dialogs.openEditDialog(undefined, this.sitePath, undefined, undefined/*context*/,
-                            u.root + u._create,
+                            u.root + u._finalize,
                             function (dialog) {
                                 if (objects) {
                                     dialog.applyData({
@@ -162,6 +163,41 @@
                 this.$buttonPublic.click(_.bind(this.publicRelease, this));
                 this.$buttonPreview.click(_.bind(this.previewRelease, this));
                 this.$buttonDelete.click(_.bind(this.deleteRelease, this));
+            },
+
+            doFinish: function (event) {
+                var c = releases.const.css.page;
+                var u = releases.const.url.release;
+                event.preventDefault();
+                if (this.sitePath) {
+                    var objects = $('.' + c.base + c._activated + c._select)
+                        .filter(function (index, element) {
+                            return element.checked;
+                        })
+                        .map(function (index, element) {
+                            return element.dataset.path;
+                        })
+                        .toArray().toString();
+                    if (pages.elements) { // context is a page
+                        pages.elements.openEditDialog({
+                            path: this.sitePath
+                        }, {
+                            url: u.root + u._finalize
+                        }, {
+                            objects: objects
+                        });
+                    } else { // context is the stage edit frame
+                        pages.dialogs.openEditDialog(undefined, this.sitePath, undefined, undefined/*context*/,
+                            u.root + u._finalize,
+                            function (dialog) {
+                                if (objects) {
+                                    dialog.applyData({
+                                        objects: objects
+                                    });
+                                }
+                            });
+                    }
+                }
             },
 
             changeRelease: function (action) {

@@ -4,6 +4,7 @@ import com.composum.pages.commons.model.Page;
 import com.composum.pages.commons.model.Site;
 import org.apache.sling.api.resource.Resource;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -18,15 +19,12 @@ public class PageReferrers extends ReferencesWidget {
     private transient Resource scope;
     private transient Boolean resolved;
 
-    public Resource getScope() {
-        return scope != null ? scope : getPage().getSite().getResource();
-    }
-
-    protected List<Reference> retrieveReferences() {
+    protected List<Reference> retrieveReferences(@Nonnull final Page target) {
         List<Reference> references = new ArrayList<>();
-        Collection<Resource> resources = getPageManager().getReferrers(getPage(), getScope(), isResolved());
+        Collection<Resource> resources = getPageManager().getReferrers(target,
+                scope != null ? scope : target.getSite().getResource(), isResolved());
         for (Resource resource : resources) {
-            references.add(new Reference(resource));
+            references.add(new Reference(target, resource));
         }
         return references;
     }
@@ -37,7 +35,7 @@ public class PageReferrers extends ReferencesWidget {
 
     @Override
     public String filterWidgetAttribute(String attributeKey, Object attributeValue) {
-        if (ATTR_PAGE.equals(attributeKey)) {
+        if (ATTR_SCOPE.equals(attributeKey)) {
             scope = attributeValue instanceof Site ? ((Site) attributeValue).getResource()
                     : attributeValue instanceof Page ? ((Page) attributeValue).getResource()
                     : attributeValue instanceof Resource ? (Resource) attributeValue

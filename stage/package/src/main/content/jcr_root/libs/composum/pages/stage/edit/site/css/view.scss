@@ -5,6 +5,34 @@
 
 .composum-pages-stage-edit-site {
 
+    .btn-group, .heading-input {
+        float: right;
+        margin-left: 10px;
+    }
+
+    .btn-group {
+        margin-top: -6px;
+
+        .btn {
+            padding-top: 3px;
+            padding-bottom: 3px;
+
+            .fa {
+                margin-right: 8px;
+            }
+        }
+    }
+
+    .heading-input {
+        margin-top: -2px;
+        margin-bottom: 8px;
+
+        .checkbox {
+            display: inline;
+            margin-right: 5px;
+        }
+    }
+
     .tab-pane {
 
         .panel:first-child {
@@ -20,27 +48,13 @@
             .panel-title {
                 float: left;
             }
-
-            .btn-group {
-                float: right;
-                margin-top: -6px;
-                margin-left: 10px;
-
-                .btn {
-                    padding-top: 3px;
-                    padding-bottom: 3px;
-
-                    .fa {
-                        margin-right: 8px;
-                    }
-                }
-            }
         }
 
         .panel-body {
+            padding: 10px;
 
             .table {
-                
+
                 &:last-child {
                     margin-bottom: 0;
                 }
@@ -57,8 +71,78 @@
             &_page {
 
                 &-select-all {
-                    margin: 0 0 4px;
+                    margin: 8px 0 0;
                 }
+
+                &-select {
+                    margin: 7px 0 0;
+                }
+            }
+
+            &_thead, &_tbody {
+
+                ._input {
+                    width: 33px;
+                    max-width: 33px;
+                    padding: 0;
+                    text-align: center;
+                    vertical-align: top;
+                }
+
+                .release-status {
+
+                    &_initial {
+
+                        ._input {
+                            background-color: $release-status-initial;
+                        }
+                    }
+
+                    &_activated {
+
+                        ._input {
+                            background-color: $release-status-activated;
+                        }
+                    }
+
+                    &_modified {
+
+                        ._input {
+                            background-color: $release-status-modified;
+                        }
+                    }
+
+                    &_deactivated {
+
+                        ._input {
+                            background-color: $release-status-deactivated;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    .composum-pages-stage-edit-site-releases {
+
+        &-release {
+
+            &:first-child {
+
+                .composum-pages-stage-edit-site-releases-release {
+
+                    &_input, &_content {
+                        border-top: none;
+                    }
+                }
+            }
+
+            &_input {
+                width: 30px;
+            }
+
+            &_content {
+                width: 99%;
             }
         }
     }

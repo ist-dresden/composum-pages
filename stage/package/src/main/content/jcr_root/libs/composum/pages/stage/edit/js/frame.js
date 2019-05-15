@@ -415,6 +415,14 @@
                                     });
                             }
                             break;
+                        case t.dialog.generic:
+                            // opens an edit dialog to perform editing of the content of the path transmitted
+                            this.log.frame.trace('frame.message.on.dialog.generic(' + message[2] + ')');
+                            if (args.target) {
+                                pages.dialogs.openGenericDialog(args.dialog.url, eval(args.dialog.type), args.values,
+                                    args.target.name, args.target.path, args.target.type);
+                            }
+                            break;
                         case t.dialog.alert:
                             // displays an alert message by opening an alert dialog
                             this.log.frame.trace('frame.message.on.dialog.alert(' + message[2] + ')');

@@ -24,9 +24,9 @@
                         class="composum-pages-tools_button-label">${cpn:i18n(slingRequest,'Activate Page')}</span>
                 </button>
                 <button type="button"
-                        class="fa fa-pause ${versionsCssBase}_action_withdraw composum-pages-tools_button btn btn-default"
-                        title="${cpn:i18n(slingRequest,'Withdraw Page')}"><span
-                        class="composum-pages-tools_button-label">${cpn:i18n(slingRequest,'Withdraw Page')}</span>
+                        class="fa fa-pause ${versionsCssBase}_action_revert composum-pages-tools_button btn btn-default"
+                        title="${cpn:i18n(slingRequest,'Revert Page')}"><span
+                        class="composum-pages-tools_button-label">${cpn:i18n(slingRequest,'Revert Page')}</span>
                 </button>
                 <button type="button"
                         class="fa fa-stop ${versionsCssBase}_action_deactivate composum-pages-tools_button btn btn-default"

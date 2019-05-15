@@ -24,13 +24,17 @@
                     <button type="button" class="btn btn-default release-preview"><i
                             class="fa fa-eye"></i>${cpn:i18n(slingRequest,'Preview')}</button>
                 </div>
+                <div class="btn-group" role="group" aria-label="...">
+                    <button type="button" class="btn btn-default release-edit"><i
+                            class="fa fa-pencil"></i>${cpn:i18n(slingRequest,'Edit')}</button>
+                </div>
             </c:if>
         </div>
         <div id="releasesPanel" class="panel-collapse collapse in" role="tabpanel"
              aria-labelledby="releasesHead">
             <div class="panel-body">
                 <table class="${siteCssBase}_table table table-condensed">
-                    <thead class="${siteCssBase}_thead">
+                    <%--thead class="${siteCssBase}_thead">
                     <tr>
                         <c:if test="${site.editMode}">
                             <th class="${siteCssBase}_select"></th>
@@ -40,7 +44,7 @@
                         <th class="${siteCssBase}_description">Description</th>
                         <th class="${siteCssBase}_categories">Categories</th>
                     </tr>
-                    </thead>
+                    </thead--%>
                     <tbody class="${siteCssBase}_tbody">
                     <c:forEach items="${site.releases}" var="release">
                         <sling:include resource="${release.resource}"

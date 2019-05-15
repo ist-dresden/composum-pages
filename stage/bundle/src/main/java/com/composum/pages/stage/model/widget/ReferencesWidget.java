@@ -4,12 +4,20 @@ import com.composum.pages.commons.model.GenericModel;
 import com.composum.pages.commons.model.Page;
 import com.composum.pages.commons.model.Site;
 import com.composum.pages.commons.service.PageManager;
+import com.composum.pages.commons.service.ResourceManager;
 import com.composum.pages.commons.widget.MultiSelect;
 import com.composum.pages.commons.widget.WidgetModel;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
 
+import javax.annotation.Nonnull;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * the abstract ...References model
@@ -17,13 +25,16 @@ import java.util.List;
 public abstract class ReferencesWidget extends MultiSelect implements WidgetModel {
 
     public static final String ATTR_PAGE = "page";
+    public static final String ATTR_PAGES = "pages";
     public static final String ATTR_SCOPE = "scope";
 
-    public class Reference {
+    public class Reference implements Comparable<Reference> {
 
+        protected final Page referrer;
         protected final GenericModel model;
 
-        public Reference(Resource resource) {
+        public Reference(Page referrer, Resource resource) {
+            this.referrer = referrer;
             this.model = new GenericModel(getContext(), resource);
         }
 
@@ -42,7 +53,7 @@ public abstract class ReferencesWidget extends MultiSelect implements WidgetMode
 
         public String getPathInSite() {
             String path = getPath();
-            Site site = getPage().getSite();
+            Site site = referrer.getSite();
             if (site != null) {
                 String siteRoot = site.getPath() + "/";
                 if (path.startsWith(siteRoot)) {
@@ -51,36 +62,82 @@ public abstract class ReferencesWidget extends MultiSelect implements WidgetMode
             }
             return path;
         }
+
+        @Override
+        public int compareTo(Reference other) {
+            return getPath().compareTo(other.getPath());
+        }
     }
 
-    private transient Page page;
+    private transient Set<Page> pages;
 
-    private transient List<Reference> references;
+    private transient TreeSet<Reference> references;
 
     private transient PageManager pageManager;
 
-    public List<Reference> getReferences() {
+    public Set<Reference> getReferences() {
         if (references == null) {
-            references = retrieveReferences();
+            references = new TreeSet<>();
+            for (Page page : getPages()) {
+                references.addAll(retrieveReferences(page));
+            }
         }
         return references;
     }
 
-    protected abstract List<Reference> retrieveReferences();
+    protected abstract List<Reference> retrieveReferences(@Nonnull Page page);
 
-    public Page getPage() {
-        return page != null ? page : getCurrentPage();
+    public Set<Page> getPages() {
+        if (pages == null) {
+            SlingHttpServletRequest request = getContext().getRequest();
+            if (request != null) {
+                pages = getPages(request.getAttribute(ATTR_PAGES));
+            }
+            if (pages == null) {
+                pages = Collections.singleton(getCurrentPage());
+            }
+        }
+        return pages;
     }
 
     @Override
     public String filterWidgetAttribute(String attributeKey, Object attributeValue) {
         if (ATTR_PAGE.equals(attributeKey)) {
-            page = attributeValue instanceof Page ? (Page) attributeValue
-                    : attributeValue instanceof Resource ? getPageManager().createBean(getContext(), (Resource) attributeValue)
-                    : attributeValue != null ? getPageManager().createBean(getContext(),
-                    getContext().getResolver().getResource(attributeValue.toString())) : null;
+            Page page = getPageAttribute(attributeValue);
+            pages = page != null ? Collections.singleton(page) : null;
+            return null;
+        } else if (ATTR_PAGES.equals(attributeKey)) {
+            // a set of pages (multi page selection)...
+            pages = getPages(attributeValue);
             return null;
         }
         return attributeKey;
+    }
+
+    protected Set<Page> getPages(Object attributeValue) {
+        Set<Page> result = null;
+        Collection<?> objects = attributeValue instanceof ResourceManager.ReferenceList
+                ? (ResourceManager.ReferenceList) attributeValue
+                : attributeValue instanceof Object[] ? Arrays.asList((Object[]) attributeValue)
+                : attributeValue instanceof Collection ? ((Collection) attributeValue) : null;
+        if (objects != null) {
+            result = new TreeSet<>();
+            for (Object element : objects) {
+                Page page = getPageAttribute(element);
+                if (page != null) {
+                    result.add(page);
+                }
+            }
+        }
+        return result;
+    }
+
+    protected Page getPageAttribute(Object attributeValue) {
+        return attributeValue instanceof Page ? (Page) attributeValue
+                : attributeValue instanceof ResourceManager.ResourceReference
+                ? getPageManager().createBean(getContext(), ((ResourceManager.ResourceReference) attributeValue).getResource())
+                : attributeValue instanceof Resource ? getPageManager().createBean(getContext(), (Resource) attributeValue)
+                : attributeValue != null ? getPageManager().createBean(getContext(),
+                getContext().getResolver().getResource(attributeValue.toString())) : null;
     }
 }

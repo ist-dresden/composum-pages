@@ -37,6 +37,7 @@
                 action: 'trigger:action',
                 dialog: {
                     edit: 'dialog:edit',
+                    generic: 'dialog:generic',
                     alert: 'dialog:alert'
                 }
             },
@@ -312,23 +313,7 @@
                         }
                     },
                     _.bind(function (data) {
-                        this.$el.append(data);
-                        var $dialog = this.$el.children(':last-child');
-                        var dialog = core.getWidget(this.el, $dialog[0], viewType);
-                        if (dialog) {
-                            dialog.data = {
-                                name: name,
-                                path: path,
-                                type: type
-                            };
-                            if (_.isFunction(dialog.afterLoad)) {
-                                dialog.afterLoad(name, path, type, context);
-                            }
-                            if (_.isFunction(setupDialog)) {
-                                setupDialog(dialog);
-                            }
-                            dialog.show();
-                        }
+                        this.showDialogContent(data, viewType, name, path, type, context, setupDialog);
                     }, this), _.bind(function (xhr) {
                         if (xhr.status === 404) {
                             if (_.isFunction(onNotFound)) {
@@ -336,6 +321,26 @@
                             }
                         }
                     }, this));
+            },
+
+            showDialogContent: function (content, viewType, name, path, type, context, setupDialog) {
+                this.$el.append(content);
+                var $dialog = this.$el.children(':last-child');
+                var dialog = core.getWidget(this.el, $dialog[0], viewType);
+                if (dialog) {
+                    dialog.data = {
+                        name: name,
+                        path: path,
+                        type: type
+                    };
+                    if (_.isFunction(dialog.afterLoad)) {
+                        dialog.afterLoad(name, path, type, context);
+                    }
+                    if (_.isFunction(setupDialog)) {
+                        setupDialog(dialog);
+                    }
+                    dialog.show();
+                }
             },
 
             openDialog: function (id, url, viewType, initView, callback) {

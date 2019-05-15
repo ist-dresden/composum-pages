@@ -5,13 +5,12 @@
                 title="Create Release" submitLabel="Create" submit="/bin/cpm/pages/release.create.html"
                 successEvent="site:changed">
     <input name="path" type="hidden" value="${site.path}" class="${siteCssBase}_path"/>
-    <input name="objects" type="hidden" value="" class="${siteCssBase}_objects"/>
     <div class="row">
+        <div class="col col-xs-4">
+            <cpp:widget label="Number" type="static"/>
+        </div>
         <div class="col col-xs-8">
             <cpp:widget name="title" label="Title" type="textfield"/>
-        </div>
-        <div class="col col-xs-4">
-            <cpp:widget name="releaseName" label="Key" type="textfield"/>
         </div>
     </div>
     <div class="row">

@@ -297,6 +297,17 @@
                 dialogs.EditDialog, name, path, type, context, setupDialog);
         };
 
+        /**
+         * open a dialog rendered as response of a PUT request with JSON data
+         */
+        dialogs.openGenericDialog = function (url, viewType, data, name, path, type, context, setupDialog) {
+            core.ajaxPut(url, JSON.stringify(data), {},
+                _.bind(function (content, status, xhr) {
+                    pages.dialogHandler.showDialogContent(content, viewType, name, path, type, context, setupDialog);
+                }, this)
+            );
+        };
+
         //
         // elements in containers...
         //

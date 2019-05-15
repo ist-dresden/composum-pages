@@ -38,6 +38,7 @@ import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.request.RequestDispatcherOptions;
+import org.apache.sling.api.request.RequestPathInfo;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -82,6 +83,8 @@ import static com.composum.pages.commons.util.ResourceTypeUtil.TREE_ACTIONS_PATH
 public class EditServlet extends PagesContentServlet {
 
     private static final Logger LOG = LoggerFactory.getLogger(EditServlet.class);
+
+    public static final String PARAM_ATTR = "attr";
 
     public static final String DEFAULT_FILTER = "page";
 
@@ -158,7 +161,7 @@ public class EditServlet extends PagesContentServlet {
         pageData, isTemplate, isAllowedChild,
         siteTree, pageTree,
         resourceInfo, editDialog, newDialog,
-        editTile, editToolbar, treeActions,
+        editTile, editToolbar, treeActions, editResource,
         pageComponents, elementTypes, targetContainers, isAllowedElement, filterDropZones, componentCategories,
         insertElement, moveElement, copyElement,
         createPage, deletePage, moveContent, renameContent, copyContent,
@@ -204,6 +207,8 @@ public class EditServlet extends PagesContentServlet {
         operations.setOperation(ServletOperationSet.Method.GET, Extension.html,
                 Operation.treeActions, new GetTreeActions());
         operations.setOperation(ServletOperationSet.Method.GET, Extension.html,
+                Operation.editResource, new GetGenericResource());
+        operations.setOperation(ServletOperationSet.Method.GET, Extension.html,
                 Operation.context, new GetContextResource());
         operations.setOperation(ServletOperationSet.Method.GET, Extension.html,
                 Operation.contextTools, new GetContextTools());
@@ -247,6 +252,8 @@ public class EditServlet extends PagesContentServlet {
                 Operation.pageComponents, new GetPageComponents());
         operations.setOperation(ServletOperationSet.Method.PUT, Extension.html,
                 Operation.elementTypes, new GetElementTypes());
+        operations.setOperation(ServletOperationSet.Method.PUT, Extension.html,
+                Operation.editResource, new GetGenericResource());
         operations.setOperation(ServletOperationSet.Method.PUT, Extension.json,
                 Operation.filterDropZones, new FilterDropZones());
         operations.setOperation(ServletOperationSet.Method.PUT, Extension.json,
@@ -463,7 +470,8 @@ public class EditServlet extends PagesContentServlet {
                 RequestDispatcherOptions options = new RequestDispatcherOptions();
                 options.setForceResourceType(editResource.getPath());
                 options.setReplaceSelectors(selectors);
-                forward(request, response, contentResource, paramType, options);
+                SlingHttpServletRequest forwardRequest = prepareForward(request, options);
+                forward(forwardRequest, response, contentResource, paramType, options);
 
             } else {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -484,6 +492,56 @@ public class EditServlet extends PagesContentServlet {
 
         protected String getDefaultSelectors() {
             return "";
+        }
+
+        protected SlingHttpServletRequest prepareForward(@Nonnull final SlingHttpServletRequest request,
+                                                         @Nonnull final RequestDispatcherOptions options) {
+            return request;
+        }
+    }
+
+    /**
+     * response with a forward to GET the rendered resource referenced by the requests suffix
+     */
+    protected class GetGenericResource extends GetEditResource {
+
+        @Override
+        protected String getResourcePath(SlingHttpServletRequest request) {
+            RequestPathInfo pathInfo = request.getRequestPathInfo();
+            String suffix = pathInfo.getSuffix();
+            if (StringUtils.isNotBlank(suffix) && !"/".equals(suffix)) {
+                Resource resource = request.getResourceResolver().getResource(suffix);
+                if (resource != null) {
+                    return resource.getPath();
+                }
+            }
+            return null;
+        }
+
+        /**
+         * in case of a PUT request the requests data are provided as request attribute
+         * assuming that the data are a JSON array of resource reference objects (multi selection)
+         */
+        @Override
+        protected SlingHttpServletRequest prepareForward(@Nonnull final SlingHttpServletRequest request,
+                                                         @Nonnull final RequestDispatcherOptions options) {
+            if (HttpConstants.METHOD_PUT.equals(request.getMethod())) {
+                String attr = request.getParameter(PARAM_ATTR); // the request attribute name for the data
+                if (StringUtils.isNotBlank(attr)) {
+                    // prepare a list of references sent via PUT for the rendering of the edit resource
+                    try (final JsonReader reader = new JsonReader(request.getReader())) {
+                        final ResourceManager.ReferenceList references =
+                                resourceManager.getReferenceList(request.getResourceResolver(), reader);
+                        // the resource can access the references via request attribute...
+                        request.setAttribute(attr, references);
+                    } catch (IOException ex) {
+                        LOG.error(ex.getMessage(), ex);
+                    }
+                }
+                // forward request with 'GET'! for right component rendering
+                return new RequestUtil.GetWrapper(request);
+            }
+            return request;
         }
     }
 

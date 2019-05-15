@@ -14,8 +14,8 @@
             <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
                 <button type="button"
                         class="fa fa-pause release composum-pages-tools_button btn btn-default"
-                        title="${cpn:i18n(slingRequest,'Withdraw selected pages')}...">
-                    <span class="composum-pages-tools_button-label">${cpn:i18n(slingRequest,'Withdraw')}</span></button>
+                        title="${cpn:i18n(slingRequest,'Revert selected pages')}...">
+                    <span class="composum-pages-tools_button-label">${cpn:i18n(slingRequest,'Revert')}</span></button>
             </div>
         </div>
     </div>

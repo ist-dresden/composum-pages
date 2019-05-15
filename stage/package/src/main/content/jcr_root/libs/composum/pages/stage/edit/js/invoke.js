@@ -38,6 +38,7 @@
                 action: 'trigger:action',
                 dialog: {
                     edit: 'dialog:edit',
+                    generic: 'dialog:generic',
                     alert: 'dialog:alert'
                 }
             },
@@ -135,6 +136,29 @@
                 + JSON.stringify({
                     action: action,
                     reference: reference
+                }), '*');
+        };
+
+        /**
+         * open a dialog loaded via PUT with the generic 'editResource' selector
+         * @param target
+         * @param dialog
+         * @param values the values object transmitted as PUT data object (JSON)
+         */
+        elements.openGenericDialog = function (target, dialog, values) {
+            if (elements.log.getLevel() <= log.levels.DEBUG) {
+                elements.log.debug('elements.postMessage.' + elements.const.trigger.dialog.generic + '('
+                    + target + ','
+                    + dialog + ','
+                    + values + ')');
+
+            }
+            // call the action in the 'edit' layer of the UI
+            parent.postMessage(elements.const.trigger.dialog.generic
+                + JSON.stringify({
+                    target: target,
+                    dialog: dialog,
+                    values: values
                 }), '*');
         };
 

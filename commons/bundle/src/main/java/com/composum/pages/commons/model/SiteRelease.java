@@ -54,6 +54,10 @@ public class SiteRelease extends AbstractModel implements Comparable<SiteRelease
         return DisplayMode.isEditMode(DisplayMode.requested(context));
     }
 
+    public boolean isCurrent() {
+        return "current".equals(getKey());
+    }
+
     public String getKey() {
         return stagingRelease.getNumber();
     }

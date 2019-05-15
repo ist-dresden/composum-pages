@@ -4,6 +4,8 @@
 <cpp:defineFrameObjects/>
 <cpp:editDialog var="model" type="com.composum.pages.commons.model.Page" selector="generic" languageContext="false"
                 title="Activate Page" submitLabel="Activate">
+    <%-- the selected pages in the requests 'pages' attribute - not rendered if no such attribute declared --%>
+    <cpp:widget type="hidden" name="target" request="pages"/>
     <cpp:widget label="Page References" type="page-references" name="page-references" scope="page" unresolved="true"
                 hint="select unresolved page references for activation"/>
     <cpp:widget label="Asset References" type="page-references" name="asset-references" scope="asset" unresolved="true"
