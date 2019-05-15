@@ -15,7 +15,7 @@
             <c:if test="${site.editMode}">
                 <div class="btn-group" role="group" aria-label="...">
                     <button class="btn btn-default release" i18n="true"><i
-                            class="fa fa-pause"></i>${cpn:i18n(slingRequest,'Unactivate')}</button>
+                            class="fa fa-pause"></i>${cpn:i18n(slingRequest,'Withdraw')}</button>
                 </div>
             </c:if>
         </div>

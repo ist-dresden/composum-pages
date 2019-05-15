@@ -5,6 +5,13 @@
 
 .composum-pages-stage-edit-site {
 
+    .tab-pane {
+
+        .panel:first-child {
+            margin-top: 15px;
+        }
+    }
+
     .panel {
 
         .panel-heading {
@@ -26,6 +33,16 @@
                     .fa {
                         margin-right: 8px;
                     }
+                }
+            }
+        }
+
+        .panel-body {
+
+            .table {
+                
+                &:last-child {
+                    margin-bottom: 0;
                 }
             }
         }
