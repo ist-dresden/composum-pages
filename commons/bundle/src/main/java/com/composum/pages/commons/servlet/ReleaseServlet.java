@@ -256,7 +256,7 @@ public class ReleaseServlet extends AbstractServiceServlet {
                 }
 
                 // FIXME hps 2019-04-10 introduce actual parameter for release number type and base release
-                StagingReleaseManager.Release release = releaseManager.createRelease(resourceResolver.getResource(path), releaseType);
+                StagingReleaseManager.Release release = releaseManager.finalizeCurrentRelease(resourceResolver.getResource(path), releaseType);
                 LOG.info("Release created {}", release);
                 Map<String, SiblingOrderUpdateStrategy.Result> result = releaseManager.updateRelease(release, versionables);
                 LOG.info("Release update result: {}", result);
