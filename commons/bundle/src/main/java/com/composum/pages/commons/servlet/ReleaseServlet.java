@@ -222,7 +222,7 @@ public class ReleaseServlet extends AbstractServiceServlet {
                 }
 
                 StagingReleaseManager.Release release =
-                        releaseManager.createRelease(Objects.requireNonNull(resource), releaseType);
+                        releaseManager.finalizeCurrentRelease(Objects.requireNonNull(resource), releaseType);
                 LOG.info("Release created {}", release);
 
                 changeReleaseMetadata(request, release);
