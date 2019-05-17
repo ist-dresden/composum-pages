@@ -61,7 +61,7 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
     private transient Homepage homepage;
 
     private transient Collection<Page> modifiedPages;
-    private transient Collection<Page> unreleasedPages;
+    private transient Collection<Page> releaseChanges;
 
     public Site() {
     }
@@ -160,7 +160,7 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
     }
 
     /**
-     * return the list of content releases of this site
+     * @return the list of content releases of this site
      */
     public List<SiteRelease> getReleases() {
         StagingReleaseManager releaseManager = context.getService(StagingReleaseManager.class);
@@ -171,6 +171,9 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
         return result;
     }
 
+    /**
+     * @return the list of pages changed after last activation
+     */
     public Collection<Page> getModifiedPages() {
         if (modifiedPages == null) {
             modifiedPages = getVersionsService().findModifiedPages(getContext(), getResource());
@@ -178,16 +181,19 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
         return modifiedPages;
     }
 
-    public Collection<Page> getUnreleasedPages() {
-        if (unreleasedPages == null) {
+    /**
+     * @return the list of pages changed (modified and activated) for the current release
+     */
+    public Collection<Page> getReleaseChanges() {
+        if (releaseChanges == null) {
             final List<SiteRelease> releases = getReleases();
             final SiteRelease release = releases.isEmpty() ? null : releases.get(releases.size() - 1);
-            unreleasedPages = getUnreleasedPages(release);
+            releaseChanges = getReleaseChanges(release);
         }
-        return unreleasedPages;
+        return releaseChanges;
     }
 
-    public Collection<Page> getUnreleasedPages(SiteRelease releaseToCheck) {
+    public Collection<Page> getReleaseChanges(SiteRelease releaseToCheck) {
         Collection<Page> result;
         try {
             result = getVersionsService().findUnreleasedPages(getContext(), getResource(), releaseToCheck);

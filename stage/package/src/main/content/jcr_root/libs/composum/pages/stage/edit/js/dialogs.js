@@ -769,7 +769,10 @@
 
             doSubmit: function () {
                 var u = dialogs.const.edit.url.version;
-                var data = {};
+                var data = {target: []};
+                this.$('input[name="target"]').each(function () {
+                    data.target.push($(this).val());
+                });
                 if (this.refs.page && this.refs.page.isNotEmpty()) {
                     data.pageRef = this.refs.page.getValue();
                 }
@@ -779,7 +782,9 @@
                 core.ajaxPost(u.base + u.activate._action + this.data.path, data, {},
                     _.bind(function (result) {
                         var e = pages.const.event;
-                        $(document).trigger(e.page.state, [new pages.Reference(undefined, this.data.path)]);
+                        data.target.forEach(function (path) {
+                            $(document).trigger(e.page.state, [new pages.Reference(undefined, path)]);
+                        });
                         if (data.pageRef) {
                             data.pageRef.forEach(function (path) {
                                 $(document).trigger(e.page.state, [new pages.Reference(undefined, path)]);

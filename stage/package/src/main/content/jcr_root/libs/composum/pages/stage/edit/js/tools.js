@@ -7,7 +7,12 @@
         'use strict';
 
         tools.const = _.extend(tools.const || {}, {
-            tabsCssBase: 'tabbed-widget',
+            css: {
+                tabs: {
+                    base: 'tabbed-widget',
+                    _tab: '_tab'
+                }
+            },
             tabsClass: 'tabbed-widget_tabs',
             handleClass: 'tabbed-widget_handle',
             linkClass: 'tabbed-widget_link',
@@ -79,6 +84,11 @@
 
             getTabPanel: function (key) {
                 return this.$content.find('.' + tools.const.panelClass + '.' + key);
+            },
+
+            activateTab: function (shortKey) {
+                var c = tools.const.css.tabs;
+                this.selectTab(undefined, c.base + c._tab + '_' + shortKey);
             },
 
             selectTab: function (event, key) {
@@ -225,13 +235,22 @@
                 var e = pages.const.event;
                 $(document).on(e.site.selected + '.Navigation', _.bind(this.onSiteChanged, this));
                 $(document).on(e.site.changed + '.Navigation', _.bind(this.onSiteChanged, this));
+                $(document).on(e.page.state + '.Navigation', _.bind(this.onSiteChanged, this));
                 $(document).on(e.scope.changed + '.Navigation', _.bind(this.onScopeChanged, this));
             },
 
             initContent: function (options) {
+                this.$changesBadge = this.$('.badge.changes');
+                this.$modifiedBadge = this.$('.badge.modified');
                 this.$restrictToSite = this.$('.restrict-to-site');
                 this.$gotoSite = this.$('.goto-site');
                 this.$manageSites = this.$('.manage-sites');
+                this.$changesBadge.click(function (event) {
+                    tools.contextTabsHook.contextTabs.activateTab('siteChanges');
+                });
+                this.$modifiedBadge.click(function (event) {
+                    tools.contextTabsHook.contextTabs.activateTab('siteModified');
+                });
                 this.$restrictToSite.click(_.bind(this.toggleScope, this));
                 this.$gotoSite.click(_.bind(this.selectSite, this));
                 this.$manageSites.click(_.bind(this.manageSites, this));
@@ -246,7 +265,8 @@
                 }
             },
 
-            onSiteChanged: function (event, path) {
+            onSiteChanged: function (event, pathOrRef) {
+                var path = pathOrRef && pathOrRef.path ? pathOrRef.path : pathOrRef;
                 var u = tools.const.navigation.context.url;
                 var url = u.base + (path ? u._site + path : u._general);
                 core.getHtml(url, undefined, undefined, _.bind(function (data) {

@@ -13,9 +13,13 @@
                 <li role="presentation"><a href="#releases-tab" aria-controls="releases" role="tab"
                                            data-toggle="tab">${cpn:i18n(slingRequest,'Releases')}</a></li>
                 <li role="presentation" class="active"><a href="#current-tab" aria-controls="current" role="tab"
-                                                          data-toggle="tab">${cpn:i18n(slingRequest,'Current')}</a></li>
+                                                          title="${cpn:i18n(slingRequest,'pages activated with changes since the previous release')}"
+                                                          data-toggle="tab">${cpn:i18n(slingRequest,'Current')}<span
+                        class="badge badge-pill changes"><%=site.getReleaseChanges().size()%></span></a></li>
                 <li role="presentation"><a href="#modified-tab" aria-controls="modified" role="tab"
-                                           data-toggle="tab">${cpn:i18n(slingRequest,'Modified')}</a></li>
+                                           title="${cpn:i18n(slingRequest,'modified but last changes not activated yet')}"
+                                           data-toggle="tab">${cpn:i18n(slingRequest,'Modified')}<span
+                        class="badge badge-pill changes"><%=site.getModifiedPages().size()%></span></a></li>
                 <li role="presentation"><a href="#settings-tab" aria-controls="settings" role="tab"
                                            data-toggle="tab">Settings</a></li>
             </ul>

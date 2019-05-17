@@ -43,7 +43,7 @@
             hint="releases list (closed and current open release)"
             title="Site Releases"
             order="{Long}40"/>
-    <siteActivated
+    <siteChanges
             jcr:primaryType="nt:unstructured"
             sling:resourceType="composum/pages/stage/edit/tools/site/activated"
             categories="[context,edit,develop,site]"

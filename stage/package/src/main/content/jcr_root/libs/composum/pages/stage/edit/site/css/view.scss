@@ -4,6 +4,15 @@
 @import "../../css/mixins";
 
 .composum-pages-stage-edit-site {
+    min-width: 600px;
+
+    .nav-tabs {
+
+        .badge-pill {
+            min-width: 26px;
+            margin-left: 10px;
+        }
+    }
 
     .btn-group, .heading-input {
         float: right;
@@ -80,6 +89,11 @@
             }
 
             &_thead, &_tbody {
+
+                th {
+                    white-space: nowrap;
+                    overflow: hidden;
+                }
 
                 ._input {
                     width: 33px;

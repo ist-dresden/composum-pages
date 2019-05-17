@@ -8,7 +8,7 @@
     <div class="composum-pages-tools_actions btn-toolbar">
         <div class="composum-pages-tools_left-actions">
             <input type="checkbox" class="composum-pages-stage-edit-site-page-activated_page-select-all"/>
-            <cpn:text tagName="label" value="Changed Pages" i18n="true"
+            <cpn:text tagName="label" value="Release Changes" i18n="true"
                       title="${cpn:i18n(slingRequest,'pages activated with changes since the previous release')}"/>
         </div>
         <div class="composum-pages-tools_right-actions">
@@ -22,7 +22,7 @@
     </div>
     <div class="composum-pages-stage-edit-tools-site-activated_tools-panel">
         <ul class="${siteCssBase}_list">
-            <c:forEach items="${site.site.unreleasedPages}" var="page">
+            <c:forEach items="${site.site.releaseChanges}" var="page">
                 <li class="${siteCssBase}_listentry">
                     <input type="checkbox" class="${siteCssBase}_page-select" data-path="${page.path}"/>
                     <div class="${siteCssBase}_page-entry" data-path="${page.path}">

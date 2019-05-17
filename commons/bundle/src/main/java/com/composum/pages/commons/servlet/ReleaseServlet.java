@@ -13,14 +13,12 @@ import com.composum.sling.core.servlet.ServletOperation;
 import com.composum.sling.core.servlet.ServletOperationSet;
 import com.composum.sling.core.util.ResourceUtil;
 import com.composum.sling.platform.security.AccessMode;
-import com.composum.sling.platform.staging.ReleasedVersionable;
-import com.composum.sling.platform.staging.impl.SiblingOrderUpdateStrategy;
 import com.composum.sling.platform.staging.ReleaseNumberCreator;
 import com.composum.sling.platform.staging.StagingReleaseManager;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
-import org.apache.sling.api.request.RequestParameter;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.servlets.HttpConstants;
@@ -35,11 +33,13 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.jcr.RepositoryException;
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -80,7 +80,8 @@ public class ReleaseServlet extends AbstractServiceServlet {
     }
 
     enum Operation {
-        release,
+        finalize,
+        change,
         delete,
         setpublic,
         setpreview
@@ -99,7 +100,8 @@ public class ReleaseServlet extends AbstractServiceServlet {
         super.init();
 
         // POST
-        operations.setOperation(ServletOperationSet.Method.POST, Extension.http, Operation.release, new ReleaseOperation());
+        operations.setOperation(ServletOperationSet.Method.POST, Extension.http, Operation.finalize, new FinalizeRelease());
+        operations.setOperation(ServletOperationSet.Method.POST, Extension.http, Operation.change, new ChangeMetadata());
         operations.setOperation(ServletOperationSet.Method.POST, Extension.http, Operation.delete, new DeleteRelease());
         operations.setOperation(ServletOperationSet.Method.POST, Extension.http, Operation.setpublic, new SetPublicRelease());
         operations.setOperation(ServletOperationSet.Method.POST, Extension.http, Operation.setpreview, new SetPreviewRelease());
@@ -124,20 +126,24 @@ public class ReleaseServlet extends AbstractServiceServlet {
     abstract private class SetReleaseCategory implements ServletOperation {
 
         @Override
-        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response, ResourceHandle resource)
+        public void doIt(@Nonnull final SlingHttpServletRequest request,
+                         @Nonnull final  SlingHttpServletResponse response,
+                         @Nonnull final ResourceHandle resource)
                 throws IOException {
             try {
-                BeanContext beanContext = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
+                final BeanContext beanContext = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
+                final Validation validation = new Validation();
 
-                String releaseNumber = getStringParameter(request, response, "releaseName", "release name is required");
+                String releaseNumber = validation.getRequiredParameter(request, "releaseName", null, "release number is required");
 
-                final String accessCategory = getCategoryString();
+                if (validation.sendError(response)) return;
 
-                StagingReleaseManager.Release release = releaseManager.findRelease(resource, releaseNumber);
+                StagingReleaseManager.Release release =
+                        releaseManager.findRelease(resource, Objects.requireNonNull(releaseNumber));
 
                 Site site = siteManager.getContainingSite(beanContext, resource);
 
-                AccessMode accessMode = AccessMode.valueOf(accessCategory.toUpperCase());
+                AccessMode accessMode = AccessMode.valueOf(getCategoryString().toUpperCase());
                 releaseManager.setMark(accessMode.name().toLowerCase(), release);
 
                 LOG.info("replication of '{}' for {}...", site.getPath(), accessMode);
@@ -184,69 +190,29 @@ public class ReleaseServlet extends AbstractServiceServlet {
         }
     }
 
-    private class DeleteRelease implements ServletOperation {
+    private class FinalizeRelease implements ServletOperation {
 
         @Override
-        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response, ResourceHandle resource)
+        public void doIt(@Nonnull final SlingHttpServletRequest request,
+                         @Nonnull final SlingHttpServletResponse response,
+                         @Nonnull final ResourceHandle resourceHandle)
                 throws IOException {
             try {
-                final String path = getStringParameter(request, response, "path", "site path is required");
-                if (path == null) return;
-                final Matcher pathMatcher = RELEASE_PATH_PATTERN.matcher(path);
-                if (!pathMatcher.matches()) {
-                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "the path must be the path of a release node");
-                    return;
-                }
-                final String sitePath = pathMatcher.group(1);
-
-                String releaseName = request.getParameter("releaseName");
-                if (releaseName == null) {
-                    releaseName = pathMatcher.group(2);
-                }
-
-                StagingReleaseManager.Release release = releaseManager.findRelease(resource, releaseName);
-                releaseManager.removeRelease(release);
-
                 final ResourceResolver resourceResolver = request.getResourceResolver();
-                resourceResolver.delete(resource);
-                resourceResolver.commit();
-            } catch (Exception e) {
-                LOG.error("error deleting release: " + e.getMessage(), e);
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
-            }
-        }
-    }
+                final Validation validation = new Validation();
 
-    private class ReleaseOperation implements ServletOperation {
+                Resource resource = getReleaseResource(request, resourceHandle);
+                if (resource == null) {
+                    validation.addMessage(request, "site path is required", null);
+                }
 
-        @Override
-        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response, ResourceHandle resourceHandle)
-                throws IOException {
-            try {
+                final String numberPolicy = validation.getRequiredParameter(request,
+                        "number", null, "no release number policy");
 
-                final String path = getStringParameter(request, response, "path", "site path is required");
-                if (path == null) return;
-                final String sitePath = path.endsWith("/jcr:content") ? path.substring(0, path.lastIndexOf('/')) : path;
+                if (validation.sendError(response)) return;
 
-                final String numberPolicy = getStringParameter(request, response, "number", "release number policy");
-                if (numberPolicy == null) return;
-                final String title = request.getParameter("title");
+                final String title = request.getParameter(PARAM_TITLE);
                 final String description = request.getParameter("description");
-                final RequestParameter objectsParameter = request.getRequestParameter("objects");
-                final String objectsString;
-                if (objectsParameter != null) {
-                    objectsString = objectsParameter.getString();
-                } else {
-                    objectsString = "";
-                }
-
-                final ResourceResolver resourceResolver = request.getResourceResolver();
-
-                List<ReleasedVersionable> versionables = new ArrayList<>();
-                for (String versionablePath : objectsString.split(",")) {
-                    Resource versionable = resourceResolver.getResource(versionablePath).getChild(ResourceUtil.CONTENT_NODE);
-                    versionables.add(ReleasedVersionable.forBaseVersion(versionable));
-                }
 
                 ReleaseNumberCreator releaseType;
                 try {
@@ -255,38 +221,123 @@ public class ReleaseServlet extends AbstractServiceServlet {
                     releaseType = ReleaseNumberCreator.MAJOR;
                 }
 
-                // FIXME hps 2019-04-10 introduce actual parameter for release number type and base release
-                StagingReleaseManager.Release release = releaseManager.createRelease(resourceResolver.getResource(path), releaseType);
+                StagingReleaseManager.Release release =
+                        releaseManager.createRelease(Objects.requireNonNull(resource), releaseType);
                 LOG.info("Release created {}", release);
-                Map<String, SiblingOrderUpdateStrategy.Result> result = releaseManager.updateRelease(release, versionables);
-                LOG.info("Release update result: {}", result);
 
-                ResourceHandle metaData = ResourceHandle.use(release.getMetaDataNode());
-                if (StringUtils.isNotBlank(title)) {
-                    metaData.setProperty(ResourceUtil.PROP_TITLE, title);
-                }
-                if (StringUtils.isNotBlank(description)) {
-                    metaData.setProperty(ResourceUtil.PROP_DESCRIPTION, description);
-                }
-                metaData.setProperty(ResourceUtil.PROP_LAST_MODIFIED, Calendar.getInstance());
-                metaData.setProperty("jcr:lastModifiedBy", resourceResolver.getUserID());
+                changeReleaseMetadata(request, release);
+
                 resourceResolver.commit();
+
             } catch (Exception e) {
                 LOG.error("error creating release: " + e.getMessage(), e);
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
             }
         }
+    }
 
+    private class ChangeMetadata implements ServletOperation {
+
+        @Override
+        public void doIt(@Nonnull final SlingHttpServletRequest request,
+                         @Nonnull final SlingHttpServletResponse response,
+                         @Nonnull final ResourceHandle resourceHandle)
+                throws IOException {
+            try {
+                StagingReleaseManager.Release release = getRelease(request, response, resourceHandle);
+                if (release != null) {
+                    changeReleaseMetadata(request, release);
+                    request.getResourceResolver().commit();
+                }
+            } catch (Exception e) {
+                LOG.error("error creating release: " + e.getMessage(), e);
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+            }
+        }
+    }
+
+    private class DeleteRelease implements ServletOperation {
+
+        @Override
+        public void doIt(@Nonnull final SlingHttpServletRequest request,
+                         @Nonnull final SlingHttpServletResponse response,
+                         @Nonnull final ResourceHandle resourceHandle)
+                throws IOException {
+            try {
+                StagingReleaseManager.Release release = getRelease(request, response, resourceHandle);
+                if (release != null) {
+                    releaseManager.removeRelease(release);
+                    request.getResourceResolver().commit();
+                }
+            } catch (Exception e) {
+                LOG.error("error deleting release: " + e.getMessage(), e);
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+            }
+        }
+    }
+
+    protected void changeReleaseMetadata(@Nonnull final SlingHttpServletRequest request,
+                                         @Nonnull final StagingReleaseManager.Release release)
+            throws RepositoryException {
+
+        final String title = request.getParameter(PARAM_TITLE);
+        final String description = request.getParameter("description");
+
+        ResourceHandle metaData = ResourceHandle.use(release.getMetaDataNode());
+        if (StringUtils.isNotBlank(title)) {
+            metaData.setProperty(ResourceUtil.PROP_TITLE, title);
+        }
+        if (StringUtils.isNotBlank(description)) {
+            metaData.setProperty(ResourceUtil.PROP_DESCRIPTION, description);
+        }
+        metaData.setProperty(JcrConstants.JCR_LASTMODIFIED, Calendar.getInstance());
+        metaData.setProperty(JcrConstants.JCR_LASTMODIFIED + "By", request.getResourceResolver().getUserID());
 
     }
 
-    @Nullable
-    private String getStringParameter(SlingHttpServletRequest request, SlingHttpServletResponse response, String paramName, String errorMesage) throws IOException {
-        final RequestParameter requestParameter = request.getRequestParameter(paramName);
-        if (requestParameter == null || StringUtils.isEmpty(requestParameter.getString())) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, errorMesage);
-            return null;
+    protected StagingReleaseManager.Release getRelease(@Nonnull final SlingHttpServletRequest request,
+                                                       @Nonnull final SlingHttpServletResponse response,
+                                                       @Nonnull final ResourceHandle resourceHandle)
+            throws IOException {
+        final ResourceResolver resourceResolver = request.getResourceResolver();
+        final Validation validation = new Validation();
+
+        Resource resource = getReleaseResource(request, resourceHandle);
+        String releaseKey = getReleaseKey(request, resource, validation);
+
+        if (validation.sendError(response)) return null;
+
+        return releaseManager.findRelease(Objects.requireNonNull(resource), releaseKey);
+    }
+
+    protected String getReleaseKey(@Nonnull final SlingHttpServletRequest request,
+                                   @Nullable final Resource resource, @Nonnull final Validation validation) {
+        String releaseKey = request.getParameter("releaseName");
+        if (resource != null) {
+            final String path = resource.getPath();
+            final Matcher pathMatcher = RELEASE_PATH_PATTERN.matcher(path);
+            if (!pathMatcher.matches()) {
+                validation.addMessage(request, "the path must be the path of a release node", path);
+            }
+            final String sitePath = pathMatcher.group(1);
+            if (releaseKey == null) {
+                releaseKey = pathMatcher.group(2);
+            }
+        } else {
+            validation.addMessage(request, "release path is required", null);
         }
-        return requestParameter.getString();
+        return releaseKey;
+    }
+
+    protected Resource getReleaseResource(@Nonnull final SlingHttpServletRequest request, @Nonnull Resource resource) {
+        final ResourceResolver resourceResolver = request.getResourceResolver();
+        String path = request.getParameter(PARAM_PATH);
+        if (path != null) {
+            resource = resourceResolver.getResource(path);
+            if (resource != null && JcrConstants.JCR_CONTENT.equals(resource.getName())) {
+                resource = resource.getParent();
+            }
+        }
+        return resource;
     }
 }

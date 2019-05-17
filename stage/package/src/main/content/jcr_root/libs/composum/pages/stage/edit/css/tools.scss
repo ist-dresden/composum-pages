@@ -772,12 +772,12 @@
                         margin: 0 4px;
                         min-width: 31px;
 
-                        &.modified {
-                            background-color: $tools-pane-sec-selection-bg;
+                        &.changes {
+                            background-color: $tools-pane-main-selection-bg;
                         }
 
-                        &.unreleased {
-                            background-color: $tools-pane-main-selection-bg;
+                        &.modified {
+                            background-color: $tools-pane-sec-selection-bg;
                         }
                     }
                 }

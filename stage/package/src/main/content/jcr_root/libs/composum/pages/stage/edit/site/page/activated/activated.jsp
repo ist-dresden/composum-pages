@@ -10,16 +10,14 @@
             <h4 class="panel-title">
                 <a class="collapsed" role="button" data-toggle="collapse"
                    href="#activatedPagesPanel" aria-expanded="false"
-                   aria-controls="activatedPagesPanel">${cpn:i18n(slingRequest,'Changed Pages')}</a>
+                   title="${cpn:i18n(slingRequest,'pages activated with changes since the previous release')}"
+                   aria-controls="activatedPagesPanel">${cpn:i18n(slingRequest,'Release Changes')}</a>
             </h4>
             <c:if test="${site.editMode}">
                 <div class="btn-group" role="group" aria-label="...">
                     <button class="btn btn-default release"><i
                             class="fa fa-pause"></i>${cpn:i18n(slingRequest,'Revert')}</button>
                 </div>
-                <%--label class="filter-input heading-input"><input type="checkbox" class="filter-changed checkbox"
-                                                                 checked="checked"/>${cpn:i18n(slingRequest,'changes only')}
-                </label--%>
             </c:if>
         </div>
         <div id="activatedPagesPanel" class="panel-collapse collapse in" role="tabpanel"
@@ -37,7 +35,7 @@
                     </tr>
                     </thead>
                     <tbody class="${siteCssBase}_tbody">
-                    <c:forEach items="${site.unreleasedPages}" var="page">
+                    <c:forEach items="${site.releaseChanges}" var="page">
                         <tr class="release-status_${page.releaseStatus.activationState}">
                             <c:if test="${site.editMode}">
                                 <td class="_input"><input type="checkbox" class="${siteCssBase}_page-select"

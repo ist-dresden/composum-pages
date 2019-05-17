@@ -10,6 +10,7 @@
             <h4 class="panel-title">
                 <a class="collapsed" role="button" data-toggle="collapse"
                    href="#modifiedPagesPanel" aria-expanded="false"
+                   title="${cpn:i18n(slingRequest,'modified but last changes not activated yet')}"
                    aria-controls="modifiedPagesPanel">${cpn:i18n(slingRequest,'Modified Pages')}</a>
             </h4>
             <c:if test="${site.editMode}">
