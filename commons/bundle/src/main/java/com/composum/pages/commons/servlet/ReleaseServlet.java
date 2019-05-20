@@ -266,7 +266,7 @@ public class ReleaseServlet extends AbstractServiceServlet {
             try {
                 StagingReleaseManager.Release release = getRelease(request, response, resourceHandle);
                 if (release != null) {
-                    releaseManager.removeRelease(release);
+                    releaseManager.deleteRelease(release);
                     request.getResourceResolver().commit();
                 }
             } catch (Exception e) {

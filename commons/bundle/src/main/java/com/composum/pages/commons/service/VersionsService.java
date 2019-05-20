@@ -30,10 +30,8 @@ public interface VersionsService {
      * @return a collection of all versionables which are changed in a release in comparision to the release before
      */
     Collection<Page> findReleaseChanges(@Nonnull BeanContext context, @Nonnull Resource root,
-                                        @Nullable SiteRelease release);
+                                        @Nullable SiteRelease release) throws RepositoryException;
 
     Collection<Page> findModifiedPages(BeanContext context, Resource root);
 
-    Collection<Page> findUnreleasedPages(BeanContext context, Resource root, SiteRelease release)
-            throws RepositoryException;
 }
