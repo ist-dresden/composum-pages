@@ -2,14 +2,10 @@ package com.composum.pages.commons.service;
 
 import com.composum.pages.commons.model.Folder;
 import com.composum.pages.commons.model.Page;
-import com.composum.pages.commons.model.PageContent;
 import com.composum.pages.commons.model.SiteRelease;
 import com.composum.sling.core.BeanContext;
-import com.composum.sling.core.ResourceHandle;
-import com.composum.sling.core.util.CoreConstants;
 import com.composum.sling.platform.staging.ReleasedVersionable;
 import com.composum.sling.platform.staging.StagingReleaseManager;
-import com.composum.sling.platform.staging.impl.StagingUtils;
 import com.composum.sling.platform.staging.versions.PlatformVersionsService;
 import org.apache.jackrabbit.api.JackrabbitSession;
 import org.apache.sling.api.SlingHttpServletRequest;
@@ -26,14 +22,11 @@ import javax.annotation.Nullable;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.version.Version;
-import javax.jcr.version.VersionException;
 import javax.jcr.version.VersionHistory;
 import javax.jcr.version.VersionIterator;
 import javax.jcr.version.VersionManager;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 @Component(
@@ -103,27 +96,25 @@ public class PagesVersionsService implements VersionsService {
         if (LOG.isInfoEnabled()) {
             LOG.info("restoreVersion(" + path + "," + versionName + ")");
         }
-        // FIXME(hps,2019-05-20) Huh?? Why remove everything?? Try to copy out version and make that new version
-        String existingVersion = ReleasedVersionable.forBaseVersion(context.getResolver().getResource(path)).getVersionUuid();
         manager.restore(path, versionName, false);
-        // ResourceHandle.use(context.getResolver().getResource(path)).setProperty(CoreConstants.JCR_BASEVERSION, existingVersion);
-        /**
-         VersionHistory history = manager.getVersionHistory(path);
-         final VersionIterator allVersions = history.getAllVersions();
-         while (allVersions.hasNext()) {
-         final Version version = allVersions.nextVersion();
-         if (version.getName().equals(versionName)) {
-         break;
-         }
-         }
-         while (allVersions.hasNext()) {
-         final Version version = allVersions.nextVersion();
-         if (LOG.isDebugEnabled()) {
-         LOG.debug("restoreVersion.remove(" + path + "," + version.getName() + ")");
-         }
-         history.removeVersion(version.getName());
-         }
-         */
+        // TODO(hps,2019-05-20) removing everything that came later is wrong from a users perspective.
+        // Unfortunately, the VersionManager does not offer any way to copy out an old version, and if we just
+        // restore an old version, we'll another branch when checking in again, which would be ... inconvenient. ...
+        VersionHistory history = manager.getVersionHistory(path);
+        final VersionIterator allVersions = history.getAllVersions();
+        while (allVersions.hasNext()) {
+            final Version version = allVersions.nextVersion();
+            if (version.getName().equals(versionName)) {
+                break;
+            }
+        }
+        while (allVersions.hasNext()) {
+            final Version version = allVersions.nextVersion();
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("restoreVersion.remove(" + path + "," + version.getName() + ")");
+            }
+            history.removeVersion(version.getName());
+        }
         manager.checkout(path);
     }
 
