@@ -3,8 +3,8 @@
         jcr:primaryType="sling:OrderedFolder"
         depends="[fonts/awesome/4.7.0/css/font-awesome.css,
                   fonts/roboto/2014/roboto.css,
-                  jslibs/bootstrap/3.3.7/css/bootstrap.css,
-                  jslibs/highlight/9.8.0/clientlib]"
+                  jslibs/bootstrap/(3.*:3.4.1)/css/bootstrap.css,
+                  jslibs/highlight/(9.*:9.15.6)/clientlib]"
         embed="[composum/pages/components/css/general.css,
                 composum/pages/components/page/css/page.css,
                 composum/pages/components/css/token.css,
