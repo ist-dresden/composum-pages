@@ -2,9 +2,15 @@ package com.composum.pages.commons.service;
 
 import com.composum.pages.commons.model.Folder;
 import com.composum.pages.commons.model.Page;
+import com.composum.pages.commons.model.PageContent;
 import com.composum.pages.commons.model.SiteRelease;
 import com.composum.sling.core.BeanContext;
+import com.composum.sling.core.ResourceHandle;
+import com.composum.sling.core.util.CoreConstants;
+import com.composum.sling.platform.staging.ReleasedVersionable;
+import com.composum.sling.platform.staging.StagingReleaseManager;
 import com.composum.sling.platform.staging.impl.StagingUtils;
+import com.composum.sling.platform.staging.versions.PlatformVersionsService;
 import org.apache.jackrabbit.api.JackrabbitSession;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.NonExistingResource;
@@ -27,6 +33,7 @@ import javax.jcr.version.VersionManager;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 @Component(
@@ -41,17 +48,29 @@ public class PagesVersionsService implements VersionsService {
     @Reference
     protected PageManager pageManager;
 
+    @Reference
+    protected StagingReleaseManager releaseManager;
+
+    @Reference
+    protected PlatformVersionsService platformVersionsService;
+
     @Override
     public boolean isModified(final Page page) {
         try {
-            Calendar lastModified = page.getContent().getLastModified();
-            if (lastModified != null) {
-                VersionManager versionManager = getVersionManager(page.getContext());
-                Version currentVersion = versionManager.getBaseVersion(page.getContent().getPath());
-                Calendar currentVersionCreated = currentVersion.getCreated();
-                return (lastModified.after(currentVersionCreated) || currentVersion.getName().equals("jcr:rootVersion"));
+            if (page.getContent() == null || page.getContent().getResource() == null)
+                return false;
+            PlatformVersionsService.Status status = platformVersionsService.getStatus(page.getContent().getResource(), null);
+            if (status == null)
+                return false;
+            switch (status.getActivationState()) {
+                case activated:
+                case deactivated:
+                    return false;
+                case initial:
+                case modified:
+                    return true;
             }
-            return false;
+            throw new IllegalStateException("Unknown state " + status.getActivationState()); // impossible
         } catch (RepositoryException e) {
             return false;
         }
@@ -84,22 +103,27 @@ public class PagesVersionsService implements VersionsService {
         if (LOG.isInfoEnabled()) {
             LOG.info("restoreVersion(" + path + "," + versionName + ")");
         }
+        // FIXME(hps,2019-05-20) Huh?? Why remove everything?? Try to copy out version and make that new version
+        String existingVersion = ReleasedVersionable.forBaseVersion(context.getResolver().getResource(path)).getVersionUuid();
         manager.restore(path, versionName, false);
-        VersionHistory history = manager.getVersionHistory(path);
-        final VersionIterator allVersions = history.getAllVersions();
-        while (allVersions.hasNext()) {
-            final Version version = allVersions.nextVersion();
-            if (version.getName().equals(versionName)) {
-                break;
-            }
-        }
-        while (allVersions.hasNext()) {
-            final Version version = allVersions.nextVersion();
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("restoreVersion.remove(" + path + "," + version.getName() + ")");
-            }
-            history.removeVersion(version.getName());
-        }
+        // ResourceHandle.use(context.getResolver().getResource(path)).setProperty(CoreConstants.JCR_BASEVERSION, existingVersion);
+        /**
+         VersionHistory history = manager.getVersionHistory(path);
+         final VersionIterator allVersions = history.getAllVersions();
+         while (allVersions.hasNext()) {
+         final Version version = allVersions.nextVersion();
+         if (version.getName().equals(versionName)) {
+         break;
+         }
+         }
+         while (allVersions.hasNext()) {
+         final Version version = allVersions.nextVersion();
+         if (LOG.isDebugEnabled()) {
+         LOG.debug("restoreVersion.remove(" + path + "," + version.getName() + ")");
+         }
+         history.removeVersion(version.getName());
+         }
+         */
         manager.checkout(path);
     }
 
@@ -108,9 +132,17 @@ public class PagesVersionsService implements VersionsService {
      */
     @Override
     public Collection<Page> findReleaseChanges(@Nonnull final BeanContext context, @Nonnull final Resource root,
-                                               @Nullable final SiteRelease release) {
+                                               @Nullable final SiteRelease siteRelease) throws RepositoryException {
         List<Page> result = new ArrayList<>();
-        //findReleaseChanges(context, root, result); // TODO implementation
+        StagingReleaseManager.Release release = releaseManager.findRelease(root, siteRelease.getKey());
+        List<ReleasedVersionable> changes = releaseManager.compareReleases(release, null);
+        for (ReleasedVersionable releasedVersionable : changes) {
+            Resource versionable = root.getChild(releasedVersionable.getRelativePath());
+            if (Page.isPageContent(versionable)) {
+                final Page page = pageManager.getContainingPage(context, versionable);
+                result.add(page);
+            }
+        }
         return result;
     }
 
@@ -137,54 +169,14 @@ public class PagesVersionsService implements VersionsService {
         }
     }
 
-    @Override
-    public Collection<Page> findUnreleasedPages(final BeanContext context, final Resource root, final SiteRelease release)
-            throws RepositoryException {
-        List<Page> result = new ArrayList<>();
-        findUnreleasedPages(context, root, release != null ? release : new NoSiteRelease(context, root.getPath()), result);
-        return result;
-    }
-
-    protected void findUnreleasedPages(final BeanContext context, final Resource parent, final SiteRelease release,
-                                       List<Page> result)
-            throws RepositoryException {
-        final Iterable<Resource> children = parent.getChildren();
-        for (Resource resource : children) {
-            if (Page.isPage(resource)) {
-                final Page page = pageManager.createBean(context, resource);
-                VersionManager versionManager = getVersionManager(context);
-                if (StagingUtils.isVersionable(page.getContent().getResource())) {
-                    Version currentVersion = versionManager.getBaseVersion(page.getContent().getPath());
-                    Calendar currentVersionCreated = currentVersion.getCreated();
-                    final VersionHistory versionHistory = versionManager.getVersionHistory(page.getContent().getPath());
-                    try {
-                        final Version versionByLabel = versionHistory.getVersionByLabel(release.getLabel());
-                        final Calendar labeledCreated = versionByLabel.getCreated();
-                        if (currentVersionCreated.after(labeledCreated)) {
-                            result.add(page);
-                        }
-                    } catch (VersionException e) {
-                        // no label
-                        if (!currentVersion.getName().equals("jcr:rootVersion")) {
-                            result.add(page);
-                        }
-                    }
-                }
-                findUnreleasedPages(context, page.getResource(), release, result);
-            } else if (Folder.isFolder(resource)) {
-                findUnreleasedPages(context, resource, release, result);
-            }
-        }
-    }
-
     public VersionManager getVersionManager(final BeanContext context)
             throws RepositoryException {
         SlingHttpServletRequest request = context.getRequest();
-        VersionManager versionManager = (VersionManager) request.getAttribute("");
+        VersionManager versionManager = (VersionManager) request.getAttribute(VersionManager.class.getName());
         if (versionManager == null) {
             final JackrabbitSession session = (JackrabbitSession) context.getResolver().adaptTo(Session.class);
             versionManager = session.getWorkspace().getVersionManager();
-            request.setAttribute("", versionManager);
+            request.setAttribute(VersionManager.class.getName(), versionManager);
         }
         return versionManager;
     }

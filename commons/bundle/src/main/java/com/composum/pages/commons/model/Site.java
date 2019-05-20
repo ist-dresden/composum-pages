@@ -196,7 +196,7 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
     public Collection<Page> getReleaseChanges(SiteRelease releaseToCheck) {
         Collection<Page> result;
         try {
-            result = getVersionsService().findUnreleasedPages(getContext(), getResource(), releaseToCheck);
+            result = getVersionsService().findReleaseChanges(getContext(), getResource(), releaseToCheck);
         } catch (RepositoryException ex) {
             LOG.error(ex.getMessage(), ex);
             result = new ArrayList<>();
