@@ -767,11 +767,23 @@
                 }
             },
 
+            /**
+             * the dialog is used in a single (e.g. tree) and a multiple (e.g. site management form) context
+             * in the single mode the this.data.path references the target; in the multiple mode are hidden input fields
+             * named 'target' embedded in the dialog form, one for each selected target; a combination is also supported
+             */
             doSubmit: function () {
                 var u = dialogs.const.edit.url.version;
+                var path = this.data.path || '';
                 var data = {target: []};
-                this.$('input[name="target"]').each(function () {
-                    data.target.push($(this).val());
+                if (path) {
+                    data.target.push(path); // mainly the single mode
+                }
+                this.$('input[name="target"]').each(function () { // multi mode
+                    var target = $(this).val();
+                    if (target && !_.contains(data.target, target)) {
+                        data.target.push();
+                    }
                 });
                 if (this.refs.page && this.refs.page.isNotEmpty()) {
                     data.pageRef = this.refs.page.getValue();
@@ -779,7 +791,7 @@
                 if (this.refs.asset && this.refs.asset.isNotEmpty()) {
                     data.assetRef = this.refs.asset.getValue();
                 }
-                core.ajaxPost(u.base + u.activate._action + this.data.path, data, {},
+                core.ajaxPost(u.base + u.activate._action, data, {},
                     _.bind(function (result) {
                         var e = pages.const.event;
                         data.target.forEach(function (path) {
