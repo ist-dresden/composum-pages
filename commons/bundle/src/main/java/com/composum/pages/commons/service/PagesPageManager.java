@@ -11,7 +11,6 @@ import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.filter.StringFilter;
 import com.composum.sling.core.util.CoreConstants;
 import com.composum.sling.core.util.ResourceUtil;
-import com.composum.sling.core.util.SlingResourceUtil;
 import com.composum.sling.platform.staging.versions.PlatformVersionsService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
@@ -303,12 +302,13 @@ public class PagesPageManager extends PagesContentManager<Page> implements PageM
      * @param page       the page
      * @param type       the type of references; if 'null' all types are retrieved
      * @param unresolved if 'true' only unresolved references (not in the same release) are determined
+     * @param transitive if 'true' we also look for references of the references
      * @return the collection of found resources
      */
     @Override
     @Nonnull
     public Collection<Resource> getReferences(@Nonnull final Page page, @Nullable final ReferenceType type,
-                                              boolean unresolved) {
+                                              boolean unresolved, boolean transitive) {
         Map<String, Resource> references = new TreeMap<>();
         ResourceFilter.ContentNodeFilter contentNodeFilter = new ResourceFilter.ContentNodeFilter(true, pagesConfig.getReferenceFilter(type), ResourceFilter.ALL);
         ResourceFilter releaseAsResourceFilter = ResourceFilter.ALL;
@@ -324,31 +324,34 @@ public class PagesPageManager extends PagesContentManager<Page> implements PageM
         resourceFilter = ResourceFilter.FilterSet.Rule.and.of(resourceFilter, PlatformVersionsService.ACTIVATABLE_FILTER);
         StringFilter propertyFilter = StringFilter.ALL;
         Resource content = page.getContent().getResource();
-        retrieveReferences(references, resourceFilter, propertyFilter, content, page.getSite(), new HashSet<>());
+        retrieveReferences(references, resourceFilter, propertyFilter, content, page.getSite(), new HashSet<>(), transitive);
         return references.values();
     }
 
     /**
      * Retrieves references of a resource recursively.
-     *
-     * @param references     collection where we put all references - maps the property value, which references, to the referenced resource
+     *  @param references     collection where we put all references - maps the property value, which references, to the referenced resource
      * @param resourceFilter restricts the resources we accept as references
      * @param propertyFilter restricts the properties that are checked for containing references
      * @param resource       the resource to check for references
      * @param site           the site to which we restrict the ancestor search
      * @param visited        keeps track of which resources we already checked
+     * @param transitive if 'true' we also look for references of the references
+     * @param transitive
      */
     protected void retrieveReferences(@Nonnull Map<String, Resource> references,
                                       @Nonnull final ResourceFilter resourceFilter,
                                       @Nonnull final StringFilter propertyFilter,
                                       @Nonnull final Resource resource,
                                       @Nonnull Site site,
-                                      @Nonnull final Set<String> visited) {
+                                      @Nonnull final Set<String> visited,
+                                      boolean transitive) {
         if (visited.contains(resource.getPath())) return;
         visited.add(resource.getPath());
 
         ResourceResolver resolver = resource.getResourceResolver();
         ValueMap values = resource.getValueMap();
+        List<Resource> foundReferences = new ArrayList<>();
         for (Map.Entry<String, Object> entry : values.entrySet()) {
 
             String key = entry.getKey();
@@ -357,27 +360,36 @@ public class PagesPageManager extends PagesContentManager<Page> implements PageM
 
                 Object value = entry.getValue();
                 if (value instanceof String) {
-                    retrieveReferencesFromValue(references, resolver, resourceFilter, (String) value);
-
+                    List<Resource> found = retrieveReferencesFromValue(references, resolver, resourceFilter, (String) value);
+                    foundReferences.addAll(found);
                 } else if (value instanceof String[]) {
                     for (String val : (String[]) value) {
-                        retrieveReferencesFromValue(references, resolver, resourceFilter, val);
+                        List<Resource> found = retrieveReferencesFromValue(references, resolver, resourceFilter, val);
+                        foundReferences.addAll(found);
                     }
                 }
             }
         }
         // recursive traversal
         for (Resource child : resource.getChildren()) {
-            retrieveReferences(references, resourceFilter, propertyFilter, child, site, visited);
+            retrieveReferences(references, resourceFilter, propertyFilter, child, site, visited, transitive);
         }
         // Parent pages also count as references since otherwise the page isn't displayed in the navigation tree
         Resource parent = resource.getParent();
         while (parent != null && isSameOrDescendant(site.getPath(), parent.getPath())) {
             Resource contentNode = parent.getChild(CoreConstants.CONTENT_NODE);
             if (contentNode != null && !isSameOrDescendant(contentNode.getPath(), resource.getPath())) {
-                retrieveReferences(references, resourceFilter, propertyFilter, contentNode, site, visited);
+                retrieveReferences(references, resourceFilter, propertyFilter, contentNode, site, visited, transitive);
             }
             parent = parent.getParent();
+        }
+        // check transitive references, too
+        if (transitive) {
+            for (Resource foundReference : foundReferences) {
+                Resource contentNode = foundReference.getChild(CoreConstants.CONTENT_NODE);
+                if (contentNode != null)
+                    retrieveReferences(references, resourceFilter, propertyFilter, contentNode, site, visited, transitive);
+            }
         }
     }
 
@@ -385,15 +397,18 @@ public class PagesPageManager extends PagesContentManager<Page> implements PageM
     /**
      * adds all references found in the value to the set
      */
-    protected void retrieveReferencesFromValue(@Nonnull final Map<String, Resource> references,
-                                               @Nonnull final ResourceResolver resolver,
-                                               @Nonnull final ResourceFilter filter,
-                                               @Nonnull final String value) {
+    @Nonnull
+    protected List<Resource> retrieveReferencesFromValue(@Nonnull final Map<String, Resource> references,
+                                                         @Nonnull final ResourceResolver resolver,
+                                                         @Nonnull final ResourceFilter filter,
+                                                         @Nonnull final String value) {
+        List<Resource> found = new ArrayList<>();
         Resource resource;
         if (REF_VALUE_PATTERN.matcher(value).matches()) {
             // simple path value...
             if ((resource = resolver.getResource(value)) != null && filter.accept(resource)) {
                 references.putIfAbsent(value, resource);
+                found.add(resource);
             }
         } else {
             // check for HTML patterns and extract all references if found
@@ -402,8 +417,10 @@ public class PagesPageManager extends PagesContentManager<Page> implements PageM
                 String path = matcher.group(2);
                 if ((resource = resolver.getResource(path)) != null && filter.accept(resource)) {
                     references.putIfAbsent(path, resource);
+                    found.add(resource);
                 }
             }
         }
+        return found;
     }
 }

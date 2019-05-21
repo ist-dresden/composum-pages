@@ -19,9 +19,10 @@ public class PageReferences extends ReferencesWidget {
     private transient ReferenceType scope;
     private transient Boolean unresolved;
 
+    @Override
     protected List<Reference> retrieveReferences(@Nonnull final Page referrer) {
         List<Reference> references = new ArrayList<>();
-        Collection<Resource> resources = getPageManager().getReferences(referrer, getScope(), isUnresolved());
+        Collection<Resource> resources = getPageManager().getReferences(referrer, getScope(), isUnresolved(), true);
         for (Resource resource : resources) {
             references.add(new Reference(referrer, resource));
         }
