@@ -124,8 +124,9 @@ public interface PageManager extends ContentManager<Page> {
      * @param page       the page
      * @param type       the type of references; if 'null' all types are retrieved
      * @param unresolved if 'true' only unresolved references (not in the same release) are determined
+     * @param transitive if 'true' we also look for references of the references
      * @return the found resources
      */
     @Nonnull
-    Collection<Resource> getReferences(@Nonnull Page page, @Nullable ReferenceType type, boolean unresolved);
+    Collection<Resource> getReferences(@Nonnull Page page, @Nullable ReferenceType type, boolean unresolved, boolean transitive);
 }
