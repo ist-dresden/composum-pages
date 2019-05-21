@@ -17,6 +17,7 @@ import javax.annotation.Nonnull;
 import javax.jcr.RepositoryException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -194,6 +195,8 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
     }
 
     public Collection<Page> getReleaseChanges(SiteRelease releaseToCheck) {
+        if (releaseToCheck == null)
+            return Collections.emptyList();
         Collection<Page> result;
         try {
             result = getVersionsService().findReleaseChanges(getContext(), getResource(), releaseToCheck);
