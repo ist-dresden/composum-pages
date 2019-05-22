@@ -5,13 +5,13 @@
 <cpp:defineFrameObjects/>
 <cpp:model var="site" type="com.composum.pages.commons.model.Site" mode="none"
            cssBase="composum-pages-stage-edit-site-page-activated">
-    <div class="panel panel-default activatedPages" data-path="${site.path}">
-        <div class="panel-heading" role="tab" id="activatedPagesHead">
+    <div class="panel panel-default releaseChanges" data-path="${site.path}">
+        <div class="panel-heading" role="tab" id="releaseChangesHead">
             <h4 class="panel-title">
                 <a class="collapsed" role="button" data-toggle="collapse"
-                   href="#activatedPagesPanel" aria-expanded="false"
+                   href="#releaseChangesPanel" aria-expanded="false"
                    title="${cpn:i18n(slingRequest,'pages activated with changes since the previous release')}"
-                   aria-controls="activatedPagesPanel">${cpn:i18n(slingRequest,'Release Changes')}</a>
+                   aria-controls="releaseChangesPanel">${cpn:i18n(slingRequest,'Release Changes')}</a>
             </h4>
             <c:if test="${site.editMode}">
                 <div class="btn-group" role="group" aria-label="...">
@@ -20,8 +20,8 @@
                 </div>
             </c:if>
         </div>
-        <div id="activatedPagesPanel" class="panel-collapse collapse in" role="tabpanel"
-             aria-labelledby="activatedPagesHead">
+        <div id="releaseChangesPanel" class="panel-collapse collapse in" role="tabpanel"
+             aria-labelledby="releaseChangesHead">
             <div class="panel-body">
                 <table class="${siteCssBase}_table table table-condensed">
                     <thead class="${siteCssBase}_thead">

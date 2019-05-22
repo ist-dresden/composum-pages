@@ -23,7 +23,7 @@
             }
         });
 
-        tools.ActivatedPages = pages.releases.ActivatedPages.extend({
+        tools.ActivatedPages = pages.releases.ReleaseChanges.extend({
 
             initialize: function (options) {
                 this.initContent();
@@ -33,7 +33,7 @@
 
             initContent: function (options) {
                 var c = tools.const.activated.page;
-                pages.releases.ActivatedPages.prototype.initialize.apply(this);
+                pages.releases.ReleaseChanges.prototype.initialize.apply(this);
                 this.sitePath = this.$('.' + c.base).data('path');
                 this.$previewEntry = [];
                 this.$('.' + c.base + c._entry).click(_.bind(this.pagePreview, this));

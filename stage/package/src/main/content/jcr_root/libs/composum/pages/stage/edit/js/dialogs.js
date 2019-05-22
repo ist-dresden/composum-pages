@@ -69,6 +69,10 @@
                             _dialog: '/page/dialog/activate.html',
                             _action: '.activate.json'
                         },
+                        revert: {
+                            _dialog: '/page/dialog/revert.html',
+                            _action: '.revert.json'
+                        },
                         deactivate: {
                             _dialog: '/page/dialog/deactivate.html',
                             _action: '.deactivate.json'
@@ -741,14 +745,11 @@
         // Releases & Versions...
         //
 
-        dialogs.ActivatePageDialog = dialogs.ElementDialog.extend({
+        dialogs.ManagePagesDialog = dialogs.ElementDialog.extend({
 
             initialize: function () {
                 dialogs.ElementDialog.prototype.initialize.apply(this);
-                this.refs = {
-                    page: core.getWidget(this.el, '.widget-name_page-references', pages.widgets.PageReferencesWidget),
-                    asset: core.getWidget(this.el, '.widget-name_asset-references', pages.widgets.PageReferencesWidget)
-                };
+                this.refs = {};
             },
 
             hasReferences: function () {
@@ -756,24 +757,12 @@
                     (this.refs.asset && this.refs.asset.isNotEmpty());
             },
 
-            show: function () {
-                if (this.hasReferences()) {
-                    // the normal show() if unresolved references found
-                    dialogs.ElementDialog.prototype.show.apply(this);
-                } else {
-                    // the show() is suppressed if no unresolved references found
-                    this.doSubmit();
-                    this.onClose();
-                }
-            },
-
             /**
-             * the dialog is used in a single (e.g. tree) and a multiple (e.g. site management form) context
-             * in the single mode the this.data.path references the target; in the multiple mode are hidden input fields
+             * a manage pages dialog is used in a single (e.g. tree) and a multiple (e.g. site management form) context
+             * in the single mode the this.data.path references the target; in the multiple mode are input fields
              * named 'target' embedded in the dialog form, one for each selected target; a combination is also supported
              */
-            doSubmit: function () {
-                var u = dialogs.const.edit.url.version;
+            getActionData: function () {
                 var path = this.data.path || '';
                 var data = {target: []};
                 if (path) {
@@ -791,17 +780,49 @@
                 if (this.refs.asset && this.refs.asset.isNotEmpty()) {
                     data.assetRef = this.refs.asset.getValue();
                 }
+                return data;
+            },
+
+            triggerStateChange: function (data) {
+                var e = pages.const.event;
+                data.target.forEach(function (path) {
+                    $(document).trigger(e.page.state, [new pages.Reference(undefined, path)]);
+                });
+                if (data.pageRef) {
+                    data.pageRef.forEach(function (path) {
+                        $(document).trigger(e.page.state, [new pages.Reference(undefined, path)]);
+                    });
+                }
+            }
+        });
+
+        dialogs.ActivatePageDialog = dialogs.ManagePagesDialog.extend({
+
+            initialize: function () {
+                dialogs.ManagePagesDialog.prototype.initialize.apply(this);
+                this.refs = {
+                    page: core.getWidget(this.el, '.widget-name_page-references', pages.widgets.PageReferencesWidget),
+                    asset: core.getWidget(this.el, '.widget-name_asset-references', pages.widgets.PageReferencesWidget)
+                };
+            },
+
+            show: function () {
+                if (this.hasReferences()) {
+                    // the normal show() if unresolved references found
+                    dialogs.ElementDialog.prototype.show.apply(this);
+                } else {
+                    // the show() is suppressed if no unresolved references found
+                    this.doSubmit();
+                    this.onClose();
+                }
+            },
+
+            doSubmit: function () {
+                var u = dialogs.const.edit.url.version;
+                var data = this.getActionData();
                 core.ajaxPost(u.base + u.activate._action, data, {},
                     _.bind(function (result) {
-                        var e = pages.const.event;
-                        data.target.forEach(function (path) {
-                            $(document).trigger(e.page.state, [new pages.Reference(undefined, path)]);
-                        });
-                        if (data.pageRef) {
-                            data.pageRef.forEach(function (path) {
-                                $(document).trigger(e.page.state, [new pages.Reference(undefined, path)]);
-                            });
-                        }
+                        this.triggerStateChange(data);
                         this.hide();
                     }, this));
             }
@@ -813,34 +834,47 @@
                 dialogs.ActivatePageDialog, name, path, type, undefined/*context*/, setupDialog);
         };
 
-        dialogs.DeactivatePageDialog = dialogs.EditDialog.extend({
+        dialogs.RevertPageDialog = dialogs.ManagePagesDialog.extend({
 
             initialize: function () {
-                dialogs.ElementDialog.prototype.initialize.apply(this);
+                dialogs.ManagePagesDialog.prototype.initialize.apply(this);
                 this.refs = {
                     page: core.getWidget(this.el, '.widget-name_page-referrers', pages.widgets.PageReferrersWidget)
                 };
             },
 
-            hasReferrers: function () {
-                return this.refs.page && this.refs.page.isNotEmpty();
+            doSubmit: function () {
+                var u = dialogs.const.edit.url.version;
+                var data = this.getActionData();
+                core.ajaxPost(u.base + u.revert._action, data, {},
+                    _.bind(function (result) {
+                        this.triggerStateChange(data);
+                        this.hide();
+                    }, this));
+            }
+        });
+
+        dialogs.openRevertPageDialog = function (name, path, type, setupDialog) {
+            var c = dialogs.const.edit.url;
+            pages.dialogHandler.openEditDialog(c.path + c.version.revert._dialog,
+                dialogs.RevertPageDialog, name, path, type, undefined/*context*/, setupDialog);
+        };
+
+        dialogs.DeactivatePageDialog = dialogs.ManagePagesDialog.extend({
+
+            initialize: function () {
+                dialogs.ManagePagesDialog.prototype.initialize.apply(this);
+                this.refs = {
+                    page: core.getWidget(this.el, '.widget-name_page-referrers', pages.widgets.PageReferrersWidget)
+                };
             },
 
             doSubmit: function () {
                 var u = dialogs.const.edit.url.version;
-                var data = {};
-                if (this.refs.page && this.refs.page.isNotEmpty()) {
-                    data.pageRef = this.refs.page.getValue();
-                }
-                core.ajaxPost(u.base + u.deactivate._action + this.data.path, data, {},
+                var data = this.getActionData();
+                core.ajaxPost(u.base + u.deactivate._action, data, {},
                     _.bind(function (result) {
-                        var e = pages.const.event;
-                        $(document).trigger(e.page.state, [new pages.Reference(undefined, this.data.path)]);
-                        if (data.pageRef) {
-                            data.pageRef.forEach(function (path) {
-                                $(document).trigger(e.page.state, [new pages.Reference(undefined, path)]);
-                            });
-                        }
+                        this.triggerStateChange(data);
                         this.hide();
                     }, this));
             }

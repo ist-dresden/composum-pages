@@ -28,7 +28,9 @@
                     _params: '?attr=pages'
                 },
                 dialog: {
-                    activate: '/libs/composum/pages/stage/edit/default/page/dialog/activate'
+                    base: '/libs/composum/pages/stage/edit/default/page/dialog',
+                    _activate: '/activate',
+                    _revert: '/revert'
                 },
                 release: {
                     servlet: '/bin/cpm/pages/release.',
@@ -74,7 +76,7 @@
                             return {path: element.dataset.path};
                         })
                         .toArray();
-                    var url = u.edit.servlet + u.edit._resource + u.dialog.activate + u.edit._params;
+                    var url = u.edit.servlet + u.edit._resource + u.dialog.base + u.dialog._activate + u.edit._params;
                     if (pages.elements) { // context is a page
                         pages.elements.openGenericDialog({
                             path: this.sitePath
@@ -93,7 +95,7 @@
 
         // release creation
 
-        releases.ActivatedPages = Backbone.View.extend({
+        releases.ReleaseChanges = Backbone.View.extend({
 
             initialize: function () {
                 var c = releases.const.css.page;
@@ -114,7 +116,7 @@
 
             doRevert: function (event) {
                 var c = releases.const.css.page;
-                var u = releases.const.url.release;
+                var u = releases.const.url;
                 event.preventDefault();
                 if (this.sitePath) {
                     var objects = $('.' + c.base + c._activated + c._select)
@@ -125,31 +127,23 @@
                             return element.dataset.path;
                         })
                         .toArray().toString();
+                    var url = u.edit.servlet + u.edit._resource + u.dialog.base + u.dialog._revert + u.edit._params;
                     if (pages.elements) { // context is a page
-                        pages.elements.openEditDialog({
+                        pages.elements.openGenericDialog({
                             path: this.sitePath
                         }, {
-                            url: u.root + u._finalize
-                        }, {
-                            objects: objects
-                        });
+                            url: url,
+                            type: 'pages.dialogs.RevertPageDialog'
+                        }, objects);
                     } else { // context is the stage edit frame
-                        pages.dialogs.openEditDialog(undefined, this.sitePath, undefined, undefined/*context*/,
-                            u.root + u._finalize,
-                            function (dialog) {
-                                if (objects) {
-                                    dialog.applyData({
-                                        objects: objects
-                                    });
-                                }
-                            });
+                        pages.dialogs.openGenericDialog(url, pages.dialogs.RevertPageDialog, objects);
                     }
                 }
             }
 
         });
 
-        releases.activatedPages = core.getView('.activatedPages', releases.ActivatedPages);
+        releases.releaseChanges = core.getView('.releaseChanges', releases.ReleaseChanges);
 
         // release manipulation
 

@@ -21,12 +21,22 @@ public class PageReferrers extends ReferencesWidget {
 
     protected List<Reference> retrieveReferences(@Nonnull final Page target) {
         List<Reference> references = new ArrayList<>();
-        Collection<Resource> resources = getPageManager().getReferrers(target,
-                scope != null ? scope : target.getSite().getResource(), isResolved());
+        Collection<Resource> resources = getPageManager().getReferrers(target, getScope(target), isResolved());
         for (Resource resource : resources) {
             references.add(new Reference(target, resource));
         }
         return references;
+    }
+
+    protected Resource getScope(@Nonnull final Page target) {
+        if (scope != null) {
+            return scope;
+        }
+        Site site = target.getSite();
+        if (site != null) {
+            return site.getResource();
+        }
+        return null;
     }
 
     public boolean isResolved() {
