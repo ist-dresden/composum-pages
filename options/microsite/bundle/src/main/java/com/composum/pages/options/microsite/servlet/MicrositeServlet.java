@@ -151,11 +151,8 @@ public class MicrositeServlet extends SlingAllMethodsServlet implements Microsit
                 JsonWriter jsonAnswer = new JsonWriter(response.getWriter());
                 jsonAnswer.beginObject();
                 jsonAnswer.name("success").value(success);
-                jsonAnswer.name("response").beginObject();
-                jsonAnswer.name("level").value(success ? "success" : "error");
-                jsonAnswer.name("text").value(CpnlElFunctions.i18n(request,
+                jsonAnswer.name("title").value(CpnlElFunctions.i18n(request,
                         success ? "Import sucessful" : "Import failed"));
-                jsonAnswer.endObject();
                 jsonAnswer.name("messages").beginArray();
                 for (MicrositeImportStatus.Message msg : importResult.getMessages()) {
                     jsonAnswer.beginObject();

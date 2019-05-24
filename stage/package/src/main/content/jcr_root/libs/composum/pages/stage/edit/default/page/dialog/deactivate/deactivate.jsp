@@ -3,7 +3,8 @@
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <cpp:defineFrameObjects/>
 <cpp:editDialog var="model" type="com.composum.pages.commons.model.Page" selector="generic" languageContext="false"
-                title="Deactivate Page" submitLabel="Deactivate">
+                title="Deactivate Page" submitLabel="Deactivate" data-path="@{model.path}">
+    <cpp:widget type="hidden" name="target" request="pages"/>
     <cpp:widget type="static" level="warning"
                 value="This page will be removed from the current release. If this release is live the page is removed from the public site."
                 i18n="true"/>

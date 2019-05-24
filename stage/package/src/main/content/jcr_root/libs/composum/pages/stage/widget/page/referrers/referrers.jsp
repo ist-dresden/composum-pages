@@ -15,7 +15,7 @@
         <c:choose>
             <c:when test="${empty widget.model.references}">
                 <div class="${widgetCssBase}_empty">
-                    <cpn:text tagClass="${widgetCssBase}_paragraph alert alert-info"
+                    <cpn:text tagClass="${widgetCssBase}_paragraph hint hint-info"
                               value="no referrers" i18n="true"/>
                 </div>
             </c:when>

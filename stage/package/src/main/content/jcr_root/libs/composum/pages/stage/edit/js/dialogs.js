@@ -756,24 +756,37 @@
                 return (this.refs.page && this.refs.page.isNotEmpty()) ||
                     (this.refs.asset && this.refs.asset.isNotEmpty());
             },
+            
+            submitActionKey: function () {
+                // abstract: return the concrete servlet action selector
+            },
+
+            doSubmit: function () {
+                var u = dialogs.const.edit.url.version;
+                var data = this.getActionData();
+                core.ajaxPost(u.base + this.submitActionKey(), data, {},
+                    _.bind(function (result) {
+                        this.triggerStateChange(data);
+                        this.hide();
+                    }, this), _.bind(this.onError, this));
+            },
 
             /**
              * a manage pages dialog is used in a single (e.g. tree) and a multiple (e.g. site management form) context
              * in the single mode the this.data.path references the target; in the multiple mode are input fields
-             * named 'target' embedded in the dialog form, one for each selected target; a combination is also supported
+             * named 'target' embedded in the dialog form, one for each selected target
              */
             getActionData: function () {
-                var path = this.data.path || '';
                 var data = {target: []};
-                if (path) {
-                    data.target.push(path); // mainly the single mode
-                }
                 this.$('input[name="target"]').each(function () { // multi mode
                     var target = $(this).val();
                     if (target && !_.contains(data.target, target)) {
-                        data.target.push();
+                        data.target.push(target);
                     }
                 });
+                if (data.target.length < 1 && this.data.path) {
+                    data.target.push(this.data.path); // single mode
+                }
                 if (this.refs.page && this.refs.page.isNotEmpty()) {
                     data.pageRef = this.refs.page.getValue();
                 }
@@ -806,6 +819,10 @@
                 };
             },
 
+            submitActionKey: function () {
+                return dialogs.const.edit.url.version.activate._action;
+            },
+
             show: function () {
                 if (this.hasReferences()) {
                     // the normal show() if unresolved references found
@@ -815,16 +832,6 @@
                     this.doSubmit();
                     this.onClose();
                 }
-            },
-
-            doSubmit: function () {
-                var u = dialogs.const.edit.url.version;
-                var data = this.getActionData();
-                core.ajaxPost(u.base + u.activate._action, data, {},
-                    _.bind(function (result) {
-                        this.triggerStateChange(data);
-                        this.hide();
-                    }, this));
             }
         });
 
@@ -843,14 +850,8 @@
                 };
             },
 
-            doSubmit: function () {
-                var u = dialogs.const.edit.url.version;
-                var data = this.getActionData();
-                core.ajaxPost(u.base + u.revert._action, data, {},
-                    _.bind(function (result) {
-                        this.triggerStateChange(data);
-                        this.hide();
-                    }, this));
+            submitActionKey: function () {
+                return dialogs.const.edit.url.version.revert._action;
             }
         });
 
@@ -869,14 +870,8 @@
                 };
             },
 
-            doSubmit: function () {
-                var u = dialogs.const.edit.url.version;
-                var data = this.getActionData();
-                core.ajaxPost(u.base + u.deactivate._action, data, {},
-                    _.bind(function (result) {
-                        this.triggerStateChange(data);
-                        this.hide();
-                    }, this));
+            submitActionKey: function () {
+                return dialogs.const.edit.url.version.deactivate._action;
             }
         });
 

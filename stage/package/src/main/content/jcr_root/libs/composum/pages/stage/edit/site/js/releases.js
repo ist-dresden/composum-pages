@@ -124,9 +124,9 @@
                             return element.checked;
                         })
                         .map(function (index, element) {
-                            return element.dataset.path;
+                            return {path: element.dataset.path};
                         })
-                        .toArray().toString();
+                        .toArray();
                     var url = u.edit.servlet + u.edit._resource + u.dialog.base + u.dialog._revert + u.edit._params;
                     if (pages.elements) { // context is a page
                         pages.elements.openGenericDialog({

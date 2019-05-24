@@ -170,10 +170,8 @@ public abstract class PagesContentServlet extends ContentServlet {
             throws IOException {
         PagesConfiguration configuration = getPagesConfiguration();
         if (!allowed) {
-            jsonWriter.name("response").beginObject();
-            jsonWriter.name("level").value("error");
-            jsonWriter.name("text").value(CpnlElFunctions.i18n(request, "Invalid Target"));
-            jsonWriter.endObject();
+            jsonWriter.name("success").value(false);
+            jsonWriter.name("title").value(CpnlElFunctions.i18n(request, "Invalid Target"));
             jsonWriter.name("messages").beginArray();
             jsonWriter.beginObject();
             jsonWriter.name("level").value("error");
