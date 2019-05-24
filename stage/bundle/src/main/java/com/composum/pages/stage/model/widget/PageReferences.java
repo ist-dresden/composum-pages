@@ -20,7 +20,7 @@ public class PageReferences extends ReferencesWidget {
     private transient Boolean unresolved;
 
     @Override
-    protected List<Reference> retrieveReferences(@Nonnull final Page referrer) {
+    protected List<Reference> retrieveCandidates(@Nonnull final Page referrer) {
         List<Reference> references = new ArrayList<>();
         Collection<Resource> resources = getPageManager().getReferences(referrer, getScope(), isUnresolved(), true);
         for (Resource resource : resources) {

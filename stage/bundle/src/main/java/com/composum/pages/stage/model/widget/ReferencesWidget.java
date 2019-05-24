@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 /**
  * the abstract ...References model
@@ -79,13 +80,15 @@ public abstract class ReferencesWidget extends MultiSelect implements WidgetMode
         if (references == null) {
             references = new TreeSet<>();
             for (Page page : getPages()) {
-                references.addAll(retrieveReferences(page));
+                references.addAll(retrieveCandidates(page));
             }
+            Set<String> pagePaths = getPages().stream().map(Page::getPath).collect(Collectors.toSet());
+            references = references.stream().filter(r -> !pagePaths.contains(r.getPath())).collect(Collectors.toCollection(TreeSet::new));
         }
         return references;
     }
 
-    protected abstract List<Reference> retrieveReferences(@Nonnull Page page);
+    protected abstract List<Reference> retrieveCandidates(@Nonnull Page page);
 
     public Set<Page> getPages() {
         if (pages == null) {

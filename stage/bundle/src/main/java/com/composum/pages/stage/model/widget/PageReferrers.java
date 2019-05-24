@@ -19,7 +19,8 @@ public class PageReferrers extends ReferencesWidget {
     private transient Resource scope;
     private transient Boolean resolved;
 
-    protected List<Reference> retrieveReferences(@Nonnull final Page target) {
+    @Override
+    protected List<Reference> retrieveCandidates(@Nonnull final Page target) {
         List<Reference> references = new ArrayList<>();
         Collection<Resource> resources = getPageManager().getReferrers(target, getScope(target), isResolved());
         for (Resource resource : resources) {
