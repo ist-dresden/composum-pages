@@ -72,9 +72,6 @@ public class ReleaseServlet extends AbstractServiceServlet {
     @Reference
     private StagingReleaseManager releaseManager;
 
-    @Reference
-    private ReplicationManager replicationManager;
-
     enum Extension {
         http
     }
@@ -145,21 +142,7 @@ public class ReleaseServlet extends AbstractServiceServlet {
 
                 AccessMode accessMode = AccessMode.valueOf(getCategoryString().toUpperCase());
                 releaseManager.setMark(accessMode.name().toLowerCase(), release);
-
-                LOG.info("replication of '{}' for {}...", site.getPath(), accessMode);
-                String releaseLabel = site.getReleaseNumber(accessMode.name());
-                LOG.debug("'{}': using staging resolver of release '{}'...", resource.getPath(), releaseLabel);
-
-                ResourceResolver stagedResolver = releaseManager.getResolverForRelease(release, replicationManager, false);
-                Resource stagedSiteResource = stagedResolver.getResource(site.getResource().getPath());
-
-                ResourceFilter releaseFilter = new SitePageFilter(site.getPath(), ResourceFilter.ALL);
-                ReplicationContext replicationContext = new ReplicationContext(beanContext, site, accessMode, releaseFilter, stagedResolver);
-                replicationManager.replicateResource(replicationContext, stagedSiteResource, true);
-                replicationManager.replicateReferences(replicationContext);
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("replication of '{}' for {} done.", resource.getPath(), accessMode);
-                }
+                // replication is triggered by setMark via the ReleaseChangeEventListener .
 
                 request.getResourceResolver().commit();
 
