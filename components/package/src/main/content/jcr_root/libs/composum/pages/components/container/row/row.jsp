@@ -3,9 +3,9 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <cpp:defineObjects/>
 <cpp:element var="row" type="com.composum.pages.components.model.container.Row" cssAdd="row">
-    <c:forEach items="${row.columns}" var="column" varStatus="loop">
+    <c:forEach items="${row.cells}" var="column" varStatus="loop">
         <div class="${rowCssBase}_column ${rowCssBase}_column-${loop.first?'first':loop.last?'last':loop.index} ${column}">
-            <cpp:include path="column-${loop.index}" resourceType="composum/pages/components/container/row/column"/>
+            <cpp:include path="column-${loop.index}" resourceType="composum/pages/components/container/row/cell"/>
         </div>
     </c:forEach>
 </cpp:element>
