@@ -2,6 +2,7 @@ package com.composum.pages.commons.setup;
 
 import com.composum.sling.core.service.RepositorySetupService;
 import com.composum.sling.core.setup.util.SetupUtil;
+import com.composum.sling.core.util.CoreConstants;
 import com.composum.sling.platform.staging.StagingConstants;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.commons.cnd.CndImporter;
@@ -77,6 +78,7 @@ public class SetupHook implements InstallHook {
                 LOG.info("installed: execute...");
                 setupAcls(ctx);
                 refreshLucene(ctx);
+                migrateTables(ctx);
                 // updateNodeTypes should be the last actions since we need a session.save() there.
                 updateNodeTypes(ctx);
                 LOG.info("installed: execute ends.");
@@ -159,6 +161,53 @@ public class SetupHook implements InstallHook {
 
         // we need to do a session.save, since otherwise the node type reimport fails, because that's probably not transactional
         session.save();
+    }
+
+    /** Execute the renaming of the "column" component within tables to "cell", since that's the actual use. */
+    protected void migrateTables(InstallContext ctx) throws PackageException {
+        try {
+            Session session = ctx.getSession();
+            QueryManager queryManager = session.getWorkspace().getQueryManager();
+            Query query = queryManager.createQuery("/jcr:root/content//*[sling:resourceType='composum/pages/components/container/row/column']", Query.XPATH);
+            QueryResult result = query.execute();
+            NodeIterator it = result.getNodes();
+            while (it.hasNext()) {
+                Node node = it.nextNode();
+                Property prop = node.getProperty(CoreConstants.PROP_RESOURCE_TYPE);
+                if ("composum/pages/components/container/row/column".equals(prop.getString())) {
+                    try {
+                        prop.setValue("composum/pages/components/container/row/cell");
+                        LOG.info("Migrated {}", prop.getName());
+                    } catch (RepositoryException e) {
+                        LOG.error("Trouble writing to prop {}", prop.getPath());
+                        throw e;
+                    }
+                }
+            }
+
+            query = queryManager.createQuery("/jcr:root/content//*[sling:resourceType='composum/pages/components/container/row'][columns]", Query.XPATH);
+            result = query.execute();
+            it = result.getNodes();
+            while (it.hasNext()) {
+                Node node = it.nextNode();
+                try {
+                    if (!node.hasProperty("columns"))
+                        continue;
+                    Property prop = node.getProperty("columns");
+                    String propPath = prop.getPath();
+                    String value = prop.getString();
+                    prop.remove();
+                    node.setProperty("cells", value);
+                    LOG.info("Migrated {}", propPath);
+                } catch (RepositoryException e) {
+                    LOG.error("Trouble writing to prop {}", node.getPath());
+                    throw e;
+                }
+            }
+        } catch (Exception rex) {
+            LOG.error(rex.getMessage(), rex);
+            throw new PackageException(rex);
+        }
     }
 
 }
