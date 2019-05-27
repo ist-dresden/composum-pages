@@ -24,7 +24,7 @@
                     allowedElements="[
                         ^(/[^/]+/)?composum/pages/components/.+$
                     ]">
-                <column
+                <cell
                         jcr:primaryType="nt:unstructured"
                         typePatterns="[
                             ^(/[^/]+/)?composum/pages/components/container/row/cell$
@@ -32,7 +32,7 @@
                         allowedElements="[
                             ^(/[^/]+/)?composum/pages/components/.+$
                         ]">
-                </column>
+                </cell>
             </cpp:design>
         </main>
     </jcr:content>

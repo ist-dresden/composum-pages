@@ -166,47 +166,58 @@ public class SetupHook implements InstallHook {
     /** Execute the renaming of the "column" component within tables to "cell", since that's the actual use. */
     protected void migrateTables(InstallContext ctx) throws PackageException {
         try {
-            Session session = ctx.getSession();
-            QueryManager queryManager = session.getWorkspace().getQueryManager();
-            Query query = queryManager.createQuery("/jcr:root/content//*[sling:resourceType='composum/pages/components/container/row/column']", Query.XPATH);
-            QueryResult result = query.execute();
-            NodeIterator it = result.getNodes();
-            while (it.hasNext()) {
-                Node node = it.nextNode();
-                Property prop = node.getProperty(CoreConstants.PROP_RESOURCE_TYPE);
-                if ("composum/pages/components/container/row/column".equals(prop.getString())) {
-                    try {
-                        prop.setValue("composum/pages/components/container/row/cell");
-                        LOG.info("Migrated {}", prop.getName());
-                    } catch (RepositoryException e) {
-                        LOG.error("Trouble writing to prop {}", prop.getPath());
-                        throw e;
-                    }
-                }
-            }
+            replaceResourceType(ctx, "composum/pages/components/container/row/column", "composum/pages/components/container/row/cell");
+            replaceResourceType(ctx, "composum/pages/components/composed/table/column", "composum/pages/components/composed/table/cell");
 
-            query = queryManager.createQuery("/jcr:root/content//*[sling:resourceType='composum/pages/components/container/row'][columns]", Query.XPATH);
-            result = query.execute();
-            it = result.getNodes();
-            while (it.hasNext()) {
-                Node node = it.nextNode();
-                try {
-                    if (!node.hasProperty("columns"))
-                        continue;
-                    Property prop = node.getProperty("columns");
-                    String propPath = prop.getPath();
-                    String value = prop.getString();
-                    prop.remove();
-                    node.setProperty("cells", value);
-                    LOG.info("Migrated {}", propPath);
-                } catch (RepositoryException e) {
-                    LOG.error("Trouble writing to prop {}", node.getPath());
-                    throw e;
-                }
-            }
+            replacePropertyName(ctx, "composum/pages/components/container/row", "columns", "cells");
         } catch (Exception rex) {
             LOG.error(rex.getMessage(), rex);
             throw new PackageException(rex);
+        }
+    }
+
+    private void replacePropertyName(InstallContext ctx, String resourceType, String oldPropertyName, String newPropertyName) throws RepositoryException {
+        Session session = ctx.getSession();
+        QueryManager queryManager = session.getWorkspace().getQueryManager();
+        Query query = queryManager.createQuery("/jcr:root/content//*[sling:resourceType='" + resourceType + "'][" + oldPropertyName + "]", Query.XPATH);
+        QueryResult result = query.execute();
+        NodeIterator it = result.getNodes();
+        while (it.hasNext()) {
+            Node node = it.nextNode();
+            try {
+                if (!node.hasProperty(oldPropertyName))
+                    continue;
+                Property prop = node.getProperty(oldPropertyName);
+                String propPath = prop.getPath();
+                String value = prop.getString();
+                prop.remove();
+                node.setProperty(newPropertyName, value);
+                LOG.info("Migrated {}", propPath);
+            } catch (RepositoryException e) {
+                LOG.error("Trouble writing to prop {}", node.getPath());
+                throw e;
+            }
+        }
+    }
+
+    protected void replaceResourceType(InstallContext ctx, String oldResourceType, String newResourceType) throws RepositoryException {
+        Session session = ctx.getSession();
+        QueryManager queryManager = session.getWorkspace().getQueryManager();
+        Query query = queryManager.createQuery("/jcr:root/content//*[sling:resourceType='" + oldResourceType + "']", Query.XPATH);
+        QueryResult result = query.execute();
+        NodeIterator it = result.getNodes();
+        while (it.hasNext()) {
+            Node node = it.nextNode();
+            Property prop = node.getProperty(CoreConstants.PROP_RESOURCE_TYPE);
+            if (oldResourceType.equals(prop.getString())) {
+                try {
+                    prop.setValue(newResourceType);
+                    LOG.info("Migrated {}", prop.getName());
+                } catch (RepositoryException e) {
+                    LOG.error("Trouble writing to prop {}", prop.getPath());
+                    throw e;
+                }
+            }
         }
     }
 
