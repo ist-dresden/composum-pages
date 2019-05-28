@@ -404,6 +404,7 @@
                             this.$el.html(data);
                             this.contextTabs = core.getWidget(this.el,
                                 '.' + tools.const.contextTabs, tools.ContextTabs);
+                            // noinspection JSPrimitiveTypeWrapperUsage
                             this.contextTabs.reference = reference;
                             this.contextTabs.initTools();
                         }, this));

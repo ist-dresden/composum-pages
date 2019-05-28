@@ -1,12 +1,13 @@
 /**
  * edit user interface functions embedded in a content page to support edit interaction
+ * strong dependency to: 'invoke.js' ('commons.js'; libs: 'backbone.js', 'underscore.js', 'loglevel.js', 'jquery.js')
  */
 (function (window) {
     window.composum = window.composum || {};
     window.composum.pages = window.composum.pages || {};
     window.composum.pages.elements = window.composum.pages.elements || {};
 
-    (function (elements, pages, core) { // strong dependency to: 'invoke.js', 'commons.js'
+    (function (elements, pages, core) {
         'use strict';
 
         elements.const = _.extend(elements.const || {}, {
@@ -1066,8 +1067,8 @@
                 }
             },
 
-            selectElement: function (event, reference) {
-                this.selectPath(reference ? reference.path : reference, true);
+            selectElement: function (event, refOrPath) {
+                this.selectPath(refOrPath ? refOrPath.path : refOrPath, true);
             },
 
             onElementSelected: function (event, reference) {
@@ -1081,6 +1082,10 @@
                 }
             },
 
+            /**
+             * the message handler for all messages sent from the edit frame to the edited page (this document)
+             * @param event "<operation><argument-object|array-JSON>"
+             */
             onMessage: function (event) {
                 var e = elements.const.event;
                 var message = e.messagePattern.exec(event.data);
@@ -1088,8 +1093,8 @@
                     elements.log.trace('elements.message.on: "' + event.data + '"...');
                 }
                 if (message) {
-                    var args = JSON.parse(message[2]);
-                    switch (message[1]) {
+                    var args = JSON.parse(message[2]); // argument object|array
+                    switch (message[1]) { // operation
                         case e.element.select:
                             if (elements.log.getLevel() <= log.levels.DEBUG) {
                                 elements.log.debug('elements.message.on.' + e.element.select + JSON.stringify(args));
