@@ -756,7 +756,7 @@
                 return (this.refs.page && this.refs.page.isNotEmpty()) ||
                     (this.refs.asset && this.refs.asset.isNotEmpty());
             },
-            
+
             submitActionKey: function () {
                 // abstract: return the concrete servlet action selector
             },

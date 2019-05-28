@@ -1165,10 +1165,6 @@
              */
             getViewRect: function ($el, offset) {
                 var viewPos = $el.offset();
-                // FIXME: check this and find the reason... i don't know why but in the bootstrap
-                // context the views rectangle must be relative to the scroll position !?
-                viewPos.top -= $(window).scrollTop();
-                viewPos.left -= $(window).scrollLeft();
                 var rect = {
                     x1: viewPos.left,
                     y1: viewPos.top,
