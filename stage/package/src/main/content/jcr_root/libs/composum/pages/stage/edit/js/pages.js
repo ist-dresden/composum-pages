@@ -1,5 +1,6 @@
 /**
  * the 'pages' namespace and core Pages edit frame functions
+ * strong dependency to: 'commons.js' (libs: 'backbone.js', 'underscore.js', 'loglevel.js', 'jquery.js')
  */
 (function (window) {
     window.composum = window.composum || {};
@@ -413,7 +414,7 @@
                     this.showing = true;
                     this.callsToRetry = [retryThisFailedCall];
                     this.show(undefined, _.bind(function () {
-                        // retry after login all collected calls
+                        // retry all collected calls after login
                         this.callsToRetry.forEach(function (retryThisFailedCall) {
                             retryThisFailedCall();
                         });

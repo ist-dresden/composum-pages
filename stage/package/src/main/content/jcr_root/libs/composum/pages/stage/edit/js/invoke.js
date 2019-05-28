@@ -1,5 +1,6 @@
 /**
  * functions for a content page to invoke edit functions of the Pages edit frame
+ * strong dependency to: 'commons.js' (libs: 'backbone.js', 'underscore.js', 'loglevel.js', 'jquery.js')
  */
 (function (window) {
     window.composum = window.composum || {};

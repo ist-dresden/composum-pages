@@ -1,5 +1,6 @@
 /**
  * general functions used in the injected edit code of a content page and in the Pages edit frame
+ * strong dependency to libs: 'backbone.js', 'underscore.js', 'loglevel.js', 'jquery.js'
  */
 (function (window) {
     window.composum = window.composum || {};
@@ -26,7 +27,7 @@
         });
 
         /**
-         * a resource reference class to handel containers, elements and component types event if they are synthetic
+         * a resource reference class to handle containers, elements and component types even if they are synthetic
          * @param nameOrData  name value or a data object: View, $() or a template data object to clone
          * @param path        the resource path; should be undefined (not present) if a data object is used
          * @param type        the resource type is important if a synthetic resource is referenced

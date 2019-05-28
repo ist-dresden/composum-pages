@@ -156,6 +156,7 @@
             initTabs: function () {
                 var c = dialogs.const.edit.css;
                 var $tabList = this.$tabList = this.$('.' + c.base + c._tabList);
+                // noinspection JSMismatchedCollectionQueryUpdate
                 var tabs = this.tabs = [];
                 this.$('.' + c.base + c._tab).each(function () {
                     var $tab = $(this);

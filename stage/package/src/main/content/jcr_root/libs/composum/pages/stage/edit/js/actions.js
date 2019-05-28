@@ -1,3 +1,6 @@
+/**
+ * the 'actions' collection to trigger edit frame actions from anywhere
+ */
 (function (window) {
     window.composum = window.composum || {};
     window.composum.pages = window.composum.pages || {};
