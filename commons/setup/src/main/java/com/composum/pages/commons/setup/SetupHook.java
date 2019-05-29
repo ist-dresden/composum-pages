@@ -2,6 +2,7 @@ package com.composum.pages.commons.setup;
 
 import com.composum.sling.core.service.RepositorySetupService;
 import com.composum.sling.core.setup.util.SetupUtil;
+import com.composum.sling.core.util.CoreConstants;
 import com.composum.sling.platform.staging.StagingConstants;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.commons.cnd.CndImporter;
@@ -77,6 +78,7 @@ public class SetupHook implements InstallHook {
                 LOG.info("installed: execute...");
                 setupAcls(ctx);
                 refreshLucene(ctx);
+                migrateTables(ctx);
                 // updateNodeTypes should be the last actions since we need a session.save() there.
                 updateNodeTypes(ctx);
                 LOG.info("installed: execute ends.");
@@ -159,6 +161,66 @@ public class SetupHook implements InstallHook {
 
         // we need to do a session.save, since otherwise the node type reimport fails, because that's probably not transactional
         session.save();
+    }
+
+    /** Execute the renaming of the "column" component within tables to "cell", since that's the actual use. */
+    protected void migrateTables(InstallContext ctx) throws PackageException {
+        try {
+            replaceResourceType(ctx, "composum/pages/components/composed/table/column", "composum/pages/components/composed/table/cell");
+
+            // revert accidential migration
+            // FIXME(hps,2019-05-29) remove this after 2 weeks
+            replaceResourceType(ctx, "composum/pages/components/container/row/column", "composum/pages/components/container/row/column");
+            replacePropertyName(ctx, "composum/pages/components/container/row", "cells", "columns");
+        } catch (Exception rex) {
+            LOG.error(rex.getMessage(), rex);
+            throw new PackageException(rex);
+        }
+    }
+
+    private void replacePropertyName(InstallContext ctx, String resourceType, String oldPropertyName, String newPropertyName) throws RepositoryException {
+        Session session = ctx.getSession();
+        QueryManager queryManager = session.getWorkspace().getQueryManager();
+        Query query = queryManager.createQuery("/jcr:root/content//*[sling:resourceType='" + resourceType + "'][" + oldPropertyName + "]", Query.XPATH);
+        QueryResult result = query.execute();
+        NodeIterator it = result.getNodes();
+        while (it.hasNext()) {
+            Node node = it.nextNode();
+            try {
+                if (!node.hasProperty(oldPropertyName))
+                    continue;
+                Property prop = node.getProperty(oldPropertyName);
+                String propPath = prop.getPath();
+                String value = prop.getString();
+                prop.remove();
+                node.setProperty(newPropertyName, value);
+                LOG.info("Migrated {}", propPath);
+            } catch (RepositoryException e) {
+                LOG.error("Trouble writing to prop {}", node.getPath());
+                throw e;
+            }
+        }
+    }
+
+    protected void replaceResourceType(InstallContext ctx, String oldResourceType, String newResourceType) throws RepositoryException {
+        Session session = ctx.getSession();
+        QueryManager queryManager = session.getWorkspace().getQueryManager();
+        Query query = queryManager.createQuery("/jcr:root/content//*[sling:resourceType='" + oldResourceType + "']", Query.XPATH);
+        QueryResult result = query.execute();
+        NodeIterator it = result.getNodes();
+        while (it.hasNext()) {
+            Node node = it.nextNode();
+            Property prop = node.getProperty(CoreConstants.PROP_RESOURCE_TYPE);
+            if (oldResourceType.equals(prop.getString())) {
+                try {
+                    prop.setValue(newResourceType);
+                    LOG.info("Migrated {}", prop.getName());
+                } catch (RepositoryException e) {
+                    LOG.error("Trouble writing to prop {}", prop.getPath());
+                    throw e;
+                }
+            }
+        }
     }
 
 }
