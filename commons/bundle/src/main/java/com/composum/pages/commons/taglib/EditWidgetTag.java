@@ -39,6 +39,8 @@ public class EditWidgetTag extends AbstractWidgetTag implements LoopTag {
     public static final String MODEL_CLASS = "modelClass";
     public static final String DEFAULT_MODEL_CLASS = "";
 
+    public static final String NN_ATTRIBUTES = "attributes";
+
     protected String widgetType;
     protected Object value;
     protected boolean multi = false;
@@ -142,9 +144,34 @@ public class EditWidgetTag extends AbstractWidgetTag implements LoopTag {
         disabled = val;
     }
 
+    /**
+     * adds all pre configured attributes to the attribute set
+     */
+    protected void collectConfiguredAttributes(Map<String, Object> attributeSet) {
+        Resource widget = ResolverUtil.getResourceType(resourceResolver, getSnippetResourceType());
+        while (widget != null) {
+            Resource attributes = widget.getChild(NN_ATTRIBUTES);
+            if (attributes != null) {
+                ValueMap attributeValues = attributes.getValueMap();
+                for (Map.Entry<String, Object> entry : attributeValues.entrySet()) {
+                    String key = entry.getKey();
+                    if (key.indexOf(':') < 0) { // no properties with namespaces
+                        Object value = entry.getValue();
+                        if (value instanceof String) {
+                            value = eval(value, value);
+                        }
+                        useDynamicAttribute(attributeSet, key, value.toString());
+                    }
+                }
+            }
+            widget = ResolverUtil.getResourceType(resourceResolver, widget.getResourceSuperType());
+        }
+    }
+
     @Override
     protected void collectAttributes(Map<String, Object> attributeSet) {
         collectDynamicAttributes(attributeSet);
+        collectConfiguredAttributes(attributeSet);
     }
 
     @Override
@@ -153,7 +180,7 @@ public class EditWidgetTag extends AbstractWidgetTag implements LoopTag {
         if (model instanceof WidgetModel) {
             String widgetKey = ((WidgetModel) model).filterWidgetAttribute(key, value);
             if (widgetKey != null) {
-                attributeSet.put(widgetKey, value);
+                attributeSet.putIfAbsent(widgetKey, value);
             }
         } else {
             super.useDynamicAttribute(attributeSet, key, value);

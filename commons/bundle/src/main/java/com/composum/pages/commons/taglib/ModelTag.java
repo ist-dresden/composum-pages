@@ -208,7 +208,7 @@ public class ModelTag extends ComponentTag implements DynamicAttributes {
      * adds a dynamic attribute to the attribute set (extension hook)
      */
     protected void useDynamicAttribute(Map<String, Object> attributeSet, String key, Object value) {
-        attributeSet.put(key, value);
+        attributeSet.putIfAbsent(key, value);
     }
 
     /**

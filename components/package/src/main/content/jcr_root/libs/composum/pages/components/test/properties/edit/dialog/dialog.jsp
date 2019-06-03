@@ -44,6 +44,14 @@
                             hint="an email like text<br/>(pattern: '^[a-zA-Z_.-]+@[a-zA-Z_.-]+$')"/>
             </div>
             <div class="col col-xs-6">
+                <cpp:widget type="email" label="E-Mail Field" property="single_mail" i18n="true"
+                            rules="blank" hint="an email address (RFC 2822)"/>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col col-xs-6">
+            </div>
+            <div class="col col-xs-6">
                 <cpp:widget type="slider" label="Slider" property="single_slider" i18n="true" options="1.5;5;0.5;2"
                             hint="a slider can not have an empty<br/>or undefined value (options: '1.5;5;0.5;2')"/>
             </div>
