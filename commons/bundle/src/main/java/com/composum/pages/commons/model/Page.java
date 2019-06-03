@@ -20,6 +20,7 @@ import com.composum.sling.core.util.ResourceUtil;
 import com.composum.sling.platform.security.AccessMode;
 import com.composum.sling.platform.staging.versions.PlatformVersionsService;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
@@ -31,6 +32,7 @@ import javax.jcr.RepositoryException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -165,7 +167,10 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
 
     @Override
     public int compareTo(@Nonnull Page page) {
-        return getName().compareTo(page.getName());
+        CompareToBuilder builder = new CompareToBuilder();
+        builder.append(getName(), page.getName());
+        builder.append(getPath(), page.getPath());
+        return builder.toComparison();
     }
 
     // initializer extensions
