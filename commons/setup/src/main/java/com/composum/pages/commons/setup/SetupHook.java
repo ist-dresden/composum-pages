@@ -170,7 +170,7 @@ public class SetupHook implements InstallHook {
 
             // revert accidential migration
             // FIXME(hps,2019-05-29) remove this after 2 weeks
-            replaceResourceType(ctx, "composum/pages/components/container/row/column", "composum/pages/components/container/row/column");
+            replaceResourceType(ctx, "composum/pages/components/container/row/cell", "composum/pages/components/container/row/column");
             replacePropertyName(ctx, "composum/pages/components/container/row", "cells", "columns");
         } catch (Exception rex) {
             LOG.error(rex.getMessage(), rex);
@@ -222,5 +222,4 @@ public class SetupHook implements InstallHook {
             }
         }
     }
-
 }

@@ -136,13 +136,18 @@ public abstract class ReferencesWidget extends MultiSelect implements WidgetMode
     }
 
     protected Page getPageAttribute(Object attributeValue) {
-        if (attributeValue instanceof Page) return (Page) attributeValue;
-        else if (attributeValue instanceof ResourceManager.ResourceReference)
-            return getPageManager().createBean(getContext(), ((ResourceManager.ResourceReference) attributeValue).getResource());
-        else if (attributeValue instanceof Resource)
+        if (attributeValue instanceof Page) {
+            return (Page) attributeValue;
+        } else if (attributeValue instanceof ResourceManager.ResourceReference) {
+            return getPageManager().createBean(getContext(),
+                    ((ResourceManager.ResourceReference) attributeValue).getResource());
+        } else if (attributeValue instanceof Resource) {
             return getPageManager().createBean(getContext(), (Resource) attributeValue);
-        else if (attributeValue != null) return getPageManager().createBean(getContext(),
-                getContext().getResolver().getResource(attributeValue.toString()));
-        else return null;
+        } else if (attributeValue != null) {
+            return getPageManager().createBean(getContext(),
+                    getContext().getResolver().getResource(attributeValue.toString()));
+        } else {
+            return null;
+        }
     }
 }
