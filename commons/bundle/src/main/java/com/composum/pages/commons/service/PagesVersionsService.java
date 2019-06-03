@@ -26,6 +26,8 @@ import javax.jcr.version.VersionIterator;
 import javax.jcr.version.VersionManager;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 @Component(
@@ -133,6 +135,7 @@ public class PagesVersionsService implements VersionsService {
                 result.add(page);
             }
         }
+        Collections.sort(result, Comparator.comparing(Page::getPath));
         return result;
     }
 
@@ -140,6 +143,7 @@ public class PagesVersionsService implements VersionsService {
     public Collection<Page> findModifiedPages(final BeanContext context, final Resource root) {
         List<Page> result = new ArrayList<>();
         findModifiedPages(context, root, result);
+        Collections.sort(result, Comparator.comparing(Page::getPath));
         return result;
     }
 
