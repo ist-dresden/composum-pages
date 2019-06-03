@@ -642,14 +642,20 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
 
         public void fromJson(JsonReader reader) throws IOException {
             reader.beginObject();
-            while (reader.peek() != JsonToken.END_OBJECT) {
+            JsonToken token;
+            while ((token = reader.peek()) != JsonToken.END_OBJECT) {
                 String name = reader.nextName();
                 switch (name) {
                     case PATH:
                         path = reader.nextString();
                         break;
                     case TYPE:
-                        type = reader.nextString();
+                        if (token == JsonToken.NULL) {
+                            reader.nextNull();
+                            type = null;
+                        } else {
+                            type = reader.nextString();
+                        }
                         break;
                     default:
                         reader.skipValue();
