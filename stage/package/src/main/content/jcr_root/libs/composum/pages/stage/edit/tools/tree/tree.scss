@@ -4,6 +4,7 @@
 @import "../../css/mixins";
 
 $frame-tree-fg-color: #fff;
+$frame-tree-icon-color: $release-status-initial;
 $frame-tree-dnd-border: 1px dashed rgba(255, 255, 255, 0.7);
 
 .composum-pages-EDIT,
@@ -33,6 +34,10 @@ $frame-tree-dnd-border: 1px dashed rgba(255, 255, 255, 0.7);
             font-size: $default-font-size;
         }
 
+        &-icon {
+            color: $frame-tree-icon-color;
+        }
+
         &-node,
         &-node > .jstree-anchor {
             @include default-font;
@@ -41,6 +46,40 @@ $frame-tree-dnd-border: 1px dashed rgba(255, 255, 255, 0.7);
         &-node.intermediate,
         &-node.intermediate > .jstree-anchor {
             font-family: 'robotolight_italic', sans-serif;
+        }
+
+        &-node {
+
+            &.release-status {
+
+                &_initial {
+
+                    > .jstree-anchor > .jstree-icon {
+                        color: $release-status-initial;
+                    }
+                }
+
+                &_activated {
+
+                    > .jstree-anchor > .jstree-icon {
+                        color: $release-status-activated;
+                    }
+                }
+
+                &_modified {
+
+                    > .jstree-anchor > .jstree-icon {
+                        color: $release-status-modified;
+                    }
+                }
+
+                &_deactivated {
+
+                    > .jstree-anchor > .jstree-icon {
+                        color: $release-status-deactivated;
+                    }
+                }
+            }
         }
 
         &-wholerow {

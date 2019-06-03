@@ -74,7 +74,7 @@ public class PagesReplicationManager implements ReplicationManager {
         boolean replicationDone = false;
         String resourcePath = resource.getPath();
         if (!context.done.contains(resourcePath)) {
-            // perform replication only of not always done
+            // perform replication only of not already done
             for (ReplicationStrategy strategy : instances) {
                 if (strategy.canReplicate(context, resource, isReference)) {
                     if (LOG.isDebugEnabled()) {
@@ -149,4 +149,15 @@ public class PagesReplicationManager implements ReplicationManager {
             strategy.deactivate(this);
         }
     }
+
+    @Override
+    public boolean releaseMappingAllowed(String path, String uri) {
+        return releaseMappingAllowed(path);
+    }
+
+    @Override
+    public boolean releaseMappingAllowed(String path) {
+        return path.startsWith(getConfig().contentPath());
+    }
+
 }

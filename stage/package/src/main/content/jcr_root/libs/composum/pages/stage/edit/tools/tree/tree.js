@@ -69,6 +69,32 @@
                 if (core.components.Tree.prototype.onPathSelected.apply(this, [event, path])) {
                     this.$el.trigger("node:selected", [path]);
                 }
+            },
+
+            /**
+             * refresh the data and tree node state of one node (no structure change refresh!)
+             * @param refOrPath the reference or the path of the repository resource
+             */
+            refreshTreeNodeState: function (refOrPath) {
+                if (refOrPath) {
+                    var path = refOrPath.path ? refOrPath.path : refOrPath;
+                    // load data and replace the 'original' data store of the node
+                    core.getJson(this.dataUrlForPath(path), _.bind(function (data) {
+                        var nodeId = this.nodeId(path);
+                        var node = this.jstree.get_node(nodeId);
+                        if (this.log.getLevel() <= log.levels.DEBUG) {
+                            this.log.debug(this.nodeIdPrefix + 'tree.refreshTreeNodeState(' + path + ')');
+                        }
+                        if (node) {
+                            if (data.children) {
+                                // drop children - not for structure change refresh!
+                                delete data.children;
+                            }
+                            node.original = data; // replace 'original' data store and redraw...
+                            this.refreshNodeState(this.jstree.get_node(nodeId, true), node);
+                        }
+                    }, this));
+                }
             }
         });
 
@@ -260,8 +286,7 @@
                     var move = 'into';
                     if (relPos < height / 3) {
                         move = 'before';
-                    }
-                    else if (relPos > height - height / 3) {
+                    } else if (relPos > height - height / 3) {
                         move = 'after';
                     }
                     this.dnd = {
@@ -347,6 +372,7 @@
                 var p = pages.const.profile.page.tree;
                 var id = this.nodeIdPrefix + 'Tree';
                 this.initializeFilter();
+                this.suppressEvent = true; // suppress page select events during initialization
                 tree.ContentTree.prototype.initialize.apply(this, [options]);
                 var e = pages.const.event;
                 $(document).on(e.element.selected + '.' + id, _.bind(this.onElementSelected, this));
@@ -360,12 +386,21 @@
                 $(document).on(e.content.deleted + '.' + id, _.bind(this.onContentDeleted, this));
                 $(document).on(e.content.moved + '.' + id, _.bind(this.onContentMoved, this));
                 $(document).on(e.page.selected + '.' + id, _.bind(this.onContentSelected, this));
+                $(document).on(e.page.state + '.' + id, _.bind(this.onPageStateChanged, this));
                 $(document).on(e.page.inserted + '.' + id, _.bind(this.onContentInserted, this));
                 $(document).on(e.page.changed + '.' + id, _.bind(this.onContentChanged, this));
                 $(document).on(e.page.deleted + '.' + id, _.bind(this.onContentDeleted, this));
                 $(document).on(e.site.created + '.' + id, _.bind(this.onContentInserted, this));
                 $(document).on(e.site.changed + '.' + id, _.bind(this.onContentSelected, this));
                 $(document).on(e.site.deleted + '.' + id, _.bind(this.onContentDeleted, this));
+                $(document).on(e.ready + '.' + id, _.bind(this.ready, this));
+            },
+
+            /**
+             * switch to 'normal'; page select events no longer suppressed
+             */
+            ready: function () {
+                this.suppressEvent = false;
             },
 
             initializeFilter: function () {
@@ -376,6 +411,20 @@
             dataUrlForPath: function (path) {
                 var params = this.filter ? '?filter=' + this.filter : '';
                 return '/bin/cpm/pages/edit.pageTree.json' + path + params;
+            },
+
+            /**
+             * add the release status CSS class for the page
+             */
+            refreshNodeState: function ($node, node) {
+                node = tree.ContentTree.prototype.refreshNodeState.apply(this, [$node, node]);
+                if (node.original.release && node.original.release.status) {
+                    ['initial', 'activated', 'modified', 'deactivated'].forEach(function (value) {
+                        $node.removeClass('release-status_' + value);
+                    });
+                    $node.addClass('release-status_' + node.original.release.status);
+                }
+                return node;
             },
 
             onNodeSelected: function (path, node) {
@@ -394,6 +443,48 @@
                 this.onPathSelected(event, path);
             },
 
+            onPageStateChanged: function (event, refOrPath) {
+                var path = refOrPath && refOrPath.path ? refOrPath.path : refOrPath;
+                if (this.log.getLevel() <= log.levels.DEBUG) {
+                    this.log.debug(this.nodeIdPrefix + 'tree.onPageStateChanged(' + path + ')');
+                }
+                this.refreshTreeNodeState(path);
+            },
+
+            /**
+             * returns a reference to the Page of a content element
+             * @param elementPath
+             * @returns {Window.composum.pages.Reference|undefined|*}
+             */
+            getPageOfElement: function (elementPath) {
+                if (elementPath && elementPath !== '/') {
+                    var elementNode = this.getTreeNode(elementPath);
+                    if (elementNode) {
+                        switch (elementNode.original.type) {
+                            case 'pagecontent':
+                                var pagePath = core.getParentPath(elementPath);
+                                return new pages.Reference(core.getNameFromPath(pagePath),
+                                    pagePath, elementNode.original.resourceType, 'cpp:Page');
+                            case 'page':
+                                return pages.Reference(elementNode.original.name,
+                                    elementPath, undefined, elementNode.original.resourceType);
+                        }
+                    }
+                    return this.getPageOfElement(core.getParentPath(elementPath));
+                }
+                return undefined;
+            },
+
+            /**
+             * triggers a node state refresh for the page node of the changed content element
+             * @param event the element change event
+             * @param refOrPath the reference or the path of the changed element
+             */
+            onPageElementChanged: function (event, refOrPath) {
+                var pageRef = this.getPageOfElement(refOrPath && refOrPath.path ? refOrPath.path : refOrPath);
+                this.refreshTreeNodeState(pageRef);
+            },
+
             onElementSelected: function (event, refOrPath) {
                 var path = refOrPath && refOrPath.path ? refOrPath.path : refOrPath;
                 if (this.log.getLevel() <= log.levels.DEBUG) {
@@ -409,6 +500,7 @@
                 }
                 var parentAndName = core.getParentAndName(path);
                 this.onPathInserted(event, parentAndName.path, parentAndName.name);
+                this.onPageElementChanged(event, parentAndName.path);
             },
 
             onElementMoved: function (event, oldRefOrPath, newRefOrPath) {
@@ -418,6 +510,14 @@
                     this.log.debug(this.nodeIdPrefix + 'tree.onElementSelected(' + oldPath + ' -> ' + newPath + ')');
                 }
                 this.onPathMoved(event, oldPath, newPath);
+                var oldPageRef = this.getPageOfElement(oldPath);
+                var newPageRef = this.getPageOfElement(newPath);
+                if (oldPageRef) {
+                    this.refreshTreeNodeState(oldPageRef);
+                }
+                if (newPageRef && (!oldPageRef || newPageRef.path !== oldPageRef.path)) {
+                    this.refreshTreeNodeState(newPageRef);
+                }
             },
 
             onElementChanged: function (event, refOrPath) {
@@ -426,6 +526,7 @@
                     this.log.debug(this.nodeIdPrefix + 'tree.onElementChanged(' + path + ')');
                 }
                 this.onPathChanged(event, path);
+                this.onPageElementChanged(event, path);
             },
 
             onElementDeleted: function (event, refOrPath) {
@@ -434,6 +535,7 @@
                     this.log.debug(this.nodeIdPrefix + 'tree.onElementDeleted(' + path + ')');
                 }
                 this.onPathDeleted(event, path);
+                this.onPageElementChanged(event, path);
             },
 
             dropNode: function (draggedNode, targetNode, index) {
@@ -521,7 +623,7 @@
             },
 
             dataUrlForPath: function (path) {
-                return '/bin/cpm/pages/edit.developTree.json' + path;
+                return '/bin/cpm/pages/develop.tree.json' + path;
             }
         });
 
@@ -648,7 +750,7 @@
                 return false;
             },
 
-            setFilter: function (event) {
+            selectFilter: function (event) {
                 event.preventDefault();
                 var p = pages.const.profile[this.type].tree;
                 var $link = $(event.currentTarget);
@@ -673,7 +775,7 @@
                 this.$viewToggle.click(_.bind(this.toggleView, this));
                 this.setView(pages.profile.get(p.aspect, p.view, 'tree'));
                 this.setFilter(pages.profile.get(p.aspect, p.filter, undefined));
-                this.$('.' + tree.const.pages.css.base + '_filter-value a').click(_.bind(this.setFilter, this));
+                this.$('.' + tree.const.pages.css.base + '_filter-value a').click(_.bind(this.selectFilter, this));
                 this.tree.$el.on('node:selected.' + this.treePanelId, _.bind(this.onNodeSelected, this));
                 $(document).on(e.site.selected + '.' + this.treePanelId, _.bind(this.onSiteSelected, this));
                 $(document).on(e.scope.changed + '.' + this.treePanelId, _.bind(this.onScopeChanged, this));
@@ -709,7 +811,7 @@
                 this.$viewToggle.click(_.bind(this.toggleView, this));
                 this.setView(pages.profile.get(p.aspect, p.view, 'tree'));
                 this.setFilter(pages.profile.get(p.aspect, p.filter, undefined));
-                this.$('.' + tree.const.assets.css.base + '_filter-value a').click(_.bind(this.setFilter, this));
+                this.$('.' + tree.const.assets.css.base + '_filter-value a').click(_.bind(this.selectFilter, this));
                 this.tree.$el.on('node:selected.' + this.treePanelId, _.bind(this.onNodeSelected, this));
                 $(document).on(e.asset.select + '.' + this.treePanelId, _.bind(this.selectAsset, this));
                 $(document).on(e.site.selected + '.' + this.treePanelId, _.bind(this.onSiteSelected, this));

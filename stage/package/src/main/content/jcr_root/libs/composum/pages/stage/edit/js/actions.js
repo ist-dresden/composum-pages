@@ -1,3 +1,6 @@
+/**
+ * the 'actions' collection to trigger edit frame actions from anywhere
+ */
 (function (window) {
     window.composum = window.composum || {};
     window.composum.pages = window.composum.pages || {};
@@ -16,7 +19,18 @@
          * @param type the resource type of the content element
          */
 
-        actions.const = _.extend(actions.const || {}, {});
+        actions.const = _.extend(actions.const || {}, {
+            versions: {
+                uri: {
+                    nodes: {
+                        base: '/bin/cpm/nodes/version',
+                        _checkpoint: '.checkpoint.json',
+                        _checkIn: '.check-in.json',
+                        _checkOut: '.check-out.json'
+                    }
+                }
+            }
+        });
 
         actions.trigger = function (event, action, reference) {
             if (_.isString(action)) {
@@ -92,12 +106,7 @@
                         // trigger content change
                         $(document).trigger(pages.const.event.element.inserted, [new pages.Reference(result.reference)]);
                     }, this), function (xhr) {
-                        var msgs = xhr.responseJSON.messages;
-                        if (msgs && msgs.length > 0) {
-                            core.alert(msgs[0].level, msgs[0].text, msgs[0].hint);
-                        } else {
-                            core.alert('error', 'Error', 'Error on copying element');
-                        }
+                        actions.error('Error on copying element', xhr);
                     });
                 }
             },
@@ -189,19 +198,49 @@
                 pages.dialogs.openDeleteContentDialog('page', name, path, type);
             },
 
+            activate: function (event, name, path, type) {
+                pages.dialogs.openActivatePageDialog(name, path, type);
+            },
+
+            deactivate: function (event, name, path, type) {
+                pages.dialogs.openDeactivatePageDialog(name, path, type);
+            },
+
             checkout: function (event, name, path, type) {
-                alert('page.checkout... ' + name + ',' + path + ',' + type);
+                var u = actions.const.versions.uri;
+                core.ajaxPost(u.nodes.base + u.nodes._checkOut + path, {}, {},
+                    _.bind(function (result) {
+                        $(document).trigger(pages.const.event.page.state, [new pages.Reference(name, path, type)]);
+                    }, this), function (xhr) {
+                        actions.error('Error on checkout', xhr);
+                    });
             },
 
             checkin: function (event, name, path, type) {
-                alert('page.checkin... ' + name + ',' + path + ',' + type);
+                var u = actions.const.versions.uri;
+                core.ajaxPost(u.nodes.base + u.nodes._checkIn + path, {}, {},
+                    _.bind(function (result) {
+                        $(document).trigger(pages.const.event.page.state, [new pages.Reference(name, path, type)]);
+                    }, this), function (xhr) {
+                        actions.error('Error on checkin', xhr);
+                    });
             },
 
             checkpoint: function (event, name, path, type) {
-                alert('page.checkpoint... ' + name + ',' + path + ',' + type);
+                var u = actions.const.versions.uri;
+                core.ajaxPost(u.nodes.base + u.nodes._checkpoint + path, {}, {},
+                    _.bind(function (result) {
+                        $(document).trigger(pages.const.event.page.state, [new pages.Reference(name, path, type)]);
+                    }, this), function (xhr) {
+                        actions.error('Error on checkpoint', xhr);
+                    });
             },
 
             lock: function (event, name, path, type) {
+                alert('page.lock... ' + name + ',' + path + ',' + type);
+            },
+
+            unlock: function (event, name, path, type) {
                 alert('page.lock... ' + name + ',' + path + ',' + type);
             }
         };
@@ -442,6 +481,15 @@
                         core.alert('error', 'Error', 'Error on moving component', xhr);
                     });
                 }
+            }
+        };
+
+        actions.error = function (title, xhr) {
+            var msgs = xhr.responseJSON.messages;
+            if (msgs && msgs.length > 0) {
+                core.alert(msgs[0].level, msgs[0].text, msgs[0].hint);
+            } else {
+                core.alert('error', 'Error', title);
             }
         };
 

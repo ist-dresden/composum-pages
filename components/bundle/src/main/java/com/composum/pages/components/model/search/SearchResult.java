@@ -6,7 +6,7 @@
 package com.composum.pages.components.model.search;
 
 import com.composum.pages.commons.model.Element;
-import com.composum.pages.commons.service.PlaceholderService;
+import com.composum.platform.commons.content.service.PlaceholderService;
 import com.composum.pages.commons.service.search.SearchService;
 import com.composum.pages.commons.service.search.SearchTermParseException;
 import com.composum.sling.core.BeanContext;

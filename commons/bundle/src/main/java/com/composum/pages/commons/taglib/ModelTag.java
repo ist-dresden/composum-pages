@@ -186,14 +186,14 @@ public class ModelTag extends ComponentTag implements DynamicAttributes {
      * collects the set of tag attributes classes (extension hook)
      * adds all dynamic attributes as tag attributes
      */
-    protected void collectAttributes(Map<String, String> attributeSet) {
+    protected void collectAttributes(Map<String, Object> attributeSet) {
         collectDynamicAttributes(attributeSet);
     }
 
     /**
      * adds all dynamic attributes to the attribute set
      */
-    protected void collectDynamicAttributes(Map<String, String> attributeSet) {
+    protected void collectDynamicAttributes(Map<String, Object> attributeSet) {
         for (Map.Entry<String, Object> entry : dynamicAttributes) {
             String key = entry.getKey();
             Object value = entry.getValue();
@@ -207,8 +207,8 @@ public class ModelTag extends ComponentTag implements DynamicAttributes {
     /**
      * adds a dynamic attribute to the attribute set (extension hook)
      */
-    protected void useDynamicAttribute(Map<String, String> attributeSet, String key, String value) {
-        attributeSet.put(key, value);
+    protected void useDynamicAttribute(Map<String, Object> attributeSet, String key, Object value) {
+        attributeSet.putIfAbsent(key, value);
     }
 
     /**
@@ -298,9 +298,9 @@ public class ModelTag extends ComponentTag implements DynamicAttributes {
     public String getAttributes() {
         if (attributes == null) {
             StringBuilder builder = new StringBuilder();
-            Map<String, String> attributeSet = new LinkedHashMap<>();
+            Map<String, Object> attributeSet = new LinkedHashMap<>();
             collectAttributes(attributeSet);
-            for (Map.Entry<String, String> attribute : attributeSet.entrySet()) {
+            for (Map.Entry<String, Object> attribute : attributeSet.entrySet()) {
                 builder.append(" ").append(attribute.getKey()).append("=\"").append(attribute.getValue()).append("\"");
             }
             attributes = builder.toString();
@@ -311,7 +311,7 @@ public class ModelTag extends ComponentTag implements DynamicAttributes {
     /**
      * builds the list of tag attributes for the wrapping tag
      */
-    protected void addEditAttributes(@Nonnull Map<String, String> attributeSet,
+    protected void addEditAttributes(@Nonnull Map<String, Object> attributeSet,
                                      @Nonnull Resource resource, @Nullable String resourceType) {
         ResourceManager resourceManager = context.getService(ResourceManager.class);
         ResourceManager.ResourceReference reference = resourceManager.getReference(resource, resourceType);

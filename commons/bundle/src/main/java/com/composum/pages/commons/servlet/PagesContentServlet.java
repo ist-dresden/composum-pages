@@ -170,10 +170,8 @@ public abstract class PagesContentServlet extends ContentServlet {
             throws IOException {
         PagesConfiguration configuration = getPagesConfiguration();
         if (!allowed) {
-            jsonWriter.name("response").beginObject();
-            jsonWriter.name("level").value("error");
-            jsonWriter.name("text").value(CpnlElFunctions.i18n(request, "Invalid Target"));
-            jsonWriter.endObject();
+            jsonWriter.name("success").value(false);
+            jsonWriter.name("title").value(CpnlElFunctions.i18n(request, "Invalid Target"));
             jsonWriter.name("messages").beginArray();
             jsonWriter.beginObject();
             jsonWriter.name("level").value("error");
@@ -419,34 +417,6 @@ public abstract class PagesContentServlet extends ContentServlet {
             try {
                 BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
                 getVersionsService().restoreVersion(context, params.path, params.version);
-                ResponseUtil.writeEmptyArray(response);
-
-            } catch (RepositoryException ex) {
-                LOG.error(ex.getMessage(), ex);
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, ex.getMessage());
-            }
-        }
-    }
-
-    protected class SetVersionLabel implements ServletOperation {
-
-        @Override
-        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
-                         ResourceHandle resource)
-                throws IOException {
-
-            final Gson gson = new Gson();
-            final VersionPutParameters params = gson.fromJson(
-                    new InputStreamReader(request.getInputStream(), MappingRules.CHARSET.name()),
-                    VersionPutParameters.class);
-
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("SetVersionLabel(" + params.path + "," + params.version + "," + params.label + ")...");
-            }
-
-            try {
-                BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
-                getVersionsService().setVersionLabel(context, params.path, params.version, params.label);
                 ResponseUtil.writeEmptyArray(response);
 
             } catch (RepositoryException ex) {

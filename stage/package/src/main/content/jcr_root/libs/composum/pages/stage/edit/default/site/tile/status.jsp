@@ -12,11 +12,11 @@
                     class="${siteCssBase}_template">*</span></c:if></h3>
             <div class="${siteCssBase}_status">
                 <a href="#"
-                   class="badge badge-pill modified"
-                   title="${cpn:i18n(slingRequest,'Modified Pages')}"><%=site.getModifiedPages().size()%>
+                   class="badge badge-pill changes"
+                   title="${cpn:i18n(slingRequest,'Release Changes')}"><%=site.getReleaseChanges().size()%>
                 </a><a href="#"
-                       class="badge badge-pill unreleased"
-                       title="${cpn:i18n(slingRequest,'Finished Pages')}"><%=site.getUnreleasedPages().size()%>
+                       class="badge badge-pill modified"
+                       title="${cpn:i18n(slingRequest,'Modified Pages')}"><%=site.getModifiedPages().size()%>
             </a>
             </div>
             <h4 class="${siteCssBase}_path">${cpn:path(site.path)}</h4>

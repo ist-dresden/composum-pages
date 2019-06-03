@@ -4,7 +4,6 @@ import com.composum.pages.commons.model.Site;
 import com.composum.sling.core.JcrResource;
 import com.composum.sling.core.ResourceHandle;
 import com.composum.sling.platform.security.AccessMode;
-import com.composum.sling.platform.staging.service.ReleaseMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.resource.ModifiableValueMap;
@@ -25,7 +24,7 @@ import java.util.regex.Pattern;
 /**
  * the general implementation base for an in-place replication strategy
  */
-public abstract class InPlaceReplicationStrategy implements ReplicationStrategy, ReleaseMapper {
+public abstract class InPlaceReplicationStrategy implements ReplicationStrategy {
 
     private static final Logger LOG = LoggerFactory.getLogger(InPlaceReplicationStrategy.class);
 
@@ -40,16 +39,6 @@ public abstract class InPlaceReplicationStrategy implements ReplicationStrategy,
         return replicationManager.getConfig();
     }
 
-    @Override
-    public boolean releaseMappingAllowed(String path, String uri) {
-        return releaseMappingAllowed(path);
-    }
-
-    @Override
-    public boolean releaseMappingAllowed(String path) {
-        return path.startsWith(getConfig().contentPath());
-    }
-
     protected String getTargetPath(ReplicationContext context) {
         switch (context.accessMode) {
             case PREVIEW:
@@ -60,11 +49,6 @@ public abstract class InPlaceReplicationStrategy implements ReplicationStrategy,
                 return null;
         }
     }
-
-    /**
-     * @return the resolver to use for traversing the released content (the replication source)
-     */
-    protected abstract ResourceResolver getReleaseResolver(ReplicationContext context, Resource resource);
 
     /**
      * the general 'canReplicate' check for all InPlace replication strategy implementations
@@ -91,11 +75,10 @@ public abstract class InPlaceReplicationStrategy implements ReplicationStrategy,
         Resource targetRoot;
         if (StringUtils.isNotBlank(targetPath) && (targetRoot = replicateResolver.getResource(targetPath)) != null) {
             String relativePath = resource.getPath().replaceAll("^" + config.contentPath() + "/", "");
-            // the 'releaseResolver' is probably a version controlled resolver
-            ResourceResolver releaseResolver = getReleaseResolver(context, resource);
-            Resource released = releaseResolver.getResource(resource.getPath());
             // delegation to the extension hook...
-            replicate(context, targetRoot, released, relativePath, recursive, false);
+            replicate(context, targetRoot, resource, relativePath, recursive, false);
+        } else {
+            throw new IllegalStateException("Target path not found: " + targetPath);
         }
     }
 
@@ -257,7 +240,9 @@ public abstract class InPlaceReplicationStrategy implements ReplicationStrategy,
      */
     protected String transformStringProperty(ReplicationContext context, String targetRoot, String value) {
         Matcher contentPathMatcher = contentPathPattern.matcher(value);
-        if (contentPathMatcher.matches() && context.getResolver().getResource(value) != null) {
+        Resource referencedResource;
+        if (contentPathMatcher.matches() && (referencedResource = context.releaseResolver.getResource(value)) != null &&
+                context.releaseFilter.accept(referencedResource)) {
             // the the value is a reference transform the value to the replication path
             String path = contentPathMatcher.group(1);
             context.references.add(contentPath + path);
@@ -273,7 +258,6 @@ public abstract class InPlaceReplicationStrategy implements ReplicationStrategy,
      * transforms embedded references of a rich text from 'content' to the replication path
      */
     public String transformTextProperty(ReplicationContext context, String targetRoot, String value) {
-        ResourceResolver resolver = context.getResolver();
         StringBuilder result = new StringBuilder();
         Matcher matcher = contentLinkPattern.matcher(value);
         int len = value.length();
@@ -282,7 +266,8 @@ public abstract class InPlaceReplicationStrategy implements ReplicationStrategy,
             result.append(value, pos, matcher.start());
             String path = matcher.group(3);
             // check for a resolvable resource
-            if (resolver.getResource(contentPath + path) != null) {
+            Resource referencedResource = context.releaseResolver.getResource(contentPath + path);
+            if (referencedResource != null && context.releaseFilter.accept(referencedResource)) {
                 context.references.add(contentPath + path);
                 result.append(matcher.group(1));
                 result.append(targetRoot);

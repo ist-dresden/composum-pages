@@ -61,7 +61,7 @@ public abstract class AbstractWrappingTag extends ModelTag {
      * collects the set of tag attributes classes (extension hook)
      * adds the 'class' attribute with all collected CSS classes to the set build by the superclass
      */
-    protected void collectAttributes(Map<String, String> attributeSet) {
+    protected void collectAttributes(Map<String, Object> attributeSet) {
         String cssClasses = buildCssClasses();
         if (StringUtils.isNotBlank(cssClasses)) {
             attributeSet.put("class", cssClasses);

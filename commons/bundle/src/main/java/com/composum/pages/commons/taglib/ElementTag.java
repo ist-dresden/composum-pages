@@ -138,7 +138,7 @@ public class ElementTag extends AbstractWrappingTag {
      * builds the list of tag attributes for the wrapping tag
      */
     @Override
-    protected void collectAttributes(Map<String, String> attributeSet) {
+    protected void collectAttributes(Map<String, Object> attributeSet) {
         String value;
         if (StringUtils.isNotBlank(value = getId())) {
             attributeSet.put(TAG_ID, value);

@@ -33,5 +33,13 @@
 
         window.widgets.register('.widget.page-templates-widget', widgets.PageTemplateWidget);
 
+        widgets.PageReferencesWidget = core.components.TableSelectWidget.extend({});
+
+        window.widgets.register('.widget.page-references-widget', widgets.PageReferencesWidget);
+
+        widgets.PageReferrersWidget = core.components.TableSelectWidget.extend({});
+
+        window.widgets.register('.widget.page-referrers-widget', widgets.PageReferrersWidget);
+
     })(window.composum.pages.widgets, window.composum.pages, window.core);
 })(window);

@@ -57,6 +57,8 @@
         <source.encoding>UTF-8</source.encoding>
         <java.source>1.8</java.source>
         <java.target>1.8</java.target>
+        <maven.compiler.source>${java.source}</maven.compiler.source>
+        <maven.compiler.target>${java.target}</maven.compiler.target>
     </properties>
 
     <scm>
@@ -836,10 +838,11 @@
                 <version>3.4</version>
                 <scope>test</scope>
             </dependency>
+            <!-- https://mvnrepository.com/artifact/org.mockito/mockito-core -->
             <dependency>
                 <groupId>org.mockito</groupId>
-                <artifactId>mockito-all</artifactId>
-                <version>1.10.19</version>
+                <artifactId>mockito-core</artifactId>
+                <version>2.26.0</version>
                 <scope>test</scope>
             </dependency>
             <dependency>

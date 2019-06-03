@@ -5,4 +5,4 @@
         jcr:title="Row"
         category="[Layout,Blueprint]"
         sling:resourceSuperType="composum/pages/components/container"
-        allowedElements="[composum/pages/components/container/row/column]"/>
+        allowedElements="[composum/pages/components/container/row/cell]"/>

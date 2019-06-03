@@ -18,11 +18,9 @@ public class TextWidget extends PropertyEditHandle<String> implements WidgetMode
     }
 
     @Override
-    public String getWidgetAttributeKey(String attributeKey) {
+    public String filterWidgetAttribute(String attributeKey, Object attributeValue) {
         if (PATTERN_ATTR.equals(attributeKey) || DATA_PATTERN_ATTR.equals(attributeKey)) {
             return DATA_PATTERN_ATTR;
-        } else if (PATTERN_HINT_ATTR.equals(attributeKey) || DATA_PATTERN_HINT_ATTR.equals(attributeKey)) {
-            return DATA_PATTERN_HINT_ATTR;
         } else if (PATTERN_HINT_ATTR.equals(attributeKey) || DATA_PATTERN_HINT_ATTR.equals(attributeKey)) {
             return DATA_PATTERN_HINT_ATTR;
         } else {

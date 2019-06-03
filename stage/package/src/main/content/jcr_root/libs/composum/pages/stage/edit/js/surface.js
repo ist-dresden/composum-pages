@@ -9,20 +9,21 @@
         surface.const = _.extend(surface.const || {}, {
             toolsPanelClass: 'composum-pages-stage-edit-tools',
             sidebarClass: 'composum-pages-stage-edit-sidebar',
+            logoClass: 'composum-pages-stage-edit-sidebar-logo',
             navigationClass: 'composum-pages-stage-edit-tools_navigation',
             contextToolsClass: 'composum-pages-stage-edit-tools_context',
             handleClass: 'composum-pages-stage-edit-sidebar_handle',
             handleIconClass: 'composum-pages-stage-edit-sidebar_handle-icon',
             modeIconClass: 'composum-pages-stage-edit-sidebar_mode-icon',
             modeOverlapClass: 'composum-pages-stage-edit-sidebar_overlap',
-            versionMainClass: 'composum-pages-stage-version-frame_main',
+            versionPrimaryClass: 'composum-pages-stage-version-frame_primary',
             versionSecondaryClass: 'composum-pages-stage-version-frame_secondary'
         });
 
         surface.Surface = Backbone.View.extend({
 
             initialize: function (options) {
-                this.$versionMain = $('.' + surface.const.versionMainClass);
+                this.$versionPrimary = $('.' + surface.const.versionPrimaryClass);
                 this.$versionSecondary = $('.' + surface.const.versionSecondaryClass);
                 window.addEventListener('resize', _.bind(function () {
                     this.bodySync();
@@ -40,8 +41,8 @@
                 if (this.$body) {
                     this.$body.css('margin-left', 0);
                     this.$body.css('width', '100%');
-                    this.$versionMain.css('left', 0);
-                    this.$versionMain.css('width', '100%');
+                    this.$versionPrimary.css('left', 0);
+                    this.$versionPrimary.css('width', '100%');
                     this.$versionSecondary.css('left', 0);
                     this.$versionSecondary.css('width', '100%');
                     this.$body = undefined;
@@ -74,8 +75,8 @@
                         }
                         this.$body.css('margin-left', margin + 'px');
                         this.$body.css('width', width + 'px');
-                        this.$versionMain.css('left', margin + 'px');
-                        this.$versionMain.css('width', width + 'px');
+                        this.$versionPrimary.css('left', margin + 'px');
+                        this.$versionPrimary.css('width', width + 'px');
                         this.$versionSecondary.css('left', margin + 'px');
                         this.$versionSecondary.css('width', width + 'px');
                     }
@@ -353,6 +354,34 @@
             }
         });
 
+        surface.Logo = Backbone.View.extend({
+
+            initialize: function (options) {
+                this.popover = false;
+                this.$link = this.$('.' + surface.const.logoClass + '_link');
+                this.$link.click(_.bind(this.initPopover, this));
+            },
+
+            initPopover: function (event) {
+                event.preventDefault();
+                if (!this.popover) {
+                    pages.loadFrameContent('/libs/composum/pages/stage/edit/sidebar/logo/popover.html',
+                        _.bind(function (content) {
+                            this.popover = true;
+                            this.$link.popover({
+                                placement: 'bottom',
+                                animation: false,
+                                html: true,
+                                sanitize: false,
+                                content: content
+                            });
+                            this.$link.popover('show');
+                        }, this));
+                }
+                return false;
+            }
+        });
+
         surface.Navigation = surface.Sidebar.extend({
 
             initialize: function (options) {
@@ -383,6 +412,7 @@
             }
         });
 
+        surface.logo = core.getView('.' + surface.const.logoClass, surface.Logo);
         surface.navigation = core.getView('.' + surface.const.navigationClass, surface.Navigation);
         surface.contextTools = core.getView('.' + surface.const.contextToolsClass, surface.ContextTools);
         surface.surface = core.getView('.' + surface.const.toolsPanelClass, surface.Surface);

@@ -10,7 +10,7 @@
             css: { // edit UI CSS selector keys
                 page: {
                     base: 'composum-pages-stage-edit-site-page',
-                    _finished: '-finished',
+                    _activated: '-activated',
                     _modified: '-modified',
                     _selectAll: '_page-select-all',
                     _select: '_page-select'
@@ -22,13 +22,21 @@
                 }
             },
             url: { // servlet URLs for GET and change requests
-                modified: {
-                    checkpoint: '/bin/cpm/pages/edit.checkpoint.json'
+                edit: {
+                    servlet: '/bin/cpm/pages/edit',
+                    _resource: '.editResource.html',
+                    _params: '?attr=pages'
+                },
+                dialog: {
+                    base: '/libs/composum/pages/stage/edit/default/page/dialog',
+                    _activate: '/activate',
+                    _revert: '/revert'
                 },
                 release: {
                     servlet: '/bin/cpm/pages/release.',
                     root: '/libs/composum/pages/stage/edit/site/releases/',
-                    _create: 'create.html',
+                    _edit: 'edit.html',
+                    _finalize: 'finalize.html',
                     _delete: 'delete.html'
                 }
             }
@@ -41,8 +49,8 @@
             initialize: function () {
                 var c = releases.const.css.page;
                 this.sitePath = this.$el.data('path');
-                this.$button = this.$('button.checkpoint');
-                this.$button.click(_.bind(this.doCheckpoint, this));
+                this.$button = this.$('button.activate');
+                this.$button.click(_.bind(this.doActivate, this));
                 this.$selectAllBox = this.$('.' + c.base + c._modified + c._selectAll);
                 this.$selectAllBox.on("change", _.bind(this.selectAll, this));
             },
@@ -55,9 +63,9 @@
                 });
             },
 
-            doCheckpoint: function (event) {
+            doActivate: function (event) {
                 var c = releases.const.css.page;
-                var u = releases.const.url.modified;
+                var u = releases.const.url;
                 event.preventDefault();
                 if (this.sitePath) {
                     var objects = $('.' + c.base + c._modified + c._select)
@@ -65,90 +73,77 @@
                             return element.checked;
                         })
                         .map(function (index, element) {
-                            return element.dataset.path;
+                            return {path: element.dataset.path};
                         })
-                        .toArray().toString();
-                    core.ajaxPost(u.checkpoint, {
-                            paths: objects
-                        }, {},
-                        _.bind(function () {
-                            if (pages.elements) {
-                                pages.elements.triggerEvent(pages.elements.const.event.site.changed, [this.sitePath]);
-                            } else {
-                                pages.log.debug('site.trigger.' + pages.const.event.site.changed + '(' + this.sitePath + ')');
-                                $(document).trigger(pages.const.event.site.changed, [this.sitePath]);
-                            }
-                        }, this), _.bind(function (result) {
-                            var fn = pages.elements ? pages.elements.alertMessage : core.alert;
-                            fn.call(this, 'danger', 'Error', 'Error on creating checkpoint', result);
-                        }, this)
-                    );
+                        .toArray();
+                    var url = u.edit.servlet + u.edit._resource + u.dialog.base + u.dialog._activate + u.edit._params;
+                    if (pages.elements) { // context is a page
+                        pages.elements.openGenericDialog({
+                            path: this.sitePath
+                        }, {
+                            url: url,
+                            type: 'pages.dialogs.ActivatePageDialog'
+                        }, objects);
+                    } else { // context is the stage edit frame
+                        pages.dialogs.openGenericDialog(url, pages.dialogs.ActivatePageDialog, objects);
+                    }
                 }
             }
-
         });
 
         releases.modifiedPages = core.getView('.modifiedPages', releases.ModifiedPages);
 
         // release creation
 
-        releases.FinishedPages = Backbone.View.extend({
+        releases.ReleaseChanges = Backbone.View.extend({
 
             initialize: function () {
                 var c = releases.const.css.page;
                 this.sitePath = this.$el.data('path');
                 this.$button = this.$('button.release');
-                this.$button.click(_.bind(this.doRelease, this));
-                this.$selectAllBox = this.$('.' + c.base + c._finished + c._selectAll);
+                this.$button.click(_.bind(this.doRevert, this));
+                this.$selectAllBox = this.$('.' + c.base + c._activated + c._selectAll);
                 this.$selectAllBox.on("change", _.bind(this.selectAll, this));
             },
 
             selectAll: function (event) {
                 var c = releases.const.css.page;
                 event.preventDefault();
-                this.$('.' + c.base + c._finished + c._select).each(function (index, value) {
+                this.$('.' + c.base + c._activated + c._select).each(function (index, value) {
                     value.checked = event.currentTarget.checked;
                 });
             },
 
-            doRelease: function (event) {
+            doRevert: function (event) {
                 var c = releases.const.css.page;
-                var u = releases.const.url.release;
+                var u = releases.const.url;
                 event.preventDefault();
                 if (this.sitePath) {
-                    var objects = $('.' + c.base + c._finished + c._select)
+                    var objects = $('.' + c.base + c._activated + c._select)
                         .filter(function (index, element) {
                             return element.checked;
                         })
                         .map(function (index, element) {
-                            return element.dataset.path;
+                            return {path: element.dataset.path};
                         })
-                        .toArray().toString();
+                        .toArray();
+                    var url = u.edit.servlet + u.edit._resource + u.dialog.base + u.dialog._revert + u.edit._params;
                     if (pages.elements) { // context is a page
-                        pages.elements.openEditDialog({
+                        pages.elements.openGenericDialog({
                             path: this.sitePath
                         }, {
-                            url: u.root + u._create
-                        }, {
-                            objects: objects
-                        });
+                            url: url,
+                            type: 'pages.dialogs.RevertPageDialog'
+                        }, objects);
                     } else { // context is the stage edit frame
-                        pages.dialogs.openEditDialog(undefined, this.sitePath, undefined, undefined/*context*/,
-                            u.root + u._create,
-                            function (dialog) {
-                                if (objects) {
-                                    dialog.applyData({
-                                        objects: objects
-                                    });
-                                }
-                            });
+                        pages.dialogs.openGenericDialog(url, pages.dialogs.RevertPageDialog, objects);
                     }
                 }
             }
 
         });
 
-        releases.finishedPages = core.getView('.finishedPages', releases.FinishedPages);
+        releases.releaseChanges = core.getView('.releaseChanges', releases.ReleaseChanges);
 
         // release manipulation
 
@@ -159,9 +154,29 @@
                 this.$buttonPublic = this.$('button.release-public');
                 this.$buttonPreview = this.$('button.release-preview');
                 this.$buttonDelete = this.$('button.release-delete');
+                this.$buttonFinalize = this.$('button.release-finalize');
                 this.$buttonPublic.click(_.bind(this.publicRelease, this));
                 this.$buttonPreview.click(_.bind(this.previewRelease, this));
                 this.$buttonDelete.click(_.bind(this.deleteRelease, this));
+                this.$buttonFinalize.click(_.bind(this.doFinalize, this));
+            },
+
+            doFinalize: function (event) {
+                var c = releases.const.css.page;
+                var u = releases.const.url.release;
+                event.preventDefault();
+                if (this.sitePath) {
+                    if (pages.elements) { // context is a page
+                        pages.elements.openEditDialog({
+                            path: this.sitePath
+                        }, {
+                            url: u.root + u._finalize
+                        });
+                    } else { // context is the stage edit frame
+                        pages.dialogs.openEditDialog(undefined, this.sitePath, undefined, undefined/*context*/,
+                            u.root + u._finalize);
+                    }
+                }
             },
 
             changeRelease: function (action) {

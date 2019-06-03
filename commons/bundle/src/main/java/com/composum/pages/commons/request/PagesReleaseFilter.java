@@ -4,8 +4,8 @@ import com.composum.pages.commons.model.Site;
 import com.composum.pages.commons.replication.PagesReplicationConfig;
 import com.composum.pages.commons.replication.ReplicationManager;
 import com.composum.pages.commons.service.SiteManager;
-import com.composum.sling.core.BeanContext;
 import com.composum.pages.commons.util.LinkUtil;
+import com.composum.sling.core.BeanContext;
 import com.composum.sling.platform.security.AccessMode;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
@@ -16,7 +16,6 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
@@ -37,21 +36,23 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 import static com.composum.pages.commons.PagesConstants.COMPOSUM_PREFIX;
 import static com.composum.platform.commons.request.service.InternalRequestService.RA_IS_INTERNAL_REQUEST;
-import static com.composum.sling.platform.staging.ResourceResolverChangeFilter.ATTRIBUTE_NAME;
-import static com.composum.sling.platform.staging.ResourceResolverChangeFilter.PARAMETER_NAME;
+import static com.composum.sling.platform.staging.impl.ResourceResolverChangeFilter.ATTR_CPM_RELEASE;
+import static com.composum.sling.platform.staging.impl.ResourceResolverChangeFilter.ATTR_CPM_VERSION;
+import static com.composum.sling.platform.staging.impl.ResourceResolverChangeFilter.PARAM_CPM_RELEASE;
+import static com.composum.sling.platform.staging.impl.ResourceResolverChangeFilter.PARAM_CPM_VERSION;
 
 @Component(
         service = {Filter.class},
         property = {
-                Constants.SERVICE_DESCRIPTION + "=Composum Platform Release Filter",
+                Constants.SERVICE_DESCRIPTION + "=Composum Pages Release Filter",
                 "sling.filter.scope=REQUEST",
                 "service.ranking:Integer=" + 5070
-        },
-        configurationPolicy = ConfigurationPolicy.REQUIRE
+        }
 )
 @Designate(ocd = PagesReleaseFilter.Config.class)
 public class PagesReleaseFilter implements Filter {
@@ -63,40 +64,42 @@ public class PagesReleaseFilter implements Filter {
     public static final String ATTR_CACHE_DISABLED = "com.composum.platform.cache.component.ComponentCacheService#cacheDisabled";
 
     @ObjectClassDefinition(
-            name = "Composum Platform Release Filter Configuration"
+            name = "Composum Pages Release Filter Configuration"
     )
     @interface Config {
 
         @AttributeDefinition(
-                name = "release.filter.enabled",
+                name = "enabled",
                 description = "the on/off switch for the Release Filter"
         )
-        boolean enabled() default true;
+        boolean release_filter_enabled() default true;
 
         @AttributeDefinition(
-                name = "unreleased.host.allow",
+                name = "unreleased Hosts",
                 description = "the hostname patterns for general (unreleased) artifacts"
         )
-        String[] ignoredHostPatterns() default {};
+        String[] unreleased_host_allow() default {};
 
         @AttributeDefinition(
-                name = "unreleased.uri.allow",
+                name = "unreleased URIs",
                 description = "the URI patterns for general (unreleased) artifacts"
         )
-        String[] ignoredUriPatterns() default {
+        String[] unreleased_uri_allow() default {
                 "^/(apps|libs)/.*\\.(css|js|jpg|jpeg|gif|png|ttf|woff)$",
                 "^/bin/public/clientlibs\\.(min\\.)?(css|js)(/.*)?$",
                 "^/j_security_check$"
         };
 
         @AttributeDefinition(
-                name = "unreleased.path.allow",
+                name = "unreleased Paths",
                 description = "the path patterns for general (unreleased) artifacts"
         )
-        String[] ignoredPathPatterns() default {"^/(apps|libs)/.*\\.(css|js|jpg|jpeg|gif|png|ttf|woff)$",
+        String[] unreleased_path_allow() default {
+                "^/(apps|libs)/.*\\.(css|js|jpg|jpeg|gif|png|ttf|woff)$",
                 "^/libs/sling/servlet/errorhandler/.*$",
                 "^/libs/(themes|fonts|jslibs|composum|sling)/.*$",
-                "^/libs(/composum/platform/security)?/login.*$"};
+                "^/libs(/composum/platform/security)?/login.*$"
+        };
     }
 
     private PagesReleaseFilter.Config config;
@@ -128,11 +131,12 @@ public class PagesReleaseFilter implements Filter {
      * <dd>no check, render author content as is as public content</dd>
      * </dl>
      */
+    @Override
     public void doFilter(ServletRequest request, ServletResponse response,
                          FilterChain chain)
             throws IOException, ServletException {
 
-        if (config.enabled()) {
+        if (config.release_filter_enabled()) {
             String release = null;
 
             SlingHttpServletRequest slingRequest = (SlingHttpServletRequest) request;
@@ -198,7 +202,7 @@ public class PagesReleaseFilter implements Filter {
                                 }
                                 break;
                             case Site.PUBLIC_MODE_VERSIONS:
-                                release = site.getReleaseLabel(accessMode.name());
+                                release = site.getReleaseNumber(accessMode.name());
                                 if (StringUtils.isBlank(release)) {
                                     sendReject(response, "no appropriate release found", uri, resource);
                                     return;
@@ -222,11 +226,11 @@ public class PagesReleaseFilter implements Filter {
 
                 // if Author or unspecific mode use requested release...
 
-                release = request.getParameter(PARAMETER_NAME);
+                release = request.getParameter(PARAM_CPM_RELEASE);
                 if (StringUtils.isBlank(release)) {
                     HttpSession session = slingRequest.getSession(false);
                     if (session != null) {
-                        release = (String) session.getAttribute(ATTRIBUTE_NAME);
+                        release = (String) session.getAttribute(ATTR_CPM_RELEASE);
                     }
                 }
 
@@ -237,11 +241,25 @@ public class PagesReleaseFilter implements Filter {
                     } else {
                         if (site != null && !release.startsWith(COMPOSUM_PREFIX)) {
                             // assuming that an access mode is set for the requested release
-                            String mapped = site.getReleaseLabel(release);
+                            String mapped = site.getReleaseNumber(release);
                             if (StringUtils.isNotBlank(mapped)) {
                                 release = mapped;
                             }
                         }
+                    }
+
+                } else {
+
+                    // for version compare a version of a page can be requested...
+                    String version = request.getParameter(PARAM_CPM_VERSION);
+
+                    if (StringUtils.isNotBlank(version)) {
+                        if (LOG.isDebugEnabled()) {
+                            LOG.debug("{} access mode, version '{}' selected", accessMode, version);
+                        }
+                        request.setAttribute(ATTR_CPM_VERSION, version);
+                        // disable editing for release requests
+                        Objects.requireNonNull(slingRequest.adaptTo(DisplayMode.class)).reset(DisplayMode.Value.NONE);
                     }
                 }
             }
@@ -250,9 +268,9 @@ public class PagesReleaseFilter implements Filter {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("{} access mode, release '{}' selected", accessMode, release);
                 }
-                request.setAttribute(ATTRIBUTE_NAME, release);
+                request.setAttribute(ATTR_CPM_RELEASE, release);
                 // disable editing for release requests
-                slingRequest.adaptTo(DisplayMode.class).reset(DisplayMode.Value.NONE);
+                Objects.requireNonNull(slingRequest.adaptTo(DisplayMode.class)).reset(DisplayMode.Value.NONE);
             }
 
             // disable component caching if in edit context ('edit', 'preview', 'browse', 'develop')
@@ -270,6 +288,7 @@ public class PagesReleaseFilter implements Filter {
         chain.doFilter(request, response);
     }
 
+    @SuppressWarnings("Duplicates")
     protected boolean isUnreleasedPublicAccessAllowed(String hostname, String uri, String path) {
         for (Pattern pattern : ignoredHostPatterns) {
             if (pattern.matcher(hostname).matches()) {
@@ -296,27 +315,30 @@ public class PagesReleaseFilter implements Filter {
         slingResponse.sendError(HttpServletResponse.SC_NOT_FOUND);
     }
 
+    @Override
     public void init(FilterConfig filterConfig) {
         servletContext = filterConfig.getServletContext();
     }
 
+    @Override
     public void destroy() {
     }
 
     @Activate
     @Modified
-    public void activate(final PagesReleaseFilter.Config config) {
+    public void activate(final PagesReleaseFilter.Config config, final BundleContext bundleContext) {
         this.config = config;
+        this.bundleContext = bundleContext;
         ignoredHostPatterns = new ArrayList<>();
-        for (String rule : PropertiesUtil.toStringArray(config.ignoredHostPatterns())) {
+        for (String rule : PropertiesUtil.toStringArray(config.unreleased_host_allow())) {
             if (StringUtils.isNotBlank(rule = rule.trim())) ignoredHostPatterns.add(Pattern.compile(rule));
         }
         ignoredUriPatterns = new ArrayList<>();
-        for (String rule : PropertiesUtil.toStringArray(config.ignoredUriPatterns())) {
+        for (String rule : PropertiesUtil.toStringArray(config.unreleased_uri_allow())) {
             if (StringUtils.isNotBlank(rule = rule.trim())) ignoredUriPatterns.add(Pattern.compile(rule));
         }
         ignoredPathPatterns = new ArrayList<>();
-        for (String rule : PropertiesUtil.toStringArray(config.ignoredPathPatterns())) {
+        for (String rule : PropertiesUtil.toStringArray(config.unreleased_path_allow())) {
             if (StringUtils.isNotBlank(rule = rule.trim())) ignoredPathPatterns.add(Pattern.compile(rule));
         }
     }

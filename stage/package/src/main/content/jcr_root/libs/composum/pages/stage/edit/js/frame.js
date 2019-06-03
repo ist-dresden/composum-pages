@@ -63,13 +63,12 @@
                 core.unauthorizedDelegate = pages.handleUnauthorized;
             },
 
+            /**
+             * called from the edit frame template at the end of frame load (see: frame.jsp)
+             */
             ready: function () {
                 var e = pages.const.event;
                 var initialPath = this.$el.data('path');
-                if (this.log.frame.getLevel() <= log.levels.DEBUG) {
-                    this.log.frame.debug('frame.trigger.' + e.ready + '(' + initialPath + ')');
-                }
-                $(document).trigger(e.ready);
                 if (initialPath) {
                     if (this.log.frame.getLevel() <= log.levels.DEBUG) {
                         this.log.frame.debug('frame.trigger.' + e.page.select + '(' + initialPath + ')');
@@ -77,6 +76,13 @@
                     $(document).trigger(e.page.select, [initialPath]);
                 }
                 window.addEventListener("message", _.bind(this.onMessage, this), false);
+                if (this.log.frame.getLevel() <= log.levels.DEBUG) {
+                    this.log.frame.debug('frame.trigger.' + e.ready + '(' + initialPath + ')');
+                }
+                // signal initialization end and let components switch to 'normal' mode...
+                window.setTimeout(function () {
+                    $(document).trigger(e.ready);
+                }, 800);
             },
 
             onPageSelected: function (event, path) {
@@ -407,6 +413,14 @@
                                             dialog.applyData(args.values);
                                         }
                                     });
+                            }
+                            break;
+                        case t.dialog.generic:
+                            // opens an edit dialog to perform editing of the content of the path transmitted
+                            this.log.frame.trace('frame.message.on.dialog.generic(' + message[2] + ')');
+                            if (args.target) {
+                                pages.dialogs.openGenericDialog(args.dialog.url, eval(args.dialog.type), args.values,
+                                    args.target.name, args.target.path, args.target.type);
                             }
                             break;
                         case t.dialog.alert:

@@ -16,8 +16,25 @@ public class FramePage extends Page {
     private transient Resource pageResource;
     private transient String pagePath;
 
+    private transient DisplayMode.Value displayMode;
+
     public FramePage() {
         super();
+    }
+
+    /**
+     * @return the resource of the edited page (this is not the initializers resource)
+     */
+    @Override
+    public Resource getResource() {
+        return getPageResource();
+    }
+
+    /**
+     * @return the initializers resource (the edit frame component resource)
+     */
+    public Resource getFrameResource() {
+        return super.getResource();
     }
 
     public Page getPage() {
@@ -27,6 +44,9 @@ public class FramePage extends Page {
         return page;
     }
 
+    /**
+     * @return the resource of the edited page
+     */
     public Resource getPageResource() {
         if (pageResource == null) {
             String path = getPagePath();
@@ -37,6 +57,9 @@ public class FramePage extends Page {
         return pageResource;
     }
 
+    /**
+     * @return the path of the edited page
+     */
     public String getPagePath() {
         if (pagePath == null) {
             pagePath = context.getRequest().getRequestPathInfo().getSuffix();
@@ -56,19 +79,54 @@ public class FramePage extends Page {
         return pagePath;
     }
 
+    /**
+     * @return the URL of the edited page
+     */
     public String getPageUrl() {
         return LinkUtil.getUrl(context.getRequest(), getPagePath());
     }
 
+    /**
+     * send a redirect to the edited page as response of the current context
+     */
     public void redirectToPage() throws IOException {
         context.getResponse().sendRedirect(getPageUrl());
     }
 
+    // edit status properties
+
+    /**
+     * @return a readable key of the current edited language
+     */
     public String getLanguageHint() {
         Language language = getPage().getLanguage();
         return language != null ? language.getKey().toLowerCase().replace('_', '.') : "";
     }
 
+    // view mode
+
+    public boolean isEditMode() {
+        DisplayMode.Value mode = getDisplayMode();
+        return mode == DisplayMode.Value.EDIT || mode == DisplayMode.Value.DEVELOP;
+    }
+
+    public boolean isDevelopMode() {
+        return getDisplayMode() == DisplayMode.Value.DEVELOP;
+    }
+
+    /**
+     * @return the requested display mode (the current could be overloaded during 'include')
+     */
+    public DisplayMode.Value getDisplayMode() {
+        if (displayMode == null) {
+            displayMode = DisplayMode.requested(getContext());
+        }
+        return displayMode;
+    }
+
+    /**
+     * @return a readable string of the current display mode
+     */
     public String getDisplayModeHint() {
         DisplayMode.Value mode = getDisplayMode();
         switch (mode) {
@@ -80,12 +138,10 @@ public class FramePage extends Page {
         return mode.name();
     }
 
+    /**
+     * @return the Sling selector key for the current display mode
+     */
     public String getDisplayModeSelector() {
         return getDisplayModeHint().toLowerCase();
-    }
-
-    @Override
-    public DisplayMode.Value getDisplayMode() {
-        return DisplayMode.requested(context);
     }
 }

@@ -9,7 +9,9 @@ public interface WidgetModel {
     String DATA_PREFIX = "data-";
 
     /**
-     * transforms a tag attribute name (dynamic attribute) into the key expected by the widgets view
+     * the extension hook for the model implementation to consume dynamic tag attributes
+     * @return the attribute key for the widget tag (or the tag template) to use the attribute value;
+     * return 'null' is the tag should not use the attribute (used by the model only)
      */
-    String getWidgetAttributeKey(String attributeKey);
+    String filterWidgetAttribute(String attributeKey, Object attributeValue);
 }

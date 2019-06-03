@@ -16,13 +16,13 @@
                 _time: '-time',
                 timeHint: new RegExp('^..(.*):..$'),
                 isCheckedOut: 'is-checked-out',
-                mainAvailable: 'main-available',
+                primaryAvailable: 'primary-available',
                 versionsComparable: 'versions-comparable',
-                selectedMain: 'selected-main',
+                selectedPrimary: 'selected-primary',
                 selectedSecondary: 'selected-secondary',
-                selectionMain: '_selection-main',
+                selectionPrimary: '_selection-primary',
                 selectionSecondary: '_selection-secondary',
-                mainSelection: '_main-selection',
+                primarySelection: '_primary-selection',
                 secondarySelection: '_secondary-selection',
                 slider: {
                     cssKey: '_version-slider',
@@ -34,16 +34,18 @@
                 actionKey: '_action_',
                 viewAction: 'view',
                 compareAction: 'compare',
+                activateAction: 'activate',
+                deactivateAction: 'deactivate',
                 checkpointAction: 'checkpoint',
+                menuKey: '_menu',
+                purgeAction: 'purge',
                 checkInAction: 'check-in',
                 checkOutAction: 'check-out',
                 restoreAction: 'restore',
-                deleteAction: 'delete',
-                addLabelAction: 'add-label',
-                removeLabelAction: 'remove-label',
                 versionContentUri: '/bin/cpm/pages/edit.versions.versionList.html',
                 versionRestoreUri: '/bin/cpm/pages/edit.restoreVersion.json',
-                versionServiceUri: '/bin/cpm/nodes/version.',
+                platformVersionsUri: '/bin/cpm/platform/versions.',
+                nodesVersionsUri: '/bin/cpm/nodes/version.',
                 disabled: 'disabled',
                 hidden: 'hidden'
             }
@@ -53,18 +55,20 @@
 
             initialize: function (options) {
                 var c = tools.const.versions;
+                this.id = this.$el.data('version');
+                this.release = this.$el.data('release');
                 this.name = this.$('.' + c.cssBase + c.version + c._name).text();
                 this.time = this.$('.' + c.cssBase + c.version + c._time).text();
                 this.timeHint = c.timeHint.exec(this.time)[1];
-                this.$mainSelector = this.$('.' + c.cssBase + c.selectionMain);
+                this.$primSelector = this.$('.' + c.cssBase + c.selectionPrimary);
                 this.$sdrySelector = this.$('.' + c.cssBase + c.selectionSecondary);
-                this.$mainSelector.click(_.bind(this.toggleMainSelection, this));
+                this.$primSelector.click(_.bind(this.togglePrimSelection, this));
                 this.$sdrySelector.click(_.bind(this.toggleSdrySelection, this));
             },
 
-            toggleMainSelection: function (event) {
+            togglePrimSelection: function (event) {
                 event.preventDefault();
-                this.versions.toggleMainSelection(this);
+                this.versions.togglePrimSelection(this);
             },
 
             toggleSdrySelection: function (event) {
@@ -77,32 +81,39 @@
             initialize: function (options) {
                 var c = tools.const.versions;
                 this.$viewAction = this.$('.' + c.cssBase + c.actionKey + c.viewAction);
+                this.$activateAction = this.$('.' + c.cssBase + c.actionKey + c.activateAction);
+                this.$deactivateAction = this.$('.' + c.cssBase + c.actionKey + c.deactivateAction);
                 this.$checkpointAction = this.$('.' + c.cssBase + c.actionKey + c.checkpointAction);
+                this.$moreMenu = this.$('.' + c.cssBase + c.menuKey);
+                this.$purgeAction = this.$('.' + c.cssBase + c.actionKey + c.purgeAction);
                 this.$checkInAction = this.$('.' + c.cssBase + c.actionKey + c.checkInAction);
                 this.$checkOutAction = this.$('.' + c.cssBase + c.actionKey + c.checkOutAction);
                 this.$restoreAction = this.$('.' + c.cssBase + c.actionKey + c.restoreAction);
-                this.$deleteAction = this.$('.' + c.cssBase + c.actionKey + c.deleteAction);
-                this.$addLabelAction = this.$('.' + c.cssBase + c.actionKey + c.addLabelAction);
-                this.$removeLabelAction = this.$('.' + c.cssBase + c.actionKey + c.removeLabelAction);
+                this.right = [
+                    this.$activateAction,
+                    this.$deactivateAction,
+                    this.$checkpointAction,
+                    this.$moreMenu
+                ];
                 this.$viewAction.click(_.bind(this.toggleView, this));
+                this.$activateAction.click(_.bind(this.activatePage, this));
+                this.$deactivateAction.click(_.bind(this.deactivatePage, this));
                 this.$checkpointAction.click(_.bind(this.createCheckpoint, this));
+                this.$purgeAction.click(_.bind(this.purgeVersions, this));
                 this.$checkInAction.click(_.bind(this.checkIn, this));
                 this.$checkOutAction.click(_.bind(this.checkOut, this));
                 this.$restoreAction.click(_.bind(this.restoreVersion, this));
-                this.$deleteAction.click(_.bind(this.deleteVersion, this));
-                this.$addLabelAction.click(_.bind(this.addVersionLabel, this));
-                this.$removeLabelAction.click(_.bind(this.removeVersionLabel, this));
             },
 
             setActionsState: function () {
                 var c = tools.const.versions;
-                if (this.versions.mainSelection || this.versions.versionsVisible) {
+                if (this.versions.primSelection || this.versions.versionsVisible) {
                     this.$viewAction.prop(c.disabled, false);
                 } else {
                     this.$viewAction.prop(c.disabled, true);
                 }
                 if (this.versions.state.checkedOut) {
-                    this.$checkpointAction.prop(c.disabled, false);
+                    this.$checkpointAction.prop(c.disabled, this.versions.versionsVisible);
                     this.$checkOutAction.addClass(c.hidden);
                     this.$checkInAction.removeClass(c.hidden);
                 } else {
@@ -110,20 +121,10 @@
                     this.$checkOutAction.removeClass(c.hidden);
                     this.$checkInAction.addClass(c.hidden);
                 }
-                if (this.versions.mainSelection) {
+                if (this.versions.primSelection) {
                     this.$restoreAction.prop(c.disabled, false);
-                    if (this.versions.mainSelection !== this.versions.currentVersion) {
-                        this.$deleteAction.prop(c.disabled, false);
-                    } else {
-                        this.$deleteAction.prop(c.disabled, true);
-                    }
-                    this.$addLabelAction.prop(c.disabled, false);
-                    this.$removeLabelAction.prop(c.disabled, false);
                 } else {
                     this.$restoreAction.prop(c.disabled, true);
-                    this.$deleteAction.prop(c.disabled, true);
-                    this.$addLabelAction.prop(c.disabled, true);
-                    this.$removeLabelAction.prop(c.disabled, true);
                 }
             },
 
@@ -134,46 +135,46 @@
                 this.versions.toggleVersionsView();
             },
 
+            activatePage: function (event) {
+                var ref = this.versions.data.reference;
+                pages.actions.page.activate(event, ref.name, ref.path, ref.type);
+            },
+
+            deactivatePage: function (event) {
+                var ref = this.versions.data.reference;
+                pages.actions.page.deactivate(event, ref.name, ref.path, ref.type);
+            },
+
             createCheckpoint: function (event) {
+                var ref = this.versions.data.reference;
+                var path = this.versions.data.jcrContent.path;
+                pages.actions.page.checkpoint(event, ref.name, path, ref.type);
+            },
+
+            purgeVersions: function (event) {
                 if (event) {
                     event.preventDefault();
                 }
-                var path = this.versions.data.jcrContent.path;
-                core.ajaxPost(tools.const.versions.versionServiceUri + 'checkpoint.json' + path, {}, {},
+                var ref = this.versions.data.reference;
+                core.ajaxPost(tools.const.versions.platformVersionsUri + 'purge.json' + ref.path, {}, {},
                     _.bind(function (result) {
                         this.versions.reload();
                     }, this), _.bind(function (result) {
-                        this.error('on creating checkpoint', result);
+                        this.error('on versions purge', result);
                     }, this)
                 );
             },
 
             checkIn: function (event) {
-                if (event) {
-                    event.preventDefault();
-                }
+                var ref = this.versions.data.reference;
                 var path = this.versions.data.jcrContent.path;
-                core.ajaxPost(tools.const.versions.versionServiceUri + 'checkin.json' + path, {}, {},
-                    _.bind(function (result) {
-                        this.versions.reload();
-                    }, this), _.bind(function (result) {
-                        this.error('on checkin', result);
-                    }, this)
-                );
+                pages.actions.page.checkin(event, ref.name, path, ref.type);
             },
 
             checkOut: function (event) {
-                if (event) {
-                    event.preventDefault();
-                }
+                var ref = this.versions.data.reference;
                 var path = this.versions.data.jcrContent.path;
-                core.ajaxPost(tools.const.versions.versionServiceUri + 'checkout.json' + path, {}, {},
-                    _.bind(function (result) {
-                        this.versions.reload();
-                    }, this), _.bind(function (result) {
-                        this.error('on checkout', result);
-                    }, this)
-                );
+                pages.actions.page.checkout(event, ref.name, path, ref.type);
             },
 
             restoreVersion: function (event) {
@@ -181,7 +182,7 @@
                     event.preventDefault();
                 }
                 var path = this.versions.data.jcrContent.path;
-                var version = this.versions.mainSelection.name;
+                var version = this.versions.primSelection.name;
                 core.ajaxPut(tools.const.versions.versionRestoreUri + path, JSON.stringify({
                         path: path,
                         version: version
@@ -193,24 +194,6 @@
                 );
             },
 
-            deleteVersion: function (event) {
-                if (event) {
-                    event.preventDefault();
-                }
-            },
-
-            addVersionLabel: function (event) {
-                if (event) {
-                    event.preventDefault();
-                }
-            },
-
-            removeVersionLabel: function (event) {
-                if (event) {
-                    event.preventDefault();
-                }
-            },
-
             error: function (hint, result) {
                 core.alert('danger', 'Error', 'Error ' + hint, result);
             }
@@ -220,7 +203,7 @@
 
             initialize: function (options) {
                 var c = tools.const.versions;
-                this.$mainSelection = this.$('.' + c.cssBase + c.mainSelection);
+                this.$primSelection = this.$('.' + c.cssBase + c.primarySelection);
                 this.$sdrySelection = this.$('.' + c.cssBase + c.secondarySelection);
                 this.$slider = this.$('.' + c.cssBase + c.slider.cssKey);
                 this.$versionContent = this.$('.' + c.cssBase + c.content);
@@ -228,6 +211,10 @@
                 this.actions.versions = this;
                 this.$slider.slider(c.slider.options);
                 this.$slider.on('slide', _.bind(this.compare, this));
+                var id = 'Versions';
+                var e = pages.const.event;
+                $(document).on(e.page.state + '.' + id, _.bind(this.reload, this));
+                $(document).on(e.page.changed + '.' + id, _.bind(this.reload, this));
             },
 
             onTabSelected: function () {
@@ -245,7 +232,7 @@
                         this.$el.removeClass(c.isCheckedOut);
                     }
                     this.currentVersion = undefined;
-                    this.mainSelection = undefined;
+                    this.primSelection = undefined;
                     this.sdrySelection = undefined;
                     this.$slider.slider('disable');
                     core.ajaxGet(c.versionContentUri + this.contextTabs.reference.path, {},
@@ -270,33 +257,36 @@
             },
 
             compare: function (event) {
-                pages.versionsView.mainView.setOpacity(100 - event.value);
+                pages.versionsView.primView.setOpacity(100 - event.value);
             },
 
             setComparable: function () {
-                if (this.mainSelection && this.sdrySelection && this.mainSelection !== this.sdrySelection) {
+                if (this.primSelection && this.sdrySelection && this.primSelection !== this.sdrySelection) {
                     this.$el.addClass(tools.const.versions.versionsComparable);
                     this.$slider.slider('enable');
-                    pages.versionsView.mainView.setOpacity(100 - this.$slider.slider('getValue'));
+                    pages.versionsView.primView.setOpacity(100 - this.$slider.slider('getValue'));
                 } else {
                     this.$slider.slider('disable');
                     this.$el.removeClass(tools.const.versions.versionsComparable);
-                    pages.versionsView.mainView.setOpacity(100);
+                    pages.versionsView.primView.setOpacity(100);
                 }
             },
 
-            toggleMainSelection: function (version) {
-                this.$versionList.removeClass(tools.const.versions.selectedMain);
-                if (this.mainSelection === version) {
-                    this.mainSelection = undefined;
+            togglePrimSelection: function (version) {
+                this.$versionList.removeClass(tools.const.versions.selectedPrimary);
+                if (this.primSelection === version) {
+                    this.primSelection = undefined;
                     if (this.versionsVisible) {
-                        pages.versionsView.mainView.reset();
+                        pages.versionsView.primView.reset();
                     }
                 } else {
-                    this.mainSelection = version;
-                    this.mainSelection.$el.addClass(tools.const.versions.selectedMain);
+                    this.primSelection = version;
+                    this.primSelection.$el.addClass(tools.const.versions.selectedPrimary);
                     if (this.versionsVisible) {
-                        pages.versionsView.mainView.view(this.data.path, version.name);
+                        pages.versionsView.primView.view(this.data.path, {
+                            release: version.release,
+                            version: version.id
+                        });
                     }
                 }
                 this.showSelection();
@@ -313,7 +303,10 @@
                     this.sdrySelection = version;
                     this.sdrySelection.$el.addClass(tools.const.versions.selectedSecondary);
                     if (this.versionsVisible) {
-                        pages.versionsView.sdryView.view(this.data.path, version.name);
+                        pages.versionsView.sdryView.view(this.data.path, {
+                            release: version.release,
+                            version: version.id
+                        });
                     }
                 }
                 this.showSelection();
@@ -321,7 +314,7 @@
 
             showSelection: function () {
                 var c = tools.const.versions;
-                this.showSelectionValues(this.$mainSelection, this.mainSelection, c.mainAvailable);
+                this.showSelectionValues(this.$primSelection, this.primSelection, c.primaryAvailable);
                 this.showSelectionValues(this.$sdrySelection, this.sdrySelection);
                 this.actions.setActionsState();
                 this.setComparable();
@@ -345,22 +338,35 @@
             },
 
             toggleVersionsView: function () {
+                var c = tools.const.versions;
                 if (this.versionsVisible) {
                     this.versionsVisible = false;
                     pages.versionsView.reset();
                     this.actions.$viewAction.removeClass('active');
                     this.contextTabs.lockTabs(false);
+                    this.actions.right.forEach(function ($el) {
+                        $el.prop(c.disabled, false);
+                    });
                 } else {
+                    this.actions.right.forEach(function ($el) {
+                        $el.prop(c.disabled, true);
+                    });
                     this.contextTabs.lockTabs(true);
                     this.versionsVisible = true;
                     var path = this.data.path;
                     var primary = undefined;
                     var secondary = undefined;
-                    if (this.mainSelection) {
-                        primary = this.mainSelection.name;
+                    if (this.primSelection) {
+                        primary = {
+                            release: this.primSelection.release,
+                            version: this.primSelection.id
+                        };
                     }
                     if (this.sdrySelection) {
-                        secondary = this.sdrySelection.name;
+                        secondary = {
+                            release: this.sdrySelection.release,
+                            version: this.sdrySelection.id
+                        };
                     }
                     pages.versionsView.showVersions(path, primary, secondary);
                     this.actions.$viewAction.addClass('active');

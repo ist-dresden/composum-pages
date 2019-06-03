@@ -13,7 +13,7 @@ public class ComboBox extends SingleStringOption implements WidgetModel {
     }
 
     @Override
-    public String getWidgetAttributeKey(String attributeKey) {
+    public String filterWidgetAttribute(String attributeKey, Object attributeValue) {
         if (TYPEAHEAD_ATTR.equals(attributeKey) || DATA_TYPEAHEAD_ATTR.equals(attributeKey)) {
             return DATA_TYPEAHEAD_ATTR;
         }

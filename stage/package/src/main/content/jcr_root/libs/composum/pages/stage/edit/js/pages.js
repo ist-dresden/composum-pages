@@ -1,5 +1,6 @@
 /**
  * the 'pages' namespace and core Pages edit frame functions
+ * strong dependency to: 'commons.js' (libs: 'backbone.js', 'underscore.js', 'loglevel.js', 'jquery.js')
  */
 (function (window) {
     window.composum = window.composum || {};
@@ -37,6 +38,7 @@
                 action: 'trigger:action',
                 dialog: {
                     edit: 'dialog:edit',
+                    generic: 'dialog:generic',
                     alert: 'dialog:alert'
                 }
             },
@@ -60,6 +62,7 @@
                     inserted: 'page:inserted',      // done.
                     changed: 'page:changed',        // done.
                     deleted: 'page:deleted',        // done.
+                    state: 'page:state',            // changed state of the page itself only (no structure change)
                     containerRefs: 'page:containerRefs'
                 },
                 content: {
@@ -286,6 +289,17 @@
             }
         };
 
+        pages.loadFrameContent = function (uri, callback) {
+            var target = pages.current.page || pages.current.site;
+            if (target) {
+                uri += target;
+            }
+            uri += '?pages.view=' + pages.current.mode;
+            core.getHtml(uri, _.bind(function (content) {
+                callback(content);
+            }, this));
+        };
+
         //
         // Dialog container
         //
@@ -300,27 +314,7 @@
                         }
                     },
                     _.bind(function (data) {
-                        this.$el.append(data);
-                        var $dialog = this.$el.children(':last-child');
-                        var dialog = core.getWidget(this.el, $dialog[0], viewType);
-                        if (dialog) {
-                            dialog.data = {
-                                name: name,
-                                path: path,
-                                type: type
-                            };
-                            if (_.isFunction(dialog.afterLoad)) {
-                                dialog.afterLoad(name, path, type, context);
-                            }
-                            if (_.isFunction(setupDialog)) {
-                                setupDialog(dialog);
-                            }
-                            if (dialog.useDefault) {
-                                dialog.doSubmit(dialog.useDefault);
-                            } else {
-                                dialog.show();
-                            }
-                        }
+                        this.showDialogContent(data, viewType, name, path, type, context, setupDialog);
                     }, this), _.bind(function (xhr) {
                         if (xhr.status === 404) {
                             if (_.isFunction(onNotFound)) {
@@ -328,6 +322,26 @@
                             }
                         }
                     }, this));
+            },
+
+            showDialogContent: function (content, viewType, name, path, type, context, setupDialog) {
+                this.$el.append(content);
+                var $dialog = this.$el.children(':last-child');
+                var dialog = core.getWidget(this.el, $dialog[0], viewType);
+                if (dialog) {
+                    dialog.data = {
+                        name: name,
+                        path: path,
+                        type: type
+                    };
+                    if (_.isFunction(dialog.afterLoad)) {
+                        dialog.afterLoad(name, path, type, context);
+                    }
+                    if (_.isFunction(setupDialog)) {
+                        setupDialog(dialog);
+                    }
+                    dialog.show();
+                }
             },
 
             openDialog: function (id, url, viewType, initView, callback) {
@@ -400,7 +414,7 @@
                     this.showing = true;
                     this.callsToRetry = [retryThisFailedCall];
                     this.show(undefined, _.bind(function () {
-                        // retry after login all collected calls
+                        // retry all collected calls after login
                         this.callsToRetry.forEach(function (retryThisFailedCall) {
                             retryThisFailedCall();
                         });

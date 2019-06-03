@@ -31,6 +31,8 @@ import static com.composum.pages.commons.util.ResourceTypeUtil.isSyntheticResour
 @PropertyDetermineResourceStrategy(Component.TypeResourceStrategy.class)
 public class Component extends AbstractModel {
 
+    public static final String EDIT_HELP_PATH = "edit/help";
+
     public static final String TYPE_HINT_PARAM = "type";
 
     public static final Pattern PRIMARY_TYPE_PATTERN = Pattern.compile("^[^:/]+:.+");
@@ -111,6 +113,7 @@ public class Component extends AbstractModel {
     private transient List<String> category;
 
     private transient String quickHelp;
+    private transient String helpContent;
 
     /** delegate initialization */
 
@@ -126,7 +129,7 @@ public class Component extends AbstractModel {
      */
     @Override
     protected Resource determineResource(Resource initialResource) {
-        Resource typeResource = null;
+        Resource typeResource;
         if (Component.isComponent(initialResource)) {
             typeResource = initialResource;
         } else {
@@ -256,6 +259,14 @@ public class Component extends AbstractModel {
             quickHelp = ResolverUtil.getTypeProperty(getResource(), "quickHelp", "");
         }
         return quickHelp;
+    }
+
+    public String getHelpContent() {
+        if (helpContent == null) {
+            Resource contentRes = getResource().getChild(EDIT_HELP_PATH);
+            helpContent = contentRes != null ? contentRes.getPath() : "";
+        }
+        return helpContent;
     }
 
     @Override

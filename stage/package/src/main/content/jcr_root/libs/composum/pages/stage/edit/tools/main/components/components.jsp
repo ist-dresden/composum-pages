@@ -17,8 +17,7 @@
         </div>
         <div class="composum-pages-tools_right-actions">
             <button type="button" class="filter-toggle fa fa-filter composum-pages-tools_button btn btn-default"
-                    title="${cpn:i18n(slingRequest,'Filter')}"><span
-                    class="composum-pages-tools_button-label">${cpn:i18n(slingRequest,'Filter')}</span></button>
+                    title="${cpn:i18n(slingRequest,'Filter')}"></button>
             <cpp:include replaceSelectors="filter"/>
         </div>
     </div>

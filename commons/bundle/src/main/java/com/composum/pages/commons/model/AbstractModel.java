@@ -14,9 +14,9 @@ import com.composum.pages.commons.service.PageManager;
 import com.composum.pages.commons.service.ResourceManager;
 import com.composum.pages.commons.service.SiteManager;
 import com.composum.pages.commons.service.VersionsService;
+import com.composum.pages.commons.util.LinkUtil;
 import com.composum.pages.commons.util.PagesUtil;
 import com.composum.pages.commons.util.TagCssClasses;
-import com.composum.pages.commons.util.ValueHashMap;
 import com.composum.platform.models.annotations.PropertyDefaults;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.InheritedValues;
@@ -24,7 +24,6 @@ import com.composum.sling.core.SlingBean;
 import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.filter.StringFilter;
 import com.composum.sling.core.request.DomIdentifiers;
-import com.composum.pages.commons.util.LinkUtil;
 import com.composum.sling.core.util.PropertyUtil;
 import com.composum.sling.core.util.ResourceUtil;
 import com.composum.sling.platform.security.AccessMode;
@@ -35,6 +34,7 @@ import org.apache.sling.api.request.RequestPathInfo;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
+import org.apache.sling.api.wrappers.ValueMapDecorator;
 import org.apache.sling.models.annotations.injectorspecific.Self;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -203,7 +203,7 @@ public abstract class AbstractModel implements SlingBean, Model {
     protected void initializeWithResource(Resource resource) {
         properties = resource.adaptTo(ValueMap.class);
         if (properties == null) {
-            properties = new ValueHashMap();
+            properties = new ValueMapDecorator(new HashMap<>());
         }
     }
 
@@ -665,6 +665,13 @@ public abstract class AbstractModel implements SlingBean, Model {
     }
 
     // Object
+
+    public String toString() {
+        String ref = super.toString();
+        StringBuilder builder = new StringBuilder(ref.substring(ref.lastIndexOf(".") + 1));
+        builder.append("{").append(getPath()).append("}");
+        return builder.toString();
+    }
 
     @Override
     public int hashCode() {

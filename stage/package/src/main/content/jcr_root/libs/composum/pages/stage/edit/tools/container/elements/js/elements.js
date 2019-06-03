@@ -211,9 +211,11 @@
             },
 
             getElement: function (reference) {
-                for (var i = 0; i < this.elements.length; i++) {
-                    if (this.elements[i].reference.path === reference.path) {
-                        return this.elements[i];
+                if (this.elements && reference) {
+                    for (var i = 0; i < this.elements.length; i++) {
+                        if (this.elements[i].reference.path === reference.path) {
+                            return this.elements[i];
+                        }
                     }
                 }
                 return undefined;
@@ -252,7 +254,7 @@
             },
 
             onElementSelected: function (event, reference) {
-                this.selectPath(reference ? reference.path : undefined);
+                this.selectPath(reference);
             },
 
             onElementInserted: function (event, reference) {

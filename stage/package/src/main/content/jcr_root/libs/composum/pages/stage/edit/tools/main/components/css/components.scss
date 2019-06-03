@@ -27,7 +27,7 @@
 
                 .composum-pages-stage-edit-tools-main-components {
 
-                    &_filter {
+                    &_filter-menu {
                         display: none;
                     }
                 }
@@ -45,7 +45,7 @@
 
                     .composum-pages-stage-edit-tools-main-components {
 
-                        &_category, &_label {
+                        &_category, &_category_title, &_label {
                             color: $bootstrap-default-color;
                         }
 
@@ -53,7 +53,7 @@
                             white-space: nowrap;
                         }
 
-                        &_label {
+                        &_category_title {
                             margin: 0;
                         }
                     }
@@ -72,14 +72,14 @@
 
                 .composum-pages-stage-edit-tools-main-components {
 
-                    &_label {
+                    &_category_title {
                         margin-top: 0;
                     }
                 }
             }
         }
 
-        &_label {
+        &_category_title {
             display: inline-block;
             width: 100%;
             margin: $tools-pane-padding 0 $tools-pane-padding/2;

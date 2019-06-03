@@ -172,7 +172,7 @@ public abstract class AbstractEditTag extends AbstractWrappingTag {
     }
 
     @Override
-    protected void collectAttributes(Map<String, String> attributeSet) {
+    protected void collectAttributes(Map<String, Object> attributeSet) {
         super.collectAttributes(attributeSet);
         Resource resourceToEdit = getReferenceResource();
         if (resourceToEdit != null) {

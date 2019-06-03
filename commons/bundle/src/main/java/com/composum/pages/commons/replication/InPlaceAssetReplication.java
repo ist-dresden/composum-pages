@@ -23,8 +23,4 @@ public class InPlaceAssetReplication extends InPlaceReplicationStrategy {
         return isReferenced && File.isFile(resource);
     }
 
-    @Override
-    protected ResourceResolver getReleaseResolver(ReplicationContext context, Resource resource) {
-        return context.getResolver();
-    }
 }

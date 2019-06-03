@@ -63,6 +63,21 @@
                     _upload: {
                         dialog: '/file/dialog/upload.html'
                     },
+                    version: {
+                        base: '/bin/cpm/platform/versions',
+                        activate: {
+                            _dialog: '/page/dialog/activate.html',
+                            _action: '.activate.json'
+                        },
+                        revert: {
+                            _dialog: '/page/dialog/revert.html',
+                            _action: '.revert.json'
+                        },
+                        deactivate: {
+                            _dialog: '/page/dialog/deactivate.html',
+                            _action: '.deactivate.json'
+                        }
+                    },
                     sites: {
                         list: '/libs/composum/pages/stage/edit/site/manager.html'
                     }
@@ -129,11 +144,19 @@
                 this.$submitButton = this.$('.' + c.base + c._submitButton);
                 this.initTabs();
                 this.$('.' + c.base + c._deleteButton).click(_.bind(this.doDelete, this));
+                var init = this.$el.data('init');
+                if (init) {
+                    init = eval(init);
+                    if (_.isFunction(init)) {
+                        init.call(this);
+                    }
+                }
             },
 
             initTabs: function () {
                 var c = dialogs.const.edit.css;
                 var $tabList = this.$tabList = this.$('.' + c.base + c._tabList);
+                // noinspection JSMismatchedCollectionQueryUpdate
                 var tabs = this.tabs = [];
                 this.$('.' + c.base + c._tab).each(function () {
                     var $tab = $(this);
@@ -279,6 +302,17 @@
                 dialogs.EditDialog, name, path, type, context, setupDialog);
         };
 
+        /**
+         * open a dialog rendered as response of a PUT request with JSON data
+         */
+        dialogs.openGenericDialog = function (url, viewType, data, name, path, type, context, setupDialog) {
+            core.ajaxPut(url, JSON.stringify(data), {},
+                _.bind(function (content, status, xhr) {
+                    pages.dialogHandler.showDialogContent(content, viewType, name, path, type, context, setupDialog);
+                }, this)
+            );
+        };
+
         //
         // elements in containers...
         //
@@ -336,13 +370,40 @@
         dialogs.NewElementDialog = dialogs.ElementDialog.extend({
 
             initView: function () {
-                this.elementType = core.getWidget(this.el, '.element-type-select-widget', pages.widgets.ElementTypeSelectWidget);
-                if (this.elementType.getCount() === 1) {
-                    this.useDefault = this.elementType.getOnlyOne();
-                }
+                this.elementType = core.getWidget(this.el, '.element-type-select-widget',
+                    pages.widgets.ElementTypeSelectWidget, {
+                        callback: _.bind(this.showOrDefault, this)
+                    });
+                // after initialization of the element-type-select-widget to set up the reload callback
+                dialogs.ElementDialog.prototype.setUpWidgets.apply(this);
+                this.elementType.reload();
             },
 
-            doSubmit: function (type) {
+            setUpWidgets: function (root) {
+                // avoid initializing during construction; widget initialization is done later - see: initView()
+            },
+
+            show: function () {
+                // the show() is suppressed if only one type is allowed; create an instance of this type immediately
+            },
+
+            showOrDefault: function () {
+                this.elementType.callback = undefined; // reset 'show' callback
+                if (this.elementType.getCount() === 1) {
+                    var selection = this.elementType.getOnlyOne();
+                    // use the one option instead of show and select if no more options are available
+                    if (selection) {
+                        this.doSubmit(undefined, selection);
+                        // dispose the dialog to avoid reuse of a dialog which is not initialized during shown
+                        this.onClose();
+                        return;
+                    }
+                }
+                // the normal show() if more than one option available or the filter is used...
+                dialogs.ElementDialog.prototype.show.apply(this);
+            },
+
+            doSubmit: function (event, type) {
                 var u = dialogs.const.edit.url;
                 var d = dialogs.const.edit.data;
                 if (!type) {
@@ -679,6 +740,146 @@
             var c = dialogs.const.edit.url;
             pages.dialogHandler.openEditDialog(c.path + c._copy.dialog,
                 dialogs.CopyContentDialog, name, path, type, undefined/*context*/, setupDialog);
+        };
+
+        //
+        // Releases & Versions...
+        //
+
+        dialogs.ManagePagesDialog = dialogs.ElementDialog.extend({
+
+            initialize: function () {
+                dialogs.ElementDialog.prototype.initialize.apply(this);
+                this.refs = {};
+            },
+
+            hasReferences: function () {
+                return (this.refs.page && this.refs.page.isNotEmpty()) ||
+                    (this.refs.asset && this.refs.asset.isNotEmpty());
+            },
+
+            submitActionKey: function () {
+                // abstract: return the concrete servlet action selector
+            },
+
+            doSubmit: function () {
+                var u = dialogs.const.edit.url.version;
+                var data = this.getActionData();
+                core.ajaxPost(u.base + this.submitActionKey(), data, {},
+                    _.bind(function (result) {
+                        this.triggerStateChange(data);
+                        this.hide();
+                    }, this), _.bind(this.onError, this));
+            },
+
+            /**
+             * a manage pages dialog is used in a single (e.g. tree) and a multiple (e.g. site management form) context
+             * in the single mode the this.data.path references the target; in the multiple mode are input fields
+             * named 'target' embedded in the dialog form, one for each selected target
+             */
+            getActionData: function () {
+                var data = {target: []};
+                this.$('input[name="target"]').each(function () { // multi mode
+                    var target = $(this).val();
+                    if (target && !_.contains(data.target, target)) {
+                        data.target.push(target);
+                    }
+                });
+                if (data.target.length < 1 && this.data.path) {
+                    data.target.push(this.data.path); // single mode
+                }
+                if (this.refs.page && this.refs.page.isNotEmpty()) {
+                    data.pageRef = this.refs.page.getValue();
+                }
+                if (this.refs.asset && this.refs.asset.isNotEmpty()) {
+                    data.assetRef = this.refs.asset.getValue();
+                }
+                return data;
+            },
+
+            triggerStateChange: function (data) {
+                var e = pages.const.event;
+                data.target.forEach(function (path) {
+                    $(document).trigger(e.page.state, [new pages.Reference(undefined, path)]);
+                });
+                if (data.pageRef) {
+                    data.pageRef.forEach(function (path) {
+                        $(document).trigger(e.page.state, [new pages.Reference(undefined, path)]);
+                    });
+                }
+            }
+        });
+
+        dialogs.ActivatePageDialog = dialogs.ManagePagesDialog.extend({
+
+            initialize: function () {
+                dialogs.ManagePagesDialog.prototype.initialize.apply(this);
+                this.refs = {
+                    page: core.getWidget(this.el, '.widget-name_page-references', pages.widgets.PageReferencesWidget),
+                    asset: core.getWidget(this.el, '.widget-name_asset-references', pages.widgets.PageReferencesWidget)
+                };
+            },
+
+            submitActionKey: function () {
+                return dialogs.const.edit.url.version.activate._action;
+            },
+
+            show: function () {
+                if (this.hasReferences()) {
+                    // the normal show() if unresolved references found
+                    dialogs.ElementDialog.prototype.show.apply(this);
+                } else {
+                    // the show() is suppressed if no unresolved references found
+                    this.doSubmit();
+                    this.onClose();
+                }
+            }
+        });
+
+        dialogs.openActivatePageDialog = function (name, path, type, setupDialog) {
+            var c = dialogs.const.edit.url;
+            pages.dialogHandler.openEditDialog(c.path + c.version.activate._dialog,
+                dialogs.ActivatePageDialog, name, path, type, undefined/*context*/, setupDialog);
+        };
+
+        dialogs.RevertPageDialog = dialogs.ManagePagesDialog.extend({
+
+            initialize: function () {
+                dialogs.ManagePagesDialog.prototype.initialize.apply(this);
+                this.refs = {
+                    page: core.getWidget(this.el, '.widget-name_page-referrers', pages.widgets.PageReferrersWidget)
+                };
+            },
+
+            submitActionKey: function () {
+                return dialogs.const.edit.url.version.revert._action;
+            }
+        });
+
+        dialogs.openRevertPageDialog = function (name, path, type, setupDialog) {
+            var c = dialogs.const.edit.url;
+            pages.dialogHandler.openEditDialog(c.path + c.version.revert._dialog,
+                dialogs.RevertPageDialog, name, path, type, undefined/*context*/, setupDialog);
+        };
+
+        dialogs.DeactivatePageDialog = dialogs.ManagePagesDialog.extend({
+
+            initialize: function () {
+                dialogs.ManagePagesDialog.prototype.initialize.apply(this);
+                this.refs = {
+                    page: core.getWidget(this.el, '.widget-name_page-referrers', pages.widgets.PageReferrersWidget)
+                };
+            },
+
+            submitActionKey: function () {
+                return dialogs.const.edit.url.version.deactivate._action;
+            }
+        });
+
+        dialogs.openDeactivatePageDialog = function (name, path, type, setupDialog) {
+            var c = dialogs.const.edit.url;
+            pages.dialogHandler.openEditDialog(c.path + c.version.deactivate._dialog,
+                dialogs.DeactivatePageDialog, name, path, type, undefined/*context*/, setupDialog);
         };
 
         //

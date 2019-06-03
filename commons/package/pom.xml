@@ -108,7 +108,10 @@
                             <root>/libs/composum/pages/commons</root>
                         </filter>
                         <filter>
-                            <root>/oak:index/lucene/composum.pages</root>
+                            <root>/oak:index/lucene/aggregates/cpp:PageContent</root>
+                        </filter>
+                        <filter>
+                            <root>/oak:index/lucene/aggregates/nt:frozenNode</root>
                         </filter>
                         <filter>
                             <root>/libs/composum/pages/install</root>
@@ -116,6 +119,7 @@
                                 <include>.*/composum-sling-pages-commons-bundle.*\.jar</include>
                                 <include>.*/com.composum.platform.commons.sling.PlatformErrorHandler.config</include>
                                 <include>.*/org.apache.sling.serviceusermapping.impl.ServiceUserMapperImpl.amended-pages.config</include>
+                                <include>.*/org.apache.sling.serviceusermapping.impl.ServiceUserMapperImpl.amended-pages-token.config</include>
                             </includes>
                         </filter>
                     </filters>

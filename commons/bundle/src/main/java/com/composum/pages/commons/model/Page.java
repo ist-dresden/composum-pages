@@ -5,27 +5,38 @@
  */
 package com.composum.pages.commons.model;
 
+import com.composum.pages.commons.PagesConstants;
 import com.composum.pages.commons.model.properties.Language;
 import com.composum.pages.commons.model.properties.Languages;
 import com.composum.pages.commons.request.DisplayMode;
 import com.composum.pages.commons.request.PagesLocale;
 import com.composum.pages.commons.service.PageManager;
+import com.composum.pages.commons.util.LinkUtil;
 import com.composum.platform.models.annotations.DetermineResourceStategy;
 import com.composum.platform.models.annotations.PropertyDetermineResourceStrategy;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.filter.ResourceFilter;
-import com.composum.pages.commons.util.LinkUtil;
 import com.composum.sling.core.util.ResourceUtil;
 import com.composum.sling.platform.security.AccessMode;
+import com.composum.sling.platform.staging.versions.PlatformVersionsService;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.apache.sling.api.SlingHttpServletRequest;
+import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
+import javax.jcr.RepositoryException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.regex.Matcher;
 
 import static com.composum.pages.commons.PagesConstants.DEFAULT_EDIT_CATEGORY;
 import static com.composum.pages.commons.PagesConstants.DEFAULT_VIEW_CATEGORY;
@@ -39,9 +50,12 @@ import static com.composum.pages.commons.PagesConstants.PROP_EDIT_CATEGORY;
 import static com.composum.pages.commons.PagesConstants.PROP_PAGE_LANGUAGES;
 import static com.composum.pages.commons.PagesConstants.PROP_SLING_TARGET;
 import static com.composum.pages.commons.PagesConstants.PROP_VIEW_CATEGORY;
+import static com.composum.pages.commons.PagesConstants.VERSION_DATE_FORMAT;
 
 @PropertyDetermineResourceStrategy(Page.ContainingPageResourceStrategy.class)
 public class Page extends ContentDriven<PageContent> implements Comparable<Page> {
+
+    private static final Logger LOG = LoggerFactory.getLogger(Page.class);
 
     public static final String DISPLAY_MODE_CSS_CLASS = PAGES_PREFIX + "display-mode";
 
@@ -81,7 +95,7 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
 
     // child pages filter base
 
-    public static class DefaultPageFilter implements ResourceFilter {
+    public static class DefaultPageFilter extends ResourceFilter.AbstractResourceFilter {
 
         protected final BeanContext context;
         protected final Locale locale;
@@ -136,6 +150,9 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
     private transient Boolean isDefaultLangPage;
     private transient Page defaultLanguagePage;
 
+    private transient StatusModel releaseStatus;
+    private transient PlatformVersionsService versionsService;
+
     public Page() {
     }
 
@@ -150,7 +167,10 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
 
     @Override
     public int compareTo(@Nonnull Page page) {
-        return getName().compareTo(page.getName());
+        CompareToBuilder builder = new CompareToBuilder();
+        builder.append(getName(), page.getName());
+        builder.append(getPath(), page.getPath());
+        return builder.toComparison();
     }
 
     // initializer extensions
@@ -309,7 +329,7 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
     // properties
 
     public String getSubtitle() {
-        if (subtitle == null){
+        if (subtitle == null) {
             subtitle = getProperty(PN_SUBTITLE, "");
         }
         return subtitle;
@@ -335,6 +355,7 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
      * @return the URL to reference this page;
      * this can be the URL of the default language sibling if this page itself is a language variation instance
      */
+    @Override
     public String getUrl() {
         return LinkUtil.getUrl(getContext().getRequest(), getDefaultLanguagePage().getPath());
     }
@@ -359,7 +380,7 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
     }
 
     public String getHtmlClasses() {
-        return StringUtils.join(collectHtmlClasses(new ArrayList<String>()), " ");
+        return StringUtils.join(collectHtmlClasses(new ArrayList<>()), " ");
     }
 
     protected List<String> collectHtmlClasses(List<String> classes) {
@@ -402,5 +423,70 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
             targetUrl = LinkUtil.getUrl(request, targetUrl);
         }
         return targetUrl;
+    }
+
+    // releases
+
+    public class StatusModel {
+
+        protected final PlatformVersionsService.Status releaseStatus;
+
+        public StatusModel() throws RepositoryException, PersistenceException {
+            releaseStatus = getPlatformVersionsService().getStatus(getResource(), null);
+        }
+
+        public PlatformVersionsService.ActivationState getActivationState() {
+            return releaseStatus.getActivationState();
+        }
+
+        public String getLastModified() {
+            return new SimpleDateFormat(VERSION_DATE_FORMAT).format(releaseStatus.getLastModified().getTime());
+        }
+
+        public String getLastModifiedBy() {
+            return releaseStatus.getLastModifiedBy();
+        }
+
+        public String getReleaseLabel() {
+            String label = releaseStatus.release().getReleaseLabel();
+            Matcher matcher = PagesConstants.RELEASE_LABEL_PATTERN.matcher(label);
+            return matcher.matches() ? matcher.group(1) : label;
+        }
+
+        public String getLastActivated() {
+            Calendar calendar = releaseStatus.getLastActivated();
+            return calendar != null ? new SimpleDateFormat(VERSION_DATE_FORMAT).format(calendar.getTime()) : "";
+        }
+
+        public String getLastActivatedBy() {
+            return releaseStatus.getLastActivatedBy();
+        }
+
+        public String getLastDeactivated() {
+            Calendar calendar = releaseStatus.getLastDeactivated();
+            return calendar != null ? new SimpleDateFormat(VERSION_DATE_FORMAT).format(calendar.getTime()) : "";
+        }
+
+        public String getLastDeactivatedBy() {
+            return releaseStatus.getLastDeactivatedBy();
+        }
+    }
+
+    public StatusModel getReleaseStatus() {
+        if (releaseStatus == null) {
+            try {
+                releaseStatus = new StatusModel();
+            } catch (PersistenceException | RepositoryException ex) {
+                LOG.error(ex.getMessage(), ex);
+            }
+        }
+        return releaseStatus;
+    }
+
+    protected PlatformVersionsService getPlatformVersionsService() {
+        if (versionsService == null) {
+            versionsService = context.getService(PlatformVersionsService.class);
+        }
+        return versionsService;
     }
 }

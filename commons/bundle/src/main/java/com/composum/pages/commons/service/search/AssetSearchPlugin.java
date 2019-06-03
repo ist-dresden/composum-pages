@@ -32,6 +32,7 @@ public class AssetSearchPlugin extends AbstractSearchPlugin {
 
     }
 
+    @Nonnull
     @Override
     protected ResourceFilter getTargetFilter() {
         return TARGET_FILTER;

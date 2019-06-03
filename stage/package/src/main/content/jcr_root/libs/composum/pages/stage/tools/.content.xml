@@ -3,14 +3,6 @@
         jcr:primaryType="nt:unstructured"
         jcr:description="the tools collection declaration for all tools shipped with Composum Pages"
         sling:resourceType="composum/pages/tools/collection">
-    <userView
-            jcr:primaryType="nt:unstructured"
-            sling:resourceType="composum/pages/stage/edit/tools/main/user"
-            _categories="[navigation,browse,edit,develop]"
-            iconClass="user"
-            hint="Users Things"
-            title="User"
-            order="{Long}20"/>
     <pagesTree
             jcr:primaryType="nt:unstructured"
             sling:resourceType="composum/pages/stage/edit/tools/main/pages"
@@ -47,26 +39,31 @@
             jcr:primaryType="nt:unstructured"
             sling:resourceType="composum/pages/stage/edit/tools/site/releases"
             categories="[context,edit,develop,site]"
-            iconClass="sitemap"
-            hint="Site Releases to manage"
+            iconClass="list-ol"
+            hint="releases list (closed and current open release)"
             title="Site Releases"
             order="{Long}40"/>
-    <siteFinished
+    <siteChanges
             jcr:primaryType="nt:unstructured"
-            sling:resourceType="composum/pages/stage/edit/tools/site/finished"
+            sling:resourceType="composum/pages/stage/edit/tools/site/activated"
             categories="[context,edit,develop,site]"
-            iconClass="flag-checkered"
-            hint="Finished Pages to releasde"
-            title="Finished"
+            iconClass="check-square-o"
+            hint="pages activated with changes since the previous release"
+            title="Changes"
             order="{Long}42"/>
     <siteModified
             jcr:primaryType="nt:unstructured"
             sling:resourceType="composum/pages/stage/edit/tools/site/modified"
             categories="[context,edit,develop,site]"
-            iconClass="check-square-o"
-            hint="Modified Pages to finalize"
+            iconClass="pencil-square-o"
+            hint="modified but last changes not activated yet"
             title="Modified"
             order="{Long}44"/>
+    <pageStatus
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="composum/pages/stage/edit/tools/page/status"
+            categories="[status,edit,develop,page,container,element]"
+            order="{Long}20"/>
     <pageVersions
             jcr:primaryType="nt:unstructured"
             sling:resourceType="composum/pages/stage/edit/tools/page/versions"
@@ -83,15 +80,7 @@
             hint="Page Content"
             title="Content"
             order="{Long}60"/>
-    <pageComments
-            jcr:primaryType="nt:unstructured"
-            sling:resourceType="composum/pages/stage/edit/tools/page/comments"
-            _categories="[context,edit,develop,page]"
-            iconClass="commenting-o"
-            hint="Comments"
-            title="Comments"
-            order="{Long}70"/>
-    <pageStatistics
+     <pageStatistics
             jcr:primaryType="nt:unstructured"
             sling:resourceType="composum/pages/stage/edit/tools/page/statistics"
             categories="[context,edit,develop,page]"
@@ -117,7 +106,7 @@
             order="{Long}999"/>
     <componentHelp
             jcr:primaryType="nt:unstructured"
-            sling:resourceType="composum/pages/stage/edit/tools/main/support"
+            sling:resourceType="composum/pages/stage/edit/tools/component/help/context"
             categories="[context,edit,develop,page,container,element]"
             iconClass="question-circle-o"
             hint="Component Help"
@@ -125,7 +114,7 @@
             order="{Long}80"/>
     <componentContext
             jcr:primaryType="nt:unstructured"
-            sling:resourceType="composum/pages/stage/edit/tools/dev/component"
+            sling:resourceType="composum/pages/stage/edit/tools/component/edit"
             categories="[context,develop,page,container,element]"
             iconClass="wrench"
             hint="Component Implementation"

@@ -6,6 +6,8 @@
            cssBase="composum-pages-stage-file_tile">
     <div class="${fileCssBase}_text">
         <cpn:text value="${file.fileName}" tagClass="${fileCssBase}_name"></cpn:text>
+        <cpn:text value="${file.fileDate}" tagClass="${fileCssBase}_date"></cpn:text>
         <cpn:text value="${file.mimeType}" tagClass="${fileCssBase}_mime-type"></cpn:text>
+        <cpn:text value="${file.filePath}" tagClass="${fileCssBase}_path"></cpn:text>
     </div>
 </cpp:model>

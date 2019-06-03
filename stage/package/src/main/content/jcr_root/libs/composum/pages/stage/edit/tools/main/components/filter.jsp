@@ -4,7 +4,7 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <cpp:defineFrameObjects/>
 <cpp:model var="components" type="com.composum.pages.stage.model.edit.page.Components">
-    <div class="${componentsCssBase}_filter">
+    <div class="${componentsCssBase}_filter-menu">
         <c:forEach items="${components.allCategories}" var="category">
             <div class="${componentsCssBase}_category checkbox">
                 <label><input type="checkbox" value="${category}"/><span

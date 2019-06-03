@@ -5,5 +5,5 @@
 <cpp:editDialog var="container" type="com.composum.pages.commons.model.Container" languageContext="false"
                 title="${cpn:i18n(slingRequest,'Add a new Element')}" selector="new">
     <cpp:widget label="${cpn:i18n(slingRequest,'Select the element type')}" name="elementType" type="element-type-select"
-                options="${container.elementTypes}"/>
+                container="${container.encodedReference}"/>
 </cpp:editDialog>

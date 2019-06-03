@@ -44,7 +44,7 @@ public class DateTimeField extends PropertyEditHandle<Calendar> implements Widge
     }
 
     @Override
-    public String getWidgetAttributeKey(String attributeKey) {
+    public String filterWidgetAttribute(String attributeKey, Object attributeValue) {
         if (ATTR_LOCALE.equalsIgnoreCase(attributeKey)) {
             return DATA_PREFIX + ATTR_LOCALE;
         } else if (ATTR_WEEKS.equalsIgnoreCase(attributeKey)) {

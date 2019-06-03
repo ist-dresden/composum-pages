@@ -12,6 +12,7 @@ import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.platform.staging.query.Query;
 import com.composum.sling.platform.staging.query.QueryBuilder;
 import com.composum.sling.platform.staging.query.QueryConditionDsl;
+import com.composum.sling.platform.staging.query.QueryValueMap;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.exception.ContextedRuntimeException;
 import org.apache.commons.lang3.tuple.Pair;
@@ -25,12 +26,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.jcr.RepositoryException;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static com.composum.pages.commons.service.search.SearchService.PARAMETER_SEARCHTERM;
 import static com.composum.pages.commons.service.search.SearchTermParseException.Kind.Empty;
@@ -38,6 +34,8 @@ import static com.composum.pages.commons.service.search.SearchTermParseException
 import static com.composum.pages.commons.service.search.SearchUtil.nameAndTextCondition;
 import static com.composum.sling.core.util.ResourceUtil.CONTENT_NODE;
 import static com.composum.sling.core.util.ResourceUtil.PROP_TITLE;
+import static com.composum.sling.platform.staging.query.Query.COLUMN_PATH;
+import static com.composum.sling.platform.staging.query.Query.COLUMN_SCORE;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.jackrabbit.JcrConstants.JCR_SCORE;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -60,8 +58,16 @@ public abstract class AbstractSearchPlugin implements SearchPlugin {
         searchService = service;
     }
 
+    /** Optional filter to find the resource we want to return as a parent of the actually found resources. Default: {@link ResourceFilter#ALL}. */
+    @Nonnull
     protected ResourceFilter getTargetFilter() {
-        return null;
+        return ResourceFilter.ALL;
+    }
+
+    /** Optional filter that can discard some of the search results, if no explicit filter was given. Default: {@link ResourceFilter#ALL}. */
+    @Nonnull
+    protected ResourceFilter getDefaultTargetAcceptFilter(BeanContext context) {
+        return ResourceFilter.ALL;
     }
 
     protected void buildQuery(Query query, String root, String searchExpression) {
@@ -78,16 +84,17 @@ public abstract class AbstractSearchPlugin implements SearchPlugin {
     public List<SearchService.Result> search(@Nonnull final BeanContext context, @Nonnull final String root,
                                              @Nonnull final String searchExpression, @Nullable final ResourceFilter filter,
                                              final int offset, @Nullable final Integer limit)
-            throws RepositoryException, SearchTermParseException {
+            throws SearchTermParseException {
         if (isBlank(searchExpression)) throw new SearchTermParseException(Empty,
                 searchExpression, searchExpression);
         final Set<String> positiveTerms = new SearchtermParser(searchExpression).getPositiveSearchterms();
         if (positiveTerms.isEmpty()) throw new SearchTermParseException(NoPositivePhrases,
                 searchExpression, searchExpression);
+        ResourceFilter acceptFilter = filter != null ? filter : getDefaultTargetAcceptFilter(context);
 
         SearchService.LimitedQuery limitedQuery = new SearchService.LimitedQuery() {
             @Override
-            public Pair<Boolean, List<SearchService.Result>> execQuery(int matchLimit) throws RepositoryException {
+            public Pair<Boolean, List<SearchService.Result>> execQuery(int matchLimit) {
                 Query query = context.getResolver().adaptTo(QueryBuilder.class).createQuery();
                 buildQuery(query, root, searchExpression);
                 query.limit(matchLimit);
@@ -98,19 +105,21 @@ public abstract class AbstractSearchPlugin implements SearchPlugin {
                 ResourceFilter targetFilter = getTargetFilter();
                 List<SearchService.Result> results = new ArrayList<>();
                 Map<String, SubmatchResultImpl> targetToResultMap = new HashMap<>();
-                for (Resource match : query.execute()) {
+                Iterable<QueryValueMap> rows = query.selectAndExecute(COLUMN_PATH, COLUMN_SCORE);
+                for (QueryValueMap row : rows) {
                     rowcount++;
-                    Resource target = findTarget(match, targetFilter);
-                    if (filter == null || filter.accept(target)) {
+                    Resource target = findTarget(row.getResource(), targetFilter);
+                    if (acceptFilter.accept(target)) {
                         SubmatchResultImpl result = targetToResultMap.get(target.getPath());
                         if (null == result) {
-                            result = new SubmatchResultImpl(context, target, null, new ArrayList<Resource>(),
+                            result = new SubmatchResultImpl(context, target, row.get(COLUMN_SCORE, Float.class),
+                                    new ArrayList<>(),
                                     searchExpression, positiveTerms);
                             targetToResultMap.put(target.getPath(), result);
                             if (results.size() >= neededResults) return Pair.of(true, results);
                             results.add(result);
                         }
-                        result.getMatches().add(match);
+                        result.getMatches().add(row.getResource());
                     }
                 }
                 return Pair.of(rowcount < matchLimit, results);

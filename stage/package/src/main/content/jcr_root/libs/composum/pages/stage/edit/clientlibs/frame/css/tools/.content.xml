@@ -3,11 +3,12 @@
         jcr:primaryType="sling:OrderedFolder"
         embed="[
             composum/pages/stage/edit/tools/site/releases/css/releases.css,
-            composum/pages/stage/edit/tools/site/finished/css/finished.css,
+            composum/pages/stage/edit/tools/site/activated/css/activated.css,
             composum/pages/stage/edit/tools/site/modified/css/modified.css,
             composum/pages/stage/edit/tools/page/versions/css/versions.css,
             jslibs/chartist/0.11.0/chartist.css,
             composum/pages/stage/edit/tools/page/statistics/css/statistics.css,
             composum/pages/stage/edit/tools/container/elements/css/elements.css,
-            composum/pages/stage/edit/tools/dev/component/css/component.css
+            composum/pages/stage/edit/tools/component/help/css/help.css,
+            composum/pages/stage/edit/tools/component/edit/css/edit.css
         ]"/>

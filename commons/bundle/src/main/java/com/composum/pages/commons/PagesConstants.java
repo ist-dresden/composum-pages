@@ -17,6 +17,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 
+import java.util.regex.Pattern;
+
 public interface PagesConstants {
 
     String ENCODING = "UTF-8";
@@ -58,6 +60,11 @@ public interface PagesConstants {
     String CATEGORY_OTHER = "other";
 
     /** Content elements */
+
+    /** the reference path property name of a reference component (for the referrers query) */
+    String PN_CONTENT_REFERENCE = "contentReference";
+    /** the key part of a reference component type (for the referrers query) */
+    String RES_TYPE_KEY_REFERENCE = "/reference";
 
     String NODE_TYPE_SOMETHING = "nt:unstructured";
     String NODE_TYPE_ELEMENT = CPP_PREFIX + "Element";
@@ -143,6 +150,11 @@ public interface PagesConstants {
 
     String NP_SETTINGS = "settings";
 
+    /** release & version */
+
+    String VERSION_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
+    Pattern RELEASE_LABEL_PATTERN = Pattern.compile("^composum-release-(.+)$");
+
     /** date & time */
 
     String PP_FORMAT = "format/";
@@ -213,4 +225,6 @@ public interface PagesConstants {
             return null;
         }
     }
+
+    enum ReferenceType {page, asset}
 }

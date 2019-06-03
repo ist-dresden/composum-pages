@@ -5,6 +5,7 @@
  */
 package com.composum.pages.commons;
 
+import com.composum.pages.commons.PagesConstants.ReferenceType;
 import com.composum.pages.commons.filter.SitePageFilter;
 import com.composum.pages.commons.model.Site;
 import com.composum.pages.commons.service.SiteManager;
@@ -76,7 +77,7 @@ public class PagesConfigImpl implements PagesConfiguration {
         @AttributeDefinition(
                 description = "the filter configuration to set the scope to component development"
         )
-        String develomentTreeFilterRule() default "PrimaryType(+'^cpp:(Site|Component|Theme)$')";
+        String develomentTreeFilterRule() default "Path(+'^/(etc|conf|apps|libs|sightly|htl|var)/+')";
 
         @AttributeDefinition(
                 description = "the filter configuration to determine all intermediate nodes in the content structure"
@@ -86,7 +87,7 @@ public class PagesConfigImpl implements PagesConfiguration {
         @AttributeDefinition(
                 description = "the filter configuration to determine all intermediate nodes in the development scope"
         )
-        String devIntermediateFilterRule() default "and{Folder(),Path(+'^/(etc|conf|apps|libs|sightly|htl|var)'";
+        String devIntermediateFilterRule() default "and{Folder(),Path(+'^/(etc|conf|apps|libs|sightly|htl|var)(/.+)?')}";
 
         @AttributeDefinition(
                 description = "the filter configuration to determine all intermediate nodes in the tree view"
@@ -104,9 +105,14 @@ public class PagesConfigImpl implements PagesConfiguration {
         String replicationRootFilterRule() default "Path(-'^/(public|preview)')";
 
         @AttributeDefinition(
-                description = "the filter configuration for page resources"
+                description = "the filter configuration for page resources (reference type 'page')"
         )
         String pageFilterRule() default "PrimaryType(+'^cpp:Page$')";
+
+        @AttributeDefinition(
+                description = "the filter configuration for asset resources (reference type 'asset')"
+        )
+        String assetFilterRule() default "PrimaryType(+'^(cpp:Asset|nt:file)$')";
     }
 
     private ResourceFilter siteNodeFilter;
@@ -118,7 +124,6 @@ public class PagesConfigImpl implements PagesConfiguration {
     private ResourceFilter orderableNodesFilter;
     private ResourceFilter replicationRootFilter;
 
-    private ResourceFilter pageFilter;
     private Map<String, ResourceFilter> pageFilters;
 
     protected Configuration config;
@@ -208,6 +213,21 @@ public class PagesConfigImpl implements PagesConfiguration {
         return filter;
     }
 
+    protected ResourceFilter pageFilter;
+    protected ResourceFilter assetFilter;
+
+    @Nonnull
+    @Override
+    public ResourceFilter getReferenceFilter(@Nonnull ReferenceType type) {
+        switch (type) {
+            case asset:
+                return assetFilter;
+            case page:
+            default:
+                return pageFilter;
+        }
+    }
+
     protected SiteManager getSiteManager() {
         if (siteManager == null) {
             siteManager = (SiteManager) bundleContext.getService(
@@ -261,6 +281,7 @@ public class PagesConfigImpl implements PagesConfiguration {
         develomentTreeFilter = buildTreeFilter(
                 ResourceFilterMapping.fromString(config.develomentTreeFilterRule()), devIntermediateFilter);
         pageFilter = ResourceFilterMapping.fromString(config.pageFilterRule());
+        assetFilter = ResourceFilterMapping.fromString(config.assetFilterRule());
         pageFilters = new HashMap<>();
         pageFilters.put(PAGE_FILTER_SITE, pageFilter);
         pageFilters.put(PAGE_FILTER_ALL, pageFilter);

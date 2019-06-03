@@ -18,7 +18,9 @@
                 this.$code = this.$(components.const.codeblock.cssBase + "_content code");
                 this.$expand = this.$(components.const.codeblock.cssBase + "_expand");
                 this.$collapse = this.$(components.const.codeblock.cssBase + "_collapse");
-                this.highlight = hljs.highlightBlock(this.$code[0]);
+                if (this.$code.length > 0) {
+                    this.highlight = hljs.highlightBlock(this.$code[0]);
+                }
                 this.$expand.click(_.bind(this.expand, this));
                 this.$collapse.click(_.bind(this.collapse, this));
             },

@@ -1,5 +1,6 @@
 package com.composum.pages.commons.service;
 
+import com.composum.pages.commons.PagesConstants.ReferenceType;
 import com.composum.pages.commons.model.Model;
 import com.composum.pages.commons.model.Page;
 import com.composum.sling.core.BeanContext;
@@ -105,4 +106,27 @@ public interface PageManager extends ContentManager<Page> {
     void touch(@Nonnull BeanContext context, @Nonnull Resource resource, @Nullable Calendar time, boolean commit);
 
     void touch(@Nonnull BeanContext context, @Nonnull Page page, @Nullable Calendar time, boolean commit);
+
+    /**
+     * retrieve the collection of referrers of a content page
+     *
+     * @param page       the page
+     * @param searchRoot the root in the repository for searching referrers
+     * @param resolved   if 'true' only active references (in the same release) are determined
+     * @return the collection of found resources
+     */
+    @Nonnull
+    Collection<Resource> getReferrers(@Nonnull Page page, @Nonnull Resource searchRoot, boolean resolved);
+
+    /**
+     * the iterator to walk through the target resources of the content elements referenced by the page
+     *
+     * @param page       the page
+     * @param type       the type of references; if 'null' all types are retrieved
+     * @param unresolved if 'true' only unresolved references (not in the same release) are determined
+     * @param transitive if 'true' we also look for references of the references
+     * @return the found resources
+     */
+    @Nonnull
+    Collection<Resource> getReferences(@Nonnull Page page, @Nullable ReferenceType type, boolean unresolved, boolean transitive);
 }

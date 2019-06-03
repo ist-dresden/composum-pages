@@ -61,22 +61,22 @@ public class TemplateAndDesignTest {
         ResourceManager.Template template = resourceManager.toTemplate(templateResource);
         Resource pageResource = resolver.getResource("/content/test/page");
         Resource pageContent = pageResource.getChild(JcrConstants.JCR_CONTENT);
-        findDesign(template, pageContent, "main/row-1/column-0", null,
-                "/content/test/template/jcr:content/main/cpp:design/column");
-        findDesign(template, pageContent, "main/row-1/column-0/textimage", null,
-                "/content/test/template/jcr:content/main/cpp:design/column/text");
+        findDesign(template, pageContent, "main/row-1/cell-0", null,
+                "/content/test/template/jcr:content/main/cpp:design/cell");
+        findDesign(template, pageContent, "main/row-1/cell-0/textimage", null,
+                "/content/test/template/jcr:content/main/cpp:design/cell/text");
         findDesign(template, pageContent, "main/pages", null,
                 "/content/test/template/jcr:content/main/cpp:design/text");
         findDesign(template, pageContent, "main/nonexisting",
                 "composum/pages/components/element/title",
                 "/content/test/template/jcr:content/main/cpp:design/text");
-        findDesign(template, pageContent, "other/row-2/column-1", null,
-                "/content/test/template/jcr:content/cpp:design/column");
-        findDesign(template, pageContent, "other/row-2/column-1/textimage", null,
-                "/content/test/template/jcr:content/cpp:design/column/text");
-        findDesign(template, pageContent, "other/row-2/column-1/nonexisting",
+        findDesign(template, pageContent, "other/row-2/cell-1", null,
+                "/content/test/template/jcr:content/cpp:design/cell");
+        findDesign(template, pageContent, "other/row-2/cell-1/textimage", null,
+                "/content/test/template/jcr:content/cpp:design/cell/text");
+        findDesign(template, pageContent, "other/row-2/cell-1/nonexisting",
                 "composum/pages/components/element/textimage",
-                "/content/test/template/jcr:content/cpp:design/column/text");
+                "/content/test/template/jcr:content/cpp:design/cell/text");
     }
 
     protected void findDesign(ResourceManager.Template template, Resource pageContent,
@@ -90,12 +90,12 @@ public class TemplateAndDesignTest {
     public void useDesignProperty() {
         context.load().json("/test/template/findDesign.json", "/content/test");
         ResourceResolver resolver = context.resourceResolver();
-        useDesignProperty(resolver.getResource("/content/test/page/jcr:content/main/row-1/column-1/textimage"),
-                "main/cpp:design/column/text");
-        useDesignProperty(resolver.getResource("/content/test/page/jcr:content/main/row-1/column-0/textimage"),
-                "page/main/row-1/column.0/textimage");
-        useDesignProperty(resolver.getResource("/content/test/page/jcr:content/other/row-2/column-0/textimage"),
-                "cpp:design/column/text");
+        useDesignProperty(resolver.getResource("/content/test/page/jcr:content/main/row-1/cell-1/textimage"),
+                "main/cpp:design/cell/text");
+        useDesignProperty(resolver.getResource("/content/test/page/jcr:content/main/row-1/cell-0/textimage"),
+                "page/main/row-1/cell.0/textimage");
+        useDesignProperty(resolver.getResource("/content/test/page/jcr:content/other/row-2/cell-0/textimage"),
+                "cpp:design/cell/text");
         useDesignProperty(resolver.getResource("/content/test/page/jcr:content/main/pages"),
                 "main/cpp:design/text");
         useDesignProperty(resolver.getResource("/content/test/page/jcr:content/other/pages"),

@@ -13,7 +13,7 @@ import static com.composum.pages.commons.PagesConstants.PROP_TEMPLATE;
 /**
  * accepts page resources marked as a template
  */
-public class TemplateFilter implements ResourceFilter {
+public class TemplateFilter extends ResourceFilter.AbstractResourceFilter {
 
     public static final TemplateFilter INSTANCE = new TemplateFilter();
 

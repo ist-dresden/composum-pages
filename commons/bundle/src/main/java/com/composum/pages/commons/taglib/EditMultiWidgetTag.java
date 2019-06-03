@@ -90,7 +90,7 @@ public class EditMultiWidgetTag extends AbstractWidgetTag implements LoopTag {
         collection.addAll(FORM_CSS_CLASES);
     }
 
-    protected void collectAttributes(Map<String, String> attributeSet) {
+    protected void collectAttributes(Map<String, Object> attributeSet) {
         attributeSet.put("data-name", getPropertyName());
         super.collectAttributes(attributeSet);
     }
