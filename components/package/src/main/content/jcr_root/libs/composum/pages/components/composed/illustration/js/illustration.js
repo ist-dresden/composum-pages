@@ -21,6 +21,7 @@
                 var self = this;
                 this.$('.' + c.cssBase + c._link).popover({
                     html: true,
+                    sanitize: false,
                     trigger: this.$el.data('behavior') === 'independent' ? 'click' : 'focus',
                     viewport: function () {
                         return self.el;

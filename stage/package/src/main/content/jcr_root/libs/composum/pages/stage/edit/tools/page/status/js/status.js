@@ -67,6 +67,7 @@
                             placement: 'bottom',
                             animation: false,
                             html: true,
+                            sanitize: false,
                             content: content
                         });
                         this.$icon.popover('show');

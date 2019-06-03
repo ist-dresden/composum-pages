@@ -61,6 +61,7 @@
                 this.$filterContent = this.$('.' + c.base + c._.filterContent);
                 this.$filterToggle.popover({
                     html: true,
+                    sanitize: false,
                     content: this.$filterContent.html(),
                     placement: 'bottom',
                     viewport: {

@@ -132,6 +132,7 @@
                 this.$filterContent = this.$('.' + c.base + c._.filter);
                 this.$filterButton.popover({
                     html: true,
+                    sanitize: false,
                     content: this.$filterContent.html(),
                     placement: 'bottom',
                     viewport: {
