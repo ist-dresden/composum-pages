@@ -2,7 +2,7 @@ package com.composum.pages.commons.replication;
 
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.platform.security.AccessMode;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.framework.Constants;

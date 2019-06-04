@@ -1,7 +1,7 @@
 package com.composum.pages.commons.taglib;
 
 import com.composum.sling.cpnl.ComponentTagTEI;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.jsp.jstl.core.LoopTagStatus;
 import javax.servlet.jsp.tagext.TagData;
@@ -10,6 +10,7 @@ import java.util.List;
 
 public class EditWidgetTagTEI extends ComponentTagTEI {
 
+    @Override
     protected void collectVariables(TagData data, List<VariableInfo> variables) {
         String multi = data.getAttributeString("multi");
         if ("true".equalsIgnoreCase(multi)) {
