@@ -8,7 +8,6 @@ package com.composum.pages.commons.service;
 import com.composum.sling.platform.staging.query.Query;
 import com.composum.sling.platform.staging.query.QueryBuilder;
 import org.apache.sling.api.SlingException;
-import org.apache.sling.api.resource.QuerySyntaxException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
@@ -17,7 +16,6 @@ import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.jcr.RepositoryException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;

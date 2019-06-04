@@ -4,7 +4,11 @@ import com.composum.pages.commons.PagesConfiguration;
 import com.composum.pages.commons.PagesConstants;
 import com.composum.pages.commons.PagesConstants.ReferenceType;
 import com.composum.pages.commons.filter.TemplateFilter;
-import com.composum.pages.commons.model.*;
+import com.composum.pages.commons.model.ContentTypeFilter;
+import com.composum.pages.commons.model.Model;
+import com.composum.pages.commons.model.Page;
+import com.composum.pages.commons.model.PageContent;
+import com.composum.pages.commons.model.Site;
 import com.composum.pages.commons.replication.ReplicationManager;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.filter.ResourceFilter;
@@ -14,7 +18,11 @@ import com.composum.sling.core.util.ResourceUtil;
 import com.composum.sling.platform.staging.versions.PlatformVersionsService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
-import org.apache.sling.api.resource.*;
+import org.apache.sling.api.resource.ModifiableValueMap;
+import org.apache.sling.api.resource.PersistenceException;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.ValueMap;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -24,7 +32,17 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -310,7 +328,9 @@ public class PagesPageManager extends PagesContentManager<Page> implements PageM
     public Collection<Resource> getReferences(@Nonnull final Page page, @Nullable final ReferenceType type,
                                               boolean unresolved, boolean transitive) {
         Map<String, Resource> references = new TreeMap<>();
-        ResourceFilter.ContentNodeFilter contentNodeFilter = new ResourceFilter.ContentNodeFilter(true, pagesConfig.getReferenceFilter(type), ResourceFilter.ALL);
+        ResourceFilter contentNodeFilter = type != null
+                ? new ResourceFilter.ContentNodeFilter(true, pagesConfig.getReferenceFilter(type), ResourceFilter.ALL)
+                : ResourceFilter.ALL;
         ResourceFilter releaseAsResourceFilter = ResourceFilter.ALL;
         if (unresolved) {
             // this filtering does not work when pages are renamed wrt. to the release. But there is currently no good way to handle this - you'll run into path problems,
@@ -330,14 +350,14 @@ public class PagesPageManager extends PagesContentManager<Page> implements PageM
 
     /**
      * Retrieves references of a resource recursively.
-     *  @param references     collection where we put all references - maps the property value, which references, to the referenced resource
+     *
+     * @param references     collection where we put all references - maps the property value, which references, to the referenced resource
      * @param resourceFilter restricts the resources we accept as references
      * @param propertyFilter restricts the properties that are checked for containing references
      * @param resource       the resource to check for references
      * @param site           the site to which we restrict the ancestor search
      * @param visited        keeps track of which resources we already checked
-     * @param transitive if 'true' we also look for references of the references
-     * @param transitive
+     * @param transitive     if 'true' we also look for references of the references
      */
     protected void retrieveReferences(@Nonnull Map<String, Resource> references,
                                       @Nonnull final ResourceFilter resourceFilter,
@@ -388,7 +408,7 @@ public class PagesPageManager extends PagesContentManager<Page> implements PageM
             for (Resource foundReference : foundReferences) {
                 Resource contentNode = foundReference.getChild(CoreConstants.CONTENT_NODE);
                 if (contentNode != null)
-                    retrieveReferences(references, resourceFilter, propertyFilter, contentNode, site, visited, transitive);
+                    retrieveReferences(references, resourceFilter, propertyFilter, contentNode, site, visited, true);
             }
         }
     }

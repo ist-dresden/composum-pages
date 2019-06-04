@@ -16,6 +16,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.jcr.RepositoryException;
 import java.util.LinkedHashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import static org.apache.jackrabbit.JcrConstants.JCR_NAME;
@@ -49,7 +50,7 @@ public abstract class PagesContentManager<ModelType extends ContentDriven> imple
         try {
             ResourceResolver resolver = context.getResolver();
             String queryRoot = searchRoot != null ? searchRoot.getPath() : "/content";
-            Query query = resolver.adaptTo(QueryBuilder.class).createQuery();
+            Query query = Objects.requireNonNull(resolver.adaptTo(QueryBuilder.class)).createQuery();
             query.path(queryRoot).type(primaryType).orderBy(JCR_NAME);
             Iterable<Resource> found = query.execute();
             for (Resource resource : found) {

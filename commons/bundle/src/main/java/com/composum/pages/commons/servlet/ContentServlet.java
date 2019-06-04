@@ -2,6 +2,7 @@ package com.composum.pages.commons.servlet;
 
 import com.composum.pages.commons.service.ResourceManager;
 import com.composum.pages.commons.util.RequestUtil;
+import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.ResourceHandle;
 import com.composum.sling.core.servlet.NodeTreeServlet;
 import com.composum.sling.core.servlet.ServletOperation;
@@ -38,7 +39,8 @@ public abstract class ContentServlet extends NodeTreeServlet {
     // JSON helpers
     //
 
-    public void writeJsonResource(@Nonnull JsonWriter writer, @Nonnull TreeNodeStrategy nodeStrategy, Resource resource)
+    public void writeJsonResource(@Nonnull final BeanContext context, @Nonnull final JsonWriter writer,
+                                  @Nonnull final TreeNodeStrategy nodeStrategy, Resource resource)
             throws IOException {
         ResourceHandle handle = ResourceHandle.use(resource);
         writer.beginObject();
@@ -51,7 +53,7 @@ public abstract class ContentServlet extends NodeTreeServlet {
             }
             writer.name("meta").beginObject();
             writer.name("template").value(handle.getProperty(PROP_TEMPLATE));
-            writer.name("isTemplate").value(getResourceManager().isTemplate(handle));
+            writer.name("isTemplate").value(getResourceManager().isTemplate(context, handle));
             writer.endObject();
         }
         writer.endObject();

@@ -26,6 +26,7 @@ import org.apache.sling.api.resource.ResourceResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nonnull;
 import javax.jcr.ItemExistsException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
@@ -35,9 +36,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 public abstract class PagesContentServlet extends ContentServlet {
 
@@ -62,12 +63,7 @@ public abstract class PagesContentServlet extends ContentServlet {
     @Override
     protected List<Resource> prepareTreeItems(ResourceHandle resource, List<Resource> items) {
         if (!getPagesConfiguration().getOrderableNodesFilter().accept(resource)) {
-            Collections.sort(items, new Comparator<Resource>() {
-                @Override
-                public int compare(Resource r1, Resource r2) {
-                    return getSortName(r1).compareTo(getSortName(r2));
-                }
-            });
+            items.sort(Comparator.comparing(this::getSortName));
         }
         return items;
     }
@@ -114,8 +110,9 @@ public abstract class PagesContentServlet extends ContentServlet {
                 throws IOException {
 
             if (resource != null) {
+                BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
+                ResourceResolver resolver = context.getResolver();
 
-                ResourceResolver resolver = request.getResourceResolver();
                 String parentPath = request.getParameter(PARAM_PATH);
                 Resource parent;
                 if (StringUtils.isNotBlank(parentPath) && (parent = resolver.getResource(parentPath)) != null) {
@@ -126,7 +123,7 @@ public abstract class PagesContentServlet extends ContentServlet {
                     JsonWriter jsonWriter = ResponseUtil.getJsonWriter(response);
                     jsonWriter.beginObject();
                     jsonWriter.name("isAllowed").value(allowed);
-                    addAllowedChildInfo(request, response, parent, resource, jsonWriter, allowed);
+                    addAllowedChildInfo(context, parent, resource, jsonWriter, allowed);
                     jsonWriter.endObject();
 
                 } else {
@@ -151,10 +148,11 @@ public abstract class PagesContentServlet extends ContentServlet {
     protected void sendNotAllowedChild(SlingHttpServletRequest request, SlingHttpServletResponse response,
                                        Resource parent, Resource child)
             throws IOException {
+        BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
         response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
         JsonWriter jsonWriter = ResponseUtil.getJsonWriter(response);
         jsonWriter.beginObject();
-        addAllowedChildInfo(request, response, parent, child, jsonWriter, false);
+        addAllowedChildInfo(context, parent, child, jsonWriter, false);
         jsonWriter.endObject();
     }
 
@@ -165,11 +163,13 @@ public abstract class PagesContentServlet extends ContentServlet {
      * @param child   the child resource which is not allowed as the parents child
      * @param allowed 'true' if the child can be a child of the designated parent
      */
-    protected void addAllowedChildInfo(SlingHttpServletRequest request, SlingHttpServletResponse response,
-                                       Resource parent, Resource child, JsonWriter jsonWriter, boolean allowed)
+    protected void addAllowedChildInfo(@Nonnull final BeanContext context,
+                                       @Nonnull final Resource parent, @Nonnull final Resource child,
+                                       @Nonnull final JsonWriter jsonWriter, boolean allowed)
             throws IOException {
         PagesConfiguration configuration = getPagesConfiguration();
         if (!allowed) {
+            SlingHttpServletRequest request = context.getRequest();
             jsonWriter.name("success").value(false);
             jsonWriter.name("title").value(CpnlElFunctions.i18n(request, "Invalid Target"));
             jsonWriter.name("messages").beginArray();
@@ -181,9 +181,9 @@ public abstract class PagesContentServlet extends ContentServlet {
             jsonWriter.endArray();
         }
         jsonWriter.name("parent");
-        writeJsonResource(jsonWriter, new DefaultTreeNodeStrategy(configuration.getPageNodeFilter()), parent);
+        writeJsonResource(context, jsonWriter, new DefaultTreeNodeStrategy(configuration.getPageNodeFilter()), parent);
         jsonWriter.name("child");
-        writeJsonResource(jsonWriter, new DefaultTreeNodeStrategy(configuration.getPageNodeFilter()), child);
+        writeJsonResource(context, jsonWriter, new DefaultTreeNodeStrategy(configuration.getPageNodeFilter()), child);
     }
 
     protected class MoveContentOperation extends ChangeContentOperation {
@@ -262,7 +262,7 @@ public abstract class PagesContentServlet extends ContentServlet {
                 Resource root = resolver.getResource("/content");
                 if (root != null) {
                     Resource result = getResourceManager().moveContentResource(resolver, root,
-                            resource, resource.getParent(), name, null);
+                            resource, Objects.requireNonNull(resource.getParent()), name, null);
                     resolver.commit();
 
                     sendResponse(response, result);

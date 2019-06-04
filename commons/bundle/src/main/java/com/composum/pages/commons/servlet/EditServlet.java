@@ -281,11 +281,11 @@ public class EditServlet extends PagesContentServlet {
                          ResourceHandle resource)
                 throws IOException {
 
+            BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
             Page page = null;
 
             Resource pageResource = pageManager.getContainingPageResource(resource);
             if (pageResource != null) {
-                BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
                 page = pageManager.createBean(context, pageResource);
             }
 
@@ -297,7 +297,7 @@ public class EditServlet extends PagesContentServlet {
 
                 response.setStatus(HttpServletResponse.SC_OK);
                 JsonWriter jsonWriter = ResponseUtil.getJsonWriter(response);
-                writeJsonPage(jsonWriter, pagesConfiguration.getPageNodeFilter(), page);
+                writeJsonPage(context, jsonWriter, pagesConfiguration.getPageNodeFilter(), page);
 
             } else {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -1182,8 +1182,8 @@ public class EditServlet extends PagesContentServlet {
 
     // JSON response
 
-    public void writeJsonPage(JsonWriter writer, ResourceFilter filter,
-                              Page page)
+    public void writeJsonPage(@Nonnull final BeanContext context, @Nonnull final JsonWriter writer,
+                              @Nonnull final ResourceFilter filter, @Nonnull final Page page)
             throws IOException {
         writer.beginObject();
         if (page.isValid()) {
@@ -1198,7 +1198,7 @@ public class EditServlet extends PagesContentServlet {
             Site site = page.getSite();
             writer.name("site").value(site != null ? site.getPath() : null);
             writer.name("template").value(page.getTemplatePath());
-            writer.name("isTemplate").value(resourceManager.isTemplate(page.getResource()));
+            writer.name("isTemplate").value(resourceManager.isTemplate(context, page.getResource()));
             writer.endObject();
         }
         writer.endObject();

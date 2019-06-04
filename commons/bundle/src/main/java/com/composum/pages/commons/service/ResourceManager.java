@@ -7,6 +7,7 @@ package com.composum.pages.commons.service;
 
 import com.composum.pages.commons.model.AbstractModel;
 import com.composum.pages.commons.model.properties.PathPatternSet;
+import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.filter.StringFilter;
 import com.google.gson.JsonObject;
@@ -262,7 +263,7 @@ public interface ResourceManager {
     /**
      * @return 'true' if the resource is a content template
      */
-    boolean isTemplate(@Nonnull Resource resource);
+    boolean isTemplate(@Nonnull BeanContext context, @Nonnull Resource resource);
 
     /**
      * Creates a new resource as a copy of a template. If content nodes of such a template are referencing

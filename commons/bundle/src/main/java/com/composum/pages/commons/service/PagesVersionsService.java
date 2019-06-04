@@ -26,9 +26,9 @@ import javax.jcr.version.VersionIterator;
 import javax.jcr.version.VersionManager;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 @Component(
         property = {
@@ -126,16 +126,18 @@ public class PagesVersionsService implements VersionsService {
     public Collection<Page> findReleaseChanges(@Nonnull final BeanContext context, @Nonnull final Resource root,
                                                @Nullable final SiteRelease siteRelease) throws RepositoryException {
         List<Page> result = new ArrayList<>();
-        StagingReleaseManager.Release release = releaseManager.findRelease(root, siteRelease.getKey());
-        List<ReleasedVersionable> changes = releaseManager.compareReleases(release, null);
-        for (ReleasedVersionable releasedVersionable : changes) {
-            Resource versionable = root.getChild(releasedVersionable.getRelativePath());
-            if (Page.isPageContent(versionable)) {
-                final Page page = pageManager.getContainingPage(context, versionable);
-                result.add(page);
+        if (siteRelease != null) {
+            StagingReleaseManager.Release release = releaseManager.findRelease(root, siteRelease.getKey());
+            List<ReleasedVersionable> changes = releaseManager.compareReleases(release, null);
+            for (ReleasedVersionable releasedVersionable : changes) {
+                Resource versionable = root.getChild(releasedVersionable.getRelativePath());
+                if (Page.isPageContent(versionable)) {
+                    final Page page = pageManager.getContainingPage(context, versionable);
+                    result.add(page);
+                }
             }
+            result.sort(Comparator.comparing(Page::getPath));
         }
-        Collections.sort(result, Comparator.comparing(Page::getPath));
         return result;
     }
 
@@ -143,7 +145,7 @@ public class PagesVersionsService implements VersionsService {
     public Collection<Page> findModifiedPages(final BeanContext context, final Resource root) {
         List<Page> result = new ArrayList<>();
         findModifiedPages(context, root, result);
-        Collections.sort(result, Comparator.comparing(Page::getPath));
+        result.sort(Comparator.comparing(Page::getPath));
         return result;
     }
 
@@ -168,7 +170,8 @@ public class PagesVersionsService implements VersionsService {
         SlingHttpServletRequest request = context.getRequest();
         VersionManager versionManager = (VersionManager) request.getAttribute(VersionManager.class.getName());
         if (versionManager == null) {
-            final JackrabbitSession session = (JackrabbitSession) context.getResolver().adaptTo(Session.class);
+            final JackrabbitSession session = Objects.requireNonNull(
+                    (JackrabbitSession) context.getResolver().adaptTo(Session.class));
             versionManager = session.getWorkspace().getVersionManager();
             request.setAttribute(VersionManager.class.getName(), versionManager);
         }

@@ -18,6 +18,7 @@ import com.composum.pages.commons.util.ResolverUtil;
 import com.composum.platform.cache.service.CacheConfiguration;
 import com.composum.platform.cache.service.CacheManager;
 import com.composum.platform.cache.service.impl.CacheServiceImpl;
+import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.filter.StringFilter;
 import com.composum.sling.core.util.PropertyUtil;
@@ -40,6 +41,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
@@ -63,6 +65,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -122,6 +125,9 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
     protected final Design NO_DESIGN = new DesignImpl(null, 0);
     public static final Serializable NO_VALUE = "";
 
+    @Reference(cardinality = ReferenceCardinality.OPTIONAL)
+    protected volatile PagesTenantSupport tenantSupport;
+
     /** the template cache is registered as a cache od the platform cache manager */
     @Reference
     protected CacheManager cacheManager;
@@ -149,7 +155,7 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
          */
         public TemplateImpl(@Nonnull Resource templateResource) {
             this.templatePath = templateResource.getPath();
-            Resource contentChild = templateResource.getChild(JcrConstants.JCR_CONTENT);
+            Resource contentChild = Objects.requireNonNull(templateResource.getChild(JcrConstants.JCR_CONTENT));
             this.resourceType = contentChild.getResourceType();
             this.typePatternMap = new LinkedHashMap<>();
             this.designCache = new HashMap<>();
@@ -195,8 +201,8 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
          */
         @Override
         @Nonnull
-        public Resource getTemplateResource(ResourceResolver resolver) {
-            return resolver.getResource(templatePath);
+        public Resource getTemplateResource(@Nonnull final ResourceResolver resolver) {
+            return Objects.requireNonNull(resolver.getResource(templatePath));
         }
 
         /**
@@ -371,8 +377,8 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
          */
         @Override
         @Nonnull
-        public Resource getResource(@Nonnull ResourceResolver resolver) {
-            return resolver.getResource(path);
+        public Resource getResource(@Nonnull final ResourceResolver resolver) {
+            return Objects.requireNonNull(resolver.getResource(path));
         }
 
         /**
@@ -642,15 +648,14 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
 
         public void fromJson(JsonReader reader) throws IOException {
             reader.beginObject();
-            JsonToken token;
-            while ((token = reader.peek()) != JsonToken.END_OBJECT) {
+            while (reader.peek() != JsonToken.END_OBJECT) {
                 String name = reader.nextName();
                 switch (name) {
                     case PATH:
                         path = reader.nextString();
                         break;
                     case TYPE:
-                        if (token == JsonToken.NULL) {
+                        if (reader.peek() == JsonToken.NULL) {
                             reader.nextNull();
                             type = null;
                         } else {
@@ -821,7 +826,7 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
         String referencePath = parent.getPath() + "/" + child.getName();
         Resource childTypeResource = child;
         if (Page.isPage(child) || Site.isSite(child)) {
-            childTypeResource = child.getChild(JcrConstants.JCR_CONTENT);
+            childTypeResource = Objects.requireNonNull(child.getChild(JcrConstants.JCR_CONTENT));
         }
         String referenceType = childTypeResource.getResourceType();
         ContentTypeFilter filter = new ContentTypeFilter(this, parent);
@@ -846,7 +851,7 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
                                         @Nullable String newName, @Nullable Resource before)
             throws RepositoryException {
 
-        Session session = resolver.adaptTo(Session.class);
+        Session session = Objects.requireNonNull(resolver.adaptTo(Session.class));
 
         String oldPath = source.getPath();
         int lastSlash = oldPath.lastIndexOf('/');
@@ -904,7 +909,7 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
             // ordering not supported - ignore it
         }
 
-        return resolver.getResource(newPath);
+        return Objects.requireNonNull(resolver.getResource(newPath));
     }
 
     //
@@ -930,7 +935,7 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
         if (resourceFilter.accept(resource)) {
             boolean resourceChanged = false;
 
-            ModifiableValueMap values = resource.adaptTo(ModifiableValueMap.class);
+            ModifiableValueMap values = Objects.requireNonNull(resource.adaptTo(ModifiableValueMap.class));
             for (Map.Entry<String, Object> entry : values.entrySet()) {
 
                 String key = entry.getKey();
@@ -1039,7 +1044,7 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
         // check resource filter
         if (resourceFilter.accept(resource)) {
 
-            ModifiableValueMap values = resource.adaptTo(ModifiableValueMap.class);
+            ModifiableValueMap values = Objects.requireNonNull(resource.adaptTo(ModifiableValueMap.class));
             String resourceType = values.get(ResourceUtil.PROP_RESOURCE_TYPE, "");
             if (StringUtils.isNotBlank(resourceType)) {
                 Matcher matcher = oldTypePattern.matcher(resourceType);
@@ -1114,7 +1119,7 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
             ValueMap contentValues = templateContent.getValueMap();
             String primaryContentType = (String) contentValues.get(JcrConstants.JCR_PRIMARYTYPE);
             Resource targetContent = resolver.create(target, JcrConstants.JCR_CONTENT, Collections.singletonMap(
-                    JcrConstants.JCR_PRIMARYTYPE, (Object) primaryContentType));
+                    JcrConstants.JCR_PRIMARYTYPE, primaryContentType));
             ModifiableValueMap targetValues = targetContent.adaptTo(ModifiableValueMap.class);
             applyContentTemplate(templateContext, templateContent, targetContent, false, false);
         } else {
@@ -1136,12 +1141,16 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
      * @return 'true' if the resource is a content template
      */
     @Override
-    public boolean isTemplate(@Nonnull Resource resource) {
+    public boolean isTemplate(@Nonnull BeanContext context, @Nonnull Resource resource) {
         ResourceResolver resolver = resource.getResourceResolver();
-        String tenant = null; // TODO tenant support
+        String tenantId = tenantSupport != null ? tenantSupport.getTenantId(resource) : null;
         String path = resource.getPath();
         for (String root : resolver.getSearchPath()) {
-            if (path.startsWith(StringUtils.isNotBlank(tenant) ? root + tenant : root)) {
+            String searchRootPath = root;
+            if ("/apps/".equals(root) && StringUtils.isNotBlank(tenantId)) {
+                searchRootPath = tenantSupport.getApplicationRoot(context, tenantId);
+            }
+            if (searchRootPath != null && path.startsWith(searchRootPath)) {
                 return TemplateFilter.INSTANCE.accept(resource);
             }
         }
@@ -1216,15 +1225,15 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
             // create the 'jcr:content' child and mark this resource with the path of the used template
             String primaryContentType = (String) contentValues.get(JcrConstants.JCR_PRIMARYTYPE);
             Resource targetContent = resolver.create(target, JcrConstants.JCR_CONTENT, Collections.singletonMap(
-                    JcrConstants.JCR_PRIMARYTYPE, (Object) primaryContentType));
-            ModifiableValueMap targetValues = targetContent.adaptTo(ModifiableValueMap.class);
+                    JcrConstants.JCR_PRIMARYTYPE, primaryContentType));
+            ModifiableValueMap targetValues = Objects.requireNonNull(targetContent.adaptTo(ModifiableValueMap.class));
             applyContentTemplate(context, templateContent, targetContent, false, true);
 
             // prevent from unwanted properties in raw node types...
             if (setTemplateProperty && !primaryContentType.startsWith("nt:")) {
                 if (targetValues.get(PROP_TEMPLATE) == null) {
                     // write template only if not always set by the template properties
-                    targetValues.put(PROP_TEMPLATE, templateContent.getParent().getPath());
+                    targetValues.put(PROP_TEMPLATE, Objects.requireNonNull(templateContent.getParent()).getPath());
                 }
             }
         } else {
@@ -1300,7 +1309,7 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
     protected void applyTemplateProperties(@Nonnull TemplateContext context, @Nonnull Resource template,
                                            @Nonnull Resource target, boolean merge) {
         ResourceResolver resolver = context.getResolver();
-        ModifiableValueMap values = target.adaptTo(ModifiableValueMap.class);
+        ModifiableValueMap values = Objects.requireNonNull(target.adaptTo(ModifiableValueMap.class));
         ValueMap templateValues = template.getValueMap();
         if (!merge) {
             // in case of a 'reset' remove all properties from the target resource

@@ -15,10 +15,10 @@ import org.osgi.service.component.annotations.Modified;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.jcr.RepositoryException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Objects;
 
 import static com.composum.pages.commons.PagesConstants.NODE_TYPE_WIDGET;
 import static com.composum.pages.commons.PagesConstants.PROP_WIDGET_TYPE;
@@ -59,7 +59,7 @@ public class PagesWidgetManager implements WidgetManager {
     }
 
     protected Resource findByName(ResourceResolver resolver, String widgetType, String root) {
-        Query query = resolver.adaptTo(QueryBuilder.class).createQuery();
+        Query query = Objects.requireNonNull(resolver.adaptTo(QueryBuilder.class)).createQuery();
         query.path(root).type(NODE_TYPE_WIDGET).element(widgetType);
         Iterator<Resource> found = query.execute().iterator();
         if (found.hasNext()) {
@@ -69,7 +69,7 @@ public class PagesWidgetManager implements WidgetManager {
     }
 
     protected Resource findByProperty(ResourceResolver resolver, String widgetType, String root) {
-        Query query = resolver.adaptTo(QueryBuilder.class).createQuery();
+        Query query = Objects.requireNonNull(resolver.adaptTo(QueryBuilder.class)).createQuery();
         query.path(root).type(NODE_TYPE_WIDGET).condition(query.conditionBuilder().in(PROP_WIDGET_TYPE, widgetType));
         Iterator<Resource> found = query.execute().iterator();
         if (found.hasNext()) {

@@ -32,7 +32,6 @@ import javax.jcr.RepositoryException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -210,7 +209,7 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
     }
 
     public boolean isTemplate() {
-        return getResourceManager().isTemplate(this.getResource());
+        return getResourceManager().isTemplate(getContext(), this.getResource());
     }
 
     /**

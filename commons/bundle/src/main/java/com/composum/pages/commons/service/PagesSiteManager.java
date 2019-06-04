@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import static com.composum.pages.commons.PagesConstants.NODE_TYPE_SITE;
@@ -221,6 +222,7 @@ public class PagesSiteManager extends PagesContentManager<Site> implements SiteM
                 siteName, siteTitle, description, siteTemplate, commit);
     }
 
+    @SuppressWarnings("Duplicates")
     @Override
     public Site createSite(@Nonnull BeanContext context, @Nonnull Resource siteBase, @Nonnull String siteName,
                            @Nullable String siteTitle, @Nullable String description,
@@ -263,7 +265,8 @@ public class PagesSiteManager extends PagesContentManager<Site> implements SiteM
             siteResource = site.getResource();
         }
 
-        ModifiableValueMap values = siteResource.getChild(JcrConstants.JCR_CONTENT).adaptTo(ModifiableValueMap.class);
+        Resource content = Objects.requireNonNull(siteResource.getChild(JcrConstants.JCR_CONTENT));
+        ModifiableValueMap values = Objects.requireNonNull(content.adaptTo(ModifiableValueMap.class));
         if (StringUtils.isNotBlank(siteTitle)) {
             values.put(ResourceUtil.PROP_TITLE, siteTitle);
         }
