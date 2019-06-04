@@ -12,7 +12,7 @@
     }
 
     /* the 'float' and 'padding' (Bootstrap) disables margin collapse... */
-    &_cell {
+    &_column {
         margin: ($section-spacing-default / 2) 0;
 
         :first-child {

@@ -29,10 +29,10 @@
                     cells="-6--6-">
                 <column-0
                         jcr:primaryType="cpp:Container"
-                        sling:resourceType="composum/pages/components/container/row/cell"/>
+                        sling:resourceType="composum/pages/components/container/row/column"/>
                 <column-1
                         jcr:primaryType="cpp:Container"
-                        sling:resourceType="composum/pages/components/container/row/cell"/>
+                        sling:resourceType="composum/pages/components/container/row/column"/>
             </row>
         </main>
     </jcr:content>

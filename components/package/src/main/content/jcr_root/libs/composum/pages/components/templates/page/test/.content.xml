@@ -27,7 +27,7 @@
                 <column
                         jcr:primaryType="nt:unstructured"
                         typePatterns="[
-                            ^(/[^/]+/)?composum/pages/components/container/row/cell$
+                            ^(/[^/]+/)?composum/pages/components/container/row/column$
                         ]"
                         allowedElements="[
                             ^(/[^/]+/)?composum/pages/components/.+$

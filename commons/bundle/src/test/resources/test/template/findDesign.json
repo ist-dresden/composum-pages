@@ -16,7 +16,7 @@
           "column": {
             "jcr:primaryType": "nt:unstructured",
             "typePatterns": [
-              "^(/[^/]+/)?composum/pages/components/container/row/cell$"
+              "^(/[^/]+/)?composum/pages/components/container/row/column$"
             ],
             "text": {
               "jcr:primaryType": "nt:unstructured",
@@ -43,7 +43,7 @@
         "column": {
           "jcr:primaryType": "nt:unstructured",
           "typePatterns": [
-            "^(/[^/]+/)?composum/pages/components/container/row/cell$"
+            "^(/[^/]+/)?composum/pages/components/container/row/column$"
           ],
           "text": {
             "jcr:primaryType": "nt:unstructured",
@@ -81,7 +81,7 @@
           "sling:resourceType": "composum/pages/components/container/row",
           "column-0": {
             "jcr:primaryType": "cpp:Container",
-            "sling:resourceType": "composum/pages/components/container/row/cell",
+            "sling:resourceType": "composum/pages/components/container/row/column",
             "textimage": {
               "jcr:primaryType": "cpp:Element",
               "sling:resourceType": "composum/pages/components/element/textimage",
@@ -90,7 +90,7 @@
           },
           "column-1": {
             "jcr:primaryType": "cpp:Container",
-            "sling:resourceType": "composum/pages/components/container/row/cell",
+            "sling:resourceType": "composum/pages/components/container/row/column",
             "textimage": {
               "jcr:primaryType": "cpp:Element",
               "sling:resourceType": "composum/pages/components/element/textimage"
@@ -110,7 +110,7 @@
           "sling:resourceType": "composum/pages/components/container/row",
           "column-0": {
             "jcr:primaryType": "cpp:Container",
-            "sling:resourceType": "composum/pages/components/container/row/cell",
+            "sling:resourceType": "composum/pages/components/container/row/column",
             "textimage": {
               "jcr:primaryType": "cpp:Element",
               "sling:resourceType": "composum/pages/components/element/textimage"
@@ -118,7 +118,7 @@
           },
           "column-1": {
             "jcr:primaryType": "cpp:Container",
-            "sling:resourceType": "composum/pages/components/container/row/cell",
+            "sling:resourceType": "composum/pages/components/container/row/column",
             "textimage": {
               "jcr:primaryType": "cpp:Element",
               "sling:resourceType": "composum/pages/components/element/textimage"
