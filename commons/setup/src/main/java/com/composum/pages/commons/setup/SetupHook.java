@@ -167,11 +167,6 @@ public class SetupHook implements InstallHook {
     protected void migrateTables(InstallContext ctx) throws PackageException {
         try {
             replaceResourceType(ctx, "composum/pages/components/composed/table/column", "composum/pages/components/composed/table/cell");
-
-            // revert accidential migration
-            // FIXME(hps,2019-05-29) remove this after 2 weeks
-            replaceResourceType(ctx, "composum/pages/components/container/row/cell", "composum/pages/components/container/row/column");
-            replacePropertyName(ctx, "composum/pages/components/container/row", "cells", "columns");
         } catch (Exception rex) {
             LOG.error(rex.getMessage(), rex);
             throw new PackageException(rex);
