@@ -44,6 +44,13 @@
                 sling:key="the repository name" sling:message="der Name im Repository"/>
         <title-placeholder jcr:primaryType="sling:MessageEntry"
                 sling:key="the more readable title" sling:message="der 'lesbare' Titel"/>
+
+        <email jcr:primaryType="sling:Folder">
+            <pattern-hint jcr:primaryType="sling:MessageEntry"
+                    sling:key="must be an email address (RFC 2822)"
+                    sling:message="muss eine E-Mail-Adresse sein (RFC 2822)"/>
+        </email>
+
     </widget>
 
 </jcr:root>

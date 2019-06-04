@@ -41,6 +41,7 @@
             <div class="col col-xs-6">
                 <cpp:widget type="textfield" label="Text Field" property="single_text" i18n="true"
                             rules="blank" pattern="^[a-zA-Z_.-]+@[a-zA-Z_.-]+$"
+                            pattern-hint="a value matching pattern: '{}'"
                             hint="an email like text<br/>(pattern: '^[a-zA-Z_.-]+@[a-zA-Z_.-]+$')"/>
             </div>
             <div class="col col-xs-6">

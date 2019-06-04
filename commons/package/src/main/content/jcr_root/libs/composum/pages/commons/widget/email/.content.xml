@@ -4,5 +4,6 @@
         sling:resourceType="composum/pages/commons/widget/email"
         sling:resourceSuperType="composum/pages/commons/widget/textfield">
     <attributes jcr:primaryType="nt:unstructured"
-            pattern="\[a-z0-9!#$%&amp;'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&amp;'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?"/>
+            pattern="\[a-z0-9!#$%&amp;'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&amp;'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?"
+            pattern-hint="must be an email address (RFC 2822)"/>
 </jcr:root>

@@ -123,4 +123,10 @@
                 sling:key="top" sling:message="oben"/>
     </text>
 
+    <validation jcr:primaryType="sling:Folder"><!-- validation hints -->
+
+        <pattern jcr:primaryType="sling:MessageEntry"
+                sling:key="a value matching pattern: '{}'" sling:message="ein Wert passend zum Muster: '{}'"/>
+    </validation>
+
 </jcr:root>
