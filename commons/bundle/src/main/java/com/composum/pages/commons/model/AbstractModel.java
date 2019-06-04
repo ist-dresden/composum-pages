@@ -50,6 +50,7 @@ import java.util.Objects;
 
 import static com.composum.pages.commons.PagesConstants.PN_DESCRIPTION;
 import static com.composum.pages.commons.PagesConstants.PN_TITLE_KEYS;
+import static com.composum.pages.commons.servlet.PagesContentServlet.EDIT_RESOURCE_TYPE_KEY;
 import static com.composum.pages.commons.taglib.DefineObjectsTag.CURRENT_PAGE;
 import static com.composum.platform.models.annotations.InternationalizationStrategy.I18NFOLDER;
 import static com.composum.sling.platform.security.PlatformAccessFilter.ACCESS_MODE_KEY;
@@ -308,7 +309,12 @@ public abstract class AbstractModel implements SlingBean, Model {
     }
 
     public String getEncodedReference() {
-        return PagesUtil.getEncodedReference(getResource());
+        String typeHint = null;
+        SlingHttpServletRequest request = getContext().getRequest();
+        if (request != null) {
+            typeHint = (String) request.getAttribute(EDIT_RESOURCE_TYPE_KEY);
+        }
+        return PagesUtil.getEncodedReference(getResource(), typeHint);
     }
 
     public String getPathHint() {

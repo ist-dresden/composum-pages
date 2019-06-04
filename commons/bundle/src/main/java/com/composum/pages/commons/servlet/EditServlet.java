@@ -1190,7 +1190,7 @@ public class EditServlet extends PagesContentServlet {
             TreeNodeStrategy nodeStrategy = new DefaultTreeNodeStrategy(filter);
             writeJsonNodeData(writer, nodeStrategy, ResourceHandle.use(page.getResource()), LabelType.name, false);
             writer.name("reference");
-            PagesUtil.write(writer, PagesUtil.getReference(page.getResource()));
+            PagesUtil.write(writer, PagesUtil.getReference(page.getResource(), null));
             Resource contentResource = page.getContent().getResource();
             writer.name("jcrContent");
             writeJsonNode(writer, nodeStrategy, ResourceHandle.use(contentResource), LabelType.name, false);

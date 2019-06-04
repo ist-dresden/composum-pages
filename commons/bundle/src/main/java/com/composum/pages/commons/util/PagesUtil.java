@@ -11,10 +11,12 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.stream.JsonWriter;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.resource.Resource;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
@@ -31,14 +33,15 @@ public class PagesUtil {
      * @param resource the resource for referencing; the parent is used if this resource is a content resource
      * @return a JSON object which is representing a reference to the resource
      */
-    public static JsonObject getReference(@Nonnull Resource resource) {
+    public static JsonObject getReference(@Nonnull Resource resource, @Nullable final String typeHint) {
         if (JcrConstants.JCR_CONTENT.equals(resource.getName())) {
             resource = Objects.requireNonNull(resource.getParent());
         }
+        String type = StringUtils.isNotBlank(typeHint) ? typeHint : ResourceTypeUtil.getResourceType(resource);
         JsonObject data = new JsonObject();
         data.addProperty("name", resource.getName());
         data.addProperty("path", resource.getPath());
-        data.addProperty("type", ResourceTypeUtil.getResourceType(resource));
+        data.addProperty("type", type);
         data.addProperty("prim", ResourceTypeUtil.getPrimaryType(resource));
         return data;
     }
@@ -47,8 +50,8 @@ public class PagesUtil {
      * @param resource the resource for referencing; the parent is used if this resource is a content resource
      * @return the Base64 encoded string of a JSON object which is representing a reference to the resource
      */
-    public static String getEncodedReference(Resource resource) {
-        return Base64.encodeBase64String(getReference(resource).toString().getBytes(StandardCharsets.UTF_8));
+    public static String getEncodedReference(@Nonnull  Resource resource, @Nullable final String typeHint) {
+        return Base64.encodeBase64String(getReference(resource, typeHint).toString().getBytes(StandardCharsets.UTF_8));
     }
 
     public static String getTimestampString(Calendar timestamp) {

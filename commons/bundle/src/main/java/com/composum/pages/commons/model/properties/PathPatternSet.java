@@ -64,9 +64,11 @@ public class PathPatternSet {
      */
     public boolean matches(String resourceType) {
         if (!isEmpty()) {
-            for (Pattern pattern : patternList) {
-                if (pattern.matcher(resourceType).matches()) {
-                    return true;
+            if (StringUtils.isNotBlank(resourceType)) {
+                for (Pattern pattern : patternList) {
+                    if (pattern.matcher(resourceType).matches()) {
+                        return true;
+                    }
                 }
             }
             return false;
