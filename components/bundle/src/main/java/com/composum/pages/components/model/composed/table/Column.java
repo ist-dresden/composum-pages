@@ -16,7 +16,7 @@ import static com.composum.pages.components.model.composed.table.Row.PN_HEAD;
 import static com.composum.pages.components.model.composed.table.Row.PN_LEVEL;
 import static com.composum.pages.components.model.text.Text.PROP_TEXT;
 
-public class Cell extends Element {
+public class Column extends Element {
 
     public static final String PN_TEXT = PROP_TEXT;
     public static final String PN_TEXT_ALIGN = "textAlignment";
@@ -54,7 +54,6 @@ public class Cell extends Element {
         return head;
     }
 
-    @Override
     public String getType() {
         return isHead() ? "th" : "td";
     }

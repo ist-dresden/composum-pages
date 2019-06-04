@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
-          jcr:primaryType="cpp:Component"
-          jcr:description="a row, a container of entries which are table columns"
-          jcr:title="Table Row"
-          category="[Table,General,Blueprint]"
-          sling:resourceSuperType="composum/pages/components/composed"
-          allowedContainers="[composum/pages/components/composed/table]"
-          allowedElements="[composum/pages/components/composed/table/cell]"/>
+        jcr:primaryType="cpp:Component"
+        jcr:description="a row, a container of entreies which are table columns"
+        jcr:title="Table Row"
+        category="[Table,General,Blueprint]"
+        sling:resourceSuperType="composum/pages/components/composed"
+        allowedContainers="[composum/pages/components/composed/table]"
+        allowedElements="[composum/pages/components/composed/table/column]"/>

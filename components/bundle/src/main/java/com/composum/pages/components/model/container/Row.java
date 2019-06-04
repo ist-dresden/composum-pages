@@ -47,7 +47,7 @@ public class Row extends Element {
         if (cells == null) {
             cells = CELL_RULES.get(getProperty("cells", "-12-"));
             if (cells == null) {
-                LOG.error("invalid cell rule: " + getProperty("cells", ""));
+                LOG.error("invalid column rule: " + getProperty("cells", ""));
                 cells = new String[0];
             }
         }
