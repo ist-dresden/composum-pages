@@ -6,7 +6,7 @@ import com.composum.pages.options.microsite.service.MicrositeImportService;
 import com.composum.pages.options.microsite.service.MicrositeImportStatus;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.filter.StringFilter;
-import com.composum.sling.cpnl.CpnlElFunctions;
+import com.composum.sling.core.util.I18N;
 import com.google.gson.stream.JsonWriter;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -151,7 +151,7 @@ public class MicrositeServlet extends SlingAllMethodsServlet implements Microsit
                 JsonWriter jsonAnswer = new JsonWriter(response.getWriter());
                 jsonAnswer.beginObject();
                 jsonAnswer.name("success").value(success);
-                jsonAnswer.name("title").value(CpnlElFunctions.i18n(request,
+                jsonAnswer.name("title").value(I18N.get(request,
                         success ? "Import sucessful" : "Import failed"));
                 jsonAnswer.name("messages").beginArray();
                 for (MicrositeImportStatus.Message msg : importResult.getMessages()) {

@@ -9,9 +9,9 @@ import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.ResourceHandle;
 import com.composum.sling.core.mapping.MappingRules;
 import com.composum.sling.core.servlet.ServletOperation;
+import com.composum.sling.core.util.I18N;
 import com.composum.sling.core.util.ResourceUtil;
 import com.composum.sling.core.util.ResponseUtil;
-import com.composum.sling.cpnl.CpnlElFunctions;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonWriter;
 import org.apache.commons.lang3.StringUtils;
@@ -171,12 +171,12 @@ public abstract class PagesContentServlet extends ContentServlet {
         if (!allowed) {
             SlingHttpServletRequest request = context.getRequest();
             jsonWriter.name("success").value(false);
-            jsonWriter.name("title").value(CpnlElFunctions.i18n(request, "Invalid Target"));
+            jsonWriter.name("title").value(I18N.get(request, "Invalid Target"));
             jsonWriter.name("messages").beginArray();
             jsonWriter.beginObject();
             jsonWriter.name("level").value("error");
-            jsonWriter.name("text").value(CpnlElFunctions.i18n(request, "Target path not allowed"));
-            jsonWriter.name("hint").value(CpnlElFunctions.i18n(request, "this change is breaking the resource hierarchy policy rules"));
+            jsonWriter.name("text").value(I18N.get(request, "Target path not allowed"));
+            jsonWriter.name("hint").value(I18N.get(request, "this change is breaking the resource hierarchy policy rules"));
             jsonWriter.endObject();
             jsonWriter.endArray();
         }
