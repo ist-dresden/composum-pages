@@ -13,10 +13,10 @@ import javax.servlet.jsp.JspException;
 import java.io.IOException;
 
 import static com.composum.pages.commons.taglib.ElementTag.DEFAULT_TAG;
-import static com.composum.pages.commons.taglib.ElementTag.NONE_TAG;
 import static com.composum.pages.commons.taglib.ModelTag.PAGES_EDIT_DATA;
 import static com.composum.pages.commons.taglib.ModelTag.PAGES_EDIT_DATA_PATH;
 import static com.composum.pages.commons.taglib.ModelTag.PAGES_EDIT_DATA_TYPE;
+import static com.composum.sling.cpnl.TagBase.TAG_NONE;
 
 /**
  * the general action tag to embed action calls to the edit layer into a page
@@ -151,7 +151,7 @@ public class InvokeTag extends CpnlBodyTagSupport {
     public int doStartTag() throws JspException {
         super.doStartTag();
         if (getTestResult()) {
-            if (!NONE_TAG.equalsIgnoreCase(tagName)) {
+            if (!TAG_NONE.equalsIgnoreCase(tagName)) {
                 try {
                     String path = this.path;
                     if (StringUtils.isBlank(path) || !path.startsWith("/")) {
@@ -191,7 +191,7 @@ public class InvokeTag extends CpnlBodyTagSupport {
     @Override
     public int doEndTag() throws JspException {
         if (getTestResult()) {
-            if (!NONE_TAG.equalsIgnoreCase(tagName)) {
+            if (!TAG_NONE.equalsIgnoreCase(tagName)) {
                 try {
                     out.append("</").append(StringUtils.isNotBlank(tagName) ? tagName : DEFAULT_TAG).append(">");
                 } catch (IOException ioex) {

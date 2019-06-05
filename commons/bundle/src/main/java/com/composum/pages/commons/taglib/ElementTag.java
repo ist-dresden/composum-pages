@@ -19,6 +19,8 @@ import org.apache.sling.api.resource.ValueMap;
 import java.io.IOException;
 import java.util.Map;
 
+import static com.composum.sling.cpnl.TagBase.TAG_NONE;
+
 /**
  * the tag to render a Pages Sling component
  * such a component is rendering an HTML tag with the components content within
@@ -26,7 +28,6 @@ import java.util.Map;
  */
 public class ElementTag extends AbstractWrappingTag {
 
-    public static final String NONE_TAG = "none";
     public static final String DEFAULT_TAG = "div";
 
     public static final String COMPONENT_EDIT_BODY_CLASSES = "composum-pages-component";
@@ -101,7 +102,7 @@ public class ElementTag extends AbstractWrappingTag {
     }
 
     public boolean isWithTag() {
-        return !NONE_TAG.equalsIgnoreCase(getTagName());
+        return !TAG_NONE.equalsIgnoreCase(getTagName());
     }
 
     /**

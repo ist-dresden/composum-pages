@@ -18,6 +18,7 @@ import java.util.Map;
 import static com.composum.pages.commons.taglib.AbstractPageTag.STAGE_COMPONENT_BASE;
 import static com.composum.pages.commons.util.TagCssClasses.cssOfType;
 import static com.composum.platform.models.annotations.InternationalizationStrategy.I18NFOLDER.I18N_PROPERTY_PATH;
+import static com.composum.sling.cpnl.TagBase.TAG_NONE;
 
 /**
  * the EditDialogTag creates the HTML code for an edit dialog of a component
@@ -42,8 +43,6 @@ public class EditDialogTag extends AbstractEditTag {
             SELECTOR_GENERIC,
             SELECTOR_WIZARD
     );
-
-    public static final String TYPE_NONE = "none";
 
     public static final String DEFAULT_CSS_BASE = "composum-pages-stage-edit-dialog";
 
@@ -160,7 +159,7 @@ public class EditDialogTag extends AbstractEditTag {
     }
 
     public boolean useCreationType(String type) {
-        return StringUtils.isNotBlank(type) && !TYPE_NONE.equalsIgnoreCase(type) && isCreateOrSynthetic();
+        return StringUtils.isNotBlank(type) && !TAG_NONE.equalsIgnoreCase(type) && isCreateOrSynthetic();
     }
 
     public boolean isCreateOrSynthetic() {
