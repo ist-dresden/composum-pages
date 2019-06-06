@@ -35,7 +35,7 @@ public class ContainerTag extends ElementTag {
 
     @Override
     public int doStartTag() throws JspException {
-        super.doStartTag();
+        int result = super.doStartTag();
         if (decoration && isEditMode() && isWithTag() && component instanceof Container) {
             Container container = (Container) component;
             try {
@@ -53,8 +53,9 @@ public class ContainerTag extends ElementTag {
             } catch (IOException ioex) {
                 LOG.error(ioex.getMessage(), ioex);
             }
+            result = EVAL_BODY_INCLUDE;
         }
-        return EVAL_BODY_INCLUDE;
+        return result;
     }
 
     @Override
