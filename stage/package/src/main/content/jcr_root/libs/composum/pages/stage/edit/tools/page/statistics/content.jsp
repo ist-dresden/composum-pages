@@ -7,9 +7,9 @@
 <cpp:model var="model" type="com.composum.pages.commons.model.Page">
     <div class="${modelCssBase}_chart">
         <div class="${modelCssBase}_chart-legend">
-            <span class="${modelCssBase}_chart-legend_unique"><b></b><cpn:text tagName="i" tagClass="" value="unique"
+            <span class="${modelCssBase}_chart-legend_unique"><b></b><cpn:text tagName="i" class="" value="unique"
                                                                                i18n="true"/></span>
-            <span class="${modelCssBase}_chart-legend_total"><b></b><cpn:text tagName="i" tagClass="" value="total"
+            <span class="${modelCssBase}_chart-legend_total"><b></b><cpn:text tagName="i" class="" value="total"
                                                                                i18n="true"/></span>
         </div>
         <div class="${modelCssBase}_canvas-wrapper">

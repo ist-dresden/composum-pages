@@ -30,7 +30,7 @@
                 <button type="button"
                         class="fa fa-search ${treeCssBase}_toggle-view composum-pages-tools_button btn btn-default"
                         title="${cpn:i18n(slingRequest,'Search a component')}"><cpn:text
-                        tagName="span" tagClass="composum-pages-tools_button-label"
+                        tagName="span" class="composum-pages-tools_button-label"
                         i18n="true">Search</cpn:text></button>
             </div>
         </div>

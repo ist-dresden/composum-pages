@@ -7,8 +7,8 @@
     <div class="${fileCssBase} ${file.mimeTypeCss}" title="${file.filePath}">
         <div class="${fileCssBase}_frame">
             <div class="${fileCssBase}_properties">
-                <cpn:text value="${file.fileName}" tagClass="${fileCssBase}_name"></cpn:text>
-                <cpn:text value="${file.mimeType}" tagClass="${fileCssBase}_mime-type"></cpn:text>
+                <cpn:text value="${file.fileName}" class="${fileCssBase}_name"></cpn:text>
+                <cpn:text value="${file.mimeType}" class="${fileCssBase}_mime-type"></cpn:text>
             </div>
         </div>
     </div>

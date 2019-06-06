@@ -6,8 +6,8 @@
            cssBase="composum-pages-components-page">
     <div class="${page_itemCssBase}_search-item">
         <cpn:link href="${page_item.url}" body="true">
-            <cpn:text tagClass="${page_itemCssBase}_title" value="${page_item.title}"/>
-            <cpn:text tagClass="${page_itemCssBase}_description" value="${page_item.description}"/>
+            <cpn:text class="${page_itemCssBase}_title" value="${page_item.title}"/>
+            <cpn:text class="${page_itemCssBase}_description" value="${page_item.description}"/>
         </cpn:link>
     </div>
 </cpp:model>

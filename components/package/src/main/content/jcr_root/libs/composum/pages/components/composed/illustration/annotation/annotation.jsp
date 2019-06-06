@@ -10,7 +10,7 @@
             <h4 class="${annotationCssBase}_title">
                 <i class="${annotationCssBase}_icon ${annotation.iconClasses}">${cpn:text(annotation.shapeText)}</i>
                     ${cpn:text(annotation.title)}</h4>
-            <cpn:text tagClass="${annotationCssBase}_text" value="${annotation.text}" type="rich"/>
+            <cpn:text class="${annotationCssBase}_text" value="${annotation.text}" type="rich"/>
         </c:when>
         <c:otherwise>
             <cpp:include replaceSelectors="placeholder"/>

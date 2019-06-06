@@ -9,17 +9,17 @@
             <div class="${codeCssBase}_panel panel panel-default">
                 <c:if test="${code.showHeading}">
                     <div class="${codeCssBase}_heading panel-heading">
-                        <cpn:text tagName="span" tagClass="${codeCssBase}_title" value="${code.title}"/>
+                        <cpn:text tagName="span" class="${codeCssBase}_title" value="${code.title}"/>
                         <c:if test="${code.showLanguage}">
-                            <cpn:text tagName="span" tagClass="${codeCssBase}_language badge"
+                            <cpn:text tagName="span" class="${codeCssBase}_language badge"
                                       value="${code.codeLanguage}"/>
                         </c:if>
                         <c:if test="${code.collapsible}">
                             <cpn:text tagName="button"
-                                      tagClass="${codeCssBase}_button btn btn-xs btn-default ${codeCssBase}_expand"
+                                      class="${codeCssBase}_button btn btn-xs btn-default ${codeCssBase}_expand"
                                       value="expand code"/>
                             <cpn:text tagName="button"
-                                      tagClass="${codeCssBase}_button btn btn-xs btn-default ${codeCssBase}_collapse"
+                                      class="${codeCssBase}_button btn btn-xs btn-default ${codeCssBase}_collapse"
                                       value="collapse code"/>
                         </c:if>
                     </div>
@@ -29,7 +29,7 @@
                         class="${code.codeLanguage}"><cpn:text>${code.code}</cpn:text></code></div>
                 </div>
                 <c:if test="${code.hasCopyright}">
-                    <cpn:text tagClass="${codeCssBase}_footer panel-footer" value="${code.copyright}"/>
+                    <cpn:text class="${codeCssBase}_footer panel-footer" value="${code.copyright}"/>
                 </c:if>
             </div>
         </c:when>

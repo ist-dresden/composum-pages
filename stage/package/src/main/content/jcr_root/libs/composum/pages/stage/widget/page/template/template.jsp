@@ -14,7 +14,7 @@
         </div>
         <c:if test="${empty widget.model.templates}">
             <div class="${widgetCssBase}_empty">
-                <cpn:text tagClass="${widgetCssBase}_paragraph alert alert-warning"
+                <cpn:text class="${widgetCssBase}_paragraph alert alert-warning"
                           value="no Page templates available" i18n="true"/>
             </div>
         </c:if>

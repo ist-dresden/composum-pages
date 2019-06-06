@@ -27,7 +27,7 @@
                 <button type="button"
                         class="fa fa-search ${assetsCssBase}_toggle-view composum-pages-tools_button btn btn-default"
                         title="${cpn:i18n(slingRequest,'Search an asset object')}"><cpn:text
-                        tagName="span" tagClass="composum-pages-tools_button-label"
+                        tagName="span" class="composum-pages-tools_button-label"
                         i18n="true">Search</cpn:text></button>
             </div>
         </div>

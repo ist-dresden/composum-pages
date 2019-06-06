@@ -14,7 +14,7 @@
         </div>
         <c:if test="${empty widget.model.templates}">
             <div class="${widgetCssBase}_empty">
-                <cpn:text tagClass="${widgetCssBase}_paragraph alert alert-warning"
+                <cpn:text class="${widgetCssBase}_paragraph alert alert-warning"
                           value="no Site templates available" i18n="true"/>
             </div>
         </c:if>
@@ -32,9 +32,9 @@
                 <cpp:include resourceType="composum/pages/stage/edit/default/site/thumbnail"/>
                 <div class="composum-pages-stage-site_tile_text">
                     <cpn:text tagName="h3" value="no template" i18n="true"
-                              tagClass="composum-pages-stage-site_tile_title"/>
+                              class="composum-pages-stage-site_tile_title"/>
                     <cpn:text tagName="div" value="<p>Create a new site without a template.</p>"
-                              type="rich" i18n="true" tagClass="composum-pages-stage-site_tile_description"/>
+                              type="rich" i18n="true" class="composum-pages-stage-site_tile_description"/>
                 </div>
             </cpn:link>
         </div>
