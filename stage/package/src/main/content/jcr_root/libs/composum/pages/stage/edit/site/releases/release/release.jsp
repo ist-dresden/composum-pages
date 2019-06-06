@@ -16,6 +16,8 @@
            href="#release_detail_${release.key}" aria-expanded="false" aria-controls="release_detail_${release.key}">
             <cpn:text class="${releaseCssBase}_key">${release.key}</cpn:text>
             <cpn:text class="${releaseCssBase}_title">${release.title}</cpn:text>
+            <cpn:text class="${releaseCssBase}_creationDate date" format="created: {}" i18n="true"
+                      value="${release.creationDateString}"/>
         </a>
         <div id="release_detail_${release.key}" class="collapse fade${release.current?' in':''}"
              aria-labelledby="release_head_${release.key}">
