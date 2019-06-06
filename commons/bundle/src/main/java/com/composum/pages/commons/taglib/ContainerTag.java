@@ -35,26 +35,19 @@ public class ContainerTag extends ElementTag {
 
     @Override
     public int doStartTag() throws JspException {
-        super.doStartTag();
+        int result = super.doStartTag();
         if (decoration && isEditMode() && isWithTag() && component instanceof Container) {
             Container container = (Container) component;
             try {
                 out.append("<div class=\"composum-pages-container_start\">");
                 out.append("&nbsp;>> ");
-                out.append("<span class=\"composum-pages-container_path-hint\">");
-                out.append(container.getPathHint());
-                out.append("</span>");
-                out.append("<span class=\"composum-pages-container_name-hint\">");
-                out.append(container.getName());
-                out.append("</span>");
-                out.append(" <span class=\"composum-pages-container_type-hint\">(");
-                out.append(container.getTypeHint());
-                out.append(")</span></div>\n");
+                writeContainerDecoration(container);
             } catch (IOException ioex) {
                 LOG.error(ioex.getMessage(), ioex);
             }
+            result = EVAL_BODY_INCLUDE;
         }
-        return EVAL_BODY_INCLUDE;
+        return result;
     }
 
     @Override
@@ -64,20 +57,24 @@ public class ContainerTag extends ElementTag {
             try {
                 out.append("<div class=\"composum-pages-container_end\">");
                 out.append("&nbsp;<< ");
-                out.append("<span class=\"composum-pages-container_path-hint\">");
-                out.append(container.getPathHint());
-                out.append("</span>");
-                out.append("<span class=\"composum-pages-container_name-hint\">");
-                out.append(container.getName());
-                out.append("</span>");
-                out.append(" <span class=\"composum-pages-container_type-hint\">(");
-                out.append(container.getTypeHint());
-                out.append(")</span></div>\n");
+                writeContainerDecoration(container);
             } catch (IOException ioex) {
                 LOG.error(ioex.getMessage(), ioex);
             }
         }
         super.doEndTag();
         return EVAL_PAGE;
+    }
+
+    protected void writeContainerDecoration(Container container) throws IOException {
+        out.append("<span class=\"composum-pages-container_path-hint\">");
+        out.append(container.getPathHint());
+        out.append("</span>");
+        out.append("<span class=\"composum-pages-container_name-hint\">");
+        out.append(container.getName());
+        out.append("</span>");
+        out.append(" <span class=\"composum-pages-container_type-hint\">(");
+        out.append(container.getTypeHint());
+        out.append(")</span></div>\n");
     }
 }

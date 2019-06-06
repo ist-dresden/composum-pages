@@ -5,7 +5,7 @@
 <cpp:model var="title" type="com.composum.pages.components.model.text.Title"
            test="@{title.valid}">
     <div class="${titleCssBase}_text">
-        <cpn:text tagName="h1" tagClass="${titleCssBase}_title" value="${title.title}"/>
-        <cpn:text tagClass="${titleCssBase}_subtitle" value="${title.subtitle}"/>
+        <cpn:text tagName="h1" class="${titleCssBase}_title" value="${title.title}"/>
+        <cpn:text class="${titleCssBase}_subtitle" value="${title.subtitle}"/>
     </div>
 </cpp:model>

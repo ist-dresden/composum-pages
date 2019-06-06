@@ -13,9 +13,9 @@
     <c:choose>
         <c:when test="${textImage.textValid}">
             <div class="${textImageCssBase}_text-block">
-                <cpn:text tagName="h${textImage.titleLevel}" tagClass="${textImageCssBase}_title"
+                <cpn:text tagName="h${textImage.titleLevel}" class="${textImageCssBase}_title"
                           value="${textImage.title}"/>
-                <cpn:text tagClass="${textImageCssBase}_text ${textImageCssBase}_align-${textImage.alignment}"
+                <cpn:text class="${textImageCssBase}_text ${textImageCssBase}_align-${textImage.alignment}"
                           value="${textImage.text}" type="rich"/>
             </div>
         </c:when>

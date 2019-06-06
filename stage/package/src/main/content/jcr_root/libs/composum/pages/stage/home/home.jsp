@@ -15,7 +15,7 @@
     <div class="composum-platform-public_content">
         <sling:include path="/libs/composum/platform/public/page" replaceSelectors="header"/>
         <div class="composum-pages-stage-home-sites composum-platform-public_panel panel panel-default">
-            <cpn:text tagName="h2" tagClass="composum-pages-stage-home-sites_title" value="${home.title}"/>
+            <cpn:text tagName="h2" class="composum-pages-stage-home-sites_title" value="${home.title}"/>
             <cpp:include resourceType="composum/pages/stage/edit/site/list"/>
             <cpp:include resourceType="composum/pages/stage/home/tools"/>
         </div>

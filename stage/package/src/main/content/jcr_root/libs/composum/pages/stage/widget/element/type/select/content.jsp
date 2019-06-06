@@ -13,7 +13,7 @@
            cssBase="composum-pages-edit-widget">
     <c:if test="${empty components.categories}">
         <div class="${componentsCssBase}_empty">
-            <cpn:text tagClass="${componentsCssBase}_paragraph alert alert-warning"
+            <cpn:text class="${componentsCssBase}_paragraph alert alert-warning"
                       value="no element type found for insertion" i18n="true"/>
         </div>
     </c:if>

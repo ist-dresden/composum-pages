@@ -6,9 +6,9 @@
            cssBase="composum-pages-stage-page_tile">
     <cpp:include resourceType="composum/pages/stage/edit/default/page/thumbnail"/>
     <div class="${tilepageCssBase}_text">
-        <cpn:text tagName="h3" value="${tilepage.title}" i18n="true" tagClass="${tilepageCssBase}_title"/>
+        <cpn:text tagName="h3" value="${tilepage.title}" i18n="true" class="${tilepageCssBase}_title"/>
         <cpn:text tagName="div" value="${tilepage.description}" type="rich" i18n="true"
-                  tagClass="${tilepageCssBase}_description"/>
-        <cpn:text tagName="h4" value="${tilepage.path}" tagClass="${tilepageCssBase}_path"/>
+                  class="${tilepageCssBase}_description"/>
+        <cpn:text tagName="h4" value="${tilepage.path}" class="${tilepageCssBase}_path"/>
     </div>
 </cpp:model>

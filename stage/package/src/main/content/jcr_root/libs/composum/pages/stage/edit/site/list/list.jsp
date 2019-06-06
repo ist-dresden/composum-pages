@@ -20,14 +20,14 @@
                     </div>
                     <div class="${sitesCssBase}_actions">
                         <button class="${sitesCssBase}_button ${sitesCssBase}_create"><cpn:text
-                                tagClass="${sitesCssBase}_label" value="${sites.properties.createSiteLabel}"/></button>
+                                class="${sitesCssBase}_label" value="${sites.properties.createSiteLabel}"/></button>
                     </div>
                 </div>
             </div>
         </c:when>
         <c:otherwise>
             <div class="${sitesCssBase}_no-site">
-                <cpn:text tagName="p" tagClass="${sitesCssBase}_paragraph alert alert-warning"
+                <cpn:text tagName="p" class="${sitesCssBase}_paragraph alert alert-warning"
                           value="${sites.properties.noSitesMessage}"/>
                 <cpn:link href="" classes="${sitesCssBase}_create alert alert-info"><cpn:text
                         tagName="span" value="${sites.properties.noSitesCreateLinkLabel}"/></cpn:link>

@@ -11,7 +11,7 @@
                         class="${code.codeLanguage}"><cpn:text value="${code.code}"/></code></div>
             </div>
             <c:if test="${code.hasCopyright}">
-                <cpn:text tagClass="${codeCssBase}_footer simple-footer" value="${code.copyright}"/>
+                <cpn:text class="${codeCssBase}_footer simple-footer" value="${code.copyright}"/>
             </c:if>
         </c:when>
         <c:otherwise>

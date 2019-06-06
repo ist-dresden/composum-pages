@@ -7,7 +7,7 @@
              cssBase="composum-pages-component-tile">
     <sling:call script="icon.jsp"/>
     <div class="${elementCssBase}_title">${cpn:text(element.title)}</div>
-    <cpn:text value="${element.name}" format="{Message}({0})" tagClass="${elementCssBase}_name"/>
-    <cpn:text value="${element.pathHint}${element.name}" tagClass="${elementCssBase}_path"/>
-    <cpn:text value="${element.component.typeHint}" tagClass="${elementCssBase}_type"/>
+    <cpn:text value="${element.name}" format="{Message}({0})" class="${elementCssBase}_name"/>
+    <cpn:text value="${element.pathHint}${element.name}" class="${elementCssBase}_path"/>
+    <cpn:text value="${element.component.typeHint}" class="${elementCssBase}_type"/>
 </cpp:element>
