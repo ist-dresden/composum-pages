@@ -15,8 +15,8 @@ import com.composum.pages.commons.servlet.EditServlet;
 import com.composum.pages.commons.util.AttributeSet;
 import com.composum.pages.commons.util.TagCssClasses;
 import com.composum.sling.core.BeanContext;
+import com.composum.sling.core.util.I18N;
 import com.composum.sling.cpnl.ComponentTag;
-import com.composum.sling.cpnl.CpnlElFunctions;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
@@ -288,7 +288,7 @@ public class ModelTag extends ComponentTag implements DynamicAttributes {
     }
 
     public String i18n(String text) {
-        return CpnlElFunctions.i18n(request, text);
+        return I18N.get(request, text);
     }
 
     /**

@@ -11,6 +11,7 @@
                 sling:key="Create" sling:message="Anlegen"/>
         <open jcr:primaryType="sling:MessageEntry"
                 sling:key="Open" sling:message="Öffnen"/>
+
     </general>
 
     <entity jcr:primaryType="sling:Folder"><!-- Pages entities -->
@@ -23,7 +24,17 @@
                 sling:key="Page" sling:message="Seite"/>
         <template jcr:primaryType="sling:MessageEntry"
                 sling:key="Template" sling:message="Vorlage"/>
+
     </entity>
+
+    <format jcr:primaryType="sling:Folder"><!-- Pages entities -->
+
+        <created jcr:primaryType="sling:MessageEntry"
+                sling:key="created: {}" sling:message="erzeugt: {}"/>
+        <last-modified jcr:primaryType="sling:MessageEntry"
+                sling:key="last modified: {}" sling:message="zuletzt geändert: {}"/>
+
+    </format>
 
     <content jcr:primaryType="sling:Folder"><!-- Content operations -->
 
@@ -36,6 +47,7 @@
         <target-path-not-allowed jcr:primaryType="sling:MessageEntry"
                 sling:key="Target path not allowed"
                 sling:message="Ziel-Pfad nicht erlaubt"/>
+
     </content>
 
     <widget jcr:primaryType="sling:Folder"><!-- widget and dialog buttons, labels and titles -->
@@ -52,5 +64,14 @@
         </email>
 
     </widget>
+
+    <release jcr:primaryType="sling:Folder"><!-- widget and dialog buttons, labels and titles -->
+
+        <no-title jcr:primaryType="sling:MessageEntry"
+                sling:key="&lt;no title>" sling:message="&lt;kein Titel>"/>
+        <current-title jcr:primaryType="sling:MessageEntry"
+                sling:key="the open next release" sling:message="das offene, nächste Release"/>
+
+    </release>
 
 </jcr:root>

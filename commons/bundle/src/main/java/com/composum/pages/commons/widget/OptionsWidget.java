@@ -4,7 +4,7 @@ import com.composum.pages.commons.model.properties.Language;
 import com.composum.pages.commons.model.properties.Languages;
 import com.composum.pages.commons.taglib.EditWidgetTag;
 import com.composum.pages.commons.taglib.PropertyEditHandle;
-import com.composum.sling.cpnl.CpnlElFunctions;
+import com.composum.sling.core.util.I18N;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.StringUtils;
@@ -51,7 +51,7 @@ public abstract class OptionsWidget<T> extends PropertyEditHandle<T> {
 
         @Nonnull
         public String getLabel() {
-            return CpnlElFunctions.i18n(context.getRequest(), label);
+            return I18N.get(context.getRequest(), label);
         }
 
         @Nonnull

@@ -152,6 +152,7 @@ public interface PagesConstants {
 
     /** release & version */
 
+    String KEY_CURRENT_RELEASE = "current";
     String VERSION_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
     Pattern RELEASE_LABEL_PATTERN = Pattern.compile("^composum-release-(.+)$");
 
