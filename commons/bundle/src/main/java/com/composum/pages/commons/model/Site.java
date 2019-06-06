@@ -9,6 +9,7 @@ import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.util.ResourceUtil;
 import com.composum.sling.platform.staging.StagingReleaseManager;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.apache.sling.api.resource.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,7 +79,10 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
 
     @Override
     public int compareTo(@Nonnull Site site) {
-        return getName().compareTo(site.getName());
+        CompareToBuilder builder = new CompareToBuilder();
+        builder.append(getName(), site.getName());
+        builder.append(getPath(), site.getPath());
+        return builder.toComparison();
     }
 
     // initializer extensions

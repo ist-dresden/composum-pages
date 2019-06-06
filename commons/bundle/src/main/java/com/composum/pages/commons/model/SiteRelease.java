@@ -3,6 +3,7 @@ package com.composum.pages.commons.model;
 import com.composum.pages.commons.request.DisplayMode;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.platform.staging.StagingReleaseManager;
+import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.apache.sling.api.resource.Resource;
 
 import javax.annotation.Nonnull;
@@ -73,8 +74,9 @@ public class SiteRelease extends AbstractModel implements Comparable<SiteRelease
 
     @Override
     public int compareTo(@Nonnull SiteRelease o) {
-        return created != null
-                ? (o.created != null ? created.compareTo(o.created) : -1)
-                : (o.created != null ? 1 : 0);
+        CompareToBuilder builder = new CompareToBuilder();
+        builder.append(created, o.created);
+        builder.append(getPath(), o.getPath());
+        return builder.toComparison();
     }
 }

@@ -1,6 +1,7 @@
 package com.composum.pages.commons.model;
 
 import com.google.gson.stream.JsonWriter;
+import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.apache.sling.api.request.RequestPathInfo;
 import org.apache.sling.api.resource.NonExistingResource;
 import org.apache.sling.api.resource.Resource;
@@ -99,6 +100,7 @@ public class Statistics extends AbstractModel {
             this.data = new Data(values.get("total", 0), values.get("unique", 0));
         }
 
+        @Override
         public void toJSON(JsonWriter writer) throws IOException {
             writer.beginObject();
             writer.name("url").value(url);
@@ -109,7 +111,10 @@ public class Statistics extends AbstractModel {
 
         @Override
         public int compareTo(@Nonnull Referer other) {
-            return data.unique - other.data.unique;
+            CompareToBuilder builder = new CompareToBuilder();
+            builder.append(data.unique, other.data.unique);
+            builder.append(url, other.url);
+            return builder.toComparison();
         }
     }
 

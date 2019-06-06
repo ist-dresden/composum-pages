@@ -2,6 +2,7 @@ package com.composum.pages.stage.tools;
 
 import com.composum.sling.core.filter.ResourceFilter;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
@@ -72,7 +73,10 @@ public class ToolsCollection {
 
         @Override
         public int compareTo(@Nonnull Component other) {
-            return getOrder() - other.getOrder();
+            CompareToBuilder builder = new CompareToBuilder();
+            builder.append(getOrder(), other.getOrder());
+            builder.append(getPath(), other.getPath());
+            return builder.toComparison();
         }
     }
 
