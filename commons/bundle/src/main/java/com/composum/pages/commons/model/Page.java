@@ -17,6 +17,7 @@ import com.composum.platform.models.annotations.PropertyDetermineResourceStrateg
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.util.ResourceUtil;
+import com.composum.sling.core.util.SlingResourceUtil;
 import com.composum.sling.platform.security.AccessMode;
 import com.composum.sling.platform.staging.versions.PlatformVersionsService;
 import org.apache.commons.lang3.StringUtils;
@@ -432,6 +433,9 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
 
         public StatusModel() throws RepositoryException, PersistenceException {
             releaseStatus = getPlatformVersionsService().getStatus(getResource(), null);
+            if (releaseStatus == null) { // rare strange case - needs to be investigated.
+                LOG.warn("No release status for {}", SlingResourceUtil.getPath(getResource()));
+            }
         }
 
         public PlatformVersionsService.ActivationState getActivationState() {
@@ -479,6 +483,8 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
                 LOG.error(ex.getMessage(), ex);
             }
         }
+        if (releaseStatus != null && releaseStatus.releaseStatus == null)
+            return null;
         return releaseStatus;
     }
 
