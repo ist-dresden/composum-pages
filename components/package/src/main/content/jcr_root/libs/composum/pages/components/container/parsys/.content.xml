@@ -3,10 +3,4 @@
         jcr:primaryType="cpp:Component"
         jcr:title="Paragraph System"
         category="[Layout,Blueprint]"
-        sling:resourceSuperType="composum/pages/components/container"
-        allowedElements="[composum/pages/components/container/(gallery|row|section),
-                          composum/pages/components/element/.*,
-                          composum/pages/components/composed/.*,
-                          composum/pages/components/search/(field|result),
-                          composum/platform/content/components/.*,
-                          .*/pages/components/demo/.*]"/>
+        sling:resourceSuperType="composum/pages/components/container"/>
