@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
         jcr:primaryType="sling:OrderedFolder"
-        embed="[category:composum.components.view,
-                jslibs/highlight/(9.*:9.15.6)/clientlib,
-                composum/pages/components/composed/illustration/js/illustration.js,
+        depends="[category:composum.components.view,
+                  jslibs/bootstrap/(3.*:3.4.1)/js/bootstrap.js,
+                  jslibs/highlight/(9.*:9.15.6)/clientlib]"
+        embed="[composum/pages/components/composed/illustration/js/illustration.js,
                 composum/pages/components/element/codeblock/js/codeblock.js,
                 composum/pages/components/element/map/google/js/google.js"/>
