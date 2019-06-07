@@ -88,8 +88,8 @@
              * @returns an 'only one' option if the filter is not used
              */
             getOnlyOne: function () {
-                return this.filterAccepted ? undefined
-                    : core.components.RadioGroupWidget.prototype.getOnlyOne.apply(this);
+                return this.probablyFiltered ? undefined
+                    : core.components.RadioGroupWidget.prototype.getOnlyOne.apply(this, []);
             },
 
             selectType: function (event) {
@@ -104,12 +104,15 @@
             reload: function () {
                 var c = widgets.const.element.type.css;
                 var u = widgets.const.element.type.url;
+                this.probablyFiltered = false;
                 var params = ['name=' + encodeURIComponent(this.$el.data('name'))];
                 if (this.filter && this.filter.length > 0) {
                     params.push('filter=' + encodeURIComponent(this.filter.join(',')));
+                    this.probablyFiltered = true;
                 }
                 if (this.searchTerm) {
                     params.push('query=' + encodeURIComponent(this.searchTerm));
+                    this.probablyFiltered = true;
                 }
                 var url = u.get.components + pages.current.page;
                 if (params.length > 0) {
@@ -124,6 +127,7 @@
                         } else if (data.status === 200) {
                             this.$content.html(data.responseText);
                             this.filterAccepted = false;
+                            this.probablyFiltered = false;
                         } else {
                             this.$content.html("");
                         }
@@ -147,7 +151,7 @@
                         $content.find('input[value="' + this.filter[i] + '"]').prop('checked', true);
                     }
                 }
-                $content.find('input').change(_.bind(this.filterChanged, this))
+                $content.find('input').change(_.bind(this.filterChanged, this));
                 this.filterState();
             },
 
