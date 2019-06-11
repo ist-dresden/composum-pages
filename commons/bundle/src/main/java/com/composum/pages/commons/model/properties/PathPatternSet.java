@@ -3,6 +3,7 @@ package com.composum.pages.commons.model.properties;
 import com.composum.pages.commons.service.ResourceManager;
 import com.composum.pages.commons.util.ResolverUtil;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.sling.api.resource.ResourceResolver;
 
 import javax.annotation.Nonnull;
@@ -75,5 +76,12 @@ public class PathPatternSet {
         } else {
             return !isValid();
         }
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+                .append(patternList)
+                .toString();
     }
 }
