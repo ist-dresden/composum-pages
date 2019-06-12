@@ -440,7 +440,7 @@
 
             <!-- Setup utilities -->
             <dependency>
-                <groupId>com.composum.sling.core</groupId>
+                <groupId>com.composum.sling.core.setup</groupId>
                 <artifactId>composum-sling-core-setup-util</artifactId>
                 <version>${composum.core.version}</version>
                 <scope>provided</scope>
