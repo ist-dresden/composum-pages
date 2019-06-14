@@ -4,7 +4,7 @@
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <cpp:defineObjects/>
-<cpp:element var="column" type="com.composum.pages.components.model.composed.table.Column"
+<cpp:element var="column" type="com.composum.pages.components.model.composed.table.Cell"
              tagName="@{column.type}" tagAttributes="@{column.tdAttributes}"
              cssAdd="valign_@{column.verticalAlign} @{column.level}">
     <c:choose>
