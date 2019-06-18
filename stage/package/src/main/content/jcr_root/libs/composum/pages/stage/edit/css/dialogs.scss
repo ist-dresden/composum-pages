@@ -71,6 +71,11 @@
 
         &_content {
 
+            .row {
+                display: flex;
+                align-items: flex-end;  /* align on bottom */
+            }
+
             .panel.tile-panel {
 
                 &.panel-default {

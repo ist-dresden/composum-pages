@@ -16,6 +16,9 @@ public class Row extends Element {
 
     private static final Logger LOG = LoggerFactory.getLogger(Row.class);
 
+    public static final String PN_ANCHOR = "anchor";
+
+    private transient String anchor;
     private transient String[] columns;
 
     public static final Map<String, String[]> COLUMN_RULES;
@@ -52,5 +55,12 @@ public class Row extends Element {
             }
         }
         return columns;
+    }
+
+    public String getAnchor(){
+        if (anchor == null){
+            anchor = getProperty(PN_ANCHOR, null, "");
+        }
+        return anchor;
     }
 }
