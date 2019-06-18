@@ -45,7 +45,6 @@
         <package.company>IST GmbH Dresden</package.company>
         <bundle.category>composum,pages</bundle.category>
         <composum.nodes.version>1.10.2</composum.nodes.version>
-        <composum.nodes.dependency>[${composum.nodes.version},2.1)</composum.nodes.dependency>
         <sling.scheme>http</sling.scheme>
         <sling.secure>false</sling.secure>
         <sling.host>localhost</sling.host>
@@ -423,19 +422,19 @@
             <dependency>
                 <groupId>com.composum.sling.core</groupId>
                 <artifactId>composum-sling-core-console</artifactId>
-                <version>${composum.nodes.dependency}</version>
+                <version>${composum.nodes.version}</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>com.composum.sling.core</groupId>
                 <artifactId>composum-sling-user-management</artifactId>
-                <version>${composum.nodes.dependency}</version>
+                <version>${composum.nodes.version}</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>com.composum.sling.core</groupId>
                 <artifactId>composum-sling-core-commons</artifactId>
-                <version>${composum.nodes.dependency}</version>
+                <version>${composum.nodes.version}</version>
                 <scope>provided</scope>
             </dependency>
 
