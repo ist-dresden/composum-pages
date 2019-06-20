@@ -5,7 +5,7 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <cpp:defineFrameObjects/>
 <cpp:element var="versions" type="com.composum.pages.stage.model.edit.page.Versions" mode="none"
-             cssClasses="composum-pages-tools composum-pages-tools_context">
+             cssAdd="composum-pages-tools composum-pages-tools_context">
     <div class="composum-pages-tools_actions btn-toolbar">
         <div class="composum-pages-tools_left-actions">
             <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">

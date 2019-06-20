@@ -27,7 +27,8 @@ import static com.composum.sling.cpnl.TagBase.TAG_NONE;
 public class EditDialogTag extends AbstractEditTag {
 
     public static final String DIALOG_VAR = "dialog";
-    public static final String DIALOG_CSS_VAR = DIALOG_VAR + "CssBase";
+    public static final String DIALOG_CSS_VAR = DIALOG_VAR + "CSS";
+    public static final String DIALOG_CSSBASE_VAR = DIALOG_VAR + "CssBase";
 
     public static final String DEFAULT_SELECTOR = "edit";
     public static final String SELECTOR_CREATE = "create";
@@ -350,6 +351,7 @@ public class EditDialogTag extends AbstractEditTag {
         setAttribute(DIALOG_VAR, this, PageContext.REQUEST_SCOPE);
         if (StringUtils.isNotBlank(cssBase)) {
             setAttribute(DIALOG_CSS_VAR, cssBase, PageContext.REQUEST_SCOPE);
+            setAttribute(DIALOG_CSSBASE_VAR, cssBase, PageContext.REQUEST_SCOPE);
         }
     }
 

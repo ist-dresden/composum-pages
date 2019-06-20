@@ -11,7 +11,7 @@ import javax.servlet.jsp.tagext.TagData;
 import javax.servlet.jsp.tagext.VariableInfo;
 import java.util.List;
 
-import static com.composum.pages.commons.taglib.DropZoneTag.DROP_ZONE_CSS_VAR;
+import static com.composum.pages.commons.taglib.DropZoneTag.DROP_ZONE_CSSBASE_VAR;
 import static com.composum.pages.commons.taglib.DropZoneTag.DROP_ZONE_VAR;
 
 public class DropZoneTagTEI extends AbstractTagTEI {
@@ -19,6 +19,6 @@ public class DropZoneTagTEI extends AbstractTagTEI {
     @Override
     protected void collectVariables(TagData data, List<VariableInfo> variables) {
         variables.add(new VariableInfo(DROP_ZONE_VAR, DropZoneTag.class.getName(), true, VariableInfo.NESTED));
-        variables.add(new VariableInfo(DROP_ZONE_CSS_VAR, "java.lang.String", true, VariableInfo.NESTED));
+        variables.add(new VariableInfo(DROP_ZONE_CSSBASE_VAR, "java.lang.String", true, VariableInfo.NESTED));
     }
 }

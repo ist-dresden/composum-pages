@@ -340,6 +340,7 @@ public class ModelTag extends ComponentTag implements DynamicAttributes {
         String var = getVar();
         if (var != null) {
             if (StringUtils.isNotBlank(cssBase)) {
+                setAttribute(var + "CSS", cssBase, getVarScope());
                 setAttribute(var + "CssBase", cssBase, getVarScope());
             }
         }

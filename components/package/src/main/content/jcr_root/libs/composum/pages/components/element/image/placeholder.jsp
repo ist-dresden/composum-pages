@@ -4,7 +4,7 @@
 <cpp:defineObjects/>
 <cpp:element var="image" type="com.composum.pages.commons.model.Image" mode="none"
              test="@{image.editMode}" cssBase="composum-pages-components-placeholder">
-    <span class="fa-stack ${imageCssBase}_icon">
+    <span class="fa-stack ${imageCSS}_icon">
         <i class="fa fa-image fa-stack-2x"></i>
         <i class="fa fa-plus fa-stack-1x add-plus"></i>
     </span>

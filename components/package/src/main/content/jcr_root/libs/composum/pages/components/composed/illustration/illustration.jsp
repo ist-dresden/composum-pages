@@ -5,7 +5,7 @@
 <cpp:defineObjects/>
 <cpp:container var="illustration" type="com.composum.pages.components.model.composed.illustration.Illustration"
                data-behavior="@{illustration.behavior}" style="@{illustration.style}">
-    <div class="${illustrationCssBase}_image">
+    <div class="${illustrationCSS}_image">
         <cpp:dropZone property="image/imageRef" filter="asset:image">
             <cpp:include path="image" resourceType="composum/pages/components/element/image" mode="none"/>
         </cpp:dropZone>

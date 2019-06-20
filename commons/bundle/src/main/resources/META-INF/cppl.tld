@@ -104,12 +104,6 @@
             <type>java.lang.String</type>
         </attribute>
         <attribute>
-            <name>cssClasses</name>
-            <required>false</required>
-            <rtexprvalue>true</rtexprvalue>
-            <type>java.lang.String</type>
-        </attribute>
-        <attribute>
             <name>tagAttributes</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -188,12 +182,6 @@
         </attribute>
         <attribute>
             <name>cssAdd</name>
-            <required>false</required>
-            <rtexprvalue>true</rtexprvalue>
-            <type>java.lang.String</type>
-        </attribute>
-        <attribute>
-            <name>cssClasses</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
@@ -453,12 +441,6 @@
             <type>java.lang.String</type>
         </attribute>
         <attribute>
-            <name>data</name>
-            <required>false</required>
-            <rtexprvalue>true</rtexprvalue>
-            <type>java.lang.String</type>
-        </attribute>
-        <attribute>
             <name>cssBase</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -472,12 +454,6 @@
         </attribute>
         <attribute>
             <name>cssAdd</name>
-            <required>false</required>
-            <rtexprvalue>true</rtexprvalue>
-            <type>java.lang.String</type>
-        </attribute>
-        <attribute>
-            <name>cssClasses</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
@@ -667,12 +643,6 @@
         </attribute>
         <attribute>
             <name>cssAdd</name>
-            <required>false</required>
-            <rtexprvalue>true</rtexprvalue>
-            <type>java.lang.String</type>
-        </attribute>
-        <attribute>
-            <name>cssClasses</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
@@ -939,12 +909,6 @@
         </attribute>
         <attribute>
             <name>cssAdd</name>
-            <required>false</required>
-            <rtexprvalue>true</rtexprvalue>
-            <type>java.lang.String</type>
-        </attribute>
-        <attribute>
-            <name>cssClasses</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>

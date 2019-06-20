@@ -22,7 +22,7 @@
         </div>
         <div id="releaseChangesPanel" class="panel-collapse collapse in" role="tabpanel"
              aria-labelledby="releaseChangesHead">
-            <div class="panel-body">
+            <div class="${siteCssBase}_content panel-body">
                 <table class="${siteCssBase}_table table table-condensed">
                     <thead class="${siteCssBase}_thead">
                     <tr>

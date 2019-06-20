@@ -41,7 +41,8 @@ public class DropZoneTag extends ModelTag {
     private static final Logger LOG = LoggerFactory.getLogger(DropZoneTag.class);
 
     public static final String DROP_ZONE_VAR = "dropZone";
-    public static final String DROP_ZONE_CSS_VAR = DROP_ZONE_VAR + "CssBase";
+    public static final String DROP_ZONE_CSS_VAR = DROP_ZONE_VAR + "CSS";
+    public static final String DROP_ZONE_CSSBASE_VAR = DROP_ZONE_VAR + "CssBase";
 
     public static final String DEFAULT_TAGNAME = "div";
     public static final String DEFAULT_TYPE = "asset";
@@ -277,6 +278,7 @@ public class DropZoneTag extends ModelTag {
             setAttribute(DROP_ZONE_VAR, this, PageContext.REQUEST_SCOPE);
             if (StringUtils.isNotBlank(cssBase)) {
                 setAttribute(DROP_ZONE_CSS_VAR, cssBase, PageContext.REQUEST_SCOPE);
+                setAttribute(DROP_ZONE_CSSBASE_VAR, cssBase, PageContext.REQUEST_SCOPE);
             }
             try {
                 out.append("<").append(getTagName()).append(getAttributes()).append(">");

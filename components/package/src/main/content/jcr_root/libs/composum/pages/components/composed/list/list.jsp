@@ -5,6 +5,6 @@
 <cpp:container var="list" type="com.composum.pages.components.model.composed.List"
                tagName="@{list.type}">
     <c:forEach items="${list.elements}" var="item">
-        <li class="${listCssBase}_list-item"><cpp:include resource="${item.resource}"/></li>
+        <li class="${listCSS}_list-item"><cpp:include resource="${item.resource}"/></li>
     </c:forEach>
 </cpp:container>

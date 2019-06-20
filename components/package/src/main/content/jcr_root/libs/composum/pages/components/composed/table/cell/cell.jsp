@@ -9,7 +9,7 @@
              cssAdd="valign_@{column.verticalAlign} @{column.level}">
     <c:choose>
         <c:when test="${column.hasText}">
-            <cpn:text class="${columnCssBase}_text align_${column.textAlign}" value="${column.text}" type="rich"/>
+            <cpn:text class="${columnCSS}_text align_${column.textAlign}" value="${column.text}" type="rich"/>
         </c:when>
         <c:otherwise>
             <cpp:include test="${column.editMode}" replaceSelectors="placeholder"/>

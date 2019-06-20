@@ -7,10 +7,10 @@
              tagId="@{annotationId}">
     <c:choose>
         <c:when test="${annotation.valid}">
-            <h4 class="${annotationCssBase}_title">
-                <i class="${annotationCssBase}_icon ${annotation.iconClasses}">${cpn:text(annotation.shapeText)}</i>
+            <h4 class="${annotationCSS}_title">
+                <i class="${annotationCSS}_icon ${annotation.iconClasses}">${cpn:text(annotation.shapeText)}</i>
                     ${cpn:text(annotation.title)}</h4>
-            <cpn:text class="${annotationCssBase}_text" value="${annotation.text}" type="rich"/>
+            <cpn:text class="${annotationCSS}_text" value="${annotation.text}" type="rich"/>
         </c:when>
         <c:otherwise>
             <cpp:include replaceSelectors="placeholder"/>

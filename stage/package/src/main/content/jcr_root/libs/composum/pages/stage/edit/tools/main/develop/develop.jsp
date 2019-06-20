@@ -4,7 +4,7 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <cpp:defineFrameObjects/>
 <cpp:element var="tree" type="com.composum.pages.stage.model.edit.FramePage" mode="none"
-               cssClasses="composum-pages-tools">
+               cssAdd="composum-pages-tools">
     <div class="composum-pages-tools_actions btn-toolbar">
         <div class="composum-pages-tools_left-actions">
         </div>

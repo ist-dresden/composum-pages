@@ -4,8 +4,8 @@
 <cpp:defineObjects/>
 <cpp:model var="title" type="com.composum.pages.components.model.text.Title"
            test="@{title.valid}">
-    <div class="${titleCssBase}_text">
-        <cpn:text tagName="h1" class="${titleCssBase}_title" value="${title.title}"/>
-        <cpn:text class="${titleCssBase}_subtitle" value="${title.subtitle}"/>
+    <div class="${titleCSS}_text">
+        <cpn:text tagName="h1" class="${titleCSS}_title" value="${title.title}"/>
+        <cpn:text class="${titleCSS}_subtitle" value="${title.subtitle}"/>
     </div>
 </cpp:model>

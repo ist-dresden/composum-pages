@@ -10,6 +10,6 @@ public class EditToolbarTagTEI extends AbstractTagTEI {
 
     protected void collectVariables(TagData data, List<VariableInfo> variables) {
         variables.add(new VariableInfo(EditToolbarTag.TOOLBAR_VAR, EditToolbarTag.class.getName(), true, VariableInfo.NESTED));
-        variables.add(new VariableInfo(EditToolbarTag.TOOLBAR_CSS_VAR, "java.lang.String", true, VariableInfo.NESTED));
+        variables.add(new VariableInfo(EditToolbarTag.TOOLBAR_CSSBASE_VAR, "java.lang.String", true, VariableInfo.NESTED));
     }
 }

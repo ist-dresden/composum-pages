@@ -4,18 +4,18 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <cpp:defineObjects/>
 <cpp:element var="textImage" type="com.composum.pages.components.model.text.TextImage"
-             cssAdd="@{textImageCssBase}_@{textImage.floatingText?'floating':'block'} @{textImageCssBase}_@{textImage.imagePosition}">
+             cssAdd="@{textImageCSS}_@{textImage.floatingText?'floating':'block'} @{textImageCSS}_@{textImage.imagePosition}">
     <c:if test="${!textImage.imageBottom}">
-        <div class="${textImageCssBase}_image">
+        <div class="${textImageCSS}_image">
             <cpp:include path="image" resourceType="composum/pages/components/element/image"/>
         </div>
     </c:if>
     <c:choose>
         <c:when test="${textImage.textValid}">
-            <div class="${textImageCssBase}_text-block">
-                <cpn:text tagName="h${textImage.titleLevel}" class="${textImageCssBase}_title"
+            <div class="${textImageCSS}_text-block">
+                <cpn:text tagName="h${textImage.titleLevel}" class="${textImageCSS}_title"
                           value="${textImage.title}"/>
-                <cpn:text class="${textImageCssBase}_text ${textImageCssBase}_align-${textImage.alignment}"
+                <cpn:text class="${textImageCSS}_text ${textImageCSS}_align-${textImage.alignment}"
                           value="${textImage.text}" type="rich"/>
             </div>
         </c:when>
@@ -24,7 +24,7 @@
         </c:otherwise>
     </c:choose>
     <c:if test="${textImage.imageBottom}">
-        <div class="${textImageCssBase}_image">
+        <div class="${textImageCSS}_image">
             <cpp:include path="image" resourceType="composum/pages/components/element/image"/>
         </div>
     </c:if>

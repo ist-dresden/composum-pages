@@ -4,8 +4,8 @@
 <cpp:defineObjects/>
 <cpp:element var="menu" type="com.composum.pages.components.model.navigation.Menu" mode="none"
              tagName="none">
-    <cpn:link class="${menuCssBase}_brand navbar-brand"
+    <cpn:link class="${menuCSS}_brand navbar-brand"
               href="${menu.currentPage.homepage.url}"><img
-            class="${menuCssBase}_logo" src="${menu.currentPage.homepage.logoUrl}"/><span
-            class="${menuCssBase}_title">${menu.currentPage.homepage.title}</span></cpn:link>
+            class="${menuCSS}_logo" src="${menu.currentPage.homepage.logoUrl}"/><span
+            class="${menuCSS}_title">${menu.currentPage.homepage.title}</span></cpn:link>
 </cpp:element>

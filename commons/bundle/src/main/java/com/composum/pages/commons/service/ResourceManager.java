@@ -227,6 +227,25 @@ public interface ResourceManager {
     /**
      * only properties of a template accepted by this filter are copied (filter out template settings)
      */
+    StringFilter CONTENT_PROPERTY_FILTER = new StringFilter.BlackList(
+            "^jcr:(primaryType|created.*|uuid)$",
+            "^jcr:(baseVersion|predecessors|versionHistory|isCheckedOut)$",
+            "^(allowed|forbidden)(Child|Parent)(Elements|Containers|Templates|Types)$",
+            "^(allowed|forbidden)(Paths)$",
+            "^isTemplate$"
+    );
+
+    /**
+     * properties of a target accepted by this filter are not replaced by values from a template
+     */
+    StringFilter CONTENT_TARGET_KEEP = new StringFilter.WhiteList(
+            "^jcr:(primaryType|created.*|uuid)$",
+            "^jcr:(baseVersion|predecessors|versionHistory|isCheckedOut)$"
+    );
+
+    /**
+     * only properties of a template accepted by this filter are copied (filter out template settings)
+     */
     StringFilter TEMPLATE_PROPERTY_FILTER = new StringFilter.BlackList(
             "^jcr:(primaryType|created.*|uuid)$",
             "^jcr:(baseVersion|predecessors|versionHistory|isCheckedOut)$",

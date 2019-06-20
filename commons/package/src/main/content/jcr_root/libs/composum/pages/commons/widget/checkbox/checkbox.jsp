@@ -3,9 +3,9 @@
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <cpp:defineFrameObjects/><%-- the 'checkbox' widget form template --%>
-<div class="${widgetCssBase}_${widget.widgetType} ${widgetCssBase}_${widget.cssName} checkbox form-inline">
+<div class="${widgetCSS}_${widget.widgetType} ${widgetCSS}_${widget.cssName} checkbox form-inline">
     <sling:call script="hint.jsp"/><%-- place hints in the 'label level'; on top of the checkbox --%>
-    <label class="${widgetCssBase}_label"><%-- for checkboxes the label is the checkbox label itself --%>
+    <label class="${widgetCSS}_label"><%-- for checkboxes the label is the checkbox label itself --%>
         <%-- this 'span' is the widget 'div'; the hook for the widgets JS view --%>
         <span class="widget ${widget.widgetType}-widget widget-name_${widget.cssName}"
         ${widget.attributes}><c:if test="${widget.formWidget}"><%--
@@ -19,10 +19,10 @@
                        value="false"/><input type="hidden" class="sling-post-use-default-hint"
                                              name="${widget.name}@UseDefaultWhenMissing" value="true"/></c:if><%--
              and now the input field... --%>
-            <input name="${widget.name}" data-i18n="${widget.i18n}" class="${widgetCssBase}_input" type="checkbox"
+            <input name="${widget.name}" data-i18n="${widget.i18n}" class="${widgetCSS}_input" type="checkbox"
                    value="true" ${widget.model.checkedValue}/></c:if><c:if test="${!widget.formWidget}"><%--
                not a Sling POST form: generate a simple checkbox input field...
-            --%><input data-i18n="${widget.i18n}" class="${widgetCssBase}_input"
+            --%><input data-i18n="${widget.i18n}" class="${widgetCSS}_input"
                        type="checkbox" value="true" ${widget.model.checkedValue}/></c:if><%--
             in each case - the label of the checkbox... --%>
             <span class="label-text">${widget.label}</span></span></label>

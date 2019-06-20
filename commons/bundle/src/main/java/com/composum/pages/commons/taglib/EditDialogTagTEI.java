@@ -8,6 +8,6 @@ public class EditDialogTagTEI extends ModelTagTEI {
 
     protected void collectVariables(TagData data, List<VariableInfo> variables) {
         variables.add(new VariableInfo(EditDialogTag.DIALOG_VAR, EditDialogTag.class.getName(), true, VariableInfo.NESTED));
-        variables.add(new VariableInfo(EditDialogTag.DIALOG_CSS_VAR, "java.lang.String", true, VariableInfo.NESTED));
+        variables.add(new VariableInfo(EditDialogTag.DIALOG_CSSBASE_VAR, "java.lang.String", true, VariableInfo.NESTED));
     }
 }

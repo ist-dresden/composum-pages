@@ -6,10 +6,10 @@
 <cpp:element var="image" type="com.composum.pages.commons.model.Image"
              test="@{image.valid||image.editMode}">
     <cpp:dropZone property="imageRef" i18n="true" filter="asset:image">
-        <div class="${imageCssBase}_frame">
+        <div class="${imageCSS}_frame">
             <c:choose>
                 <c:when test="${image.valid}">
-                    <div class="${imageCssBase}_picture" style="background-image:url(${image.src})"
+                    <div class="${imageCSS}_picture" style="background-image:url(${image.src})"
                          title="${cpn:text(image.title)}"></div>
                 </c:when>
                 <c:otherwise>

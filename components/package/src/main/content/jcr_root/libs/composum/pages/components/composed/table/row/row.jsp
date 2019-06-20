@@ -5,7 +5,7 @@
 <cpp:defineObjects/>
 <cpp:container var="row" type="com.composum.pages.components.model.composed.table.Row"
                tagName="tr" decoration="false" cssAdd="@{row.level}">
-    <cpn:div tagName="td" test="${row.editMode}" class="${rowCssBase}_handle fa fa-minus"></cpn:div>
+    <cpn:div tagName="td" test="${row.editMode}" class="${rowCSS}_handle fa fa-minus"></cpn:div>
     <sling:call script="elements.jsp"/>
-    <cpn:div tagName="td" test="${row.editMode}" class="${rowCssBase}_end"></cpn:div>
+    <cpn:div tagName="td" test="${row.editMode}" class="${rowCSS}_end"></cpn:div>
 </cpp:container>

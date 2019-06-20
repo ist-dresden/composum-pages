@@ -6,12 +6,12 @@
 <cpp:model var="code" type="com.composum.pages.components.model.codeblock.CodeBlock">
     <c:choose>
         <c:when test="${code.valid}">
-            <div class="${codeCssBase}_content-block">
-                <div class="${codeCssBase}_content"><code
+            <div class="${codeCSS}_content-block">
+                <div class="${codeCSS}_content"><code
                         class="${code.codeLanguage}"><cpn:text value="${code.code}"/></code></div>
             </div>
             <c:if test="${code.hasCopyright}">
-                <cpn:text class="${codeCssBase}_footer simple-footer" value="${code.copyright}"/>
+                <cpn:text class="${codeCSS}_footer simple-footer" value="${code.copyright}"/>
             </c:if>
         </c:when>
         <c:otherwise>

@@ -5,7 +5,7 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <cpp:defineFrameObjects/>
 <cpp:element var="tools" type="com.composum.pages.stage.tools.ContextTools" mode="none"
-             cssBase="tabbed-widget" cssClasses="composum-pages-stage-edit-sidebar-context"
+             cssBase="tabbed-widget" cssAdd="composum-pages-stage-edit-sidebar-context"
              data-component-type="@{tools.componentTypeName}">
     <ul class="composum-pages-stage-edit-sidebar-context_tabs ${toolsCssBase}_tabs icons-only">
         <cpn:div test="${tools.status != null}" class="${toolsCssBase}_status">

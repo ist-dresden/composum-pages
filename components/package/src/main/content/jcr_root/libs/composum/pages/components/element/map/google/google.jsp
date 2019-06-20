@@ -3,7 +3,7 @@
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <cpp:defineObjects/>
 <cpp:element var="map" type="com.composum.pages.components.model.map.GoogleMap">
-    <div class="${mapCssBase}_wrapper">
-        <iframe class="${mapCssBase}_frame" width="100%" height="100%" frameborder="0" src="${map.frameUrl}"></iframe>
+    <div class="${mapCSS}_wrapper">
+        <iframe class="${mapCSS}_frame" width="100%" height="100%" frameborder="0" src="${map.frameUrl}"></iframe>
     </div>
 </cpp:element>

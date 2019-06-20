@@ -77,6 +77,10 @@
         &-page-modified,
         &-page-activated {
 
+            &_content {
+                overflow-x: scroll;
+            }
+
             &_page {
 
                 &-select-all {
@@ -98,6 +102,7 @@
                 ._input {
                     width: 33px;
                     max-width: 33px;
+                    min-width: 33px;
                     padding: 0;
                     text-align: center;
                     vertical-align: top;

@@ -20,6 +20,6 @@ public class EditWidgetTagTEI extends ComponentTagTEI {
             }
         }
         variables.add(new VariableInfo(EditWidgetTag.WIDGET_VAR, EditWidgetTag.class.getName(), true, VariableInfo.NESTED));
-        variables.add(new VariableInfo(EditWidgetTag.WIDGET_CSS_VAR, "java.lang.String", true, VariableInfo.NESTED));
+        variables.add(new VariableInfo(EditWidgetTag.WIDGET_CSSBASE_VAR, "java.lang.String", true, VariableInfo.NESTED));
     }
 }

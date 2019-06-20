@@ -6,10 +6,10 @@
 <cpp:element var="teaser" type="com.composum.pages.components.model.teaser.Teaser"
              tagName="none">
     <cpp:dropZone property="link" filter="page:site">
-        <div class="${teaserCssBase}_text-block${teaser.hasImage?'':' no-image'}">
-            <cpn:text tagName="h2" class="${teaserCssBase}_title" value="${teaser.title}"/>
-            <cpn:text class="${teaserCssBase}_subtitle" value="${teaser.subtitle}"/>
-            <cpn:text type="rich" class="${teaserCssBase}_text" value="${teaser.text}"/>
+        <div class="${teaserCSS}_text-block${teaser.hasImage?'':' no-image'}">
+            <cpn:text tagName="h2" class="${teaserCSS}_title" value="${teaser.title}"/>
+            <cpn:text class="${teaserCSS}_subtitle" value="${teaser.subtitle}"/>
+            <cpn:text type="rich" class="${teaserCSS}_text" value="${teaser.text}"/>
             <c:if test="">
                 <cpp:include path="links"/>
             </c:if>

@@ -6,8 +6,8 @@
 <cpp:element var="menu" type="com.composum.pages.components.model.navigation.Menu" mode="none"
              cssBase="composum-pages-components-navigation-navbar" role="navigation"
              cssAdd="navbar navbar-default navbar-fixed-top">
-    <div class="${menuCssBase}_container container-fluid">
-        <div class="${menuCssBase}_header navbar-header">
+    <div class="${menuCSS}_container container-fluid">
+        <div class="${menuCSS}_header navbar-header">
             <sling:call script="branding.jsp"/>
         </div>
     </div>

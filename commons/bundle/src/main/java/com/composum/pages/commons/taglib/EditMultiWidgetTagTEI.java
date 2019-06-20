@@ -21,6 +21,6 @@ public class EditMultiWidgetTagTEI extends AbstractTagTEI {
             variables.add(new VariableInfo(status, LoopTagStatus.class.getName(), true, VariableInfo.NESTED));
         }
         variables.add(new VariableInfo(EditMultiWidgetTag.MULTIWIDGET_VAR, EditMultiWidgetTag.class.getName(), true, VariableInfo.NESTED));
-        variables.add(new VariableInfo(EditMultiWidgetTag.MULTIWIDGET_CSS_VAR, "java.lang.String", true, VariableInfo.NESTED));
+        variables.add(new VariableInfo(EditMultiWidgetTag.MULTIWIDGET_CSSBASE_VAR, "java.lang.String", true, VariableInfo.NESTED));
     }
 }

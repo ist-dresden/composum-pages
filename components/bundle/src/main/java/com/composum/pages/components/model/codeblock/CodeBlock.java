@@ -113,7 +113,7 @@ public class CodeBlock extends Element {
         }
         if (isCollapsed()) {
             classes.add("collapsed");
-            classes.add(collapsed);
+            classes.add("collapsed-" + collapsed);
         }
         return StringUtils.join(classes, " ");
     }

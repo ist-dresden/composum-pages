@@ -1121,9 +1121,10 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
             Resource targetContent = resolver.create(target, JcrConstants.JCR_CONTENT, Collections.singletonMap(
                     JcrConstants.JCR_PRIMARYTYPE, primaryContentType));
             ModifiableValueMap targetValues = targetContent.adaptTo(ModifiableValueMap.class);
-            applyContentTemplate(templateContext, templateContent, targetContent, false, false);
+            applyContent(templateContext, templateContent, targetContent, false, false,
+                    CONTENT_PROPERTY_FILTER, CONTENT_TARGET_KEEP);
         } else {
-            applyTemplateProperties(templateContext, template, target, false);
+            applyProperties(templateContext, template, target, false, CONTENT_PROPERTY_FILTER, CONTENT_TARGET_KEEP);
         }
         // create a full structure copy of the template
         for (Resource child : template.getChildren()) {
@@ -1227,7 +1228,8 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
             Resource targetContent = resolver.create(target, JcrConstants.JCR_CONTENT, Collections.singletonMap(
                     JcrConstants.JCR_PRIMARYTYPE, primaryContentType));
             ModifiableValueMap targetValues = Objects.requireNonNull(targetContent.adaptTo(ModifiableValueMap.class));
-            applyContentTemplate(context, templateContent, targetContent, false, true);
+            applyContent(context, templateContent, targetContent, false, true,
+                    TEMPLATE_PROPERTY_FILTER, TEMPLATE_TARGET_KEEP);
 
             // prevent from unwanted properties in raw node types...
             if (setTemplateProperty && !primaryContentType.startsWith("nt:")) {
@@ -1237,7 +1239,7 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
                 }
             }
         } else {
-            applyTemplateProperties(context, template, target, false);
+            applyProperties(context, template, target, false, TEMPLATE_PROPERTY_FILTER, TEMPLATE_TARGET_KEEP);
         }
         if (referencedTemplate != null) {
             // create a full structure copy of the referenced template
@@ -1269,8 +1271,9 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
      * @param merge    if 'true' the target properties will be unmodified and all new aspects from the template will be added
      * @throws PersistenceException if an error is occurring
      */
-    protected void applyContentTemplate(@Nonnull TemplateContext context, @Nonnull Resource template,
-                                        @Nonnull Resource target, boolean merge, boolean filter)
+    protected void applyContent(@Nonnull TemplateContext context, @Nonnull Resource template,
+                                @Nonnull Resource target, boolean merge, boolean filter,
+                                StringFilter propertyFilter, StringFilter keepOnTarget)
             throws PersistenceException {
         ResourceResolver resolver = context.getResolver();
         if (!merge) {
@@ -1279,7 +1282,7 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
                 resolver.delete(child);
             }
         }
-        applyTemplateProperties(context, template, target, merge);
+        applyProperties(context, template, target, merge, propertyFilter, keepOnTarget);
         for (Resource child : template.getChildren()) {
             // apply the template recursive...
             if (!filter || TEMPLATE_COPY_FILTER.accept(child)) {
@@ -1293,7 +1296,7 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
                     targetChild = resolver.create(target, name, Collections.singletonMap(
                             JcrConstants.JCR_PRIMARYTYPE, childValues.get(JcrConstants.JCR_PRIMARYTYPE)));
                 }
-                applyContentTemplate(context, child, targetChild, merge, filter);
+                applyContent(context, child, targetChild, merge, filter, propertyFilter, keepOnTarget);
             }
         }
     }
@@ -1306,24 +1309,25 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
      * @param target   the target content resource
      * @param merge    if 'true' the target properties will be unmodified and all new aspects from the template will be added
      */
-    protected void applyTemplateProperties(@Nonnull TemplateContext context, @Nonnull Resource template,
-                                           @Nonnull Resource target, boolean merge) {
+    protected void applyProperties(@Nonnull TemplateContext context, @Nonnull Resource template,
+                                   @Nonnull Resource target, boolean merge,
+                                   StringFilter propertyFilter, StringFilter keepOnTarget) {
         ResourceResolver resolver = context.getResolver();
         ModifiableValueMap values = Objects.requireNonNull(target.adaptTo(ModifiableValueMap.class));
         ValueMap templateValues = template.getValueMap();
         if (!merge) {
             // in case of a 'reset' remove all properties from the target resource
             for (String key : values.keySet().toArray(new String[0])) {
-                if (!TEMPLATE_TARGET_KEEP.accept(key)) {
+                if (!keepOnTarget.accept(key)) {
                     values.remove(key);
                 }
             }
         }
         for (Map.Entry<String, Object> entry : templateValues.entrySet()) {
             String key = entry.getKey();
-            if (TEMPLATE_PROPERTY_FILTER.accept(key)) {
+            if (propertyFilter.accept(key)) {
                 // copy template properties if not always present or a 'reset' is requested
-                if (values.get(key) == null || (!merge && !TEMPLATE_TARGET_KEEP.accept(key))) {
+                if (values.get(key) == null || (!merge && !keepOnTarget.accept(key))) {
                     Object value = entry.getValue();
                     if (value instanceof String) {
                         value = context.applyTemplatePlaceholders(target, (String) value);

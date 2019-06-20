@@ -13,6 +13,7 @@ public class EditToolbarTag extends AbstractEditTag {
 
     public static final String TOOLBAR_VAR = "toolbar";
     public static final String TOOLBAR_CSS_VAR = TOOLBAR_VAR + "CssBase";
+    public static final String TOOLBAR_CSSBASE_VAR = TOOLBAR_VAR + "CssBase";
 
     public static final String DEFAULT_CSS_BASE = "composum-pages-stage-edit-toolbar";
 
@@ -45,6 +46,7 @@ public class EditToolbarTag extends AbstractEditTag {
         pageContext.setAttribute(TOOLBAR_VAR, this, PageContext.REQUEST_SCOPE);
         if (StringUtils.isNotBlank(cssBase)) {
             pageContext.setAttribute(TOOLBAR_CSS_VAR, cssBase, PageContext.REQUEST_SCOPE);
+            pageContext.setAttribute(TOOLBAR_CSSBASE_VAR, cssBase, PageContext.REQUEST_SCOPE);
         }
     }
 
@@ -61,7 +63,7 @@ public class EditToolbarTag extends AbstractEditTag {
     @Override
     protected void finishTagEnd() {
         if (StringUtils.isNotBlank(cssBase)) {
-            pageContext.removeAttribute(TOOLBAR_CSS_VAR, PageContext.REQUEST_SCOPE);
+            pageContext.removeAttribute(TOOLBAR_CSSBASE_VAR, PageContext.REQUEST_SCOPE);
         }
         pageContext.removeAttribute(TOOLBAR_VAR, PageContext.REQUEST_SCOPE);
     }

@@ -4,7 +4,7 @@
 --%><%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%><%--
 --%><cpp:defineFrameObjects/>
 <cpp:element var="component" type="com.composum.pages.stage.model.edit.FrameComponent" mode="none"
-               cssClasses="@{componentCssBase}@{component.editDialog.inherited?'_inherited':''}"
+               cssAdd="@{componentCssBase}@{component.editDialog.inherited?'_inherited':''}"
                data-path="@{component.editDialog.path}/dialog.jsp" data-type="jsp">
     <div class="composum-pages-stage-edit-tools-dev-component_toolset">
         <span class="composum-pages-stage-edit-tools-dev-component_title">Edit Dialog<c:if

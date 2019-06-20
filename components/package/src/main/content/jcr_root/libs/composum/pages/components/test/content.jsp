@@ -3,7 +3,7 @@
 <cpp:defineObjects/>
 <cpp:model var="content" type="com.composum.pages.commons.model.PageContent" scope="request"
            cssBase="composum-pages-components-page_content">
-    <div class="${contentCssBase}_main row">
+    <div class="${contentCSS}_main row">
         <div class="composum-pages-components-element-title_text">
             <h1 class="composum-pages-components-element-title_title">Test Page</h1>
             <h2 class="composum-pages-components-element-title_subtitle">Properties Edit Test</h2>

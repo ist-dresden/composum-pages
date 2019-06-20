@@ -82,7 +82,7 @@
                             path: this.sitePath
                         }, {
                             url: url,
-                            type: 'pages.dialogs.ActivatePageDialog'
+                            type: 'window.composum.pages.dialogs.ActivatePageDialog'
                         }, objects);
                     } else { // context is the stage edit frame
                         pages.dialogs.openGenericDialog(url, pages.dialogs.ActivatePageDialog, objects);
@@ -133,7 +133,7 @@
                             path: this.sitePath
                         }, {
                             url: url,
-                            type: 'pages.dialogs.RevertPageDialog'
+                            type: 'window.composum.pages.dialogs.RevertPageDialog'
                         }, objects);
                     } else { // context is the stage edit frame
                         pages.dialogs.openGenericDialog(url, pages.dialogs.RevertPageDialog, objects);

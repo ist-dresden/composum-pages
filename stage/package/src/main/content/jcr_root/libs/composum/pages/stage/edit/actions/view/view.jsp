@@ -4,7 +4,7 @@
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <cpp:defineFrameObjects/>
 <cpp:editToolbar var="frame" type="com.composum.pages.stage.model.edit.FramePage"
-                 cssClasses="composum-pages-stage-edit-toolbar">
+                 cssAdd="composum-pages-stage-edit-toolbar">
     <a class="${toolbarCssBase}_language ${toolbarCssBase}_button dropdown-toggle"
        data-toggle="dropdown" href="#"><span class="${toolbarCssBase}_language-label">${frame.languageHint}</span><span
             class="caret"></span></a>

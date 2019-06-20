@@ -5,7 +5,7 @@
 <cpp:container var="illustration" type="com.composum.pages.components.model.composed.illustration.Illustration"
                cssBase="composum-pages-components-composed-illustration_annotations" tagName="none">
     <c:forEach items="${illustration.elements}" var="element" varStatus="loop">
-        <div class="${illustrationCssBase}_element">
+        <div class="${illustrationCSS}_element">
             <cpp:include resource="${element.resource}"/>
         </div>
     </c:forEach>

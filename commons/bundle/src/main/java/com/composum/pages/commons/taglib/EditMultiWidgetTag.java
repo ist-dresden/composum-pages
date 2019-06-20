@@ -27,7 +27,8 @@ import java.util.Map;
 public class EditMultiWidgetTag extends AbstractWidgetTag implements LoopTag {
 
     public static final String MULTIWIDGET_VAR = "multiwidget";
-    public static final String MULTIWIDGET_CSS_VAR = MULTIWIDGET_VAR + "CssBase";
+    public static final String MULTIWIDGET_CSS_VAR = MULTIWIDGET_VAR + "CSS";
+    public static final String MULTIWIDGET_CSSBASE_VAR = MULTIWIDGET_VAR + "CssBase";
     public static final String MULTIWIDGET_TYPE = "multiwidget";
 
     public static final String DEFAULT_CSS_BASE = "composum-pages-edit-" + MULTIWIDGET_TYPE;
@@ -124,6 +125,7 @@ public class EditMultiWidgetTag extends AbstractWidgetTag implements LoopTag {
         setAttribute(MULTIWIDGET_VAR, this, PageContext.REQUEST_SCOPE);
         if (StringUtils.isNotBlank(cssBase)) {
             setAttribute(MULTIWIDGET_CSS_VAR, cssBase, PageContext.REQUEST_SCOPE);
+            setAttribute(MULTIWIDGET_CSSBASE_VAR, cssBase, PageContext.REQUEST_SCOPE);
         }
     }
 

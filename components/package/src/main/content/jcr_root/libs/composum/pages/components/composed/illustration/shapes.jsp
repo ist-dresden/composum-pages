@@ -4,9 +4,9 @@
 <cpp:defineObjects/>
 <cpp:model var="illustration" type="com.composum.pages.components.model.composed.illustration.Illustration"
            cssBase="composum-pages-components-composed-illustration_shapes">
-    <div class="${illustrationCssBase}">
+    <div class="${illustrationCSS}">
         <c:forEach items="${illustration.elements}" var="element" varStatus="loop">
-            <div class="${illustrationCssBase}_element">
+            <div class="${illustrationCSS}_element">
                 <cpp:include resource="${element.resource}" replaceSelectors="shape"/>
             </div>
         </c:forEach>

@@ -8,8 +8,8 @@
     <cpp:dropZone property="imageRef" i18n="true" filter="asset:image">
         <c:choose>
             <c:when test="${image.valid}">
-                <div class="${imageCssBase}_frame">
-                    <cpn:image classes="${imageCssBase}_picture" src="${image.src}" alt="${cpn:text(image.alt)}"
+                <div class="${imageCSS}_frame">
+                    <cpn:image classes="${imageCSS}_picture" src="${image.src}" alt="${cpn:text(image.alt)}"
                                title="${cpn:text(image.title)}"/>
                 </div>
             </c:when>

@@ -30,20 +30,23 @@
         }
     }
 
-    &_align-right {
-        text-align: right;
-    }
+    &_align {
 
-    &_align-center {
-        text-align: center;
-    }
+        &-right {
+            text-align: right;
+        }
 
-    &_align-justify {
+        &-center {
+            text-align: center;
+        }
 
-        .composum-pages-components-element-text {
+        &-justify {
 
-            &_text {
-                text-align: justify;
+            .composum-pages-components-element-text {
+
+                &_text {
+                    text-align: justify;
+                }
             }
         }
     }

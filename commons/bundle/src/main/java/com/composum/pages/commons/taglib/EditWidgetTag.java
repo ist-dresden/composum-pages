@@ -32,7 +32,8 @@ public class EditWidgetTag extends AbstractWidgetTag implements LoopTag {
     public static final String DATA_RULES_ATTR = "data-" + RULES_ATTR;
 
     public static final String WIDGET_VAR = "widget";
-    public static final String WIDGET_CSS_VAR = WIDGET_VAR + "CssBase";
+    public static final String WIDGET_CSS_VAR = WIDGET_VAR + "CSS";
+    public static final String WIDGET_CSSBASE_VAR = WIDGET_VAR + "CssBase";
 
     public static final String DEFAULT_CSS_BASE = "composum-pages-edit-widget";
 
@@ -279,6 +280,7 @@ public class EditWidgetTag extends AbstractWidgetTag implements LoopTag {
         setAttribute(WIDGET_VAR, this, PageContext.REQUEST_SCOPE);
         if (StringUtils.isNotBlank(cssBase)) {
             setAttribute(WIDGET_CSS_VAR, cssBase, PageContext.REQUEST_SCOPE);
+            setAttribute(WIDGET_CSSBASE_VAR, cssBase, PageContext.REQUEST_SCOPE);
         }
     }
 
@@ -314,7 +316,7 @@ public class EditWidgetTag extends AbstractWidgetTag implements LoopTag {
             }
         }
         if (StringUtils.isNotBlank(cssBase)) {
-            pageContext.removeAttribute(WIDGET_CSS_VAR, PageContext.REQUEST_SCOPE);
+            pageContext.removeAttribute(WIDGET_CSSBASE_VAR, PageContext.REQUEST_SCOPE);
         }
         pageContext.removeAttribute(WIDGET_VAR, PageContext.REQUEST_SCOPE);
     }

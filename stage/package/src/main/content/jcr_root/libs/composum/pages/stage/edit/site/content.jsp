@@ -7,7 +7,7 @@
 <div class="container">
     <div class="row">
         <cpp:element var="site" type="com.composum.pages.commons.model.Site" mode="none"
-                     cssClasses="col-md-12">
+                     cssAdd="col-md-12">
             <h2>${site.title} <span class="${siteCssBase}_title-type">(Site)</span></h2>
             <ul class="nav nav-tabs" role="tablist">
                 <li role="presentation"><a href="#releases-tab" aria-controls="releases" role="tab"
