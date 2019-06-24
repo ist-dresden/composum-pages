@@ -44,7 +44,7 @@
         <package.group>com/composum/pages</package.group>
         <package.company>IST GmbH Dresden</package.company>
         <bundle.category>composum,pages</bundle.category>
-        <composum.nodes.version>1.11.0</composum.nodes.version>
+        <composum.nodes.version>1.11.1-SNAPSHOT</composum.nodes.version>
         <sling.scheme>http</sling.scheme>
         <sling.secure>false</sling.secure>
         <sling.host>localhost</sling.host>
