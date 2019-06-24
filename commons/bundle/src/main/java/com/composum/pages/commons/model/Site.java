@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nonnull;
 import javax.jcr.RepositoryException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -170,10 +171,13 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
     public List<SiteRelease> getReleases() {
         StagingReleaseManager releaseManager = context.getService(StagingReleaseManager.class);
         List<StagingReleaseManager.Release> stagingReleases = releaseManager.getReleases(resource);
-        List<SiteRelease> result = stagingReleases.stream()
-                .map(r -> new SiteRelease(context, r))
-                .collect(Collectors.toList());
-        return result;
+        return stagingReleases.stream()
+                .map(r -> new SiteRelease(context, r)).sorted((r1, r2) -> {
+                    Calendar c1 = r1.getCreationDate();
+                    Calendar c2 = r2.getCreationDate();
+                    return c1 == null ? 1 : c2 == null ? -1 : c2.compareTo(c1);
+                }).collect(Collectors.toList());
+
     }
 
     /**
