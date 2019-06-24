@@ -11,7 +11,7 @@
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
 
-        &.fa-play, &.fa-pause, &.fa-stop{
+        &.fa-play, &.fa-pause, &.fa-stop {
             font-size: 95%;
         }
     }
@@ -526,12 +526,15 @@
         }
 
         &_left-actions {
+            position: relative;
             float: left;
             margin-left: - $edit-actions-spacing-h;
 
             label {
+                position: absolute;
                 margin-top: 6px;
                 margin-left: 9px;
+                white-space: nowrap;
                 color: $tools-pane-tabs-tab-color;
             }
         }

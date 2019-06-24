@@ -7,16 +7,21 @@
              cssBase="composum-pages-stage-edit-site-page-activated" data-path="@{site.site.path}">
     <div class="composum-pages-tools_actions btn-toolbar">
         <div class="composum-pages-tools_left-actions">
-            <input type="checkbox" class="composum-pages-stage-edit-site-page-activated_page-select-all"/>
-            <cpn:text tagName="label" value="Release Changes" i18n="true"
-                      title="${cpn:i18n(slingRequest,'pages activated with changes since the previous release')}"/>
+            <label title="${cpn:i18n(slingRequest,'pages activated with changes since the previous release')}">
+                <input type="checkbox" class="composum-pages-stage-edit-site-page-activated_page-select-all"/>
+                <span>${cpn:i18n(slingRequest,'Release Changes')}</span>
+            </label>
         </div>
         <div class="composum-pages-tools_right-actions">
             <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
                 <button type="button"
-                        class="fa fa-pause release composum-pages-tools_button btn btn-default"
-                        title="${cpn:i18n(slingRequest,'Revert selected pages')}...">
-                    <span class="composum-pages-tools_button-label">${cpn:i18n(slingRequest,'Revert')}</span></button>
+                        class="fa fa-pause revert composum-pages-tools_button btn btn-default"
+                        title="${cpn:i18n(slingRequest,'Revert selected pages')}..."></button>
+            </div>
+            <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
+                <button type="button"
+                        class="fa fa-refresh reload composum-pages-tools_button btn btn-default"
+                        title="${cpn:i18n(slingRequest,'Reload')}..."></button>
             </div>
         </div>
     </div>
@@ -27,10 +32,10 @@
                     <input type="checkbox" class="${siteCssBase}_page-select" data-path="${page.path}"/>
                     <div class="${siteCssBase}_page-entry" data-path="${page.path}">
                         <div class="${siteCssBase}_page-head">
-                            <div class="${siteCssBase}_page-title">${page.title}</div>
-                            <div class="${siteCssBase}_page-time">${page.lastModifiedString}</div>
+                            <div class="${siteCssBase}_page-title">${not empty page.title?cpn:text(page.title):'-- --'}</div>
+                            <cpn:text class="${siteCssBase}_page-time">${page.lastModifiedString}</cpn:text>
                         </div>
-                        <div class="${siteCssBase}_page-path">${page.siteRelativePath}</div>
+                        <cpn:text class="${siteCssBase}_page-path" type="path">${page.siteRelativePath}</cpn:text>
                     </div>
                 </li>
             </c:forEach>

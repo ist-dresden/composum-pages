@@ -79,6 +79,10 @@
 
             &_content {
                 overflow-x: scroll;
+
+                &.panel-body {
+                    padding: 10px 0;
+                }
             }
 
             &_page {

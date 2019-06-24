@@ -17,7 +17,8 @@
     .composum-pages-stage-edit-site-page-activated {
 
         &_page-select-all {
-            margin: $edit-actions-spacing-v 0 $edit-actions-spacing-v $edit-actions-spacing-h*4
+            vertical-align: top;
+            margin: 4px $edit-actions-spacing-h*2 0 $edit-actions-spacing-h*2
         }
 
         &_list {

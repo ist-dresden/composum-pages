@@ -49,8 +49,10 @@
             initialize: function () {
                 var c = releases.const.css.page;
                 this.sitePath = this.$el.data('path');
-                this.$button = this.$('button.activate');
-                this.$button.click(_.bind(this.doActivate, this));
+                this.$buttonActivate = this.$('button.activate');
+                this.$buttonActivate.click(_.bind(this.doActivate, this));
+                this.$buttonReload = this.$('button.reload');
+                this.$buttonReload.click(_.bind(this.reload, this));
                 this.$selectAllBox = this.$('.' + c.base + c._modified + c._selectAll);
                 this.$selectAllBox.on("change", _.bind(this.selectAll, this));
             },
@@ -61,6 +63,9 @@
                 this.$('.' + c.base + c._modified + c._select).each(function (index, value) {
                     value.checked = event.currentTarget.checked;
                 });
+            },
+
+            reload: function () {
             },
 
             doActivate: function (event) {
@@ -100,8 +105,10 @@
             initialize: function () {
                 var c = releases.const.css.page;
                 this.sitePath = this.$el.data('path');
-                this.$button = this.$('button.release');
-                this.$button.click(_.bind(this.doRevert, this));
+                this.$buttonRevert = this.$('button.revert');
+                this.$buttonRevert.click(_.bind(this.doRevert, this));
+                this.$buttonReload = this.$('button.reload');
+                this.$buttonReload.click(_.bind(this.reload, this));
                 this.$selectAllBox = this.$('.' + c.base + c._activated + c._selectAll);
                 this.$selectAllBox.on("change", _.bind(this.selectAll, this));
             },
@@ -112,6 +119,9 @@
                 this.$('.' + c.base + c._activated + c._select).each(function (index, value) {
                     value.checked = event.currentTarget.checked;
                 });
+            },
+
+            reload: function () {
             },
 
             doRevert: function (event) {
@@ -150,64 +160,88 @@
         releases.SiteReleases = Backbone.View.extend({
 
             initialize: function (options) {
+                var c = releases.const.css.release;
+                this.releaseRadios = $('.' + c.base + c._release + c._select);
                 this.sitePath = this.$el.data('path');
+                this.$buttonEdit = this.$('button.release-edit');
                 this.$buttonPublic = this.$('button.release-public');
                 this.$buttonPreview = this.$('button.release-preview');
                 this.$buttonDelete = this.$('button.release-delete');
+                this.$buttonReload = this.$('button.reload');
                 this.$buttonFinalize = this.$('button.release-finalize');
+                this.$buttonEdit.click(_.bind(this.editRelease, this));
                 this.$buttonPublic.click(_.bind(this.publicRelease, this));
                 this.$buttonPreview.click(_.bind(this.previewRelease, this));
                 this.$buttonDelete.click(_.bind(this.deleteRelease, this));
+                this.$buttonReload.click(_.bind(this.reload, this));
                 this.$buttonFinalize.click(_.bind(this.doFinalize, this));
             },
 
-            doFinalize: function (event) {
-                var c = releases.const.css.page;
-                var u = releases.const.url.release;
-                event.preventDefault();
-                if (this.sitePath) {
-                    if (pages.elements) { // context is a page
-                        pages.elements.openEditDialog({
-                            path: this.sitePath
-                        }, {
-                            url: u.root + u._finalize
-                        });
-                    } else { // context is the stage edit frame
-                        pages.dialogs.openEditDialog(undefined, this.sitePath, undefined, undefined/*context*/,
-                            u.root + u._finalize);
+            reload: function () {
+            },
+
+            getSelection: function () {
+                var result = undefined;
+                var that = this;
+                $.each(this.releaseRadios, _.bind(function (index, value) {
+                    if (value.checked) {
+                        result = {
+                            key: value.value,
+                            path: $(value).data('path')
+                        };
                     }
-                }
+                }));
+                return result;
             },
 
             changeRelease: function (action) {
-                var c = releases.const.css.release;
                 var u = releases.const.url.release;
-                this.releaseRadios = $('.' + c.base + c._release + c._select);
-                $.each(this.releaseRadios, _.bind(function (index, value) {
-                    if (value.checked) {
-                        var key = value.value;
-                        var path = this.sitePath;
-                        // call server with path and key
-                        core.ajaxPost(u.servlet + action + '.html', {
-                                path: path,
-                                releaseName: key
-                            }, {},
-                            _.bind(function (result) { // onSuccess
-                                if (pages.elements) {
-                                    pages.elements.triggerEvent(pages.elements.const.event.site.changed, [this.sitePath]);
-                                } else {
-                                    pages.log.debug('site.trigger.' + pages.const.event.site.changed + '(' + this.sitePath + ')');
-                                    $(document).trigger(pages.const.event.site.changed, [this.sitePath]);
-                                }
-                            }, this),
-                            _.bind(function (result) { // onError
-                                var fn = pages.elements ? pages.elements.alertMessage : core.alert;
-                                fn.call(this, 'danger', 'Error', 'Error on change release state', result);
-                            }, this)
-                        );
-                    }
-                }, this));
+                var selection = this.getSelection();
+                if (selection) {
+                    // call server with path and key
+                    core.ajaxPost(u.servlet + action + '.html', {
+                            path: this.sitePath,
+                            releaseName: selection.key
+                        }, {},
+                        _.bind(function (result) { // onSuccess
+                            if (pages.elements) {
+                                pages.elements.triggerEvent(pages.elements.const.event.site.changed, [this.sitePath]);
+                            } else {
+                                pages.log.debug('site.trigger.' + pages.const.event.site.changed + '(' + this.sitePath + ')');
+                                $(document).trigger(pages.const.event.site.changed, [this.sitePath]);
+                            }
+                        }, this),
+                        _.bind(function (result) { // onError
+                            var fn = pages.elements ? pages.elements.alertMessage : core.alert;
+                            fn.call(this, 'danger', 'Error', 'Error on change release state', result);
+                        }, this)
+                    );
+                }
+            },
 
+            openDialog: function (type, useSelection) {
+                var u = releases.const.url.release;
+                event.preventDefault();
+                var selection = useSelection ? this.getSelection() : {key: undefined, path: this.sitePath};
+                if (selection && selection.path) {
+                    if (pages.elements) { // context is a page
+                        pages.elements.openEditDialog({
+                            path: selection.path
+                        }, {
+                            url: u.root + type
+                        });
+                    } else { // context is the stage edit frame
+                        pages.dialogs.openEditDialog(selection.key, selection.path, undefined/*type*/,
+                            undefined/*context*/, u.root + type);
+                    }
+                }
+                return false;
+            },
+
+            doFinalize: function (event) {
+                event.preventDefault();
+                this.openDialog(releases.const.url.release._finalize, false);
+                return false;
             },
 
             publicRelease: function (event) {
@@ -223,26 +257,15 @@
                 return false;
             },
 
-            deleteRelease: function (event) {
-                var c = releases.const.css.release;
-                var u = releases.const.url.release;
+            editRelease: function (event) {
                 event.preventDefault();
-                this.releaseRadios = $('.' + c.base + c._release + c._select);
-                $.each(this.releaseRadios, _.bind(function (index, value) {
-                    if (value.checked) {
-                        var path = $(value).data('path');
-                        if (pages.elements) { // context is a page
-                            pages.elements.openEditDialog({
-                                path: path
-                            }, {
-                                url: u.root + u._delete
-                            });
-                        } else { // context is the stage edit frame
-                            pages.dialogs.openEditDialog(value.value, path, undefined/*type*/,
-                                undefined/*context*/, u.root + u._delete);
-                        }
-                    }
-                }, this));
+                this.openDialog(releases.const.url.release._edit, true);
+                return false;
+            },
+
+            deleteRelease: function (event) {
+                event.preventDefault();
+                this.openDialog(releases.const.url.release._delete, true);
                 return false;
             }
         });

@@ -8,9 +8,14 @@
              cssBase="composum-pages-stage-edit-site-releases" data-path="@{site.site.path}">
     <div class="composum-pages-tools_actions btn-toolbar">
         <div class="composum-pages-tools_left-actions">
-            <cpn:text tagName="label" value="Site Releases" i18n="true"/>
+            <label><cpn:text tagName="span" value="Site Releases" i18n="true"/></label>
         </div>
         <div class="composum-pages-tools_right-actions">
+            <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
+                <button type="button"
+                        class="fa fa-pencil composum-pages-tools_button btn btn-default release-edit"
+                        title="${cpn:i18n(slingRequest,'Public Release')}..."></button>
+            </div>
             <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
                 <button type="button"
                         class="fa fa-globe composum-pages-tools_button btn btn-default release-public"
@@ -18,9 +23,16 @@
                 <button type="button"
                         class="fa fa-eye composum-pages-tools_button btn btn-default release-preview"
                         title="${cpn:i18n(slingRequest,'Preview Release')}..."></button>
+            </div>
+            <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
                 <button type="button"
                         class="fa fa-trash composum-pages-tools_button btn btn-default release-delete"
                         title="${cpn:i18n(slingRequest,'Delete Release')}..."></button>
+            </div>
+            <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
+                <button type="button"
+                        class="fa fa-refresh reload composum-pages-tools_button btn btn-default"
+                        title="${cpn:i18n(slingRequest,'Reload')}..."></button>
             </div>
         </div>
     </div>

@@ -68,6 +68,11 @@ public class SiteRelease extends AbstractModel implements Comparable<SiteRelease
     }
 
     @Override
+    public String getPath() {
+        return stagingRelease.getPath();
+    }
+
+    @Override
     public String getTitle() {
         String title = super.getTitle();
         return StringUtils.isNotBlank(title) ? title

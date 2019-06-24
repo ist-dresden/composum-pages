@@ -6,14 +6,9 @@
                     </div>
                 </div>
                 <div class="modal-footer ${dialogCssBase}_footer">
-                    <div class="${dialogCssBase}_hints">
-                        <span class="${dialogCssBase}_path-hint" title="${dialog.resource.path}">${dialog.pathHint}</span>
-                        <span class="${dialogCssBase}_name-hint" title="${dialog.resource.path}">${dialog.nameHint}</span>
-                        <span class="${dialogCssBase}_type-hint" title="${dialog.resourceType}">${dialog.typeHint}</span>
-                    </div>
                     <button type="button" class="${dialogCssBase}_button-cancel ${dialogCssBase}_button btn btn-default"
                             data-dismiss="modal">${cpn:i18n(slingRequest,'Cancel')}</button>
-                    <button type="submit" class="${dialogCssBase}_button-submit-delete ${dialogCssBase}_button btn btn-danger">${cpn:i18n(slingRequest,'Delete')}</button>
+                    <button type="submit" class="${dialogCssBase}_button-save ${dialogCssBase}_button btn btn-primary">${cpn:i18n(slingRequest,'Save')}</button>
                 </div>
             </form>
         </div>

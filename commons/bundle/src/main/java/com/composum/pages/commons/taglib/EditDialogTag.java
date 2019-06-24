@@ -30,20 +30,23 @@ public class EditDialogTag extends AbstractEditTag {
     public static final String DIALOG_CSS_VAR = DIALOG_VAR + "CSS";
     public static final String DIALOG_CSSBASE_VAR = DIALOG_VAR + "CssBase";
 
-    public static final String DEFAULT_SELECTOR = "edit";
+    public static final String SELECTOR_CHANGE = "change";
     public static final String SELECTOR_CREATE = "create";
-    public static final String SELECTOR_NEW = "new";
     public static final String SELECTOR_DELETE = "delete";
+    public static final String SELECTOR_EDIT = "edit";
     public static final String SELECTOR_GENERIC = "generic";
+    public static final String SELECTOR_NEW = "new";
     public static final String SELECTOR_WIZARD = "wizard";
     public static final List<String> KNOWN_SELECTORS = Arrays.asList(
-            DEFAULT_SELECTOR,
+            SELECTOR_EDIT,
             SELECTOR_CREATE,
             SELECTOR_NEW,
             SELECTOR_DELETE,
+            SELECTOR_CHANGE,
             SELECTOR_GENERIC,
             SELECTOR_WIZARD
     );
+    public static final String DEFAULT_SELECTOR = SELECTOR_EDIT;
 
     public static final String DEFAULT_CSS_BASE = "composum-pages-stage-edit-dialog";
 

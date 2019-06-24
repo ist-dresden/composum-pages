@@ -28,6 +28,7 @@
             initialize: function (options) {
                 this.initContent();
                 var c = pages.const.event;
+                $(document).on(c.page.state + '.ModifiedPages', _.bind(this.reload, this));
                 $(document).on(c.site.changed + '.ModifiedPages', _.bind(this.reload, this));
             },
 
@@ -81,6 +82,7 @@
             },
 
             reload: function () {
+                this.closePreview();
                 var c = tools.const.modified.uri;
                 core.getHtml(c.load + this.contextTabs.reference.path,
                     undefined, undefined, _.bind(function (data) {
