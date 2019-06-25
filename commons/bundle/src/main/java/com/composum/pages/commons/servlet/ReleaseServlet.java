@@ -267,7 +267,6 @@ public class ReleaseServlet extends AbstractServiceServlet {
         }
         metaData.setProperty(JcrConstants.JCR_LASTMODIFIED, Calendar.getInstance());
         metaData.setProperty(JcrConstants.JCR_LASTMODIFIED + "By", request.getResourceResolver().getUserID());
-
     }
 
     protected StagingReleaseManager.Release getRelease(@Nonnull final SlingHttpServletRequest request,

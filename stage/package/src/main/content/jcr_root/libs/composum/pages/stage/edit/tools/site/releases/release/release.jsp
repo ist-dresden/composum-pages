@@ -11,7 +11,7 @@
         <div class="${releaseCSS}_entry" data-path="${release.path}">
             <div class="${releaseCSS}_head">
                 <cpn:text class="${releaseCSS}_key">${release.key}</cpn:text>
-                <cpn:text class="${releaseCSS}_title">${release.title}</cpn:text>
+                <cpn:text class="${releaseCSS}_title">${release.titleString}</cpn:text>
             </div>
             <div class="${releaseCSS}_status">
                 <cpn:text test="${not release.current}" class="${releaseCSS}_creationDate date"
@@ -28,7 +28,6 @@
                     </c:forEach>
                 </div>
             </div>
-            <cpn:text class="${releaseCSS}_description" value="${release.description}"/>
         </div>
     </li>
 </cpp:model>

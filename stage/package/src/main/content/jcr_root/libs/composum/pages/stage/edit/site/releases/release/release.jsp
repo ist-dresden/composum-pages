@@ -12,7 +12,7 @@
     <td class="${releaseCSS}_content">
         <div class="${releaseCSS}_tile">
             <div class="${releaseCSS}_row">
-                <cpn:text class="${releaseCSS}_title">${release.title}</cpn:text>
+                <cpn:text class="${releaseCSS}_title">${release.titleString}</cpn:text>
                 <cpn:text class="${releaseCSS}_key">${release.key}</cpn:text>
             </div>
             <div class="${releaseCSS}_row">

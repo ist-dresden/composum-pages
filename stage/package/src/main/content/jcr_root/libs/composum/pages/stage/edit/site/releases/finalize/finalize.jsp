@@ -2,7 +2,7 @@
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <cpp:defineFrameObjects/>
 <cpp:editDialog var="site" type="com.composum.pages.commons.model.Site" selector="generic" languageContext="false"
-                title="Finalize Release" submitLabel="Finalize" submit="/bin/cpm/pages/release.finalize.html"
+                title="Finalize Release" submitLabel="Finalize" submit="/bin/cpm/pages/release.finalize.json"
                 successEvent="site:changed">
     <input name="path" type="hidden" value="${site.path}" class="${siteCSS}_path"/>
     <div class="row">
