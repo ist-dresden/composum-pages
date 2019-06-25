@@ -9,9 +9,8 @@
         <div class="panel-heading" role="tab" id="releasesHead">
             <h4 class="panel-title">
                 <a class="collapsed" role="button" data-toggle="collapse"
-                   href="#releasesPanel" aria-expanded="false" aria-controls="releasesPanel">
-                    Release List
-                </a>
+                   href="#releasesPanel" aria-expanded="false"
+                   aria-controls="releasesPanel">${cpn:i18n(slingRequest,'Release List')}</a>
             </h4>
             <c:if test="${site.editMode}">
                 <div class="btn-group" role="group" aria-label="...">
@@ -34,17 +33,6 @@
              aria-labelledby="releasesHead">
             <div class="panel-body">
                 <table class="${siteCssBase}_table table table-condensed">
-                    <%--thead class="${siteCssBase}_thead">
-                    <tr>
-                        <c:if test="${site.editMode}">
-                            <th class="${siteCssBase}_select"></th>
-                        </c:if>
-                        <th class="${siteCssBase}_key">Key</th>
-                        <th class="${siteCssBase}_title">Title</th>
-                        <th class="${siteCssBase}_description">Description</th>
-                        <th class="${siteCssBase}_categories">Categories</th>
-                    </tr>
-                    </thead--%>
                     <tbody class="${siteCssBase}_tbody">
                     <c:forEach items="${site.releases}" var="release">
                         <sling:include resource="${release.resource}"

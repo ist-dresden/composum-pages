@@ -201,7 +201,7 @@
                     // call server with path and key
                     core.ajaxPost(u.servlet + action + '.html', {
                             path: this.sitePath,
-                            releaseName: selection.key
+                            releaseKey: selection.key
                         }, {},
                         _.bind(function (result) { // onSuccess
                             if (pages.elements) {

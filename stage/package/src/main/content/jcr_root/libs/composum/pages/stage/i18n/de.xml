@@ -9,6 +9,12 @@
 
         <by-someone jcr:primaryType="sling:MessageEntry"
                 sling:key="by" sling:message="von"/>
+        <relative-path jcr:primaryType="sling:MessageEntry"
+                sling:key="relative Path" sling:message="relativer Pfad"/>
+        <modification-Date jcr:primaryType="sling:MessageEntry"
+                sling:key="modification Date" sling:message="Modifikationsdatum"/>
+        <settings jcr:primaryType="sling:MessageEntry"
+                sling:key="Settings" sling:message="Einstellungen"/>
 
     </general>
     <frame jcr:primaryType="sling:Folder"><!-- Stage frame -->
@@ -31,6 +37,8 @@
                 sling:key="deactivated" sling:message="deaktiviert"/>
         <modified jcr:primaryType="sling:MessageEntry"
                 sling:key="modified" sling:message="geändert"/>
+        <Modified jcr:primaryType="sling:MessageEntry"
+                sling:key="Modified" sling:message="Geändert"/>
 
         <last-activated jcr:primaryType="sling:MessageEntry"
                 sling:key="last activated" sling:message="zuletzt aktiviert"/>
@@ -47,8 +55,18 @@
 
         <release jcr:primaryType="sling:MessageEntry"
                 sling:key="release" sling:message="Release"/>
+        <release-list jcr:primaryType="sling:MessageEntry"
+                sling:key="Release List" sling:message="Release-Liste"/>
         <current jcr:primaryType="sling:MessageEntry"
                 sling:key="current" sling:message="aktuell"/>
+        <Current jcr:primaryType="sling:MessageEntry"
+                sling:key="Current" sling:message="Aktuell"/>
+        <current-changes jcr:primaryType="sling:MessageEntry"
+                sling:key="Current Changes" sling:message="Aktuelle Änderungen"/>
+        <release-changes jcr:primaryType="sling:MessageEntry"
+                sling:key="Release Changes" sling:message="Release-Änderungen"/>
+        <modified-pages jcr:primaryType="sling:MessageEntry"
+                sling:key="Modified Pages" sling:message="Geänderte Seiten"/>
         <preview jcr:primaryType="sling:MessageEntry"
                 sling:key="preview" sling:message="Vorschau"/>
         <public jcr:primaryType="sling:MessageEntry"

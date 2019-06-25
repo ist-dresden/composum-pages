@@ -9,7 +9,7 @@
         <div class="composum-pages-tools_left-actions">
             <label title="${cpn:i18n(slingRequest,'pages activated with changes since the previous release')}">
                 <input type="checkbox" class="composum-pages-stage-edit-site-page-activated_page-select-all"/>
-                <span>${cpn:i18n(slingRequest,'Release Changes')}</span>
+                <span>${cpn:i18n(slingRequest,'Current Changes')}</span>
             </label>
         </div>
         <div class="composum-pages-tools_right-actions">

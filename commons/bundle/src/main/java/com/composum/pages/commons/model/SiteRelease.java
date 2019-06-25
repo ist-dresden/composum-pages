@@ -77,7 +77,7 @@ public class SiteRelease extends AbstractModel implements Comparable<SiteRelease
         String title = super.getTitle();
         return StringUtils.isNotBlank(title) ? title
                 : isCurrent() ? I18N.get(getContext().getRequest(),
-                "the open next release") : "<no title>";
+                "the open next release") : "-- --";
     }
 
     public String getKey() {

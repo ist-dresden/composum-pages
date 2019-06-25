@@ -21,7 +21,7 @@
                                            data-toggle="tab">${cpn:i18n(slingRequest,'Modified')}<span
                         class="badge badge-pill changes"><%=site.getModifiedPages().size()%></span></a></li>
                 <li role="presentation"><a href="#settings-tab" aria-controls="settings" role="tab"
-                                           data-toggle="tab">Settings</a></li>
+                                           data-toggle="tab">${cpn:i18n(slingRequest,'Settings')}</a></li>
             </ul>
 
             <div class="tab-content">
