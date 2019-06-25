@@ -14,20 +14,20 @@
             <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
                 <button type="button"
                         class="fa fa-pencil composum-pages-tools_button btn btn-default release-edit"
-                        title="${cpn:i18n(slingRequest,'Public Release')}..."></button>
+                        title="${cpn:i18n(slingRequest,'Edit Release properties')}..."></button>
             </div>
             <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
                 <button type="button"
                         class="fa fa-globe composum-pages-tools_button btn btn-default release-public"
-                        title="${cpn:i18n(slingRequest,'Public Release')}..."></button>
+                        title="${cpn:i18n(slingRequest,'switch Public Release to the selected release (publish)')}..."></button>
                 <button type="button"
                         class="fa fa-eye composum-pages-tools_button btn btn-default release-preview"
-                        title="${cpn:i18n(slingRequest,'Preview Release')}..."></button>
+                        title="${cpn:i18n(slingRequest,'switch Preview Release to the selected release')}..."></button>
             </div>
             <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
                 <button type="button"
                         class="fa fa-trash composum-pages-tools_button btn btn-default release-delete"
-                        title="${cpn:i18n(slingRequest,'Delete Release')}..."></button>
+                        title="${cpn:i18n(slingRequest,'Delete the selected release')}..."></button>
             </div>
             <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
                 <button type="button"

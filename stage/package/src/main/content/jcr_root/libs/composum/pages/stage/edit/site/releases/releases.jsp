@@ -14,17 +14,21 @@
             </h4>
             <c:if test="${site.editMode}">
                 <div class="btn-group" role="group" aria-label="...">
-                    <button type="button" class="btn btn-danger release-delete"><i
+                    <button type="button" class="btn btn-danger release-delete"
+                            title="${cpn:i18n(slingRequest,'Delete the selected release')}..."><i
                             class="fa fa-trash"></i>${cpn:i18n(slingRequest,'Delete')}</button>
                 </div>
                 <div class="btn-group" role="group" aria-label="...">
-                    <button type="button" class="btn btn-default release-public"><i
+                    <button type="button" class="btn btn-default release-public"
+                            title="${cpn:i18n(slingRequest,'switch Public Release to the selected release (publish)')}..."><i
                             class="fa fa-globe"></i>${cpn:i18n(slingRequest,'Public')}</button>
-                    <button type="button" class="btn btn-default release-preview"><i
+                    <button type="button" class="btn btn-default release-preview"
+                            title="${cpn:i18n(slingRequest,'switch Preview Release to the selected release')}..."><i
                             class="fa fa-eye"></i>${cpn:i18n(slingRequest,'Preview')}</button>
                 </div>
                 <div class="btn-group" role="group" aria-label="...">
-                    <button type="button" class="btn btn-default release-edit"><i
+                    <button type="button" class="btn btn-default release-edit"
+                            title="${cpn:i18n(slingRequest,'Edit Release properties')}..."><i
                             class="fa fa-pencil"></i>${cpn:i18n(slingRequest,'Edit')}</button>
                 </div>
             </c:if>
@@ -32,7 +36,7 @@
         <div id="releasesPanel" class="panel-collapse collapse in" role="tabpanel"
              aria-labelledby="releasesHead">
             <div class="panel-body">
-                <table class="${siteCssBase}_table table table-condensed">
+                <table class="${siteCssBase}_table table">
                     <tbody class="${siteCssBase}_tbody">
                     <c:forEach items="${site.releases}" var="release">
                         <sling:include resource="${release.resource}"

@@ -8,9 +8,14 @@ import com.composum.sling.platform.staging.StagingReleaseManager;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.apache.sling.api.resource.Resource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
+import javax.jcr.RepositoryException;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -21,6 +26,8 @@ import static com.composum.pages.commons.PagesConstants.PROP_LAST_MODIFIED;
  * Created by rw on 22.01.17.
  */
 public class SiteRelease extends AbstractModel implements Comparable<SiteRelease> {
+
+    private static final Logger LOG = LoggerFactory.getLogger(SiteRelease.class);
 
     protected StagingReleaseManager.Release stagingRelease;
     private transient Calendar creationDate;
@@ -110,6 +117,15 @@ public class SiteRelease extends AbstractModel implements Comparable<SiteRelease
 
     public String getCreationDateString() {
         return PagesUtil.getTimestampString(getCreationDate());
+    }
+
+    public Collection<Page> getChanges() {
+        try {
+            return getVersionsService().findReleaseChanges(getContext(), stagingRelease.getReleaseRoot(), this);
+        } catch (RepositoryException ex) {
+            LOG.error(ex.getMessage(), ex);
+            return new ArrayList<>();
+        }
     }
 
     @Override

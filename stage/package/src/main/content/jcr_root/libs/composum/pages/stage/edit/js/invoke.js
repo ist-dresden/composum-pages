@@ -43,22 +43,54 @@
                     alert: 'dialog:alert'
                 }
             },
-            event: { // event handling rules and keys (inter frame communication)
+            event: {
                 messagePattern: new RegExp('^([^{\\[]+)([{\\[].*[}\\]])$'),
+                ready: 'pages:ready',
+                scope: {
+                    changed: 'scope:changed'
+                },
                 site: {
-                    changed: 'site:changed'         // done.
+                    select: 'site:select',          // do it!...
+                    selected: 'site:selected',      // done.
+                    created: 'site:created',        // done.
+                    changed: 'site:changed',        // done.
+                    deleted: 'site:deleted'         // done.
                 },
                 page: {
+                    view: 'page:view',              // do it!...
+                    select: 'page:select',          // do it!...
+                    selected: 'page:selected',      // done.
+                    inserted: 'page:inserted',      // done.
                     changed: 'page:changed',        // done.
+                    deleted: 'page:deleted',        // done.
+                    state: 'page:state',            // changed state of the page itself only (no structure change)
                     containerRefs: 'page:containerRefs'
+                },
+                content: {
+                    select: 'content:select',       // do it!...
+                    selected: 'content:selected',   // done.
+                    inserted: 'content:inserted',   // done.
+                    changed: 'content:changed',     // done.
+                    deleted: 'content:deleted',     // done.
+                    moved: 'content:moved'          // done.
                 },
                 element: {
                     select: 'element:select',       // do it!...
                     selected: 'element:selected',   // done.
+                    insert: 'element:insert',       // do it!...
                     inserted: 'element:inserted',   // done.
                     changed: 'element:changed',     // done.
                     deleted: 'element:deleted',     // done.
+                    move: 'element:move',           // do it!...
                     moved: 'element:moved'          // done.
+                },
+                asset: {
+                    select: 'asset:select',         // do it!...
+                    selected: 'asset:selected'      // done.
+                },
+                path: {
+                    select: 'path:select',          // do it!...
+                    selected: 'path:selected'       // done.
                 },
                 dnd: {
                     object: 'dnd:object',           // prepare dragging

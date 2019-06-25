@@ -14,7 +14,7 @@
     </div>
     <div class="row">
         <div class="col col-xs-12">
-            <cpp:widget label="Descriotion" type="textarea" readonly="true" value="${release.description}"/>
+            <cpp:widget label="Description" type="textarea" readonly="true" value="${release.description}"/>
         </div>
     </div>
 </cpp:editDialog>

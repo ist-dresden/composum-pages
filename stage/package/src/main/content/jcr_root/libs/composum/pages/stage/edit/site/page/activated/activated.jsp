@@ -15,7 +15,7 @@
             </h4>
             <c:if test="${site.editMode}">
                 <div class="btn-group" role="group" aria-label="...">
-                    <button class="btn btn-default release"><i
+                    <button class="btn btn-default revert"><i
                             class="fa fa-pause"></i>${cpn:i18n(slingRequest,'Revert')}</button>
                 </div>
             </c:if>

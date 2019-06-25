@@ -35,6 +35,7 @@
                 viewAction: 'view',
                 compareAction: 'compare',
                 activateAction: 'activate',
+                revertAction: 'revert',
                 deactivateAction: 'deactivate',
                 checkpointAction: 'checkpoint',
                 menuKey: '_menu',
@@ -82,6 +83,7 @@
                 var c = tools.const.versions;
                 this.$viewAction = this.$('.' + c.cssBase + c.actionKey + c.viewAction);
                 this.$activateAction = this.$('.' + c.cssBase + c.actionKey + c.activateAction);
+                this.$revertAction = this.$('.' + c.cssBase + c.actionKey + c.revertAction);
                 this.$deactivateAction = this.$('.' + c.cssBase + c.actionKey + c.deactivateAction);
                 this.$checkpointAction = this.$('.' + c.cssBase + c.actionKey + c.checkpointAction);
                 this.$moreMenu = this.$('.' + c.cssBase + c.menuKey);
@@ -97,6 +99,7 @@
                 ];
                 this.$viewAction.click(_.bind(this.toggleView, this));
                 this.$activateAction.click(_.bind(this.activatePage, this));
+                this.$revertAction.click(_.bind(this.revertPage, this));
                 this.$deactivateAction.click(_.bind(this.deactivatePage, this));
                 this.$checkpointAction.click(_.bind(this.createCheckpoint, this));
                 this.$purgeAction.click(_.bind(this.purgeVersions, this));
@@ -138,6 +141,11 @@
             activatePage: function (event) {
                 var ref = this.versions.data.reference;
                 pages.actions.page.activate(event, ref.name, ref.path, ref.type);
+            },
+
+            revertPage: function (event) {
+                var ref = this.versions.data.reference;
+                pages.actions.page.revert(event, ref.name, ref.path, ref.type);
             },
 
             deactivatePage: function (event) {

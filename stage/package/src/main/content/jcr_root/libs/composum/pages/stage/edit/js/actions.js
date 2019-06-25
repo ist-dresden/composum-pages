@@ -202,6 +202,10 @@
                 pages.dialogs.openActivatePageDialog(name, path, type);
             },
 
+            revert: function (event, name, path, type) {
+                pages.dialogs.openRevertPageDialog(name, path, type);
+            },
+
             deactivate: function (event, name, path, type) {
                 pages.dialogs.openDeactivatePageDialog(name, path, type);
             },

@@ -47,6 +47,7 @@
                 $(document).on(e.content.inserted + id, _.bind(this.onElementChanged, this));
                 $(document).on(e.content.changed + id, _.bind(this.onElementChanged, this));
                 $(document).on(e.content.deleted + id, _.bind(this.onElementDeleted, this));
+                $(document).on(e.page.state + id, _.bind(this.onPageState, this));
                 $(document).on(e.page.selected + id, _.bind(this.onPageSelected, this));
                 $(document).on(e.page.select + id, _.bind(this.selectPage, this));
                 $(document).on(e.page.view + id, _.bind(this.onViewPage, this));
@@ -258,7 +259,14 @@
                 }
             },
 
+            onPageState: function (event, reference) {
+                this.$frame[0].contentWindow.postMessage(pages.const.event.page.state
+                    + JSON.stringify(reference), '*');
+            },
+
             onSiteChanged: function (event, path) {
+                this.$frame[0].contentWindow.postMessage(pages.const.event.site.changed
+                    + JSON.stringify([path]), '*');
             },
 
             onViewPage: function (event, path, parameters) {

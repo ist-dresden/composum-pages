@@ -6,5 +6,6 @@
         embed="[category:composum.pages.widgets,
                 composum/platform/public/page/css/page.css,
                 composum/pages/stage/edit/css/dialogs.css,
+                composum/pages/stage/edit/site/css/site.css,
                 composum/pages/stage/home/css/home.css]">
 </jcr:root>

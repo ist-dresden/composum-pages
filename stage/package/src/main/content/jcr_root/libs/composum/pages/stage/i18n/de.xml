@@ -12,7 +12,7 @@
         <relative-path jcr:primaryType="sling:MessageEntry"
                 sling:key="relative Path" sling:message="relativer Pfad"/>
         <modification-Date jcr:primaryType="sling:MessageEntry"
-                sling:key="modification Date" sling:message="Modifikationsdatum"/>
+                sling:key="modification Date" sling:message="Änderungsdatum"/>
         <settings jcr:primaryType="sling:MessageEntry"
                 sling:key="Settings" sling:message="Einstellungen"/>
 
@@ -37,8 +37,6 @@
                 sling:key="deactivated" sling:message="deaktiviert"/>
         <modified jcr:primaryType="sling:MessageEntry"
                 sling:key="modified" sling:message="geändert"/>
-        <Modified jcr:primaryType="sling:MessageEntry"
-                sling:key="Modified" sling:message="Geändert"/>
 
         <last-activated jcr:primaryType="sling:MessageEntry"
                 sling:key="last activated" sling:message="zuletzt aktiviert"/>
@@ -52,25 +50,6 @@
                 sling:key="last modified" sling:message="zuletzt geändert"/>
         <last-modified-by jcr:primaryType="sling:MessageEntry"
                 sling:key="last modified by" sling:message="zuletzt geändert von"/>
-
-        <release jcr:primaryType="sling:MessageEntry"
-                sling:key="release" sling:message="Release"/>
-        <release-list jcr:primaryType="sling:MessageEntry"
-                sling:key="Release List" sling:message="Release-Liste"/>
-        <current jcr:primaryType="sling:MessageEntry"
-                sling:key="current" sling:message="aktuell"/>
-        <Current jcr:primaryType="sling:MessageEntry"
-                sling:key="Current" sling:message="Aktuell"/>
-        <current-changes jcr:primaryType="sling:MessageEntry"
-                sling:key="Current Changes" sling:message="Aktuelle Änderungen"/>
-        <release-changes jcr:primaryType="sling:MessageEntry"
-                sling:key="Release Changes" sling:message="Release-Änderungen"/>
-        <modified-pages jcr:primaryType="sling:MessageEntry"
-                sling:key="Modified Pages" sling:message="Geänderte Seiten"/>
-        <preview jcr:primaryType="sling:MessageEntry"
-                sling:key="preview" sling:message="Vorschau"/>
-        <public jcr:primaryType="sling:MessageEntry"
-                sling:key="public" sling:message="publiziert"/>
 
         <Activate-Page jcr:primaryType="sling:MessageEntry"
                 sling:key="Activate Page" sling:message="Seite Aktivieren"/>
@@ -104,10 +83,66 @@
                 sling:key="select unresolved assets references for activation"
                 sling:message="Auswahl offener Asset-Referenzen zur gleichzeitigen Aktivierung"/>
         <activate-references-hint jcr:primaryType="sling:MessageEntry"
-                                  sling:key="The elements listed above are referenced directly or indirectly by this page and not part of the designated release (probably modified but not activated yet). All selected references will be activated together with this page."
-                                  sling:message="Die oben angezeigten Elemente werden direkt oder indirekt durch diese Seite referenziert und sind nicht im vorgesehenen Release enthalten (möglichweise geändert und nicht aktiviert). Alle selektierten Referenzen werden zusammen mit dieser Seite aktiviert."/>
+                sling:key="The elements listed above are referenced directly or indirectly by this page and not part of the designated release (probably modified but not activated yet). All selected references will be activated together with this page."
+                sling:message="Die oben angezeigten Elemente werden direkt oder indirekt durch diese Seite referenziert und sind nicht im vorgesehenen Release enthalten (möglichweise geändert und nicht aktiviert). Alle selektierten Referenzen werden zusammen mit dieser Seite aktiviert."/>
 
     </versions>
+    <releases jcr:primaryType="sling:Folder"><!-- version tools -->
+
+        <Activated jcr:primaryType="sling:MessageEntry"
+                sling:key="Activated" sling:message="Aktiviert"/>
+        <Activate jcr:primaryType="sling:MessageEntry"
+                sling:key="Activate" sling:message="Aktivieren"/>
+        <Activate-hint jcr:primaryType="sling:MessageEntry"
+                sling:key="Activate selected pages" sling:message="die markierten Seiten Aktivieren"/>
+        <Revert jcr:primaryType="sling:MessageEntry"
+                sling:key="Revert" sling:message="Zurücksetzen"/>
+        <Revert-hint jcr:primaryType="sling:MessageEntry"
+                sling:key="Revert selected pages" sling:message="die markierten Seiten Zurücksetzen"/>
+        <Deactivate jcr:primaryType="sling:MessageEntry"
+                sling:key="Deactivate" sling:message="Deaktivieren"/>
+        <Modified jcr:primaryType="sling:MessageEntry"
+                sling:key="Modified" sling:message="Geändert"/>
+
+        <release jcr:primaryType="sling:MessageEntry"
+                sling:key="release" sling:message="Release"/>
+        <release-list jcr:primaryType="sling:MessageEntry"
+                sling:key="Release List" sling:message="Release-Liste"/>
+        <current jcr:primaryType="sling:MessageEntry"
+                sling:key="current" sling:message="aktuell"/>
+        <Current jcr:primaryType="sling:MessageEntry"
+                sling:key="Current" sling:message="Aktuell"/>
+        <activated-pages jcr:primaryType="sling:MessageEntry"
+                sling:key="Activated Pages" sling:message="Aktivierte Seiten"/>
+        <activated-pages-hint jcr:primaryType="sling:MessageEntry"
+                sling:key="pages activated with changes since the previous release"
+                sling:message="seit dem letzten Release aktivierte Seiten"/>
+        <current-changes jcr:primaryType="sling:MessageEntry"
+                sling:key="Current Changes" sling:message="Aktuelle Änderungen"/>
+        <release-changes jcr:primaryType="sling:MessageEntry"
+                sling:key="Release Changes" sling:message="Release-Änderungen"/>
+        <modified-pages jcr:primaryType="sling:MessageEntry"
+                sling:key="Modified Pages" sling:message="Geänderte Seiten"/>
+        <modified-pages-hint jcr:primaryType="sling:MessageEntry"
+                sling:key="modified but last changes not activated yet"
+                sling:message="seit der letzten Änderung noch nicht aktiviert"/>
+        <preview jcr:primaryType="sling:MessageEntry"
+                sling:key="preview" sling:message="Vorschau"/>
+        <public jcr:primaryType="sling:MessageEntry"
+                sling:key="public" sling:message="publiziert"/>
+
+        <release-edit jcr:primaryType="sling:MessageEntry"
+                sling:key="Edit Release properties" sling:message="die Release-Eigenschaften bearbeiten"/>
+        <release-public jcr:primaryType="sling:MessageEntry"
+                sling:key="switch Public Release to the selected release (publish)"
+                sling:message="das markierte Release als Public-Release verwenden (veröffentlichen)"/>
+        <release-preview jcr:primaryType="sling:MessageEntry"
+                sling:key="switch Preview Release to the selected release"
+                sling:message="das markierte Release als Preview-Release verwenden"/>
+        <release-delete jcr:primaryType="sling:MessageEntry"
+                sling:key="Delete the selected release" sling:message="das markierte Release Löschen"/>
+
+    </releases>
     <site jcr:primaryType="sling:Folder"><!-- Site actions -->
 
         <copy-site jcr:primaryType="sling:MessageEntry"

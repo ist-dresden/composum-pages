@@ -15,8 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
-import javax.jcr.RepositoryException;
-import java.util.ArrayList;
+import javax.annotation.Nullable;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
@@ -180,6 +179,11 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
 
     }
 
+    public SiteRelease getCurrentRelease(){
+        final List<SiteRelease> releases = getReleases();
+        return releases.isEmpty() ? null : releases.get(0);
+    }
+
     /**
      * @return the list of pages changed after last activation
      */
@@ -195,23 +199,13 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
      */
     public Collection<Page> getReleaseChanges() {
         if (releaseChanges == null) {
-            final List<SiteRelease> releases = getReleases();
-            final SiteRelease release = releases.isEmpty() ? null : releases.get(releases.size() - 1);
-            releaseChanges = getReleaseChanges(release);
+            releaseChanges = getReleaseChanges(getCurrentRelease());
         }
         return releaseChanges;
     }
 
-    public Collection<Page> getReleaseChanges(SiteRelease releaseToCheck) {
-        if (releaseToCheck == null)
-            return Collections.emptyList();
-        Collection<Page> result;
-        try {
-            result = getVersionsService().findReleaseChanges(getContext(), getResource(), releaseToCheck);
-        } catch (RepositoryException ex) {
-            LOG.error(ex.getMessage(), ex);
-            result = new ArrayList<>();
-        }
-        return result;
+    @Nonnull
+    public Collection<Page> getReleaseChanges(@Nullable final SiteRelease releaseToCheck) {
+        return releaseToCheck != null ? releaseToCheck.getChanges() : Collections.emptyList();
     }
 }

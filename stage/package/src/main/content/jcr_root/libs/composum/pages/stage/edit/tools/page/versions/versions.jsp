@@ -20,23 +20,16 @@
             <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
                 <button type="button"
                         class="fa fa-play ${versionsCssBase}_action_activate composum-pages-tools_button btn btn-default"
-                        title="${cpn:i18n(slingRequest,'Activate Page')}"><span
-                        class="composum-pages-tools_button-label">${cpn:i18n(slingRequest,'Activate Page')}</span>
-                </button>
+                        title="${cpn:i18n(slingRequest,'Activate Page')}"></button>
                 <button type="button"
                         class="fa fa-pause ${versionsCssBase}_action_revert composum-pages-tools_button btn btn-default"
-                        title="${cpn:i18n(slingRequest,'Revert Page')}"><span
-                        class="composum-pages-tools_button-label">${cpn:i18n(slingRequest,'Revert Page')}</span>
-                </button>
+                        title="${cpn:i18n(slingRequest,'Revert Page')}"></button>
                 <button type="button"
                         class="fa fa-stop ${versionsCssBase}_action_deactivate composum-pages-tools_button btn btn-default"
-                        title="${cpn:i18n(slingRequest,'Deactivate Page')}"><span
-                        class="composum-pages-tools_button-label">${cpn:i18n(slingRequest,'Deactivate Page')}</span>
-                </button>
+                        title="${cpn:i18n(slingRequest,'Deactivate Page')}"></button>
                 <button type="button"
                         class="fa fa-circle-o ${versionsCssBase}_action_checkpoint composum-pages-tools_button btn btn-default"
-                        title="${cpn:i18n(slingRequest,'Checkpoint (In/Out) - new version')}"><span
-                        class="composum-pages-tools_button-label">${cpn:i18n(slingRequest,'Checkpoint')}</span></button>
+                        title="${cpn:i18n(slingRequest,'Checkpoint (In/Out) - new version')}"></button>
             </div>
             <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
                 <button type="button"
