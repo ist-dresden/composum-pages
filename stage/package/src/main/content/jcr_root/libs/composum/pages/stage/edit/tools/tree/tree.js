@@ -404,8 +404,12 @@
             },
 
             initializeFilter: function () {
-                var p = pages.const.profile.page.tree;
-                this.filter = pages.profile.get(p.aspect, p.filter, undefined);
+                if (pages.isEditMode()) {
+                    var p = pages.const.profile.page.tree;
+                    this.filter = pages.profile.get(p.aspect, p.filter, undefined);
+                } else {
+                    this.filter = undefined;
+                }
             },
 
             dataUrlForPath: function (path) {
