@@ -10,6 +10,10 @@
             pathfield: {
                 css: {
                     base: 'pathfield-widget'
+                },
+                profile: {
+                    aspect: 'pathfield',
+                    value: 'value'
                 }
             }
         });
@@ -20,6 +24,38 @@
                 var e = pages.const.event;
                 core.components.PathWidget.prototype.initialize.apply(this, [options]);
                 $(document).on(e.scope.changed + '.pathField', _.bind(this.onScopeChanged, this));
+            },
+
+            profileAspect: function () {
+                return widgets.const.pathfield.profile.aspect;
+            },
+
+            /**
+             * extension for dialog initialization with profile value
+             */
+            getPath: function (callback) {
+                var value = this.getValue();
+                if (_.isFunction(callback)) {
+                    if (!value) {
+                        var p = widgets.const.pathfield.profile;
+                        value = widgets.profile.get(this.profileAspect(), p.value);
+                    }
+                    callback(value);
+                } else {
+                    return value;
+                }
+            },
+
+            /**
+             * store value on profile for the next dialog initialization
+             */
+            setValue: function (value, triggerChange) {
+                core.components.PathWidget.prototype.setValue.apply(this, [value, triggerChange]);
+                if (value) {
+                    var p = widgets.const.pathfield.profile;
+                    widgets.profile.set(this.profileAspect(), p.value, core.getParentPath(value));
+                    widgets.profile.save(this.profileAspect());
+                }
             },
 
             onScopeChanged: function () {

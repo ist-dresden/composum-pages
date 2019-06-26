@@ -18,7 +18,8 @@
                 url: {
                     base: '/bin/cpm/pages/assets',
                     _data: '.assetData.json'
-                }
+                },
+                profile: 'imagefield'
             }
         });
 
@@ -32,6 +33,10 @@
                 this.$data = this.$preview.find('.' + c.edit + c._data);
                 this.$textField.on('change.imagefield', _.bind(this.onChange, this));
                 this.onPreviewShown();
+            },
+
+            profileAspect: function () {
+                return widgets.const.imagefield.profile;
             },
 
             onChange: function () {

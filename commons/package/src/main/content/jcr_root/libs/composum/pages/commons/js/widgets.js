@@ -7,20 +7,12 @@
         'use strict';
 
         widgets.const = _.extend(widgets.const || {}, {
-            linkfield: {
-                cssBase: 'linkfield-widget',
-                profile: 'linkfield'
+            profile: {
+                aspect: 'widgets'
             }
         });
 
-        widgets.LinkFieldWidget = widgets.PathFieldWidget.extend({
-
-            profileAspect: function () {
-                return widgets.const.linkfield.profile;
-            }
-        });
-
-        window.widgets.register('.widget.' + widgets.const.linkfield.cssBase, widgets.LinkFieldWidget);
+        widgets.profile = new core.LocalProfile('composum.pages.widgets');
 
     })(window.composum.pages.widgets, window.composum.pages, window.core);
 })(window);

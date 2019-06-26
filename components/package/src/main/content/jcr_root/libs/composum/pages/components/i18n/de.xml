@@ -11,9 +11,10 @@
                 sling:key="medium" sling:message="mittel"/>
         <other jcr:primaryType="sling:MessageEntry"
                 sling:key="other" sling:message="sonstige"/>
+
     </general>
 
-    <category jcr:primaryType="sling:Folder">
+    <category jcr:primaryType="sling:Folder"><!-- component category labels -->
 
         <General jcr:primaryType="sling:MessageEntry"
                 sling:key="General" sling:message="Allgemein"/>
@@ -21,6 +22,7 @@
                 sling:key="Documentation" sling:message="Dokumentation"/>
         <Image jcr:primaryType="sling:MessageEntry"
                 sling:key="Image" sling:message="Bild"/>
+
     </category>
 
     <element jcr:primaryType="sling:Folder"><!-- element labels -->
@@ -41,6 +43,7 @@
                 sling:key="Paragraph System" sling:message="Paragraphensystem"/>
         <textimage jcr:primaryType="sling:MessageEntry"
                 sling:key="Text &amp; Image" sling:message="Text &amp; Bild"/>
+
     </element>
 
     <property jcr:primaryType="sling:Folder"><!-- some property labels -->
@@ -105,9 +108,21 @@
                 sling:key="Type" sling:message="Typ"/>
         <with-space jcr:primaryType="sling:MessageEntry"
                 sling:key="with spacing" sling:message="mit Zwischenraum"/>
+
     </property>
 
-    <text jcr:primaryType="sling:Folder"><!-- text formatting option name -->
+    <link jcr:primaryType="sling:Folder"><!-- link element component -->
+
+        <target-hint jcr:primaryType="sling:MessageEntry"
+                sling:key="the path of the links target page or an external link"
+                sling:message="der Pfad zur Zielseite oder ein externer Link"/>
+        <title-hint jcr:primaryType="sling:MessageEntry"
+                sling:key="the text for the link tooltip (optional)"
+                sling:message="der Text für den Link-Hinweis (optional)"/>
+
+    </link>
+
+    <text jcr:primaryType="sling:Folder"><!-- text element component -->
 
         <bottom jcr:primaryType="sling:MessageEntry"
                 sling:key="bottom" sling:message="unten"/>
@@ -121,12 +136,14 @@
                 sling:key="right" sling:message="rechts"/>
         <top jcr:primaryType="sling:MessageEntry"
                 sling:key="top" sling:message="oben"/>
+
     </text>
 
     <validation jcr:primaryType="sling:Folder"><!-- validation hints -->
 
         <pattern jcr:primaryType="sling:MessageEntry"
                 sling:key="a value matching pattern: '{}'" sling:message="ein Wert passend zum Muster: '{}'"/>
+
     </validation>
 
 </jcr:root>

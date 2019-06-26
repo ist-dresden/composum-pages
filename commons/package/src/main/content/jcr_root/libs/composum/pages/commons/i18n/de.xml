@@ -63,6 +63,20 @@
                     sling:message="muss eine E-Mail-Adresse sein (RFC 2822)"/>
         </email>
 
+        <linkfield jcr:primaryType="sling:Folder"><!-- linkfield widget terms -->
+
+            <select-path-title jcr:primaryType="sling:MessageEntry"
+                    sling:key="Select the repository path"
+                    sling:message="Repository-Pfad auswählen"/>
+            <dialog-title jcr:primaryType="sling:MessageEntry"
+                    sling:key="Select Target"
+                    sling:message="Ziel Auswählen"/>
+            <data-label jcr:primaryType="sling:MessageEntry"
+                    sling:key="Link or select(ed) path"
+                    sling:message="Link oder ausgewählter Pfad"/>
+
+        </linkfield>
+
     </widget>
 
     <release jcr:primaryType="sling:Folder"><!-- widget and dialog buttons, labels and titles -->

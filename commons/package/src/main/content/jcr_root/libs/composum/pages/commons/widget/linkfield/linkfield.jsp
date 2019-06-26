@@ -6,12 +6,13 @@
 <div class="${widgetCSS}_${widget.widgetType} ${widgetCSS}_${widget.cssName} form-group">
     <sling:call script="label.jsp"/>
     <div class="${widgetCSS}_link-field input-group widget linkfield-widget widget-name_${widget.cssName}" ${widget.attributes}
-         title="Select Link" data-label="Link or select(ed) path">
+         title="${cpn:i18n(slingRequest,'Select Target')}"
+         data-label="${cpn:i18n(slingRequest,'Link or select(ed) path')}">
         <input name="${widget.name}" class="${widgetCSS}_input form-control" type="text"
                data-label="${widget.label}" data-i18n="${widget.i18n}"
                value="${cpn:value(widget.model.path)}" placeholder="${cpn:value(widget.placeholder)}"/>
         <span class="${widgetCSS}_popup-button input-group-btn">
               <button class="${widgetCSS}_select select btn btn-default" type="button"
-                      title="Select the repository path">...</button></span>
+                      title="${cpn:i18n(slingRequest,'Select the repository path')}...">...</button></span>
     </div>
 </div>
