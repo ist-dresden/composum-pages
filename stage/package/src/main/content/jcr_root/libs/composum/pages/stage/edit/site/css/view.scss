@@ -175,6 +175,12 @@
                 text-align: right;
             }
 
+            &_categories {
+                display: inline-block;
+                margin-top: 5px;
+                white-space: nowrap;
+            }
+
             &_description {
 
                 &, & p, & ul {

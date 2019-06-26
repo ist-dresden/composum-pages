@@ -41,7 +41,8 @@
                                 <td class="_input"><input type="checkbox" class="${siteCssBase}_page-select"
                                                           data-path="${page.path}"></td>
                             </c:if>
-                            <td class="${siteCssBase}_page-path">${cpn:path(page.siteRelativePath)}</td>
+                            <td class="${siteCssBase}_page-path"><a
+                                    href="${page.url}">${cpn:path(page.siteRelativePath)}</a></td>
                             <td class="${siteCssBase}_page-title">${cpn:text(page.title)}</td>
                             <td class="${siteCssBase}_page-time">${cpn:text(page.lastModifiedString)}</td>
                         </tr>

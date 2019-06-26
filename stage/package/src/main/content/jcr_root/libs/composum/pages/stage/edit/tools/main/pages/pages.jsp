@@ -4,13 +4,15 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <cpp:defineFrameObjects/>
 <cpp:element var="tree" type="com.composum.pages.stage.model.edit.FramePage" mode="none"
-             cssAdd="composum-pages-tools">
-    <c:if test="${tree.editMode}">
-        <div class="composum-pages-tools_actions btn-toolbar">
-            <div class="composum-pages-tools_left-actions">
+             cssAdd="composum-pages-tools browse-actions">
+    <div class="composum-pages-tools_actions btn-toolbar">
+        <c:if test="${tree.editMode}">
+            <div class="composum-pages-tools_left-actions browse-hidden">
             </div>
-            <div class="composum-pages-tools_right-actions">
-                <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
+        </c:if>
+        <div class="composum-pages-tools_right-actions">
+            <c:if test="${tree.editMode}">
+                <div class="composum-pages-tools_button-group btn-group btn-group-sm browse-hidden" role="group">
                     <button type="button"
                             class="fa fa-filter composum-pages-tools_button btn btn-default dropdown dropdown-toggle"
                             data-toggle="dropdown" title="Filter"><span
@@ -27,16 +29,16 @@
                         </li>
                     </ul>
                 </div>
-                <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
-                    <button type="button"
-                            class="fa fa-search ${treeCssBase}_toggle-view composum-pages-tools_button btn btn-default"
-                            title="${cpn:i18n(slingRequest,'Search a page')}"><cpn:text
-                            tagName="span" class="composum-pages-tools_button-label"
-                            i18n="true">Search</cpn:text></button>
-                </div>
+            </c:if>
+            <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
+                <button type="button"
+                        class="fa fa-search ${treeCssBase}_toggle-view composum-pages-tools_button btn btn-default"
+                        title="${cpn:i18n(slingRequest,'Search a page')}"><cpn:text
+                        tagName="span" class="composum-pages-tools_button-label"
+                        i18n="true">Search</cpn:text></button>
             </div>
         </div>
-    </c:if>
+    </div>
     <%-- the '.tree-panel' around the tree is important for the 'auto-scroll to selected node' tree feature --%>
     <div class="composum-pages-tools_tree-panel tree-panel">
         <div class="composum-pages-tools_tree">
