@@ -14,11 +14,12 @@ public class SiteModel extends FrameModel {
         if (site == null) {
             Model delegate = getDelegate();
             if (delegate instanceof Site) {
-                site = (Site) getDelegate();
+                site = (Site) delegate;
             } else if (delegate instanceof Page) {
-                site = ((Page) getDelegate()).getSite();
+                site = ((Page) delegate).getSite();
             } else if (delegate instanceof Element) {
-                site = ((Element) getDelegate()).getContainingPage().getSite();
+                Page containingPage = delegate.getContainingPage();
+                site = containingPage != null ? containingPage.getSite() : null;
             }
         }
         return site;

@@ -36,6 +36,8 @@ public class InPlacePageReplication extends InPlaceReplicationStrategy {
             if (Page.isPage(resource)) {
                 result = resource != null &&
                         (Page.isPage(resource) && resource.getChild(JcrConstants.JCR_CONTENT) != null);
+            } else if (Page.isPageContent(resource)) {
+                return Page.isPage(resource.getParent());
             } else {
                 result = (Site.isSite(resource));
             }
@@ -46,4 +48,11 @@ public class InPlacePageReplication extends InPlaceReplicationStrategy {
         return result;
     }
 
+    @Override
+    public void replicate(ReplicationContext context, Resource resource, boolean recursive) throws Exception {
+        if (Page.isPageContent(resource)) // the replication works on pages, not their jcr:content
+            super.replicate(context, resource.getParent(), recursive);
+        else
+            super.replicate(context, resource, recursive);
+    }
 }
