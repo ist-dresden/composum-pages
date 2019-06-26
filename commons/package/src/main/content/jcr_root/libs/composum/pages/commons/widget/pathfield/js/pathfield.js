@@ -13,7 +13,7 @@
                 },
                 profile: {
                     aspect: 'pathfield',
-                    value: 'value'
+                    parent: 'parent'
                 }
             }
         });
@@ -38,7 +38,7 @@
                 if (_.isFunction(callback)) {
                     if (!value) {
                         var p = widgets.const.pathfield.profile;
-                        value = widgets.profile.get(this.profileAspect(), p.value);
+                        value = widgets.profile.get(this.profileAspect(), p.parent);
                     }
                     callback(value);
                 } else {
@@ -53,7 +53,7 @@
                 core.components.PathWidget.prototype.setValue.apply(this, [value, triggerChange]);
                 if (value) {
                     var p = widgets.const.pathfield.profile;
-                    widgets.profile.set(this.profileAspect(), p.value, core.getParentPath(value));
+                    widgets.profile.set(this.profileAspect(), p.parent, core.getParentPath(value));
                     widgets.profile.save(this.profileAspect());
                 }
             },

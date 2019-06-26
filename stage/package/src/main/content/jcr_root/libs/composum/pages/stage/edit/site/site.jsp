@@ -4,16 +4,17 @@
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <cpp:defineObjects/>
 <html data-context-path="${slingRequest.contextPath}">
-<cpp:model var="site" type="com.composum.pages.commons.model.Site">
+<cpp:model var="model" type="com.composum.pages.stage.model.edit.site.SiteModel">
     <head>
-        <title>"${cpn:text(site.title)}"</title>
+        <title>"${cpn:text(model.site.title)}"</title>
         <sling:call script="head.jsp"/>
     </head>
     <body>
     <div class="container-fluid">
         <div class="row">
-            <div class="${siteCSS} col col-xs-12">
-                <h2>${cpn:text(site.title)} <span class="${siteCssBase}_title-type">(Site)</span></h2>
+            <div class="${modelCSS} col col-xs-12">
+                <h2 class="${modelCSS}_title">${cpn:text(model.site.title)}
+                    <span class="${modelCssBase}_title-type">(Site:${cpn:path(model.site.path)})</span></h2>
                 <sling:call script="content.jsp"/>
             </div>
         </div>

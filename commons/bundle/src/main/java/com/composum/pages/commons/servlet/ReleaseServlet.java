@@ -37,7 +37,8 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.Objects;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
+import static com.composum.pages.commons.model.SiteRelease.RELEASE_PATH_PATTERN;
 
 /**
  * @author Mirko Zeibig
@@ -60,8 +61,6 @@ public class ReleaseServlet extends AbstractServiceServlet {
 
     public static final String PARAM_NUMBER = "number";
     public static final String PARAM_DESCRIPTION = "description";
-
-    public static final Pattern RELEASE_PATH_PATTERN = Pattern.compile("^(/.*)/jcr:content/cpl:releases/(.+)$");
 
     protected BundleContext bundleContext;
 

@@ -10,26 +10,6 @@
                                                value="${release.key}" data-path="${release.path}"/></td>
     </c:if>
     <td class="${releaseCSS}_content">
-        <div class="${releaseCSS}_tile">
-            <div class="${releaseCSS}_row">
-                <cpn:text class="${releaseCSS}_title">${release.titleString}</cpn:text>
-                <cpn:text class="${releaseCSS}_key">${release.key}</cpn:text>
-            </div>
-            <div class="${releaseCSS}_row">
-                <div class="${releaseCSS}_categories">
-                    <c:forEach items="${release.categories}" var="category">
-                        <span class="label label-primary ${releaseCSS}_category">${category}</span>
-                    </c:forEach>
-                </div>
-                <cpn:text test="${not release.current}" class="${releaseCSS}_creationDate date" format="created: {}"
-                          i18n="true" value="${release.creationDateString}"/>
-                <cpn:div test="${release.current}" class="${releaseCSS}_actions btn-group" role="group"
-                         aria-label="...">
-                    <button type="button" class="btn btn-default release-finalize"><i
-                            class="fa fa-flag-checkered"></i>${cpn:i18n(slingRequest,'Finalize')}</button>
-                </cpn:div>
-            </div>
-            <cpn:text class="${releaseCSS}_description" type="rich">${release.description}</cpn:text>
-        </div>
+        <cpp:include replaceSelectors="tile"/>
     </td>
 </cpp:element>

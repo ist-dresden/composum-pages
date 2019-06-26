@@ -130,7 +130,7 @@
                 this.$component = this.$('.' + toolbars.const.componentActions);
                 this.initPageView();
                 var c = pages.const.event;
-                $(document).on(c.page.view + '.PageToolbar', _.bind(this.onPageSelected, this));
+                $(document).on(c.page.view + '.PageToolbar', _.bind(this.onPageView, this));
                 $(document).on(c.page.selected + '.PageToolbar', _.bind(this.onPageSelected, this));
                 $(document).on(c.element.selected + '.PageToolbar', _.bind(this.onComponentSelected, this));
                 this.loadProfile();
@@ -186,7 +186,17 @@
                 return false;
             },
 
+            onPageView: function (event, path) {
+                this.onViewChanged(path, false);
+            },
+
             onPageSelected: function (event, path) {
+                this.onViewChanged(path,
+                    pages.current.mode === pages.const.modes.edit ||
+                    pages.current.mode === pages.const.modes.develop);
+            },
+
+            onViewChanged: function (path, loadToolbar) {
                 if (path) {
                     if (this.currentPage !== path) {
                         pages.log.debug('toolbars.PageToolbar.onPageSelected(' + path + ')');
@@ -194,8 +204,7 @@
                             _.bind(function (data) {
                                 this.$view.html(data);
                                 this.initPageView(path);
-                                if (pages.current.mode === pages.const.modes.edit ||
-                                    pages.current.mode === pages.const.modes.develop) {
+                                if (loadToolbar) {
                                     this.loadComponentToolbar(path);
                                 }
                             }, this));
@@ -210,8 +219,8 @@
             onComponentSelected: function (event, refOrPath) {
                 var path = refOrPath && refOrPath.path ? refOrPath.path : refOrPath;
                 if (this.componentToolbar) {
-                    if (this.componentToolbar.data.path === path) {
-                        return;
+                    if (path && this.componentToolbar.data.path === path) {
+                        return true;
                     }
                     this.componentToolbar.dispose();
                     this.componentToolbar = undefined;

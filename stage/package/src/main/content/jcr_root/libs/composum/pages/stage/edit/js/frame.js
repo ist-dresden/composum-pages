@@ -213,10 +213,11 @@
                 }
             },
 
-            reloadPage: function (parameters, path) {
+            reloadPage: function (parameters, path, servicePath) {
                 var pagePath = path || pages.current.page;
                 if (pagePath) {
-                    var frameUrl = new core.SlingUrl(core.getContextUrl(pagePath + '.html'));
+                    var frameUrl = new core.SlingUrl(core.getContextUrl(
+                        servicePath ? servicePath + pagePath : pagePath + '.html'));
                     if (parameters) {
                         frameUrl.parameters = parameters;
                     }
@@ -269,8 +270,8 @@
                     + JSON.stringify([path]), '*');
             },
 
-            onViewPage: function (event, path, parameters) {
-                this.reloadPage(parameters, path);
+            onViewPage: function (event, path, parameters, servicePath) {
+                this.reloadPage(parameters, path, servicePath);
             },
 
             onElementSelected: function (event, reference) {

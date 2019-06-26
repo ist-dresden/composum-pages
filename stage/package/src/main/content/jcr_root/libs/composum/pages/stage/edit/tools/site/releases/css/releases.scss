@@ -28,6 +28,14 @@
             list-style: none;
             background-color: $tools-pane-tabs-background;
 
+            &.selected {
+                @include secondary-selection-background();
+
+                body.context-driven-view & {
+                    @include main-selection-background();
+                }
+            }
+
             &_head, &_status {
                 clear: both;
                 width: 100%;

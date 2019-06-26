@@ -6,6 +6,15 @@
 .composum-pages-stage-edit-site {
     min-width: 600px;
 
+    &_title, &-release_title {
+        margin: 15px 0;
+    }
+
+    &_title-type, &-release_title-type {
+        font-size: $default-font-size;
+        color: $edit-hint-color;
+    }
+
     .nav-tabs {
 
         .badge-pill {
@@ -70,7 +79,6 @@
             }
         }
     }
-
 
     .composum-pages-stage-edit-site {
 
@@ -145,6 +153,10 @@
             }
         }
     }
+}
+
+.composum-pages-stage-edit-site,
+.composum-pages-stage-edit-site-release {
 
     .composum-pages-stage-edit-site-releases {
 

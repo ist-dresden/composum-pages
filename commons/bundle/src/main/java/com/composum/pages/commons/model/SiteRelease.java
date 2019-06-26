@@ -18,6 +18,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 import static com.composum.pages.commons.PagesConstants.KEY_CURRENT_RELEASE;
 import static com.composum.pages.commons.PagesConstants.PROP_LAST_MODIFIED;
@@ -32,6 +33,12 @@ public class SiteRelease extends AbstractModel implements Comparable<SiteRelease
     protected StagingReleaseManager.Release stagingRelease;
     private transient Calendar creationDate;
     private transient Calendar lastModified;
+
+    public static final Pattern RELEASE_PATH_PATTERN = Pattern.compile("^(/.*)/jcr:content/cpl:releases/(.+)$");
+
+    public static boolean isSiteRelease(Resource resource) {
+        return resource != null && RELEASE_PATH_PATTERN.matcher(resource.getPath()).matches();
+    }
 
     public SiteRelease() {
         // empty default constructor
