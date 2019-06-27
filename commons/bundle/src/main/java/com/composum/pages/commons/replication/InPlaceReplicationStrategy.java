@@ -3,6 +3,7 @@ package com.composum.pages.commons.replication;
 import com.composum.pages.commons.model.Site;
 import com.composum.sling.core.JcrResource;
 import com.composum.sling.core.ResourceHandle;
+import com.composum.sling.core.util.ResourceUtil;
 import com.composum.sling.platform.security.AccessMode;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
@@ -21,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 /**
  * the general implementation base for an in-place replication strategy
@@ -279,30 +279,22 @@ public abstract class InPlaceReplicationStrategy implements ReplicationStrategy 
      * transforms embedded references of a rich text from 'content' to the replication path
      */
     public String transformTextProperty(ReplicationContext context, String targetRoot, String value) {
-        StringBuilder result = new StringBuilder();
+        StringBuffer result = new StringBuffer();
         Matcher matcher = contentLinkPattern.matcher(value);
-        int len = value.length();
-        int pos = 0;
-        while (matcher.find(pos)) {
-            result.append(value, pos, matcher.start());
-            String path = matcher.group(3);
+        while (matcher.find()) {
+            String path = matcher.group("relpath");
             // check for a resolvable resource
-            Resource referencedResource = context.releaseResolver.getResource(contentPath + path);
+            Resource referencedResource = findReferencedResource(context.releaseResolver, contentPath + path);
             if (referencedResource != null && context.releaseFilter.accept(referencedResource)) {
                 context.references.add(contentPath + path);
-                result.append(matcher.group(1));
-                result.append(targetRoot);
-                result.append(path);
-                result.append(matcher.group(4));
+                String replacedMatch = matcher.group("beforepath") + targetRoot + path + matcher.group("quot");
+                matcher.appendReplacement(result, Matcher.quoteReplacement(replacedMatch));
             } else {
                 // skip pattern unchanged if resource can't be resolved
-                result.append(value, matcher.start(), matcher.end());
+                matcher.appendReplacement(result, Matcher.quoteReplacement(matcher.group(0)));
             }
-            pos = matcher.end();
         }
-        if (pos >= 0 && pos < len) {
-            result.append(value, pos, len);
-        }
+        matcher.appendTail(result);
         return result.toString();
     }
 
@@ -310,12 +302,22 @@ public abstract class InPlaceReplicationStrategy implements ReplicationStrategy 
 
     @Override
     public void activate(ReplicationManager manager) {
-        this.replicationManager = manager;
         config = manager.getConfig();
-        contentPath = config.contentPath();
-        contentPathPattern = Pattern.compile("^" + contentPath + "(/.*)$");
-        // FIXME(hps,2019-06-27) insert <img src=
-        contentLinkPattern = Pattern.compile("(<a\\s+(.+\\s+)?href=['\"])" + contentPath + "(/[^'\"]+)(['\"])");
+        contentPath = StringUtils.removePattern(ResourceUtil.normalize(config.contentPath()), "/*$");
+        if (StringUtils.isBlank(contentPath) || !StringUtils.startsWith(contentPath, "/")) {
+            LOG.error("Invalid content path {}, deactivating publication!");
+            this.replicationManager = null;
+            contentPathPattern = Pattern.compile("(?=a)b"); // never matches
+            contentLinkPattern = Pattern.compile("(?=a)b"); // never matches
+        } else {
+            this.replicationManager = manager;
+            contentPathPattern = Pattern.compile("^" + contentPath + "(/.*)$");
+            contentLinkPattern = Pattern.compile(
+                    "(?<beforepath>(<|&lt;)(a|img)[^>]*\\s(href|src)=(?<quot>['\"]|&quot;))" +
+                            Pattern.quote(contentPath) +
+                            "(?<relpath>/((?!\\k<quot>).)+)\\k<quot>"
+            );
+        }
     }
 
     @Override
