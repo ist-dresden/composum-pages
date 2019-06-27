@@ -45,6 +45,7 @@
         <package.company>IST GmbH Dresden</package.company>
         <bundle.category>composum,pages</bundle.category>
         <composum.nodes.version>1.11.1-SNAPSHOT</composum.nodes.version>
+        <composum.platform.version>1.0.0-SNAPSHOT</composum.platform.version>
         <sling.scheme>http</sling.scheme>
         <sling.secure>false</sling.secure>
         <sling.host>localhost</sling.host>
@@ -390,32 +391,38 @@
             <dependency>
                 <groupId>com.composum.sling.platform</groupId>
                 <artifactId>composum-sling-platform-commons-bundle</artifactId>
-                <version>1.0.0-SNAPSHOT</version>
+                <version>${composum.platform.version}</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>com.composum.sling.platform</groupId>
                 <artifactId>composum-sling-platform-cache-bundle</artifactId>
-                <version>1.0.0-SNAPSHOT</version>
+                <version>${composum.platform.version}</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>com.composum.sling.platform</groupId>
                 <artifactId>composum-sling-platform-staging-bundle</artifactId>
-                <version>1.0.0-SNAPSHOT</version>
+                <version>${composum.platform.version}</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>com.composum.sling.platform</groupId>
                 <artifactId>composum-sling-platform-security-bundle</artifactId>
-                <version>1.0.0-SNAPSHOT</version>
+                <version>${composum.platform.version}</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>com.composum.sling.platform</groupId>
                 <artifactId>composum-sling-platform-models-bundle</artifactId>
-                <version>1.0.0-SNAPSHOT</version>
+                <version>${composum.platform.version}</version>
                 <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.composum.sling.platform</groupId>
+                <artifactId>composum-sling-platform-testing-testutil</artifactId>
+                <version>${composum.platform.version}</version>
+                <scope>test</scope>
             </dependency>
 
             <!-- Composum Nodes -->

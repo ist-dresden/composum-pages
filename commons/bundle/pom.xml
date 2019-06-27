@@ -297,6 +297,10 @@
             <groupId>org.apache.sling</groupId>
             <artifactId>org.apache.sling.testing.logging-mock</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.composum.sling.platform</groupId>
+            <artifactId>composum-sling-platform-testing-testutil</artifactId>
+        </dependency>
 
     </dependencies>
     <profiles>
