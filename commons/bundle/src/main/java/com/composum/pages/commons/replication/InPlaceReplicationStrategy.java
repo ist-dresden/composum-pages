@@ -249,18 +249,30 @@ public abstract class InPlaceReplicationStrategy implements ReplicationStrategy 
      */
     protected String transformStringProperty(ReplicationContext context, String targetRoot, String value) {
         Matcher contentPathMatcher = contentPathPattern.matcher(value);
-        Resource referencedResource;
-        if (contentPathMatcher.matches() && (referencedResource = context.releaseResolver.getResource(value)) != null &&
-                context.releaseFilter.accept(referencedResource)) {
-            // the the value is a reference transform the value to the replication path
-            String path = contentPathMatcher.group(1);
-            context.references.add(contentPath + path);
-            value = targetRoot + path;
+        if (contentPathMatcher.matches()) {
+            Resource referencedResource = findReferencedResource(context.releaseResolver, value);
+            if (referencedResource != null && context.releaseFilter.accept(referencedResource)) {
+                // the the value is a reference transform the value to the replication path
+                String path = contentPathMatcher.group(1);
+                context.references.add(contentPath + path);
+                value = targetRoot + path;
+            } else {
+                LOG.debug("Unknown possible reference found: {}", value);
+            }
         } else {
             // if the value is not a path it can be possible that this is a rich text with embedded paths...
             value = transformTextProperty(context, targetRoot, value);
         }
         return value;
+    }
+
+    protected Resource findReferencedResource(ResourceResolver releaseResolver, String path) {
+        Resource resource = releaseResolver.getResource(path);
+        while (resource == null && path.contains(".")) {
+            path = StringUtils.substringBeforeLast(path, ".");
+            resource = releaseResolver.getResource(path);
+        }
+        return resource;
     }
 
     /**
