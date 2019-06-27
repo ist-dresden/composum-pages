@@ -27,10 +27,15 @@
 
         .composum-pages-components-navigation-menuitem {
 
-            &_link{
+            &_link {
                 color: $bootstrap-color-muted;
             }
         }
+    }
+
+    .composum-pages-components-navigation-button {
+        float: left;
+        margin: 8px 0 8px 15px;
     }
 }
 

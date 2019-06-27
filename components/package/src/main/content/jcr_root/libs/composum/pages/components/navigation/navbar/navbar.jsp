@@ -25,6 +25,7 @@
                                  replaceSelectors="dropdown"/>
                 </c:forEach>
                 <sling:call script="search.jsp"/>
+                <sling:call script="language.jsp"/>
             </ul>
         </nav>
     </div>

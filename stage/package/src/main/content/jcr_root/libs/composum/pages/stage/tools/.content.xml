@@ -87,7 +87,7 @@
             iconClass="bar-chart-o"
             hint="Access Statistics"
             title="Statistics"
-            order="{Long}80"/>
+            order="{Long}111"/>
     <containerElements
             jcr:primaryType="nt:unstructured"
             sling:resourceType="composum/pages/stage/edit/tools/container/elements"
@@ -111,7 +111,7 @@
             iconClass="question-circle-o"
             hint="Component Help"
             title="Help"
-            order="{Long}80"/>
+            order="{Long}222"/>
     <componentContext
             jcr:primaryType="nt:unstructured"
             sling:resourceType="composum/pages/stage/edit/tools/component/edit"

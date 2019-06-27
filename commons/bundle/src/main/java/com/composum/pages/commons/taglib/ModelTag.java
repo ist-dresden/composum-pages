@@ -15,6 +15,7 @@ import com.composum.pages.commons.service.ResourceManager;
 import com.composum.pages.commons.servlet.EditServlet;
 import com.composum.pages.commons.util.AttributeSet;
 import com.composum.pages.commons.util.TagCssClasses;
+import com.composum.platform.models.annotations.InternationalizationStrategy;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.util.I18N;
 import com.composum.sling.cpnl.ComponentTag;
@@ -269,6 +270,24 @@ public class ModelTag extends ComponentTag implements DynamicAttributes {
         return Languages.get(context);
     }
 
+    /**
+     * @param relativePath a relative path with a closing '/' if not empty which is prepended (include path)
+     * @param name         the name (property name or path) which has to be extended in the language context
+     * @return the path with inserted 'i18n' segment if the language context is not the default language context
+     * @see InternationalizationStrategy
+     */
+    protected String getI18nPath(String relativePath, String name) {
+        Languages languages = getLanguages();
+        if (languages != null) {
+            Language defaultLanguage = languages.getDefaultLanguage();
+            if (defaultLanguage != null && !defaultLanguage.isCurrent()) {
+                Language language = languages.getLanguage();
+                return relativePath + I18N_PROPERTY_PATH + language.getKey() + "/" + name;
+            }
+        }
+        return relativePath + name;
+    }
+
     public String getNameHint() {
         return getResource().getName();
     }
@@ -291,18 +310,6 @@ public class ModelTag extends ComponentTag implements DynamicAttributes {
 
     public String i18n(String text) {
         return I18N.get(request, text);
-    }
-
-    protected String getI18nPath(String relativePath, String name) {
-        Languages languages = getLanguages();
-        if (languages != null) {
-            Language defaultLanguage = languages.getDefaultLanguage();
-            if (defaultLanguage != null && !defaultLanguage.isCurrent()) {
-                Language language = languages.getLanguage();
-                return relativePath + I18N_PROPERTY_PATH + language.getKey() + "/" + name;
-            }
-        }
-        return relativePath + name;
     }
 
     /**
