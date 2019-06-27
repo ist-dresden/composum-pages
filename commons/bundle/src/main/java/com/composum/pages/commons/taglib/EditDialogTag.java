@@ -287,18 +287,6 @@ public class EditDialogTag extends AbstractEditTag {
         return getAction().getPropertyPath(relativePath, name);
     }
 
-    protected String getI18nPath(String relativePath, String name) {
-        Languages languages = getLanguages();
-        if (languages != null) {
-            Language defaultLanguage = languages.getDefaultLanguage();
-            if (defaultLanguage != null && !defaultLanguage.isCurrent()) {
-                Language language = languages.getLanguage();
-                return relativePath + I18N_PROPERTY_PATH + language.getKey() + "/" + name;
-            }
-        }
-        return relativePath + name;
-    }
-
     public String getDialogId() {
         if (dialogId == null) {
             String type = resource.getResourceType();

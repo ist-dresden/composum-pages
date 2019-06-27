@@ -8,6 +8,7 @@ package com.composum.pages.commons.taglib;
 import com.composum.pages.commons.model.Element;
 import com.composum.pages.commons.model.GenericModel;
 import com.composum.pages.commons.model.Model;
+import com.composum.pages.commons.model.properties.Language;
 import com.composum.pages.commons.model.properties.Languages;
 import com.composum.pages.commons.request.DisplayMode;
 import com.composum.pages.commons.service.ResourceManager;
@@ -30,6 +31,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static com.composum.pages.commons.util.TagCssClasses.cssOfType;
+import static com.composum.platform.models.annotations.InternationalizationStrategy.I18NFOLDER.I18N_PROPERTY_PATH;
 
 /**
  * a tag to instantiate a model object
@@ -259,7 +261,7 @@ public class ModelTag extends ComponentTag implements DynamicAttributes {
         return resource;
     }
 
-    public String getRequestLanguage(){
+    public String getRequestLanguage() {
         return request.getLocale().getLanguage();
     }
 
@@ -289,6 +291,18 @@ public class ModelTag extends ComponentTag implements DynamicAttributes {
 
     public String i18n(String text) {
         return I18N.get(request, text);
+    }
+
+    protected String getI18nPath(String relativePath, String name) {
+        Languages languages = getLanguages();
+        if (languages != null) {
+            Language defaultLanguage = languages.getDefaultLanguage();
+            if (defaultLanguage != null && !defaultLanguage.isCurrent()) {
+                Language language = languages.getLanguage();
+                return relativePath + I18N_PROPERTY_PATH + language.getKey() + "/" + name;
+            }
+        }
+        return relativePath + name;
     }
 
     /**

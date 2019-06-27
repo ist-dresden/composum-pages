@@ -19,11 +19,13 @@ public abstract class AbstractWidgetTag extends AbstractWrappingTag {
     protected boolean i18n = false;
     protected String modelClass;
 
+    private transient String relativePath;
     private transient String propertyName;
 
     @Override
     protected void clear() {
         propertyName = null;
+        relativePath = null;
         modelClass = null;
         i18n = false;
         name = null;
@@ -116,19 +118,21 @@ public abstract class AbstractWidgetTag extends AbstractWrappingTag {
      * @return the path to the owning child of the property to edit (for embedded components and their dialogs)
      */
     public String getRelativePath() {
-        String relativePath = context.getAttribute(PROPERTY_PATH_ATTR, String.class);
-        if (StringUtils.isBlank(relativePath)) {
-            String resourcePath = getResource().getPath();
-            String actionPath = getDialog().getResource().getPath();
-            if (!resourcePath.equals(actionPath) && resourcePath.startsWith(actionPath)) {
-                relativePath = resourcePath.substring(actionPath.length() + 1);
-            }
-        }
         if (relativePath == null) {
-            relativePath = "";
-        } else {
-            if (StringUtils.isNotBlank(relativePath) && !relativePath.endsWith("/")) {
-                relativePath += "/";
+            relativePath = context.getAttribute(PROPERTY_PATH_ATTR, String.class);
+            if (StringUtils.isBlank(relativePath)) {
+                String resourcePath = getResource().getPath();
+                String actionPath = getDialog().getResource().getPath();
+                if (!resourcePath.equals(actionPath) && resourcePath.startsWith(actionPath)) {
+                    relativePath = resourcePath.substring(actionPath.length() + 1);
+                }
+            }
+            if (relativePath == null) {
+                relativePath = "";
+            } else {
+                if (StringUtils.isNotBlank(relativePath) && !relativePath.endsWith("/")) {
+                    relativePath += "/";
+                }
             }
         }
         return relativePath;
@@ -140,14 +144,17 @@ public abstract class AbstractWidgetTag extends AbstractWrappingTag {
     public String getPropertyName() {
         if (propertyName == null) {
             propertyName = name != null ? name : getProperty();
+            String relativePath = getRelativePath();
             // prepend relative path and i18n path if 'i18n' is on
             if (isI18n()) {
                 EditDialogTag dialog = getDialog();
                 if (dialog != null) {
-                    return dialog.getPropertyPath(getRelativePath(), propertyName);
+                    propertyName = dialog.getPropertyPath(relativePath, propertyName);
+                } else {
+                    propertyName = getI18nPath(relativePath, propertyName);
                 }
             } else {
-                propertyName = getRelativePath() + propertyName;
+                propertyName = relativePath + propertyName;
             }
         }
         return propertyName;
