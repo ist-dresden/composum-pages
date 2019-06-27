@@ -48,10 +48,12 @@ public class InPlaceReplicationStrategyTest {
         ResourceBuilder resourceBuilder = parentBuilder.resource("something", PROP_PRIMARY_TYPE, "cpp:Page")
                 .resource(CONTENT_NODE, PROP_PRIMARY_TYPE, "cpp:PageContent",
                         "text", "&lt;p>&lt;a href=&quot;/content/ist/composum/home/pages&quot; style=&quot;background-color: rgb(255, 255, 255);&quot;>more&lt;/a>...&lt;/p>",
+                        "imgtext", "&lt;p>&lt;img src=&quot;/content/ist/composum/assets/background/gravitational_waves.jpg&quot;>more&lt;/a>...&lt;/p>",
                         "link", "/content/ist/composum/meta/search",
                         "imageRef", "/content/ist/composum/assets/background/gravitational_waves.jpg",
                         "codeRef", "/content/ist/composum/home/pages/development/components/_jcr_content/main/row_844558834/column-0/teaser.html",
-                        "nonexists", "/content/ist/composum/nixgibs"
+                        "nonexists", "/content/ist/composum/nixgibs",
+                        "array", new String[]{"/content/ist/composum/meta/search", "/content/ist/composum/assets/background/gravitational_waves.jpg"}
                 ).commit();
         for (String path : new String[]{"/content/ist/composum/home/pages", "/content/ist/composum/meta/search",
                 "/content/ist/composum/assets/background/gravitational_waves.jpg",
@@ -92,6 +94,9 @@ public class InPlaceReplicationStrategyTest {
         ec.checkThat(target.getProperty("imageRef"), is("/preview/ist/composum/assets/background/gravitational_waves.jpg"));
         ec.checkThat(target.getProperty("codeRef"), is("/preview/ist/composum/home/pages/development/components/_jcr_content/main/row_844558834/column-0/teaser.html"));
         ec.checkThat(target.getProperty("text"), Matchers.containsString("/preview/ist/composum/home/pages"));
+        ec.checkThat(target.getProperty("imgtext"), Matchers.containsString("/preview/ist/composum/assets/background/gravitational_waves.jpg"));
+
+        ec.checkThat(target.getProperty("array", String[].class), Matchers.arrayContaining("/preview/ist/composum/meta/search", "/preview/ist/composum/assets/background/gravitational_waves.jpg"));
         // not existent -> not replaced
         ec.checkThat(target.getProperty("nonexists"), is("/content/ist/composum/nixgibs"));
 

@@ -15,11 +15,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * the general implementation base for an in-place replication strategy
@@ -227,6 +229,11 @@ public abstract class InPlaceReplicationStrategy implements ReplicationStrategy 
                     if (value instanceof String) {
                         value = transformStringProperty(context, targetRoot, (String) value);
                     }
+                    if (value instanceof String[]) {
+                        value = Arrays.asList((String[]) value).stream()
+                                .map((v) -> transformStringProperty(context, targetRoot, v))
+                                .toArray((len) -> new String[len]);
+                    }
                     if (value != null) {
                         replicateValues.put(key, value);
                     }
@@ -295,6 +302,7 @@ public abstract class InPlaceReplicationStrategy implements ReplicationStrategy 
         config = manager.getConfig();
         contentPath = config.contentPath();
         contentPathPattern = Pattern.compile("^" + contentPath + "(/.*)$");
+        // FIXME(hps,2019-06-27) insert <img src=
         contentLinkPattern = Pattern.compile("(<a\\s+(.+\\s+)?href=['\"])" + contentPath + "(/[^'\"]+)(['\"])");
     }
 
