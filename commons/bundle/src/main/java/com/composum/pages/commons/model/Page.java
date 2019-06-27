@@ -272,18 +272,16 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
         if (pageLanguages == null) {
             pageLanguages = new PageLanguages();
             Languages declaredLanguages = getLanguages();
-            if (declaredLanguages != null) {
-                String[] languages = getInherited(PROP_PAGE_LANGUAGES, null, String[].class);
-                if (languages != null) {
-                    for (String key : languages) {
-                        Language language = declaredLanguages.getLanguage(key);
-                        if (language != null) {
-                            pageLanguages.add(language);
-                        }
+            String[] languages = getInherited(PROP_PAGE_LANGUAGES, null, String[].class);
+            if (languages != null) {
+                for (String key : languages) {
+                    Language language = declaredLanguages.getLanguage(key);
+                    if (language != null) {
+                        pageLanguages.add(language);
                     }
-                } else {
-                    pageLanguages.addAll(declaredLanguages.getLanguageList());
                 }
+            } else {
+                pageLanguages.addAll(declaredLanguages.getLanguageList());
             }
         }
         return pageLanguages;

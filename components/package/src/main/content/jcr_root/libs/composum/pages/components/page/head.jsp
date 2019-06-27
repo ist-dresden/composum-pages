@@ -4,6 +4,7 @@
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <cpp:defineObjects/>
 <sling:call script="meta.jsp"/>
+<sling:call script="hreflang.jsp"/>
 <cpn:clientlib type="link" category="${pageModel.viewClientlibCategory}"/>
 <cpn:clientlib type="css" category="${pageModel.viewClientlibCategory}"/>
 <cpn:clientlib type="css" test="${pageModel.editMode}" category="${pageModel.editClientlibCategory}"/>
