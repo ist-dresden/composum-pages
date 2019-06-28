@@ -17,12 +17,6 @@ public interface VersionsService {
 
     boolean isModified(Page page);
 
-    void setVersionLabel(BeanContext context, String path, String versionName, String label)
-            throws RepositoryException;
-
-    void removeVersionLabel(BeanContext context, String path, String label)
-            throws RepositoryException;
-
     void restoreVersion(BeanContext context, String path, String versionName)
             throws RepositoryException;
 
@@ -32,6 +26,10 @@ public interface VersionsService {
     Collection<Page> findReleaseChanges(@Nonnull BeanContext context, @Nonnull Resource root,
                                         @Nullable SiteRelease release) throws RepositoryException;
 
+    /**
+     * Returns all pages that are modified wrt. the current release (that is, either not there, have a new version
+     * that isn't in the current release or are modified wrt. the last version).
+     */
     Collection<Page> findModifiedPages(BeanContext context, Resource root);
 
 }

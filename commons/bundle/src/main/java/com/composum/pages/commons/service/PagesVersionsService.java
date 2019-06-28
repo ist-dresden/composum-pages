@@ -71,26 +71,6 @@ public class PagesVersionsService implements VersionsService {
     }
 
     @Override
-    public void setVersionLabel(final BeanContext context, String path, String versionName, String label)
-            throws RepositoryException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("setVersionLabel(" + path + "," + versionName + "," + label + ")");
-        }
-        final VersionHistory history = getVersionHistory(context, path);
-        history.addVersionLabel(versionName, label, true);
-    }
-
-    @Override
-    public void removeVersionLabel(final BeanContext context, String path, String label)
-            throws RepositoryException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("removeVersionLabel(" + path + "," + label + ")");
-        }
-        final VersionHistory history = getVersionHistory(context, path);
-        history.removeVersionLabel(label);
-    }
-
-    @Override
     public void restoreVersion(final BeanContext context, String path, String versionName)
             throws RepositoryException {
         VersionManager manager = getVersionManager(context);
