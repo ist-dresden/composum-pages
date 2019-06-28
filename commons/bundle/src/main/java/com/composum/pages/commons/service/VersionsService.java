@@ -23,7 +23,7 @@ public interface VersionsService {
     /**
      * @return a collection of all versionables which are changed in a release in comparision to the release before
      */
-    Collection<Page> findReleaseChanges(@Nonnull BeanContext context, @Nonnull Resource root,
+    Collection<Page> findReleaseChanges(@Nonnull BeanContext context,
                                         @Nullable SiteRelease release) throws RepositoryException;
 
     /**

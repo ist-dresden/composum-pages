@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.jcr.RepositoryException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -71,7 +72,7 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
     /**
      * check the 'cpp:PageContent' type for a resource
      */
-    public static boolean isPageContent(Resource resource) {
+    public static boolean isPageContent(@Nullable Resource resource) {
         return ResourceUtil.isResourceType(resource, NODE_TYPE_PAGE_CONTENT);
     }
 

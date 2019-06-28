@@ -66,6 +66,7 @@ public class PagesVersionsService implements VersionsService {
             }
             throw new IllegalStateException("Unknown state " + status.getActivationState()); // impossible
         } catch (RepositoryException e) {
+            LOG.error("Unexpected error", e);
             return false;
         }
     }
@@ -103,18 +104,19 @@ public class PagesVersionsService implements VersionsService {
      * @return a collection of all versionables which are changed in a release in comparision to the release before
      */
     @Override
-    public Collection<Page> findReleaseChanges(@Nonnull final BeanContext context, @Nonnull final Resource root,
+    public Collection<Page> findReleaseChanges(@Nonnull final BeanContext context,
                                                @Nullable final SiteRelease siteRelease) throws RepositoryException {
         List<Page> result = new ArrayList<>();
         if (siteRelease != null) {
-            StagingReleaseManager.Release release = releaseManager.findRelease(root, siteRelease.getKey());
+            StagingReleaseManager.Release release = siteRelease.getStagingRelease();
             List<ReleasedVersionable> changes = releaseManager.compareReleases(release, null);
             for (ReleasedVersionable releasedVersionable : changes) {
-                Resource versionable = root.getChild(releasedVersionable.getRelativePath());
+                Resource versionable = siteRelease.getResource().getChild(releasedVersionable.getRelativePath());
                 if (Page.isPageContent(versionable)) {
                     final Page page = pageManager.getContainingPage(context, versionable);
                     result.add(page);
                 }
+                // FIXME(hps,2019-06-28) what should happen if the page doesn't exist anymore? Page on NonExistingResource?
             }
             result.sort(Comparator.comparing(Page::getPath));
         }
