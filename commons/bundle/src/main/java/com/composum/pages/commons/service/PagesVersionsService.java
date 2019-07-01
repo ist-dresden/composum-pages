@@ -29,6 +29,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Component(
         property = {
@@ -66,28 +67,9 @@ public class PagesVersionsService implements VersionsService {
             }
             throw new IllegalStateException("Unknown state " + status.getActivationState()); // impossible
         } catch (RepositoryException e) {
+            LOG.error("Unexpected error", e);
             return false;
         }
-    }
-
-    @Override
-    public void setVersionLabel(final BeanContext context, String path, String versionName, String label)
-            throws RepositoryException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("setVersionLabel(" + path + "," + versionName + "," + label + ")");
-        }
-        final VersionHistory history = getVersionHistory(context, path);
-        history.addVersionLabel(versionName, label, true);
-    }
-
-    @Override
-    public void removeVersionLabel(final BeanContext context, String path, String label)
-            throws RepositoryException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("removeVersionLabel(" + path + "," + label + ")");
-        }
-        final VersionHistory history = getVersionHistory(context, path);
-        history.removeVersionLabel(label);
     }
 
     @Override
@@ -123,18 +105,19 @@ public class PagesVersionsService implements VersionsService {
      * @return a collection of all versionables which are changed in a release in comparision to the release before
      */
     @Override
-    public Collection<Page> findReleaseChanges(@Nonnull final BeanContext context, @Nonnull final Resource root,
+    public Collection<Page> findReleaseChanges(@Nonnull final BeanContext context,
                                                @Nullable final SiteRelease siteRelease) throws RepositoryException {
         List<Page> result = new ArrayList<>();
         if (siteRelease != null) {
-            StagingReleaseManager.Release release = releaseManager.findRelease(root, siteRelease.getKey());
+            StagingReleaseManager.Release release = siteRelease.getStagingRelease();
             List<ReleasedVersionable> changes = releaseManager.compareReleases(release, null);
             for (ReleasedVersionable releasedVersionable : changes) {
-                Resource versionable = root.getChild(releasedVersionable.getRelativePath());
+                Resource versionable = siteRelease.getResource().getChild(releasedVersionable.getRelativePath());
                 if (Page.isPageContent(versionable)) {
                     final Page page = pageManager.getContainingPage(context, versionable);
                     result.add(page);
                 }
+                // FIXME(hps,2019-06-28) what should happen if the page doesn't exist anymore? Page on NonExistingResource?
             }
             result.sort(Comparator.comparing(Page::getPath));
         }
@@ -143,29 +126,18 @@ public class PagesVersionsService implements VersionsService {
 
     @Override
     public Collection<Page> findModifiedPages(final BeanContext context, final Resource root) {
-        List<Page> result = new ArrayList<>();
-        findModifiedPages(context, root, result);
-        result.sort(Comparator.comparing(Page::getPath));
+        List<ReleasedVersionable> currentContents = releaseManager.listCurrentContents(root);
+        StagingReleaseManager.Release currentRelease = platformVersionsService.getDefaultRelease(root);
+        List<Page> result = currentContents.stream()
+                .map(releasedVersionable -> root.getChild(releasedVersionable.getRelativePath()))
+                .map(resource -> pageManager.getContainingPage(context, resource))
+                .filter(this::isModified)
+                .sorted(Comparator.comparing(Page::getPath))
+                .collect(Collectors.toList());
         return result;
     }
 
-    protected void findModifiedPages(final BeanContext context, final Resource parent,
-                                     List<Page> result) {
-        final Iterable<Resource> children = parent.getChildren();
-        for (Resource resource : children) {
-            if (Page.isPage(resource)) {
-                final Page page = pageManager.createBean(context, resource);
-                if (isModified(page)) {
-                    result.add(page);
-                }
-                findModifiedPages(context, page.getResource(), result);
-            } else { // folders
-                findModifiedPages(context, resource, result);
-            }
-        }
-    }
-
-    public VersionManager getVersionManager(final BeanContext context)
+    protected VersionManager getVersionManager(final BeanContext context)
             throws RepositoryException {
         SlingHttpServletRequest request = context.getRequest();
         VersionManager versionManager = (VersionManager) request.getAttribute(VersionManager.class.getName());
@@ -178,21 +150,4 @@ public class PagesVersionsService implements VersionsService {
         return versionManager;
     }
 
-    public VersionHistory getVersionHistory(final BeanContext context, final String path)
-            throws RepositoryException {
-        return getVersionManager(context).getVersionHistory(path);
-    }
-
-    protected class NoSiteRelease extends SiteRelease {
-
-        NoSiteRelease(BeanContext context, String path) {
-            super(context, new NonExistingResource(context.getResolver(), path));
-        }
-
-        @Override
-        public String getLabel() {
-            //no existing label
-            return "w81t5l6pSYAeeN5c";
-        }
-    }
 }

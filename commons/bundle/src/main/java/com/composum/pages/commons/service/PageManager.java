@@ -62,13 +62,22 @@ public interface PageManager extends ContentManager<Page> {
         }
     }
 
-    Page createBean(BeanContext context, Resource resource);
+    /**
+     * Creates a Page from the resource - if the resource not a page, but below a page, the page is looked up.
+     *
+     * @param resource a page resource or a child of a page resource
+     */
+    @Nonnull
+    Page createBean(@Nonnull BeanContext context, @Nonnull Resource resource);
 
     Page getContainingPage(Model element);
 
-    Page getContainingPage(BeanContext context, Resource resource);
+    @Nullable
+    Page getContainingPage(@Nonnull BeanContext context, @Nullable Resource resource);
 
-    Resource getContainingPageResource(Resource resource);
+    /** Finds the next higher parent of resource (including resource itself) that is a page respource. @see {@link Page#isPage(Resource)} */
+    @Nullable
+    Resource getContainingPageResource(@Nonnull Resource resource);
 
     /**
      * Determines all usable page templates in the context of a specific tenant.

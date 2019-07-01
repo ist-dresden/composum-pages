@@ -125,9 +125,14 @@ public class SiteRelease extends AbstractModel implements Comparable<SiteRelease
         return PagesUtil.getTimestampString(getCreationDate());
     }
 
+    /** The underlying release info from the platform. */
+    public StagingReleaseManager.Release getStagingRelease() {
+        return stagingRelease;
+    }
+
     public Collection<Page> getChanges() {
         try {
-            return getVersionsService().findReleaseChanges(getContext(), stagingRelease.getReleaseRoot(), this);
+            return getVersionsService().findReleaseChanges(getContext(), this);
         } catch (RepositoryException ex) {
             LOG.error(ex.getMessage(), ex);
             return new ArrayList<>();

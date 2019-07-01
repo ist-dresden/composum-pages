@@ -798,7 +798,7 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
      */
     @Override
     @Nullable
-    public Resource findContainingPageResource(Resource resource) {
+    public Resource findContainingPageResource(@Nullable Resource resource) {
         if (resource != null) {
             if (isPage(resource)) {
                 return resource;

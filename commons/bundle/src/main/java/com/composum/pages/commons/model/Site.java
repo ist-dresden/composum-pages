@@ -19,6 +19,7 @@ import javax.annotation.Nullable;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -172,12 +173,9 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
         StagingReleaseManager releaseManager = context.getService(StagingReleaseManager.class);
         List<StagingReleaseManager.Release> stagingReleases = releaseManager.getReleases(resource);
         return stagingReleases.stream()
-                .map(r -> new SiteRelease(context, r)).sorted((r1, r2) -> {
-                    Calendar c1 = r1.getCreationDate();
-                    Calendar c2 = r2.getCreationDate();
-                    return c1 == null ? 1 : c2 == null ? -1 : c2.compareTo(c1);
-                }).collect(Collectors.toList());
-
+                .map(r -> new SiteRelease(context, r))
+                .sorted(Comparator.nullsFirst(Comparator.comparing(SiteRelease::getCreationDate).reversed()))
+                .collect(Collectors.toList());
     }
 
     public SiteRelease getCurrentRelease(){
