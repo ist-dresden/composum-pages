@@ -111,6 +111,7 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
         return getResourceManager().isTemplate(getContext(), this.getResource());
     }
 
+    @Nonnull
     @Override
     public String getTitle() {
         String title = super.getTitle();

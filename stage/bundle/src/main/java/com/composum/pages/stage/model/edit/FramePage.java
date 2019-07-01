@@ -8,6 +8,7 @@ import com.composum.sling.core.util.ResourceUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 
 public class FramePage extends Page {
@@ -25,6 +26,7 @@ public class FramePage extends Page {
     /**
      * @return the resource of the edited page (this is not the initializers resource)
      */
+    @Nonnull
     @Override
     public Resource getResource() {
         return getPageResource();

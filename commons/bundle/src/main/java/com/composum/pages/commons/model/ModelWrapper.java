@@ -5,6 +5,7 @@ import com.composum.pages.commons.model.properties.Language;
 import com.composum.sling.core.BeanContext;
 import org.apache.sling.api.resource.Resource;
 
+import javax.annotation.Nonnull;
 import java.util.Locale;
 
 public class ModelWrapper implements Model {
@@ -79,11 +80,13 @@ public class ModelWrapper implements Model {
 
     //
 
+    @Nonnull
     @Override
     public String getTitle() {
         return delegate.getTitle();
     }
 
+    @Nonnull
     @Override
     public String getDescription() {
         return delegate.getDescription();
@@ -115,11 +118,13 @@ public class ModelWrapper implements Model {
 
     //
 
+    @Nonnull
     @Override
     public String getUrl() {
         return delegate.getUrl();
     }
 
+    @Nonnull
     @Override
     public String getCssBase() {
         return delegate.getCssBase();
@@ -128,41 +133,46 @@ public class ModelWrapper implements Model {
     // properties & i18n
 
     @Override
+    @Nonnull
     public Language getLanguage() {
         return delegate.getLanguage();
     }
 
     // resource properties
 
+    @Nonnull
     @Override
-    public <T> T getProperty(String key, T defaultValue) {
+    public <T> T getProperty(@Nonnull String key, @Nonnull T defaultValue) {
         return delegate.getProperty(key, defaultValue);
     }
 
     @Override
-    public <T> T getProperty(String key, Class<T> type) {
+    public <T> T getProperty(@Nonnull String key, @Nonnull Class<T> type) {
         return delegate.getProperty(key, type);
     }
 
+    @Nonnull
     @Override
-    public <T> T getProperty(Locale locale, T defaultValue, String... keys) {
+    public <T> T getProperty(Locale locale, @Nonnull T defaultValue, String... keys) {
         return delegate.getProperty(locale, defaultValue, keys);
     }
 
     // inherited properties
 
+    @Nonnull
     @Override
-    public <T> T getInherited(String key, T defaultValue) {
+    public <T> T getInherited(@Nonnull String key, @Nonnull T defaultValue) {
         return delegate.getInherited(key, defaultValue);
     }
 
     @Override
-    public <T> T getInherited(String key, Class<T> type) {
+    public <T> T getInherited(@Nonnull String key, @Nonnull Class<T> type) {
         return delegate.getInherited(key, type);
     }
 
+    @Nonnull
     @Override
-    public <T> T getInherited(Locale locale, T defaultValue, String... keys) {
+    public <T> T getInherited(Locale locale, @Nonnull T defaultValue, String... keys) {
         return delegate.getInherited(locale, defaultValue, keys);
     }
 }

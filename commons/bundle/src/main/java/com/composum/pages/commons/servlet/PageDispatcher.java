@@ -2,6 +2,7 @@ package com.composum.pages.commons.servlet;
 
 import com.composum.pages.commons.model.Page;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 
 /**
@@ -14,11 +15,12 @@ public interface PageDispatcher {
      * @return 'true' if a redirect is send back via the pages contexts response
      * @throws IOException if an error is occurring during redirect
      */
-    boolean redirect(Page page) throws IOException;
+    boolean redirect(@Nonnull Page page) throws IOException;
 
     /**
      * @param page the page to determine the forward target
      * @return the target page for the content forward performed by the PageNodeServlet
      */
-    Page getForwardPage(Page page);
+    @Nonnull
+    Page getForwardPage(@Nonnull Page page);
 }

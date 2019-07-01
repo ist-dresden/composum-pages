@@ -8,6 +8,8 @@ import org.apache.sling.api.resource.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nonnull;
+
 import static com.composum.pages.commons.PagesConstants.PN_TITLE;
 import static com.composum.pages.commons.PagesConstants.PROP_NAV_TITLE;
 
@@ -35,6 +37,7 @@ public class Menuitem extends Page {
         return PROP_TITLE_KEYS;
     }
 
+    @Nonnull
     @Override
     public String getTitle() {
         String title = super.getTitle();

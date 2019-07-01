@@ -5,10 +5,13 @@ import com.composum.sling.core.BeanContext;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 
+import static com.composum.pages.commons.taglib.EditDialogGroupTag.DIALOG_GROUP_VAR;
+import static com.composum.pages.commons.taglib.EditDialogTabTag.DIALOG_TAB_VAR;
+
 /**
  * the EditWidgetTag is rendering a dialog widget as an element of the edit dialog form
  */
-public abstract class AbstractWidgetTag extends AbstractWrappingTag {
+public abstract class AbstractWidgetTag extends AbstractEditElementTag {
 
     public static final String PROPERTY_RESOURCE_ATTR = "propertyResource";
     public static final String PROPERTY_PATH_ATTR = "propertyPath";
@@ -83,6 +86,24 @@ public abstract class AbstractWidgetTag extends AbstractWrappingTag {
 
     public void setName(String key) {
         name = key;
+    }
+
+    public boolean isDisabled() {
+        Boolean result = null;
+        if (hasDisabledAttribute()) {
+            result = getDisabledValue();
+        } else {
+            EditDialogGroupTag groupTag = (EditDialogGroupTag) pageContext.findAttribute(DIALOG_GROUP_VAR);
+            if (groupTag != null && groupTag.hasDisabledAttribute()) {
+                result = groupTag.getDisabledValue();
+            } else {
+                EditDialogTabTag tabTag = (EditDialogTabTag) pageContext.findAttribute(DIALOG_TAB_VAR);
+                if (tabTag != null && tabTag.hasDisabledAttribute()) {
+                    result = tabTag.getDisabledValue();
+                }
+            }
+        }
+        return result != null ? result : getDialog().getDisabledValue();
     }
 
     /**

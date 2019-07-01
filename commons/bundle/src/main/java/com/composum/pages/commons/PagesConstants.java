@@ -59,7 +59,7 @@ public interface PagesConstants {
     String PN_CATEGORY = "category";
     String CATEGORY_OTHER = "other";
 
-    /** Content elements */
+    /* Content elements */
 
     /** the reference path property name of a reference component (for the referrers query) */
     String PN_CONTENT_REFERENCE = "contentReference";

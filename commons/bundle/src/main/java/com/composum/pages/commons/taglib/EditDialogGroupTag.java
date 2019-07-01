@@ -8,13 +8,14 @@ import javax.servlet.jsp.PageContext;
 import java.io.IOException;
 
 import static com.composum.pages.commons.taglib.AbstractPageTag.STAGE_COMPONENT_BASE;
+import static com.composum.pages.commons.taglib.EditDialogTabTag.DIALOG_TAB_VAR;
 import static com.composum.pages.commons.taglib.EditDialogTag.DIALOG_PATH;
 import static com.composum.pages.commons.taglib.EditDialogTag.DIALOG_VAR;
 
 /**
  * the PageBodyTag creates the HTML body tag and the EDIT elements around the page content
  */
-public class EditDialogGroupTag extends AbstractWrappingTag {
+public class EditDialogGroupTag extends AbstractEditElementTag {
 
     public static final String DIALOG_GROUP_VAR = "dialogGroup";
 
@@ -60,6 +61,19 @@ public class EditDialogGroupTag extends AbstractWrappingTag {
 
     public void setExpanded(boolean expanded) {
         this.expanded = expanded;
+    }
+
+    public boolean isDisabled() {
+        Boolean result = null;
+        if (hasDisabledAttribute()) {
+            result = getDisabledValue();
+        } else {
+            EditDialogTabTag tabTag = (EditDialogTabTag) pageContext.findAttribute(DIALOG_TAB_VAR);
+            if (tabTag != null && tabTag.hasDisabledAttribute()) {
+                result = tabTag.getDisabledValue();
+            }
+        }
+        return result != null ? result : getDialog().getDisabledValue();
     }
 
     @Override

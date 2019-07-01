@@ -22,7 +22,7 @@ public class Language extends PropertyNode {
         name = resource.getName();
         key = values.get(PROP_KEY, "??");
         label = values.get(PROP_LABEL, key);
-        direction = values.get(PROP_DIRECTION,"");
+        direction = values.get(PROP_DIRECTION, "");
     }
 
     public boolean isCurrent() {
@@ -48,5 +48,17 @@ public class Language extends PropertyNode {
 
     public String getDirection() {
         return direction;
+    }
+
+    // Object
+
+    @Override
+    public boolean equals(Object object) {
+        return object instanceof Language && key.equals(((Language) object).key);
+    }
+
+    @Override
+    public int hashCode() {
+        return key.hashCode();
     }
 }

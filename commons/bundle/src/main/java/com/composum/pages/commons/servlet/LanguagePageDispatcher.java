@@ -1,22 +1,23 @@
 package com.composum.pages.commons.servlet;
 
 import com.composum.pages.commons.model.Page;
-import com.composum.pages.commons.model.properties.Language;
 import com.composum.pages.commons.service.PageManager;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.sling.api.resource.Resource;
+import com.composum.sling.core.BeanContext;
+import org.apache.sling.api.SlingHttpServletRequest;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
-import static com.composum.pages.commons.PagesConstants.LANGUAGE_NAME_SEPARATOR;
+import javax.annotation.Nonnull;
+import java.io.IOException;
 
 /**
  * the dispatcher to route a page request to the designated language variation
  */
 @Component(
         property = {
-                Constants.SERVICE_DESCRIPTION + "=Composum Pages Language Page Dispatcher"
+                Constants.SERVICE_DESCRIPTION + "=Composum Pages Language Page Dispatcher",
+                Constants.SERVICE_RANKING + ":Integer=999"
         }
 )
 public class LanguagePageDispatcher implements PageDispatcher {
@@ -28,8 +29,10 @@ public class LanguagePageDispatcher implements PageDispatcher {
      * @return the target page for the content forward performed by the PageNodeServlet;
      * this can be the language variant in the case of a language split
      */
+    @Nonnull
     @Override
-    public Page getForwardPage(Page page) {
+    public Page getForwardPage(@Nonnull Page page) {
+        /* FIXME deprecated 'hidden language split'
         Language language;
         // it's possible that the request has to use a language variant if default language page is addressed
         // and doesn't support the requested language
@@ -46,12 +49,20 @@ public class LanguagePageDispatcher implements PageDispatcher {
                     }
                 }
             }
-        }
+        }*/
         return page;
     }
 
     @Override
-    public boolean redirect(Page page) {
+    public boolean redirect(@Nonnull Page page) throws IOException {
+        BeanContext context = page.getContext();
+        SlingHttpServletRequest request = context.getRequest();
+        String requestUrl = request.getRequestURL().append("?").append(request.getQueryString()).toString();
+        String pageUrl = page.getUrl();
+        if (!requestUrl.contains(pageUrl)) {
+            context.getResponse().sendRedirect(pageUrl);
+            return true;
+        }
         return false;
     }
 }

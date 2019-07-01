@@ -12,7 +12,7 @@ import static com.composum.pages.commons.taglib.EditDialogTag.DIALOG_VAR;
 /**
  * the PageBodyTag creates the HTML body tag and the EDIT elements around the page content
  */
-public class EditDialogTabTag extends AbstractWrappingTag {
+public class EditDialogTabTag extends AbstractEditElementTag {
 
     public static final String DIALOG_TAB_VAR = "dialogTab";
 
@@ -48,6 +48,14 @@ public class EditDialogTabTag extends AbstractWrappingTag {
 
     public void setLabel(String label) {
         this.label = label;
+    }
+
+    public boolean isDisabled() {
+        Boolean result = null;
+        if (hasDisabledAttribute()) {
+            result = getDisabledValue();
+        }
+        return result != null ? result : getDialog().getDisabledValue();
     }
 
     @Override

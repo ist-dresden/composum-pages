@@ -47,7 +47,6 @@ public class EditWidgetTag extends AbstractWidgetTag implements LoopTag {
     protected boolean multi = false;
     protected String hint;
     protected String placeholder;
-    protected Boolean disabled;
     protected String rules;
 
     protected String status;
@@ -58,7 +57,6 @@ public class EditWidgetTag extends AbstractWidgetTag implements LoopTag {
         loopStatus = null;
         status = null;
         rules = null;
-        disabled = null;
         placeholder = null;
         hint = null;
         multi = false;
@@ -135,14 +133,6 @@ public class EditWidgetTag extends AbstractWidgetTag implements LoopTag {
 
     public void setPlaceholder(String val) {
         placeholder = val;
-    }
-
-    public boolean isDisabled() {
-        return disabled != null && disabled;
-    }
-
-    public void setDisabled(boolean val) {
-        disabled = val;
     }
 
     /**

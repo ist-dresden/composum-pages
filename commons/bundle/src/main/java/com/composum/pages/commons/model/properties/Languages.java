@@ -5,7 +5,10 @@ import com.composum.pages.commons.service.PageManager;
 import com.composum.sling.core.BeanContext;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.SyntheticResource;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Locale;
@@ -102,6 +105,7 @@ public class Languages extends PropertyNodeSet<Language> {
      * returns the language for a locale
      * or the default language if the set doesn't contain an appropriate language
      */
+    @Nonnull
     public Language getLanguage(final Locale locale) {
         return retrieveLanguage(locale.toString());
     }
@@ -109,14 +113,16 @@ public class Languages extends PropertyNodeSet<Language> {
     /**
      * returns the language for a language key; 'null' if not declared for the key
      */
+    @Nullable
     public Language getLanguage(String key) {
-       return languageSet.get(key);
+        return languageSet.get(key);
     }
 
     /**
      * returns the language for a language key
      * or the default language if the set doesn't contain an appropriate language
      */
+    @Nonnull
     public Language retrieveLanguage(String key) {
         while (StringUtils.isNotBlank(key)) {
             Language language = getLanguage(key);
@@ -132,12 +138,24 @@ public class Languages extends PropertyNodeSet<Language> {
     /**
      * returns the default language of the set, simply the first element in the set
      */
+    @Nonnull
     public Language getDefaultLanguage() {
         Collection<Language> languages = getLanguageList();
-        return languages.size() > 0 ? languages.iterator().next() : null;
+        return languages.size() > 0 ? languages.iterator().next() : new SyntheticLanguage("en", "english");
     }
 
+    @Nonnull
     public Collection<Language> getLanguageList() {
         return propertySet.values();
+    }
+
+    protected class SyntheticLanguage extends Language {
+
+        public SyntheticLanguage(String key, String label) {
+            super(Languages.this.context, new SyntheticResource(Languages.this.context.getResolver(),
+                    Languages.this.resource.getPath() + "/en", ""));
+            this.name = this.key = key;
+            this.label = label;
+        }
     }
 }

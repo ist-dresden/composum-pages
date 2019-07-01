@@ -16,6 +16,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
 
+import javax.annotation.Nonnull;
+
 import static com.composum.pages.commons.model.AbstractModel.CSS_BASE_TYPE_RESTRICTION;
 import static com.composum.pages.commons.util.ResourceTypeUtil.EDIT_TILE_PATH;
 import static com.composum.sling.core.servlet.AbstractServiceServlet.PARAM_TYPE;
@@ -58,6 +60,7 @@ public class FrameModel extends GenericModel {
     /**
      * @return the CSS base of the frame element itself not of the delegate
      */
+    @Nonnull
     @Override
     public String getCssBase() {
         Resource resource = getFrameResource();
