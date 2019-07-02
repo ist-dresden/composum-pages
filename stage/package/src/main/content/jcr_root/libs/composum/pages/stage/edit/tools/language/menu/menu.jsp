@@ -6,7 +6,7 @@
 <cpp:model var="languages" type="com.composum.pages.commons.model.properties.Languages"
            cssBase="composum-pages-language-menu">
     <ul class="${languagesCssBase} dropdown-menu dropdown-menu-right" data-default="${languages.defaultLanguage}">
-        <c:forEach items="${languages.languageList}" var="language">
+        <c:forEach items="${languages.languages}" var="language">
             <li class="${languagesCssBase}_item"><a class="${languagesCssBase}_link" href="#"
                                                     data-value="${language.key}"><span
                     class="${languagesCssBase}_label">${language.label}</span>

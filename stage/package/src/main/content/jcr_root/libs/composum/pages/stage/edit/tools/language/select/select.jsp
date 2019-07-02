@@ -6,7 +6,7 @@
 <cpp:model var="languages" type="com.composum.pages.commons.model.properties.Languages"
            cssBase="composum-pages-language-select">
     <select class="${languagesCssBase} form-control" data-default="${languages.defaultLanguage}">
-        <c:forEach items="${languages.languageList}" var="language">
+        <c:forEach items="${languages.languages}" var="language">
             <option value="${language.key}"<c:if test="${language.current}"> selected</c:if>>${language.label}
                 [${language.key}]
             </option>

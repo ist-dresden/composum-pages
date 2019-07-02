@@ -19,8 +19,8 @@ import static com.composum.pages.commons.taglib.DefineObjectsTag.CURRENT_PAGE;
 /**
  * the model of a resource which is the root of a language split in the context of the current page
  * (the site with the configured site language set is used if no language split declared)
- * assuming the a language split root page has siblings for the other languages of a site;
- * the alternatives of the current page are searched in the siblings paths relative to the language root
+ * assuming that a language split root page has siblings for the other languages of a site;
+ * the alternatives of the current page are searched in the siblings path relative to the language root
  */
 public class LanguageRoot extends GenericModel {
 
@@ -105,6 +105,10 @@ public class LanguageRoot extends GenericModel {
         return page;
     }
 
+    public boolean isRootPage() {
+        return !Site.isSite(getResource());
+    }
+
     @Nonnull
     public String getLanguageKeyLabel() {
         return getLanguage().getKey().toUpperCase();
@@ -113,12 +117,12 @@ public class LanguageRoot extends GenericModel {
     @Nonnull
     public Collection<Language> getPageLanguages() {
         Page page = getPage();
-        return page != null ? page.getPageLanguages() : getSiteLanguages();
+        return page != null ? page.getPageLanguages().getLanguages() : getSiteLanguages();
     }
 
     @Nonnull
     public Collection<Language> getSiteLanguages() {
-        return getLanguages().getLanguageList();
+        return getLanguages().getLanguages();
     }
 
     @Nonnull
@@ -144,7 +148,7 @@ public class LanguageRoot extends GenericModel {
                 Collection<Language> pageLanguages = getPageLanguages();
                 Languages languages = getLanguages();
                 Language defaultLanguage = languages.getDefaultLanguage();
-                for (Language language : languages.getLanguageList()) {
+                for (Language language : languages.getLanguages()) {
                     if (!language.equals(pageLanguage)) {
                         if (pageLanguages.contains(language)) {
                             // i18n by property switch
@@ -171,7 +175,7 @@ public class LanguageRoot extends GenericModel {
         for (Resource child : getLanguageSiblingsParent().getChildren()) {
             if (Page.isPage(child)) {
                 Page page = getPageManager().createBean(getContext(), child);
-                if (language.equals(page.getLanguage())) {
+                if (page.getPageLanguages().contains(language)) {
                     return page;
                 }
             }

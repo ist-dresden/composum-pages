@@ -16,6 +16,6 @@ public class Languages extends Element {
     }
 
     public Collection<Language> getLanguageList() {
-        return getLanguages().getLanguageList();
+        return getLanguages().getLanguages();
     }
 }

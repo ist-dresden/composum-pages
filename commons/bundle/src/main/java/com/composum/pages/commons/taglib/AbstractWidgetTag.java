@@ -88,6 +88,10 @@ public abstract class AbstractWidgetTag extends AbstractEditElementTag {
         name = key;
     }
 
+    public void setDisabled(boolean value) {
+        disabled = value;
+    }
+
     public boolean isDisabled() {
         Boolean result = null;
         if (hasDisabledAttribute()) {
@@ -95,15 +99,15 @@ public abstract class AbstractWidgetTag extends AbstractEditElementTag {
         } else {
             EditDialogGroupTag groupTag = (EditDialogGroupTag) pageContext.findAttribute(DIALOG_GROUP_VAR);
             if (groupTag != null && groupTag.hasDisabledAttribute()) {
-                result = groupTag.getDisabledValue();
+                result = groupTag.isDisabledSet();
             } else {
                 EditDialogTabTag tabTag = (EditDialogTabTag) pageContext.findAttribute(DIALOG_TAB_VAR);
                 if (tabTag != null && tabTag.hasDisabledAttribute()) {
-                    result = tabTag.getDisabledValue();
+                    result = tabTag.isDisabledSet();
                 }
             }
         }
-        return result != null ? result : getDialog().getDisabledValue();
+        return result != null ? result : getDialog().isDisabledSet();
     }
 
     /**

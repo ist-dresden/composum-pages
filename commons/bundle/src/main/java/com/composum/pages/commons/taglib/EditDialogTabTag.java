@@ -50,12 +50,8 @@ public class EditDialogTabTag extends AbstractEditElementTag {
         this.label = label;
     }
 
-    public boolean isDisabled() {
-        Boolean result = null;
-        if (hasDisabledAttribute()) {
-            result = getDisabledValue();
-        }
-        return result != null ? result : getDialog().getDisabledValue();
+    public boolean isDisabledSet() {
+        return hasDisabledAttribute() ? getDisabledValue() : getDialog().isDisabledSet();
     }
 
     @Override

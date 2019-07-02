@@ -1,7 +1,5 @@
 package com.composum.pages.commons.taglib;
 
-import com.composum.pages.commons.model.properties.Language;
-import com.composum.pages.commons.model.properties.Languages;
 import com.composum.pages.commons.util.ResourceTypeUtil;
 import com.composum.pages.commons.util.TagCssClasses;
 import com.composum.sling.core.util.ResourceUtil;
@@ -17,7 +15,6 @@ import java.util.Map;
 
 import static com.composum.pages.commons.taglib.AbstractPageTag.STAGE_COMPONENT_BASE;
 import static com.composum.pages.commons.util.TagCssClasses.cssOfType;
-import static com.composum.platform.models.annotations.InternationalizationStrategy.I18NFOLDER.I18N_PROPERTY_PATH;
 import static com.composum.sling.cpnl.TagBase.TAG_NONE;
 
 /**
@@ -118,6 +115,10 @@ public class EditDialogTag extends AbstractEditTag {
 
     public void setTitle(String text) {
         title = text;
+    }
+
+    public boolean isDisabledSet() {
+        return getDisabledValue();
     }
 
     /**

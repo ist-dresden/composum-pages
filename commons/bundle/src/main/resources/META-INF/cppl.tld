@@ -811,7 +811,7 @@
             <name>disabled</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
-            <type>java.lang.Object</type>
+            <type>java.lang.Boolean</type>
         </attribute>
         <attribute>
             <name>placeholder</name>

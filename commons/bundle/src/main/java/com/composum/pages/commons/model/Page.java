@@ -7,6 +7,7 @@ package com.composum.pages.commons.model;
 
 import com.composum.pages.commons.PagesConstants;
 import com.composum.pages.commons.model.properties.Language;
+import com.composum.pages.commons.model.properties.LanguageSet;
 import com.composum.pages.commons.model.properties.Languages;
 import com.composum.pages.commons.request.DisplayMode;
 import com.composum.pages.commons.service.PageManager;
@@ -74,52 +75,20 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
         return ResourceUtil.isResourceType(resource, NODE_TYPE_PAGE_CONTENT);
     }
 
-    // specified languages for a page
-
-    /* FIXME deprecated 'hidden language split'
-    public static class PageLanguages extends ArrayList<Language> {
-
-        @Override
-        public int indexOf(Object object) {
-            if (object instanceof Language) {
-                String key = ((Language) object).getKey();
-                for (int index = 0; index < size(); index++) {
-                    if (get(index).getKey().equals(key)) {
-                        return index;
-                    }
-                }
-            }
-            return -1;
-        }
-    }*/
-
     // child pages filter base
 
     public static class DefaultPageFilter extends ResourceFilter.AbstractResourceFilter {
 
         protected final BeanContext context;
-        /* FIXME deprecated 'hidden language split'
-        protected final Locale locale;
-        protected final Language language;*/
 
         public DefaultPageFilter(BeanContext context) {
             this.context = context;
-            /* FIXME deprecated 'hidden language split'
-            locale = Objects.requireNonNull(context.getRequest().adaptTo(PagesLocale.class)).getLocale();
-            language = Languages.get(context).getLanguage(locale);*/
         }
 
         protected Page isAcceptedPage(Resource resource) {
             if (Page.isPage(resource)) {
                 Page page = context.getService(PageManager.class).createBean(context, resource);
                 if (page.isValid()) {
-                    /* FIXME deprecated 'hidden language split'
-                    if (language != null) {
-                        PageLanguages pageLanguages = page.getPageLanguages();
-                        if (!pageLanguages.contains(language)) {
-                            return null;
-                        }
-                    }*/
                     return page;
                 }
             }
@@ -142,6 +111,81 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
         }
     }
 
+    //
+
+    /**
+     * the set of the languages edited within this page and the language root status of the page
+     */
+    public class PageLanguages {
+
+        protected final Languages languages;
+        protected String[] languageKeys;
+        protected Boolean isLanguageRoot;
+        protected Boolean isLanguageSplit;
+        protected LanguageSet languageSet;
+
+        public PageLanguages() {
+            languages = Page.this.getLanguages();
+            languageKeys = Page.this.getProperty(PROP_PAGE_LANGUAGES, null, new String[0]);
+            isLanguageRoot = (languageKeys.length > 0);
+            isLanguageSplit = Boolean.FALSE;
+            if (!isLanguageRoot) {
+                languageKeys = getInherited(PROP_PAGE_LANGUAGES, null, new String[0]);
+            }
+            if (languageKeys.length > 0) {
+                for (String key : languageKeys) {
+                    Language language = languages.getLanguage(key);
+                    if (language != null) {
+                        if (languageSet == null) {
+                            languageSet = new LanguageSet() {
+                                @Nonnull
+                                @Override
+                                public Language getDefaultLanguage() {
+                                    return size() > 0 ? values().iterator().next() : languages.getDefaultLanguage();
+                                }
+                            };
+                            isLanguageSplit = Boolean.TRUE;
+                        }
+                        languageSet.put(language.getKey(), language);
+                    }
+                }
+            }
+            if (languageSet == null) {
+                languageSet = languages.getLanguageSet();
+                isLanguageRoot = Boolean.FALSE;
+            }
+        }
+
+        public boolean contains(Language language) {
+            return languageSet.containsKey(language.getKey());
+        }
+
+        public String[] getLanguageKeys() {
+            return languageKeys;
+        }
+
+        public boolean isLanguageRoot() {
+            return isLanguageRoot;
+        }
+
+        public boolean isLanguageSplit() {
+            return isLanguageSplit;
+        }
+
+        public Language getDefaultLanguage() {
+            return languageSet.size() > 0 ? languageSet.values().iterator().next() : languages.getDefaultLanguage();
+        }
+
+        public Collection<Language> getLanguages() {
+            return languageSet.getLanguages();
+        }
+
+        @Nullable
+        public Language getLanguage(String key) {
+            return languageSet.get(key);
+        }
+    }
+
     // page attributes
 
     private transient Site site;
@@ -150,14 +194,7 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
     private transient String subtitle;
 
     private transient Language language;
-
-    private transient Boolean isLanguageRoot;
-    private transient Boolean isLanguageSplit;
-    private transient Collection<Language> pageLanguages;
-    /* FIXME deprecated 'hidden language split'
-    private transient PageLanguages pageLanguages;
-    private transient Boolean isDefaultLangPage;
-    private transient Page defaultLanguagePage;*/
+    private transient PageLanguages languages;
 
     private transient StatusModel releaseStatus;
     private transient PlatformVersionsService versionsService;
@@ -275,17 +312,28 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
     // I18N (language split)
 
     public boolean isLanguageRoot() {
-        getPageLanguages(); /* determines the value if not done always */
-        return isLanguageRoot;
+        return getPageLanguages().isLanguageRoot();
     }
 
     public boolean isLanguageSplit() {
-        getPageLanguages(); /* determines the value if not done always */
-        return isLanguageSplit;
+        return getPageLanguages().isLanguageSplit();
     }
 
     public boolean isLanguageSplitLocked() {
         return isLanguageSplit() && !isLanguageRoot();
+    }
+
+    @Nonnull
+    public String[] getLanguageKeys() {
+        return getPageLanguages().getLanguageKeys();
+    }
+
+    @Nonnull
+    public PageLanguages getPageLanguages() {
+        if (languages == null) {
+            languages = new PageLanguages();
+        }
+        return languages;
     }
 
     /**
@@ -295,115 +343,18 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
     @Nonnull
     public Language getLanguage() {
         if (language == null) {
-            if (isLanguageSplit()) {
-                // i18n by language path split - use the language configured at the page
-                language = getPageLanguages().iterator().next();
-            } else {
-                // i18n by property path split - use the locale URL parameter
-                Languages languages = getLanguages();
-                SlingHttpServletRequest request = getContext().getRequest();
-                String requestedLang = request.getParameter(LOCALE_REQUEST_PARAM);
-                if (StringUtils.isNotBlank(requestedLang)) {
-                    language = languages.getLanguage(requestedLang);
-                }
-                if (language == null) {
-                    language = languages.getDefaultLanguage();
-                }
+            PageLanguages languages = getPageLanguages();
+            SlingHttpServletRequest request = getContext().getRequest();
+            String requestedLang = request.getParameter(LOCALE_REQUEST_PARAM);
+            if (StringUtils.isNotBlank(requestedLang)) {
+                language = languages.getLanguage(requestedLang);
+            }
+            if (language == null) {
+                language = languages.getDefaultLanguage();
             }
         }
         return language;
     }
-
-    @Nonnull
-    public Collection<Language> getPageLanguages() {
-        if (pageLanguages == null) {
-            Languages languages = getLanguages();
-            String[] languageKeys = getProperty(PROP_PAGE_LANGUAGES, null, new String[0]);
-            isLanguageRoot = (languageKeys.length > 0);
-            isLanguageSplit = Boolean.FALSE;
-            if (!isLanguageRoot) {
-                languageKeys = getInherited(PROP_PAGE_LANGUAGES, null, new String[0]);
-            }
-            if (languageKeys.length > 0) {
-                for (String key : languageKeys) {
-                    Language language = languages.getLanguage(key);
-                    if (language != null) {
-                        if (pageLanguages == null) {
-                            pageLanguages = new ArrayList<>();
-                            isLanguageSplit = Boolean.TRUE;
-                        }
-                        pageLanguages.add(language);
-                    }
-                }
-            }
-            if (pageLanguages == null) {
-                pageLanguages = languages.getLanguageList();
-                isLanguageRoot = Boolean.FALSE;
-            }
-        }
-        return pageLanguages;
-    }
-
-    /* FIXME deprecated 'hidden language split'
-    /**
-     * @return the language subset of the sites languages supported by this page
-     *
-    public PageLanguages getPageLanguages() {
-        if (pageLanguages == null) {
-            pageLanguages = new PageLanguages();
-            Languages declaredLanguages = getLanguages();
-            String[] languages = getInherited(PROP_PAGE_LANGUAGES, null, String[].class);
-            if (languages != null) {
-                for (String key : languages) {
-                    Language language = declaredLanguages.getLanguage(key);
-                    if (language != null) {
-                        pageLanguages.add(language);
-                    }
-                }
-            } else {
-                pageLanguages.addAll(declaredLanguages.getLanguageList());
-            }
-        }
-        return pageLanguages;
-    }
-
-    /**
-     * @return 'true' if this page can render the content of the default language
-     *
-    public boolean isDefaultLanguagePage() {
-        if (isDefaultLangPage == null) {
-            PageLanguages pageLanguages = getPageLanguages();
-            isDefaultLangPage = pageLanguages.contains(getLanguages().getDefaultLanguage());
-        }
-        return isDefaultLangPage;
-    }
-
-    /**
-     * @return the Page to use to build the general URL of the page even if this page is language split
-     *
-    public Page getDefaultLanguagePage() {
-        if (defaultLanguagePage == null) {
-            if (!isDefaultLanguagePage()) {
-                String baseName = StringUtils.substringBeforeLast(getName(), LANGUAGE_NAME_SEPARATOR);
-                for (Resource sibling : Objects.requireNonNull(getResource().getParent()).getChildren()) {
-                    if (Page.isPage(sibling)) {
-                        Page page = getPageManager().createBean(context, sibling);
-                        if (page.isValid()
-                                // searching for a sibling with the same 'base name' which can render the default language
-                                && baseName.equals(StringUtils.substringBeforeLast(page.getName(), LANGUAGE_NAME_SEPARATOR))
-                                && page.isDefaultLanguagePage()) {
-                            defaultLanguagePage = page;
-                        }
-                    }
-                }
-            }
-            if (defaultLanguagePage == null) {
-                defaultLanguagePage = this;
-            }
-        }
-        return defaultLanguagePage;
-    }
-    */
 
     // properties
 
@@ -430,49 +381,52 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
 
     // rendering
 
-    /* FIXME deprecated 'hidden language split'
     /**
-     * @return the URL to reference this page;
-     * this can be the URL of the default language sibling if this page itself is a language variation instance
-     *
+     * @return the pages URL - the URL in the context of the pages language - the canonical URL
+     */
     @Nonnull
     @Override
     public String getUrl() {
-        return LinkUtil.getUrl(getContext().getRequest(), getDefaultLanguagePage().getPath());
-    }*/
-    @Nonnull
-    @Override
-    public String getUrl() {
-        return getUrl(getLanguage());
+        if (url == null) {
+            url = getUrl(getLanguage());
+        }
+        return url;
     }
 
+    /**
+     * @return the pages URL in the context of the given language
+     * - decorated with the locale URL parameter if the language is not the default language
+     */
     @Nonnull
-    public String getUrl(Language language) {
-        String pageUrl = super.getUrl();
-        if (!isLanguageSplit()) {
-            if (!language.equals(getLanguages().getDefaultLanguage())) {
-                pageUrl += "?pages.locale=" + language.getKey();
-            }
+    public String getUrl(@Nonnull final Language language) {
+        SlingHttpServletRequest request = context.getRequest();
+        String pageUrl = LinkUtil.getUrl(request, getPath(), null, null);
+        if (!language.equals(getPageLanguages().getDefaultLanguage())) {
+            pageUrl += "?pages.locale=" + language.getKey();
         }
         return pageUrl;
     }
 
+    @Nonnull
     public String getHtmlLangAttribute() {
         Language language = getLanguage();
         return "lang=\"" + language.getKey() + "\"";
     }
 
+    @Nonnull
     public String getHtmlDirAttribute() {
         Language language = getLanguage();
         String dir = language.getDirection();
         return StringUtils.isNotBlank(dir) ? "dir=\"" + dir + "\"" : "";
     }
 
+    @Nonnull
     public String getHtmlClasses() {
         return StringUtils.join(collectHtmlClasses(new ArrayList<>()), " ");
     }
 
-    protected List<String> collectHtmlClasses(List<String> classes) {
+    @Nonnull
+    protected List<String> collectHtmlClasses(@Nonnull final List<String> classes) {
         SlingHttpServletRequest request = context.getRequest();
         AccessMode accessMode = AccessMode.requestMode(request);
         if (AccessMode.AUTHOR == accessMode) {
@@ -491,10 +445,12 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
         return classes;
     }
 
+    @Nonnull
     public String getViewClientlibCategory() {
         return getInherited(PROP_VIEW_CATEGORY, DEFAULT_VIEW_CATEGORY);
     }
 
+    @Nonnull
     public String getEditClientlibCategory() {
         return getInherited(PROP_EDIT_CATEGORY, DEFAULT_EDIT_CATEGORY);
     }

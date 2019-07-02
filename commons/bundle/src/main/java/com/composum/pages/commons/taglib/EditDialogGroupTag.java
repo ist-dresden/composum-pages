@@ -63,17 +63,17 @@ public class EditDialogGroupTag extends AbstractEditElementTag {
         this.expanded = expanded;
     }
 
-    public boolean isDisabled() {
+    public boolean isDisabledSet() {
         Boolean result = null;
         if (hasDisabledAttribute()) {
             result = getDisabledValue();
         } else {
             EditDialogTabTag tabTag = (EditDialogTabTag) pageContext.findAttribute(DIALOG_TAB_VAR);
             if (tabTag != null && tabTag.hasDisabledAttribute()) {
-                result = tabTag.getDisabledValue();
+                result = tabTag.isDisabledSet();
             }
         }
-        return result != null ? result : getDialog().getDisabledValue();
+        return result != null ? result : getDialog().isDisabledSet();
     }
 
     @Override

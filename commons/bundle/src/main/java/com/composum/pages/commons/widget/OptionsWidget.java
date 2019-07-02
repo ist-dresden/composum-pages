@@ -218,7 +218,7 @@ public abstract class OptionsWidget<T> extends PropertyEditHandle<T> implements 
     @Nonnull
     protected List<Option> useLanguages(Languages languages) {
         List<Option> options = new ArrayList<>();
-        for (Language language : languages.getLanguageList()) {
+        for (Language language : languages.getLanguages()) {
             options.add(newOption(language.getLabel(), language.getKey(), language));
         }
         return options;

@@ -128,7 +128,7 @@ public abstract class AbstractModel implements SlingBean, Model {
     private transient String name;
     protected transient String type;
 
-    private transient String url;
+    protected transient String url;
     protected transient String title;
     private transient String description;
 
