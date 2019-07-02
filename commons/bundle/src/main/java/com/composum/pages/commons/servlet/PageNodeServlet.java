@@ -1,5 +1,6 @@
 package com.composum.pages.commons.servlet;
 
+import com.composum.pages.commons.PagesConstants;
 import com.composum.pages.commons.model.Page;
 import com.composum.pages.commons.request.DisplayMode;
 import com.composum.pages.commons.service.PageManager;
@@ -62,6 +63,8 @@ public class PageNodeServlet extends SlingSafeMethodsServlet {
         Page page = pageManager.createBean(context, resource);
 
         if (page.isValid()) {
+            // ensure that the current page is declared before any property access
+            request.setAttribute(PagesConstants.RA_CURRENT_PAGE, page);
 
             // if not in edit mode check for a HTTP redirect triggered by one of the dispatchers
             DisplayMode.Value displayMode = DisplayMode.current(context);

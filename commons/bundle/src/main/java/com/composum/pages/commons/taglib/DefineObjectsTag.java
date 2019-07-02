@@ -12,6 +12,9 @@ import org.apache.sling.api.resource.Resource;
 
 import javax.servlet.jsp.PageContext;
 
+import static com.composum.pages.commons.PagesConstants.RA_CONTEXT_PATH;
+import static com.composum.pages.commons.PagesConstants.RA_CURRENT_PAGE;
+
 public class DefineObjectsTag extends org.apache.sling.scripting.jsp.taglib.DefineObjectsTag {
 
     public static final String PAGES_ACCESS_PREFIX = "pagesAccess";
@@ -25,9 +28,6 @@ public class DefineObjectsTag extends org.apache.sling.scripting.jsp.taglib.Defi
     public static final String PAGES_MODE_EDIT = PAGES_MODE_PREFIX + "Edit";
     public static final String PAGES_MODE_DEVELOP = PAGES_MODE_PREFIX + "Develop";
 
-    public static final String CURRENT_PAGE = "currentPage";
-    public static final String CONTEXT_PATH = "contextPath";
-
     protected BeanContext context;
 
     @Override
@@ -36,7 +36,7 @@ public class DefineObjectsTag extends org.apache.sling.scripting.jsp.taglib.Defi
         context = createContext(pageContext);
         SlingHttpServletRequest request = context.getRequest();
 
-        context.setAttribute(CONTEXT_PATH, context.getRequest().getContextPath(), BeanContext.Scope.request);
+        context.setAttribute(RA_CONTEXT_PATH, context.getRequest().getContextPath(), BeanContext.Scope.request);
         AccessMode accessMode = request.adaptTo(AccessMode.class);
         context.setAttribute(PAGES_ACCESS_AUTHOR, accessMode == AccessMode.AUTHOR
                 ? Boolean.TRUE : Boolean.FALSE, BeanContext.Scope.request);
@@ -68,7 +68,7 @@ public class DefineObjectsTag extends org.apache.sling.scripting.jsp.taglib.Defi
 
     protected void setCurrentPage() {
 
-        if (context.getAttribute(CURRENT_PAGE, Page.class) == null) {
+        if (context.getAttribute(RA_CURRENT_PAGE, Page.class) == null) {
             SlingHttpServletRequest request = context.getRequest();
             Resource resource = determineResource(request);
             PageManager pageManager = context.getService(PageManager.class);
@@ -76,7 +76,7 @@ public class DefineObjectsTag extends org.apache.sling.scripting.jsp.taglib.Defi
 
             if (pageResource != null) {
                 Page page = pageManager.createBean(context, pageResource);
-                request.setAttribute(CURRENT_PAGE, page);
+                request.setAttribute(RA_CURRENT_PAGE, page);
             }
         }
     }

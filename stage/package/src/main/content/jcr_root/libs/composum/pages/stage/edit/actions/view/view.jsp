@@ -2,13 +2,16 @@
 <%@taglib prefix="sling" uri="http://sling.apache.org/taglibs/sling/1.2" %>
 <%@taglib prefix="cpn" uri="http://sling.composum.com/cpnl/1.0" %>
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <cpp:defineFrameObjects/>
 <cpp:editToolbar var="frame" type="com.composum.pages.stage.model.edit.FramePage"
                  cssAdd="composum-pages-stage-edit-toolbar">
-    <a class="${toolbarCssBase}_language ${toolbarCssBase}_button dropdown-toggle"
-       data-toggle="dropdown" href="#"><span class="${toolbarCssBase}_language-label">${frame.languageHint}</span><span
-            class="caret"></span></a>
-    <sling:include path="${frame.pagePath}" resourceType="composum/pages/stage/edit/tools/language/menu"/>
+    <c:if test="${frame.hasLanguageVariations}">
+        <a class="${toolbarCssBase}_language ${toolbarCssBase}_button dropdown-toggle"
+           data-toggle="dropdown" href="#"><span class="${toolbarCssBase}_language-label">${frame.languageHint}</span><span
+                class="caret"></span></a>
+        <sling:include path="${frame.pagePath}" resourceType="composum/pages/stage/edit/tools/language/menu"/>
+    </c:if>
     <a class="fa fa-refresh ${toolbarCssBase}_reload-page ${toolbarCssBase}_button" href="#"
        title="${cpn:i18n(slingRequest,'Reload Page')}"><span
             class="${toolbarCssBase}_label">${cpn:i18n(slingRequest,'Reload Page')}</span></a>

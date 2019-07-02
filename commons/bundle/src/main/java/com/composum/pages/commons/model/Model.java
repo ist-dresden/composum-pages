@@ -2,6 +2,7 @@ package com.composum.pages.commons.model;
 
 import com.composum.pages.commons.PagesConstants;
 import com.composum.pages.commons.model.properties.Language;
+import com.composum.pages.commons.model.properties.Languages;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.SlingBean;
 import com.composum.pages.commons.util.LinkUtil;
@@ -59,6 +60,9 @@ public interface Model extends SlingBean {
 
     @Nonnull
     Language getLanguage();
+
+    @Nonnull
+    Languages getLanguages();
 
     // resource properties
 

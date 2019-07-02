@@ -95,14 +95,18 @@ public class FramePage extends Page {
         context.getResponse().sendRedirect(getPageUrl());
     }
 
+    public boolean isHasLanguageVariations() {
+        return getPage().getPageLanguages().getLanguages().size() > 1;
+    }
+
     // edit status properties
 
     /**
      * @return a readable key of the current edited language
      */
     public String getLanguageHint() {
-        Language language = getPage().getLanguage();
-        return language != null ? language.getKey().toLowerCase().replace('_', '.') : "";
+        Language language = getLanguages().getLanguage();
+        return language.getKey().toLowerCase().replace('_', '.');
     }
 
     // view mode

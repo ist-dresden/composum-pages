@@ -5,10 +5,13 @@
  */
 package com.composum.pages.commons.taglib;
 
+import com.composum.pages.commons.PagesConstants;
 import com.composum.pages.commons.model.Element;
 import com.composum.pages.commons.model.GenericModel;
 import com.composum.pages.commons.model.Model;
+import com.composum.pages.commons.model.Page;
 import com.composum.pages.commons.model.properties.Language;
+import com.composum.pages.commons.model.properties.LanguageSet;
 import com.composum.pages.commons.model.properties.Languages;
 import com.composum.pages.commons.request.DisplayMode;
 import com.composum.pages.commons.service.ResourceManager;
@@ -50,6 +53,8 @@ public class ModelTag extends ComponentTag implements DynamicAttributes {
 
     public static final String EDIT_CSS_BASE = "composum-pages-edit";
 
+    private transient Page currentPage;
+
     private transient TagCssClasses tagCssClasses;
     protected String cssBase;
     protected Object test;
@@ -69,6 +74,7 @@ public class ModelTag extends ComponentTag implements DynamicAttributes {
         test = null;
         cssBase = null;
         tagCssClasses = null;
+        currentPage = null;
         super.clear();
     }
 
@@ -266,6 +272,21 @@ public class ModelTag extends ComponentTag implements DynamicAttributes {
         return request.getLocale().getLanguage();
     }
 
+    @Nullable
+    public Page getCurrentPage() {
+        if (currentPage == null) {
+            currentPage = context.getAttribute(PagesConstants.RA_CURRENT_PAGE, Page.class);
+        }
+        return currentPage;
+    }
+
+    @Nonnull
+    public LanguageSet getLanguageSet() {
+        Page currentPage = getCurrentPage();
+        return currentPage != null ? currentPage.getPageLanguages().getLanguageSet() : getLanguages().getLanguageSet();
+    }
+
+    @Nonnull
     public Languages getLanguages() {
         return Languages.get(context);
     }
@@ -276,14 +297,12 @@ public class ModelTag extends ComponentTag implements DynamicAttributes {
      * @return the path with inserted 'i18n' segment if the language context is not the default language context
      * @see InternationalizationStrategy
      */
+    @Nonnull
     protected String getI18nPath(String relativePath, String name) {
-        Languages languages = getLanguages();
-        if (languages != null) {
-            Language defaultLanguage = languages.getDefaultLanguage();
-            if (defaultLanguage != null && !defaultLanguage.isCurrent()) {
-                Language language = languages.getLanguage();
-                return relativePath + I18N_PROPERTY_PATH + language.getKey() + "/" + name;
-            }
+        Language language = getLanguages().getLanguage();
+        LanguageSet languageScope = getLanguageSet();
+        if (!language.equals(languageScope.getDefaultLanguage())) {
+            return relativePath + I18N_PROPERTY_PATH + language.getKey() + "/" + name;
         }
         return relativePath + name;
     }

@@ -28,6 +28,11 @@ public interface PagesConstants {
     String COMPOSUM_PREFIX = "composum-";
     String PAGES_PREFIX = COMPOSUM_PREFIX + "pages-";
 
+    /** request attributes */
+
+    String RA_CONTEXT_PATH = "contextPath";
+    String RA_CURRENT_PAGE = "currentPage";
+
     /** I18N */
 
     String PROP_PAGE_LANGUAGES = "pageLanguages";
@@ -48,7 +53,8 @@ public interface PagesConstants {
 
     String ACCESS_MODE_ATTR = PlatformAccessFilter.ACCESS_MODE_KEY;
     String DISPLAY_MODE_ATTR = "composum-pages-request-display";
-    String PAGES_LOCALE_ATTR = "composum-pages-request-locale";
+    String RA_PAGES_LOCALE = "composum-pages-request-locale";
+    String RA_PAGES_LANGUAGE = "composum-pages-request-language";
 
     String PAGES_FRAME_PATH = "/bin/pages";
 

@@ -1,7 +1,10 @@
 package com.composum.pages.commons.model.properties;
 
 import com.composum.sling.core.BeanContext;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
+
+import java.util.Locale;
 
 public class Language extends PropertyNode {
 
@@ -14,6 +17,8 @@ public class Language extends PropertyNode {
     protected String label;
     protected String direction;
 
+    private transient Locale locale;
+
     public Language(BeanContext context, Resource resource) {
         super(context, resource);
     }
@@ -23,11 +28,6 @@ public class Language extends PropertyNode {
         key = values.get(PROP_KEY, "??");
         label = values.get(PROP_LABEL, key);
         direction = values.get(PROP_DIRECTION, "");
-    }
-
-    public boolean isCurrent() {
-        Language current = model.getLanguage();
-        return key.equals(current.key);
     }
 
     public String toString() {
@@ -48,6 +48,14 @@ public class Language extends PropertyNode {
 
     public String getDirection() {
         return direction;
+    }
+
+    public Locale getLocale() {
+        if (locale == null) {
+            String[] key = StringUtils.split(getKey(), "_", 3);
+            locale = new Locale(key[0], key.length > 1 ? key[1] : "", key.length > 2 ? key[2] : "");
+        }
+        return locale;
     }
 
     // Object

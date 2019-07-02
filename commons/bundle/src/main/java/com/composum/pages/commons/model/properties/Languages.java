@@ -1,8 +1,11 @@
 package com.composum.pages.commons.model.properties;
 
+import com.composum.pages.commons.model.Page;
 import com.composum.pages.commons.model.Site;
+import com.composum.pages.commons.request.PagesLocale;
 import com.composum.pages.commons.service.SiteManager;
 import com.composum.sling.core.BeanContext;
+import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.SyntheticResource;
 
@@ -53,10 +56,16 @@ public class Languages extends PropertyNodeSet<Language> {
 
     protected LanguageSet languageSet;
 
+    private transient Language language;
+    private transient Locale locale;
+
+    /**
+     * for use as model in templates...
+     */
     public Languages() {
     }
 
-    public Languages(final BeanContext context, final Resource resource) {
+    protected Languages(final BeanContext context, final Resource resource) {
         super(context, resource);
     }
 
@@ -92,19 +101,24 @@ public class Languages extends PropertyNodeSet<Language> {
     }
 
     /**
-     * returns the requested language from the element model
-     */
-    public Language getLanguage() {
-        return model.getLanguage();
-    }
-
-    /**
-     * returns the language for a locale
-     * or the default language if the set doesn't contain an appropriate language
+     * returns the requested language from the current page (fallback: the language retrieved from the locale)
      */
     @Nonnull
-    public Language getLanguage(final Locale locale) {
-        return languageSet.retrieveLanguage(locale.toString());
+    public Language getLanguage() {
+        if (language == null) {
+            Page page = getCurrentPage();
+            if (page != null) {
+                Language chosen = getLanguage(getLocale());
+                language = page.getPageLanguages().getLanguage(chosen.getKey());
+                if (language == null) {
+                    language = page.getLanguage();
+                }
+            }
+            if (language == null) {
+                language = getLanguage(getLocale());
+            }
+        }
+        return language;
     }
 
     /**
@@ -142,5 +156,24 @@ public class Languages extends PropertyNodeSet<Language> {
             this.name = this.key = key;
             this.label = label;
         }
+    }
+
+    /**
+     * returns the language for a locale
+     * or the default language if the set doesn't contain an appropriate language
+     */
+    @Nonnull
+    protected Language getLanguage(final Locale locale) {
+        return languageSet.retrieveLanguage(locale.toString());
+    }
+
+    @Nonnull
+    public Locale getLocale() {
+        if (locale == null) {
+            SlingHttpServletRequest request = context.getRequest();
+            PagesLocale pagesLocale = request.adaptTo(PagesLocale.class);
+            locale = pagesLocale != null ? pagesLocale.getLocale() : request.getLocale();
+        }
+        return locale;
     }
 }

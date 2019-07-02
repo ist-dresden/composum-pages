@@ -2,6 +2,7 @@ package com.composum.pages.commons.model;
 
 import com.composum.pages.commons.PagesConstants;
 import com.composum.pages.commons.model.properties.Language;
+import com.composum.pages.commons.model.properties.Languages;
 import com.composum.sling.core.BeanContext;
 import org.apache.sling.api.resource.Resource;
 
@@ -136,6 +137,12 @@ public class ModelWrapper implements Model {
     @Nonnull
     public Language getLanguage() {
         return delegate.getLanguage();
+    }
+
+    @Override
+    @Nonnull
+    public Languages getLanguages() {
+        return delegate.getLanguages();
     }
 
     // resource properties

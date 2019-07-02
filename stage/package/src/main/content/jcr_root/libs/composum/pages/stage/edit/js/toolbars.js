@@ -149,7 +149,9 @@
                 this.$('.' + c.tbar.base + c.tbar._open).click(_.bind(this.openPage, this));
                 this.$('.' + c.tbar.base + c.tbar._reload).click(_.bind(this.reloadPage, this));
                 toolbars.localeSelector = core.getView('.' + toolbars.const.languageMenu, toolbars.LocaleSelector);
-                toolbars.localeSelector.currentPage = this.currentPage;
+                if (toolbars.localeSelector) {
+                    toolbars.localeSelector.currentPage = this.currentPage;
+                }
             },
 
             profileAspect: function () {

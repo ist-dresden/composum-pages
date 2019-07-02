@@ -1,5 +1,6 @@
 package com.composum.pages.commons.model;
 
+import com.composum.pages.commons.PagesConstants;
 import com.composum.pages.commons.model.properties.Language;
 import com.composum.pages.commons.model.properties.Languages;
 import com.composum.pages.commons.service.PageManager;
@@ -14,8 +15,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import static com.composum.pages.commons.taglib.DefineObjectsTag.CURRENT_PAGE;
-
 /**
  * the model of a resource which is the root of a language split in the context of the current page
  * (the site with the configured site language set is used if no language split declared)
@@ -28,7 +27,7 @@ public class LanguageRoot extends GenericModel {
     public static Resource findLanguageRootResource(@Nonnull final BeanContext context,
                                                     @Nullable final Resource resource) {
         Resource rootRes = null;
-        Page relatedPage = context.getAttribute(CURRENT_PAGE, Page.class);
+        Page relatedPage = context.getAttribute(PagesConstants.RA_CURRENT_PAGE, Page.class);
         if (relatedPage == null) {
             PageManager pageManager = context.getService(PageManager.class);
             relatedPage = pageManager.getContainingPage(context, resource != null ? resource : context.getResource());
@@ -123,15 +122,6 @@ public class LanguageRoot extends GenericModel {
     @Nonnull
     public Collection<Language> getSiteLanguages() {
         return getLanguages().getLanguages();
-    }
-
-    @Nonnull
-    public Languages getLanguages() {
-        if (languages == null) {
-            Site site = getSite();
-            languages = site != null ? site.getLanguages() : new Languages(getContext(), getResource());
-        }
-        return languages;
     }
 
     @Nonnull

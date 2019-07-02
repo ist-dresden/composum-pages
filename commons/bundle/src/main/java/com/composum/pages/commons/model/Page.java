@@ -164,6 +164,10 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
             return languageKeys;
         }
 
+        public LanguageSet getLanguageSet() {
+            return languageSet;
+        }
+
         public boolean isLanguageRoot() {
             return isLanguageRoot;
         }

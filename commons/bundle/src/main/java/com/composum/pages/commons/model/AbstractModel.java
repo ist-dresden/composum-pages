@@ -9,7 +9,6 @@ import com.composum.pages.commons.PagesConstants;
 import com.composum.pages.commons.model.properties.Language;
 import com.composum.pages.commons.model.properties.Languages;
 import com.composum.pages.commons.request.DisplayMode;
-import com.composum.pages.commons.request.PagesLocale;
 import com.composum.pages.commons.service.PageManager;
 import com.composum.pages.commons.service.ResourceManager;
 import com.composum.pages.commons.service.SiteManager;
@@ -52,8 +51,8 @@ import java.util.Objects;
 
 import static com.composum.pages.commons.PagesConstants.PN_DESCRIPTION;
 import static com.composum.pages.commons.PagesConstants.PN_TITLE_KEYS;
+import static com.composum.pages.commons.PagesConstants.RA_CURRENT_PAGE;
 import static com.composum.pages.commons.servlet.PagesContentServlet.EDIT_RESOURCE_TYPE_KEY;
-import static com.composum.pages.commons.taglib.DefineObjectsTag.CURRENT_PAGE;
 import static com.composum.platform.models.annotations.InternationalizationStrategy.I18NFOLDER;
 import static com.composum.sling.platform.security.PlatformAccessFilter.ACCESS_MODE_KEY;
 
@@ -425,7 +424,8 @@ public abstract class AbstractModel implements SlingBean, Model {
     @Nonnull
     public Locale getLocale() {
         if (locale == null) {
-            locale = Objects.requireNonNull(context.getRequest().adaptTo(PagesLocale.class)).getLocale();
+            Language language = getLanguage();
+            locale = language.getLocale();
         }
         return locale;
     }
@@ -438,11 +438,7 @@ public abstract class AbstractModel implements SlingBean, Model {
 
     @Nonnull
     public Language getLanguage() {
-        Page page = getCurrentPage();
-        if (currentPage != null){
-            return currentPage.getLanguage();
-        }
-        return getLanguages().getLanguage(getLocale());
+        return getLanguages().getLanguage();
     }
 
     @Nonnull
@@ -660,7 +656,7 @@ public abstract class AbstractModel implements SlingBean, Model {
     @Nullable
     public Page getCurrentPage() {
         if (currentPage == null) {
-            currentPage = context.getAttribute(CURRENT_PAGE, Page.class);
+            currentPage = context.getAttribute(RA_CURRENT_PAGE, Page.class);
         }
         return currentPage;
     }
