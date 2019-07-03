@@ -6,6 +6,7 @@ import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.util.ResourceUtil;
 import com.composum.sling.platform.staging.StagingReleaseManager;
 import com.composum.sling.platform.staging.versions.PlatformVersionsService;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.resource.Resource;
@@ -42,12 +43,17 @@ public class PageVersion {
      * the status is about, but if the item isn't in that release we fall back to the current version or the previous release. */
     @Nonnull
     protected Pair<StagingReleaseManager.Release, String> getReleaseAndPath() {
+        Pair<StagingReleaseManager.Release, String> result;
         if (status.getActivationInfo() != null)
-            return Pair.of(status.getActivationInfo().release(), status.getActivationInfo().path());
+            result = Pair.of(status.getActivationInfo().release(), status.getActivationInfo().path());
         else if (status.getCurrentVersionableInfo() != null)
-            return Pair.of(null, release.absolutePath(status.getCurrentVersionableInfo().getRelativePath()));
+            result = Pair.of(null, release.absolutePath(status.getCurrentVersionableInfo().getRelativePath()));
         else // FIXME(hps,2019-07-03) should that really be the previous release?
-            return Pair.of(status.getPreviousRelease(), release.absolutePath(status.getPreviousVersionableInfo().getRelativePath()));
+            result = Pair.of(status.getPreviousRelease(), release.absolutePath(status.getPreviousVersionableInfo().getRelativePath()));
+        if (result.getRight().endsWith("/" + ResourceUtil.CONTENT_NODE)) {
+            result = Pair.of(result.getLeft(), StringUtils.removeEnd(result.getRight(), "/" + ResourceUtil.CONTENT_NODE));
+        }
+        return result;
     }
 
     public String getPath() {
