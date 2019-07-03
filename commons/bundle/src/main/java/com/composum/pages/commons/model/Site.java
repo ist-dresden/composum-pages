@@ -64,7 +64,7 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
     private transient Homepage homepage;
 
     private transient Collection<Page> modifiedPages;
-    private transient Collection<Page> releaseChanges;
+    private transient Collection<PageVersion> releaseChanges;
 
     public Site() {
     }
@@ -195,7 +195,7 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
     /**
      * @return the list of pages changed (modified and activated) for the current release
      */
-    public Collection<Page> getReleaseChanges() {
+    public Collection<PageVersion> getReleaseChanges() {
         if (releaseChanges == null) {
             releaseChanges = getReleaseChanges(getCurrentRelease());
         }
@@ -203,7 +203,7 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
     }
 
     @Nonnull
-    public Collection<Page> getReleaseChanges(@Nullable final SiteRelease releaseToCheck) {
+    public Collection<PageVersion> getReleaseChanges(@Nullable final SiteRelease releaseToCheck) {
         return releaseToCheck != null ? releaseToCheck.getChanges() : Collections.emptyList();
     }
 }
