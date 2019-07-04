@@ -30,7 +30,7 @@ public interface VersionsService {
 
     /**
      * Returns all pages that are modified wrt. the current release (that is, either not there, have a new version
-     * that isn't in the current release or are modified wrt. the last version).
+     * that isn't in the current release or are modified wrt. the last version, or have been moved.).
      */
     Collection<Page> findModifiedPages(BeanContext context, Resource root);
 

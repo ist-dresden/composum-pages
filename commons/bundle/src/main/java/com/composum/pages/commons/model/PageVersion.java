@@ -1,14 +1,12 @@
 package com.composum.pages.commons.model;
 
 import com.composum.pages.commons.util.LinkUtil;
-import com.composum.pages.commons.util.PagesUtil;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.util.ResourceUtil;
 import com.composum.sling.platform.staging.StagingReleaseManager;
 import com.composum.sling.platform.staging.versions.PlatformVersionsService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.resource.Resource;
 
 import javax.annotation.Nonnull;
@@ -45,7 +43,7 @@ public class PageVersion {
     protected Pair<StagingReleaseManager.Release, String> getReleaseAndPath() {
         Pair<StagingReleaseManager.Release, String> result;
         if (status.getActivationInfo() != null)
-            result = Pair.of(status.getActivationInfo().release(), status.getActivationInfo().path());
+            result = Pair.of(status.getActivationInfo().getRelease(), status.getActivationInfo().getPath());
         else if (status.getCurrentVersionableInfo() != null)
             result = Pair.of(null, release.absolutePath(status.getCurrentVersionableInfo().getRelativePath()));
         else // FIXME(hps,2019-07-03) should that really be the previous release?
