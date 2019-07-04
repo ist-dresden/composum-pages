@@ -161,7 +161,7 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
      */
     public String getReleaseNumber(String category) {
         StagingReleaseManager releaseManager = context.getService(StagingReleaseManager.class);
-        StagingReleaseManager.Release release = releaseManager.findReleaseByMark(resource, category);
+        StagingReleaseManager.Release release = releaseManager.findReleaseByMark(resource, StringUtils.lowerCase(category));
         return release != null ? release.getNumber() : null;
     }
 
