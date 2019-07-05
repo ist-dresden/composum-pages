@@ -12,6 +12,7 @@
             languageMenuLabel: 'composum-pages-stage-edit-toolbar_language-label',
             languageMenu: 'composum-pages-language-menu',
             languageMenuLink: 'composum-pages-language-menu_link',
+            openPageLink: 'composum-pages-stage-edit-toolbar_open-separate',
             pageViewActionsUri: '/libs/composum/pages/stage/edit/actions/view.html',
             previewAction: 'composum-pages-stage-edit-toolbar_preview',
             editAction: 'composum-pages-stage-edit-toolbar_edit',
@@ -65,6 +66,13 @@
                     .find('.' + toolbars.const.languageMenuLabel);
                 this.$menuItems = this.$('.' + toolbars.const.languageMenuLink);
                 this.$menuItems.click(_.bind(this.onClick, this));
+                this.setCurrentLanguage();
+                var e = pages.const.event.pages;
+                $(document).on(e.locale + '.LocaleSelector', _.bind(this.setCurrentLanguage, this));
+            },
+
+            setCurrentLanguage: function () {
+                this.$menuLabel.text(pages.getLocale().replace(/_/g, '.'));
             },
 
             onClick: function (event) {
@@ -74,15 +82,30 @@
                 var $menuItem = $(event.currentTarget);
                 var key = $menuItem.data('value');
                 if (pages.editFrame) {
-                    var label = key.replace(/_/g, '.');
                     var parameters = {'pages.locale': key};
                     if (this.currentPage && pages.current.page !== this.currentPage) {
                         parameters['pages.view'] = 'preview'
                     }
                     pages.editFrame.reloadPage(parameters, this.currentPage);
-                    this.$menuLabel.text(label);
                 } else {
                     location.href = (this.currentPage ? this.currentPage : ".") + "?pages.locale=" + key;
+                }
+            }
+        });
+
+        toolbars.OpenPageLink = Backbone.View.extend({
+
+            initialize: function (options) {
+                var e = pages.const.event;
+                $(document).on(e.page.selected + '.OpenPageLink', _.bind(this.setPageLink, this));
+                $(document).on(e.pages.locale + '.OpenPageLink', _.bind(this.setPageLink, this));
+            },
+
+            setPageLink: function () {
+                var link = pages.getPageUrl();
+                if (this.link !== link) {
+                    this.link = link;
+                    this.$el.attr('href', link);
                 }
             }
         });
@@ -152,6 +175,7 @@
                 if (toolbars.localeSelector) {
                     toolbars.localeSelector.currentPage = this.currentPage;
                 }
+                core.getView('.' + toolbars.const.openPageLink, toolbars.OpenPageLink);
             },
 
             profileAspect: function () {

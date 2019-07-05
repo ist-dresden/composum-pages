@@ -15,7 +15,7 @@
             <cpn:clientlib test="${frame.developMode}" type="css" category="composum.pages.develop.frame"/>
         </head>
         <body class="composum-pages-${frame.displayModeHint}_body" data-path="${frame.pagePath}"
-              data-pages-mode="${frame.displayMode}" data-pages-locale="${frame.locale}">
+              data-pages-mode="${frame.displayMode}">
         <div class="composum-pages-stage-edit-frame_wrapper" data-path="${frame.pagePath}">
             <iframe class="composum-pages-stage-edit-frame"></iframe>
         </div>

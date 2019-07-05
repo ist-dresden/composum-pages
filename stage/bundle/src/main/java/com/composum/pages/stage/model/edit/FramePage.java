@@ -1,7 +1,6 @@
 package com.composum.pages.stage.model.edit;
 
 import com.composum.pages.commons.model.Page;
-import com.composum.pages.commons.model.properties.Language;
 import com.composum.pages.commons.request.DisplayMode;
 import com.composum.pages.commons.util.LinkUtil;
 import com.composum.sling.core.util.ResourceUtil;
@@ -97,16 +96,6 @@ public class FramePage extends Page {
 
     public boolean isHasLanguageVariations() {
         return getPage().getPageLanguages().getLanguages().size() > 1;
-    }
-
-    // edit status properties
-
-    /**
-     * @return a readable key of the current edited language
-     */
-    public String getLanguageHint() {
-        Language language = getLanguages().getLanguage();
-        return language.getKey().toLowerCase().replace('_', '.');
     }
 
     // view mode

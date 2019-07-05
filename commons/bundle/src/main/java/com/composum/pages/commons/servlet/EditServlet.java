@@ -274,16 +274,30 @@ public class EditServlet extends PagesContentServlet {
     // Page
     //
 
+    /**
+     * Retrieves the data JSON object of a Pages page.
+     * #suffix the pages path, overridden by a 'url' parameter
+     * #param url a page url to resolve the page resource (optional)
+     */
     protected class GetPageData implements ServletOperation {
 
         @Override
-        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
-                         ResourceHandle resource)
+        public void doIt(@Nonnull final SlingHttpServletRequest request,
+                         @Nonnull final SlingHttpServletResponse response,
+                         @Nonnull ResourceHandle resource)
                 throws IOException {
-
             BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
-            Page page = null;
 
+            String urlParam = request.getParameter(PARAM_URL);
+            if (StringUtils.isNotBlank(urlParam)) {
+                ResourceResolver resolver = context.getResolver();
+                Resource urlResource = ResolverUtil.getUrlResource(resolver, urlParam);
+                if (urlResource != null) {
+                    resource = ResourceHandle.use(urlResource);
+                }
+            }
+
+            Page page = null;
             Resource pageResource = pageManager.getContainingPageResource(resource);
             if (pageResource != null) {
                 page = pageManager.createBean(context, pageResource);
@@ -1199,6 +1213,8 @@ public class EditServlet extends PagesContentServlet {
             writer.name("site").value(site != null ? site.getPath() : null);
             writer.name("template").value(page.getTemplatePath());
             writer.name("isTemplate").value(resourceManager.isTemplate(context, page.getResource()));
+            writer.name("language").value(page.getLocale().getLanguage());
+            writer.name("defaultLanguage").value(page.getPageLanguages().getDefaultLanguage().getKey());
             writer.endObject();
         }
         writer.endObject();

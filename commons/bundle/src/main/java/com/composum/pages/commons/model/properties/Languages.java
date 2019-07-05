@@ -101,21 +101,22 @@ public class Languages extends PropertyNodeSet<Language> {
     }
 
     /**
-     * returns the requested language from the current page (fallback: the language retrieved from the locale)
+     * returns the requested language from the current page (fallback: the language retrieved from the request)
      */
     @Nonnull
     public Language getLanguage() {
         if (language == null) {
+            Locale locale = getLocale();
             Page page = getCurrentPage();
             if (page != null) {
-                Language chosen = getLanguage(getLocale());
+                Language chosen = getLanguage(locale);
                 language = page.getPageLanguages().getLanguage(chosen.getKey());
                 if (language == null) {
                     language = page.getLanguage();
                 }
             }
             if (language == null) {
-                language = getLanguage(getLocale());
+                language = getLanguage(locale);
             }
         }
         return language;
