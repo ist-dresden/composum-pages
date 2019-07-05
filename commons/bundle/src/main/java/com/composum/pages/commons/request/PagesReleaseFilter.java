@@ -202,7 +202,7 @@ public class PagesReleaseFilter implements Filter {
                                 }
                                 break;
                             case Site.PUBLIC_MODE_VERSIONS:
-                                release = site.getReleaseNumber(accessMode.name());
+                                release = site.getReleaseNumber(accessMode.name().toLowerCase());
                                 if (StringUtils.isBlank(release)) {
                                     sendReject(response, "no appropriate release found", uri, resource);
                                     return;
@@ -235,19 +235,15 @@ public class PagesReleaseFilter implements Filter {
                 }
 
                 if (StringUtils.isNotBlank(release)) {
-                    if (Character.isDigit(release.charAt(0))) {
-                        // use release labe as is if stating with a digit
-                        release = Site.RELEASE_LABEL_PREFIX + release;
-                    } else {
-                        if (site != null && !release.startsWith(COMPOSUM_PREFIX)) {
-                            // assuming that an access mode is set for the requested release
+                    if (!release.startsWith(COMPOSUM_PREFIX)) {
+                        if (site != null) {
+                            // see whether that's an access mode / mark for the requested release
                             String mapped = site.getReleaseNumber(release);
                             if (StringUtils.isNotBlank(mapped)) {
                                 release = mapped;
                             }
                         }
                     }
-
                 } else {
 
                     // for version compare a version of a page can be requested...

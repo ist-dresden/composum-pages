@@ -286,7 +286,7 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
             Resource parentRes = isHome() ? null : resource.getParent();
             while (parent == null && parentRes != null) {
                 if (isPage(parentRes)) {
-                    parent = getPageManager().createBean(context, parentRes);
+                    parent = new Page(context, parentRes);
                 } else {
                     parentRes = parentRes.getParent();
                 }
@@ -474,17 +474,15 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
         return targetUrl;
     }
 
-    // releases
+    // release
 
-    public class StatusModel {
+    /** Pages-Adapter around {@link PlatformVersionsService.Status}. */
+    public static class StatusModel {
 
         protected final PlatformVersionsService.Status releaseStatus;
 
-        public StatusModel() throws RepositoryException {
-            releaseStatus = getPlatformVersionsService().getStatus(getResource(), null);
-            if (releaseStatus == null) { // rare strange case - needs to be investigated.
-                LOG.warn("No release status for {}", SlingResourceUtil.getPath(getResource()));
-            }
+        public StatusModel(PlatformVersionsService.Status status) {
+            releaseStatus = status;
         }
 
         public PlatformVersionsService.ActivationState getActivationState() {
@@ -492,8 +490,8 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
         }
 
         public String getLastModified() {
-            Calendar date = releaseStatus.getLastModified();
-            return date != null ? new SimpleDateFormat(VERSION_DATE_FORMAT).format(date.getTime()) : "";
+            Calendar lastModified = releaseStatus.getLastModified();
+            return lastModified != null ? new SimpleDateFormat(VERSION_DATE_FORMAT).format(lastModified.getTime()) : "";
         }
 
         public String getLastModifiedBy() {
@@ -501,36 +499,40 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
         }
 
         public String getReleaseLabel() {
-            String label = releaseStatus.release().getReleaseLabel();
+            String label = releaseStatus.getRelease().getReleaseLabel();
             Matcher matcher = PagesConstants.RELEASE_LABEL_PATTERN.matcher(label);
             return matcher.matches() ? matcher.group(1) : label;
         }
 
         public String getLastActivated() {
-            Calendar calendar = releaseStatus.getLastActivated();
+            Calendar calendar = releaseStatus.getActivationInfo() != null ? releaseStatus.getActivationInfo().getLastActivated() : null;
             return calendar != null ? new SimpleDateFormat(VERSION_DATE_FORMAT).format(calendar.getTime()) : "";
         }
 
         public String getLastActivatedBy() {
-            return releaseStatus.getLastActivatedBy();
+            return releaseStatus.getActivationInfo() != null ? releaseStatus.getActivationInfo().getLastActivatedBy() : null;
         }
 
         public String getLastDeactivated() {
-            Calendar calendar = releaseStatus.getLastDeactivated();
+            Calendar calendar = releaseStatus.getActivationInfo() != null ? releaseStatus.getActivationInfo().getLastDeactivated() : null;
             return calendar != null ? new SimpleDateFormat(VERSION_DATE_FORMAT).format(calendar.getTime()) : "";
         }
 
         public String getLastDeactivatedBy() {
-            return releaseStatus.getLastDeactivatedBy();
+            return releaseStatus.getActivationInfo() != null ? releaseStatus.getActivationInfo().getLastDeactivatedBy() : null;
         }
     }
 
     public StatusModel getReleaseStatus() {
         if (releaseStatus == null) {
             try {
-                releaseStatus = new StatusModel();
+                PlatformVersionsService.Status status = getPlatformVersionsService().getStatus(getResource(), null);
+                if (status == null) { // rare strange case - needs to be investigated.
+                    LOG.warn("No release status for {}", SlingResourceUtil.getPath(getResource()));
+                }
+                releaseStatus = new StatusModel(status);
             } catch (RepositoryException ex) {
-                LOG.error(ex.getMessage(), ex);
+                LOG.error("Error calculating status for " + SlingResourceUtil.getPath(getResource()), ex);
             }
         }
         if (releaseStatus != null && releaseStatus.releaseStatus == null)

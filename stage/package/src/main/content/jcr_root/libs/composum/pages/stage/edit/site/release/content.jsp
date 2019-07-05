@@ -23,18 +23,20 @@
             <table class="${modelCSS}_table table table-condensed">
                 <thead class="${modelCSS}_thead">
                 <tr>
+                    <th class="${modelCSS}_page-state"></th>
                     <th class="${modelCSS}_page-path">${cpn:i18n(slingRequest,'relative Path')}</th>
                     <th class="${modelCSS}_page-title">${cpn:i18n(slingRequest,'Title')}</th>
                     <th class="${modelCSS}_page-time">${cpn:i18n(slingRequest,'modification Date')}</th>
                 </tr>
                 </thead>
                 <tbody class="${modelCSS}_tbody">
-                <c:forEach items="${model.release.changes}" var="page">
-                    <tr class="release-status_${page.releaseStatus.activationState}">
-                        <td class="${modelCSS}_page-path"><a
-                                href="${page.url}">${cpn:path(page.siteRelativePath)}</a></td>
-                        <td class="${modelCSS}_page-title">${cpn:text(page.title)}</td>
-                        <td class="${modelCSS}_page-time">${cpn:text(page.lastModifiedString)}</td>
+                <c:forEach items="${model.release.changes}" var="pageVersion">
+                    <tr>
+                        <td class="${modelCSS}_page-state release-status_${pageVersion.releaseStatus.activationState}">${cpn:text(pageVersion.releaseStatus.activationState)}</td>
+                        <td class="${modelCSS}_page-path"><a href="${pageVersion.url}">${cpn:path(pageVersion.path)}</a>
+                        </td>
+                        <td class="${modelCSS}_page-title">${cpn:text(pageVersion.title)}</td>
+                        <td class="${modelCSS}_page-time">${cpn:text(pageVersion.releaseStatus.lastModified)}</td>
                     </tr>
                 </c:forEach>
                 </tbody>

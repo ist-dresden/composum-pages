@@ -130,7 +130,7 @@ public class SiteRelease extends AbstractModel implements Comparable<SiteRelease
         return stagingRelease;
     }
 
-    public Collection<Page> getChanges() {
+    public List<PageVersion> getChanges() {
         try {
             return getVersionsService().findReleaseChanges(getContext(), this);
         } catch (RepositoryException ex) {

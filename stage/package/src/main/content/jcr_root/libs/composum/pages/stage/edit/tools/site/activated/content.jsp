@@ -27,15 +27,15 @@
     </div>
     <div class="composum-pages-stage-edit-tools-site-activated_tools-panel">
         <ul class="${siteCssBase}_list">
-            <c:forEach items="${site.site.releaseChanges}" var="page">
+            <c:forEach items="${site.site.releaseChanges}" var="pageVersion">
                 <li class="${siteCssBase}_listentry">
-                    <input type="checkbox" class="${siteCssBase}_page-select" data-path="${page.path}"/>
-                    <div class="${siteCssBase}_page-entry" data-path="${page.path}">
+                    <input type="checkbox" class="${siteCssBase}_page-select" data-path="${pageVersion.path}"/>
+                    <div class="${siteCssBase}_page-entry" data-path="${pageVersion.path}">
                         <div class="${siteCssBase}_page-head">
-                            <div class="${siteCssBase}_page-title">${not empty page.title?cpn:text(page.title):'-- --'}</div>
-                            <cpn:text class="${siteCssBase}_page-time">${page.lastModifiedString}</cpn:text>
+                            <div class="${siteCssBase}_page-title">${not empty pageVersion.title?cpn:text(pageVersion.title):'-- --'}</div>
+                            <cpn:text class="${siteCssBase}_page-time">${pageVersion.lastModifiedString}</cpn:text>
                         </div>
-                        <cpn:text class="${siteCssBase}_page-path" type="path">${page.siteRelativePath}</cpn:text>
+                        <cpn:text class="${siteCssBase}_page-path" type="path">${pageVersion.path}</cpn:text>
                     </div>
                 </li>
             </c:forEach>

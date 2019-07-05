@@ -35,16 +35,16 @@
                     </tr>
                     </thead>
                     <tbody class="${siteCssBase}_tbody">
-                    <c:forEach items="${site.releaseChanges}" var="page">
-                        <tr class="release-status_${page.releaseStatus.activationState}">
+                    <c:forEach items="${site.releaseChanges}" var="pageVersion">
+                        <tr class="release-status_${pageVersion.releaseStatus.activationState}">
                             <c:if test="${site.editMode}">
                                 <td class="_input"><input type="checkbox" class="${siteCssBase}_page-select"
-                                                          data-path="${page.path}"></td>
+                                                          data-path="${pageVersion.path}"></td>
                             </c:if>
                             <td class="${siteCssBase}_page-path"><a
-                                    href="${page.url}">${cpn:path(page.siteRelativePath)}</a></td>
-                            <td class="${siteCssBase}_page-title">${cpn:text(page.title)}</td>
-                            <td class="${siteCssBase}_page-time">${cpn:text(page.lastModifiedString)}</td>
+                                    href="${pageVersion.url}">${cpn:path(pageVersion.path)}</a></td>
+                            <td class="${siteCssBase}_page-title">${cpn:text(pageVersion.title)}</td>
+                            <td class="${siteCssBase}_page-time">${cpn:text(pageVersion.lastModifiedString)}</td>
                         </tr>
                     </c:forEach>
                     </tbody>

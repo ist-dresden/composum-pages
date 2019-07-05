@@ -1,14 +1,15 @@
 package com.composum.pages.commons.service;
 
 import com.composum.pages.commons.model.Page;
+import com.composum.pages.commons.model.PageVersion;
 import com.composum.pages.commons.model.SiteRelease;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.platform.staging.ReleasedVersionable;
 import com.composum.sling.platform.staging.StagingReleaseManager;
 import com.composum.sling.platform.staging.versions.PlatformVersionsService;
+import org.apache.commons.collections4.SetUtils;
 import org.apache.jackrabbit.api.JackrabbitSession;
 import org.apache.sling.api.SlingHttpServletRequest;
-import org.apache.sling.api.resource.NonExistingResource;
 import org.apache.sling.api.resource.Resource;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
@@ -26,9 +27,12 @@ import javax.jcr.version.VersionIterator;
 import javax.jcr.version.VersionManager;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Component(
@@ -105,21 +109,17 @@ public class PagesVersionsService implements VersionsService {
      * @return a collection of all versionables which are changed in a release in comparision to the release before
      */
     @Override
-    public Collection<Page> findReleaseChanges(@Nonnull final BeanContext context,
-                                               @Nullable final SiteRelease siteRelease) throws RepositoryException {
-        List<Page> result = new ArrayList<>();
+    public List<PageVersion> findReleaseChanges(@Nonnull final BeanContext context,
+                                                @Nullable final SiteRelease siteRelease) throws RepositoryException {
+        List<PageVersion> result = new ArrayList<>();
         if (siteRelease != null) {
             StagingReleaseManager.Release release = siteRelease.getStagingRelease();
-            List<ReleasedVersionable> changes = releaseManager.compareReleases(release, null);
-            for (ReleasedVersionable releasedVersionable : changes) {
-                Resource versionable = siteRelease.getResource().getChild(releasedVersionable.getRelativePath());
-                if (Page.isPageContent(versionable)) {
-                    final Page page = pageManager.getContainingPage(context, versionable);
-                    result.add(page);
-                }
-                // FIXME(hps,2019-06-28) what should happen if the page doesn't exist anymore? Page on NonExistingResource?
+            List<PlatformVersionsService.Status> changes = platformVersionsService.findReleaseChanges(release);
+            for (PlatformVersionsService.Status status : changes) {
+                PageVersion pv = new PageVersion(siteRelease, status);
+                result.add(pv);
             }
-            result.sort(Comparator.comparing(Page::getPath));
+            result.sort(Comparator.comparing(PageVersion::getPath));
         }
         return result;
     }
