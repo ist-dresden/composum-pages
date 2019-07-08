@@ -842,13 +842,15 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
      * @param targetParent the target (the parent resource) of the move
      * @param newName      an optional new name for the resource
      * @param before       the designated sibling in an ordered target collection
+     * @param updatedReferrers output parameter: the List of referers found - these were changed and might need setting a last modification date
      * @return the new resource at the target path
      */
     @Override
     @Nonnull
     public Resource moveContentResource(@Nonnull ResourceResolver resolver, @Nonnull Resource changeRoot,
                                         @Nonnull Resource source, @Nonnull Resource targetParent,
-                                        @Nullable String newName, @Nullable Resource before)
+                                        @Nullable String newName, @Nullable Resource before,
+                                        @Nonnull List<Resource> updatedReferrers)
             throws RepositoryException {
 
         Session session = Objects.requireNonNull(resolver.adaptTo(Session.class));
@@ -895,9 +897,8 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
         // move it if it is a real move and adjust all references
         if (isAnotherParent || !newName.equals(name)) {
             session.move(oldPath, newPath);
-            ArrayList<Resource> foundReferers = new ArrayList<>();
             // adopt all references to the source and use the new target path
-            changeReferences(ResourceFilter.ALL, StringFilter.ALL, changeRoot, foundReferers, false, oldPath, newPath);
+            changeReferences(ResourceFilter.ALL, StringFilter.ALL, changeRoot, updatedReferrers, false, oldPath, newPath);
         }
 
         // move to the designated position in the target collection

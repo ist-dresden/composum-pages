@@ -281,7 +281,7 @@ public class PagesPageManager extends PagesContentManager<Page> implements PageM
     }
 
     @Override
-    public void touch(@Nonnull BeanContext.Service context, @Nonnull Collection<Resource> resources, @Nullable Calendar time) {
+    public void touch(@Nonnull BeanContext context, @Nonnull Collection<Resource> resources, @Nullable Calendar time) {
         resources.stream()
                 .map((r) -> getContainingPage(context, r))
                 .filter(Objects::nonNull)

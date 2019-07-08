@@ -179,12 +179,14 @@ public interface ResourceManager {
      * @param targetParent the target (the parent resource) of the move
      * @param newName      an optional new name for the resource
      * @param before       the designated sibling in an ordered target collection
+     * @param updatedReferrers output parameter: the List of referers found - these were changed and might need setting a last modification date
      * @return the new resource at the target path
      */
     @Nonnull
     Resource moveContentResource(@Nonnull ResourceResolver resolver, @Nonnull Resource changeRoot,
                                  @Nonnull Resource source, @Nonnull Resource targetParent,
-                                 @Nullable String newName, @Nullable Resource before)
+                                 @Nullable String newName, @Nullable Resource before,
+                                 @Nonnull List<Resource> updatedReferrers)
             throws RepositoryException;
 
     /**

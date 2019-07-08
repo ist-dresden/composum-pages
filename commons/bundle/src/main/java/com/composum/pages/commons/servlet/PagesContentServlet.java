@@ -36,6 +36,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -78,7 +79,7 @@ public abstract class PagesContentServlet extends ContentServlet {
                 throws IOException {
 
             if (LOG.isDebugEnabled()) {
-                LOG.debug("GetResourceInfo(" + resource + ")...");
+                LOG.debug("GetResourceInfo({})...", resource);
             }
 
             String type = RequestUtil.getParameter(request, PARAM_TYPE, (String) null);
@@ -211,23 +212,26 @@ public abstract class PagesContentServlet extends ContentServlet {
                            Resource target, String name)
                 throws IOException {
             ResourceManager resourceManager = getResourceManager();
+            BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
 
             if (resourceManager.isAllowedChild(resolver, target, resource)) {
 
                 Resource before = getRequestedSibling(request, target, resource);
                 try {
                     if (LOG.isDebugEnabled()) {
-                        LOG.debug("MoveContentOperation(" + resource.getPath() + " > " + target.getPath() + " < "
-                                + (before != null ? before.getName() : "<end>") + ")...");
+                        LOG.debug("MoveContentOperation({} > {} < {})...", resource.getPath(), target.getPath(), before != null ? before.getName() : "<end>");
                     }
 
                     Resource root = resolver.getResource("/content");
                     if (root != null) {
+                        List<Resource> updatedReferrers = new ArrayList<>();
                         Resource result = resourceManager.moveContentResource(resolver, root,
-                                resource, target, name, before);
+                                resource, target, name, before, updatedReferrers);
+                        getPageManager().touch(context, updatedReferrers, null);
+
                         resolver.commit();
 
-                        sendResponse(response, result);
+                        sendResponse(response, result, updatedReferrers);
                     }
                 } catch (ItemExistsException itex) {
                     jsonAnswerItemExists(request, response);
@@ -249,23 +253,26 @@ public abstract class PagesContentServlet extends ContentServlet {
         public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
                          ResourceHandle resource)
                 throws IOException {
-
             String name = request.getParameter(PARAM_NAME);
 
             if (LOG.isDebugEnabled()) {
-                LOG.debug("RenameContentOperation(" + resource.getPath() + " > " + name + ")...");
+                LOG.debug("RenameContentOperation({} > {})...", resource.getPath(), name);
             }
 
             ResourceResolver resolver = request.getResourceResolver();
+            BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
 
             try {
                 Resource root = resolver.getResource("/content");
                 if (root != null) {
+                    List<Resource> updatedReferrers = new ArrayList<>();
                     Resource result = getResourceManager().moveContentResource(resolver, root,
-                            resource, Objects.requireNonNull(resource.getParent()), name, null);
+                            resource, Objects.requireNonNull(resource.getParent()), name, null, updatedReferrers);
+                    getPageManager().touch(context, updatedReferrers, null);
+
                     resolver.commit();
 
-                    sendResponse(response, result);
+                    sendResponse(response, result, updatedReferrers);
                 }
             } catch (ItemExistsException itex) {
                 jsonAnswerItemExists(request, response);
@@ -297,8 +304,7 @@ public abstract class PagesContentServlet extends ContentServlet {
                     Resource before = getRequestedSibling(request, target, resource);
 
                     if (LOG.isDebugEnabled()) {
-                        LOG.debug("CopyContentOperation(" + resource.getPath() + " > " + targetPath + " < "
-                                + (before != null ? before.getName() : "<end>") + ")...");
+                        LOG.debug("CopyContentOperation({} > {} < {})...", resource.getPath(), targetPath, before != null ? before.getName() : "<end>");
                     }
 
                     try {
@@ -385,7 +391,7 @@ public abstract class PagesContentServlet extends ContentServlet {
 
             String selectors = RequestUtil.getSelectorString(request, null, 1);
             if (LOG.isDebugEnabled()) {
-                LOG.debug("GetVersions(" + resource + "," + selectors + ")...");
+                LOG.debug("GetVersions({},{})...", resource, selectors);
             }
 
             RequestDispatcherOptions options = new RequestDispatcherOptions();
@@ -411,7 +417,7 @@ public abstract class PagesContentServlet extends ContentServlet {
                     VersionPutParameters.class);
 
             if (LOG.isDebugEnabled()) {
-                LOG.debug("RestoreVersion(" + params.path + "," + params.version + ")...");
+                LOG.debug("RestoreVersion({},{})...", params.path, params.version);
             }
 
             try {

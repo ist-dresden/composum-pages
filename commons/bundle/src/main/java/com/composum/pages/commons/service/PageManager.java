@@ -117,7 +117,7 @@ public interface PageManager extends ContentManager<Page> {
     void touch(@Nonnull BeanContext context, @Nonnull Page page, @Nullable Calendar time);
 
     /* Touches (adjusts 'jcr:lastModified') the containing pages of the given resources. */
-    void touch(@Nonnull BeanContext.Service context, @Nonnull Collection<Resource> resources, @Nullable Calendar time);
+    void touch(@Nonnull BeanContext context, @Nonnull Collection<Resource> resources, @Nullable Calendar time);
 
     /**
      * retrieve the collection of referrers of a content page

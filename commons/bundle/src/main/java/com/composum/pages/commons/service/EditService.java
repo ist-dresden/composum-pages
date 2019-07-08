@@ -94,10 +94,12 @@ public interface EditService {
      * @param source       the resource to move
      * @param targetParent the target (a reference to the parent resource) of the move
      * @param before       the designated sibling in an ordered target collection
+     * @param updatedReferrers output parameter: the List of referers found - these were changed and might need setting a last modification date
      * @return the new resource at the target path
      */
     Resource moveElement(ResourceResolver resolver, Resource changeRoot,
-                         Resource source, ResourceManager.ResourceReference targetParent, Resource before)
+                         Resource source, ResourceManager.ResourceReference targetParent, Resource before,
+                         @Nonnull List<Resource> updatedReferrers)
             throws RepositoryException, PersistenceException;
 
     /**
