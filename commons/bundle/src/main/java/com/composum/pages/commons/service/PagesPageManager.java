@@ -45,6 +45,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static com.composum.pages.commons.PagesConstants.NODE_TYPE_PAGE;
 import static com.composum.sling.core.util.SlingResourceUtil.isSameOrDescendant;
@@ -251,15 +252,15 @@ public class PagesPageManager extends PagesContentManager<Page> implements PageM
     }
 
     @Override
-    public void touch(@Nonnull BeanContext context, @Nonnull Resource resource, @Nullable Calendar time, boolean commit) {
+    public void touch(@Nonnull BeanContext context, @Nonnull Resource resource, @Nullable Calendar time) {
         Page page = getContainingPage(context, resource);
         if (page != null) {
-            touch(context, page, time, commit);
+            touch(context, page, time);
         }
     }
 
     @Override
-    public void touch(@Nonnull BeanContext context, @Nonnull Page page, @Nullable Calendar time, boolean commit) {
+    public void touch(@Nonnull BeanContext context, @Nonnull Page page, @Nullable Calendar time) {
         PageContent content = page.getContent();
         if (content != null) {
             if (time == null) {
@@ -269,7 +270,7 @@ public class PagesPageManager extends PagesContentManager<Page> implements PageM
             Resource contentResource = content.getResource();
             ModifiableValueMap values = Objects.requireNonNull(contentResource.adaptTo(ModifiableValueMap.class));
             values.put(PagesConstants.PROP_LAST_MODIFIED, time);
-            Session session = context.getResolver().adaptTo(Session.class);
+            Session session = contentResource.getResourceResolver().adaptTo(Session.class);
             if (session != null) {
                 String userId = session.getUserID();
                 if (StringUtils.isNotBlank(userId)) {
@@ -277,6 +278,15 @@ public class PagesPageManager extends PagesContentManager<Page> implements PageM
                 }
             }
         }
+    }
+
+    @Override
+    public void touch(@Nonnull BeanContext.Service context, @Nonnull Collection<Resource> resources, @Nullable Calendar time) {
+        resources.stream()
+                .map((r) -> getContainingPage(context, r))
+                .filter(Objects::nonNull)
+                .distinct()
+                .forEach((page) -> touch(context, page, time));
     }
 
     /**

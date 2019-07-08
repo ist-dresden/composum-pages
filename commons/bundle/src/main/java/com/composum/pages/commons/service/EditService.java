@@ -87,7 +87,7 @@ public interface EditService {
             throws RepositoryException, PersistenceException;
 
     /**
-     * Moves aan element and adopts all references to the moved resource or one of its children.
+     * Moves an element and adopts all references to the moved resource or one of its children.
      *
      * @param resolver     the resolver (session context)
      * @param changeRoot   the root element for reference search and change

@@ -217,7 +217,7 @@ public class PagesEditService implements EditService {
         properties.put(JcrConstants.JCR_PRIMARYTYPE, primaryType);
         properties.put(ResourceUtil.PROP_RESOURCE_TYPE, resourceType);
         Resource result = resolver.create(collection, newName, properties);
-        pageManager.touch(context, collection, null, false);
+        pageManager.touch(context, collection, null);
 
         Session session = resolver.adaptTo(Session.class);
         if (session != null && StringUtils.isNotBlank(siblingName)) {
@@ -292,13 +292,13 @@ public class PagesEditService implements EditService {
 
             String newName = source.getName();
             if (isAnotherParent) {
-                pageManager.touch(context, currentParent, null, false);
+                pageManager.touch(context, currentParent, null);
                 newName = checkNameCollision(collection, newName);
             }
 
             result = resourceManager.moveContentResource(resolver, changeRoot, source, collection,
                     isAnotherParent ? newName : null, before);
-            pageManager.touch(context, collection, null, false);
+            pageManager.touch(context, collection, null);
         }
         return result;
     }
@@ -323,7 +323,7 @@ public class PagesEditService implements EditService {
         Resource collection = getContainerCollection(resolver, targetParent);
         String newName = checkNameCollision(collection, source.getName());
         Resource result = resourceManager.copyContentResource(resolver, source, collection, newName, before);
-        pageManager.touch(context, collection, null, false);
+        pageManager.touch(context, collection, null);
         return result;
     }
 

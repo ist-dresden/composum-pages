@@ -189,6 +189,7 @@ public interface ResourceManager {
 
     /**
      * Changes the 'oldPath' references in each property of a tree to the 'newPath'.
+     * Caution: this does *not* update the last modification date of referrers - that has to be done later from {foundReferrers}.
      *
      * @param resourceFilter change all resources accepted by this filter, let all other resources unchanged
      * @param propertyFilter change only the properties with names matching to this property name filter

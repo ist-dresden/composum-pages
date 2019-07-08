@@ -112,9 +112,12 @@ public interface PageManager extends ContentManager<Page> {
      * touches (adjusts 'jcr:lastModified') the containing page of a resource (e.g. during changes);
      * if 'time' is null the current time is used
      */
-    void touch(@Nonnull BeanContext context, @Nonnull Resource resource, @Nullable Calendar time, boolean commit);
+    void touch(@Nonnull BeanContext context, @Nonnull Resource resource, @Nullable Calendar time);
 
-    void touch(@Nonnull BeanContext context, @Nonnull Page page, @Nullable Calendar time, boolean commit);
+    void touch(@Nonnull BeanContext context, @Nonnull Page page, @Nullable Calendar time);
+
+    /* Touches (adjusts 'jcr:lastModified') the containing pages of the given resources. */
+    void touch(@Nonnull BeanContext.Service context, @Nonnull Collection<Resource> resources, @Nullable Calendar time);
 
     /**
      * retrieve the collection of referrers of a content page
