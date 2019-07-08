@@ -4,6 +4,7 @@ import com.composum.sling.core.BeanContext;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 
+import javax.annotation.Nonnull;
 import java.util.Locale;
 
 public class Language extends PropertyNode {
@@ -34,6 +35,7 @@ public class Language extends PropertyNode {
         return key;
     }
 
+    @Nonnull
     public String getName() {
         return name;
     }

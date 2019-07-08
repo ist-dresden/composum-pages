@@ -54,16 +54,19 @@ public class ModelWrapper implements Model {
         return delegate.getResource();
     }
 
+    @Nonnull
     @Override
     public String getPath() {
         return delegate.getPath();
     }
 
+    @Nonnull
     @Override
     public String getName() {
         return delegate.getName();
     }
 
+    @Nonnull
     @Override
     public String getType() {
         return delegate.getType();
@@ -181,5 +184,11 @@ public class ModelWrapper implements Model {
     @Override
     public <T> T getInherited(Locale locale, @Nonnull T defaultValue, String... keys) {
         return delegate.getInherited(locale, defaultValue, keys);
+    }
+
+    @Nonnull
+    @Override
+    public String getHashKey() {
+        return delegate.getHashKey();
     }
 }

@@ -71,6 +71,7 @@ public class FrameModel extends GenericModel {
     /**
      * @return the resource type retrieved from the URL 'type' parameter ot the resource type element to edit
      */
+    @Nonnull
     @Override
     public String getType() {
         if (resourceType == null) {

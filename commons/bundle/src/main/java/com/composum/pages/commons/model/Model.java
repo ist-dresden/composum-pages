@@ -85,4 +85,7 @@ public interface Model extends SlingBean {
 
     @Nonnull
     <T> T getInherited(Locale locale, @Nonnull T defaultValue, String... keys);
+
+    @Nonnull
+    String getHashKey();
 }

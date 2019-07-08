@@ -54,6 +54,7 @@ public class Cell extends Element {
         return head;
     }
 
+    @Nonnull
     @Override
     public String getType() {
         return isHead() ? "th" : "td";

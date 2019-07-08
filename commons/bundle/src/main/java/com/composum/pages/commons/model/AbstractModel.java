@@ -290,6 +290,7 @@ public abstract class AbstractModel implements SlingBean, Model {
         return resource;
     }
 
+    @Nonnull
     public String getPath() {
         if (path == null) {
             path = resource.getPath();
@@ -297,6 +298,7 @@ public abstract class AbstractModel implements SlingBean, Model {
         return path;
     }
 
+    @Nonnull
     public String getName() {
         if (name == null) {
             name = resource.getName();
@@ -304,6 +306,7 @@ public abstract class AbstractModel implements SlingBean, Model {
         return name;
     }
 
+    @Nonnull
     public String getType() {
         if (type == null) {
             type = resource.getResourceType();
@@ -712,11 +715,17 @@ public abstract class AbstractModel implements SlingBean, Model {
 
     @Override
     public int hashCode() {
-        return getPath().hashCode();
+        return getHashKey().hashCode();
     }
 
     @Override
     public boolean equals(Object other) {
-        return other instanceof Model && ((Model) other).getPath().equals(getPath());
+        return other instanceof Model && ((Model) other).getHashKey().equals(getHashKey());
+    }
+
+    @Nonnull
+    @Override
+    public String getHashKey() {
+        return getClass().getName() + "#" + getPath();
     }
 }

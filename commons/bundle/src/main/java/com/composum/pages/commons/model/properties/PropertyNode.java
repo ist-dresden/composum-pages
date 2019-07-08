@@ -12,6 +12,7 @@ import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.api.wrappers.ValueMapDecorator;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.HashMap;
 
@@ -40,14 +41,17 @@ public abstract class PropertyNode implements SlingBean {
         return resource;
     }
 
+    @Nonnull
     public String getName() {
         return resource.getName();
     }
 
+    @Nonnull
     public String getPath() {
         return resource.getPath();
     }
 
+    @Nonnull
     public String getType() {
         return resource.getResourceType();
     }

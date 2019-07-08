@@ -14,6 +14,7 @@ import org.apache.sling.api.resource.NonExistingResource;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 
+import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -246,6 +247,7 @@ public class Component extends AbstractModel {
     // component aspect of AbstractModel
 
     /** the type of a component is the the components resource path relative to the resolver root path */
+    @Nonnull
     @Override
     public String getType() {
         if (type == null) {
