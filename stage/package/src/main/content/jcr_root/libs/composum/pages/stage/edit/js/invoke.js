@@ -106,7 +106,11 @@
             }
         });
 
-        elements.log = log.getLogger("elements");
+        elements.log = {
+            std: log.getLogger("elements:std"),
+            dnd: log.getLogger("elements:dnd"),
+            ptr: log.getLogger("elements:ptr")
+        };
 
         /**
          * show an alert message in the edit frame
@@ -116,8 +120,8 @@
          * @param data
          */
         elements.alertMessage = function (type, title, message, data) {
-            if (elements.log.getLevel() <= log.levels.DEBUG) {
-                elements.log.debug('elements.postMessage.' + elements.const.trigger.dialog.alert + '('
+            if (elements.log.std.getLevel() <= log.levels.DEBUG) {
+                elements.log.std.debug('elements.postMessage.' + elements.const.trigger.dialog.alert + '('
                     + type + ','
                     + title + ','
                     + message + ','
@@ -140,8 +144,8 @@
          * @param data
          */
         elements.triggerEvent = function (event, data) {
-            if (elements.log.getLevel() <= log.levels.DEBUG) {
-                elements.log.debug('elements.postMessage.' + elements.const.trigger.event + '('
+            if (elements.log.std.getLevel() <= log.levels.DEBUG) {
+                elements.log.std.debug('elements.postMessage.' + elements.const.trigger.event + '('
                     + event + ','
                     + data + ')');
 
@@ -160,8 +164,8 @@
          * @param data
          */
         elements.triggerAction = function (action, reference) {
-            if (elements.log.getLevel() <= log.levels.DEBUG) {
-                elements.log.debug('elements.postMessage.' + elements.const.trigger.action + '('
+            if (elements.log.std.getLevel() <= log.levels.DEBUG) {
+                elements.log.std.debug('elements.postMessage.' + elements.const.trigger.action + '('
                     + action + ','
                     + reference + ')');
 
@@ -181,8 +185,8 @@
          * @param values the values object transmitted as PUT data object (JSON)
          */
         elements.openGenericDialog = function (target, dialog, values) {
-            if (elements.log.getLevel() <= log.levels.DEBUG) {
-                elements.log.debug('elements.postMessage.' + elements.const.trigger.dialog.generic + '('
+            if (elements.log.std.getLevel() <= log.levels.DEBUG) {
+                elements.log.std.debug('elements.postMessage.' + elements.const.trigger.dialog.generic + '('
                     + target + ','
                     + dialog + ','
                     + values + ')');
@@ -204,8 +208,8 @@
          * @param values
          */
         elements.openEditDialog = function (target, dialog, values) {
-            if (elements.log.getLevel() <= log.levels.DEBUG) {
-                elements.log.debug('elements.postMessage.' + elements.const.trigger.dialog.edit + '('
+            if (elements.log.std.getLevel() <= log.levels.DEBUG) {
+                elements.log.std.debug('elements.postMessage.' + elements.const.trigger.dialog.edit + '('
                     + target + ','
                     + dialog + ','
                     + values + ')');

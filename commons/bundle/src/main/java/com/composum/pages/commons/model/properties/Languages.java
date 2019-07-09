@@ -17,7 +17,6 @@ import java.util.Locale;
 import static com.composum.pages.commons.PagesConstants.DEFAULT_LANGUAGES;
 import static com.composum.pages.commons.PagesConstants.LANGUAGES_ATTR;
 import static com.composum.pages.commons.PagesConstants.LANGUAGES_PATH;
-import static com.composum.pages.commons.PagesConstants.LANGUAGES_TYPE;
 
 public class Languages extends PropertyNodeSet<Language> {
 
@@ -71,9 +70,7 @@ public class Languages extends PropertyNodeSet<Language> {
 
     @Override
     public void initialize(final BeanContext context, final Resource resource) {
-        super.initialize(context, resource.isResourceType(LANGUAGES_TYPE)
-                ? resource
-                : findLanguages(context, resource));
+        super.initialize(context, findLanguages(context, resource));
     }
 
     @Override

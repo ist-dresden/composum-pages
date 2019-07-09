@@ -417,8 +417,8 @@
                     self.currentReference = reference;
                     var data = object;
                     if (object instanceof elements.Component) {
-                        if (elements.log.getLevel() <= log.levels.DEBUG) {
-                            elements.log.debug('elements.dnd.onDragStart(' + object.reference.path + ')');
+                        if (elements.log.dnd.getLevel() <= log.levels.DEBUG) {
+                            elements.log.dnd.debug('elements.dnd.onDragStart(' + object.reference.path + ')');
                         }
                         self.reset();
                         pages.current.dnd.object = data = {
@@ -455,8 +455,8 @@
 
             onDragEnd: function (event) {
                 var self = elements.pageBody.dnd;
-                if (elements.log.getLevel() <= log.levels.DEBUG) {
-                    elements.log.debug('elements.dnd.onDragEnd()');
+                if (elements.log.dnd.getLevel() <= log.levels.DEBUG) {
+                    elements.log.dnd.debug('elements.dnd.onDragEnd()');
                 }
                 self.reset();
                 parent.postMessage(elements.const.event.dnd.finished + '{}', '*');
@@ -525,16 +525,16 @@
 
             setDragZone: function (zone, event) {
                 if (this.dragZone && this.dragZone !== zone) {
-                    if (elements.log.getLevel() <= log.levels.DEBUG) {
-                        elements.log.debug('elements.dnd.dragZone.clear! (' + this.dragZone.$el.attr('id') + ')');
+                    if (elements.log.dnd.getLevel() <= log.levels.DEBUG) {
+                        elements.log.dnd.debug('elements.dnd.dragZone.clear! (' + this.dragZone.$el.attr('id') + ')');
                     }
                     this.dragZone.$el.removeClass(elements.const.dnd.class.base + elements.const.dnd.class.targetOver);
                     this.dragZone = undefined;
                 }
                 if (zone && this.dragZone !== zone) {
-                    if (elements.log.getLevel() <= log.levels.DEBUG) {
+                    if (elements.log.dnd.getLevel() <= log.levels.DEBUG) {
                         var pointer = elements.pageBody.getPointer(event);
-                        elements.log.debug('elements.dnd.dragZone.set: ' + zone.$el.attr('id') + ' ' + JSON.stringify(pointer));
+                        elements.log.dnd.debug('elements.dnd.dragZone.set: ' + zone.$el.attr('id') + ' ' + JSON.stringify(pointer));
                     }
                     this.dragZone = zone;
                     zone.$el.addClass(elements.const.dnd.class.base + elements.const.dnd.class.targetOver);
@@ -609,8 +609,8 @@
 
             setDragTarget: function (container, event) {
                 if (this.dragTarget && this.dragTarget !== container) {
-                    if (elements.log.getLevel() <= log.levels.DEBUG) {
-                        elements.log.debug('elements.dnd.dragTarget.clear! (' + this.dragTarget.reference.path + ')');
+                    if (elements.log.dnd.getLevel() <= log.levels.DEBUG) {
+                        elements.log.dnd.debug('elements.dnd.dragTarget.clear! (' + this.dragTarget.reference.path + ')');
                     }
                     this.dragTarget.$el.removeClass(elements.const.dnd.class.base + elements.const.dnd.class.targetOver);
                     this.$insert.removeClass(elements.const.dnd.class.base + elements.const.dnd.class.visible);
@@ -623,9 +623,9 @@
                     if (this.dragTarget === container) {
                         this.moveInsertMarker(event);
                     } else {
-                        if (elements.log.getLevel() <= log.levels.DEBUG) {
+                        if (elements.log.dnd.getLevel() <= log.levels.DEBUG) {
                             var pointer = elements.pageBody.getPointer(event);
-                            elements.log.debug('elements.dnd.dragTarget.set: ' + container.reference.path + ' ' + JSON.stringify(pointer));
+                            elements.log.dnd.debug('elements.dnd.dragTarget.set: ' + container.reference.path + ' ' + JSON.stringify(pointer));
                         }
                         this.dragTarget = container;
                         container.$el.addClass(elements.const.dnd.class.base + elements.const.dnd.class.targetOver);
@@ -915,8 +915,8 @@
              */
             onDragEnter: function (event) {
                 event.preventDefault();
-                if (elements.log.getLevel() <= log.levels.TRACE) {
-                    elements.log.trace('elements.dndEnter(' + '' + ')');
+                if (elements.log.dnd.getLevel() <= log.levels.TRACE) {
+                    elements.log.dnd.trace('elements.dndEnter(' + '' + ')');
                 }
                 if (pages.current.dnd.object) {
                     this.onDragStart(event, pages.current.dnd.object);
@@ -936,15 +936,15 @@
                     if (object.type === 'component' || object.type === 'element') {
                         var ref = dnd.el.view.reference;
                         var target = this.dnd.getDragTarget(event);
-                        if (elements.log.getLevel() <= log.levels.TRACE) {
-                            elements.log.trace('elements.dndOver(' + (ref ? ref.path : 'body') + '): '
+                        if (elements.log.dnd.getLevel() <= log.levels.TRACE) {
+                            elements.log.dnd.trace('elements.dndOver(' + (ref ? ref.path : 'body') + '): '
                                 + JSON.stringify(dnd.pos) + " - " + (target ? target.reference.path : '?'));
                         }
                         this.dnd.setDragTarget(target, event);
                     } else {
                         var zone = this.dnd.getDragZone(event);
-                        if (elements.log.getLevel() <= log.levels.TRACE) {
-                            elements.log.trace('elements.dndOver('
+                        if (elements.log.dnd.getLevel() <= log.levels.TRACE) {
+                            elements.log.dnd.trace('elements.dndOver('
                                 + JSON.stringify(dnd.pos) + " - " + (zone ? zone.$el.attr('id') : '?'));
                         }
                         this.dnd.setDragZone(zone, event);
@@ -972,8 +972,8 @@
                     object = JSON.parse(event.originalEvent.dataTransfer.getData('application/json'));
                     target = this.dnd.dragTarget.reference;
                     var before = this.dnd.insert.before ? this.dnd.insert.before.reference : undefined;
-                    if (elements.log.getLevel() <= log.levels.DEBUG) {
-                        elements.log.debug('elements.dnd.onDrop(' + this.dnd.dragTarget.reference.path + '): '
+                    if (elements.log.dnd.getLevel() <= log.levels.DEBUG) {
+                        elements.log.dnd.debug('elements.dnd.onDrop(' + this.dnd.dragTarget.reference.path + '): '
                             + JSON.stringify(object) + ' > '
                             + JSON.stringify(target) + ' < '
                             + JSON.stringify(before)
@@ -999,8 +999,8 @@
                 } else if (this.dnd.dragZone) {
                     object = JSON.parse(event.originalEvent.dataTransfer.getData('application/json'));
                     target = this.dnd.dragZone.data;
-                    if (elements.log.getLevel() <= log.levels.DEBUG) {
-                        elements.log.debug('elements.dnd.onDrop(' + this.dnd.dragZone.$el.attr('id') + '): '
+                    if (elements.log.dnd.getLevel() <= log.levels.DEBUG) {
+                        elements.log.dnd.debug('elements.dnd.onDrop(' + this.dnd.dragZone.$el.attr('id') + '): '
                             + JSON.stringify(object) + ' > '
                             + JSON.stringify(target)
                         );
@@ -1027,7 +1027,7 @@
                     if ($target && $target.length > 0) {
                         var component = $target[0].view;
                         if (component) {
-                            elements.log.debug('pages.elements.selectElement(' + path + ')');
+                            elements.log.std.debug('pages.elements.selectElement(' + path + ')');
                             this.setSelection(component, force);
                             found = true;
                         }
@@ -1039,14 +1039,14 @@
             },
 
             setSelection: function (component, force) {
-                elements.log.debug('pages.elements.setSelection(' + component + ',' + force + ')');
+                elements.log.std.debug('pages.elements.setSelection(' + component + ',' + force + ')');
                 if (elements.pageBody.selection.component !== component || force) {
                     if (component) {
                         var e = elements.const.event;
                         this.dnd.reset();
                         elements.pageBody.selection.setComponent(component);
                         elements.pageBody.selection.setHeadVisibility(true);
-                        elements.log.debug('elements.trigger.' + e.element.selected + '(' + component.reference.path + ')');
+                        elements.log.std.debug('elements.trigger.' + e.element.selected + '(' + component.reference.path + ')');
                         $(document).trigger(e.element.selected, component.reference);
                     } else {
                         this.clearSelection();
@@ -1060,9 +1060,9 @@
                 this.dnd.reset();
                 if (elements.pageBody.selection.component) {
                     var e = elements.const.event;
-                    elements.log.debug('pages.elements.clearSelection(' + elements.pageBody.selection.component + ')');
+                    elements.log.std.debug('pages.elements.clearSelection(' + elements.pageBody.selection.component + ')');
                     elements.pageBody.selection.setComponent(undefined);
-                    elements.log.debug('elements.trigger.' + e.element.selected + '([])');
+                    elements.log.std.debug('elements.trigger.' + e.element.selected + '([])');
                     $(document).trigger(e.element.selected, []);
                 }
             },
@@ -1074,10 +1074,10 @@
             onElementSelected: function (event, reference) {
                 var e = elements.const.event;
                 if (reference && reference.path) {
-                    elements.log.debug('pages.elements.' + e.element.selected + '(' + reference.path + ')');
+                    elements.log.std.debug('pages.elements.' + e.element.selected + '(' + reference.path + ')');
                     parent.postMessage(e.element.selected + JSON.stringify({reference: reference}), '*');
                 } else {
-                    elements.log.debug('pages.elements.selectionCleared()');
+                    elements.log.std.debug('pages.elements.selectionCleared()');
                     parent.postMessage(e.element.selected + JSON.stringify({}), '*');
                 }
             },
@@ -1089,55 +1089,55 @@
             onMessage: function (event) {
                 var e = elements.const.event;
                 var message = e.messagePattern.exec(event.data);
-                if (elements.log.getLevel() <= log.levels.TRACE) {
-                    elements.log.trace('elements.message.on: "' + event.data + '"...');
+                if (elements.log.std.getLevel() <= log.levels.TRACE) {
+                    elements.log.std.trace('elements.message.on: "' + event.data + '"...');
                 }
                 if (message) {
                     var args = JSON.parse(message[2]); // argument object|array
                     switch (message[1]) { // operation
                         case e.element.select:
-                            if (elements.log.getLevel() <= log.levels.DEBUG) {
-                                elements.log.debug('elements.message.on.' + e.element.select + JSON.stringify(args));
+                            if (elements.log.std.getLevel() <= log.levels.DEBUG) {
+                                elements.log.std.debug('elements.message.on.' + e.element.select + JSON.stringify(args));
                             }
                             if (args.reference && args.reference.path) {
-                                if (elements.log.getLevel() <= log.levels.DEBUG) {
-                                    elements.log.debug('elements.trigger.' + e.element.select + '(' + args.reference.path + ')');
+                                if (elements.log.std.getLevel() <= log.levels.DEBUG) {
+                                    elements.log.std.debug('elements.trigger.' + e.element.select + '(' + args.reference.path + ')');
                                 }
                                 $(document).trigger(e.element.select, args.reference);
                             } else {
-                                if (elements.log.getLevel() <= log.levels.DEBUG) {
-                                    elements.log.debug('elements.trigger.' + e.element.select + '([])');
+                                if (elements.log.std.getLevel() <= log.levels.DEBUG) {
+                                    elements.log.std.debug('elements.trigger.' + e.element.select + '([])');
                                 }
                                 $(document).trigger(e.element.select, []);
                             }
                             break;
                         case e.element.inserted:
-                            if (elements.log.getLevel() <= log.levels.DEBUG) {
-                                elements.log.debug('elements.message.on.' + e.element.inserted + JSON.stringify(args));
+                            if (elements.log.std.getLevel() <= log.levels.DEBUG) {
+                                elements.log.std.debug('elements.message.on.' + e.element.inserted + JSON.stringify(args));
                             }
                             this.elementInserted(event, args.reference);
                             break;
                         case e.element.changed:
-                            if (elements.log.getLevel() <= log.levels.DEBUG) {
-                                elements.log.debug('elements.message.on.' + e.element.changed + JSON.stringify(args));
+                            if (elements.log.std.getLevel() <= log.levels.DEBUG) {
+                                elements.log.std.debug('elements.message.on.' + e.element.changed + JSON.stringify(args));
                             }
                             this.elementChanged(event, args.reference);
                             break;
                         case e.element.deleted:
-                            if (elements.log.getLevel() <= log.levels.DEBUG) {
-                                elements.log.debug('elements.message.on.' + e.element.deleted + JSON.stringify(args));
+                            if (elements.log.std.getLevel() <= log.levels.DEBUG) {
+                                elements.log.std.debug('elements.message.on.' + e.element.deleted + JSON.stringify(args));
                             }
                             this.elementDeleted(event, args.reference);
                             break;
                         case e.dnd.object:
-                            if (elements.log.getLevel() <= log.levels.DEBUG) {
-                                elements.log.debug('elements.message.on.' + e.dnd.object + JSON.stringify(args));
+                            if (elements.log.std.getLevel() <= log.levels.DEBUG) {
+                                elements.log.std.debug('elements.message.on.' + e.dnd.object + JSON.stringify(args));
                             }
                             pages.current.dnd.object = args;
                             break;
                         case e.dnd.finished:
-                            if (elements.log.getLevel() <= log.levels.DEBUG) {
-                                elements.log.debug('elements.message.on.' + e.dnd.finished);
+                            if (elements.log.std.getLevel() <= log.levels.DEBUG) {
+                                elements.log.std.debug('elements.message.on.' + e.dnd.finished);
                             }
                             pages.current.dnd.object = undefined;
                             elements.pageBody.dnd.reset();
@@ -1223,8 +1223,8 @@
                 if (view) {
                     var self = this;
                     var viewRect = this.getViewRect(view.$el);
-                    if (elements.log.getLevel() <= log.levels.TRACE) {
-                        elements.log.trace('elements.getPointerView('
+                    if (elements.log.ptr.getLevel() <= log.levels.TRACE) {
+                        elements.log.ptr.trace('elements.getPointerView('
                             + (view.reference ? view.reference.path : view.data.path) + ', '
                             + JSON.stringify(pointer) + ' / ' + JSON.stringify(viewRect) + ', "'
                             + selector + '"' + (condition ? ' ++' : '') + ' ...');
@@ -1236,8 +1236,8 @@
                             var nested = this.view; // use the elements view
                             if (nested) {
                                 var nestedRect = self.getViewRect(nested.$el);
-                                if (elements.log.getLevel() <= log.levels.TRACE) {
-                                    elements.log.trace('elements.getPointerView.try: '
+                                if (elements.log.ptr.getLevel() <= log.levels.TRACE) {
+                                    elements.log.ptr.trace('elements.getPointerView.try: '
                                         + (nested.reference ? nested.reference.path : nested.data.path) + ' '
                                         + JSON.stringify(nestedRect));
                                 }
@@ -1275,8 +1275,8 @@
                         }
                     }
                 }
-                if (elements.log.getLevel() <= log.levels.TRACE) {
-                    elements.log.trace('elements.getPointerView: '
+                if (elements.log.ptr.getLevel() <= log.levels.TRACE) {
+                    elements.log.ptr.trace('elements.getPointerView: '
                         + (view ? (view.reference ? view.reference.path : view.data.path) : 'undefined'));
                 }
                 return view;

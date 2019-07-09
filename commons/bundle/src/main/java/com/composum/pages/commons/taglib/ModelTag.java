@@ -25,11 +25,16 @@ import com.composum.sling.cpnl.ComponentTag;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.DynamicAttributes;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -41,6 +46,8 @@ import static com.composum.platform.models.annotations.InternationalizationStrat
  * a tag to instantiate a model object
  */
 public class ModelTag extends ComponentTag implements DynamicAttributes {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ModelTag.class);
 
     public static final String DEFAULT_VAR_NAME = "target";
 
@@ -65,8 +72,11 @@ public class ModelTag extends ComponentTag implements DynamicAttributes {
 
     protected AttributeSet dynamicAttributes = new AttributeSet();
 
+    private transient String tagDebug;
+
     @Override
     protected void clear() {
+        tagDebug = null;
         dynamicAttributes = new AttributeSet();
         attributes = null;
         displayMode = null;
@@ -385,5 +395,29 @@ public class ModelTag extends ComponentTag implements DynamicAttributes {
             }
         }
         return EVAL_BODY_INCLUDE;
+    }
+
+    @SuppressWarnings("Duplicates")
+    public String getTagDebug() {
+        if (tagDebug == null) {
+            try {
+                StringWriter writer = new StringWriter();
+                writer.append("<!-- \n");
+                getTagDebug(writer);
+                writer.append("\n -->");
+                tagDebug = writer.toString();
+            } catch (IOException ioex) {
+                LOG.error(ioex.getMessage(), ioex);
+            }
+        }
+        return tagDebug;
+    }
+
+    @SuppressWarnings("Duplicates")
+    protected void getTagDebug(Writer writer) throws IOException {
+        writer.append("    var: '").append(getVar())
+                .append("'; model: ").append(getModel().toString())
+                .append("; tagClass: ").append(getClass().getName());
+        writer.append("\n    resource: ").append(getModelResource(context).getPath());
     }
 }

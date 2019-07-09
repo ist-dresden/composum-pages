@@ -111,6 +111,9 @@ public abstract class AbstractWrappingTag extends ModelTag {
             try {
                 out.flush();
                 renderTagStart();
+                if (LoggerFactory.getLogger(getClass()).isDebugEnabled()) {
+                    out.print(getTagDebug());
+                }
                 out.flush();
             } catch (IOException ioex) {
                 LOG.error(ioex.getMessage(), ioex);
