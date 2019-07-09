@@ -1153,8 +1153,8 @@
              */
             getPointer: function (event) {
                 return {
-                    x: event.originalEvent.pageX - window.pageXOffset,
-                    y: event.originalEvent.pageY - window.pageYOffset
+                    x: event.pageX,
+                    y: event.pageY
                 };
             },
 
@@ -1196,7 +1196,7 @@
             getPointerComponent: function (event, selector, condition) {
                 var component = undefined;
                 var pointer = this.getPointer(event);
-                var domEl = document.elementFromPoint(pointer.x, pointer.y);
+                var domEl = document.elementFromPoint(pointer.x - window.pageXOffset, pointer.y - window.pageYOffset);
                 if (domEl) {
                     var handleEl;
                     if ((handleEl = (elements.pageBody.pointer.getComponentEl(domEl))
