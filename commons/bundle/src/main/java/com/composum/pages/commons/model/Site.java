@@ -1,5 +1,6 @@
 package com.composum.pages.commons.model;
 
+import com.composum.pages.commons.model.properties.Language;
 import com.composum.pages.commons.request.DisplayMode;
 import com.composum.pages.commons.service.PageManager;
 import com.composum.pages.commons.service.SiteManager;
@@ -11,12 +12,12 @@ import com.composum.sling.platform.staging.StagingReleaseManager;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -66,6 +67,8 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
     private transient Collection<Page> modifiedPages;
     private transient Collection<PageVersion> releaseChanges;
 
+    private transient String templateType;
+
     public Site() {
     }
 
@@ -112,11 +115,36 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
         return getResourceManager().isTemplate(getContext(), this.getResource());
     }
 
-    @Nonnull
+    public String getTemplateType() {
+        if (templateType == null) {
+            templateType = isTemplate() ? getPath() : getTemplatePath();
+            if (StringUtils.isNotBlank(templateType)) {
+                ResourceResolver resolver = getContext().getResolver();
+                for (String root : resolver.getSearchPath()) {
+                    if (templateType.startsWith(root)) {
+                        templateType = templateType.substring(root.length());
+                        break;
+                    }
+                }
+            }
+            if (templateType == null) {
+                templateType = "";
+            }
+        }
+        return templateType;
+    }
+
     @Override
+    @Nonnull
     public String getTitle() {
         String title = super.getTitle();
         return StringUtils.isNotBlank(title) ? title : getName();
+    }
+
+    @Override
+    @Nonnull
+    public Language getLanguage() {
+        return getLanguages().getDefaultLanguage();
     }
 
     // site hierarchy
@@ -178,7 +206,7 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
                 .collect(Collectors.toList());
     }
 
-    public SiteRelease getCurrentRelease(){
+    public SiteRelease getCurrentRelease() {
         final List<SiteRelease> releases = getReleases();
         return releases.isEmpty() ? null : releases.get(0);
     }

@@ -14,7 +14,7 @@
     </c:when><c:otherwise>
         <div class="${toolbarCssBase}_language ${toolbarCssBase}_button"><span class="${toolbarCssBase}_language-label">xx</span>
         </div>
-        <div class="composum-pages-language-menu"></div>
+        <div class="composum-pages-language-menu dropdown-menu dropdown-menu-right"></div>
     </c:otherwise>
     </c:choose>
     <a class="fa fa-refresh ${toolbarCssBase}_reload-page ${toolbarCssBase}_button" href="#"

@@ -55,6 +55,8 @@ public class TemplateAndDesignTest {
 
     @Test
     public void findDesign() {
+        context.load().json("/test/template/emptyFolder.json", "/apps");
+        context.load().json("/test/template/emptyFolder.json", "/libs");
         context.load().json("/test/template/findDesign.json", "/content/test");
         ResourceResolver resolver = context.resourceResolver();
         Resource templateResource = resolver.getResource("/content/test/template");
@@ -88,6 +90,8 @@ public class TemplateAndDesignTest {
 
     @Test
     public void useDesignProperty() {
+        context.load().json("/test/template/emptyFolder.json", "/apps");
+        context.load().json("/test/template/emptyFolder.json", "/libs");
         context.load().json("/test/template/findDesign.json", "/content/test");
         ResourceResolver resolver = context.resourceResolver();
         useDesignProperty(resolver.getResource("/content/test/page/jcr:content/main/row-1/column-1/textimage"),
