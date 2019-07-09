@@ -17,6 +17,7 @@ import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.jstl.core.LoopTag;
 import javax.servlet.jsp.jstl.core.LoopTagStatus;
 import java.io.IOException;
+import java.io.Writer;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -102,6 +103,15 @@ public class EditMultiWidgetTag extends AbstractWidgetTag implements LoopTag {
             cssBase = DEFAULT_CSS_BASE;
         }
         return super.doStartTag();
+    }
+
+    @Override
+    @SuppressWarnings("Duplicates")
+    protected void getTagDebug(Writer writer) throws IOException {
+        super.getTagDebug(writer);
+        writer.append("\n    name: '").append(getName()).append("'; property: '").append(getProperty())
+                .append("'; propertyName: '").append(getPropertyName())
+                .append("'; relativePath: '").append(getRelativePath()).append("'");
     }
 
     protected String getSnippetResourceType() {

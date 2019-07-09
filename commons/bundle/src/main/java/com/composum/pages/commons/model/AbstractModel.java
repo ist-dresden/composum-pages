@@ -9,7 +9,6 @@ import com.composum.pages.commons.PagesConstants;
 import com.composum.pages.commons.model.properties.Language;
 import com.composum.pages.commons.model.properties.Languages;
 import com.composum.pages.commons.request.DisplayMode;
-import com.composum.pages.commons.request.PagesLocale;
 import com.composum.pages.commons.service.PageManager;
 import com.composum.pages.commons.service.ResourceManager;
 import com.composum.pages.commons.service.SiteManager;
@@ -40,6 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -51,8 +51,8 @@ import java.util.Objects;
 
 import static com.composum.pages.commons.PagesConstants.PN_DESCRIPTION;
 import static com.composum.pages.commons.PagesConstants.PN_TITLE_KEYS;
+import static com.composum.pages.commons.PagesConstants.RA_CURRENT_PAGE;
 import static com.composum.pages.commons.servlet.PagesContentServlet.EDIT_RESOURCE_TYPE_KEY;
-import static com.composum.pages.commons.taglib.DefineObjectsTag.CURRENT_PAGE;
 import static com.composum.platform.models.annotations.InternationalizationStrategy.I18NFOLDER;
 import static com.composum.sling.platform.security.PlatformAccessFilter.ACCESS_MODE_KEY;
 
@@ -127,7 +127,7 @@ public abstract class AbstractModel implements SlingBean, Model {
     private transient String name;
     protected transient String type;
 
-    private transient String url;
+    protected transient String url;
     protected transient String title;
     private transient String description;
 
@@ -254,6 +254,7 @@ public abstract class AbstractModel implements SlingBean, Model {
     /**
      * This is used by the 'component' tag to determine the CSS class base name for the component.
      */
+    @Nonnull
     public String getCssBase() {
         if (cssBase == null) {
             cssBase = buildCssBase();
@@ -284,10 +285,12 @@ public abstract class AbstractModel implements SlingBean, Model {
     }
 
     /** public access to the resource */
+    @Nonnull
     public Resource getResource() {
         return resource;
     }
 
+    @Nonnull
     public String getPath() {
         if (path == null) {
             path = resource.getPath();
@@ -295,6 +298,7 @@ public abstract class AbstractModel implements SlingBean, Model {
         return path;
     }
 
+    @Nonnull
     public String getName() {
         if (name == null) {
             name = resource.getName();
@@ -302,6 +306,7 @@ public abstract class AbstractModel implements SlingBean, Model {
         return name;
     }
 
+    @Nonnull
     public String getType() {
         if (type == null) {
             type = resource.getResourceType();
@@ -382,6 +387,7 @@ public abstract class AbstractModel implements SlingBean, Model {
 
     //
 
+    @Nonnull
     public String getTitle() {
         if (title == null) {
             title = getProperty(getLocale(), "", getTitleKeys());
@@ -393,6 +399,7 @@ public abstract class AbstractModel implements SlingBean, Model {
         return PN_TITLE_KEYS;
     }
 
+    @Nonnull
     public String getDescription() {
         if (description == null) {
             description = getProperty(getLocale(), "", PN_DESCRIPTION, ResourceUtil.PROP_DESCRIPTION);
@@ -405,6 +412,7 @@ public abstract class AbstractModel implements SlingBean, Model {
      *
      * @see LinkUtil#getUrl(SlingHttpServletRequest, String)
      */
+    @Nonnull
     public String getUrl() {
         if (url == null) {
             SlingHttpServletRequest request = context.getRequest();
@@ -416,27 +424,24 @@ public abstract class AbstractModel implements SlingBean, Model {
 
     // i18n - language support
 
+    @Nonnull
     public Locale getLocale() {
         if (locale == null) {
-            locale = Objects.requireNonNull(context.getRequest().adaptTo(PagesLocale.class)).getLocale();
+            Language language = getLanguage();
+            locale = language.getLocale();
         }
         return locale;
     }
 
+    @Nonnull
     public String getLanguageKey() {
         Language language = getLanguage();
-        if (language != null) {
-            return language.getKey();
-        }
-        Locale locale = getLocale();
-        if (locale != null) {
-            return locale.toString();
-        }
-        return "";
+        return language.getKey();
     }
 
+    @Nonnull
     public Language getLanguage() {
-        return getLanguages().getLanguage(getLocale());
+        return getLanguages().getLanguage();
     }
 
     @Nonnull
@@ -451,6 +456,7 @@ public abstract class AbstractModel implements SlingBean, Model {
         return languages;
     }
 
+    @Nonnull
     protected List<String> getI18nPaths() {
         if (i18nPaths == null) {
             i18nPaths = I18NFOLDER.getI18nPaths(getLocale());
@@ -460,25 +466,31 @@ public abstract class AbstractModel implements SlingBean, Model {
 
     // resource properties
 
-    public <T> T getProperty(String key, T defaultValue) {
+    @Nonnull
+    public <T> T getProperty(@Nonnull final String key, @Nonnull final T defaultValue) {
         return getProperty(key, getLocale(), defaultValue);
     }
 
-    public <T> T getProperty(String key, Class<T> type) {
+    @Nullable
+    public <T> T getProperty(@Nonnull final String key, @Nonnull final Class<T> type) {
         return getProperty(key, getLocale(), type);
     }
 
-    public <T> T getProperty(String key, Locale locale, T defaultValue) {
+    @Nonnull
+    public <T> T getProperty(@Nonnull final String key, @Nullable final Locale locale, @Nonnull final T defaultValue) {
         Class<T> type = PropertyUtil.getType(defaultValue);
         T value = getProperty(key, locale, type);
         return value != null ? value : defaultValue;
     }
 
-    public <T> T getProperty(String key, Locale locale, Class<T> type) {
+    @Nullable
+    public <T> T getProperty(@Nonnull final String key, @Nullable final Locale locale,
+                             @Nonnull final Class<T> type) {
         return getProperty(key, type, locale != null ? getI18nPaths() : IGNORE_I18N);
     }
 
-    public <T> T getProperty(Locale locale, T defaultValue, String... keys) {
+    @Nonnull
+    public <T> T getProperty(@Nullable final Locale locale, @Nonnull final T defaultValue, String... keys) {
         Class<T> type = PropertyUtil.getType(defaultValue);
         T value;
         for (String key : keys) {
@@ -489,7 +501,9 @@ public abstract class AbstractModel implements SlingBean, Model {
         return defaultValue;
     }
 
-    protected <T> T getProperty(String key, Class<T> type, List<String> pathsToTry) {
+    @Nullable
+    protected <T> T getProperty(@Nonnull final String key, @Nonnull final Class<T> type,
+                                @Nonnull final List<String> pathsToTry) {
         T value;
         if (properties != null) {
             for (String path : pathsToTry) {
@@ -504,6 +518,7 @@ public abstract class AbstractModel implements SlingBean, Model {
     /**
      * the generic map for direct use in templates
      */
+    @Nonnull
     public Map<String, Object> getProperties() {
         if (propertiesMap == null) {
             propertiesMap = new GenericProperties();
@@ -513,21 +528,27 @@ public abstract class AbstractModel implements SlingBean, Model {
 
     // inherited properties
 
-    public <T> T getInherited(String key, T defaultValue) {
+    @Nonnull
+    public <T> T getInherited(@Nonnull final String key, @Nonnull final T defaultValue) {
         return getInherited(key, getLocale(), defaultValue);
     }
 
-    public <T> T getInherited(String key, Class<T> type) {
+    @Nullable
+    public <T> T getInherited(@Nonnull final String key, @Nonnull final Class<T> type) {
         return getInherited(key, getLocale(), type);
     }
 
-    protected <T> T getInherited(String key, Locale locale, T defaultValue) {
+    @Nonnull
+    protected <T> T getInherited(@Nonnull final String key, @Nullable final Locale locale,
+                                 @Nonnull final T defaultValue) {
         Class<T> type = PropertyUtil.getType(defaultValue);
         T value = getInherited(key, locale, type);
         return value != null ? value : defaultValue;
     }
 
-    protected <T> T getInherited(String key, Locale locale, Class<T> type) {
+    @Nullable
+    protected <T> T getInherited(@Nonnull final String key, @Nullable final Locale locale,
+                                 @Nonnull final Class<T> type) {
         T value = getProperty(key, locale, type);
         if (value == null) {
             value = getInherited(key, type, locale != null ? getI18nPaths() : IGNORE_I18N);
@@ -535,7 +556,8 @@ public abstract class AbstractModel implements SlingBean, Model {
         return value;
     }
 
-    public <T> T getInherited(Locale locale, T defaultValue, String... keys) {
+    @Nonnull
+    public <T> T getInherited(@Nullable Locale locale, @Nonnull T defaultValue, String... keys) {
         Class<T> type = PropertyUtil.getType(defaultValue);
         T value;
         for (String key : keys) {
@@ -546,24 +568,23 @@ public abstract class AbstractModel implements SlingBean, Model {
         return defaultValue;
     }
 
-    protected <T> T getInherited(String key, Class<T> type, List<String> pathsToTry) {
+    @Nullable
+    protected <T> T getInherited(@Nonnull final String key, @Nonnull final Class<T> type,
+                                 @Nonnull final List<String> pathsToTry) {
         T value;
         for (String path : pathsToTry) {
             InheritedValues values = getInheritedValues();
-            if (values != null) {
-                if ((value = values.get(path + '/' + key, type)) != null) {
-                    return value;
-                }
+            if ((value = values.get(path + '/' + key, type)) != null) {
+                return value;
             }
         }
         return null;
     }
 
+    @Nonnull
     protected InheritedValues getInheritedValues() {
         if (inheritedValues == null) {
-            if (resource != null) {
-                inheritedValues = createInheritedValues(resource);
-            }
+            inheritedValues = createInheritedValues(getResource());
         }
         return inheritedValues;
     }
@@ -571,6 +592,7 @@ public abstract class AbstractModel implements SlingBean, Model {
     /**
      * the generic map for direct use in templates
      */
+    @Nonnull
     public Map<String, Object> getInherited() {
         if (inheritedMap == null) {
             inheritedMap = new GenericInherited();
@@ -581,7 +603,8 @@ public abstract class AbstractModel implements SlingBean, Model {
     /**
      * create the inherited properties strategy (extension hook, defaults to an instance of InheritedValues)
      */
-    protected InheritedValues createInheritedValues(Resource resource) {
+    @Nonnull
+    protected InheritedValues createInheritedValues(@Nonnull final Resource resource) {
         return new InheritedValues(resource);
     }
 
@@ -595,7 +618,8 @@ public abstract class AbstractModel implements SlingBean, Model {
          * delegates each 'get' to the localized methods and caches the result
          */
         @Override
-        public Object get(Object key) {
+        @Nullable
+        public Object get(@Nonnull final Object key) {
             Object value = super.get(key);
             if (value == null) {
                 value = getValue((String) key);
@@ -610,7 +634,8 @@ public abstract class AbstractModel implements SlingBean, Model {
     public class GenericProperties extends GenericMap {
 
         @Override
-        public Object getValue(String key) {
+        @Nullable
+        public Object getValue(@Nonnull final String key) {
             return getProperty(key, Object.class);
         }
 
@@ -619,7 +644,8 @@ public abstract class AbstractModel implements SlingBean, Model {
     public class GenericInherited extends GenericMap {
 
         @Override
-        public Object getValue(String key) {
+        @Nullable
+        public Object getValue(@Nonnull final String key) {
             return getInherited(key, Object.class);
         }
 
@@ -630,13 +656,15 @@ public abstract class AbstractModel implements SlingBean, Model {
     /**
      * the requested page referenced by the current HTTP request
      */
+    @Nullable
     public Page getCurrentPage() {
         if (currentPage == null) {
-            currentPage = context.getAttribute(CURRENT_PAGE, Page.class);
+            currentPage = context.getAttribute(RA_CURRENT_PAGE, Page.class);
         }
         return currentPage;
     }
 
+    @Nullable
     public Page getContainingPage() {
         if (containingPage == null) {
             containingPage = getPageManager().getContainingPage(this);
@@ -644,30 +672,34 @@ public abstract class AbstractModel implements SlingBean, Model {
         return containingPage;
     }
 
+    @Nonnull
     public PageManager getPageManager() {
         if (pageManager == null) {
-            pageManager = context.getService(PageManager.class);
+            pageManager = Objects.requireNonNull(context.getService(PageManager.class));
         }
         return pageManager;
     }
 
+    @Nonnull
     public SiteManager getSiteManager() {
         if (siteManager == null) {
-            siteManager = context.getService(SiteManager.class);
+            siteManager = Objects.requireNonNull(context.getService(SiteManager.class));
         }
         return siteManager;
     }
 
+    @Nonnull
     public ResourceManager getResourceManager() {
         if (resourceManager == null) {
-            resourceManager = context.getService(ResourceManager.class);
+            resourceManager = Objects.requireNonNull(context.getService(ResourceManager.class));
         }
         return resourceManager;
     }
 
+    @Nonnull
     public VersionsService getVersionsService() {
         if (versionsService == null) {
-            versionsService = context.getService(VersionsService.class);
+            versionsService = Objects.requireNonNull(context.getService(VersionsService.class));
         }
         return versionsService;
     }
@@ -683,11 +715,17 @@ public abstract class AbstractModel implements SlingBean, Model {
 
     @Override
     public int hashCode() {
-        return getPath().hashCode();
+        return getHashKey().hashCode();
     }
 
     @Override
     public boolean equals(Object other) {
-        return other instanceof Model && ((Model) other).getPath().equals(getPath());
+        return other instanceof Model && ((Model) other).getHashKey().equals(getHashKey());
+    }
+
+    @Nonnull
+    @Override
+    public String getHashKey() {
+        return getClass().getName() + "#" + getPath();
     }
 }

@@ -44,7 +44,10 @@
             },
             event: {
                 messagePattern: new RegExp('^([^{\\[]+)([{\\[].*[}\\]])$'),
-                ready: 'pages:ready',
+                pages: {
+                    ready: 'pages:ready',
+                    locale: 'pages:locale'
+                },
                 scope: {
                     changed: 'scope:changed'
                 },
@@ -118,7 +121,8 @@
             profile: {
                 pages: {
                     aspect: 'pages',
-                    scope: 'scope'      // the scope of the edit UI: 'site' or 'content'
+                    scope: 'scope',     // the scope of the edit UI: 'site' or 'content'
+                    locale: 'locale'
                 },
                 page: {
                     tree: {
@@ -211,15 +215,18 @@
         };
 
         pages.$body = $('body');
-        pages.current = {
-            mode: pages.$body.data(pages.const.data.body.mode),
-            locale: pages.$body.data(pages.const.data.body.locale),
-            folder: undefined,
-            site: undefined,
-            page: undefined,
-            element: undefined,
-            dnd: {}
-        };
+        pages.current = function () {
+            var g = pages.const.profile.pages;
+            return {
+                mode: pages.$body.data(pages.const.data.body.mode),
+                locale: pages.profile.get(g.aspect, g.locale, 'en'),
+                folder: undefined,
+                site: undefined,
+                page: undefined,
+                element: undefined,
+                dnd: {}
+            }
+        }();
 
         switch (pages.current.mode) {
             case 'PREVIEW':
@@ -231,6 +238,22 @@
                 pages.profile.set('mode', 'edit', pages.current.mode.toLowerCase());
                 break;
         }
+
+        pages.getLocale = function () {
+            return pages.current.locale;
+        };
+
+        pages.setLocale = function (locale, localeDefault) {
+            if (pages.current.locale !== locale || (localeDefault && localeDefault !== pages.current.localeDefault)) {
+                pages.current.locale = locale;
+                pages.current.localeDefault = localeDefault;
+                var e = pages.const.event.pages;
+                var g = pages.const.profile.pages;
+                pages.profile.set(g.aspect, g.locale, locale);
+                pages.log.debug('pages.trigger.' + e.locale + '(' + locale + ')');
+                $(document).trigger(e.locale, [locale]);
+            }
+        };
 
         pages.getScope = function () {
             var c = pages.const.css;
@@ -260,12 +283,19 @@
             }
         };
 
-        pages.isEditMode = function () {
-            return pages.current.mode === 'EDIT' || pages.current.mode === 'DEVELOP';
+        pages.getPageUrl = function (/*optional*/ path, /*optional*/ locale) {
+            if (!locale) {
+                locale = pages.getLocale();
+            }
+            var url = core.getContextUrl((path || pages.current.page) + '.html');
+            if (locale !== pages.current.localeDefault) {
+                url += '?pages.locale=' + locale;
+            }
+            return url;
         };
 
-        pages.getPageData = function (path, callback, failure) {
-            core.ajaxGet(pages.const.url.get.pageData + path, {}, callback, failure);
+        pages.isEditMode = function () {
+            return pages.current.mode === 'EDIT' || pages.current.mode === 'DEVELOP';
         };
 
         pages.versionsVisible = function () {

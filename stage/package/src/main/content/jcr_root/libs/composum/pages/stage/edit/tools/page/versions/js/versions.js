@@ -231,7 +231,7 @@
 
             reload: function () {
                 var c = tools.const.versions;
-                pages.getPageData(this.contextTabs.reference.path, _.bind(function (data) {
+                pages.editFrame.getPageData(this.contextTabs.reference.path, _.bind(function (data) {
                     this.data = data;
                     this.state = data.jcrContent.jcrState;
                     if (this.state.checkedOut) {

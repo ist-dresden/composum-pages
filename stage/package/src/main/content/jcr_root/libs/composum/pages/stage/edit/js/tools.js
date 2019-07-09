@@ -155,7 +155,7 @@
                 tools.TabPanel.prototype.initialize.apply(this, [options]);
                 var e = pages.const.event;
                 $(document).on(e.path.select + '.Navigation', _.bind(this.selectPath, this));
-                $(document).on(e.ready + '.Navigation', _.bind(this.ready, this));
+                $(document).on(e.pages.ready + '.Navigation', _.bind(this.ready, this));
             },
 
             ready: function () {
@@ -209,7 +209,7 @@
                             break;
                         case 'container':
                         case 'element':
-                            pages.getPageData(path, _.bind(function (data) {
+                            pages.editFrame.getPageData(path, _.bind(function (data) {
                                 if (data.path !== pages.current.page) {
                                     pages.log.debug('tools.trigger.' + pages.const.event.page.select + '(' + data.path + ')');
                                     $(document).trigger(pages.const.event.page.select, [data.path, undefined,

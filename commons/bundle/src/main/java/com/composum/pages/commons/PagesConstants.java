@@ -28,11 +28,15 @@ public interface PagesConstants {
     String COMPOSUM_PREFIX = "composum-";
     String PAGES_PREFIX = COMPOSUM_PREFIX + "pages-";
 
+    /** request attributes */
+
+    String RA_CONTEXT_PATH = "contextPath";
+    String RA_CURRENT_PAGE = "currentPage";
+
     /** I18N */
 
     String PROP_PAGE_LANGUAGES = "pageLanguages";
     String LANGUAGES_PATH = "jcr:content/languages";
-    String LANGUAGES_TYPE = "composum/pages/stage/edit/site/languages";
     String DEFAULT_LANGUAGES = "/libs/composum/pages/commons/default/" + LANGUAGES_PATH;
     String LANGUAGE_NAME_SEPARATOR = "_";
 
@@ -48,7 +52,8 @@ public interface PagesConstants {
 
     String ACCESS_MODE_ATTR = PlatformAccessFilter.ACCESS_MODE_KEY;
     String DISPLAY_MODE_ATTR = "composum-pages-request-display";
-    String PAGES_LOCALE_ATTR = "composum-pages-request-locale";
+    String RA_PAGES_LOCALE = "composum-pages-request-locale";
+    String RA_PAGES_LANGUAGE = "composum-pages-request-language";
 
     String PAGES_FRAME_PATH = "/bin/pages";
 
@@ -59,7 +64,7 @@ public interface PagesConstants {
     String PN_CATEGORY = "category";
     String CATEGORY_OTHER = "other";
 
-    /** Content elements */
+    /* Content elements */
 
     /** the reference path property name of a reference component (for the referrers query) */
     String PN_CONTENT_REFERENCE = "contentReference";

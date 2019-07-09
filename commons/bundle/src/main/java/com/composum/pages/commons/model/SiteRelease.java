@@ -15,7 +15,6 @@ import javax.annotation.Nonnull;
 import javax.jcr.RepositoryException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Pattern;
@@ -81,6 +80,7 @@ public class SiteRelease extends AbstractModel implements Comparable<SiteRelease
         return KEY_CURRENT_RELEASE.equals(getKey());
     }
 
+    @Nonnull
     @Override
     public String getPath() {
         return stagingRelease.getPath();

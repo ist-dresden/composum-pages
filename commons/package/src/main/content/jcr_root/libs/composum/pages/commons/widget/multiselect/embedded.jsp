@@ -5,7 +5,8 @@
 <cpp:defineFrameObjects/>
 <select
         <c:if test="${widget.formWidget}">name="${widget.name}"</c:if> data-label="${widget.label}"
-        data-i18n="${widget.i18n}" ${widget.attributes} multiple="multiple"
+        data-i18n="${widget.i18n}" ${widget.attributes}
+        <c:if test="${widget.disabled}">disabled</c:if> multiple="multiple"
         class="${widgetCSS}_select widget multiselect-widget form-control widget-name_${widget.cssName}">
     <c:forEach var="option" items="${widget.model.options}">
         <option value="${option.value}"<c:if

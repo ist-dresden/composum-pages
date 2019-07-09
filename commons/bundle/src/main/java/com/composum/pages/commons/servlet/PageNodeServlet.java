@@ -1,5 +1,6 @@
 package com.composum.pages.commons.servlet;
 
+import com.composum.pages.commons.PagesConstants;
 import com.composum.pages.commons.model.Page;
 import com.composum.pages.commons.request.DisplayMode;
 import com.composum.pages.commons.service.PageManager;
@@ -45,7 +46,7 @@ public class PageNodeServlet extends SlingSafeMethodsServlet {
 
     protected BundleContext bundleContext;
 
-    protected List<PageDispatcher> pageDispatchers = Collections.synchronizedList(new ArrayList<PageDispatcher>());
+    protected List<PageDispatcher> pageDispatchers = Collections.synchronizedList(new ArrayList<>());
 
     @Activate
     private void activate(final BundleContext bundleContext) {
@@ -53,15 +54,17 @@ public class PageNodeServlet extends SlingSafeMethodsServlet {
     }
 
     @Override
-    protected void doGet(@Nonnull SlingHttpServletRequest request,
-                         @Nonnull SlingHttpServletResponse response) throws ServletException,
-            IOException {
+    protected void doGet(@Nonnull final SlingHttpServletRequest request,
+                         @Nonnull final SlingHttpServletResponse response)
+            throws ServletException, IOException {
 
-        BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
-        Resource resource = request.getResource();
+        final BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
+        final Resource resource = request.getResource();
         Page page = pageManager.createBean(context, resource);
 
         if (page.isValid()) {
+            // ensure that the current page is declared before any property access
+            request.setAttribute(PagesConstants.RA_CURRENT_PAGE, page);
 
             // if not in edit mode check for a HTTP redirect triggered by one of the dispatchers
             DisplayMode.Value displayMode = DisplayMode.current(context);

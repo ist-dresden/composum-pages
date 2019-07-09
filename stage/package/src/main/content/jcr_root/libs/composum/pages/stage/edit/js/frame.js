@@ -78,12 +78,42 @@
                 }
                 window.addEventListener("message", _.bind(this.onMessage, this), false);
                 if (this.log.frame.getLevel() <= log.levels.DEBUG) {
-                    this.log.frame.debug('frame.trigger.' + e.ready + '(' + initialPath + ')');
+                    this.log.frame.debug('frame.trigger.' + e.pages.ready + '(' + initialPath + ')');
                 }
                 // signal initialization end and let components switch to 'normal' mode...
                 window.setTimeout(function () {
-                    $(document).trigger(e.ready);
+                    $(document).trigger(e.pages.ready);
                 }, 800);
+            },
+
+            getPageData: function (path, callback, failure, frameUrl) {
+                var suffix = '', data;
+                if (path) {
+                    suffix = path;
+                    data = {
+                        'pages.locale': pages.getLocale()
+                    };
+                } else {
+                    if (!frameUrl) {
+                        frameUrl = this.$frame.attr('src');
+                    }
+                    if (frameUrl) {
+                        var url = new core.SlingUrl(frameUrl);
+                        data = {
+                            'url': frameUrl
+                        };
+                        if (url.parameters && url.parameters['pages.locale']) {
+                            data['pages.locale'] = url.parameters['pages.locale'];
+                        }
+                    }
+                }
+                if (suffix || data) {
+                    core.ajaxGet(pages.const.url.get.pageData + suffix, {data: data}, callback, failure);
+                } else {
+                    if (_.isFunction(failure)) {
+                        failure();
+                    }
+                }
             },
 
             onPageSelected: function (event, path) {
@@ -91,8 +121,9 @@
                     if (this.log.frame.getLevel() <= log.levels.DEBUG) {
                         this.log.frame.debug('pages.EditFrame.onPageSelected(' + path + ')');
                     }
-                    this.currentPath = path;
-                    pages.getPageData(path, _.bind(function (data) {
+                    this.getPageData(undefined, _.bind(function (data) {
+                        this.currentPath = data.path;
+                        pages.setLocale(this.currentLocale = data.meta.language, data.meta.defaultLanguage);
                         if (data.meta && data.meta.site !== pages.current.site) {
                             pages.current.site = data.meta.site;
                             if (this.log.frame.getLevel() <= log.levels.DEBUG) {
@@ -103,6 +134,7 @@
                     }, this));
                     if (history.replaceState) {
                         history.replaceState(path, 'pages', core.getContextUrl('/bin/pages.html' + path));
+                        //history.replaceState(path, 'pages', this.$frame.attr('src'));
                     }
                 }
             },
@@ -111,55 +143,48 @@
                 if (!this.busy) {
                     this.busy = true;
                     var frameUrl = event.currentTarget.contentDocument.URL;
-                    var url;
-                    core.ajaxGet('/bin/cpm/nodes/node.resolve.json', {
-                            data: {
-                                url: frameUrl
+                    this.getPageData(undefined, _.bind(function (data) {
+                        if (this.currentPath !== data.path || this.currentLocale !== data.meta.language) {
+                            var url = new core.SlingUrl(frameUrl);
+                            if (this.log.frame.getLevel() <= log.levels.DEBUG) {
+                                this.log.frame.debug('pages.EditFrame.onFrameLoad(' + frameUrl + '): ' + data.path);
                             }
-                        }, _.bind(function (data) {
-                            if (this.currentPath !== data.path) {
-                                if (this.log.frame.getLevel() <= log.levels.DEBUG) {
-                                    this.log.frame.debug('pages.EditFrame.onFrameLoad(' + frameUrl + '): ' + data.path);
-                                }
-                                url = new core.SlingUrl(frameUrl);
-                                var displayMode = url.parameters ? url.parameters['pages.view'] : undefined;
-                                if (!displayMode && pages.isEditMode()) {
-                                    // reload with the right display mode if no mode specified in the URL
-                                    // this is generally happens if the content navigation is used
-                                    this.reloadPage(url.parameters, data.path);
-                                } else {
-                                    // no event for explicit 'preview' - probably site page scanning
-                                    if (!displayMode || displayMode !== 'preview') {
-                                        // trigger all necessary events after loading a different page
-                                        pages.current.page = data.path;
-                                        var eventData = [data.path, url.parameters];
-                                        if (this.log.frame.getLevel() <= log.levels.DEBUG) {
-                                            this.log.frame.debug('frame.trigger.' + pages.const.event.page.selected + '(' + data.path + ')');
-                                        }
-                                        $(document).trigger(pages.const.event.page.selected, eventData);
-                                    }
-                                }
+                            var displayMode = url.parameters ? url.parameters['pages.view'] : undefined;
+                            if (!displayMode && pages.isEditMode()) {
+                                // reload with the right display mode if no mode specified in the URL
+                                // this is generally happens if the content navigation is used
+                                var parameters = url.parameters || {};
+                                parameters['pages.locale'] = data.meta.language;
+                                this.reloadPage(parameters, data.path);
                             } else {
-                                url = new core.SlingUrl(frameUrl);
-                                var locale = url.parameters ? url.parameters['pages.locale'] : undefined;
-                                if (locale) {
-                                    // get current locale from request if present to keep locale switching
-                                    pages.current.locale = locale;
-                                }
-                                var select = this.selectOnLoad;
-                                if (!select) {
-                                    select = pages.toolbars.pageToolbar.getSelectedComponent();
-                                }
-                                if (select) {
-                                    pages.log.debug('frame.trigger.' + pages.const.event.element.select + '(' + select.path + ')');
-                                    $(document).trigger(pages.const.event.element.select, [new pages.Reference(select)]);
+                                // no event for explicit 'preview' - probably site page scanning
+                                if (!displayMode || displayMode !== 'preview') {
+                                    // trigger all necessary events after loading a different page
+                                    pages.current.page = data.path;
+                                    var eventData = [data.path, url.parameters];
+                                    if (this.log.frame.getLevel() <= log.levels.DEBUG) {
+                                        this.log.frame.debug('frame.trigger.' + pages.const.event.page.selected + '(' + data.path + ')');
+                                    }
+                                    $(document).trigger(pages.const.event.page.selected, eventData);
                                 }
                             }
-                            this.selectOnLoad = undefined;
-                        }, this), undefined, _.bind(function (data) {
-                            this.busy = false;
-                        }, this)
-                    );
+                        } else {
+                            var select = this.selectOnLoad;
+                            if (!select) {
+                                select = pages.toolbars.pageToolbar.getSelectedComponent();
+                            }
+                            if (select) {
+                                pages.log.debug('frame.trigger.' + pages.const.event.element.select + '(' + select.path + ')');
+                                $(document).trigger(pages.const.event.element.select, [new pages.Reference(select)]);
+                            }
+                        }
+                        // get current locale from request if present to keep locale switching
+                        pages.setLocale(this.currentLocale = data.meta.language, data.meta.defaultLanguage);
+                        this.selectOnLoad = undefined;
+                        this.busy = false;
+                    }, this), _.bind(function (data) {
+                        this.busy = false;
+                    }, this), frameUrl);
                 } else {
                     this.busy = false;
                 }
@@ -184,7 +209,7 @@
                     if (this.log.frame.getLevel() <= log.levels.DEBUG) {
                         this.log.frame.debug('pages.EditFrame.selectPage(' + path + ')');
                     }
-                    pages.getPageData(path, _.bind(function (data) {
+                    this.getPageData(path, _.bind(function (data) {
                         if (data.meta && data.meta.site !== pages.current.site) {
                             pages.current.site = data.meta.site;
                             if (this.log.frame.getLevel() <= log.levels.DEBUG) {
@@ -228,7 +253,7 @@
                         frameUrl.parameters['pages.view'] = pages.current.mode.toLowerCase();
                     }
                     if (!frameUrl.parameters['pages.locale']) {
-                        frameUrl.parameters['pages.locale'] = pages.current.locale;
+                        frameUrl.parameters['pages.locale'] = pages.getLocale();
                     }
                     frameUrl.build();
                     if (this.log.frame.getLevel() <= log.levels.DEBUG) {

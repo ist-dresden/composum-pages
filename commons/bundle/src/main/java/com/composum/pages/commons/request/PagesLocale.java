@@ -10,7 +10,7 @@ public class PagesLocale {
 
     protected final Locale locale;
 
-    PagesLocale (@Nonnull Locale locale) {
+    public PagesLocale (@Nonnull Locale locale) {
         this.locale = locale;
     }
 

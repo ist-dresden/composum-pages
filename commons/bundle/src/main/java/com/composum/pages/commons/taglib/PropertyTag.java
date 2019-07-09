@@ -6,7 +6,6 @@ import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 
 import java.util.List;
-import java.util.Locale;
 
 import static com.composum.platform.models.annotations.InternationalizationStrategy.I18NFOLDER;
 
@@ -49,9 +48,9 @@ public class PropertyTag extends ModelTag {
         ResourceResolver resolver = context.getResolver();
         Resource resource = super.getModelResource(context);
         Resource propertyResource = null;
-        if (isI18n()) {
-            Locale locale = context.getRequest().adaptTo(PagesLocale.class).getLocale();
-            List<String> i18nPaths = I18NFOLDER.getI18nPaths(locale);
+        PagesLocale pagesLocale;
+        if (i18n && (pagesLocale = context.getRequest().adaptTo(PagesLocale.class)) != null) {
+            List<String> i18nPaths = I18NFOLDER.getI18nPaths(pagesLocale.getLocale());
             for (String path : i18nPaths) {
                 if ((propertyResource = resolver.getResource(resource, path + '/' + property)) != null) {
                     break;

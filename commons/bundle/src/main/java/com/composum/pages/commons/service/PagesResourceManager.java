@@ -33,6 +33,7 @@ import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.SyntheticResource;
 import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.api.wrappers.ValueMapDecorator;
 import org.osgi.framework.Constants;
@@ -238,7 +239,11 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
             Design design = designCache.get(cacheKey);
             if (design == null) {
                 ResourceResolver resolver = pageContent.getResourceResolver();
-                design = findDesign(getContentResource(resolver), pageContent, relativePath, resourceType);
+                Resource templateContent = getContentResource(resolver);
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("retrieveDesign('{}','{}','{}')", pageContent.getPath(), relativePath, resourceType);
+                }
+                design = findDesign(getContentResource(resolver), pageContent, relativePath, resourceType, 1);
                 designCache.put(cacheKey, design != null ? design : NO_DESIGN);
             }
             return design != NO_DESIGN ? design : null;
@@ -248,92 +253,108 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
          * The internal 'find' for a design is searching for the best matching 'cpp:design' content element of the template
          * and then searching for the best matching element node of the selected 'cpp:design' resource.
          *
-         * @param templateContent the content resource of the template
-         * @param pageContent     the content resource of the content elements page
-         * @param relativePath    the elements path within the pages content
-         * @param resourceType    the designated or overlayed resource type of the content element
+         * @param templateNode the current content resource of the template (recursive)
+         * @param contentNode  the current content resource of the content elements page (recursive)
+         * @param relativePath the current elements path within the current content node
+         * @param elementType  the designated or overlayed resource type of the content element
+         * @param weight       the current weight for a matching design resource
          * @return the determined design; 'null' if n o appropriate design resource found
          */
         @Nullable
-        protected Design findDesign(@Nonnull Resource templateContent, @Nonnull Resource pageContent,
-                                    @Nonnull String relativePath, @Nullable String resourceType) {
-            DesignImpl bestMatchingDesign = null;
-            String designPath = relativePath;
-            do {
-                Resource templateElement = StringUtils.isNotBlank(designPath)
-                        ? templateContent.getChild(designPath) : templateContent;
-                if (templateElement != null) {
-                    Resource contentElement = StringUtils.isNotBlank(designPath)
-                            ? pageContent.getChild(designPath) : pageContent;
-                    if (contentElement != null || StringUtils.isNotBlank(resourceType)) {
-                        Resource designNode = templateElement.getChild(NODE_NAME_DESIGN);
-                        if (designNode != null) {
-                            // use 'resourceType' if present for the last path segment (potentially not existing)
-                            String elementType = contentElement != null && (StringUtils.isBlank(resourceType)
-                                    || !designPath.equals(relativePath)) ? contentElement.getResourceType() : resourceType;
-                            if (isMatchingType(designNode, elementType)) {
-                                String contentPath = StringUtils.isNotBlank(designPath)
-                                        ? StringUtils.substring(relativePath, designPath.length() + 1) : relativePath;
-                                int weight = StringUtils.countMatches(designPath, '/');
-                                if (StringUtils.isNotBlank(designPath)) {
-                                    weight++;
-                                }
-                                DesignImpl design = findDesign(designNode, contentElement, contentPath, resourceType, weight * 10);
-                                if (design != null) {
-                                    if (bestMatchingDesign == null || design.weight > bestMatchingDesign.weight) {
-                                        bestMatchingDesign = design;
-                                    }
-                                }
+        protected Design findDesign(@Nonnull final Resource templateNode, @Nonnull final Resource contentNode,
+                                    @Nonnull final String relativePath, @Nullable final String elementType, int weight) {
+            Design design = null;
+            String[] path = StringUtils.isNotBlank(relativePath) ? StringUtils.split(relativePath, "/", 2) : new String[0];
+            if (path.length > 0 && StringUtils.isNotBlank(path[0])) {
+                Resource contentChild = contentNode.getChild(path[0]);
+                if (contentChild == null && elementType != null) {
+                    contentChild = new SyntheticResource(contentNode.getResourceResolver(), path[0], elementType);
+                }
+                if (contentChild != null) {
+                    Resource templateChild = templateNode.getChild(path[0]);
+                    if (templateChild != null) {
+                        design = findDesign(templateChild, contentChild, path.length > 1 ? path[1] : "", elementType, weight * 10);
+                        if (design == null) {
+                            Resource designNode = templateNode.getChild(NODE_NAME_DESIGN);
+                            if (designNode != null) {
+                                design = findInDesign(designNode, contentChild, path.length > 1 ? path[1] : "", elementType, weight + 5);
                             }
                         }
                     }
                 }
-                if (StringUtils.isBlank(designPath)) {
-                    designPath = null;
-                } else {
-                    int lastSlash = designPath.lastIndexOf('/');
-                    designPath = lastSlash > 0 ? designPath.substring(0, lastSlash) : "";
+            }
+            if (design == null) {
+                Resource designNode = templateNode.getChild(NODE_NAME_DESIGN);
+                if (designNode != null) {
+                    design = findInDesign(designNode, contentNode, relativePath, elementType, weight);
                 }
-            } while (designPath != null);
-            return bestMatchingDesign;
+            }
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("findDesign('{}','{}'): {}", templateNode.getPath(), relativePath, design);
+            }
+            return design;
         }
 
         /**
          * Determines the element of a 'cpp:design' resource which is matching to a content element;
          * recursive traversal through the design hierarchy.
          *
-         * @param designNode   the current design resource element
-         * @param contentNode  the current content resource base of the traversal
-         * @param relativePath the relative path the the content element
-         * @param resourceType the designated or overlayed resource type of the content element
+         * @param templateNode the current content resource of the template (recursive)
+         * @param contentNode  the current content resource of the content elements page (recursive)
+         * @param relativePath the current elements path within the current content node
+         * @param elementType  the designated or overlayed resource type of the content element
          * @param weight       the current weight for a matching design resource
          * @return a matching design resource if found, otherwise 'null'
          */
-        protected DesignImpl findDesign(Resource designNode, Resource contentNode,
-                                        String relativePath, String resourceType, int weight) {
-            if (contentNode != null) {
-                String childName = StringUtils.substringBefore(relativePath, "/");
-                Resource contentChild = contentNode.getChild(childName);
-                if (contentChild != null || StringUtils.isNotBlank(resourceType)) {
-                    String contentPath = StringUtils.substringAfter(relativePath, "/");
-                    // use 'resourceType' if present for the last path segment (potentially not existing)
-                    String contentType = contentChild != null && (StringUtils.isNotBlank(contentPath)
-                            || StringUtils.isBlank(resourceType)) ? contentChild.getResourceType() : resourceType;
-                    for (Resource designChild : designNode.getChildren()) {
-                        if (isMatchingType(designChild, contentType)) {
-                            if (StringUtils.isBlank(contentPath)) {
-                                return new DesignImpl(designChild, weight);
-                            } else {
-                                return findDesign(designChild, contentChild, contentPath, resourceType, weight + 2);
-                            }
-                        }
-                    }
-                    if (StringUtils.isNotBlank(contentPath)) {
-                        return findDesign(designNode, contentChild, contentPath, resourceType, weight);
+        @Nullable
+        protected DesignImpl findInDesign(@Nonnull Resource templateNode, @Nonnull Resource contentNode,
+                                          @Nonnull String relativePath, @Nullable final String elementType, int weight) {
+            DesignImpl design = null;
+            String[] path = StringUtils.isNotBlank(relativePath) ? StringUtils.split(relativePath, "/", 2) : new String[0];
+            if (path.length > 0 && StringUtils.isNotBlank(path[0])) {
+                Resource contentChild = contentNode.getChild(path[0]);
+                if (contentChild == null && elementType != null) {
+                    contentChild = new SyntheticResource(contentNode.getResourceResolver(), path[0], elementType);
+                }
+                if (contentChild != null) {
+                    String nextPath = path.length > 1 ? path[1] : "";
+                    Resource templateChild = templateNode.getChild(path[0]);
+                    if (templateChild != null) {
+                        design = findInDesign(templateChild, contentChild, nextPath, elementType, weight * 5);
+                    } else {
+                        design = findInDesign(templateNode, contentChild, nextPath, elementType, weight);
+                        design = findBestInDesign(templateNode, contentNode, nextPath, elementType, weight, design, contentChild);
                     }
                 }
             }
-            return null;
+            if (design == null) {
+                design = findBestInDesign(templateNode, contentNode, relativePath, elementType, weight, design, contentNode);
+            }
+            if (design == null) {
+                if (isMatchingType(templateNode, contentNode.getResourceType())) {
+                    design = new DesignImpl(templateNode, weight);
+                }
+            }
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("findInDesign('{}','{}'): {}", templateNode.getPath(), relativePath, design);
+            }
+            return design;
+        }
+
+        protected DesignImpl findBestInDesign(@Nonnull final Resource templateNode, @Nonnull final Resource contentNode,
+                                              @Nonnull final String relativePath, @Nullable final String elementType, int weight,
+                                              @Nullable DesignImpl design, @Nonnull final Resource contentChild) {
+            for (Resource child : templateNode.getChildren()) {
+                if (isMatchingType(child, contentNode.getResourceType())) {
+                    DesignImpl found = findInDesign(child, contentChild, relativePath, elementType, weight + 1);
+                    if (found != null) {
+                        if (design == null || design.weight < found.weight) {
+                            design = found;
+                        }
+                    }
+                }
+            }
+            return design;
         }
 
         /**
@@ -395,6 +416,13 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
                 propertyCache.put(name, value != null ? value : NO_VALUE);
             }
             return value != NO_VALUE ? value : null;
+        }
+
+        @Override
+        public String toString() {
+            String raw = super.toString();
+            return new StringBuilder().append("Design").append(raw.substring(raw.indexOf('@')))
+                    .append("{").append(weight).append(":").append(path).append("}").toString();
         }
     }
 

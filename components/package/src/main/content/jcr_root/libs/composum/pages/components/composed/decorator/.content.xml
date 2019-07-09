@@ -4,5 +4,5 @@
         jcr:description="a container with decoration around the content"
         jcr:title="Decorator"
         category="[Layout,Blueprint]"
-        sling:resourceSuperType="composum/pages/components/container/parsys"
+        sling:resourceSuperType="composum/pages/components/composed"
         allowedElements="[composum/pages/components/element/.*]"/>

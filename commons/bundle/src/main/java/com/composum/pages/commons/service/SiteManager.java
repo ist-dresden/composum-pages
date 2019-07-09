@@ -24,7 +24,7 @@ public interface SiteManager extends ContentManager<Site> {
 
         @Override
         public boolean add(Site site) {
-            return !containsSiteByName(site) && super.add(site);
+            return !containsSiteByType(site) && super.add(site);
         }
 
         @Override
@@ -36,9 +36,9 @@ public interface SiteManager extends ContentManager<Site> {
             return result;
         }
 
-        public boolean containsSiteByName(Site site) {
+        public boolean containsSiteByType(Site site) {
             for (Site element : this) {
-                if (element.getName().equals(site.getName())) {
+                if (element.getTemplateType().equals(site.getTemplateType())) {
                     return true;
                 }
             }

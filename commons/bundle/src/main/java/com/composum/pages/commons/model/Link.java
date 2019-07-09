@@ -8,6 +8,8 @@ package com.composum.pages.commons.model;
 import com.composum.pages.commons.util.LinkUtil;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.annotation.Nonnull;
+
 public class Link extends Element {
 
     public static final String PN_LINK = "link";
@@ -34,6 +36,7 @@ public class Link extends Element {
         return link;
     }
 
+    @Nonnull
     @Override
     public String getTitle() {
         if (title == null) {

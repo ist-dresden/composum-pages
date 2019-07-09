@@ -18,7 +18,7 @@
                 sling:resourceType="composum/pages/stage/edit/site/languages">
             <english
                     jcr:primaryType="nt:unstructured"
-                    key="en" label="english" default="true"/>
+                    key="en" label="english"/>
         </languages>
     </jcr:content>
     <meta/>

@@ -3,15 +3,14 @@
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <cpp:defineObjects/>
-<cpp:element var="model" type="com.composum.pages.components.model.navigation.Languages" mode="none"
-             test="@{model.useful}">
+<cpp:element var="model" type="com.composum.pages.commons.model.LanguageRoot" mode="none"
+             test="@{not empty model.alternatives}">
     <button type="button" class="${modelCSS}_menu btn btn-default" data-toggle="dropdown" aria-haspopup="true"
-            aria-expanded="false">${cpn:text(model.currentKey)}<span class="caret"></span></button>
+            aria-expanded="false">${cpn:text(model.languageKeyLabel)}<span class="caret"></span></button>
     <ul class="${modelCSS}_list dropdown-menu">
-        <c:forEach items="${model.languageList}" var="language">
+        <c:forEach items="${model.alternatives}" var="alt">
             <li class="${modelCSS}_item">
-                <a class="${modelCSS}_link"
-                   href="${currentPage.url}?pages.locale=${cpn:text(language.key)}">${cpn:text(language.label)}</a>
+                <a class="${modelCSS}_link" href="${alt.url}">${cpn:text(alt.language.label)}</a>
             </li>
         </c:forEach>
     </ul>

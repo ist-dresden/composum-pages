@@ -3,11 +3,8 @@
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <cpp:defineObjects/>
-<cpp:model var="model" type="com.composum.pages.components.model.navigation.Languages" test="@{model.useful}">
-    <c:forEach items="${model.languageList}" var="language">
-        <c:if test="${not language.current}">
-            <link rel="alternate" hreflang="${cpn:text(language.key)}"
-                  href="${currentPage.url}?pages.locale=${cpn:text(language.key)}"/>
-        </c:if>
+<cpp:model var="model" type="com.composum.pages.commons.model.LanguageRoot" test="@{not empty model.alternatives}">
+    <c:forEach items="${model.alternatives}" var="alt">
+        <link rel="alternate" hreflang="${cpn:text(alt.language.key)}" href="${cpn:url(slingRequest,alt.url)}"/>
     </c:forEach>
 </cpp:model>

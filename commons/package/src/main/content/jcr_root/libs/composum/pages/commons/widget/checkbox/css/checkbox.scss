@@ -7,22 +7,18 @@
 
     &_checkbox,
     &_checkselect {
-
-        .row > .col > & {
-
-            .composum-pages-edit-widget {
-
-                &_hint {
-                    margin-top: -10px;
-                    margin-bottom: 12px;
-                }
-            }
-        }
+        margin-top: 0;
+        margin-bottom: 0;
 
         .composum-pages-edit-widget {
 
             &_hint {
-                min-height: 22px;
+                margin-bottom: 4px;
+            }
+
+            &_label {
+                min-height: 34px;
+                line-height: 17px;
             }
         }
 

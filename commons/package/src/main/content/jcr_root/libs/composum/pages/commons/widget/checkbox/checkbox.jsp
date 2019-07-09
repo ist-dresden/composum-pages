@@ -12,18 +12,19 @@
                if the widget is embedded in a Sling POST form generate all hidden hints for the POST servlet
             --%><input type="hidden" class="sling-post-type-hint" name="${widget.name}@TypeHint" value="Boolean"/>
             <c:if test="${!widget.model.storeFalse}"><%-- if 'removable' add delete hint
-            --%><input type="hidden" class="sling-post-delete-hint" name="${widget.name}@Delete"
-                       value="true"/></c:if><%-- otherwise...
+            --%><input type="hidden" class="sling-post-delete-hint" name="${widget.name}@Delete" value="true"/></c:if><%-- otherwise...
             --%><c:if test="${widget.model.storeFalse}"><%-- if not 'removable' add default value (false)
             --%><input type="hidden" class="sling-post-default-hint" name="${widget.name}@DefaultValue"
                        value="false"/><input type="hidden" class="sling-post-use-default-hint"
                                              name="${widget.name}@UseDefaultWhenMissing" value="true"/></c:if><%--
              and now the input field... --%>
             <input name="${widget.name}" data-i18n="${widget.i18n}" class="${widgetCSS}_input" type="checkbox"
-                   value="true" ${widget.model.checkedValue}/></c:if><c:if test="${!widget.formWidget}"><%--
+                   value="true"
+                   <c:if test="${widget.disabled}">disabled</c:if> ${widget.model.checkedValue}/></c:if><c:if
+                test="${!widget.formWidget}"><%--
                not a Sling POST form: generate a simple checkbox input field...
-            --%><input data-i18n="${widget.i18n}" class="${widgetCSS}_input"
-                       type="checkbox" value="true" ${widget.model.checkedValue}/></c:if><%--
+            --%><input data-i18n="${widget.i18n}" class="${widgetCSS}_input" type="checkbox" value="true"
+                       <c:if test="${widget.disabled}">disabled</c:if> ${widget.model.checkedValue}/></c:if><%--
             in each case - the label of the checkbox... --%>
             <span class="label-text">${widget.label}</span></span></label>
 </div>

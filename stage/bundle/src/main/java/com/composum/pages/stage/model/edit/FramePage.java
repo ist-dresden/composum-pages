@@ -1,13 +1,13 @@
 package com.composum.pages.stage.model.edit;
 
 import com.composum.pages.commons.model.Page;
-import com.composum.pages.commons.model.properties.Language;
 import com.composum.pages.commons.request.DisplayMode;
 import com.composum.pages.commons.util.LinkUtil;
 import com.composum.sling.core.util.ResourceUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 
 public class FramePage extends Page {
@@ -25,6 +25,7 @@ public class FramePage extends Page {
     /**
      * @return the resource of the edited page (this is not the initializers resource)
      */
+    @Nonnull
     @Override
     public Resource getResource() {
         return getPageResource();
@@ -93,14 +94,8 @@ public class FramePage extends Page {
         context.getResponse().sendRedirect(getPageUrl());
     }
 
-    // edit status properties
-
-    /**
-     * @return a readable key of the current edited language
-     */
-    public String getLanguageHint() {
-        Language language = getPage().getLanguage();
-        return language != null ? language.getKey().toLowerCase().replace('_', '.') : "";
+    public boolean isHasLanguageVariations() {
+        return getPage().getPageLanguages().getLanguages().size() > 1;
     }
 
     // view mode

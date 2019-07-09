@@ -393,7 +393,7 @@
                 $(document).on(e.site.created + '.' + id, _.bind(this.onContentInserted, this));
                 $(document).on(e.site.changed + '.' + id, _.bind(this.onContentSelected, this));
                 $(document).on(e.site.deleted + '.' + id, _.bind(this.onContentDeleted, this));
-                $(document).on(e.ready + '.' + id, _.bind(this.ready, this));
+                $(document).on(e.pages.ready + '.' + id, _.bind(this.ready, this));
             },
 
             /**
@@ -820,7 +820,7 @@
                 $(document).on(e.asset.select + '.' + this.treePanelId, _.bind(this.selectAsset, this));
                 $(document).on(e.site.selected + '.' + this.treePanelId, _.bind(this.onSiteSelected, this));
                 $(document).on(e.scope.changed + '.' + this.treePanelId, _.bind(this.onScopeChanged, this));
-                $(document).on(e.ready + '.' + this.treePanelId, _.bind(this.onReady, this));
+                $(document).on(e.pages.ready + '.' + this.treePanelId, _.bind(this.onReady, this));
             },
 
             onReady: function (event) {

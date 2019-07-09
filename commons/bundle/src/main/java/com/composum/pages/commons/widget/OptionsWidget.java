@@ -2,7 +2,6 @@ package com.composum.pages.commons.widget;
 
 import com.composum.pages.commons.model.properties.Language;
 import com.composum.pages.commons.model.properties.Languages;
-import com.composum.pages.commons.taglib.EditWidgetTag;
 import com.composum.pages.commons.taglib.PropertyEditHandle;
 import com.composum.sling.core.util.I18N;
 import com.google.gson.JsonArray;
@@ -16,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public abstract class OptionsWidget<T> extends PropertyEditHandle<T> {
+public abstract class OptionsWidget<T> extends PropertyEditHandle<T> implements WidgetModel {
 
     // dynamic attributes consumed by the model itself
 
@@ -33,6 +32,13 @@ public abstract class OptionsWidget<T> extends PropertyEditHandle<T> {
      */
     public static final String ATTR_SEPARATORS = "separators";
     public static final String DEFAULT_SEPARATORS = ", :";
+
+    public static final String ATTR_PREPEND = "prepend";
+    public static final String ATTR_APPEND = "append";
+
+    protected String[] separators;
+    protected String prepend;
+    protected String append;
 
     private transient List<Option> options;
     private transient List<T> optionValues;
@@ -71,9 +77,25 @@ public abstract class OptionsWidget<T> extends PropertyEditHandle<T> {
         super(type);
     }
 
-    public void setWidget(EditWidgetTag tag) {
-        super.setWidget(tag);
-        options = retrieveOptions(); // consume the options attribute
+    @Override
+    public String filterWidgetAttribute(String attributeKey, Object attributeValue) {
+        switch (attributeKey) {
+            case ATTR_PREPEND:
+                prepend = (String) attributeValue;
+                return null;
+            case ATTR_APPEND:
+                append = (String) attributeValue;
+                return null;
+            default:
+                return attributeKey;
+        }
+    }
+
+    protected String[] getSeparators() {
+        if (separators == null) {
+            separators = StringUtils.split(widget.consumeDynamicAttribute(ATTR_SEPARATORS, DEFAULT_SEPARATORS), " ", 2);
+        }
+        return separators;
     }
 
     public void setOptions(List<Option> options) {
@@ -82,7 +104,7 @@ public abstract class OptionsWidget<T> extends PropertyEditHandle<T> {
 
     public List<Option> getOptions() {
         if (options == null) {
-            options = retrieveOptions(); // lazy load if not configured during initialization
+            options = retrieveOptions(); // lazy load(!)
         }
         return options;
     }
@@ -120,8 +142,7 @@ public abstract class OptionsWidget<T> extends PropertyEditHandle<T> {
         List<Option> options;
         Object optionsObject = widget.consumeDynamicAttribute(ATTR_OPTIONS, Object.class);
         if (optionsObject instanceof String) {
-            String[] separators = StringUtils.split(widget.consumeDynamicAttribute(
-                    ATTR_SEPARATORS, DEFAULT_SEPARATORS), " ", 2);
+            String[] separators = getSeparators();
             options = useString((String) optionsObject, separators[0], separators[1]);
         } else if (optionsObject instanceof Map) {
             options = useMap((Map<String, Object>) optionsObject);
@@ -134,11 +155,18 @@ public abstract class OptionsWidget<T> extends PropertyEditHandle<T> {
         } else {
             options = new ArrayList<>();
         }
+        if (StringUtils.isNotBlank(prepend)) {
+            options.add(0, createOption(prepend, getSeparators()[1]));
+        }
+        if (StringUtils.isNotBlank(append)) {
+            options.add(createOption(append, getSeparators()[1]));
+        }
         return options;
     }
 
     @Nonnull
-    protected List<Option> useString(String string, String listSeparator, String keySeparator) {
+    protected List<Option> useString(@Nonnull final String string,
+                                     @Nonnull final String listSeparator, @Nonnull final String keySeparator) {
         Resource resource = resolver.getResource(string);
         if (resource != null) {
             return useResource(resource);
@@ -148,9 +176,16 @@ public abstract class OptionsWidget<T> extends PropertyEditHandle<T> {
         for (String value : values) {
             String[] keyAndLabel = StringUtils.split(value.trim(), keySeparator, 2);
             String key = (keyAndLabel.length > 0 ? keyAndLabel[0] : value).trim();
-            options.add(newOption((keyAndLabel.length > 1 ? keyAndLabel[1] : key), key, null));
+            options.add(createOption(value, keySeparator));
         }
         return options;
+    }
+
+    @Nonnull
+    protected Option createOption(@Nonnull final String value, @Nonnull final String keySeparator) {
+        String[] keyAndLabel = StringUtils.split(value.trim(), keySeparator, 2);
+        String key = (keyAndLabel.length > 0 ? keyAndLabel[0] : value).trim();
+        return newOption((keyAndLabel.length > 1 ? keyAndLabel[1] : key), key, null);
     }
 
     @Nonnull
@@ -183,7 +218,7 @@ public abstract class OptionsWidget<T> extends PropertyEditHandle<T> {
     @Nonnull
     protected List<Option> useLanguages(Languages languages) {
         List<Option> options = new ArrayList<>();
-        for (Language language : languages.getLanguageList()) {
+        for (Language language : languages.getLanguages()) {
             options.add(newOption(language.getLabel(), language.getKey(), language));
         }
         return options;

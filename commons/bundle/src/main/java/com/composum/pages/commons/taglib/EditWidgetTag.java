@@ -14,6 +14,7 @@ import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.jstl.core.LoopTag;
 import javax.servlet.jsp.jstl.core.LoopTagStatus;
 import java.io.IOException;
+import java.io.Writer;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -47,7 +48,6 @@ public class EditWidgetTag extends AbstractWidgetTag implements LoopTag {
     protected boolean multi = false;
     protected String hint;
     protected String placeholder;
-    protected Boolean disabled;
     protected String rules;
 
     protected String status;
@@ -58,7 +58,6 @@ public class EditWidgetTag extends AbstractWidgetTag implements LoopTag {
         loopStatus = null;
         status = null;
         rules = null;
-        disabled = null;
         placeholder = null;
         hint = null;
         multi = false;
@@ -135,14 +134,6 @@ public class EditWidgetTag extends AbstractWidgetTag implements LoopTag {
 
     public void setPlaceholder(String val) {
         placeholder = val;
-    }
-
-    public boolean isDisabled() {
-        return disabled != null && disabled;
-    }
-
-    public void setDisabled(boolean val) {
-        disabled = val;
     }
 
     /**
@@ -257,6 +248,17 @@ public class EditWidgetTag extends AbstractWidgetTag implements LoopTag {
         super.doStartTag();
         getAttributes(); // ensure that all attributes are processed before body rendering
         return SKIP_BODY;
+    }
+
+    @Override
+    @SuppressWarnings("Duplicates")
+    protected void getTagDebug(Writer writer) throws IOException {
+        super.getTagDebug(writer);
+        writer.append("\n    type: '").append(getType())
+                .append("'; attributes: ").append(getAttributes());
+        writer.append("\n    name: '").append(getName()).append("'; property: '").append(getProperty())
+                .append("'; propertyName: '").append(getPropertyName())
+                .append("'; relativePath: '").append(getRelativePath()).append("'");
     }
 
     protected String getSnippetResourceType() {
