@@ -17,9 +17,5 @@
   {
     "path": "/preview",
     "jcr:primaryType": "sling:Folder"
-  },
-  {
-    "path": "/content/sites",
-    "jcr:primaryType": "sling:Folder"
   }
 ]

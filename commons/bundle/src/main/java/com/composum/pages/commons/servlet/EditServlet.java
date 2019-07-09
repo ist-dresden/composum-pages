@@ -145,6 +145,11 @@ public class EditServlet extends PagesContentServlet {
     }
 
     @Override
+    protected PageManager getPageManager() {
+        return pageManager;
+    }
+
+    @Override
     protected boolean isEnabled() {
         return true;
     }
@@ -304,7 +309,7 @@ public class EditServlet extends PagesContentServlet {
             }
 
             if (LOG.isDebugEnabled()) {
-                LOG.debug("GetPageData(" + resource + "," + page + ")...");
+                LOG.debug("GetPageData({},{})...", resource, page);
             }
 
             if (page != null && page.isValid()) {
@@ -349,7 +354,7 @@ public class EditServlet extends PagesContentServlet {
             }
 
             if (LOG.isDebugEnabled()) {
-                LOG.debug("CheckIsTemplate(" + resource + "," + model + "): " + isTemplate + " (" + template + ")");
+                LOG.debug("CheckIsTemplate({},{}): {} ({})", resource, model, isTemplate, template);
             }
             if (model != null) {
 
@@ -476,8 +481,7 @@ public class EditServlet extends PagesContentServlet {
             Resource editResource = getEditResource(request, contentResource, selectors, paramType);
 
             if (LOG.isDebugEnabled()) {
-                LOG.debug("GetEditResource(" + contentResource.getPath() + "," +
-                        (editResource != null ? editResource.getPath() : "null") + ")...");
+                LOG.debug("GetEditResource({},{})...", contentResource.getPath(), editResource != null ? editResource.getPath() : "null");
             }
 
             if (editResource != null) {
@@ -700,7 +704,7 @@ public class EditServlet extends PagesContentServlet {
                 String selectors = RequestUtil.getSelectorString(request, null, 1);
 
                 if (LOG.isDebugEnabled()) {
-                    LOG.debug("GetPageComponents(" + resource + "," + selectors + ", " + containerRefs + ")...");
+                    LOG.debug("GetPageComponents({},{}, {})...", resource, selectors, containerRefs);
                 }
 
                 // forward request with 'GET'! for right component rendering
@@ -788,7 +792,7 @@ public class EditServlet extends PagesContentServlet {
                     resourceManager.getReferenceList(context.getResolver(), request.getParameter("targetList"));
 
             if (LOG.isDebugEnabled()) {
-                LOG.debug("GetTargetContainers(" + resource + ", " + targetList + ")...");
+                LOG.debug("GetTargetContainers({}, {})...", resource, targetList);
             }
 
             String type = request.getParameter(PARAM_TYPE);
@@ -796,7 +800,7 @@ public class EditServlet extends PagesContentServlet {
             targetList = editService.filterTargetContainers(context.getResolver(), targetList, element);
 
             if (LOG.isDebugEnabled()) {
-                LOG.debug("GetTargetContainers(" + resource + "): " + targetList);
+                LOG.debug("GetTargetContainers({}): {}", resource, targetList);
             }
 
             JsonWriter jsonWriter = ResponseUtil.getJsonWriter(response);
@@ -821,7 +825,7 @@ public class EditServlet extends PagesContentServlet {
 
                 DropZone.List dropZoneList = new DropZone.List(context, reader);
                 if (LOG.isDebugEnabled()) {
-                    LOG.debug("FilterDropZones(" + resource + "," + dropZoneList + ")...");
+                    LOG.debug("FilterDropZones({},{})...", resource, dropZoneList);
                 }
 
                 dropZoneList = dropZoneList.getMatchingList(resource);
@@ -879,25 +883,25 @@ public class EditServlet extends PagesContentServlet {
             ResourceManager.ResourceReference object = getReference(request, resource, targetPath);
 
             if (LOG.isDebugEnabled()) {
-                LOG.debug(getOperationName() + "Element(" + object.getType() + "@" + object.getPath()
-                        + " > " + targetPath + " < " + beforePath + ")...");
+                LOG.debug("{}Element({}@{} > {} < {})...", getOperationName(), object.getType(), object.getPath(), targetPath, beforePath);
             }
 
             if (editService.isAllowedElement(resolver, target, object)) {
                 Resource before = StringUtils.isNotBlank(beforePath) ? resolver.getResource(beforePath) : null;
 
                 try {
-                    Resource result = doIt(resolver, object, target, before);
+                    List<Resource> updatedReferrers = new ArrayList<>();
+                    Resource result = doIt(resolver, object, target, before, updatedReferrers);
                     resolver.commit();
 
-                    sendResponse(response, result);
+                    sendResponse(response, result, updatedReferrers);
 
                 } catch (RepositoryException ex) {
                     LOG.error(ex.getMessage(), ex);
                     response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ex.getMessage());
                 }
             } else {
-                LOG.info(getOperationName() + " not allowed: " + object.getType() + "@" + targetPath);
+                LOG.info("{} not allowed: {}@{}", getOperationName(), object.getType(), targetPath);
                 sendNotAllowedChild(request, response, target.getResource(), object.getResource());
             }
         }
@@ -906,7 +910,7 @@ public class EditServlet extends PagesContentServlet {
                                                                           ResourceHandle resource, String targetPath);
 
         protected abstract Resource doIt(ResourceResolver resolver, ResourceManager.ResourceReference source,
-                                         ResourceManager.ResourceReference target, Resource before)
+                                         ResourceManager.ResourceReference target, Resource before, List<Resource> updatedReferrers)
                 throws PersistenceException, RepositoryException;
 
         protected abstract String getOperationName();
@@ -923,7 +927,7 @@ public class EditServlet extends PagesContentServlet {
 
         @Override
         public Resource doIt(ResourceResolver resolver, ResourceManager.ResourceReference source,
-                             ResourceManager.ResourceReference target, Resource before)
+                             ResourceManager.ResourceReference target, Resource before, List<Resource> updatedReferrers)
                 throws PersistenceException, RepositoryException {
             return editService.insertElement(resolver, source.getType(), target, before);
         }
@@ -944,10 +948,10 @@ public class EditServlet extends PagesContentServlet {
 
         @Override
         public Resource doIt(ResourceResolver resolver, ResourceManager.ResourceReference source,
-                             ResourceManager.ResourceReference target, Resource before)
+                             ResourceManager.ResourceReference target, Resource before, List<Resource> updatedReferrers)
                 throws PersistenceException, RepositoryException {
             return editService.moveElement(resolver, resolver.getResource("/content"),
-                    source.getResource(), target, before);
+                    source.getResource(), target, before, updatedReferrers);
         }
 
         @Override
@@ -966,7 +970,7 @@ public class EditServlet extends PagesContentServlet {
 
         @Override
         public Resource doIt(ResourceResolver resolver, ResourceManager.ResourceReference source,
-                             ResourceManager.ResourceReference target, Resource before)
+                             ResourceManager.ResourceReference target, Resource before, List<Resource> updatedReferrers)
                 throws PersistenceException, RepositoryException {
             return editService.copyElement(resolver, source.getResource(), target, before);
         }
@@ -1181,7 +1185,7 @@ public class EditServlet extends PagesContentServlet {
 
             String selectors = RequestUtil.getSelectorString(request, null, 1);
             if (LOG.isDebugEnabled()) {
-                LOG.debug("GetContextTools(" + resource + "," + selectors + ")...");
+                LOG.debug("GetContextTools({},{})...", resource, selectors);
             }
 
             String paramType = request.getParameter(PARAM_TYPE);

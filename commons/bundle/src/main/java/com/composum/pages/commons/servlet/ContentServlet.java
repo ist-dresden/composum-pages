@@ -1,5 +1,6 @@
 package com.composum.pages.commons.servlet;
 
+import com.composum.pages.commons.service.PageManager;
 import com.composum.pages.commons.service.ResourceManager;
 import com.composum.pages.commons.util.RequestUtil;
 import com.composum.sling.core.BeanContext;
@@ -23,6 +24,7 @@ import javax.annotation.Nullable;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.List;
 
 import static com.composum.pages.commons.PagesConstants.PROP_TEMPLATE;
 import static com.composum.pages.commons.util.ResourceTypeUtil.isSyntheticResource;
@@ -34,6 +36,8 @@ public abstract class ContentServlet extends NodeTreeServlet {
     protected BundleContext bundleContext;
 
     protected abstract ResourceManager getResourceManager();
+
+    protected abstract PageManager getPageManager();
 
     //
     // JSON helpers
@@ -95,19 +99,42 @@ public abstract class ContentServlet extends NodeTreeServlet {
             return null;
         }
 
-        protected void sendResponse(SlingHttpServletResponse response, Resource result)
+        /**
+         * Writes the JSON response
+         *
+         * @param result           the main result resource which was changed
+         * @param updatedResources additional resources that have been updated (e.g. referrers) and need to be refreshed because of possibly changed stati etc.
+         */
+        protected void sendResponse(SlingHttpServletResponse response, Resource result, @Nullable List<Resource> updatedResources)
                 throws IOException {
             JsonWriter jsonWriter = ResponseUtil.getJsonWriter(response);
             response.setStatus(HttpServletResponse.SC_OK);
-            jsonWriter.beginObject();
+            jsonWriter.beginObject(); // outer object
             jsonWriter.name("reference").beginObject();
             jsonWriter.name("name").value(result.getName());
             jsonWriter.name("path").value(result.getPath());
             jsonWriter.name("type").value(result.getResourceType());
             jsonWriter.name("prim").value(result.getValueMap().get(JcrConstants.JCR_PRIMARYTYPE, ""));
             jsonWriter.name("synthetic").value(isSyntheticResource(result));
-            jsonWriter.endObject();
-            jsonWriter.endObject();
+            jsonWriter.endObject(); // "reference"
+            if (null != updatedResources && !updatedResources.isEmpty()) {
+                jsonWriter.name("updated").beginArray();
+                for (Resource updatedResource : updatedResources) {
+                    jsonWriter.value(updatedResource.getPath());
+                }
+                jsonWriter.endArray();
+            }
+            jsonWriter.endObject(); // outer object
+        }
+
+        /**
+         * Writes the JSON response
+         *
+         * @param result the main result resource which was changed
+         */
+        protected void sendResponse(SlingHttpServletResponse response, Resource result)
+                throws IOException {
+            sendResponse(response, result, null);
         }
     }
 }

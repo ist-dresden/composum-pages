@@ -3,6 +3,7 @@ package com.composum.pages.commons.servlet;
 import com.composum.pages.commons.AssetsConfiguration;
 import com.composum.pages.commons.PagesConfiguration;
 import com.composum.pages.commons.model.Site;
+import com.composum.pages.commons.service.PageManager;
 import com.composum.pages.commons.service.ResourceManager;
 import com.composum.pages.commons.service.SiteManager;
 import com.composum.pages.commons.service.VersionsService;
@@ -68,21 +69,32 @@ public class AssetServlet extends PagesContentServlet {
     @Reference
     protected VersionsService versionsService;
 
+    @Reference
+    protected PageManager pageManager;
+
     @Activate
     private void activate(final BundleContext bundleContext) {
         this.bundleContext = bundleContext;
     }
 
+    @Override
     protected PagesConfiguration getPagesConfiguration() {
         return pagesConfiguration;
     }
 
+    @Override
     protected VersionsService getVersionsService() {
         return versionsService;
     }
 
+    @Override
     protected ResourceManager getResourceManager() {
         return resourceManager;
+    }
+
+    @Override
+    protected PageManager getPageManager() {
+        return pageManager;
     }
 
     @Override
@@ -196,7 +208,7 @@ public class AssetServlet extends PagesContentServlet {
                 throws IOException {
 
             if (LOG.isDebugEnabled()) {
-                LOG.debug("GetAssetData(" + resource + ")...");
+                LOG.debug("GetAssetData({})...", resource);
             }
 
             if (resource.isValid()) {
@@ -227,11 +239,11 @@ public class AssetServlet extends PagesContentServlet {
                     resourceManager.getReferenceList(context.getResolver(), request.getParameter("targetList"));
 
             if (LOG.isDebugEnabled()) {
-                LOG.debug("GetTargetContainers(" + resource + ", " + targetList + ")...");
+                LOG.debug("GetTargetContainers({}, {})...", resource, targetList);
             }
 
             if (LOG.isDebugEnabled()) {
-                LOG.debug("GetTargetContainers(" + resource + "): " + targetList);
+                LOG.debug("GetTargetContainers({}): {}", resource, targetList);
             }
 
             JsonWriter jsonWriter = ResponseUtil.getJsonWriter(response);

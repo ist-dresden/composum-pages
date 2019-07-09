@@ -204,7 +204,7 @@ public class PagesEditService implements EditService {
         String siblingName = before != null ? before.getName() : null;
 
         if (LOG.isInfoEnabled()) {
-            LOG.info("insertElement(" + resourceType + " > " + collection.getPath() + " < " + siblingName + ")...");
+            LOG.info("insertElement({} > {} < {})...", resourceType, collection.getPath(), siblingName);
         }
 
         String newName = checkNameCollision(collection, name);
@@ -217,7 +217,7 @@ public class PagesEditService implements EditService {
         properties.put(JcrConstants.JCR_PRIMARYTYPE, primaryType);
         properties.put(ResourceUtil.PROP_RESOURCE_TYPE, resourceType);
         Resource result = resolver.create(collection, newName, properties);
-        pageManager.touch(context, collection, null, false);
+        pageManager.touch(context, collection, null);
 
         Session session = resolver.adaptTo(Session.class);
         if (session != null && StringUtils.isNotBlank(siblingName)) {
@@ -274,11 +274,13 @@ public class PagesEditService implements EditService {
      * @param source       the resource to move
      * @param targetParent the target (a reference to the parent resource) of the move
      * @param before       the designated sibling in an ordered target collection
+     * @param updatedReferrers output parameter: the List of referers found - these were changed and might need setting a last modification date
      * @return the new resource at the target path
      */
     @Override
     public Resource moveElement(ResourceResolver resolver, Resource changeRoot,
-                                Resource source, ResourceManager.ResourceReference targetParent, Resource before)
+                                Resource source, ResourceManager.ResourceReference targetParent, Resource before,
+                                @Nonnull List<Resource> updatedReferrers)
             throws RepositoryException, PersistenceException {
         Resource result = null;
 
@@ -292,13 +294,14 @@ public class PagesEditService implements EditService {
 
             String newName = source.getName();
             if (isAnotherParent) {
-                pageManager.touch(context, currentParent, null, false);
+                pageManager.touch(context, currentParent, null);
                 newName = checkNameCollision(collection, newName);
             }
 
             result = resourceManager.moveContentResource(resolver, changeRoot, source, collection,
-                    isAnotherParent ? newName : null, before);
-            pageManager.touch(context, collection, null, false);
+                    isAnotherParent ? newName : null, before, updatedReferrers);
+            pageManager.touch(context, collection, null);
+            pageManager.touch(context, updatedReferrers, null);
         }
         return result;
     }
@@ -323,7 +326,7 @@ public class PagesEditService implements EditService {
         Resource collection = getContainerCollection(resolver, targetParent);
         String newName = checkNameCollision(collection, source.getName());
         Resource result = resourceManager.copyContentResource(resolver, source, collection, newName, before);
-        pageManager.touch(context, collection, null, false);
+        pageManager.touch(context, collection, null);
         return result;
     }
 

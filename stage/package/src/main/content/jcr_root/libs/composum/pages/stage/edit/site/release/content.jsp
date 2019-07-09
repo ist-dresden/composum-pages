@@ -33,7 +33,8 @@
                 <c:forEach items="${model.release.changes}" var="pageVersion">
                     <tr>
                         <td class="${modelCSS}_page-state release-status_${pageVersion.releaseStatus.activationState}">${cpn:text(pageVersion.releaseStatus.activationState)}</td>
-                        <td class="${modelCSS}_page-path"><a href="${pageVersion.url}">${cpn:path(pageVersion.path)}</a>
+                        <td class="${modelCSS}_page-path"><a href="${pageVersion.url}"
+                                                             target="_blank">${cpn:path(pageVersion.path)}</a>
                         </td>
                         <td class="${modelCSS}_page-title">${cpn:text(pageVersion.title)}</td>
                         <td class="${modelCSS}_page-time">${cpn:text(pageVersion.releaseStatus.lastModified)}</td>

@@ -11,6 +11,8 @@ import org.apache.sling.servlets.post.Modification;
 import org.apache.sling.servlets.post.SlingPostProcessor;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Calendar;
 import java.util.HashSet;
@@ -23,11 +25,14 @@ import java.util.Set;
 @Component
 public class AdjustPagePostProcessor implements SlingPostProcessor {
 
+    private static final Logger LOG = LoggerFactory.getLogger(AdjustPagePostProcessor.class);
+
     @Reference
     protected PageManager pageManager;
 
     @Override
     public void process(SlingHttpServletRequest request, List<Modification> changes) {
+        LOG.info("Modified: {}", changes);
         ResourceResolver resolver = request.getResourceResolver();
         BeanContext context = new BeanContext.Service(resolver);
         Set<Page> modifiedPages = new HashSet<>();
@@ -37,7 +42,7 @@ public class AdjustPagePostProcessor implements SlingPostProcessor {
         }
         Calendar now = Calendar.getInstance();
         for (Page page : modifiedPages) {
-            pageManager.touch(context, page, now, false);
+            pageManager.touch(context, page, now);
         }
     }
 

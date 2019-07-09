@@ -42,7 +42,7 @@
                                                           data-path="${pageVersion.path}"></td>
                             </c:if>
                             <td class="${siteCssBase}_page-path"><a
-                                    href="${pageVersion.url}">${cpn:path(pageVersion.path)}</a></td>
+                                    href="${pageVersion.url}" target="_blank">${cpn:path(pageVersion.path)}</a></td>
                             <td class="${siteCssBase}_page-title">${cpn:text(pageVersion.title)}</td>
                             <td class="${siteCssBase}_page-time">${cpn:text(pageVersion.lastModifiedString)}</td>
                         </tr>
