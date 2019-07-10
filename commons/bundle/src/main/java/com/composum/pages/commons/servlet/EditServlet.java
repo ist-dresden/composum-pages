@@ -29,6 +29,7 @@ import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.servlet.NodeTreeServlet;
 import com.composum.sling.core.servlet.ServletOperation;
 import com.composum.sling.core.servlet.ServletOperationSet;
+import com.composum.sling.core.servlet.Status;
 import com.composum.sling.core.util.ResponseUtil;
 import com.composum.sling.platform.staging.versions.PlatformVersionsService;
 import com.google.gson.stream.JsonReader;
@@ -872,6 +873,7 @@ public class EditServlet extends PagesContentServlet {
         public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
                          ResourceHandle resource)
                 throws IOException {
+            Status status = new Status(request,response);
 
             String targetPath = request.getParameter("targetPath");
             String targetType = request.getParameter("targetType");
@@ -894,16 +896,19 @@ public class EditServlet extends PagesContentServlet {
                     Resource result = doIt(resolver, object, target, before, updatedReferrers);
                     resolver.commit();
 
-                    sendResponse(response, result, updatedReferrers);
+                    status.reference("reference", result);
+                    status.list("updated", updatedReferrers);
 
                 } catch (RepositoryException ex) {
                     LOG.error(ex.getMessage(), ex);
-                    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ex.getMessage());
+                    status.error(ex.getLocalizedMessage());
                 }
             } else {
                 LOG.info("{} not allowed: {}@{}", getOperationName(), object.getType(), targetPath);
                 sendNotAllowedChild(request, response, target.getResource(), object.getResource());
+                return;
             }
+            status.sendJson();
         }
 
         protected abstract ResourceManager.ResourceReference getReference(SlingHttpServletRequest request,

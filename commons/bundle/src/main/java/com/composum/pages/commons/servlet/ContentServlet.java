@@ -7,12 +7,11 @@ import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.ResourceHandle;
 import com.composum.sling.core.servlet.NodeTreeServlet;
 import com.composum.sling.core.servlet.ServletOperation;
-import com.composum.sling.core.util.ResponseUtil;
+import com.composum.sling.core.servlet.Status;
 import com.google.gson.stream.JsonWriter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.SlingHttpServletRequest;
-import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.framework.BundleContext;
@@ -21,13 +20,11 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
 import static com.composum.pages.commons.PagesConstants.PROP_TEMPLATE;
-import static com.composum.pages.commons.util.ResourceTypeUtil.isSyntheticResource;
 
 public abstract class ContentServlet extends NodeTreeServlet {
 
@@ -105,26 +102,13 @@ public abstract class ContentServlet extends NodeTreeServlet {
          * @param result           the main result resource which was changed
          * @param updatedResources additional resources that have been updated (e.g. referrers) and need to be refreshed because of possibly changed stati etc.
          */
-        protected void sendResponse(SlingHttpServletResponse response, Resource result, @Nullable List<Resource> updatedResources)
+        protected void sendResponse(Status status, Resource result, @Nullable List<Resource> updatedResources)
                 throws IOException {
-            JsonWriter jsonWriter = ResponseUtil.getJsonWriter(response);
-            response.setStatus(HttpServletResponse.SC_OK);
-            jsonWriter.beginObject(); // outer object
-            jsonWriter.name("reference").beginObject();
-            jsonWriter.name("name").value(result.getName());
-            jsonWriter.name("path").value(result.getPath());
-            jsonWriter.name("type").value(result.getResourceType());
-            jsonWriter.name("prim").value(result.getValueMap().get(JcrConstants.JCR_PRIMARYTYPE, ""));
-            jsonWriter.name("synthetic").value(isSyntheticResource(result));
-            jsonWriter.endObject(); // "reference"
-            if (null != updatedResources && !updatedResources.isEmpty()) {
-                jsonWriter.name("updated").beginArray();
-                for (Resource updatedResource : updatedResources) {
-                    jsonWriter.value(updatedResource.getPath());
-                }
-                jsonWriter.endArray();
+            status.reference("reference", result);
+            if (updatedResources != null) {
+                status.list("updated", updatedResources);
             }
-            jsonWriter.endObject(); // outer object
+            status.sendJson();
         }
 
         /**
@@ -132,9 +116,9 @@ public abstract class ContentServlet extends NodeTreeServlet {
          *
          * @param result the main result resource which was changed
          */
-        protected void sendResponse(SlingHttpServletResponse response, Resource result)
+        protected void sendResponse(Status status, Resource result)
                 throws IOException {
-            sendResponse(response, result, null);
+            sendResponse(status, result, null);
         }
     }
 }

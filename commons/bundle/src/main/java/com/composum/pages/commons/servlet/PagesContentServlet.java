@@ -9,6 +9,7 @@ import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.ResourceHandle;
 import com.composum.sling.core.mapping.MappingRules;
 import com.composum.sling.core.servlet.ServletOperation;
+import com.composum.sling.core.servlet.Status;
 import com.composum.sling.core.util.I18N;
 import com.composum.sling.core.util.ResourceUtil;
 import com.composum.sling.core.util.ResponseUtil;
@@ -211,6 +212,7 @@ public abstract class PagesContentServlet extends ContentServlet {
                            ResourceResolver resolver, ResourceHandle resource,
                            Resource target, String name)
                 throws IOException {
+            Status status = new Status(request,response);
             ResourceManager resourceManager = getResourceManager();
             BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
 
@@ -231,7 +233,7 @@ public abstract class PagesContentServlet extends ContentServlet {
 
                         resolver.commit();
 
-                        sendResponse(response, result, updatedReferrers);
+                        sendResponse(status, result, updatedReferrers);
                     }
                 } catch (ItemExistsException itex) {
                     jsonAnswerItemExists(request, response);
@@ -253,6 +255,7 @@ public abstract class PagesContentServlet extends ContentServlet {
         public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
                          ResourceHandle resource)
                 throws IOException {
+            Status status = new Status(request,response);
             String name = request.getParameter(PARAM_NAME);
 
             if (LOG.isDebugEnabled()) {
@@ -272,7 +275,7 @@ public abstract class PagesContentServlet extends ContentServlet {
 
                     resolver.commit();
 
-                    sendResponse(response, result, updatedReferrers);
+                    sendResponse(status, result, updatedReferrers);
                 }
             } catch (ItemExistsException itex) {
                 jsonAnswerItemExists(request, response);
@@ -290,6 +293,7 @@ public abstract class PagesContentServlet extends ContentServlet {
         public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
                          ResourceHandle resource)
                 throws IOException {
+            Status status = new Status(request,response);
 
             String targetPath = request.getParameter("targetPath");
             String name = request.getParameter(PARAM_NAME);
@@ -311,7 +315,7 @@ public abstract class PagesContentServlet extends ContentServlet {
                         Resource result = resourceManager.copyContentResource(resolver, resource, target, name, before);
                         resolver.commit();
 
-                        sendResponse(response, result);
+                        sendResponse(status, result);
 
                     } catch (PersistenceException pex) {
 
