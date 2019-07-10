@@ -25,7 +25,7 @@ import java.util.List;
 @Component(
         service = {ReplicationManager.class},
         property = {
-                Constants.SERVICE_DESCRIPTION + "=Pages Replication Manager"
+                Constants.SERVICE_DESCRIPTION + "=Composum Pages Replication Manager"
         },
         immediate = true
 )

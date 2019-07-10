@@ -157,6 +157,8 @@ public abstract class AbstractModel implements SlingBean, Model {
      * @param context  the scripting context (e.g. a JSP PageContext or a Groovy scripting context)
      * @param resource the resource to use (normally the resource addressed by the request)
      */
+    @Override
+    @SuppressWarnings("deprecation")
     public void initialize(BeanContext context, Resource resource) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("initialize (" + context + ", " + resource + ")");
@@ -179,6 +181,8 @@ public abstract class AbstractModel implements SlingBean, Model {
      *
      * @param context the scripting context (e.g. a JSP PageContext or a Groovy scripting context)
      */
+    @Override
+    @SuppressWarnings("deprecation")
     public void initialize(BeanContext context) {
         Resource resource = context.getResource();
         initialize(context, resource);
@@ -254,6 +258,7 @@ public abstract class AbstractModel implements SlingBean, Model {
     /**
      * This is used by the 'component' tag to determine the CSS class base name for the component.
      */
+    @Override
     @Nonnull
     public String getCssBase() {
         if (cssBase == null) {
@@ -280,16 +285,19 @@ public abstract class AbstractModel implements SlingBean, Model {
     //
 
     /** public access to the context */
+    @Override
     public BeanContext getContext() {
         return context;
     }
 
     /** public access to the resource */
+    @Override
     @Nonnull
     public Resource getResource() {
         return resource;
     }
 
+    @Override
     @Nonnull
     public String getPath() {
         if (path == null) {
@@ -298,6 +306,7 @@ public abstract class AbstractModel implements SlingBean, Model {
         return path;
     }
 
+    @Override
     @Nonnull
     public String getName() {
         if (name == null) {
@@ -306,6 +315,7 @@ public abstract class AbstractModel implements SlingBean, Model {
         return name;
     }
 
+    @Override
     @Nonnull
     public String getType() {
         if (type == null) {
@@ -323,10 +333,12 @@ public abstract class AbstractModel implements SlingBean, Model {
         return PagesUtil.getEncodedReference(getResource(), typeHint);
     }
 
+    @Override
     public String getPathHint() {
         return getPathHint(getPath());
     }
 
+    @Override
     public String getTypeHint() {
         return getTypeHint(getType());
     }
@@ -371,6 +383,7 @@ public abstract class AbstractModel implements SlingBean, Model {
 
     // component
 
+    @Override
     public Component getComponent() {
         if (component == null) {
             component = new Component(context, getResource());
@@ -378,6 +391,7 @@ public abstract class AbstractModel implements SlingBean, Model {
         return component;
     }
 
+    @Override
     public PagesConstants.ComponentType getComponentType() {
         if (componentType == null) {
             componentType = PagesConstants.ComponentType.typeOf(resolver, resource, null);
@@ -387,6 +401,7 @@ public abstract class AbstractModel implements SlingBean, Model {
 
     //
 
+    @Override
     @Nonnull
     public String getTitle() {
         if (title == null) {
@@ -399,6 +414,7 @@ public abstract class AbstractModel implements SlingBean, Model {
         return PN_TITLE_KEYS;
     }
 
+    @Override
     @Nonnull
     public String getDescription() {
         if (description == null) {
@@ -412,6 +428,7 @@ public abstract class AbstractModel implements SlingBean, Model {
      *
      * @see LinkUtil#getUrl(SlingHttpServletRequest, String)
      */
+    @Override
     @Nonnull
     public String getUrl() {
         if (url == null) {
@@ -439,11 +456,13 @@ public abstract class AbstractModel implements SlingBean, Model {
         return language.getKey();
     }
 
+    @Override
     @Nonnull
     public Language getLanguage() {
         return getLanguages().getLanguage();
     }
 
+    @Override
     @Nonnull
     public Languages getLanguages() {
         if (languages == null) {
@@ -466,11 +485,13 @@ public abstract class AbstractModel implements SlingBean, Model {
 
     // resource properties
 
+    @Override
     @Nonnull
     public <T> T getProperty(@Nonnull final String key, @Nonnull final T defaultValue) {
         return getProperty(key, getLocale(), defaultValue);
     }
 
+    @Override
     @Nullable
     public <T> T getProperty(@Nonnull final String key, @Nonnull final Class<T> type) {
         return getProperty(key, getLocale(), type);
@@ -489,6 +510,7 @@ public abstract class AbstractModel implements SlingBean, Model {
         return getProperty(key, type, locale != null ? getI18nPaths() : IGNORE_I18N);
     }
 
+    @Override
     @Nonnull
     public <T> T getProperty(@Nullable final Locale locale, @Nonnull final T defaultValue, String... keys) {
         Class<T> type = PropertyUtil.getType(defaultValue);
@@ -528,11 +550,13 @@ public abstract class AbstractModel implements SlingBean, Model {
 
     // inherited properties
 
+    @Override
     @Nonnull
     public <T> T getInherited(@Nonnull final String key, @Nonnull final T defaultValue) {
         return getInherited(key, getLocale(), defaultValue);
     }
 
+    @Override
     @Nullable
     public <T> T getInherited(@Nonnull final String key, @Nonnull final Class<T> type) {
         return getInherited(key, getLocale(), type);
@@ -556,6 +580,7 @@ public abstract class AbstractModel implements SlingBean, Model {
         return value;
     }
 
+    @Override
     @Nonnull
     public <T> T getInherited(@Nullable Locale locale, @Nonnull T defaultValue, String... keys) {
         Class<T> type = PropertyUtil.getType(defaultValue);
@@ -656,6 +681,7 @@ public abstract class AbstractModel implements SlingBean, Model {
     /**
      * the requested page referenced by the current HTTP request
      */
+    @Override
     @Nullable
     public Page getCurrentPage() {
         if (currentPage == null) {
@@ -664,6 +690,7 @@ public abstract class AbstractModel implements SlingBean, Model {
         return currentPage;
     }
 
+    @Override
     @Nullable
     public Page getContainingPage() {
         if (containingPage == null) {
@@ -706,6 +733,7 @@ public abstract class AbstractModel implements SlingBean, Model {
 
     // Object
 
+    @Override
     public String toString() {
         String ref = super.toString();
         StringBuilder builder = new StringBuilder(ref.substring(ref.lastIndexOf(".") + 1));
