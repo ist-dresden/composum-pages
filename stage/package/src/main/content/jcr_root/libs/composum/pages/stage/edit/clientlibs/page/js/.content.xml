@@ -5,6 +5,5 @@
         embed="[composum/pages/commons/js/core.js,
                 composum/pages/stage/edit/js/commons.js,
                 composum/pages/stage/edit/js/invoke.js,
-                composum/pages/stage/edit/js/elements.js,
-                composum/pages/stage/edit/js/debug.js]">
+                composum/pages/stage/edit/js/elements.js]">
 </jcr:root>

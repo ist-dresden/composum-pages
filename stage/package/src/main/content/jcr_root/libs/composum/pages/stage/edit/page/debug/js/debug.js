@@ -1,7 +1,3 @@
-/**
- * edit user interface functions embedded in a content page to support edit interaction
- * strong dependency to: 'invoke.js' ('commons.js'; libs: 'backbone.js', 'underscore.js', 'loglevel.js', 'jquery.js')
- */
 (function (window) {
     window.composum = window.composum || {};
     window.composum.pages = window.composum.pages || {};
@@ -132,13 +128,11 @@
             }
         });
 
-        if (elements.log.dnd.getLevel() <= log.levels.DEBUG) {
-            core.ajaxGet(debug.const.url.content, {}, function (data) {
-                debug.$body = $('body');
-                debug.$body.append(data);
-                debug.frame = core.getView('.composum-pages-debug-frame', debug.Frame);
-            });
-        }
+        core.ajaxGet(debug.const.url.content, {}, function (data) {
+            debug.$body = $('body');
+            debug.$body.append(data);
+            debug.frame = core.getView('.composum-pages-debug-frame', debug.Frame);
+        });
 
     })(window.composum.pages.debug, window.composum.pages.elements, window.composum.pages, window.core);
 })(window);
