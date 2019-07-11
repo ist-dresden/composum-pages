@@ -8,6 +8,9 @@
 
         tools.const = _.extend(tools.const || {}, {
             versions: {
+                event: {
+                    id: '.tools.Versions'
+                },
                 cssBase: 'composum-pages-stage-edit-tools-page-versions',
                 version: '_version',
                 selection: '_selection',
@@ -219,10 +222,19 @@
                 this.actions.versions = this;
                 this.$slider.slider(c.slider.options);
                 this.$slider.on('slide', _.bind(this.compare, this));
-                var id = 'Versions';
+                var id = tools.const.versions.event.id;
                 var e = pages.const.event;
-                $(document).on(e.page.state + '.' + id, _.bind(this.reload, this));
-                $(document).on(e.page.changed + '.' + id, _.bind(this.reload, this));
+                $(document)
+                    .on(e.page.state + '.' + id, _.bind(this.reload, this))
+                    .on(e.page.changed + '.' + id, _.bind(this.reload, this));
+            },
+
+            beforeClose: function () {
+                var e = pages.const.event;
+                var id = tools.const.versions.event.id;
+                $(document)
+                    .off(e.page.state + id)
+                    .off(e.page.changed + id);
             },
 
             onTabSelected: function () {

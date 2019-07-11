@@ -8,6 +8,9 @@
 
         tools.const = _.extend(tools.const || {}, {
             releases: {
+                event: {
+                    id: 'tools.SiteReleases'
+                },
                 css: {
                     site: {
                         base: 'composum-pages-stage-edit-site-releases'
@@ -34,9 +37,20 @@
 
             initialize: function () {
                 this.initContent();
-                var c = pages.const.event;
-                $(document).on(c.site.state + '.ModifiedPages', _.bind(this.reload, this));
-                $(document).on(c.site.changed + '.ModifiedPages', _.bind(this.reload, this));
+                var e = pages.const.event;
+                var id = tools.const.releases.event.id;
+                $(document)
+                    .on(e.site.state + id, _.bind(this.reload, this))
+                    .on(e.site.changed + id, _.bind(this.reload, this));
+            },
+
+            beforeClose: function () {
+                this.beforeHideTab();
+                var e = pages.const.event;
+                var id = tools.const.releases.event.id;
+                $(document)
+                    .off(e.site.state + id)
+                    .off(e.site.changed + id);
             },
 
             initContent: function () {
@@ -74,10 +88,6 @@
                     this.$releaseView = [];
                     pages.trigger('site.release.close', pages.const.event.page.view, [null, {}]);
                 }
-            },
-
-            beforeClose: function () {
-                this.beforeHideTab();
             },
 
             beforeHideTab: function () {

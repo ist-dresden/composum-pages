@@ -8,6 +8,9 @@
 
         tools.const = _.extend(tools.const || {}, {
             modified: {
+                event: {
+                    id: 'tools.ModifiedPages'
+                },
                 page: {
                     base: 'composum-pages-stage-edit-site-page-modified',
                     _listentry: '_listentry',
@@ -27,9 +30,20 @@
 
             initialize: function (options) {
                 this.initContent();
-                var c = pages.const.event;
-                $(document).on(c.page.state + '.ModifiedPages', _.bind(this.reload, this));
-                $(document).on(c.site.changed + '.ModifiedPages', _.bind(this.reload, this));
+                var id = tools.const.modified.event.id;
+                var e = pages.const.event;
+                $(document)
+                    .on(e.page.state + id, _.bind(this.reload, this))
+                    .on(e.site.changed + id, _.bind(this.reload, this));
+            },
+
+            beforeClose: function () {
+                this.beforeHideTab();
+                var e = pages.const.event;
+                var id = tools.const.modified.event.id;
+                $(document)
+                    .off(e.page.state + id)
+                    .off(e.site.changed + id);
             },
 
             initContent: function (options) {
@@ -65,10 +79,6 @@
                     this.$previewEntry = [];
                     pages.trigger('site.modified.close', pages.const.event.page.view, [null, {}]);
                 }
-            },
-
-            beforeClose: function () {
-                this.beforeHideTab();
             },
 
             beforeHideTab: function () {
