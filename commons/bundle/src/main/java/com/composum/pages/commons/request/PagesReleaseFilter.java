@@ -64,7 +64,8 @@ public class PagesReleaseFilter implements Filter {
     public static final String ATTR_CACHE_DISABLED = "com.composum.platform.cache.component.ComponentCacheService#cacheDisabled";
 
     @ObjectClassDefinition(
-            name = "Composum Pages Release Filter Configuration"
+            name = "Composum Pages Release Filter Configuration",
+            description = "Enables Configures for which URLs a release has to be chosen according to the host's access mode."
     )
     @interface Config {
 

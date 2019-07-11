@@ -13,7 +13,12 @@ import org.apache.jackrabbit.vault.packaging.PackageException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.jcr.*;
+import javax.jcr.Node;
+import javax.jcr.NodeIterator;
+import javax.jcr.PathNotFoundException;
+import javax.jcr.Property;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
 import javax.jcr.nodetype.NodeTypeManager;
 import javax.jcr.query.Query;
@@ -21,7 +26,11 @@ import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import static java.util.Arrays.asList;
 
@@ -146,7 +155,7 @@ public class SetupHook implements InstallHook {
     protected void createCplReleaseNodes(InstallContext ctx) throws RepositoryException {
         Session session = ctx.getSession();
         QueryManager queryManager = session.getWorkspace().getQueryManager();
-        Query query = queryManager.createQuery(SITE_CONFIGURATION_QUERY, Query.XPATH);
+        @SuppressWarnings("deprecation") Query query = queryManager.createQuery(SITE_CONFIGURATION_QUERY, Query.XPATH);
         QueryResult result = query.execute();
         NodeIterator it = result.getNodes();
         while (it.hasNext()) {
@@ -182,8 +191,7 @@ public class SetupHook implements InstallHook {
         while (it.hasNext()) {
             Node node = it.nextNode();
             try {
-                if (!node.hasProperty(oldPropertyName))
-                    continue;
+                if (!node.hasProperty(oldPropertyName)) { continue; }
                 Property prop = node.getProperty(oldPropertyName);
                 String propPath = prop.getPath();
                 String value = prop.getString();
