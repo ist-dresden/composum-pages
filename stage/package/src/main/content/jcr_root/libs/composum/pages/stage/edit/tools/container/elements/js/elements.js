@@ -25,7 +25,7 @@
                     _element: '_element'
                 },
                 log: {
-                    prefix: 'tools.Elements.'
+                    prefix: 'context.elements.'
                 },
                 uri: {
                     base: '/libs/composum/pages/stage/edit/tools/container/elements',
@@ -102,7 +102,7 @@
             onDragEnd: function (event) {
                 event.preventDefault();
                 var e = pages.const.event;
-                pages.trigger('elements.dnd.end', e.dnd.finished, [event]);
+                pages.trigger('elements.dnd.end', e.dnd.finished, [event], ['...']);
                 return false;
             },
 
@@ -180,15 +180,27 @@
                 this.$moveDown.click(_.bind(this.moveDown, this));
                 this.$goUp.click(_.bind(this.selectContainer, this));
                 this.$select.click(_.bind(this.selectElement, this));
-                $(document).on(e.element.selected + id, _.bind(this.onElementSelected, this));
-                $(document).on(e.element.inserted + id, _.bind(this.onElementInserted, this));
-                $(document).on(e.element.changed + id, _.bind(this.onElementChanged, this));
-                $(document).on(e.element.deleted + id, _.bind(this.onElementDeleted, this));
-                $(document).on(e.dnd.finished + '.Elements', _.bind(this.onDragFinished, this));
+                $(document)
+                    .on(e.element.selected + id, _.bind(this.onElementSelected, this))
+                    .on(e.element.inserted + id, _.bind(this.onElementInserted, this))
+                    .on(e.element.changed + id, _.bind(this.onElementChanged, this))
+                    .on(e.element.deleted + id, _.bind(this.onElementDeleted, this))
+                    .on(e.dnd.finished + id, _.bind(this.onDragFinished, this));
                 this.$el
                     .on('dragenter' + id, _.bind(this.onDragEnter, this))
                     .on('dragover' + id, _.bind(this.onDragOver, this))
                     .on('drop' + id, _.bind(this.onDrop, this));
+            },
+
+            beforeClose: function () {
+                var e = pages.const.event;
+                var id = tools.const.elements.event.id;
+                $(document)
+                    .off(e.element.selected + id)
+                    .off(e.element.inserted + id)
+                    .off(e.element.changed + id)
+                    .off(e.element.deleted + id)
+                    .off(e.dnd.finished + id);
             },
 
             initContent: function (options) {
@@ -204,6 +216,9 @@
                     elements.push(item);
                     item.$el.click(_.bind(that.selectLocal, that))
                 });
+                if (this.log.tools.getLevel() <= log.levels.DEBUG) {
+                    this.log.tools.debug('context.elements.init.content[' + this.elements.length + ']');
+                }
                 this.selectPath(pages.current.element);
             },
 
@@ -247,31 +262,45 @@
             },
 
             onTabSelected: function () {
+                if (this.log.tools.getLevel() <= log.levels.DEBUG) {
+                    this.log.tools.debug(tools.const.elements.log.prefix + 'on.tab.selected');
+                }
                 this.reload();
             },
 
             onElementSelected: function (event, reference) {
+                if (this.log.tools.getLevel() <= log.levels.DEBUG) {
+                    this.log.tools.debug(tools.const.elements.log.prefix + 'on.element.selected(' + JSON.stringify(reference) + ')');
+                }
                 this.selectPath(reference);
             },
 
             onElementInserted: function (event, reference) {
+                if (this.log.tools.getLevel() <= log.levels.DEBUG) {
+                    this.log.tools.debug(tools.const.elements.log.prefix + 'on.element.inserted(' + JSON.stringify(reference) + ')');
+                }
                 this.reload();
             },
 
             onElementChanged: function (event, reference) {
+                if (this.log.tools.getLevel() <= log.levels.DEBUG) {
+                    this.log.tools.debug(tools.const.elements.log.prefix + 'on.element.changed(' + JSON.stringify(reference) + ')');
+                }
                 this.reload();
             },
 
             onElementDeleted: function (event, reference) {
+                if (this.log.tools.getLevel() <= log.levels.DEBUG) {
+                    this.log.tools.debug(tools.const.elements.log.prefix + 'on.element.deleted(' + JSON.stringify(reference) + ')');
+                }
                 this.reload();
             },
 
             reload: function () {
-                var u = tools.const.elements.uri.edit.context;
                 if (this.log.tools.getLevel() <= log.levels.DEBUG) {
-                    this.log.tools.debug(tools.const.elements.log.prefix
-                        + 'reload(' + this.reference.path + ')');
+                    this.log.tools.debug(tools.const.elements.log.prefix + 'reload(' + JSON.stringify(this.reference) + ')');
                 }
+                var u = tools.const.elements.uri.edit.context;
                 core.ajaxGet(u._ + u._container + this.reference.path, {
                         data: {
                             type: this.reference.type // the type to support synthetic resources
@@ -288,32 +317,48 @@
             },
 
             selectLocal: function (event) {
+                if (this.log.tools.getLevel() <= log.levels.DEBUG) {
+                    this.log.tools.debug(tools.const.elements.log.prefix + 'select.local('
+                        + JSON.stringify(event.currentTarget.view.reference) + ')');
+                }
                 event.preventDefault();
                 this.selectPath(event.currentTarget.view.reference);
                 return false;
             },
 
             selectContainer: function (event) {
+                if (this.log.tools.getLevel() <= log.levels.DEBUG) {
+                    this.log.tools.debug(tools.const.elements.log.prefix + 'select.container('
+                        + (this.selection ? JSON.stringify(this.selection) : '[]') + ')');
+                }
                 event.preventDefault();
                 if (this.selection) {
                     var e = pages.const.event;
                     var parentPath = core.getParentPath(this.selection);
-                    pages.trigger('elements.select.container', e.element.select,
+                    pages.trigger(tools.const.elements.log.prefix + 'select.container', e.element.select,
                         [new pages.Reference(undefined, parentPath)]);
                 }
                 return false;
             },
 
             selectElement: function (event) {
+                if (this.log.tools.getLevel() <= log.levels.DEBUG) {
+                    this.log.tools.debug(tools.const.elements.log.prefix + 'select.element('
+                        + (this.selection ? JSON.stringify(this.selection) : '[]') + ')');
+                }
                 event.preventDefault();
                 if (this.selection) {
                     var e = pages.const.event;
-                    pages.trigger('elements.select.element', e.element.select, [new pages.Reference(undefined, this.selection)]);
+                    pages.trigger(tools.const.elements.log.prefix + 'select.element', e.element.select,
+                        [new pages.Reference(undefined, this.selection)]);
                 }
                 return false;
             },
 
             selectPath: function (reference) {
+                if (this.log.tools.getLevel() <= log.levels.DEBUG) {
+                    this.log.tools.debug(tools.const.elements.log.prefix + 'select.path(' + JSON.stringify(reference) + ')');
+                }
                 var c = tools.const.elements.css;
                 this.$content.find('.' + c.base + c._element).removeClass('selected').removeClass('current');
                 if (!reference || this.selection === reference.path) {
@@ -332,6 +377,9 @@
             },
 
             setElementActions: function (reference) {
+                if (this.log.tools.getLevel() <= log.levels.TRACE) {
+                    this.log.tools.trace(tools.const.elements.log.prefix + 'element.actions(' + JSON.stringify(reference) + ')');
+                }
                 if (this.actions) {
                     this.actions.dispose();
                     this.actions = undefined;
@@ -358,6 +406,10 @@
                 event.preventDefault();
                 if (this.selection && this.selection !== this.reference) {
                     var element = this.getElement({path: this.selection});
+                    if (this.log.tools.getLevel() <= log.levels.DEBUG) {
+                        this.log.tools.debug(tools.const.elements.log.prefix + 'move.up('
+                            + (element ? JSON.stringify(element.reference) : '[]') + ')');
+                    }
                     if (element) {
                         var before = this.getPrevSibling(element);
                         if (before) {
@@ -382,6 +434,10 @@
                 event.preventDefault();
                 if (this.selection && this.selection !== this.reference) {
                     var element = this.getElement({path: this.selection});
+                    if (this.log.tools.getLevel() <= log.levels.DEBUG) {
+                        this.log.tools.debug(tools.const.elements.log.prefix + 'move.down('
+                            + (element ? JSON.stringify(element.reference) : '[]') + ')');
+                    }
                     if (element) {
                         var next = this.getNextSibling(element);
                         if (next) {
@@ -410,7 +466,7 @@
                 var dnd = core.dnd.getDndData(event);
                 var target = this.getDndTarget(dnd);
                 if (this.log.dnd.getLevel() <= log.levels.TRACE) {
-                    this.log.dnd.trace(tools.const.elements.log.prefix + 'dndEnter(' + dnd.el.view.reference.path + '): '
+                    this.log.dnd.trace(tools.const.elements.log.prefix + 'dnd.enter(' + dnd.el.view.reference.path + '): '
                         + JSON.stringify(dnd.pos) + " - " + (target ? target.container.reference.path : '?'));
                 }
                 this.setDndTarget(dnd, target);
@@ -432,7 +488,7 @@
                 event.preventDefault();
                 if (this.dndTarget && pages.current.dnd.object) {
                     if (this.log.dnd.getLevel() <= log.levels.INFO) {
-                        this.log.dnd.info(tools.const.elements.log.prefix + 'dndDrop('
+                        this.log.dnd.info(tools.const.elements.log.prefix + 'dnd.drop('
                             + this.dndTarget.container.reference.path + ':' + this.dndTarget.before.reference.path + ', '
                             + pages.current.dnd.object.type + ':' + JSON.stringify(pages.current.dnd.object.reference) + ')');
                     }

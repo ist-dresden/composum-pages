@@ -350,7 +350,7 @@
 
             onDragEnd: function (event, data) {
                 var e = pages.const.event;
-                pages.trigger('tree.content.dnd.end', e.dnd.finished, [event]);
+                pages.trigger('tree.content.dnd.end', e.dnd.finished, [event], ['...']);
             },
 
             onDragFinished: function () {

@@ -204,7 +204,7 @@
 
             onDragEnd: function (event) {
                 var e = pages.const.event;
-                pages.trigger('search.dnd.end', e.dnd.finished, [event]);
+                pages.trigger('search.dnd.end', e.dnd.finished, [event], ['...']);
             }
         });
 

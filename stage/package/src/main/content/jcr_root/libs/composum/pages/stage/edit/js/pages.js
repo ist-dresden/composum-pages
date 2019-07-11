@@ -302,9 +302,17 @@
             return $('body').hasClass(pages.const.versionViewCssClass);
         };
 
-        pages.trigger = function (key, event, /*array,optional*/ args) {
-            if (pages.log.getLevel() <= log.levels.INFO) {
-                pages.log.info('trigger@' + key + ' > ' + event + (args ? JSON.stringify(args) : ''));
+        /**
+         * the general $(document) trigger point for the 'pages' widgets which is logging the event and the args
+         * @param key the logging key which identifies the code source
+         * @param event the event to trigger
+         * @param args the event arguments (array of objects or values)
+         * @param argsToLog optional; used for logging instead of the event args if args should not be logged
+         */
+        pages.trigger = function (key, event, /*array,optional*/ args, /*optional*/ argsToLog) {
+            if (pages.log.getLevel() <= log.levels.WARN) { // use WARN to cause a call stack
+                pages.log.warn('trigger@' + key + ' > ' + event
+                    + JSON.stringify(argsToLog !== undefined ? argsToLog : (args ? args : [])));
             }
             $(document).trigger(event, args);
         };

@@ -112,9 +112,17 @@
             ptr: log.getLogger("elements:ptr")
         };
 
-        elements.trigger = function (key, event, /*array,optional*/ args) {
-            if (elements.log.std.getLevel() <= log.levels.INFO) {
-                elements.log.std.info('trigger@' + key + ' > ' + event + (args ? JSON.stringify(args) : ''));
+        /**
+         * the general $(document) trigger point for the 'element' widgets of the edited page
+         * @param key the logging key which identifies the code source
+         * @param event the event to trigger
+         * @param args the event arguments (array of objects or values)
+         * @param argsToLog optional; used for logging instead of the event args if args should not be logged
+         */
+        elements.trigger = function (key, event, /*array,optional*/ args, /*optional*/ argsToLog) {
+            if (elements.log.std.getLevel() <= log.levels.WARN) { // use WARN to cause a call stack
+                elements.log.std.warn('trigger@' + key + ' > ' + event
+                    + JSON.stringify(argsToLog !== undefined ? argsToLog : (args ? args : [])));
             }
             $(document).trigger(event, args);
         };
