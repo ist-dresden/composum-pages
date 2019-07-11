@@ -112,7 +112,7 @@
             &:before,
             &:after {
                 position: absolute;
-                font-family: "FontAwesome";
+                font-family: "FontAwesome", sans-serif;
                 font-size: 36px;
                 line-height: 36px;
                 color: $dnd-target-over-color;
@@ -256,8 +256,7 @@
         }
 
         &_head {
-            visibility: hidden;
-            display: block;
+            display: none;
             width: 100%;
             padding: 0 2px 3px;
             @include edit-handle-color;
@@ -326,22 +325,18 @@
             }
 
             .composum-pages-component-handle_selection {
-                min-width: 30px;
-                min-height: 20px;
 
                 .composum-pages-component-handle {
 
-                    &_visible, &_top {
+                    &_head {
+                        display: block;
                         min-width: 30px;
                         min-height: 20px;
                     }
 
-                    &_head {
-                        visibility: visible;
-                    }
-
                     &_toolbar {
                         display: inline-block;
+                        background: $edit-select-background;
 
                         .composum-pages-stage-edit-toolbar {
                             display: inline-block;
@@ -367,6 +362,14 @@
                             }
                         }
 
+                    }
+
+                    &_top {
+                        min-width: 30px;
+                    }
+
+                    &_left {
+                        min-height: 31px;
                     }
 
                     &_top {

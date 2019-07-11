@@ -66,7 +66,8 @@
                 this.$x.text(pointer.x);
                 this.$y.text(pointer.x);
                 var insert = elements.pageBody.dnd.insert;
-                this.$ipos.text(insert ? (insert.vertical ? insert.y : insert.x) : '');
+                this.$ipos.text(insert ? (insert.vertical
+                    ? insert.y + insert.handlePos.top + 3 : insert.x + insert.handlePos.left + 3) : '');
                 var target = elements.pageBody.getPointerComponent(event, '.' + elements.const.class.container);
                 if (target) {
                     this.$count.text(target.elements.length);
