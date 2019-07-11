@@ -350,6 +350,10 @@
                 pages.dialogs.openUploadFileDialog(name, path, type);
             },
 
+            download: function (event, name, path, type) {
+                window.open(core.getContextUrl(path), '_blank');
+            },
+
             rename: function (event, name, path, type) {
                 pages.dialogs.openRenameContentDialog(name, path, type)
             },

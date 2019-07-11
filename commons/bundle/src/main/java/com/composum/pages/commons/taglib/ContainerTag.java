@@ -1,6 +1,7 @@
 package com.composum.pages.commons.taglib;
 
 import com.composum.pages.commons.model.Container;
+import com.composum.pages.commons.request.DisplayMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,8 +40,11 @@ public class ContainerTag extends ElementTag {
         if (decoration && isEditMode() && isWithTag() && component instanceof Container) {
             Container container = (Container) component;
             try {
-                out.append("<div class=\"composum-pages-container_start\">");
-                out.append("&nbsp;>> ");
+                out.append("<div class=\"composum-pages-container_start\"");
+                if (DisplayMode.isDevelopMode(context)) {
+                    out.append(" title=\"type: ").append(container.getType()).append("\"");
+                }
+                out.append(">").append("&nbsp;>> ");
                 writeContainerDecoration(container);
             } catch (IOException ioex) {
                 LOG.error(ioex.getMessage(), ioex);
@@ -55,8 +59,7 @@ public class ContainerTag extends ElementTag {
         if (decoration && isEditMode() && isWithTag() && component instanceof Container) {
             Container container = (Container) component;
             try {
-                out.append("<div class=\"composum-pages-container_end\">");
-                out.append("&nbsp;<< ");
+                out.append("<div class=\"composum-pages-container_end\">").append("&nbsp;<< ");
                 writeContainerDecoration(container);
             } catch (IOException ioex) {
                 LOG.error(ioex.getMessage(), ioex);
@@ -67,14 +70,7 @@ public class ContainerTag extends ElementTag {
     }
 
     protected void writeContainerDecoration(Container container) throws IOException {
-        out.append("<span class=\"composum-pages-container_path-hint\">");
-        out.append(container.getPathHint());
-        out.append("</span>");
-        out.append("<span class=\"composum-pages-container_name-hint\">");
-        out.append(container.getName());
-        out.append("</span>");
-        out.append(" <span class=\"composum-pages-container_type-hint\">(");
-        out.append(container.getTypeHint());
-        out.append(")</span></div>\n");
+        out.append("<span class=\"composum-pages-container_path-hint\">").append(container.getPathHint()).append("</span>");
+        out.append("<span class=\"composum-pages-container_name-hint\">").append(container.getName()).append("</span></div>\n");
     }
 }

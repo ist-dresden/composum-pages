@@ -16,8 +16,7 @@
         &_start, &_end {
             width: 100%;
             white-space: nowrap;
-            overflow-x: auto;
-            overflow-y: hidden;
+            overflow: hidden;
             @include edit-hint-font;
             color: $edit-hint-color;
 
@@ -361,7 +360,6 @@
                                 display: none;
                             }
                         }
-
                     }
 
                     &_top {

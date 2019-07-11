@@ -372,25 +372,26 @@
                 this.suppressEvent = true; // suppress page select events during initialization
                 tree.ContentTree.prototype.initialize.apply(this, [options]);
                 var e = pages.const.event;
-                $(document).on(e.element.selected + '.' + id, _.bind(this.onElementSelected, this));
-                $(document).on(e.element.inserted + '.' + id, _.bind(this.onElementInserted, this));
-                $(document).on(e.element.changed + '.' + id, _.bind(this.onElementChanged, this));
-                $(document).on(e.element.deleted + '.' + id, _.bind(this.onElementDeleted, this));
-                $(document).on(e.element.moved + '.' + id, _.bind(this.onElementMoved, this));
-                $(document).on(e.content.selected + '.' + id, _.bind(this.onContentSelected, this));
-                $(document).on(e.content.inserted + '.' + id, _.bind(this.onContentInserted, this));
-                $(document).on(e.content.changed + '.' + id, _.bind(this.onContentChanged, this));
-                $(document).on(e.content.deleted + '.' + id, _.bind(this.onContentDeleted, this));
-                $(document).on(e.content.moved + '.' + id, _.bind(this.onContentMoved, this));
-                $(document).on(e.page.selected + '.' + id, _.bind(this.onContentSelected, this));
-                $(document).on(e.page.state + '.' + id, _.bind(this.onPageStateChanged, this));
-                $(document).on(e.page.inserted + '.' + id, _.bind(this.onContentInserted, this));
-                $(document).on(e.page.changed + '.' + id, _.bind(this.onContentChanged, this));
-                $(document).on(e.page.deleted + '.' + id, _.bind(this.onContentDeleted, this));
-                $(document).on(e.site.created + '.' + id, _.bind(this.onContentInserted, this));
-                $(document).on(e.site.changed + '.' + id, _.bind(this.onContentSelected, this));
-                $(document).on(e.site.deleted + '.' + id, _.bind(this.onContentDeleted, this));
-                $(document).on(e.pages.ready + '.' + id, _.bind(this.ready, this));
+                $(document)
+                    .on(e.element.selected + '.' + id, _.bind(this.onElementSelected, this))
+                    .on(e.element.inserted + '.' + id, _.bind(this.onElementInserted, this))
+                    .on(e.element.changed + '.' + id, _.bind(this.onElementChanged, this))
+                    .on(e.element.deleted + '.' + id, _.bind(this.onElementDeleted, this))
+                    .on(e.element.moved + '.' + id, _.bind(this.onElementMoved, this))
+                    .on(e.content.selected + '.' + id, _.bind(this.onContentSelected, this))
+                    .on(e.content.inserted + '.' + id, _.bind(this.onContentInserted, this))
+                    .on(e.content.changed + '.' + id, _.bind(this.onContentChanged, this))
+                    .on(e.content.deleted + '.' + id, _.bind(this.onContentDeleted, this))
+                    .on(e.content.moved + '.' + id, _.bind(this.onContentMoved, this))
+                    .on(e.page.selected + '.' + id, _.bind(this.onContentSelected, this))
+                    .on(e.page.state + '.' + id, _.bind(this.onPageStateChanged, this))
+                    .on(e.page.inserted + '.' + id, _.bind(this.onContentInserted, this))
+                    .on(e.page.changed + '.' + id, _.bind(this.onContentChanged, this))
+                    .on(e.page.deleted + '.' + id, _.bind(this.onContentDeleted, this))
+                    .on(e.site.created + '.' + id, _.bind(this.onContentInserted, this))
+                    .on(e.site.changed + '.' + id, _.bind(this.onContentSelected, this))
+                    .on(e.site.deleted + '.' + id, _.bind(this.onContentDeleted, this))
+                    .on(e.pages.ready + '.' + id, _.bind(this.ready, this));
             },
 
             /**
@@ -574,11 +575,12 @@
                 this.initializeFilter();
                 tree.ContentTree.prototype.initialize.apply(this, [options]);
                 var e = pages.const.event;
-                $(document).on(e.asset.selected + '.' + id, _.bind(this.onAssetSelected, this));
-                $(document).on(e.content.inserted + '.' + id, _.bind(this.onContentInserted, this));
-                $(document).on(e.content.changed + '.' + id, _.bind(this.onContentChanged, this));
-                $(document).on(e.content.deleted + '.' + id, _.bind(this.onContentDeleted, this));
-                $(document).on(e.content.moved + '.' + id, _.bind(this.onContentMoved, this));
+                $(document)
+                    .on(e.asset.selected + '.' + id, _.bind(this.onAssetSelected, this))
+                    .on(e.content.inserted + '.' + id, _.bind(this.onContentInserted, this))
+                    .on(e.content.changed + '.' + id, _.bind(this.onContentChanged, this))
+                    .on(e.content.deleted + '.' + id, _.bind(this.onContentDeleted, this))
+                    .on(e.content.moved + '.' + id, _.bind(this.onContentMoved, this));
             },
 
             initializeFilter: function () {
@@ -778,8 +780,9 @@
                 this.setFilter(pages.profile.get(p.aspect, p.filter, undefined));
                 this.$('.' + tree.const.pages.css.base + '_filter-value a').click(_.bind(this.selectFilter, this));
                 this.tree.$el.on('node:selected.' + this.treePanelId, _.bind(this.onNodeSelected, this));
-                $(document).on(e.site.selected + '.' + this.treePanelId, _.bind(this.onSiteSelected, this));
-                $(document).on(e.scope.changed + '.' + this.treePanelId, _.bind(this.onScopeChanged, this));
+                $(document)
+                    .on(e.site.selected + '.' + this.treePanelId, _.bind(this.onSiteSelected, this))
+                    .on(e.scope.changed + '.' + this.treePanelId, _.bind(this.onScopeChanged, this));
             },
 
             selectDefaultNode: function () {
@@ -814,10 +817,11 @@
                 this.setFilter(pages.profile.get(p.aspect, p.filter, undefined));
                 this.$('.' + tree.const.assets.css.base + '_filter-value a').click(_.bind(this.selectFilter, this));
                 this.tree.$el.on('node:selected.' + this.treePanelId, _.bind(this.onNodeSelected, this));
-                $(document).on(e.asset.select + '.' + this.treePanelId, _.bind(this.selectAsset, this));
-                $(document).on(e.site.selected + '.' + this.treePanelId, _.bind(this.onSiteSelected, this));
-                $(document).on(e.scope.changed + '.' + this.treePanelId, _.bind(this.onScopeChanged, this));
-                $(document).on(e.pages.ready + '.' + this.treePanelId, _.bind(this.onReady, this));
+                $(document)
+                    .on(e.asset.select + '.' + this.treePanelId, _.bind(this.selectAsset, this))
+                    .on(e.site.selected + '.' + this.treePanelId, _.bind(this.onSiteSelected, this))
+                    .on(e.scope.changed + '.' + this.treePanelId, _.bind(this.onScopeChanged, this))
+                    .on(e.pages.ready + '.' + this.treePanelId, _.bind(this.onReady, this));
             },
 
             onReady: function (event) {

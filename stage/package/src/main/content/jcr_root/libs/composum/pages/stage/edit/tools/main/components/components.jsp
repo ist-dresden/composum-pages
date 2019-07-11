@@ -7,18 +7,22 @@
              cssAdd="composum-pages-tools">
     <div class="composum-pages-tools_actions btn-toolbar">
         <div class="composum-pages-tools_left-actions">
-            <div class="input-group">
-                <span class="composum-pages-tools_search-reset input-group-addon fa fa-times-circle"></span>
-                <input class="composum-pages-tools_search-field form-control" type="text"
-                       title="${cpn:i18n(slingRequest,'Search Term')}"
-                       placeholder="${cpn:i18n(slingRequest,'search...')}"/>
-                <span class="composum-pages-tools_search-action input-group-addon fa fa-search"></span>
+            <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
+                <div class="input-group">
+                    <span class="composum-pages-tools_search-reset input-group-addon fa fa-times-circle"></span>
+                    <input class="composum-pages-tools_search-field form-control" type="text"
+                           title="${cpn:i18n(slingRequest,'Search Term')}"
+                           placeholder="${cpn:i18n(slingRequest,'search...')}"/>
+                    <span class="composum-pages-tools_search-action input-group-addon fa fa-search"></span>
+                </div>
             </div>
         </div>
         <div class="composum-pages-tools_right-actions">
-            <button type="button" class="filter-toggle fa fa-filter composum-pages-tools_button btn btn-default"
-                    title="${cpn:i18n(slingRequest,'Filter')}"></button>
-            <cpp:include replaceSelectors="filter"/>
+            <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
+                <button type="button" class="filter-toggle fa fa-filter composum-pages-tools_button btn btn-default"
+                        title="${cpn:i18n(slingRequest,'Filter')}"></button>
+                <cpp:include replaceSelectors="filter"/>
+            </div>
         </div>
     </div>
     <div class="composum-pages-tools_panel">
