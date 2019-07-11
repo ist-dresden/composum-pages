@@ -104,7 +104,8 @@
                         name: sourceName
                     }, {}, _.bind(function (result) {
                         // trigger content change
-                        $(document).trigger(pages.const.event.element.inserted, [new pages.Reference(result.reference)]);
+                        pages.trigger('actions.container.paste', pages.const.event.element.inserted,
+                            [new pages.Reference(result.reference)]);
                     }, this), function (xhr) {
                         actions.error('Error on copying element', xhr);
                     });
@@ -134,7 +135,7 @@
                         name: name
                     }, {}, _.bind(function (result) {
                         // trigger content change
-                        $(document).trigger(pages.const.event.content.inserted, [
+                        pages.trigger('actions.content.paste', pages.const.event.content.inserted, [
                             new pages.Reference(result.name, result.path, result.type, result.prim)]);
                     }, this), _.bind(function (result) {
                         // on error - display copy dialog initialized with the known data
@@ -158,8 +159,7 @@
 
             open: function (event, name, path, type) {
                 var e = pages.const.event.page;
-                pages.log.debug('actions.trigger.' + e.select + '(' + path + ')');
-                $(document).trigger(e.select, [path]);
+                pages.trigger('actions.page.open', e.select, [path]);
             },
 
             edit: function (event, name, path, type) {
@@ -214,7 +214,8 @@
                 var u = actions.const.versions.uri;
                 core.ajaxPost(u.nodes.base + u.nodes._checkOut + path, {}, {},
                     _.bind(function (result) {
-                        $(document).trigger(pages.const.event.page.state, [new pages.Reference(name, path, type)]);
+                        pages.trigger('actions.page.checkout', pages.const.event.page.state,
+                            [new pages.Reference(name, path, type)]);
                     }, this), function (xhr) {
                         actions.error('Error on checkout', xhr);
                     });
@@ -224,7 +225,8 @@
                 var u = actions.const.versions.uri;
                 core.ajaxPost(u.nodes.base + u.nodes._checkIn + path, {}, {},
                     _.bind(function (result) {
-                        $(document).trigger(pages.const.event.page.state, [new pages.Reference(name, path, type)]);
+                        pages.trigger('actions.page.checkin', pages.const.event.page.state,
+                            [new pages.Reference(name, path, type)]);
                     }, this), function (xhr) {
                         actions.error('Error on checkin', xhr);
                     });
@@ -234,7 +236,8 @@
                 var u = actions.const.versions.uri;
                 core.ajaxPost(u.nodes.base + u.nodes._checkpoint + path, {}, {},
                     _.bind(function (result) {
-                        $(document).trigger(pages.const.event.page.state, [new pages.Reference(name, path, type)]);
+                        pages.trigger('actions.page.checkpoint', pages.const.event.page.state,
+                            [new pages.Reference(name, path, type)]);
                     }, this), function (xhr) {
                         actions.error('Error on checkpoint', xhr);
                     });
@@ -253,8 +256,7 @@
 
             open: function (event, name, path, type) {
                 var e = pages.const.event.site;
-                pages.log.debug('actions.trigger.' + e.select + '(' + path + ')');
-                $(document).trigger(e.select, [path]);
+                pages.trigger('actions.site.open', e.select, [path]);
             },
 
             edit: function (event, name, path, type) {
@@ -422,10 +424,7 @@
                                     targetPath: path,
                                     targetType: target.container.reference.type
                                 }, {}, _.bind(function (result) {
-                                    if (pages.log.getLevel() <= log.levels.DEBUG) {
-                                        pages.log.debug('actions.dnd.insert.trigger.' + pages.const.event.element.inserted + '(' + path + ')');
-                                    }
-                                    $(document).trigger(pages.const.event.element.inserted, [new pages.Reference(result.reference)]);
+                                    pages.trigger('actions.dnd.insert', pages.const.event.element.inserted, [new pages.Reference(result.reference)]);
                                 }, this));
                             }, this));
                     }
@@ -447,15 +446,9 @@
                     }, {}, function (result) {
                         var oldParentPath = core.getParentPath(object.reference.path);
                         if (oldParentPath !== target.container.reference.path) {
-                            if (pages.log.getLevel() <= log.levels.DEBUG) {
-                                pages.log.debug('actions.dnd.move.trigger.' + pages.const.event.element.changed + '(' + oldParentPath + ')');
-                            }
-                            $(document).trigger(pages.const.event.element.changed, [new pages.Reference(undefined, oldParentPath)]);
+                            pages.trigger('actions.dnd.move', pages.const.event.element.changed, [new pages.Reference(undefined, oldParentPath)]);
                         }
-                        if (pages.log.getLevel() <= log.levels.DEBUG) {
-                            pages.log.debug('actions.dnd.move.trigger.' + pages.const.event.element.changed + '(' + target.container.reference.path + ')');
-                        }
-                        $(document).trigger(pages.const.event.element.changed, [target.container.reference]);
+                        pages.trigger('actions.dnd.move', pages.const.event.element.changed, [target.container.reference]);
                     }, function (xhr) {
                         core.alert('error', 'Error', 'Error on moving component', xhr);
                     });
@@ -477,10 +470,7 @@
                     core.ajaxPost(zone.path, data, {}, function (result) {
                         var event = zone.event ? zone.event : pages.const.event.element.changed;
                         var reference = new pages.Reference(zone);
-                        if (pages.log.getLevel() <= log.levels.DEBUG) {
-                            pages.log.debug('actions.dnd.zone.trigger.' + event + '(' + reference.path + ')');
-                        }
-                        $(document).trigger(event, [reference]);
+                        pages.trigger('actions.dnd.zone', event, [reference]);
                     }, function (xhr) {
                         core.alert('error', 'Error', 'Error on moving component', xhr);
                     });

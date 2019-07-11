@@ -1068,10 +1068,7 @@
                         this.dnd.reset();
                         elements.pageBody.selection.setComponent(component);
                         elements.pageBody.selection.setHeadVisibility(true);
-                        if (lgr.getLevel() <= log.levels.DEBUG) {
-                            lgr.debug('elements.trigger.' + e.element.selected + '(' + component.reference.path + ')');
-                        }
-                        $(document).trigger(e.element.selected, component.reference);
+                        elements.trigger('elements.selection.set', e.element.selected, component.reference);
                     } else {
                         this.clearSelection();
                     }
@@ -1089,10 +1086,7 @@
                         lgr.debug('pages.elements.clearSelection(' + elements.pageBody.selection.component + ')');
                     }
                     elements.pageBody.selection.setComponent(undefined);
-                    if (lgr.getLevel() <= log.levels.DEBUG) {
-                        lgr.debug('elements.trigger.' + e.element.selected + '([])');
-                    }
-                    $(document).trigger(e.element.selected, []);
+                    elements.trigger('elements.selection.clear', e.element.selected, []);
                 }
             },
 
@@ -1135,15 +1129,9 @@
                                 lgr.debug('elements.message.on.' + e.element.select + JSON.stringify(args));
                             }
                             if (args.reference && args.reference.path) {
-                                if (lgr.getLevel() <= log.levels.DEBUG) {
-                                    lgr.debug('elements.trigger.' + e.element.select + '(' + args.reference.path + ')');
-                                }
-                                $(document).trigger(e.element.select, args.reference);
+                                elements.trigger('elements.msg.select', e.element.select, args.reference);
                             } else {
-                                if (lgr.getLevel() <= log.levels.DEBUG) {
-                                    lgr.debug('elements.trigger.' + e.element.select + '([])');
-                                }
-                                $(document).trigger(e.element.select, []);
+                                elements.trigger('elements.msg.select', e.element.select, []);
                             }
                             break;
                         case e.element.inserted:

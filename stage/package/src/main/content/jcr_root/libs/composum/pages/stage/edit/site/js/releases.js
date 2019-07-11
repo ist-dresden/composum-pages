@@ -207,8 +207,7 @@
                             if (pages.elements) {
                                 pages.elements.triggerEvent(pages.elements.const.event.site.changed, [this.sitePath]);
                             } else {
-                                pages.log.debug('site.trigger.' + pages.const.event.site.changed + '(' + this.sitePath + ')');
-                                $(document).trigger(pages.const.event.site.changed, [this.sitePath]);
+                                pages.trigger('releases.change', pages.const.event.site.changed, [this.sitePath]);
                             }
                         }, this),
                         _.bind(function (result) { // onError

@@ -190,39 +190,34 @@
                         case 'siteconfiguration':
                             path = core.getParentPath(path);
                         case 'site':
-                            pages.log.debug('tools.trigger.' + pages.const.event.site.select + '(' + path + ')');
-                            $(document).trigger(pages.const.event.site.select, [path]);
+                            pages.trigger('tools.select.path', pages.const.event.site.select, [path]);
                             break;
                         case 'pagecontent':
                             path = core.getParentPath(path);
                         case 'page':
                             if (path === pages.current.page) {
                                 // trigger a 'page select again' to adjust all tools
-                                pages.log.debug('tools.trigger.' + pages.const.event.page.selected + '(' + pages.current.page + ')');
-                                $(document).trigger(pages.const.event.page.selected, [pages.current.page]);
-                                pages.log.debug('tools.trigger.' + pages.const.event.element.select + '()');
-                                $(document).trigger(pages.const.event.element.select, []);
+                                pages.trigger('tools.select.path', pages.const.event.page.selected, [pages.current.page]);
+                                pages.trigger('tools.select.path', pages.const.event.element.select, []);
                             } else {
-                                pages.log.debug('tools.trigger.' + pages.const.event.page.select + '(' + path + ')');
-                                $(document).trigger(pages.const.event.page.select, [path]);
+                                pages.trigger('tools.select.path', pages.const.event.page.select, [path]);
                             }
                             break;
                         case 'container':
                         case 'element':
                             pages.editFrame.getPageData(path, _.bind(function (data) {
                                 if (data.path !== pages.current.page) {
-                                    pages.log.debug('tools.trigger.' + pages.const.event.page.select + '(' + data.path + ')');
-                                    $(document).trigger(pages.const.event.page.select, [data.path, undefined,
-                                        new pages.Reference(name, path, type)]);
+                                    pages.trigger('tools.select.path', pages.const.event.page.select,
+                                        [data.path, undefined,
+                                            new pages.Reference(name, path, type)]);
                                 } else {
-                                    pages.log.debug('tools.trigger.' + pages.const.event.element.select + '(' + path + ')');
-                                    $(document).trigger(pages.const.event.element.select, [new pages.Reference(name, path, type)]);
+                                    pages.trigger('tools.select.path', pages.const.event.element.select,
+                                        [new pages.Reference(name, path, type)]);
                                 }
                             }, this));
                             break;
                         default:
-                            pages.log.debug('tools.trigger.' + pages.const.event.path.selected + '(' + path + ')');
-                            $(document).trigger(pages.const.event.path.selected, [path]);
+                            pages.trigger('tools.select.path', pages.const.event.path.selected, [path]);
                             break;
                     }
                 }

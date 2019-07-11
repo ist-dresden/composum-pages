@@ -153,10 +153,7 @@
                 var $el = $(event.currentTarget);
                 var path = $el.data('path');
                 if (path) {
-                    if (pages.log.getLevel() <= log.levels.DEBUG) {
-                        pages.log.debug('search.trigger.' + pages.const.event[this.type].select + '(' + path + ')');
-                    }
-                    $(document).trigger(pages.const.event[this.type].select, [path]);
+                    pages.trigger('search.select', pages.const.event[this.type].select, [path]);
                 }
                 return false;
             },
@@ -194,7 +191,7 @@
                         type: this.type,
                         reference: reference
                     };
-                    $(document).trigger(e.dnd.object, [object]);
+                    pages.trigger('search.dnd.start', e.dnd.object, [object]);
                     var jsonData = JSON.stringify(object);
                     var dndEvent = event.originalEvent;
                     dndEvent.dataTransfer.setData('application/json', jsonData);
@@ -207,10 +204,7 @@
 
             onDragEnd: function (event) {
                 var e = pages.const.event;
-                if (this.log.dnd.getLevel() <= log.levels.DEBUG) {
-                    this.log.dnd.debug('search.trigger.' + e.dnd.finished + '(...)');
-                }
-                $(document).trigger(e.dnd.finished, [event]);
+                pages.trigger('search.dnd.end', e.dnd.finished, [event]);
             }
         });
 

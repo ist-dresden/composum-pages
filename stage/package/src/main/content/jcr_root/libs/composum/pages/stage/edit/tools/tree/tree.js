@@ -183,9 +183,9 @@
                     name: newName
                 }, {}, _.bind(function (data) {
                     if (this.isElementType(node)) {
-                        $(document).trigger(pages.const.event.element.moved, [oldPath, data.path]);
+                        pages.trigger('tree.content.rename', pages.const.event.element.moved, [oldPath, data.path]);
                     } else {
-                        $(document).trigger(pages.const.event.content.moved, [oldPath, data.path]);
+                        pages.trigger('tree.content.rename', pages.const.event.content.moved, [oldPath, data.path]);
                     }
                 }, this), _.bind(function (result) {
                     this.refreshNodeById(node.id);
@@ -218,7 +218,7 @@
                         targetPath: targetPath,
                         before: before ? before.original.path : undefined
                     }, {}, _.bind(function (result) {
-                        $(document).trigger(pages.const.event.content.moved, [
+                        pages.trigger('tree.content.dnd.drop', pages.const.event.content.moved, [
                             new pages.Reference(draggedNode.name, draggedNode.path, draggedNode.type),
                             new pages.Reference(result.reference)
                         ]);
@@ -262,7 +262,7 @@
                         type: this.type,
                         reference: reference
                     };
-                    $(document).trigger(e.dnd.object, [object]);
+                    pages.trigger('tree.content.dnd.start', e.dnd.object, [object]);
                     var jsonData = JSON.stringify(object);
                     var dndEvent = event.originalEvent;
                     dndEvent.dataTransfer.setData('application/json', jsonData);
@@ -350,10 +350,7 @@
 
             onDragEnd: function (event, data) {
                 var e = pages.const.event;
-                if (this.log.getLevel() <= log.levels.DEBUG) {
-                    this.log.debug(this.nodeIdPrefix + 'tree.trigger.' + e.dnd.finished + '(...)');
-                }
-                $(document).trigger(e.dnd.finished, [event]);
+                pages.trigger('tree.content.dnd.end', e.dnd.finished, [event]);
             },
 
             onDragFinished: function () {
@@ -433,7 +430,7 @@
 
             onNodeSelected: function (path, node) {
                 if (!this.suppressEvent) {
-                    $(document).trigger("path:select", [path, node.original.name, node.original.type]);
+                    pages.trigger('tree.page.on.node', "path:select", [path, node.original.name, node.original.type]);
                 } else {
                     this.$el.trigger("node:selected", [path]);
                 }
@@ -553,7 +550,7 @@
                         targetType: targetNode.type,
                         before: before ? before.original.path : undefined
                     }, {}, function (result) {
-                        $(document).trigger(pages.const.event.element.moved, [
+                        pages.trigger('tree.page.dnd.drop', pages.const.event.element.moved, [
                             new pages.Reference(draggedNode.name, draggedNode.path, draggedNode.type),
                             new pages.Reference(result.reference)
                         ]);
@@ -596,7 +593,7 @@
 
             onNodeSelected: function (path, node) {
                 if (!this.suppressEvent) {
-                    $(document).trigger("asset:select", [path, node.original.name, node.original.type]);
+                    pages.trigger('tree.asset.on.node', "asset:select", [path, node.original.name, node.original.type]);
                 } else {
                     core.components.Tree.prototype.onNodeSelected.apply(this, [path, node]);
                 }
@@ -834,7 +831,7 @@
             selectAsset: function (event, refOrPath) {
                 var e = pages.const.event;
                 var path = refOrPath && refOrPath.path ? refOrPath.path : refOrPath;
-                $(document).trigger(e.asset.selected, [path]);
+                pages.trigger('tree.asset.select', e.asset.selected, [path]);
             },
 
             selectDefaultNode: function () {

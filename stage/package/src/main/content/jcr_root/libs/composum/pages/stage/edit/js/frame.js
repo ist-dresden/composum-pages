@@ -71,18 +71,12 @@
                 var e = pages.const.event;
                 var initialPath = this.$el.data('path');
                 if (initialPath) {
-                    if (this.log.frame.getLevel() <= log.levels.DEBUG) {
-                        this.log.frame.debug('frame.trigger.' + e.page.select + '(' + initialPath + ')');
-                    }
-                    $(document).trigger(e.page.select, [initialPath]);
+                    pages.trigger('frame.ready', e.page.select, [initialPath]);
                 }
                 window.addEventListener("message", _.bind(this.onMessage, this), false);
-                if (this.log.frame.getLevel() <= log.levels.DEBUG) {
-                    this.log.frame.debug('frame.trigger.' + e.pages.ready + '(' + initialPath + ')');
-                }
                 // signal initialization end and let components switch to 'normal' mode...
                 window.setTimeout(function () {
-                    $(document).trigger(e.pages.ready);
+                    pages.trigger('frame.ready', e.pages.ready);
                 }, 800);
             },
 
@@ -126,10 +120,8 @@
                         pages.setLocale(this.currentLocale = data.meta.language, data.meta.defaultLanguage);
                         if (data.meta && data.meta.site !== pages.current.site) {
                             pages.current.site = data.meta.site;
-                            if (this.log.frame.getLevel() <= log.levels.DEBUG) {
-                                this.log.frame.debug('frame.trigger.' + pages.const.event.site.selected + '(' + data.meta.site + ')');
-                            }
-                            $(document).trigger(pages.const.event.site.selected, [data.meta.site]);
+                            pages.trigger('frame.on.page.selected', pages.const.event.site.selected,
+                                [data.meta.site]);
                         }
                     }, this));
                     if (history.replaceState) {
@@ -162,10 +154,7 @@
                                     // trigger all necessary events after loading a different page
                                     pages.current.page = data.path;
                                     var eventData = [data.path, url.parameters];
-                                    if (this.log.frame.getLevel() <= log.levels.DEBUG) {
-                                        this.log.frame.debug('frame.trigger.' + pages.const.event.page.selected + '(' + data.path + ')');
-                                    }
-                                    $(document).trigger(pages.const.event.page.selected, eventData);
+                                    pages.trigger('frame.on.load', pages.const.event.page.selected, eventData);
                                 }
                             }
                         } else {
@@ -174,8 +163,8 @@
                                 select = pages.toolbars.pageToolbar.getSelectedComponent();
                             }
                             if (select) {
-                                pages.log.debug('frame.trigger.' + pages.const.event.element.select + '(' + select.path + ')');
-                                $(document).trigger(pages.const.event.element.select, [new pages.Reference(select)]);
+                                pages.trigger('frame.on.load', pages.const.event.element.select,
+                                    [new pages.Reference(select)]);
                             }
                         }
                         // get current locale from request if present to keep locale switching
@@ -196,10 +185,7 @@
                         this.log.frame.debug('pages.EditFrame.selectSite(' + path + ')');
                     }
                     pages.current.site = path;
-                    if (this.log.frame.getLevel() <= log.levels.DEBUG) {
-                        this.log.frame.debug('frame.trigger.' + pages.const.event.site.selected + '(' + path + ')');
-                    }
-                    $(document).trigger(pages.const.event.site.selected, [path]);
+                    pages.trigger('frame.site.select', pages.const.event.site.selected, [path]);
                 }
                 this.selectPage(event, path);
             },
@@ -207,34 +193,25 @@
             selectPage: function (event, path, parameters, elementRef) {
                 if (pages.current.page !== path) {
                     if (this.log.frame.getLevel() <= log.levels.DEBUG) {
-                        this.log.frame.debug('pages.EditFrame.selectPage(' + path + ')');
+                        this.log.frame.debug('frame.page.select(' + path + ')');
                     }
                     this.getPageData(path, _.bind(function (data) {
                         if (data.meta && data.meta.site !== pages.current.site) {
                             pages.current.site = data.meta.site;
-                            if (this.log.frame.getLevel() <= log.levels.DEBUG) {
-                                this.log.frame.debug('frame.trigger.' + pages.const.event.site.selected + '(' + data.meta.site + ')');
-                            }
-                            $(document).trigger(pages.const.event.site.selected, [data.meta.site]);
+                            pages.trigger('frame.page.select', pages.const.event.site.selected, [data.meta.site]);
                         }
                         pages.current.page = path;
                         if (elementRef) {
                             this.selectOnLoad = elementRef;
                         }
                         this.reloadPage(parameters);
-                        if (this.log.frame.getLevel() <= log.levels.DEBUG) {
-                            this.log.frame.debug('frame.trigger.' + pages.const.event.page.selected + '(' + path + ')');
-                        }
-                        $(document).trigger(pages.const.event.page.selected, [path]);
+                        pages.trigger('frame.page.select', pages.const.event.page.selected, [path]);
                     }, this), _.bind(function () {
-                        $(document).trigger(pages.const.event.content.selected, ["/"]);
-                        $(document).trigger(pages.const.event.site.selected);
+                        pages.trigger('frame.page.select', pages.const.event.content.selected, ["/"]);
+                        pages.trigger('frame.page.select', pages.const.event.site.selected);
                     }, this));
                 } else {
-                    if (this.log.frame.getLevel() <= log.levels.DEBUG) {
-                        this.log.frame.debug('frame.trigger.' + pages.const.event.path.selected + '(' + path + ')');
-                    }
-                    $(document).trigger(pages.const.event.path.selected, [path]);
+                    pages.trigger('frame.page.select', pages.const.event.path.selected, [path]);
                 }
             },
 
@@ -410,22 +387,22 @@
                         case e.element.selected:
                             // transform selection messages into the corresponding event for the edit frame components
                             if (args.reference && args.reference.path) {
-                                this.log.frame.debug('frame.trigger.' + e.element.selected + '(' + args.reference.path + ')');
-                                $(document).trigger(e.element.selected, [args.reference]);
+                                pages.trigger('frame.msg.element.selected', e.element.selected, [args.reference]);
                             } else {
-                                this.log.frame.debug('frame.trigger.' + e.element.selected + '()');
-                                $(document).trigger(e.element.selected, []);
+                                pages.trigger('frame.msg.element.selected', e.element.selected, []);
                             }
                             break;
                         case e.page.containerRefs:
                             // forward container references list to the edit frame components
-                            this.log.frame.trace('frame.message.on.' + e.page.containerRefs + '(' + message[2] + ')');
-                            $(document).trigger(e.page.containerRefs, [args]);
+                            if (this.log.frame.getLevel() <= log.levels.TRACE) {
+                                this.log.frame.trace('frame.message.on.' + e.page.containerRefs + '(' + message[2] + ')');
+                            }
+                            pages.trigger('frame.msg.container.refs', e.page.containerRefs, [args]);
                             break;
                         case t.event:
                             // triggers an event in the frame document context
                             this.log.frame.debug('frame.message.on.' + args.event + '(' + message[2] + ')');
-                            $(document).trigger(args.event, args.data);
+                            pages.trigger('frame.msg.event', args.event, args.data);
                             break;
                         case t.action:
                             // triggers an event in the frame document context
@@ -467,10 +444,7 @@
                         //
                         case e.dnd.object:
                             // triggers a 'dnd:object' event eith the data of an object dragged on the content page
-                            if (this.log.frame.getLevel() <= log.levels.DEBUG) {
-                                this.log.frame.debug('frame.message.on.' + e.dnd.object + JSON.stringify(args));
-                            }
-                            $(document).trigger(e.dnd.object, [args, 'message']);
+                            pages.trigger('frame.msg.dnd.object', e.dnd.object, [args, 'message']);
                             break;
                         case e.dnd.drop:
                             // executes the DnD drop operation triggered in the content page using the data from the content
@@ -498,10 +472,7 @@
                             break;
                         case e.dnd.finished:
                             // triggers the 'dnd:finished' event in the frames context if the end is detected in the content
-                            if (this.log.frame.getLevel() <= log.levels.DEBUG) {
-                                this.log.frame.debug('frame.message.on.' + e.dnd.finished);
-                            }
-                            $(document).trigger(e.dnd.finished, [event, 'message']);
+                            pages.trigger('frame.msg.dnd.finished', e.dnd.finished, [event, 'message']);
                             break;
                     }
                 }

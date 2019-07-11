@@ -112,6 +112,13 @@
             ptr: log.getLogger("elements:ptr")
         };
 
+        elements.trigger = function (key, event, /*array,optional*/ args) {
+            if (elements.log.std.getLevel() <= log.levels.INFO) {
+                elements.log.std.info('trigger@' + key + ' > ' + event + (args ? JSON.stringify(args) : ''));
+            }
+            $(document).trigger(event, args);
+        };
+
         /**
          * show an alert message in the edit frame
          * @param type

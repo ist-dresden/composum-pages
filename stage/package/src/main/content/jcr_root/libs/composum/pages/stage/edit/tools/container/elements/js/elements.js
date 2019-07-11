@@ -67,7 +67,7 @@
                     type: 'element',
                     reference: this.reference
                 };
-                $(document).trigger(e.dnd.object, [object]);
+                pages.trigger('elements.dnd.start', e.dnd.object, [object]);
                 var jsonData = JSON.stringify(object);
                 var dndEvent = event.originalEvent;
                 dndEvent.dataTransfer.setData('application/json', jsonData);
@@ -102,10 +102,7 @@
             onDragEnd: function (event) {
                 event.preventDefault();
                 var e = pages.const.event;
-                if (this.log.dnd.getLevel() <= log.levels.DEBUG) {
-                    this.log.dnd.debug('elements.trigger.' + e.dnd.finished + '(...)');
-                }
-                $(document).trigger(e.dnd.finished, [event]);
+                pages.trigger('elements.dnd.end', e.dnd.finished, [event]);
                 return false;
             },
 
@@ -301,7 +298,8 @@
                 if (this.selection) {
                     var e = pages.const.event;
                     var parentPath = core.getParentPath(this.selection);
-                    $(document).trigger(e.element.select, [new pages.Reference(undefined, parentPath)]);
+                    pages.trigger('elements.select.container', e.element.select,
+                        [new pages.Reference(undefined, parentPath)]);
                 }
                 return false;
             },
@@ -310,7 +308,7 @@
                 event.preventDefault();
                 if (this.selection) {
                     var e = pages.const.event;
-                    $(document).trigger(e.element.select, [new pages.Reference(undefined, this.selection)]);
+                    pages.trigger('elements.select.element', e.element.select, [new pages.Reference(undefined, this.selection)]);
                 }
                 return false;
             },

@@ -251,7 +251,7 @@
                 var g = pages.const.profile.pages;
                 pages.profile.set(g.aspect, g.locale, locale);
                 pages.log.debug('pages.trigger.' + e.locale + '(' + locale + ')');
-                $(document).trigger(e.locale, [locale]);
+                pages.trigger('pages.locale.set', e.locale, [locale]);
             }
         };
 
@@ -279,7 +279,7 @@
             if (triggerEvent) {
                 var e = pages.const.event.scope;
                 pages.log.debug('pages.trigger.' + e.changed + '(' + scope + ')');
-                $(document).trigger(e.changed, [scope]);
+                pages.trigger('pages.scope.set', e.changed, [scope]);
             }
         };
 
@@ -300,6 +300,13 @@
 
         pages.versionsVisible = function () {
             return $('body').hasClass(pages.const.versionViewCssClass);
+        };
+
+        pages.trigger = function (key, event, /*array,optional*/ args) {
+            if (pages.log.getLevel() <= log.levels.INFO) {
+                pages.log.info('trigger@' + key + ' > ' + event + (args ? JSON.stringify(args) : ''));
+            }
+            $(document).trigger(event, args);
         };
 
         pages.contextTools = {

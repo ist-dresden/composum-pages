@@ -59,7 +59,7 @@
                     type: 'component',
                     reference: this.reference
                 };
-                $(document).trigger(e.dnd.object, [object]);
+                pages.trigger('components.dnd.start', e.dnd.object, [object]);
                 var jsonData = JSON.stringify(object);
                 var dndEvent = event.originalEvent;
                 dndEvent.dataTransfer.setData('application/json', jsonData);
@@ -71,10 +71,7 @@
 
             onDragEnd: function (event) {
                 var e = pages.const.event;
-                if (this.log.dnd.getLevel() <= log.levels.DEBUG) {
-                    this.log.dnd.debug('components.trigger.' + e.dnd.finished + '(...)');
-                }
-                $(document).trigger(e.dnd.finished, [event]);
+                pages.trigger('components.dnd.end', e.dnd.finished, [event]);
             }
         });
 

@@ -62,8 +62,7 @@
                     this.$releaseView = $listEntry;
                     $('body').addClass('context-driven-view');
                     $listEntry.addClass('selected');
-                    pages.log.debug('site.trigger.' + pages.const.event.page.view + '(' + path + ',preview)');
-                    $(document).trigger(pages.const.event.page.view, [path, {'pages.view': 'preview'},
+                    pages.trigger('site.release.view', pages.const.event.page.view, [path, {'pages.view': 'preview'},
                         tools.const.releases.uri.release.view]);
                 }
             },
@@ -73,8 +72,7 @@
                     $('body').removeClass('context-driven-view');
                     this.$releaseView.removeClass('selected');
                     this.$releaseView = [];
-                    pages.log.debug('site.trigger.' + pages.const.event.page.view + '()');
-                    $(document).trigger(pages.const.event.page.view, [null, {}]);
+                    pages.trigger('site.release.close', pages.const.event.page.view, [null, {}]);
                 }
             },
 
