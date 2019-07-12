@@ -23,15 +23,6 @@
     "jcr:primaryType": "sling:Folder",
     "acl": [
       {
-        "principal": "everyone",
-        "acl": [
-          {
-            "allow": true,
-            "privileges": "jcr:read"
-          }
-        ]
-      },
-      {
         "principal": "composum-pages-token-service",
         "acl": [
           {
