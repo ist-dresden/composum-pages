@@ -330,7 +330,7 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
             if (design == null) {
                 design = findBestInDesign(templateNode, contentNode, relativePath, elementType, weight, design, contentNode);
             }
-            if (design == null) {
+            if (design == null && StringUtils.isBlank(relativePath)) {
                 if (isMatchingType(templateNode, contentNode.getResourceType())) {
                     design = new DesignImpl(templateNode, weight);
                 }
@@ -362,7 +362,7 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
          */
         protected boolean isMatchingType(Resource designNode, String resourceType) {
             PathPatternSet typePatterns = new PathPatternSet(getReference(designNode, null), PROP_TYPE_PATTERNS);
-            return typePatterns.matches(resourceType);
+            return typePatterns.matches(designNode.getResourceResolver(), resourceType);
         }
     }
 
@@ -864,12 +864,12 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
     /**
      * Moves a resource and adopts all references to the moved resource or one of its children.
      *
-     * @param resolver     the resolver (session context)
-     * @param changeRoot   the root element for reference search and change
-     * @param source       the resource to move
-     * @param targetParent the target (the parent resource) of the move
-     * @param newName      an optional new name for the resource
-     * @param before       the designated sibling in an ordered target collection
+     * @param resolver         the resolver (session context)
+     * @param changeRoot       the root element for reference search and change
+     * @param source           the resource to move
+     * @param targetParent     the target (the parent resource) of the move
+     * @param newName          an optional new name for the resource
+     * @param before           the designated sibling in an ordered target collection
      * @param updatedReferrers output parameter: the List of referers found - these were changed and might need setting a last modification date
      * @return the new resource at the target path
      */

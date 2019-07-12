@@ -63,14 +63,17 @@ public class PathPatternSet {
     /**
      * matches if property is valid and one of the rules is matching
      */
-    public boolean matches(String resourceType) {
+    public boolean matches(ResourceResolver resolver, String resourceType) {
         if (!isEmpty()) {
             if (StringUtils.isNotBlank(resourceType)) {
-                for (Pattern pattern : patternList) {
-                    if (pattern.matcher(resourceType).matches()) {
-                        return true;
+                do {
+                    for (Pattern pattern : patternList) {
+                        if (pattern.matcher(resourceType).matches()) {
+                            return true;
+                        }
                     }
                 }
+                while (StringUtils.isNotBlank(resourceType = resolver.getParentResourceType(resourceType)));
             }
             return false;
         } else {

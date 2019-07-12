@@ -85,7 +85,7 @@ public class Element extends AbstractModel {
     }
 
     public boolean isAllowedContainer(String resourceType) {
-        return getAllowedContainers().matches(resourceType);
+        return getAllowedContainers().matches(getContext().getResolver(), resourceType);
     }
 
     /**

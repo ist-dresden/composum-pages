@@ -249,7 +249,7 @@ public class Container extends Element {
     }
 
     public boolean isAllowedElement(String resourceType) {
-        return getAllowedElements().matches(resourceType);
+        return getAllowedElements().matches(getContext().getResolver(), resourceType);
     }
 
     /**
