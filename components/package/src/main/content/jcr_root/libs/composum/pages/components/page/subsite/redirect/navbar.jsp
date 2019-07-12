@@ -2,4 +2,4 @@
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <cpp:defineObjects/>
 <cpp:include resourceType="composum/pages/components/page/subsite/navbar"
-             resource="${pageModel.homepage.resource}"/>
+             resource="${currentPage.homepage.resource}"/>

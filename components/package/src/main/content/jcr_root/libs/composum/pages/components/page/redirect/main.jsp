@@ -6,7 +6,7 @@
         <div class="composum-pages-components-page_row row">
             <div class="composum-pages-components-page_main col-xs-12">
                 <div class="composum-pages-components-page-redirect_redirect-hint alert alert-info">This page
-                    redirects to: '<a href="${pageModel.slingTargetUrl}">${pageModel.slingTarget}</a>'
+                    redirects to: '<a href="${currentPage.slingTargetUrl}">${currentPage.slingTarget}</a>'
                 </div>
             </div>
         </div>

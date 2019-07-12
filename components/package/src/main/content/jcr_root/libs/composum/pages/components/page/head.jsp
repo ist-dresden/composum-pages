@@ -5,6 +5,6 @@
 <cpp:defineObjects/>
 <sling:call script="meta.jsp"/>
 <sling:call script="hreflang.jsp"/>
-<cpn:clientlib type="link" category="${pageModel.viewClientlibCategory}"/>
-<cpn:clientlib type="css" category="${pageModel.viewClientlibCategory}"/>
-<cpn:clientlib type="css" test="${pageModel.editMode}" category="${pageModel.editClientlibCategory}"/>
+<cpn:clientlib type="link" category="${currentPage.viewClientlibCategory}"/>
+<cpn:clientlib type="css" category="${currentPage.viewClientlibCategory}"/>
+<cpn:clientlib type="css" test="${currentPage.editMode}" category="${currentPage.editClientlibCategory}"/>
