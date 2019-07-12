@@ -4,6 +4,8 @@ import com.composum.pages.commons.PagesConstants.ReferenceType;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.filter.ResourceFilter;
 import org.apache.sling.api.SlingHttpServletRequest;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -12,6 +14,9 @@ import javax.annotation.Nullable;
  * The configuration service for all servlets in the pages bundle.
  */
 public interface PagesConfiguration {
+
+    @Nonnull
+    Resource getPageMetaDataRoot(@Nonnull ResourceResolver resolver);
 
     @Nonnull
     ResourceFilter getRequestNodeFilter(@Nonnull SlingHttpServletRequest request,

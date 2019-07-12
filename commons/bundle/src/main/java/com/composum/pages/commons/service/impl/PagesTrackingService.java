@@ -1,10 +1,12 @@
 package com.composum.pages.commons.service.impl;
 
+import com.composum.pages.commons.PagesConfiguration;
 import com.composum.pages.commons.model.Page;
 import com.composum.pages.commons.replication.ReplicationManager;
 import com.composum.pages.commons.service.PageManager;
 import com.composum.pages.commons.service.TrackingService;
 import com.composum.sling.core.BeanContext;
+import com.composum.sling.core.util.CoreConstants;
 import com.composum.sling.core.util.ResourceUtil;
 import com.composum.sling.platform.security.AccessMode;
 import org.apache.commons.codec.binary.Base64;
@@ -29,6 +31,8 @@ import org.osgi.service.metatype.annotations.Option;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 import javax.jcr.RepositoryException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpSession;
@@ -39,6 +43,7 @@ import java.util.Formatter;
 import java.util.GregorianCalendar;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 import static com.composum.pages.commons.PagesConstants.META_NODE_NAME;
 import static com.composum.pages.commons.PagesConstants.META_NODE_TYPE;
@@ -140,6 +145,9 @@ public class PagesTrackingService implements TrackingService {
     protected ResourceResolverFactory resolverFactory;
 
     @Reference
+    protected PagesConfiguration pagesConfig;
+
+    @Reference
     protected ReplicationManager replicationManager;
 
     protected Config config;
@@ -197,78 +205,84 @@ public class PagesTrackingService implements TrackingService {
             SlingHttpServletRequest request = token.context.getRequest();
 
             Resource statistics = getStatistics(token.context, token.resource);
-            Resource dayStatistics = getDayStatistics(statistics, token);
+            if (statistics != null) {
 
-            // count page assess for each hour of a day
-            String hourlyPath = new Formatter().format(PAGE_STATS_HOUR, token.hour).toString();
-            Resource hourlyStats = ResourceUtil.getOrCreateChild(dayStatistics, hourlyPath, INTERMEDIATE_TYPE);
+                Resource dayStatistics = getDayStatistics(statistics, token);
 
-            ModifiableValueMap hourlyValues = hourlyStats.adaptTo(ModifiableValueMap.class);
-            hourlyValues.put(PROP_TOTAL, hourlyValues.get(PROP_TOTAL, 0) + 1);
+                // count page assess for each hour of a day
+                String hourlyPath = new Formatter().format(PAGE_STATS_HOUR, token.hour).toString();
+                Resource hourlyStats = ResourceUtil.getOrCreateChild(dayStatistics, hourlyPath, INTERMEDIATE_TYPE);
 
-            Resource refererStats;
-            ModifiableValueMap refererStatsValues = null;
+                ModifiableValueMap hourlyValues = Objects.requireNonNull(hourlyStats.adaptTo(ModifiableValueMap.class));
+                hourlyValues.put(PROP_TOTAL, hourlyValues.get(PROP_TOTAL, 0) + 1);
 
-            // count page access requests from one referer (daily count)
-            if (StringUtils.isNotBlank(token.referer)) {
-                String refererPath = "referer/r-" + Integer.toHexString(Math.abs(token.referer.hashCode()));
-                String refererUrl = new String(Base64.decodeBase64(token.referer.getBytes()), CHARSET);
-                refererStats = ResourceUtil.getOrCreateChild(dayStatistics, refererPath, INTERMEDIATE_TYPE);
-                refererStatsValues = refererStats.adaptTo(ModifiableValueMap.class);
-                refererStatsValues.put(PROP_URL, refererUrl);
-                refererStatsValues.put(PROP_TOTAL, refererStatsValues.get(PROP_TOTAL, 0) + 1);
-            }
+                Resource refererStats;
+                ModifiableValueMap refererStatsValues = null;
 
-            boolean isUnique = false;
-            switch (config.cookiePolicy()) {
-                case "tracking":
-                    // use a cookie to detect repeated requests from the same client (daily cookie)
-                    Cookie cookie = request.getCookie(PAGE_TOKEN_COOKIE);
-                    if (cookie == null) {
-                        // count 'unique' requests if no cookie found
-                        isUnique = true;
-
-                        // set cookie to avoid multiple counts for the same day
-                        String uri = request.getRequestURI();
-                        if (!uri.endsWith(EXT_PNG)) {
-                            uri = uri.substring(0, uri.lastIndexOf("/")); // ignore referer suffix
-                        }
-                        cookie = new Cookie(PAGE_TOKEN_COOKIE,
-                                token.year + "-" + token.month + "-" + token.day + ":" + token.hour);
-                        cookie.setPath(uri);
-                        cookie.setMaxAge((25 - token.hour) * 3600); // expires near the end of the day
-                        token.context.getResponse().addCookie(cookie);
-                    }
-                    break;
-                case "session":
-                default:
-                    // use session instead of special cookies (one 'technical' session cookie only)
-                    HttpSession session = request.getSession(true);
-                    SessionTrace trace = null;
-                    try {
-                        trace = (SessionTrace) session.getAttribute(SA_SESSION_TRACE);
-                    } catch (ClassCastException ccex) {
-                        // ok, ignore and reset
-                    }
-                    if (trace == null) {
-                        trace = new SessionTrace();
-                        session.setAttribute(SA_SESSION_TRACE, trace);
-                    }
-
-                    if (trace.isNewRequest(token)) {
-                        // count 'unique' requests if resource not found in session trace
-                        isUnique = true;
-                    }
-                    trace.addRequest(token);
-                    break;
-            }
-
-            // count 'unique' requests
-            if (isUnique) {
-                hourlyValues.put(PROP_UNIQUE, hourlyValues.get(PROP_UNIQUE, 0) + 1);
-                if (refererStatsValues != null) {
-                    refererStatsValues.put(PROP_UNIQUE, refererStatsValues.get(PROP_UNIQUE, 0) + 1);
+                // count page access requests from one referer (daily count)
+                if (StringUtils.isNotBlank(token.referer)) {
+                    String refererPath = "referer/r-" + Integer.toHexString(Math.abs(token.referer.hashCode()));
+                    String refererUrl = new String(Base64.decodeBase64(token.referer.getBytes()), CHARSET);
+                    refererStats = ResourceUtil.getOrCreateChild(dayStatistics, refererPath, INTERMEDIATE_TYPE);
+                    refererStatsValues = Objects.requireNonNull(refererStats.adaptTo(ModifiableValueMap.class));
+                    refererStatsValues.put(PROP_URL, refererUrl);
+                    refererStatsValues.put(PROP_TOTAL, refererStatsValues.get(PROP_TOTAL, 0) + 1);
                 }
+
+                boolean isUnique = false;
+                switch (config.cookiePolicy()) {
+                    case "tracking":
+                        // use a cookie to detect repeated requests from the same client (daily cookie)
+                        Cookie cookie = request.getCookie(PAGE_TOKEN_COOKIE);
+                        if (cookie == null) {
+                            // count 'unique' requests if no cookie found
+                            isUnique = true;
+
+                            // set cookie to avoid multiple counts for the same day
+                            String uri = request.getRequestURI();
+                            if (!uri.endsWith(EXT_PNG)) {
+                                uri = uri.substring(0, uri.lastIndexOf("/")); // ignore referer suffix
+                            }
+                            cookie = new Cookie(PAGE_TOKEN_COOKIE,
+                                    token.year + "-" + token.month + "-" + token.day + ":" + token.hour);
+                            cookie.setPath(uri);
+                            cookie.setMaxAge((25 - token.hour) * 3600); // expires near the end of the day
+                            token.context.getResponse().addCookie(cookie);
+                        }
+                        break;
+                    case "session":
+                    default:
+                        // use session instead of special cookies (one 'technical' session cookie only)
+                        HttpSession session = request.getSession(true);
+                        SessionTrace trace = null;
+                        try {
+                            trace = (SessionTrace) session.getAttribute(SA_SESSION_TRACE);
+                        } catch (ClassCastException ccex) {
+                            // ok, ignore and reset
+                        }
+                        if (trace == null) {
+                            trace = new SessionTrace();
+                            session.setAttribute(SA_SESSION_TRACE, trace);
+                        }
+
+                        if (trace.isNewRequest(token)) {
+                            // count 'unique' requests if resource not found in session trace
+                            isUnique = true;
+                        }
+                        trace.addRequest(token);
+                        break;
+                }
+
+                // count 'unique' requests
+                if (isUnique) {
+                    hourlyValues.put(PROP_UNIQUE, hourlyValues.get(PROP_UNIQUE, 0) + 1);
+                    if (refererStatsValues != null) {
+                        refererStatsValues.put(PROP_UNIQUE, refererStatsValues.get(PROP_UNIQUE, 0) + 1);
+                    }
+                }
+
+            } else {
+                LOG.error("can't resolve statistics of '{}'", token.resource.getPath());
             }
 
         } catch (RepositoryException ex) {
@@ -279,17 +293,24 @@ public class PagesTrackingService implements TrackingService {
     /**
      * returns the statistics resource of the containing page of the resource for statistics updates
      */
-    protected Resource getStatistics(BeanContext context, Resource requested)
+    @CheckForNull
+    protected Resource getStatistics(@Nonnull final BeanContext context, @Nonnull final Resource requested)
             throws RepositoryException {
+        Resource statistics = null;
         PageManager pageManager = context.getService(PageManager.class);
-        Resource page = pageManager.getContainingPageResource(requested);
-        Resource cppMeta = page.getChild(META_NODE_NAME);
-        if (cppMeta == null) {
-            cppMeta = ResourceUtil.getOrCreateChild(page, META_NODE_NAME, META_NODE_TYPE);
-        }
-        Resource statistics = cppMeta.getChild(STATS_NODE_NAME);
-        if (statistics == null) {
-            statistics = ResourceUtil.getOrCreateChild(cppMeta, STATS_NODE_NAME, INTERMEDIATE_TYPE);
+        Page page = pageManager.getContainingPage(context, requested);
+        if (page != null) {
+            Resource cppMeta = page.getMetaData();
+            if (ResourceUtil.isNonExistingResource(cppMeta)) {
+                Resource metaDataRoot = pagesConfig.getPageMetaDataRoot(context.getResolver());
+                String parentPath = Page.getMetaDataPath(page.getPath()).substring(metaDataRoot.getPath().length());
+                Resource metaParent = ResourceUtil.getOrCreateChild(metaDataRoot, parentPath, CoreConstants.TYPE_SLING_FOLDER);
+                cppMeta = ResourceUtil.getOrCreateChild(metaParent, META_NODE_NAME, META_NODE_TYPE);
+            }
+            statistics = cppMeta.getChild(STATS_NODE_NAME);
+            if (statistics == null) {
+                statistics = ResourceUtil.getOrCreateChild(cppMeta, STATS_NODE_NAME, INTERMEDIATE_TYPE);
+            }
         }
         return statistics;
     }
@@ -297,13 +318,12 @@ public class PagesTrackingService implements TrackingService {
     /**
      * returns the resource to store statistics data for the given path; uses the token to build the 'calendar path'
      */
-    protected Resource getDayStatistics(Resource statistics, TokenRequest token)
+    @Nonnull
+    protected Resource getDayStatistics(@Nonnull final Resource statistics, @Nonnull final TokenRequest token)
             throws RepositoryException {
         String pathToDay = new Formatter().format(PAGE_STATS_PATH,
                 token.year, token.month, token.day).toString();
-        @SuppressWarnings("UnnecessaryLocalVariable")
-        Resource dayStatistics = ResourceUtil.getOrCreateChild(statistics, pathToDay, INTERMEDIATE_TYPE);
-        return dayStatistics;
+        return ResourceUtil.getOrCreateChild(statistics, pathToDay, INTERMEDIATE_TYPE);
     }
 
     @Activate

@@ -14,6 +14,8 @@ import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.mapping.jcr.ResourceFilterMapping;
 import org.apache.sling.api.SlingHttpServletRequest;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.ComponentContext;
@@ -29,6 +31,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+
+import static com.composum.pages.commons.PagesConstants.META_ROOT_PATH;
 
 /**
  * The configuration service for all servlets in the Pages module.
@@ -129,6 +134,12 @@ public class PagesConfigImpl implements PagesConfiguration {
     protected Configuration config;
     private transient BundleContext bundleContext;
     private transient SiteManager siteManager;
+
+    @Nonnull
+    @Override
+    public Resource getPageMetaDataRoot(@Nonnull final ResourceResolver resolver) {
+        return Objects.requireNonNull(resolver.getResource(META_ROOT_PATH));
+    }
 
     @Nonnull
     @Override

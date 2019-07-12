@@ -17,5 +17,29 @@
   {
     "path": "/preview",
     "jcr:primaryType": "sling:Folder"
+  },
+  {
+    "path": "/var/composum/pages",
+    "jcr:primaryType": "sling:Folder",
+    "acl": [
+      {
+        "principal": "everyone",
+        "acl": [
+          {
+            "allow": true,
+            "privileges": "jcr:read"
+          }
+        ]
+      },
+      {
+        "principal": "composum-pages-token-service",
+        "acl": [
+          {
+            "allow": true,
+            "privileges": "jcr:all"
+          }
+        ]
+      }
+    ]
   }
 ]

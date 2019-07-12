@@ -1,5 +1,8 @@
 package com.composum.pages.commons.taglib;
 
+import com.composum.pages.commons.PagesConstants;
+import com.composum.pages.commons.model.Page;
+import com.composum.pages.commons.model.properties.Language;
 import com.composum.pages.commons.service.TrackingService;
 import com.composum.pages.commons.util.LinkUtil;
 import com.composum.sling.cpnl.CpnlTagSupport;
@@ -51,14 +54,19 @@ public class TokenTag extends CpnlTagSupport {
     public int doEndTag() throws JspException {
         if (getTestResult()) {
             try {
+                Page page = (Page) request.getAttribute(PagesConstants.RA_CURRENT_PAGE);
                 String url = LinkUtil.getUrl(
                         request,
-                        resource.getPath(),
+                        page.getPath(),
                         "token",
                         TrackingService.EXT_PNG);
                 String referer = request.getHeader("Referer");
                 if (StringUtils.isNotBlank(referer)) {
                     url += "/" + Base64.encodeBase64URLSafeString(referer.getBytes(TrackingService.CHARSET));
+                }
+                Language language = page.getLanguage();
+                if (!language.equals(page.getPageLanguages().getDefaultLanguage())) {
+                    url += "?pages.locale=" + language.getKey();
                 }
                 JspWriter writer = pageContext.getOut();
                 writer.write("<img class=\"composum-pages-token\" src=\"");

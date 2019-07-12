@@ -42,6 +42,9 @@ import static com.composum.pages.commons.PagesConstants.DEFAULT_EDIT_CATEGORY;
 import static com.composum.pages.commons.PagesConstants.DEFAULT_VIEW_CATEGORY;
 import static com.composum.pages.commons.PagesConstants.LANGUAGE_CSS_KEY;
 import static com.composum.pages.commons.PagesConstants.LOCALE_REQUEST_PARAM;
+import static com.composum.pages.commons.PagesConstants.META_NODE_NAME;
+import static com.composum.pages.commons.PagesConstants.META_PATH_PATTERN;
+import static com.composum.pages.commons.PagesConstants.META_ROOT_PATH;
 import static com.composum.pages.commons.PagesConstants.NODE_TYPE_PAGE;
 import static com.composum.pages.commons.PagesConstants.NODE_TYPE_PAGE_CONTENT;
 import static com.composum.pages.commons.PagesConstants.PAGES_PREFIX;
@@ -202,6 +205,8 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
 
     private transient StatusModel releaseStatus;
     private transient PlatformVersionsService versionsService;
+
+    private transient Resource metaData;
 
     public Page() {
     }
@@ -381,6 +386,20 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
 
     public <T> T getSettingsProperty(String key, Locale locale, T defaultValue) {
         return getSite().getContent().getSettingsProperty(key, locale, defaultValue);
+    }
+
+    // metaData
+
+    public Resource getMetaData() {
+        if (metaData == null) {
+            metaData = getResource().getResourceResolver().resolve(getMetaDataPath(getPath()) + "/" + META_NODE_NAME);
+        }
+        return metaData;
+    }
+
+    public static String getMetaDataPath(String pagePath) {
+        Matcher metaPath = META_PATH_PATTERN.matcher(pagePath);
+        return META_ROOT_PATH + (metaPath.matches() ? metaPath.group(1) : "");
     }
 
     // rendering
