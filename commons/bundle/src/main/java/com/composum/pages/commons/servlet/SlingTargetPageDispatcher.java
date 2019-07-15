@@ -32,6 +32,10 @@ public class SlingTargetPageDispatcher implements PageDispatcher {
     public boolean redirect(@Nonnull Page page) throws IOException {
         String targetUrl = page.getSlingTargetUrl();
         if (StringUtils.isNotBlank(targetUrl)) {
+            Page targetPage = page.getPageManager().getPage(page.getContext(), targetUrl);
+            if (targetPage != null) {
+                targetUrl = targetPage.getUrl();
+            }
             page.getContext().getResponse().sendRedirect(targetUrl);
             return true;
         }

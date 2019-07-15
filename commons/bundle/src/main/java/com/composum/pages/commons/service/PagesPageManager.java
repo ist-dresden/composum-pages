@@ -45,7 +45,6 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import static com.composum.pages.commons.PagesConstants.NODE_TYPE_PAGE;
 import static com.composum.sling.core.util.SlingResourceUtil.isSameOrDescendant;
@@ -86,18 +85,27 @@ public class PagesPageManager extends PagesContentManager<Page> implements PageM
     @Reference
     protected PlatformVersionsService versionsService;
 
+    @Nullable
+    public Page getPage(@Nonnull BeanContext context, @Nonnull String absPath) {
+        Resource resource = context.getResolver().getResource(absPath);
+        return (Page.isPage(resource) || Page.isPageContent(resource)) ? createBean(context, resource) : null;
+    }
+
+    @Nonnull
     @Override
-    public Page createBean(BeanContext context, Resource resource) {
+    public Page createBean(@Nonnull BeanContext context, @Nonnull Resource resource) {
         return new Page(this, context, resource);
     }
 
     @Override
+    @Nullable
     public Page getContainingPage(Model element) {
         return getContainingPage(element.getContext(), element.getResource());
     }
 
     @Override
-    public Page getContainingPage(BeanContext context, Resource resource) {
+    @Nullable
+    public Page getContainingPage(@Nonnull final BeanContext context, @Nullable final Resource resource) {
         Page page = null;
         Resource pageResource = resourceManager.findContainingPageResource(resource);
         if (pageResource != null) {
@@ -107,7 +115,7 @@ public class PagesPageManager extends PagesContentManager<Page> implements PageM
     }
 
     @Override
-    public Resource getContainingPageResource(Resource resource) {
+    public Resource getContainingPageResource(@Nonnull final Resource resource) {
         Resource pageResource = resourceManager.findContainingPageResource(resource);
         // fallback to resource itself if no 'page' found
         return pageResource != null ? pageResource : resource;
@@ -196,15 +204,18 @@ public class PagesPageManager extends PagesContentManager<Page> implements PageM
             public String applyTemplatePlaceholders(@Nonnull final Resource target, @Nonnull final String value) {
                 Resource siteResource = siteManager.getContainingSiteResource(target);
                 Resource pageResource = getContainingPageResource(target);
-                String result = value.replaceAll("\\$\\{path}", target.getPath());
-                result = result.replaceAll("\\$\\{page}", pageResource.getPath());
-                if (siteResource != null) {
-                    result = result.replaceAll("\\$\\{site}", siteResource.getPath());
+                if (pageResource != null) {
+                    String result = value.replaceAll("\\$\\{path}", target.getPath());
+                    result = result.replaceAll("\\$\\{page}", pageResource.getPath());
+                    if (siteResource != null) {
+                        result = result.replaceAll("\\$\\{site}", siteResource.getPath());
+                    }
+                    if (!value.equals(result)) {
+                        result = result.replaceAll("/[^/]+/\\.\\./", "/");
+                    }
+                    return result;
                 }
-                if (!value.equals(result)) {
-                    result = result.replaceAll("/[^/]+/\\.\\./", "/");
-                }
-                return result;
+                return value;
             }
 
         }, parent, pageName, pageTemplate, true);

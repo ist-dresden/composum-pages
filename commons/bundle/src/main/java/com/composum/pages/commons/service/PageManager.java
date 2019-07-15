@@ -63,13 +63,22 @@ public interface PageManager extends ContentManager<Page> {
     }
 
     /**
-     * Creates a Page from the resource - if the resource not a page, but below a page, the page is looked up.
+     * Constructs a Page model for a path if the path points to a page or page content
+     *
+     * @param absPath a page resource or a child of a page resource
+     */
+    @Nullable
+    Page getPage(@Nonnull BeanContext context, @Nonnull String absPath);
+
+    /**
+     * Constructs a Page model from the resource - if the resource not a page, but below a page, the page is looked up.
      *
      * @param resource a page resource or a child of a page resource
      */
     @Nonnull
     Page createBean(@Nonnull BeanContext context, @Nonnull Resource resource);
 
+    @Nullable
     Page getContainingPage(Model element);
 
     @Nullable

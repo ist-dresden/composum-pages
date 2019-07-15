@@ -154,7 +154,7 @@ public interface ResourceManager {
     Template getTemplateOf(@Nullable Resource resource);
 
     @Nullable
-    Resource findContainingPageResource(Resource resource);
+    Resource findContainingPageResource(@Nullable Resource resource);
 
     /**
      * Checks the policies of the resource hierarchy for a given parent and child (for move and copy operations).

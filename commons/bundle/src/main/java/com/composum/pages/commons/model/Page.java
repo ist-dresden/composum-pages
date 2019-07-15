@@ -200,6 +200,8 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
 
     private transient String subtitle;
 
+    private transient String targetUrl;
+
     private transient Language language;
     private transient PageLanguages languages;
 
@@ -405,6 +407,27 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
     // rendering
 
     /**
+     * @return 'true' if the current requests URL is equal to this pages canonical URL
+     */
+    public boolean isCanonicalRequest() {
+        SlingHttpServletRequest request = getContext().getRequest();
+        String query = request.getQueryString();
+        StringBuffer url = request.getRequestURL();
+        if (StringUtils.isNotBlank(query)) {
+            url.append("?").append(query);
+        }
+        return getCanonicalUrl().equals(url.toString());
+    }
+
+    /**
+     * @return the full qualified (external) URL of this page
+     */
+    @Nonnull
+    public String getCanonicalUrl() {
+        return LinkUtil.getAbsoluteUrl(getContext().getRequest(), getUrl());
+    }
+
+    /**
      * @return the pages URL - the URL in the context of the pages language - the canonical URL
      */
     @Nonnull
@@ -485,10 +508,19 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
     }
 
     public String getSlingTargetUrl() {
-        String targetUrl = getSlingTarget();
-        if (StringUtils.isNotBlank(targetUrl)) {
-            SlingHttpServletRequest request = context.getRequest();
-            targetUrl = LinkUtil.getUrl(request, targetUrl);
+        if (targetUrl == null) {
+            String target = getSlingTarget();
+            if (StringUtils.isNotBlank(target)) {
+                Page page = getPageManager().getPage(getContext(), target);
+                if (page != null) {
+                    targetUrl = page.getUrl();
+                } else {
+                    SlingHttpServletRequest request = context.getRequest();
+                    targetUrl = LinkUtil.getUrl(request, target);
+                }
+            } else {
+                targetUrl = "";
+            }
         }
         return targetUrl;
     }

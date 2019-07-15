@@ -71,22 +71,25 @@ public class Menuitem extends Page {
 
     public boolean isMenuOnly() {
         if (menuOnly == null) {
-            String target = getTarget();
-            menuOnly = target != null && StringUtils.isBlank(target);
+            String targetUrl = getSlingTargetUrl();
+            menuOnly = targetUrl != null && StringUtils.isBlank(targetUrl);
         }
         return menuOnly;
     }
 
     public boolean isRedirect() {
         if (redirect == null) {
-            String target = getTarget();
-            redirect = StringUtils.isNotBlank(target);
+            String targetUrl = getSlingTargetUrl();
+            redirect = StringUtils.isNotBlank(targetUrl);
         }
         return redirect;
     }
 
-    protected String getTarget() {
-        return getProperty("sling:target", null, (String) null);
+    @Override
+    @Nonnull
+    public String getUrl() {
+        String targetUrl = getSlingTargetUrl();
+        return StringUtils.isNotBlank(targetUrl) ? targetUrl : super.getUrl();
     }
 
     public boolean isSubmenu() {

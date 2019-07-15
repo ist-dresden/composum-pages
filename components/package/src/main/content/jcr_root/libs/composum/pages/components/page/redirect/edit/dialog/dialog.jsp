@@ -9,7 +9,4 @@
         <sling:call script="general.jsp"/>
         <sling:call script="navigation.jsp"/>
     </cpp:editDialogTab>
-    <cpp:editDialogTab tabId="languages" label="Languages">
-        <sling:call script="languages.jsp"/>
-    </cpp:editDialogTab>
 </cpp:editDialog>
