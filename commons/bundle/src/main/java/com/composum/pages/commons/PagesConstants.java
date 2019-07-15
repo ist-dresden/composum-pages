@@ -83,7 +83,7 @@ public interface PagesConstants {
     String NODE_TYPE_PAGE = CPP_PREFIX + "Page";
     String NODE_TYPE_PAGE_CONTENT = CPP_PREFIX + "PageContent";
 
-    String META_ROOT_PATH = "/var/composum/pages";
+    String META_ROOT_PATH = "/var/composum/content";
     Pattern META_PATH_PATTERN = Pattern.compile("^/[^/]+(/.+)(/jcr:content(/.*)?)?$");
     String META_NODE_NAME = CPP_PREFIX + "metaData";
     String META_NODE_TYPE = CPP_PREFIX + "MetaData";
