@@ -158,7 +158,6 @@ public abstract class AbstractModel implements SlingBean, Model {
      * @param resource the resource to use (normally the resource addressed by the request)
      */
     @Override
-    @SuppressWarnings("deprecation")
     public void initialize(BeanContext context, Resource resource) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("initialize (" + context + ", " + resource + ")");
@@ -182,7 +181,6 @@ public abstract class AbstractModel implements SlingBean, Model {
      * @param context the scripting context (e.g. a JSP PageContext or a Groovy scripting context)
      */
     @Override
-    @SuppressWarnings("deprecation")
     public void initialize(BeanContext context) {
         Resource resource = context.getResource();
         initialize(context, resource);

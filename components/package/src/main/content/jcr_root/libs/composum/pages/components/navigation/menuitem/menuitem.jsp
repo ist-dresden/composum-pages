@@ -4,8 +4,7 @@
 <cpp:defineObjects/>
 <cpp:element var="menuitem" type="com.composum.pages.components.model.navigation.Menuitem"
              tagName="li" cssAdd="menu-item link@{menuitem.cssClasses}">
-    <a class="${menuitemCSS}_link" href="${menuitem.url}">
-            ${cpn:text(menuitem.title)}
-    </a>
+    <a class="${menuitemCSS}_link" href="${menuitem.url}" role="menuitem"
+       aria-label="${cpn:text(menuitem.title)}">${cpn:text(menuitem.title)}</a>
     <cpp:include resourceType="composum/pages/components/navigation/submenu"/>
 </cpp:element>

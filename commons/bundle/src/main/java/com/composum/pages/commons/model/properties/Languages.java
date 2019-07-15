@@ -103,17 +103,12 @@ public class Languages extends PropertyNodeSet<Language> {
     @Nonnull
     public Language getLanguage() {
         if (language == null) {
-            Locale locale = getLocale();
             Page page = getCurrentPage();
             if (page != null) {
-                Language chosen = getLanguage(locale);
-                language = page.getPageLanguages().getLanguage(chosen.getKey());
-                if (language == null) {
-                    language = page.getLanguage();
-                }
+                language = page.getLanguage();
             }
             if (language == null) {
-                language = getLanguage(locale);
+                language = getLanguage(getLocale());
             }
         }
         return language;

@@ -108,6 +108,13 @@ public class LanguageRoot extends GenericModel {
         return !Site.isSite(getResource());
     }
 
+    @Override
+    @Nonnull
+    public Language getLanguage() {
+        Page page = getPage();
+        return page != null ? page.getLanguage() : delegate.getLanguage();
+    }
+
     @Nonnull
     public String getLanguageKeyLabel() {
         return getLanguage().getKey().toUpperCase();
