@@ -11,24 +11,28 @@
         <div class="composum-pages-tools_right-actions">
             <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
                 <button type="button"
-                        class="fa fa-filter composum-pages-tools_button btn btn-default dropdown dropdown-toggle"
-                        data-toggle="dropdown" title="Filter"><span
+                        class="fa fa-search ${assetsCSS}_toggle-view composum-pages-tools_button btn btn-default"
+                        title="${cpn:i18n(slingRequest,'Search an asset object')}"><cpn:text
+                        tagName="span" class="composum-pages-tools_button-label"
+                        i18n="true">Search</cpn:text></button>
+            </div>
+            <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
+                <button type="button" title="Filter" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                        class="fa fa-filter composum-pages-tools_button btn btn-default dropdown dropdown-toggle"><span
                         class="composum-pages-tools_button-label">Filter</span></button>
-                <ul class="${assetsCssBase}_filter composum-pages-tools_menu dropdown-menu" role="menu">
+                <ul class="${assetsCSS}_filter composum-pages-tools_menu dropdown-menu" role="menu">
                     <c:forEach items="${assets.assetFilterSet}" var="filter">
-                        <li class="${assetsCssBase}_filter-value" data-value="${filter.key}"><a
+                        <li class="${assetsCSS}_filter-value" data-value="${filter.key}"><a
                                 href="#"
                                 title="${cpn:i18n(slingRequest,filter.hint)}">${cpn:i18n(slingRequest,filter.label)}</a>
                         </li>
                     </c:forEach>
                 </ul>
-            </div>
-            <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
                 <button type="button"
-                        class="fa fa-search ${assetsCssBase}_toggle-view composum-pages-tools_button btn btn-default"
-                        title="${cpn:i18n(slingRequest,'Search an asset object')}"><cpn:text
+                        class="fa fa-refresh ${assetsCSS}_refresh composum-pages-tools_button btn btn-default"
+                        title="${cpn:i18n(slingRequest,'Refresh current node')}"><cpn:text
                         tagName="span" class="composum-pages-tools_button-label"
-                        i18n="true">Search</cpn:text></button>
+                        i18n="true">Refresh</cpn:text></button>
             </div>
         </div>
     </div>

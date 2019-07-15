@@ -3,14 +3,16 @@
 <cpp:defineFrameObjects/>
 <cpp:editToolbar>
     <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
-        <div class="btn-group btn-group-sm" role="group">
-            <cpp:treeMenu key="more" icon="navicon" label="More..." title="more page manipulation actions...">
-                <cpp:menuItem icon="id-badge" label="Rename" title="Rename the selected folder"
-                              action="window.composum.pages.actions.site.rename"/>
-                <cpp:menuItem icon="arrows-alt" label="Move" title="Move the selected folder"
-                              action="window.composum.pages.actions.site.move"/>
-            </cpp:treeMenu>
-        </div>
+            <%-- div class="btn-group btn-group-sm" role="group">
+                <cpp:treeMenu key="more" icon="navicon" label="More..." title="more page manipulation actions...">
+                    <cpp:menuItem icon="id-badge" label="Rename" title="Rename the selected folder"
+                                  action="window.composum.pages.actions.site.rename"/>
+                    <cpp:menuItem icon="arrows-alt" label="Move" title="Move the selected folder"
+                                  action="window.composum.pages.actions.site.move"/>
+                </cpp:treeMenu>
+            </div --%>
+        <cpp:treeAction icon="database" label="Manage" title="Manage Sites"
+                        action="window.composum.pages.actions.site.manage"/>
         <cpp:treeAction icon="edit" label="Edit" title="Edit the site properties"
                         action="window.composum.pages.actions.site.edit"/>
     </div>
@@ -25,7 +27,9 @@
                               action="window.composum.pages.actions.site.insertFile"/>
             </cpp:treeMenu>
         </div>
-        <div class="btn-group btn-group-sm" role="group">
+        <cpp:treeAction icon="paste" label="Paste into Site" title="Paste element as child of the site"
+                        action="window.composum.pages.actions.site.paste"/>
+        <%-- div class="btn-group btn-group-sm" role="group">
             <cpp:treeMenu key="changes" icon="cog" label="More..." title="new site, copy, paste or delete...">
                 <cpp:menuItem icon="sitemap" label="Create Site" title="Create a new Site"
                               action="window.composum.pages.actions.site.create"/>
@@ -37,6 +41,6 @@
                 <cpp:menuItem icon="trash" label="Delete Site" title="Delete the selected site!"
                               action="window.composum.pages.actions.site.delete"/>
             </cpp:treeMenu>
-        </div>
+        </div --%>
     </div>
 </cpp:editToolbar>

@@ -687,6 +687,19 @@
                         }
                     }
                 }
+
+                &_right-actions {
+
+                    button.fa-filter {
+                        width: 28px;
+                        border-top-right-radius: 0;
+                        border-bottom-right-radius: 0;
+                    }
+
+                    button.fa-refresh {
+                        width: 29px;
+                    }
+                }
             }
         }
     }

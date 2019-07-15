@@ -200,6 +200,8 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
 
     private transient String subtitle;
 
+    private transient Boolean canonicalRequest;
+    private transient String canonicalUrl;
     private transient String targetUrl;
 
     private transient Language language;
@@ -410,13 +412,16 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
      * @return 'true' if the current requests URL is equal to this pages canonical URL
      */
     public boolean isCanonicalRequest() {
-        SlingHttpServletRequest request = getContext().getRequest();
-        String query = request.getQueryString();
-        StringBuffer url = request.getRequestURL();
-        if (StringUtils.isNotBlank(query)) {
-            url.append("?").append(query);
+        if (canonicalRequest == null) {
+            SlingHttpServletRequest request = getContext().getRequest();
+            String query = request.getQueryString();
+            StringBuffer url = request.getRequestURL();
+            if (StringUtils.isNotBlank(query)) {
+                url.append("?").append(query);
+            }
+            canonicalRequest = getCanonicalUrl().equals(url.toString());
         }
-        return getCanonicalUrl().equals(url.toString());
+        return canonicalRequest;
     }
 
     /**
@@ -424,7 +429,10 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
      */
     @Nonnull
     public String getCanonicalUrl() {
-        return LinkUtil.getAbsoluteUrl(getContext().getRequest(), getUrl());
+        if (canonicalUrl == null) {
+            canonicalUrl = LinkUtil.getAbsoluteUrl(getContext().getRequest(), getUrl());
+        }
+        return canonicalUrl;
     }
 
     /**

@@ -19,7 +19,7 @@
     "jcr:primaryType": "sling:Folder"
   },
   {
-    "path": "/var/composum/pages",
+    "path": "/var/composum/content",
     "jcr:primaryType": "sling:Folder",
     "acl": [
       {

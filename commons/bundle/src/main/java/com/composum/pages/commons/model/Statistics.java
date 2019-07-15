@@ -1,7 +1,10 @@
 package com.composum.pages.commons.model;
 
+import com.composum.sling.core.BeanContext;
 import com.google.gson.stream.JsonWriter;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.CompareToBuilder;
+import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.request.RequestPathInfo;
 import org.apache.sling.api.resource.NonExistingResource;
 import org.apache.sling.api.resource.Resource;
@@ -392,8 +395,19 @@ public class Statistics extends AbstractModel {
     @Nonnull
     public Resource getStatistics() {
         if (statistics == null) {
-            Resource resource = getResource();
-            Page page = getPageManager().getContainingPage(getContext(), resource);
+            BeanContext context = getContext();
+            SlingHttpServletRequest request = context.getRequest();
+            String suffix = request.getRequestPathInfo().getSuffix();
+            Page page = null;
+            if (StringUtils.isNotBlank(suffix)) {
+                Resource resource = context.getResolver().getResource(suffix);
+                if (resource != null) {
+                    page = getPageManager().getContainingPage(getContext(), resource);
+                }
+            }
+            if (page == null) {
+                page = getPageManager().getContainingPage(getContext(), getResource());
+            }
             if (page != null) {
                 Resource metaData = page.getMetaData();
                 if (metaData != null) {

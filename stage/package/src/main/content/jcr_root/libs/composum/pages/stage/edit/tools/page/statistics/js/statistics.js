@@ -15,7 +15,7 @@
                 uri: {
                     base: '/libs/composum/pages/stage/edit/tools/page/statistics',
                     _content: '.content.html',
-                    _data: '/_jcr_content.statistics'
+                    data: '/libs/composum/pages/stage/edit/page/statistics'
                 }
             }
         });
@@ -166,7 +166,7 @@
                 if (this.$canvas.length === 1 && this.$refTable.length === 1) {
                     this.$canvas.html('');
                     this.$refTable.html('');
-                    var uri = this.contextTabs.reference.path + c.uri._data + '.' + requestSelector + '.json';
+                    var uri = c.uri.data + '.' + requestSelector + '.json' + this.contextTabs.reference.path;
                     core.ajaxGet(uri, {},
                         _.bind(function (data) {
                             this.displayChart(data);

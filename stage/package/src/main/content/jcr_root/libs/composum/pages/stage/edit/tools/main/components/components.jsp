@@ -22,10 +22,15 @@
                 <button type="button" class="filter-toggle fa fa-filter composum-pages-tools_button btn btn-default"
                         title="${cpn:i18n(slingRequest,'Filter')}"></button>
                 <cpp:include replaceSelectors="filter"/>
+                <button type="button"
+                        class="fa fa-refresh ${componentsCSS}_refresh composum-pages-tools_button btn btn-default"
+                        title="${cpn:i18n(slingRequest,'Refresh current node')}"><cpn:text
+                        tagName="span" class="composum-pages-tools_button-label"
+                        i18n="true">Refresh</cpn:text></button>
             </div>
         </div>
     </div>
     <div class="composum-pages-tools_panel">
-        <div class="${componentsCssBase}_components-view"></div>
+        <div class="${componentsCSS}_components-view"></div>
     </div>
 </cpp:element>
