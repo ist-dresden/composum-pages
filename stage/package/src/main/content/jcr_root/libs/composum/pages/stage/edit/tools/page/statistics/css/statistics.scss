@@ -16,6 +16,10 @@
                     @include font('robotolight', $hint-font-size);
                 }
             }
+
+            &_prev, &_next {
+                width: 27px;
+            }
         }
     }
 

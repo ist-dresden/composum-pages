@@ -243,10 +243,15 @@
                 });
             },
 
+            adjustTop: function (top) {
+                return Math.max(Math.min(top, this.sidebar.$el.height() - this.$el.height() - 20), 20);
+            },
+
             move: function (event) {
                 var move = this.getMove(event, this.start);
-                this.sidebar.$el.css('width', (this.start.width + (move.x * this.sidebar.sizeDirection())) + 'px');
-                this.$el.css('top', (this.start.handle + move.y) + 'px');
+                var width = Math.max(this.start.width + (move.x * this.sidebar.sizeDirection()), 300);
+                this.sidebar.$el.css('width', width + 'px');
+                this.$el.css('top', this.adjustTop(this.start.handle + move.y) + 'px');
                 surface.surface.bodySync(this.sidebar);
                 this.sidebar.onResize();
             },
@@ -302,7 +307,7 @@
                     this.$sidebar.removeClass(surface.const.sidebarClass + '_closed');
                     this.$el.css('width', this.profile.open ? this.profile.width + 'px' : 0);
                     this.$sidebar.addClass(surface.const.sidebarClass + (this.profile.open ? '_open' : '_closed'));
-                    this.handle.$el.css('top', this.profile.handle + '%');
+                    this.handle.$el.css('top', this.handle.adjustTop(this.profile.handle * (this.$el.height() - this.handle.$el.height()) / 100) + 'px');
                     this.handle.showMode();
                 }
             },
@@ -330,7 +335,7 @@
             loadProfile: function () {
                 this.profile = {
                     open: pages.profile.get(this.profileAspect(), 'open', true),
-                    width: pages.profile.get(this.profileAspect(), 'width', 240),
+                    width: pages.profile.get(this.profileAspect(), 'width', 300),
                     handle: pages.profile.get(this.profileAspect(), 'handle', 30),
                     overlap: pages.profile.get(this.profileAspect(), 'overlap', true)
                 };
