@@ -24,11 +24,6 @@
 
             <plugin>
                 <groupId>org.apache.felix</groupId>
-                <artifactId>maven-scr-plugin</artifactId>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
                 <extensions>true</extensions>
                 <configuration>
@@ -224,14 +219,6 @@
 
         <!-- OSGi, Felix -->
         <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.scr</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.scr.annotations</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
         </dependency>
@@ -285,7 +272,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.sling</groupId>
-            <artifactId>org.apache.sling.testing.sling-mock</artifactId>
+            <artifactId>org.apache.sling.testing.sling-mock.junit4</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.sling</groupId>
@@ -294,6 +281,15 @@
         <dependency>
             <groupId>com.composum.sling.platform</groupId>
             <artifactId>composum-sling-platform-testing-testutil</artifactId>
+        </dependency>
+
+        <!-- TODO Temporary workaround for https://issues.apache.org/jira/browse/SLING-8576 . Once that's fixed this
+          should be removed. -->
+        <dependency>
+            <groupId>org.apache.sling</groupId>
+            <artifactId>org.apache.sling.scripting.core</artifactId>
+            <version>2.0.50</version>
+            <scope>test</scope>
         </dependency>
 
     </dependencies>
