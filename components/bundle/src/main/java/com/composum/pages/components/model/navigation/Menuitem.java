@@ -65,7 +65,6 @@ public class Menuitem extends Page {
     public boolean isActive() {
         String currentPagePath = getCurrentPage().getPath();
         String menuitemPath = resource.getPath();
-        String homepagePath = getHomepage().getPath();
         return menuitemPath.equals(currentPagePath) || currentPagePath.startsWith(menuitemPath + "/");
     }
 

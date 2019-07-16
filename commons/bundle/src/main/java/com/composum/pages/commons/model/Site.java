@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 import static com.composum.pages.commons.PagesConstants.DEFAULT_HOMEPAGE_PATH;
@@ -149,13 +150,19 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
 
     // site hierarchy
 
-    public Homepage getHomepage() {
+    public Homepage getHomepage(Locale locale) {
         if (homepage == null) {
             PageManager pageManager = getPageManager();
             String homepagePath = getProperty(PROP_HOMEPAGE, null, DEFAULT_HOMEPAGE_PATH);
             Resource homepageRes = resource.getChild(homepagePath);
             if (homepageRes != null) {
-                homepage = new Homepage(pageManager, context, homepageRes);
+                LanguageRoot languageRoot = new LanguageRoot(context, homepageRes);
+                Page languageHome = languageRoot.getLanguageRoot(locale);
+                if (languageHome != null) {
+                    homepage = new Homepage(pageManager, context, languageHome.getResource());
+                } else {
+                    homepage = new Homepage(pageManager, context, homepageRes);
+                }
             } else {
                 homepage = new Homepage(pageManager, context, resource); // use itself as homepage
             }

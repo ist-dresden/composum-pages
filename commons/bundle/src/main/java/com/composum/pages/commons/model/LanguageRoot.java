@@ -14,6 +14,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * the model of a resource which is the root of a language split in the context of the current page
@@ -80,6 +81,13 @@ public class LanguageRoot extends GenericModel {
 
     private transient PageManager pageManager;
     private transient SiteManager siteManager;
+
+    public LanguageRoot() {
+    }
+
+    public LanguageRoot(BeanContext context, Resource resource) {
+        initialize(context, resource);
+    }
 
     @Override
     protected Resource determineDelegateResource(BeanContext context, Resource resource) {
@@ -168,7 +176,14 @@ public class LanguageRoot extends GenericModel {
         return alternatives;
     }
 
-    protected Page getLanguageRoot(Language language) {
+    @Nullable
+    protected Page getLanguageRoot(@Nonnull final Locale locale) {
+        Language language = getLanguages().getLanguage(locale.getLanguage());
+        return language != null ? getLanguageRoot(language) : null;
+    }
+
+    @Nullable
+    protected Page getLanguageRoot(@Nonnull final Language language) {
         for (Resource child : getLanguageSiblingsParent().getChildren()) {
             if (Page.isPage(child)) {
                 Page page = getPageManager().createBean(getContext(), child);

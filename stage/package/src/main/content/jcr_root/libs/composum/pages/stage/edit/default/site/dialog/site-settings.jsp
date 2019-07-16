@@ -13,6 +13,12 @@
 </div>
 <div class="row">
     <div class="col col-xs-12">
-        <cpp:widget label="Description" property="jcr:description" type="richtext" i18n="false"/>
+        <cpp:widget label="Homepage" property="homepage" type="pathfield"
+                    hint="the path to the sites homepage (if not './home')"/>
+    </div>
+</div>
+<div class="row">
+    <div class="col col-xs-12">
+        <cpp:widget label="Description" property="jcr:description" type="richtext"/>
     </div>
 </div>

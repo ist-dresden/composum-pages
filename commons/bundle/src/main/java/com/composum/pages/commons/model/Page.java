@@ -284,7 +284,7 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
      */
     public Homepage getHomepage() {
         Site site = getSite();
-        return site != null ? site.getHomepage() : new Homepage(context, resource);
+        return site != null ? site.getHomepage(getLocale()) : new Homepage(context, resource);
     }
 
     /**
@@ -292,12 +292,12 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
      */
     public Page getParentPage() {
         if (parent == null) {
-            Resource parentRes = isHome() ? null : resource.getParent();
+            Resource parentRes = resource.getParent();
             while (parent == null && parentRes != null) {
                 if (isPage(parentRes)) {
                     parent = new Page(context, parentRes);
                 } else {
-                    parentRes = parentRes.getParent();
+                    parentRes = Site.isSite(parentRes) ? null : parentRes.getParent();
                 }
             }
         }
