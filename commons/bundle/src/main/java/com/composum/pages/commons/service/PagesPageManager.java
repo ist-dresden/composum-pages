@@ -56,6 +56,8 @@ import static com.composum.sling.core.util.SlingResourceUtil.isSameOrDescendant;
 )
 public class PagesPageManager extends PagesContentManager<Page> implements PageManager {
 
+    public static final String APPS_RESOLVER_ROOT = "/apps/";
+
     public static final String REF_PATH_ROOT = "/content/";
     public static final Pattern REF_VALUE_PATTERN = Pattern.compile("^" + REF_PATH_ROOT + ".+$");
     public static final Pattern REF_LINK_PATTERN = Pattern.compile("(href|src)=\"(" + REF_PATH_ROOT + "[^\"]+)?\"");
@@ -128,13 +130,23 @@ public class PagesPageManager extends PagesContentManager<Page> implements PageM
         String tenantId = tenantSupport != null ? tenantSupport.getTenantId(parent) : null;
         for (String root : resolver.getSearchPath()) {
             String searchRootPath = root;
-            if ("/apps/".equals(root) && StringUtils.isNotBlank(tenantId)) {
+            if (APPS_RESOLVER_ROOT.equals(root) && StringUtils.isNotBlank(tenantId)) {
                 searchRootPath = tenantSupport.getApplicationRoot(context, tenantId);
             }
             Resource searchRoot;
             if (StringUtils.isNotBlank(searchRootPath) && (searchRoot = resolver.getResource(searchRootPath)) != null) {
                 Collection<Page> templates = getModels(context, NODE_TYPE_PAGE, searchRoot, TemplateFilter.INSTANCE);
                 result.addAll(templates);
+            }
+            if (APPS_RESOLVER_ROOT.equals(root)) {
+                for (String additionalRoot : pagesConfig.getConfig().sharedTemplates()) {
+                    if (StringUtils.isNotBlank(additionalRoot)
+                            && (!additionalRoot.startsWith(APPS_RESOLVER_ROOT) || StringUtils.isNotBlank(tenantId))
+                            && (searchRoot = resolver.getResource(additionalRoot)) != null) {
+                        Collection<Page> templates = getModels(context, NODE_TYPE_PAGE, searchRoot, TemplateFilter.INSTANCE);
+                        result.addAll(templates);
+                    }
+                }
             }
         }
         ContentTypeFilter filter = new ContentTypeFilter(resourceManager, parent);

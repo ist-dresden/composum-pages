@@ -60,6 +60,14 @@ public class PagesConfigImpl implements PagesConfiguration {
         String defaultSitesRoot() default "/content/sites";
 
         @AttributeDefinition(
+                description = "additional shared template root paths scanned in configured order"
+        )
+        String[] sharedTemplates() default {
+                "/apps/shared",
+                "/apps/composum"
+        };
+
+        @AttributeDefinition(
                 description = "the filter configuration to set the scope to the internet sites"
         )
         String siteNodeFilterRule() default "PrimaryType(+'^cpp:(Site)$')";
