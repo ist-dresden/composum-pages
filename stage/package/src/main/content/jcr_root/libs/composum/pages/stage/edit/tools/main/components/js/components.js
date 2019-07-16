@@ -23,6 +23,7 @@
                         searchRes: '_search-reset',
                         searchAct: '_search-action',
                         filter: '_filter-menu',
+                        reload: '_reload',
                         category: '_category'
                     },
                     filterBtn: 'filter-toggle'
@@ -146,6 +147,7 @@
                     .click(_.bind(this.searchTermChanged, this));
                 this.$('.' + c.tools + c._.actions + ' .' + c.tools + c._.searchRes)
                     .click(_.bind(this.resetSearchTerm, this));
+                this.$('.' + c.base + c._.reload).click(_.bind(this.components.reload, this.components));
             },
 
             popoverContent: function () {

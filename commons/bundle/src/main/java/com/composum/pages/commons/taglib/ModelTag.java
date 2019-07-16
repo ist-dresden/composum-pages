@@ -10,10 +10,10 @@ import com.composum.pages.commons.model.Element;
 import com.composum.pages.commons.model.GenericModel;
 import com.composum.pages.commons.model.Model;
 import com.composum.pages.commons.model.Page;
-import com.composum.pages.commons.model.properties.Language;
 import com.composum.pages.commons.model.properties.LanguageSet;
 import com.composum.pages.commons.model.properties.Languages;
 import com.composum.pages.commons.request.DisplayMode;
+import com.composum.pages.commons.request.PagesLocale;
 import com.composum.pages.commons.service.ResourceManager;
 import com.composum.pages.commons.servlet.EditServlet;
 import com.composum.pages.commons.util.AttributeSet;
@@ -60,6 +60,8 @@ public class ModelTag extends ComponentTag implements DynamicAttributes {
 
     public static final String EDIT_CSS_BASE = "composum-pages-edit";
 
+    public static final String PARAM_LOCALE = "locale";
+
     private transient Page currentPage;
 
     private transient TagCssClasses tagCssClasses;
@@ -70,6 +72,9 @@ public class ModelTag extends ComponentTag implements DynamicAttributes {
     private transient String attributes;
     protected DisplayMode.Value displayMode;
 
+    private transient String language;
+    private transient LanguageSet languageSet;
+
     protected AttributeSet dynamicAttributes = new AttributeSet();
 
     private transient String tagDebug;
@@ -78,6 +83,8 @@ public class ModelTag extends ComponentTag implements DynamicAttributes {
     protected void clear() {
         tagDebug = null;
         dynamicAttributes = new AttributeSet();
+        languageSet = null;
+        language = null;
         attributes = null;
         displayMode = null;
         testResult = null;
@@ -279,7 +286,11 @@ public class ModelTag extends ComponentTag implements DynamicAttributes {
     }
 
     public String getRequestLanguage() {
-        return request.getLocale().getLanguage();
+        if (language == null) {
+            PagesLocale locale = request.adaptTo(PagesLocale.class);
+            language = (locale != null ? locale.getLocale() : request.getLocale()).getLanguage();
+        }
+        return language;
     }
 
     @Nullable
@@ -292,8 +303,13 @@ public class ModelTag extends ComponentTag implements DynamicAttributes {
 
     @Nonnull
     public LanguageSet getLanguageSet() {
-        Page currentPage = getCurrentPage();
-        return currentPage != null ? currentPage.getPageLanguages().getLanguageSet() : getLanguages().getLanguageSet();
+        if (languageSet == null) {
+            Page currentPage = getCurrentPage();
+            languageSet = currentPage != null
+                    ? currentPage.getPageLanguages().getLanguageSet()
+                    : getLanguages().getLanguageSet();
+        }
+        return languageSet;
     }
 
     @Nonnull
@@ -309,10 +325,10 @@ public class ModelTag extends ComponentTag implements DynamicAttributes {
      */
     @Nonnull
     protected String getI18nPath(String relativePath, String name) {
-        Language language = getLanguages().getLanguage();
+        String language = getRequestLanguage();
         LanguageSet languageScope = getLanguageSet();
-        if (!language.equals(languageScope.getDefaultLanguage())) {
-            return relativePath + I18N_PROPERTY_PATH + language.getKey() + "/" + name;
+        if (!language.equals(languageScope.getDefaultLanguage().getKey())) {
+            return relativePath + I18N_PROPERTY_PATH + language + "/" + name;
         }
         return relativePath + name;
     }

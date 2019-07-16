@@ -355,7 +355,8 @@
                 core.ajaxGet(url + (path ? path : ''), {
                         data: {
                             name: name ? name : '',
-                            type: type ? type : ''
+                            type: type ? type : '',
+                            'pages.locale': pages.getLocale()
                         }
                     },
                     _.bind(function (data) {
@@ -390,7 +391,11 @@
             },
 
             openDialog: function (id, url, viewType, initView, callback) {
-                this.getDialog(id, url, {}, viewType, _.bind(function (dialog) {
+                this.getDialog(id, url, {
+                    data: {
+                        'pages.locale': pages.getLocale()
+                    }
+                }, viewType, _.bind(function (dialog) {
                     dialog.show(initView, callback);
                 }, this));
             },
