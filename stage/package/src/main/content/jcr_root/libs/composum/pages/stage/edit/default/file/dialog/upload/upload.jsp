@@ -8,6 +8,6 @@
                 title="Upload new file Content" selector="generic" submitLabel="Upload"
                 submit="/bin/cpm/nodes/node.fileUpdate.json@{model.path}" successEvent="content:changed">
     <cpp:widget label="Path" type="textfield" value="${model.path}" disabled="true"/>
-    <cpp:widget label="Select File" name="file" type="fileupload" rules="mandatory"/>
+    <cpp:widget label="Select File" name="file" type="fileupload" rules="required"/>
     <cpp:widget name="adjustLastModified" type="hidden" value="true"/>
 </cpp:editDialog>

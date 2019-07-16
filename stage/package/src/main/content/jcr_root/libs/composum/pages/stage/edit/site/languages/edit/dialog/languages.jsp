@@ -6,10 +6,11 @@
                  var="language" cssAdd="multiwidget-table">
     <div class="row">
         <div class="col col-xs-4"><cpp:widget label="Name" name=":name" value="${language.name}"
-                                              type="textfield"/></div>
-        <div class="col col-xs-2"><cpp:widget label="Key" name="key" value="${language.key}" type="textfield"/></div>
+                                              type="textfield" required="true" unique="true"/></div>
+        <div class="col col-xs-2"><cpp:widget label="Key" name="key" value="${language.key}" type="textfield"
+                                              required="true" unique="true"/></div>
         <div class="col col-xs-4"><cpp:widget label="Label" name="label" value="${language.label}"
-                                              type="textfield"/></div>
+                                              type="textfield" required="true"/></div>
         <div class="col col-xs-2"><cpp:widget label="Dir" name="direction" value="${language.direction}" type="select"
                                               options=",ltr,rtl"/></div>
     </div>

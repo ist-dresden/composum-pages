@@ -28,9 +28,12 @@ import static com.composum.pages.commons.taglib.EditMultiWidgetTag.MULTIWIDGET_T
 public class EditWidgetTag extends AbstractWidgetTag implements LoopTag {
 
     public static final List<String> RULES_OPTIONS = Arrays.asList(
-            "mandatory", "blank", "unique");
+            "required", "mandatory", "blank", "unique");
+
     public static final String RULES_ATTR = "rules";
     public static final String DATA_RULES_ATTR = "data-" + RULES_ATTR;
+
+    public static final String CSS_CLASS_REQUIRED = "widget-required";
 
     public static final String WIDGET_VAR = "widget";
     public static final String WIDGET_CSS_VAR = WIDGET_VAR + "CSS";
@@ -121,6 +124,10 @@ public class EditWidgetTag extends AbstractWidgetTag implements LoopTag {
         return StringUtils.isNotBlank(getHint());
     }
 
+    public boolean isRequired() {
+        return dynamicAttributes.isOption(DATA_RULES_ATTR, RULES_OPTIONS.get(0));
+    }
+
     public String getPlaceholder() {
         String result = placeholder;
         if (component instanceof PropertyEditHandle) {
@@ -186,7 +193,9 @@ public class EditWidgetTag extends AbstractWidgetTag implements LoopTag {
     protected void setDynamicAttribute(String key, Object value) throws JspException {
         String attributeKey = key.toLowerCase();
         if (RULES_OPTIONS.contains(attributeKey)) {
-            dynamicAttributes.setOption(DATA_RULES_ATTR, attributeKey, value);
+            dynamicAttributes.setOption(DATA_RULES_ATTR,
+                    RULES_OPTIONS.get(1).equals(attributeKey) ? RULES_OPTIONS.get(0) : attributeKey,
+                    value);
         } else if (RULES_ATTR.equals(attributeKey) || DATA_RULES_ATTR.equals(attributeKey)) {
             String string = (String) value;
             if (StringUtils.isNotBlank(string)) {

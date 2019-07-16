@@ -4,7 +4,7 @@
 <%@taglib prefix="cpn" uri="http://sling.composum.com/cpnl/1.0" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <cpp:defineFrameObjects/>
-<div class="${widgetCSS}_${widget.widgetType} ${widgetCSS}_${widget.cssName} form-group">
+<div class="${widgetCSS}_${widget.widgetType} ${widgetCSS}_${widget.cssName}${widget.required?' required':''} form-group">
     <sling:call script="label.jsp"/>
     <textarea name="${widget.name}" data-label="${widget.label}" data-i18n="${widget.i18n}" ${widget.attributes}
               class="${widgetCSS}_input ${widgetCSS}_text-area widget text-area-widget form-control widget-name_${widget.cssName}"

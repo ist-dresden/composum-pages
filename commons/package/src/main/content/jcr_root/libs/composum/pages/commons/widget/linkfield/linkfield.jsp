@@ -3,7 +3,7 @@
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <%@taglib prefix="cpn" uri="http://sling.composum.com/cpnl/1.0" %>
 <cpp:defineFrameObjects/>
-<div class="${widgetCSS}_${widget.widgetType} ${widgetCSS}_${widget.cssName} form-group">
+<div class="${widgetCSS}_${widget.widgetType} ${widgetCSS}_${widget.cssName}${widget.required?' required':''} form-group">
     <sling:call script="label.jsp"/>
     <div class="${widgetCSS}_link-field input-group widget linkfield-widget widget-name_${widget.cssName}" ${widget.attributes}
          title="${cpn:i18n(slingRequest,'Select Target')}"

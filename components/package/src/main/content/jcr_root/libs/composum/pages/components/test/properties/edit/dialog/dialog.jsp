@@ -119,7 +119,7 @@
             <div class="row">
                 <div class="col col-xs-3">
                     <cpp:widget label="Label" name="label" value="${multi.label}" type="textfield"
-                                pattern="[a-z]+" pattern-hint="ein paar Buchstaben" rules="mandatory,blank"/>
+                                pattern="[a-z]+" pattern-hint="ein paar Buchstaben" rules="required,blank"/>
                 </div>
                 <div class="col col-xs-2">
                     <cpp:widget label="active" property="active" type="checkbox"/>

@@ -62,6 +62,11 @@ public class AttributeSet implements Iterable<Map.Entry<String, Object>> {
         }
     }
 
+    public boolean isOption(String optionsKey, String key) {
+        List<String> options = getAttribute(optionsKey, List.class);
+        return options != null && options.contains(key);
+    }
+
     public void setOption(String optionsKey, String key, Object value) {
         List<String> options = getAttribute(optionsKey, List.class);
         if (options == null) {

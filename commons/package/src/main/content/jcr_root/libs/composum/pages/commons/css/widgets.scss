@@ -27,6 +27,13 @@
             margin-left: 0;
             margin-right: 20px;
         }
+
+        .required > & {
+
+            .label-text:after {
+                content: ' *';
+            }
+        }
     }
 
     &_hint {

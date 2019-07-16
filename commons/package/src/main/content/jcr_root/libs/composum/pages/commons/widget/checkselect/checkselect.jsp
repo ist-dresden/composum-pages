@@ -3,7 +3,7 @@
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <cpp:defineFrameObjects/><%-- the 'checkselect' (checkbox) widget form template --%>
-<div class="${widgetCSS}_${widget.widgetType} ${widgetCSS}_${widget.cssName} checkbox form-inline">
+<div class="${widgetCSS}_${widget.widgetType} ${widgetCSS}_${widget.cssName}${widget.required?' required':''} checkbox form-inline">
     <sling:call script="hint.jsp"/><%-- place hints in the 'label level'; on top of the checkbox --%>
     <label class="${widgetCSS}_label"><%-- for checkboxes the label is the checkbox label itself --%>
         <%-- this 'span' is the widget 'div'; the hook for the widgets JS view --%>

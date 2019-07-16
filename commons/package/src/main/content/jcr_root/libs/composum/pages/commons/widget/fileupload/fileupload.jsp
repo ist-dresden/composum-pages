@@ -3,7 +3,7 @@
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <%@taglib prefix="cpn" uri="http://sling.composum.com/cpnl/1.0" %>
 <cpp:defineFrameObjects/>
-<div class="${widgetCSS}_${widget.widgetType} ${widgetCSS}_${widget.cssName} form-group">
+<div class="${widgetCSS}_${widget.widgetType} ${widgetCSS}_${widget.cssName}${widget.required?' required':''} form-group">
     <sling:call script="label.jsp"/>
     <input name="${widget.name}" type="file" ${widget.attributes}
            class="${widgetCSS}_fileupload widget file-upload-widget ${widgetCSS}_input form-control widget-name_${widget.cssName}"

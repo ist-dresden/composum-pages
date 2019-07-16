@@ -10,12 +10,12 @@
     <cpp:editDialogTab tabId="site" label="Site">
         <div class="row">
             <cpn:div test="${sites.tenantSupport}" class="col col-xs-5">
-                <cpp:widget label="Tenant" name="tenant" type="select" rules="mandatory"
+                <cpp:widget label="Tenant" name="tenant" type="select" rules="required"
                             options="${sites.tenantOptions}"/>
             </cpn:div>
             <div class="col col-xs-${sites.tenantSupport?'7':'12'}">
                 <cpp:widget label="Name" name="name" placeholder="the repository name" type="textfield"
-                            rules="mandatory" pattern="^[A-Za-z_][\\- \\w]*$"/>
+                            rules="required" pattern="^[A-Za-z_][\\- \\w]*$"/>
             </div>
         </div>
         <cpp:widget label="Title" name="jcr:title" placeholder="the more readable title" type="textfield"/>

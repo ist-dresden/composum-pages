@@ -3,7 +3,7 @@
 <cpp:defineFrameObjects/>
 <div class="row">
     <div class="col col-xs-6">
-        <cpp:widget label="Date" property="date" type="datetimefield" i18n="false" mandatory="true"
+        <cpp:widget label="Date" property="date" type="datetimefield" i18n="false" required="true"
                     hint="the (start) date of the event"/>
     </div>
     <div class="col col-xs-6">
@@ -11,5 +11,5 @@
                     hint="the optional end date / time"/>
     </div>
 </div>
-<cpp:widget label="Location" property="map/location" type="textfield" i18n="false" mandatory="true"
+<cpp:widget label="Location" property="map/location" type="textfield" i18n="false" required="true"
             hint="the events location (address)"/>
