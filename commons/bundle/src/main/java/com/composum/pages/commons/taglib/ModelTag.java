@@ -43,7 +43,7 @@ import static com.composum.pages.commons.util.TagCssClasses.cssOfType;
 import static com.composum.platform.models.annotations.InternationalizationStrategy.I18NFOLDER.I18N_PROPERTY_PATH;
 
 /**
- * a tag to instantiate a model object
+ * a tag to instantiate a model object and the tag base for the edit tags
  */
 public class ModelTag extends ComponentTag implements DynamicAttributes {
 
@@ -99,7 +99,9 @@ public class ModelTag extends ComponentTag implements DynamicAttributes {
      * the display mode for this tag rendering and all included content
      */
     public void setMode(String mode) {
-        displayMode = DisplayMode.Value.valueOf(mode.toUpperCase());
+        if (StringUtils.isNotBlank(mode)) {
+            displayMode = DisplayMode.Value.valueOf(mode.toUpperCase());
+        }
     }
 
     public DisplayMode.Value getDisplayMode() {
@@ -111,7 +113,7 @@ public class ModelTag extends ComponentTag implements DynamicAttributes {
 
     public boolean isEditMode() {
         DisplayMode.Value mode = getDisplayMode();
-        return mode == DisplayMode.Value.EDIT || mode == DisplayMode.Value.DEVELOP;
+        return DisplayMode.isEditMode(getDisplayMode());
     }
 
     /**
@@ -157,6 +159,9 @@ public class ModelTag extends ComponentTag implements DynamicAttributes {
         return cssBase;
     }
 
+    /**
+     * @return the CSS class collection of this tag
+     */
     protected TagCssClasses getTagCssClasses() {
         if (tagCssClasses == null) {
             tagCssClasses = new TagCssClasses();
@@ -238,7 +243,7 @@ public class ModelTag extends ComponentTag implements DynamicAttributes {
     }
 
     /**
-     * gets and removes a dynamic attribute
+     * gets a dynamic attribute from the attribute set and removes the attribute key from the set
      */
     public <T> T consumeDynamicAttribute(String key, Class<T> type) {
         return dynamicAttributes.consumeAttribute(key, type);
@@ -249,112 +254,6 @@ public class ModelTag extends ComponentTag implements DynamicAttributes {
      */
     public <T> T consumeDynamicAttribute(String key, T defaultValue) {
         return dynamicAttributes.consumeAttribute(key, defaultValue);
-    }
-
-    //
-    //
-    //
-
-    @Override
-    public String getVar() {
-        String varName = super.getVar();
-        if (StringUtils.isBlank(varName)) {
-            varName = DEFAULT_VAR_NAME;
-        }
-        return varName;
-    }
-
-    @Override
-    public String getType() {
-        String type = super.getType();
-        if (StringUtils.isBlank(type)) {
-            type = GenericModel.class.getName();
-        }
-        return type;
-    }
-
-    public Resource getModelResource(BeanContext context) {
-        return context.getResource();
-    }
-
-    public Object getModel() {
-        return component;
-    }
-
-    public Resource getResource() {
-        return resource;
-    }
-
-    public String getRequestLanguage() {
-        if (language == null) {
-            PagesLocale locale = request.adaptTo(PagesLocale.class);
-            language = (locale != null ? locale.getLocale() : request.getLocale()).getLanguage();
-        }
-        return language;
-    }
-
-    @Nullable
-    public Page getCurrentPage() {
-        if (currentPage == null) {
-            currentPage = context.getAttribute(PagesConstants.RA_CURRENT_PAGE, Page.class);
-        }
-        return currentPage;
-    }
-
-    @Nonnull
-    public LanguageSet getLanguageSet() {
-        if (languageSet == null) {
-            Page currentPage = getCurrentPage();
-            languageSet = currentPage != null
-                    ? currentPage.getPageLanguages().getLanguageSet()
-                    : getLanguages().getLanguageSet();
-        }
-        return languageSet;
-    }
-
-    @Nonnull
-    public Languages getLanguages() {
-        return Languages.get(context);
-    }
-
-    /**
-     * @param relativePath a relative path with a closing '/' if not empty which is prepended (include path)
-     * @param name         the name (property name or path) which has to be extended in the language context
-     * @return the path with inserted 'i18n' segment if the language context is not the default language context
-     * @see InternationalizationStrategy
-     */
-    @Nonnull
-    protected String getI18nPath(String relativePath, String name) {
-        String language = getRequestLanguage();
-        LanguageSet languageScope = getLanguageSet();
-        if (!language.equals(languageScope.getDefaultLanguage().getKey())) {
-            return relativePath + I18N_PROPERTY_PATH + language + "/" + name;
-        }
-        return relativePath + name;
-    }
-
-    public String getNameHint() {
-        return getResource().getName();
-    }
-
-    public String getPathHint() {
-        return Element.getPathHint(getResource());
-    }
-
-    public String getResourceType() {
-        String type = (String) request.getAttribute(EditServlet.EDIT_RESOURCE_TYPE_KEY);
-        if (type == null) {
-            type = getResource().getResourceType();
-        }
-        return type;
-    }
-
-    public String getTypeHint() {
-        return Element.getTypeHint(getResourceType());
-    }
-
-    public String i18n(String text) {
-        return I18N.get(request, text);
     }
 
     /**
@@ -375,7 +274,7 @@ public class ModelTag extends ComponentTag implements DynamicAttributes {
     }
 
     /**
-     * builds the list of tag attributes for the wrapping tag
+     * adds the set of editing tag attributes for the wrapping tag
      */
     protected void addEditAttributes(@Nonnull Map<String, Object> attributeSet,
                                      @Nonnull Resource resource, @Nullable String resourceType) {
@@ -386,8 +285,148 @@ public class ModelTag extends ComponentTag implements DynamicAttributes {
     }
 
     //
+    //
+    //
+
+    /**
+     * @return the name of the 'var' model object declared by this tag
+     */
+    @Override
+    public String getVar() {
+        String varName = super.getVar();
+        if (StringUtils.isBlank(varName)) {
+            varName = DEFAULT_VAR_NAME;
+        }
+        return varName;
+    }
+
+    /**
+     * @return the type (the full class name) of the 'var' to provide by this tag
+     */
+    @Override
+    public String getType() {
+        String type = super.getType();
+        if (StringUtils.isBlank(type)) {
+            type = GenericModel.class.getName();
+        }
+        return type;
+    }
+
+    /**
+     * retrieves the resource to use for the model construction
+     * @param context the current request context
+     * @return the resource base of the model instance
+     */
+    public Resource getModelResource(BeanContext context) {
+        return context.getResource();
+    }
+
+    /**
+     * @return the model instance generated by this tag
+     */
+    public Object getModel() {
+        return component;
+    }
+
+    /**
+     * @return the resource of the rendering request
+     */
+    public Resource getResource() {
+        return resource;
+    }
+
+    //
+    // I18N
+    //
+
+    public String getRequestLanguage() {
+        if (language == null) {
+            PagesLocale locale = request.adaptTo(PagesLocale.class);
+            language = (locale != null ? locale.getLocale() : request.getLocale()).getLanguage();
+        }
+        return language;
+    }
+
+    @Nullable
+    public Page getCurrentPage() {
+        if (currentPage == null) {
+            currentPage = context.getAttribute(PagesConstants.RA_CURRENT_PAGE, Page.class);
+        }
+        return currentPage;
+    }
+
+    /**
+     * @return the set of languages of the current page; fallback: the set of languages of the site
+     */
+    @Nonnull
+    public LanguageSet getLanguageSet() {
+        if (languageSet == null) {
+            Page currentPage = getCurrentPage();
+            languageSet = currentPage != null
+                    ? currentPage.getPageLanguages().getLanguageSet()
+                    : getLanguages().getLanguageSet();
+        }
+        return languageSet;
+    }
+
+    /**
+     * @return the languages of the current site
+     */
+    @Nonnull
+    public Languages getLanguages() {
+        return Languages.get(context);
+    }
+
+    /**
+     * @param text the text to translate
+     * @return the text translated to the requests language if such a translation can be found
+     */
+    public String i18n(String text) {
+        return I18N.get(request, text);
+    }
+
+    /**
+     * @param relativePath a relative path with a closing '/' which is prepended if not empty (include path)
+     * @param name         the name (property name or path) which has to be extended in the language context
+     * @return the path with inserted 'i18n' segment if the language context is not the default language context
+     * @see InternationalizationStrategy
+     */
+    @Nonnull
+    protected String getI18nPath(String relativePath, String name) {
+        String language = getRequestLanguage();
+        LanguageSet languageScope = getLanguageSet();
+        if (!language.equals(languageScope.getDefaultLanguage().getKey())) {
+            return relativePath + I18N_PROPERTY_PATH + language + "/" + name;
+        }
+        return relativePath + name;
+    }
+
+    //
     // rendering ...
     //
+
+    public String getNameHint() {
+        return getResource().getName();
+    }
+
+    public String getPathHint() {
+        return Element.getPathHint(getResource());
+    }
+
+    public String getTypeHint() {
+        return Element.getTypeHint(getResourceType());
+    }
+
+    /**
+     * @return the resource type of the resource to edit
+     */
+    public String getResourceType() {
+        String type = (String) request.getAttribute(EditServlet.EDIT_RESOURCE_TYPE_KEY);
+        if (type == null) {
+            type = getResource().getResourceType();
+        }
+        return type;
+    }
 
     /**
      * collects all CSS classes and attributes, prepares the rendering (prepareTagStart())
