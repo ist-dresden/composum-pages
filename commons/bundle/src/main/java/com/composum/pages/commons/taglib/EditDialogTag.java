@@ -2,9 +2,7 @@ package com.composum.pages.commons.taglib;
 
 import com.composum.pages.commons.util.ResourceTypeUtil;
 import com.composum.pages.commons.util.TagCssClasses;
-import com.composum.sling.core.util.ResourceUtil;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.sling.api.resource.Resource;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
@@ -168,10 +166,8 @@ public class EditDialogTag extends AbstractEditTag {
     }
 
     public boolean isCreateOrSynthetic() {
-        Resource resource;
         return SELECTOR_CREATE.equalsIgnoreCase(getSelector())
-                || ResourceTypeUtil.isSyntheticResource(resource = getModelResource(context))
-                || StringUtils.isBlank(resource.getValueMap().get(ResourceUtil.PROP_RESOURCE_TYPE, ""));
+                || ResourceTypeUtil.isSyntheticResource(getModelResource(context));
     }
 
     // the dialog variation selector
