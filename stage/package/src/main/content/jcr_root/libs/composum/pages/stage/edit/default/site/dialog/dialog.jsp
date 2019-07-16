@@ -8,8 +8,8 @@
         <sling:call script="site-settings.jsp"/>
     </cpp:editDialogTab>
     <cpp:editDialogTab tabId="languages" label="Languages">
-        <cpp:include path="${dialog.editPath}/languages"
-                     resourceType="composum/pages/stage/edit/site/languages/edit/dialog" replaceSelectors="languages"/>
+        <cpp:include resourceType="composum/pages/stage/edit/site/languages" subtype="edit/dialog"
+                     replaceSelectors="languages"/>
     </cpp:editDialogTab>
     <cpp:editDialogTab tabId="pages" label="Page Presets">
         <sling:call script="page-presets.jsp"/>
