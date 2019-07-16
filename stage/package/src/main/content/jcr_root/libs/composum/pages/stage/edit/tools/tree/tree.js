@@ -7,11 +7,19 @@
         'use strict';
 
         tree.const = _.extend(tree.const || {}, {
-            treeClass: 'composum-pages-tools_tree',
-            treeActionsClass: 'composum-pages-tools_actions',
-            treePanelClass: 'composum-pages-tools_tree-panel',
-            treePanelPreviewClass: 'tree-panel-preview',
-            searchPanelClass: 'composum-pages-tools_search-panel',
+            css: {
+                tools: 'composum-pages-tools',
+                main: 'composum-pages-stage-edit-tools-main',
+                _: {
+                    pages: '-pages',
+                    assets: '-assets',
+                    tree: '_tree',
+                    treePanel: '_tree-panel',
+                    actions: '_actions',
+                    refresh: '_refresh'
+                },
+                preview: 'tree-panel-preview'
+            },
             actions: {
                 css: 'composum-pages-tools_left-actions',
                 url: '/bin/cpm/pages/edit.treeActions.html'
@@ -309,11 +317,11 @@
 
             onNodeDragEnd: function (event) {
                 if (this.dnd) {
-
+                    var c = tree.const.css;
                     // really inside of the tree?... prevent from move on drag outside of the tree
                     var dnd = core.dnd.getDndData(event);
                     var domEl = document.elementFromPoint(dnd.pos.px, dnd.pos.py);
-                    var $tree = $(domEl).closest('.' + tree.const.treeClass);
+                    var $tree = $(domEl).closest('.' + c.tools + c._.tree);
                     if ($tree.length === 1) {
 
                         var object = this.jstree.get_node(this.dnd.object);
@@ -688,11 +696,20 @@
         tree.ContentTreePanel = tree.ToolsTreePanel.extend({
 
             initialize: function (options) {
+                var c = tree.const.css;
                 tree.ToolsTreePanel.prototype.initialize.apply(this, [options]);
-                this.$treePanel = this.$('.' + tree.const.treePanelClass);
-                this.$treePanelPreview = this.$('.' + tree.const.treePanelPreviewClass);
+                this.$treePanel = this.$('.' + c.tools + c._.treePanel);
+                this.$treePanelPreview = this.$('.' + c.preview);
                 this.searchPanel = core.getWidget(this.el, '.' + pages.search.const.css.base + pages.search.const.css._panel,
                     pages.search.SearchPanel);
+            },
+
+            refresh: function () {
+                if (this.currentView === 'search') {
+                    this.searchPanel.refresh();
+                } else {
+                    this.tree.refresh();
+                }
             },
 
             onScopeChanged: function () {
@@ -769,9 +786,10 @@
 
             initialize: function (options) {
                 this.type = 'page';
+                var c = tree.const.css;
                 var e = pages.const.event;
                 var p = pages.const.profile[this.type].tree;
-                this.tree = core.getWidget(this.el, '.' + tree.const.treeClass, tree.PageTree);
+                this.tree = core.getWidget(this.el, '.' + c.tools + c._.tree, tree.PageTree);
                 this.tree.panel = this;
                 tree.ContentTreePanel.prototype.initialize.apply(this, [options]);
                 this.$viewToggle = this.$('.' + tree.const.pages.css.base + '_toggle-view');
@@ -779,6 +797,7 @@
                 this.setView(pages.profile.get(p.aspect, p.view, 'tree'));
                 this.setFilter(pages.profile.get(p.aspect, p.filter, undefined));
                 this.$('.' + tree.const.pages.css.base + '_filter-value a').click(_.bind(this.selectFilter, this));
+                this.$('.' + c.main + c._.pages + c._.refresh).click(_.bind(this.refresh, this));
                 this.tree.$el.on('node:selected.' + this.treePanelId, _.bind(this.onNodeSelected, this));
                 $(document)
                     .on(e.site.selected + '.' + this.treePanelId, _.bind(this.onSiteSelected, this))
@@ -806,9 +825,10 @@
 
             initialize: function (options) {
                 this.type = 'asset';
+                var c = tree.const.css;
                 var e = pages.const.event;
                 var p = pages.const.profile[this.type].tree;
-                this.tree = core.getWidget(this.el, '.' + tree.const.treeClass, tree.AssetsTree);
+                this.tree = core.getWidget(this.el, '.' + c.tools + c._.tree, tree.AssetsTree);
                 this.tree.panel = this;
                 tree.ContentTreePanel.prototype.initialize.apply(this, [options]);
                 this.$viewToggle = this.$('.' + tree.const.assets.css.base + '_toggle-view');
@@ -816,6 +836,7 @@
                 this.setView(pages.profile.get(p.aspect, p.view, 'tree'));
                 this.setFilter(pages.profile.get(p.aspect, p.filter, undefined));
                 this.$('.' + tree.const.assets.css.base + '_filter-value a').click(_.bind(this.selectFilter, this));
+                this.$('.' + c.main + c._.assets + c._.refresh).click(_.bind(this.refresh, this));
                 this.tree.$el.on('node:selected.' + this.treePanelId, _.bind(this.onNodeSelected, this));
                 $(document)
                     .on(e.asset.select + '.' + this.treePanelId, _.bind(this.selectAsset, this))
@@ -882,7 +903,8 @@
         tree.DevelopTreePanel = tree.ToolsTreePanel.extend({
 
             initialize: function (options) {
-                this.tree = core.getWidget(this.el, '.' + tree.const.treeClass, tree.DevelopTree);
+                var c = tree.const.css;
+                this.tree = core.getWidget(this.el, '.' + c.tools + c._.tree, tree.DevelopTree);
                 this.tree.panel = this;
                 tree.ToolsTreePanel.prototype.initialize.apply(this, [options]);
             },

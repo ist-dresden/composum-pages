@@ -98,16 +98,20 @@
                 return scope;
             },
 
-            onChange: function (event) {
-                var p = pages.const.profile[this.type].search;
+            refresh: function () {
                 var term = this.$input.val();
                 var scope = this.$scope.val();
                 if (term && (term = term.trim()).length > 1) {
                     this.search(scope, term);
                 }
+            },
+
+            onChange: function (event) {
+                this.refresh();
                 if (event) {
-                    pages.profile.set(p.aspect, p.scope, scope);
-                    pages.profile.set(p.aspect, p.term, term);
+                    var p = pages.const.profile[this.type].search;
+                    pages.profile.set(p.aspect, p.scope, this.$scope.val());
+                    pages.profile.set(p.aspect, p.term, this.$input.val());
                 }
             },
 
