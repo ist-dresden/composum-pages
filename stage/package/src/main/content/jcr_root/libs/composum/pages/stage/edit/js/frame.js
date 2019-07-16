@@ -293,23 +293,23 @@
                 }
             },
 
-            onElementInserted: function (event, reference) {
-                if (reference && reference.path) {
+            onElementInserted: function (event, parentRef, /*optional*/ resultRef) {
+                if (parentRef && parentRef.path) {
                     if (this.log.frame.getLevel() <= log.levels.DEBUG) {
-                        this.log.frame.debug('pages.EditFrame.onElementInserted(' + reference.path + "," + reference.name + ')');
+                        this.log.frame.debug('pages.EditFrame.onElementInserted(' + parentRef.path + "," + (resultRef ? resultRef.name : '*') + ')');
                     }
                     this.$frame[0].contentWindow.postMessage(pages.const.event.element.inserted
-                        + JSON.stringify({reference: reference}), '*');
+                        + JSON.stringify([parentRef, resultRef]), '*');
                 }
             },
 
-            onElementChanged: function (event, reference) {
-                if (reference && reference.path) {
+            onElementChanged: function (event, changedRef) {
+                if (changedRef && changedRef.path) {
                     if (this.log.frame.getLevel() <= log.levels.DEBUG) {
-                        this.log.frame.debug('pages.EditFrame.onElementChanged(' + reference.path + ')');
+                        this.log.frame.debug('pages.EditFrame.onElementChanged(' + changedRef.path + ')');
                     }
                     this.$frame[0].contentWindow.postMessage(pages.const.event.element.changed
-                        + JSON.stringify({reference: reference}), '*');
+                        + JSON.stringify({reference: changedRef}), '*');
                 }
             },
 

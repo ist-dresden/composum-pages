@@ -104,8 +104,9 @@
                         name: sourceName
                     }, {}, _.bind(function (result) {
                         // trigger content change
-                        pages.trigger('actions.container.paste', pages.const.event.element.inserted,
-                            [new pages.Reference(result.reference)]);
+                        pages.trigger('actions.container.paste', pages.const.event.element.inserted, [
+                            new pages.Reference(name, path, type),
+                            new pages.Reference(result.reference)]);
                     }, this), function (xhr) {
                         actions.error('Error on copying element', xhr);
                     });
@@ -136,6 +137,7 @@
                     }, {}, _.bind(function (result) {
                         // trigger content change
                         pages.trigger('actions.content.paste', pages.const.event.content.inserted, [
+                            new pages.Reference(name, path),
                             new pages.Reference(result.name, result.path, result.type, result.prim)]);
                     }, this), _.bind(function (result) {
                         // on error - display copy dialog initialized with the known data
@@ -428,7 +430,9 @@
                                     targetPath: path,
                                     targetType: target.container.reference.type
                                 }, {}, _.bind(function (result) {
-                                    pages.trigger('actions.dnd.insert', pages.const.event.element.inserted, [new pages.Reference(result.reference)]);
+                                    pages.trigger('actions.dnd.insert', pages.const.event.element.inserted, [
+                                        new pages.Reference(name, path, type),
+                                        new pages.Reference(result.reference)]);
                                 }, this));
                             }, this));
                     }

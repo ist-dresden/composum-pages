@@ -133,13 +133,12 @@
                     .on(e.dnd.finished + '.' + this.nodeIdPrefix + 'tree', _.bind(this.onDragFinished, this));
             },
 
-            onContentInserted: function (event, refOrPath) {
-                var path = refOrPath && refOrPath.path ? refOrPath.path : refOrPath;
+            onContentInserted: function (event, parentRef, /*optional*/ resultRef) {
+                var path = parentRef && parentRef.path ? parentRef.path : parentRef;
                 if (this.log.getLevel() <= log.levels.DEBUG) {
                     this.log.debug(this.nodeIdPrefix + 'tree.onContentInserted(' + path + ')');
                 }
-                var parentAndName = core.getParentAndName(path);
-                this.onPathInserted(event, parentAndName.path, parentAndName.name);
+                this.onPathInserted(event, path, resultRef && resultRef.name ? resultRef.name : '*');
             },
 
             onContentMoved: function (event, oldRefOrPath, newRefOrPath) {
@@ -503,14 +502,13 @@
                 this.onPathSelected(event, path);
             },
 
-            onElementInserted: function (event, refOrPath) {
-                var path = refOrPath && refOrPath.path ? refOrPath.path : refOrPath;
+            onElementInserted: function (event, parentRefOrPath, /*optional*/ resultRef) {
+                var path = parentRefOrPath && parentRefOrPath.path ? parentRefOrPath.path : parentRefOrPath;
                 if (this.log.getLevel() <= log.levels.DEBUG) {
                     this.log.debug(this.nodeIdPrefix + 'tree.onElementSelected(' + path + ')');
                 }
-                var parentAndName = core.getParentAndName(path);
-                this.onPathInserted(event, parentAndName.path, parentAndName.name);
-                this.onPageElementChanged(event, parentAndName.path);
+                this.onPathInserted(event, path, resultRef && resultRef.name ? resultRef.name : '*');
+                this.onPageElementChanged(event, path);
             },
 
             onElementMoved: function (event, oldRefOrPath, newRefOrPath) {

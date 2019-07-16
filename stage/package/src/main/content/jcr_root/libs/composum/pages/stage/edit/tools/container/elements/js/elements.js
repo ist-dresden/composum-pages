@@ -275,9 +275,9 @@
                 this.selectPath(reference);
             },
 
-            onElementInserted: function (event, reference) {
+            onElementInserted: function (event, parentRef, /*optional*/ resultRef) {
                 if (this.log.tools.getLevel() <= log.levels.DEBUG) {
-                    this.log.tools.debug(tools.const.elements.log.prefix + 'on.element.inserted(' + JSON.stringify(reference) + ')');
+                    this.log.tools.debug(tools.const.elements.log.prefix + 'on.element.inserted(' + JSON.stringify(parentRef) + ')');
                 }
                 this.reload();
             },

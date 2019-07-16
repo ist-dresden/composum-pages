@@ -809,9 +809,8 @@
 
             // change event handling
 
-            elementInserted: function (event, reference) {
-                this.redraw(new pages.Reference(undefined, reference.name === '*'
-                    ? reference.path : core.getParentPath(reference.path)));
+            elementInserted: function (event, parentRef, /*optional*/ resultRef) {
+                this.redraw(parentRef);
             },
 
             elementChanged: function (event, reference) {
@@ -1139,7 +1138,7 @@
                             if (lgr.getLevel() <= log.levels.DEBUG) {
                                 lgr.debug('elements.message.on.' + e.element.inserted + JSON.stringify(args));
                             }
-                            this.elementInserted(event, args.reference);
+                            this.elementInserted(event, args[0], args.length > 1 ? args[1] : undefined);
                             break;
                         case e.element.changed:
                             if (lgr.getLevel() <= log.levels.DEBUG) {

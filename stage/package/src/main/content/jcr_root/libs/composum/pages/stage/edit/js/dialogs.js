@@ -421,8 +421,9 @@
                                 targetPath: path,
                                 targetType: this.data.type
                             }, {}, _.bind(function (result) {
-                                pages.trigger('dialog.element.new', pages.const.event.element.inserted,
-                                    [new pages.Reference(result.name, result.path)]);
+                                pages.trigger('dialog.element.new', pages.const.event.element.inserted, [
+                                    new pages.Reference(name, path, type),
+                                    new pages.Reference(result.name, result.path)]);
                             }, this));
                         }, this));
                 }
@@ -494,8 +495,9 @@
                             // create page as a copy of the template
                             core.ajaxPost(c.base + c._create.page + this.data.path, postData, {},
                                 _.bind(function (result) {
-                                    pages.trigger('dialog.page.new', pages.const.event.content.inserted,
-                                        [new pages.Reference(result.name, result.path)]);
+                                    pages.trigger('dialog.page.new', pages.const.event.content.inserted, [
+                                        new pages.Reference(this.data.name, this.data.path, this.data.type),
+                                        new pages.Reference(result.name, result.path)]);
                                 }, this));
                         } else {
                             // create page using resource type by opening the page create dialog of the designated type
@@ -505,8 +507,9 @@
                                     postData.resourceType = type;
                                     core.ajaxPost(c.base + c._create.page + path, postData, {},
                                         _.bind(function (result) {
-                                            pages.trigger('dialog.page.new', pages.const.event.content.inserted,
-                                                [new pages.Reference(result.name, result.path)]);
+                                            pages.trigger('dialog.page.new', pages.const.event.content.inserted, [
+                                                new pages.Reference(name, path, type),
+                                                new pages.Reference(result.name, result.path)]);
                                         }, this));
                                 }, this)
                             )
