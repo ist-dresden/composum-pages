@@ -810,7 +810,8 @@
             // change event handling
 
             elementInserted: function (event, reference) {
-                this.redraw(new pages.Reference(undefined, core.getParentPath(reference.path)));
+                this.redraw(new pages.Reference(undefined, reference.name === '*'
+                    ? reference.path : core.getParentPath(reference.path)));
             },
 
             elementChanged: function (event, reference) {
