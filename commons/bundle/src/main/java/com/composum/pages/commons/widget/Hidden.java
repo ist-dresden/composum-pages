@@ -14,8 +14,14 @@ public class Hidden extends PropertyEditHandle<Object> implements WidgetModel {
 
     public static final String ATTR_REQUEST = "request";
 
+    protected boolean isCollection = false;
+
     public Hidden() {
         super(Object.class);
+    }
+
+    public boolean isCollection() {
+        return isCollection;
     }
 
     /**
@@ -25,6 +31,7 @@ public class Hidden extends PropertyEditHandle<Object> implements WidgetModel {
     @Override
     public String filterWidgetAttribute(String attributeKey, Object attributeValue) {
         if (ATTR_REQUEST.equals(attributeKey)) {
+            isCollection = true;
             // retrieve values from request
             SlingHttpServletRequest request = getContext().getRequest();
             String requestAttributeName;
