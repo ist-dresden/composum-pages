@@ -242,9 +242,9 @@
             /**
              * binds the handle to a component
              */
-            setComponent: function (component) {
+            setComponent: function (component, force) {
                 if (component) {
-                    if (this.component !== component) {
+                    if (this.component !== component || force) {
                         var c = elements.const.handle.css;
                         this.component = component;
                         this.setBounds(component);
@@ -1067,7 +1067,7 @@
                     if (component) {
                         var e = elements.const.event;
                         this.dnd.reset();
-                        elements.pageBody.selection.setComponent(component);
+                        elements.pageBody.selection.setComponent(component, force);
                         elements.pageBody.selection.setHeadVisibility(true);
                         elements.trigger('elements.selection.set', e.element.selected, component.reference);
                     } else {
