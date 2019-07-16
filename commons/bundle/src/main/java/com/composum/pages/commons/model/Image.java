@@ -1,15 +1,14 @@
 package com.composum.pages.commons.model;
 
+import com.composum.pages.commons.util.LinkUtil;
 import com.composum.sling.clientlibs.handle.FileHandle;
 import com.composum.sling.core.BeanContext;
-import com.composum.pages.commons.util.LinkUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.imageio.ImageIO;
-import javax.jcr.RepositoryException;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
@@ -47,10 +46,6 @@ public class Image extends Element {
         return valid;
     }
 
-    protected String getPlaceholder() {
-        return getProperty(PROP_PLACEHOLDER, "");
-    }
-
     public String getImageRef() {
         if (imageRef == null) {
             imageRef = getProperty(PROP_IMAGE_REF, "");
@@ -76,6 +71,10 @@ public class Image extends Element {
             }
         }
         return src;
+    }
+
+    protected String getPlaceholder() {
+        return getProperty(PROP_PLACEHOLDER, "");
     }
 
     public String getAlt() {
@@ -116,7 +115,7 @@ public class Image extends Element {
                         image = ImageIO.read(stream);
                         valid = true;
                     }
-                } catch (IOException | RepositoryException ex) {
+                } catch (IOException ex) {
                     LOG.error(ex.getMessage(), ex);
                 }
             }
@@ -124,7 +123,7 @@ public class Image extends Element {
         return image;
     }
 
-    public InputStream getStream() throws RepositoryException {
+    public InputStream getStream() {
         FileHandle file = getFile();
         if (file != null && file.isValid()) {
             return file.getStream();
