@@ -54,6 +54,7 @@ public interface PagesConstants {
     String DISPLAY_MODE_ATTR = "composum-pages-request-display";
     String RA_PAGES_LOCALE = "composum-pages-request-locale";
     String RA_PAGES_LANGUAGE = "composum-pages-request-language";
+    String RA_STICKY_LOCALE = "composum-pages-sticky-locale";
 
     String PAGES_FRAME_PATH = "/bin/pages";
 

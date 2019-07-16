@@ -390,7 +390,10 @@
                     reference = new pages.Reference(undefined, path);
                 }
                 if (path) {
-                    var params = reference && reference.type ? {type: reference.type} : {};
+                    var params = {'pages.locale': pages.getLocale()};
+                    if (reference && reference.type) {
+                        params.type = reference.type;
+                    }
                     core.ajaxGet(tools.const.contextLoadUrl + path + '?pages.view=' + pages.current.mode, {
                             data: params
                         },

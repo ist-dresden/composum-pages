@@ -303,7 +303,8 @@
                 var u = tools.const.elements.uri.edit.context;
                 core.ajaxGet(u._ + u._container + this.reference.path, {
                         data: {
-                            type: this.reference.type // the type to support synthetic resources
+                            type: this.reference.type,  // the type to support synthetic resources
+                            'pages.locale': pages.getLocale()
                         }
                     },
                     undefined, undefined, _.bind(function (data) {

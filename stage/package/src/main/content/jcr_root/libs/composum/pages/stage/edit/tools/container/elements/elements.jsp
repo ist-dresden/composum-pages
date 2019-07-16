@@ -1,4 +1,5 @@
 <%@page session="false" pageEncoding="UTF-8" %>
+<%@taglib prefix="cpn" uri="http://sling.composum.com/cpnl/1.0" %>
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <cpp:defineFrameObjects/>
 <cpp:container var="container" type="com.composum.pages.stage.model.edit.FrameContainer" mode="none"
@@ -11,18 +12,23 @@
             <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
                 <button type="button"
                         class="fa fa-chevron-up ${containerCssBase}_move-up composum-pages-tools_button btn btn-default"
-                        title="Move Up"><span class="composum-pages-tools_button-label">Move Up</span></button>
+                        title="${cpn:i18n(slingRequest,'Move Up')}"><span
+                        class="composum-pages-tools_button-label">${cpn:i18n(slingRequest,'Move Up')}</span></button>
                 <button type="button"
                         class="fa fa-chevron-down ${containerCssBase}_move-down composum-pages-tools_button btn btn-default"
-                        title="Move Down"><span class="composum-pages-tools_button-label">Move Down</span></button>
+                        title="${cpn:i18n(slingRequest,'Move Down')}"><span
+                        class="composum-pages-tools_button-label">${cpn:i18n(slingRequest,'Move Down')}</span></button>
             </div>
             <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
                 <button type="button"
                         class="fa fa-eject ${containerCssBase}_go-up composum-pages-tools_button btn btn-default"
-                        title="Go Up"><span class="composum-pages-tools_button-label">Container</span></button>
+                        title="${cpn:i18n(slingRequest,'Go Up')}"><span
+                        class="composum-pages-tools_button-label">${cpn:i18n(slingRequest,'Container')}</span></button>
                 <button type="button"
                         class="fa fa-bullseye ${containerCssBase}_select composum-pages-tools_button btn btn-default"
-                        title="Select"><span class="composum-pages-tools_button-label">Select Element</span></button>
+                        title="${cpn:i18n(slingRequest,'Select')}"><span
+                        class="composum-pages-tools_button-label">${cpn:i18n(slingRequest,'Select Element')}</span>
+                </button>
             </div>
         </div>
     </div>

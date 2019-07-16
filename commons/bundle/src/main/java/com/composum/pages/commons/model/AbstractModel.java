@@ -52,6 +52,7 @@ import java.util.Objects;
 import static com.composum.pages.commons.PagesConstants.PN_DESCRIPTION;
 import static com.composum.pages.commons.PagesConstants.PN_TITLE_KEYS;
 import static com.composum.pages.commons.PagesConstants.RA_CURRENT_PAGE;
+import static com.composum.pages.commons.PagesConstants.RA_STICKY_LOCALE;
 import static com.composum.pages.commons.servlet.PagesContentServlet.EDIT_RESOURCE_TYPE_KEY;
 import static com.composum.platform.models.annotations.InternationalizationStrategy.I18NFOLDER;
 import static com.composum.sling.platform.security.PlatformAccessFilter.ACCESS_MODE_KEY;
@@ -442,8 +443,11 @@ public abstract class AbstractModel implements SlingBean, Model {
     @Nonnull
     public Locale getLocale() {
         if (locale == null) {
-            Language language = getLanguage();
-            locale = language.getLocale();
+            locale = getContext().getAttribute(RA_STICKY_LOCALE, Locale.class);
+            if (locale == null) {
+                Language language = getLanguage();
+                locale = language.getLocale();
+            }
         }
         return locale;
     }

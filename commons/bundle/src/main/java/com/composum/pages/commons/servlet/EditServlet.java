@@ -873,7 +873,7 @@ public class EditServlet extends PagesContentServlet {
         public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
                          ResourceHandle resource)
                 throws IOException {
-            Status status = new Status(request,response);
+            Status status = new Status(request, response);
 
             String targetPath = request.getParameter("targetPath");
             String targetType = request.getParameter("targetType");
