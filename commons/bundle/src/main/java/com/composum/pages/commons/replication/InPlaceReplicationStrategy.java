@@ -5,6 +5,7 @@ import com.composum.sling.core.JcrResource;
 import com.composum.sling.core.ResourceHandle;
 import com.composum.sling.core.util.ResourceUtil;
 import com.composum.sling.platform.security.AccessMode;
+import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.resource.ModifiableValueMap;
@@ -303,7 +304,7 @@ public abstract class InPlaceReplicationStrategy implements ReplicationStrategy 
     @Override
     public void activate(ReplicationManager manager) {
         config = manager.getConfig();
-        contentPath = StringUtils.removePattern(ResourceUtil.normalize(config.contentPath()), "/*$");
+        contentPath = RegExUtils.removePattern(ResourceUtil.normalize(config.contentPath()), "/*$");
         if (StringUtils.isBlank(contentPath) || !StringUtils.startsWith(contentPath, "/")) {
             LOG.error("Invalid content path {}, deactivating publication!");
             this.replicationManager = null;

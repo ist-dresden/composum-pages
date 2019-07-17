@@ -207,10 +207,11 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
     public List<SiteRelease> getReleases() {
         StagingReleaseManager releaseManager = context.getService(StagingReleaseManager.class);
         List<StagingReleaseManager.Release> stagingReleases = releaseManager.getReleases(resource);
-        return stagingReleases.stream()
+        List<SiteRelease> releases = stagingReleases.stream()
                 .map(r -> new SiteRelease(context, r))
                 .sorted(Comparator.nullsFirst(Comparator.comparing(SiteRelease::getCreationDate).reversed()))
                 .collect(Collectors.toList());
+        return releases;
     }
 
     public SiteRelease getCurrentRelease() {

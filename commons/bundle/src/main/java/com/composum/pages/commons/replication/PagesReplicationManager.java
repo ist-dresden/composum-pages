@@ -36,7 +36,7 @@ public class PagesReplicationManager implements ReplicationManager {
 
     protected PagesReplicationConfig config;
 
-    protected List<ReplicationStrategy> instances = Collections.synchronizedList(new ArrayList<ReplicationStrategy>());
+    protected List<ReplicationStrategy> instances = Collections.synchronizedList(new ArrayList<>());
 
     @Override
     public PagesReplicationConfig getConfig() {
@@ -151,6 +151,7 @@ public class PagesReplicationManager implements ReplicationManager {
     }
 
     @Override
+    @Deprecated
     public boolean releaseMappingAllowed(String path, String uri) {
         return releaseMappingAllowed(path);
     }
