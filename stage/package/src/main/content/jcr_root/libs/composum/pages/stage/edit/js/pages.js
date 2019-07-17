@@ -76,6 +76,14 @@
                     deleted: 'content:deleted',     // done.
                     moved: 'content:moved'          // done.
                 },
+                component: {
+                    select: 'component:select',     // do it!...
+                    selected: 'component:selected', // done.
+                    inserted: 'component:inserted', // done.
+                    changed: 'component:changed',   // done.
+                    deleted: 'component:deleted',   // done.
+                    moved: 'component:moved'        // done.
+                },
                 element: {
                     select: 'element:select',       // do it!...
                     selected: 'element:selected',   // done.
@@ -150,10 +158,17 @@
                         term: 'term'
                     }
                 },
-                develop: {
+                component: {
                     tree: {
-                        aspect: 'develop-tree',
+                        aspect: 'component-tree',
+                        view: 'view',
+                        filter: 'filter',
                         path: 'path'
+                    },
+                    search: {
+                        aspect: 'component-search',
+                        scope: 'scope',
+                        term: 'term'
                     }
                 },
                 components: {

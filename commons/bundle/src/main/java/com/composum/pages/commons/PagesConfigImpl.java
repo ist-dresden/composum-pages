@@ -90,7 +90,7 @@ public class PagesConfigImpl implements PagesConfiguration {
         @AttributeDefinition(
                 description = "the filter configuration to set the scope to component development"
         )
-        String develomentTreeFilterRule() default "Path(+'^/(etc|conf|apps|libs|sightly|htl|var)/+')";
+        String develomentTreeFilterRule() default "PrimaryType(+'^cpp:(Component|Page)$,^nt:(file)$')";
 
         @AttributeDefinition(
                 description = "the filter configuration to determine all intermediate nodes in the content structure"
@@ -100,7 +100,7 @@ public class PagesConfigImpl implements PagesConfiguration {
         @AttributeDefinition(
                 description = "the filter configuration to determine all intermediate nodes in the development scope"
         )
-        String devIntermediateFilterRule() default "and{Folder(),Path(+'^/(etc|conf|apps|libs|sightly|htl|var)(/.+)?')}";
+        String devIntermediateFilterRule() default "and{or{Folder(),PrimaryType(+'^nt:(unstructured)$')},Path(+'^/(apps|libs)(/.+)?')}";
 
         @AttributeDefinition(
                 description = "the filter configuration to determine all intermediate nodes in the tree view"

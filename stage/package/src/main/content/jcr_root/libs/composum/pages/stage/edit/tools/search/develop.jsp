@@ -9,9 +9,8 @@
                placeholder="${cpn:i18n(slingRequest,'search...')}"/>
         <select class="composum-pages-tools_search-scope form-control"
                 title="${cpn:i18n(slingRequest,'Search Scope')}">
-            <option value="site" selected="selected">${cpn:i18n(slingRequest,'Site')}</option>
-            <option value="path">${cpn:i18n(slingRequest,'Current Path')}</option>
-            <option value="content">${cpn:i18n(slingRequest,'Content')}</option>
+            <option value="tenant" selected="selected">${cpn:i18n(slingRequest,'Tenant')}</option>
+            <option value="platform">${cpn:i18n(slingRequest,'Platform')}</option>
         </select>
     </div>
     <div class="composum-pages-tools_search-result">

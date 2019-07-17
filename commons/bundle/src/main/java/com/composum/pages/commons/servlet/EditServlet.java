@@ -443,7 +443,7 @@ public class EditServlet extends PagesContentServlet {
     //
     //
 
-    protected abstract class GetEditResource implements ServletOperation {
+    public static abstract class GetEditResource implements ServletOperation {
 
         @Override
         public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,

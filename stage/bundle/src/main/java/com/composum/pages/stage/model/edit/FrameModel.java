@@ -5,6 +5,7 @@ import com.composum.pages.commons.model.Component;
 import com.composum.pages.commons.model.GenericModel;
 import com.composum.pages.commons.request.DisplayMode;
 import com.composum.pages.commons.service.PageManager;
+import com.composum.pages.commons.service.PagesTenantSupport;
 import com.composum.pages.commons.service.ResourceManager;
 import com.composum.pages.commons.service.SiteManager;
 import com.composum.pages.commons.util.ResolverUtil;
@@ -165,11 +166,9 @@ public class FrameModel extends GenericModel {
 
     public boolean isDevelopModeAllowed() {
         // FIXME disabled for release 1.0 - unlock if useful
-        return false;
-        /*
+        //return false;
         PagesTenantSupport tenantSupport = getSiteManager().getTenantSupport();
         return tenantSupport == null || tenantSupport.isDevelopModeAllowed(getContext(), getResource());
-        */
     }
 
     // Services...

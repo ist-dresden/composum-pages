@@ -13,6 +13,7 @@
                 _: {
                     pages: '-pages',
                     assets: '-assets',
+                    develop: '-develop',
                     tree: '_tree',
                     treePanel: '_tree-panel',
                     actions: '_actions',
@@ -22,7 +23,8 @@
             },
             actions: {
                 css: 'composum-pages-tools_left-actions',
-                url: '/bin/cpm/pages/edit.treeActions.html'
+                url: '/bin/cpm/pages/edit.treeActions.html',
+                develop: '/bin/cpm/pages/develop.treeActions.html'
             },
             tile: {
                 url: '/bin/cpm/pages/edit.editTile.html'
@@ -576,11 +578,10 @@
 
             initialize: function (options) {
                 this.type = 'asset';
-                var p = pages.const.profile.asset.tree;
-                var id = this.nodeIdPrefix + 'Tree';
                 this.initializeFilter();
                 tree.ContentTree.prototype.initialize.apply(this, [options]);
                 var e = pages.const.event;
+                var id = this.nodeIdPrefix + 'Tree';
                 $(document)
                     .on(e.asset.selected + '.' + id, _.bind(this.onAssetSelected, this))
                     .on(e.content.inserted + '.' + id, _.bind(this.onContentInserted, this))
@@ -618,21 +619,42 @@
             }
         });
 
-        tree.DevelopTree = tree.ToolsTree.extend({
+        tree.DevelopTree = tree.ContentTree.extend({
 
             nodeIdPrefix: 'PD_',
 
             initialize: function (options) {
-                this.initialSelect = this.$el.attr('data-selected');
-                if (!this.initialSelect || this.initialSelect === '/') {
-                    var p = pages.const.profile.develop.tree;
-                    this.initialSelect = pages.profile.get(p.aspect, p.path, "/");
-                }
-                tree.ToolsTree.prototype.initialize.apply(this, [options]);
+                tree.ContentTree.prototype.initialize.apply(this, [options]);
+                var e = pages.const.event;
+                var id = this.nodeIdPrefix + 'Tree';
+                $(document)
+                    .on(e.content.selected + '.' + id, _.bind(this.onContentSelected, this))
+                    .on(e.content.inserted + '.' + id, _.bind(this.onContentInserted, this))
+                    .on(e.content.changed + '.' + id, _.bind(this.onContentChanged, this))
+                    .on(e.content.deleted + '.' + id, _.bind(this.onContentDeleted, this))
+                    .on(e.content.moved + '.' + id, _.bind(this.onContentMoved, this));
             },
 
             dataUrlForPath: function (path) {
                 return '/bin/cpm/pages/develop.tree.json' + path;
+            },
+
+            onNodeSelected: function (path, node) {
+                if (!this.suppressEvent) {
+                    pages.trigger('tree.develop.on.node', "content:select", [path, node.original.name, node.original.type]);
+                } else {
+                    core.components.Tree.prototype.onNodeSelected.apply(this, [path, node]);
+                }
+            },
+
+            onContentSelected: function (event, refOrPath) {
+                var path = refOrPath && refOrPath.path ? refOrPath.path : refOrPath;
+                if (this.log.getLevel() <= log.levels.DEBUG) {
+                    this.log.debug(this.nodeIdPrefix + 'tree.onContentSelected(' + path + ')');
+                }
+                this.onPathSelected(event, path);
+                var p = pages.const.profile.component.tree;
+                pages.profile.set(p.aspect, p.path, path);
             }
         });
 
@@ -664,6 +686,10 @@
                 this.tree.busy = busy;
             },
 
+            getNodeActionsUrl: function (path) {
+                return tree.const.actions.url + path;
+            },
+
             setNodeActions: function () {
                 if (this.actions) {
                     this.actions.dispose();
@@ -673,7 +699,7 @@
                 if (node.original.path) {
                     if (this.$actions.length > 0) {
                         // load tree actions for the selected resource (if actions are used in the tree)
-                        core.ajaxGet(tree.const.actions.url + node.original.path, {},
+                        core.ajaxGet(this.getNodeActionsUrl(node.original.path), {},
                             _.bind(function (data) {
                                 this.$actions.html(data);
                                 this.actions = core.getWidget(this.$actions[0],
@@ -861,9 +887,10 @@
             },
 
             setFilter: function (filter) {
-                this.$('.' + tree.const.assets.css.base + '_filter-value').removeClass('active');
+                var c = tree.const.assets.css;
+                this.$('.' + c.base + '_filter-value').removeClass('active');
                 if (filter) {
-                    this.$('.' + tree.const.assets.css.base + '_filter-value[data-value="' + filter + '"]')
+                    this.$('.' + c.base + '_filter-value[data-value="' + filter + '"]')
                         .addClass('active');
                 }
             },
@@ -898,16 +925,58 @@
             }
         });
 
-        tree.DevelopTreePanel = tree.ToolsTreePanel.extend({
+        tree.DevelopTreePanel = tree.ContentTreePanel.extend({
 
             initialize: function (options) {
+                this.type = 'component';
                 var c = tree.const.css;
+                var e = pages.const.event;
+                var p = pages.const.profile[this.type].tree;
                 this.tree = core.getWidget(this.el, '.' + c.tools + c._.tree, tree.DevelopTree);
                 this.tree.panel = this;
-                tree.ToolsTreePanel.prototype.initialize.apply(this, [options]);
+                tree.ContentTreePanel.prototype.initialize.apply(this, [options]);
+                this.$viewToggle = this.$('.' + tree.const.develop.css.base + '_toggle-view');
+                this.$viewToggle.click(_.bind(this.toggleView, this));
+                this.setView(pages.profile.get(p.aspect, p.view, 'tree'));
+                this.setFilter(pages.profile.get(p.aspect, p.filter, undefined));
+                this.$('.' + tree.const.develop.css.base + '_filter-value a').click(_.bind(this.selectFilter, this));
+                this.$('.' + c.main + c._.develop + c._.refresh).click(_.bind(this.refresh, this));
+                this.tree.$el.on('node:selected.' + this.treePanelId, _.bind(this.onNodeSelected, this));
+                $(document)
+                    .on(e.content.select + '.' + this.treePanelId, _.bind(this.selectContent, this))
+                    .on(e.site.selected + '.' + this.treePanelId, _.bind(this.onSiteSelected, this))
+                    .on(e.scope.changed + '.' + this.treePanelId, _.bind(this.onScopeChanged, this))
+                    .on(e.pages.ready + '.' + this.treePanelId, _.bind(this.onReady, this));
+            },
+
+            onReady: function (event) {
+                var p = pages.const.profile.component.tree;
+                var path = pages.profile.get(p.aspect, p.path, '');
+                if (path) {
+                    this.selectContent(event, path);
+                }
+            },
+
+            selectContent: function (event, refOrPath) {
+                var e = pages.const.event;
+                var path = refOrPath && refOrPath.path ? refOrPath.path : refOrPath;
+                pages.trigger('tree.develop.select', e.content.selected, [path]);
             },
 
             selectDefaultNode: function () {
+            },
+
+            getNodeActionsUrl: function (path) {
+                return tree.const.actions.develop + path;
+            },
+
+            setFilter: function (filter) {
+                var c = tree.const.develop.css;
+                this.$('.' + c.base + '_filter-value').removeClass('active');
+                if (filter) {
+                    this.$('.' + c.base + '_filter-value[data-value="' + filter + '"]')
+                        .addClass('active');
+                }
             }
         });
 

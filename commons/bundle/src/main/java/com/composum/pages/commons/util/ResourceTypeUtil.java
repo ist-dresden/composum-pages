@@ -52,6 +52,7 @@ public class ResourceTypeUtil {
     public static final String EDIT_THUMBNAIL_PATH = EDIT_PATH + "/thumbnail";
     public static final String EDIT_TOOLBAR_PATH = EDIT_PATH + "/toolbar";
     public static final String TREE_ACTIONS_PATH = EDIT_PATH + "/tree";
+    public static final String DEVELOP_ACTIONS_PATH = EDIT_PATH + "/develop";
     public static final String EDIT_CONTEXT_PATH = EDIT_PATH + "/context";
     public static final String CONTEXT_ACTIONS_PATH = EDIT_CONTEXT_PATH + "/actions";
     public static final String CONTEXT_CONTAINER_PATH = EDIT_CONTEXT_PATH + "/elements";
@@ -103,6 +104,12 @@ public class ResourceTypeUtil {
     public static final String DEFAULT_FOLDER_ACTIONS = EDIT_DEFAULT_ROOT + "folder/tree";
     public static final String DEFAULT_FILE_ACTIONS = EDIT_DEFAULT_ROOT + "file/tree";
     public static final String DEFAULT_NONE_ACTIONS = EDIT_DEFAULT_ROOT + "none/tree";
+
+    public static final String DEVELOP_COMPONENT_ACTIONS = EDIT_DEFAULT_ROOT + "develop/component";
+    public static final String DEVELOP_SOURCE_ACTIONS = EDIT_DEFAULT_ROOT + "develop/source";
+    public static final String DEVELOP_PAGE_ACTIONS = EDIT_DEFAULT_ROOT + "develop/page";
+    public static final String DEVELOP_FOLDER_ACTIONS = EDIT_DEFAULT_ROOT + "develop/folder";
+    public static final String NO_DEVELOP_ACTIONS = EDIT_DEFAULT_ROOT + "develop/nothing";
 
     public static final String DEFAULT_CONTEXT_ACTIONS = EDIT_DEFAULT_ROOT + "element/context/actions";
     public static final String DEFAULT_CONTAINER_CONTEXT = EDIT_DEFAULT_ROOT + "container/context/actions";

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:cpp="http://sling.composum.com/pages/1.0"
+        xmlns:jcr="http://www.jcp.org/jcr/1.0"
+        xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+        xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+        jcr:primaryType="cpp:Page">
+    <jcr:content
+            jcr:primaryType="cpp:PageContent"
+            sling:resourceType="composum/pages/stage/edit/tools/component/help/page">
+        <main
+                jcr:primaryType="cpp:Container"
+                sling:resourceType="composum/pages/stage/edit/tools/component/help/parsys">
+            <text_01
+                    jcr:primaryType="cpp:Element"
+                    sling:resourceType="composum/pages/components/element/text"
+                    text="&lt;p>&amp;nbsp;a text only component has an optional title on top of the text and a rich text body which can contain a subset of HTML elements:&lt;/p>&lt;p>&lt;/p>&lt;ul>&lt;li>simple lists&lt;/li>&lt;li>hyperlinks&lt;/li>&lt;/ul>&lt;p>the formatting options are&lt;/p>&lt;p>&lt;/p>&lt;ul>&lt;li>bold&lt;/li>&lt;li>italic&lt;/li>&lt;li>underline&lt;/li>&lt;li>strike though&lt;/li>&lt;li>code&lt;/li>&lt;li>superscript&lt;/li>&lt;li>subscript&lt;/li>&lt;/ul>&lt;p>&lt;/p>&lt;p>&lt;/p>"
+                    textAlignment="left"
+                    title="Text">
+            </text_01>
+        </main>
+    </jcr:content>
+</jcr:root>

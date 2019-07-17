@@ -13,31 +13,31 @@
         <div class="composum-pages-tools_right-actions">
             <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
                 <button type="button"
-                        class="fa fa-search ${treeCssBase}_toggle-view composum-pages-tools_button btn btn-default"
+                        class="fa fa-search ${treeCSS}_toggle-view composum-pages-tools_button btn btn-default"
                         title="${cpn:i18n(slingRequest,'Search a page')}"><cpn:text
                         tagName="span" class="composum-pages-tools_button-label"
                         i18n="true">Search</cpn:text></button>
             </div>
             <div class="composum-pages-tools_button-group btn-group btn-group-sm browse-hidden" role="group">
                 <c:if test="${tree.editMode}">
-                    <button type="button" title="Filter" data-toggle="dropdown" aria-haspopup="true"
-                            aria-expanded="false"
+                    <button type="button" title="${cpn:i18n(slingRequest,'Filter')}" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false"
                             class="fa fa-filter composum-pages-tools_button btn btn-default dropdown dropdown-toggle"><span
-                            class="composum-pages-tools_button-label">Filter</span></button>
-                    <ul class="${treeCssBase}_filter composum-pages-tools_menu dropdown-menu" role="menu">
-                        <li class="${treeCssBase}_filter-value"
+                            class="composum-pages-tools_button-label">${cpn:i18n(slingRequest,'Filter')}</span></button>
+                    <ul class="${treeCSS}_filter composum-pages-tools_menu dropdown-menu" role="menu">
+                        <li class="${treeCSS}_filter-value"
                             data-value="page"><a href="#" title="Show pages only">Page</a>
                         </li>
-                        <li class="${treeCssBase}_filter-value"
+                        <li class="${treeCSS}_filter-value"
                             data-value="container"><a href="#" title="Show pages and containers">Container</a>
                         </li>
-                        <li class="${treeCssBase}_filter-value"
+                        <li class="${treeCSS}_filter-value"
                             data-value="element"><a href="#" title="Show all elements">Element</a>
                         </li>
                     </ul>
                 </c:if>
                 <button type="button"
-                        class="fa fa-refresh ${treeCssBase}_refresh composum-pages-tools_button btn btn-default"
+                        class="fa fa-refresh ${treeCSS}_refresh composum-pages-tools_button btn btn-default"
                         title="${cpn:i18n(slingRequest,'Refresh current node')}"><cpn:text
                         tagName="span" class="composum-pages-tools_button-label"
                         i18n="true">Refresh</cpn:text></button>
