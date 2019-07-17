@@ -6,7 +6,6 @@ import com.composum.pages.commons.model.Site;
 import com.composum.pages.commons.service.PageManager;
 import com.composum.pages.commons.service.ResourceManager;
 import com.composum.pages.commons.service.SiteManager;
-import com.composum.pages.commons.service.VersionsService;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.ResourceHandle;
 import com.composum.sling.core.filter.ResourceFilter;
@@ -67,9 +66,6 @@ public class AssetServlet extends PagesContentServlet {
     protected SiteManager siteManager;
 
     @Reference
-    protected VersionsService versionsService;
-
-    @Reference
     protected PageManager pageManager;
 
     @Activate
@@ -82,10 +78,6 @@ public class AssetServlet extends PagesContentServlet {
         return pagesConfiguration;
     }
 
-    @Override
-    protected VersionsService getVersionsService() {
-        return versionsService;
-    }
 
     @Override
     protected ResourceManager getResourceManager() {
@@ -113,8 +105,7 @@ public class AssetServlet extends PagesContentServlet {
     public enum Operation {
         filterSet, assetTree, assetData, resourceInfo,
         targetContainers, isAllowedChild,
-        moveContent, renameContent, copyContent,
-        versions, restoreVersion, checkpoint
+        moveContent, renameContent, copyContent
     }
 
     protected PagesAssetOperationSet operations = new PagesAssetOperationSet();
@@ -142,12 +133,8 @@ public class AssetServlet extends PagesContentServlet {
                 Operation.isAllowedChild, new CheckIsAllowedChild());
         operations.setOperation(ServletOperationSet.Method.GET, Extension.json,
                 Operation.targetContainers, new GetTargetContainers());
-        operations.setOperation(ServletOperationSet.Method.GET, Extension.html,
-                Operation.versions, new GetVersions());
 
         // POST
-        operations.setOperation(ServletOperationSet.Method.POST, Extension.json,
-                Operation.checkpoint, new CheckpointOperation());
         operations.setOperation(ServletOperationSet.Method.POST, Extension.json,
                 Operation.targetContainers, new GetTargetContainers());
         operations.setOperation(ServletOperationSet.Method.POST, Extension.json,
@@ -158,8 +145,6 @@ public class AssetServlet extends PagesContentServlet {
                 Operation.copyContent, new CopyContentOperation());
 
         // PUT
-        operations.setOperation(ServletOperationSet.Method.PUT, Extension.json,
-                Operation.restoreVersion, new RestoreVersion());
 
         // DELETE
     }

@@ -1,5 +1,11 @@
 /**
- * the 'actions' collection to trigger edit frame actions from anywhere
+ * the set of actions usable in the 'action' attribute of a toolbar action tag or somewhere else
+ *
+ * general parameters:
+ * @param event the event object in the UI
+ * @param name the name of the content element
+ * @param path the path of the content element
+ * @param type the resource type of the content element
  */
 (function (window) {
     window.composum = window.composum || {};
@@ -9,24 +15,20 @@
     (function (actions, pages, core) {
         'use strict';
 
-        /**
-         * the set of actions usable in the 'action' attribute of a toolbar action tag or somewhere else
-         *
-         * general parameters:
-         * @param event the event object in the UI
-         * @param name the name of the content element
-         * @param path the path of the content element
-         * @param type the resource type of the content element
-         */
-
         actions.const = _.extend(actions.const || {}, {
-            versions: {
+            version: {
                 uri: {
-                    nodes: {
-                        base: '/bin/cpm/nodes/version',
-                        _checkpoint: '.checkpoint.json',
-                        _checkIn: '.check-in.json',
-                        _checkOut: '.check-out.json'
+                    pages: {
+                        base: '/bin/cpm/pages/version',
+                        _: {
+                            checkpoint: '.checkpoint.json',
+                            checkin: '.checkin.json',
+                            checkout: '.checkout.json',
+                            toggleCheckout: '.toggleCheckout.json',
+                            lock: '.lock.json',
+                            unlock: '.unlock.json',
+                            toggleLock: '.toggleLock.json'
+                        }
                     }
                 }
             }
@@ -212,9 +214,20 @@
                 pages.dialogs.openDeactivatePageDialog(name, path, type);
             },
 
+            checkpoint: function (event, name, path, type) {
+                var u = actions.const.version.uri;
+                core.ajaxPost(u.pages.base + u.pages._.checkpoint + path, {}, {},
+                    _.bind(function (result) {
+                        pages.trigger('actions.page.checkpoint', pages.const.event.page.state,
+                            [new pages.Reference(name, path, type)]);
+                    }, this), function (xhr) {
+                        actions.error('Error on checkpoint', xhr);
+                    });
+            },
+
             checkout: function (event, name, path, type) {
-                var u = actions.const.versions.uri;
-                core.ajaxPost(u.nodes.base + u.nodes._checkOut + path, {}, {},
+                var u = actions.const.version.uri;
+                core.ajaxPost(u.pages.base + u.pages._.checkout + path, {}, {},
                     _.bind(function (result) {
                         pages.trigger('actions.page.checkout', pages.const.event.page.state,
                             [new pages.Reference(name, path, type)]);
@@ -224,8 +237,8 @@
             },
 
             checkin: function (event, name, path, type) {
-                var u = actions.const.versions.uri;
-                core.ajaxPost(u.nodes.base + u.nodes._checkIn + path, {}, {},
+                var u = actions.const.version.uri;
+                core.ajaxPost(u.pages.base + u.pages._.checkin + path, {}, {},
                     _.bind(function (result) {
                         pages.trigger('actions.page.checkin', pages.const.event.page.state,
                             [new pages.Reference(name, path, type)]);
@@ -234,23 +247,48 @@
                     });
             },
 
-            checkpoint: function (event, name, path, type) {
-                var u = actions.const.versions.uri;
-                core.ajaxPost(u.nodes.base + u.nodes._checkpoint + path, {}, {},
+            toggleCheckout: function (event, name, path, type) {
+                var u = actions.const.version.uri;
+                core.ajaxPost(u.pages.base + u.pages._.toggleCheckout + path, {}, {},
                     _.bind(function (result) {
-                        pages.trigger('actions.page.checkpoint', pages.const.event.page.state,
+                        pages.trigger('actions.page.toggleCheckout', pages.const.event.page.state,
                             [new pages.Reference(name, path, type)]);
                     }, this), function (xhr) {
-                        actions.error('Error on checkpoint', xhr);
+                        actions.error('Error on toggle checkout', xhr);
                     });
             },
 
             lock: function (event, name, path, type) {
-                alert('page.lock... ' + name + ',' + path + ',' + type);
+                var u = actions.const.version.uri;
+                core.ajaxPost(u.pages.base + u.pages._.lock + path, {}, {},
+                    _.bind(function (result) {
+                        pages.trigger('actions.page.lock', pages.const.event.page.state,
+                            [new pages.Reference(name, path, type)]);
+                    }, this), function (xhr) {
+                        actions.error('Error on lock page', xhr);
+                    });
             },
 
             unlock: function (event, name, path, type) {
-                alert('page.lock... ' + name + ',' + path + ',' + type);
+                var u = actions.const.version.uri;
+                core.ajaxPost(u.pages.base + u.pages._.unlock + path, {}, {},
+                    _.bind(function (result) {
+                        pages.trigger('actions.page.unlock', pages.const.event.page.state,
+                            [new pages.Reference(name, path, type)]);
+                    }, this), function (xhr) {
+                        actions.error('Error on unlock page', xhr);
+                    });
+            },
+
+            toggleLock: function (event, name, path, type) {
+                var u = actions.const.version.uri;
+                core.ajaxPost(u.pages.base + u.pages._.toggleLock + path, {}, {},
+                    _.bind(function (result) {
+                        pages.trigger('actions.page.toggleLock', pages.const.event.page.state,
+                            [new pages.Reference(name, path, type)]);
+                    }, this), function (xhr) {
+                        actions.error('Error on toggle lock', xhr);
+                    });
             }
         };
 

@@ -18,7 +18,6 @@ import com.composum.pages.commons.service.EditService;
 import com.composum.pages.commons.service.PageManager;
 import com.composum.pages.commons.service.ResourceManager;
 import com.composum.pages.commons.service.SiteManager;
-import com.composum.pages.commons.service.VersionsService;
 import com.composum.pages.commons.util.PagesUtil;
 import com.composum.pages.commons.util.RequestUtil;
 import com.composum.pages.commons.util.ResolverUtil;
@@ -120,9 +119,6 @@ public class EditServlet extends PagesContentServlet {
     @Reference
     protected PlatformVersionsService platformVersionsService;
 
-    @Reference
-    protected VersionsService versionsService;
-
     protected MoveElementOperation moveElementOperation;
 
     @Activate
@@ -133,11 +129,6 @@ public class EditServlet extends PagesContentServlet {
     @Override
     protected PagesConfiguration getPagesConfiguration() {
         return pagesConfiguration;
-    }
-
-    @Override
-    protected VersionsService getVersionsService() {
-        return versionsService;
     }
 
     @Override
@@ -172,8 +163,7 @@ public class EditServlet extends PagesContentServlet {
         insertElement, moveElement, copyElement,
         createPage, deletePage, moveContent, renameContent, copyContent,
         createSite, deleteSite,
-        contextTools, context,
-        versions, restoreVersion, checkpoint
+        contextTools, context
     }
 
     protected PagesEditOperationSet operations = new PagesEditOperationSet();
@@ -224,12 +214,8 @@ public class EditServlet extends PagesContentServlet {
                 Operation.targetContainers, new GetTargetContainers());
         operations.setOperation(ServletOperationSet.Method.GET, Extension.json,
                 Operation.componentCategories, new GetComponentCategories());
-        operations.setOperation(ServletOperationSet.Method.GET, Extension.html,
-                Operation.versions, new GetVersions());
 
         // POST
-        operations.setOperation(ServletOperationSet.Method.POST, Extension.json,
-                Operation.checkpoint, new CheckpointOperation());
         operations.setOperation(ServletOperationSet.Method.POST, Extension.json,
                 Operation.targetContainers, new GetTargetContainers());
         operations.setOperation(ServletOperationSet.Method.POST, Extension.html,
@@ -262,8 +248,6 @@ public class EditServlet extends PagesContentServlet {
                 Operation.editResource, new GetGenericResource());
         operations.setOperation(ServletOperationSet.Method.PUT, Extension.json,
                 Operation.filterDropZones, new FilterDropZones());
-        operations.setOperation(ServletOperationSet.Method.PUT, Extension.json,
-                Operation.restoreVersion, new RestoreVersion());
 
         // DELETE
 

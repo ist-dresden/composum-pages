@@ -46,12 +46,22 @@
                 checkInAction: 'check-in',
                 checkOutAction: 'check-out',
                 restoreAction: 'restore',
-                versionContentUri: '/bin/cpm/pages/edit.versions.versionList.html',
-                versionRestoreUri: '/bin/cpm/pages/edit.restoreVersion.json',
-                platformVersionsUri: '/bin/cpm/platform/versions.',
-                nodesVersionsUri: '/bin/cpm/nodes/version.',
                 disabled: 'disabled',
-                hidden: 'hidden'
+                hidden: 'hidden',
+                uri: {
+                    version: {
+                        base: '/bin/cpm/pages/version',
+                        platform: '/bin/cpm/platform/versions',
+                        _: {
+                            list: '.list.versionList.html',
+                            checkpoint: '.checkpoint.json',
+                            checkin: '.checkin.jason',
+                            checkout: '.checkout.json',
+                            purge: '.purge.json',
+                            restore: '.restoreVersion.json'
+                        }
+                    }
+                }
             }
         });
 
@@ -166,8 +176,9 @@
                 if (event) {
                     event.preventDefault();
                 }
+                var u = tools.const.versions.uri.version;
                 var ref = this.versions.data.reference;
-                core.ajaxPost(tools.const.versions.platformVersionsUri + 'purge.json' + ref.path, {}, {},
+                core.ajaxPost(u.platform + u._.purge + ref.path, {}, {},
                     _.bind(function (result) {
                         this.versions.reload();
                     }, this), _.bind(function (result) {
@@ -192,9 +203,10 @@
                 if (event) {
                     event.preventDefault();
                 }
+                var u = tools.const.versions.uri.version;
                 var path = this.versions.data.jcrContent.path;
                 var version = this.versions.primSelection.name;
-                core.ajaxPut(tools.const.versions.versionRestoreUri + path, JSON.stringify({
+                core.ajaxPut(u.base + u._.restore + path, JSON.stringify({
                         path: path,
                         version: version
                     }), {}, _.bind(function (result) {
@@ -243,6 +255,7 @@
 
             reload: function () {
                 var c = tools.const.versions;
+                var u = tools.const.versions.uri.version;
                 pages.editFrame.getPageData(this.contextTabs.reference.path, _.bind(function (data) {
                     this.data = data;
                     this.state = data.jcrContent.jcrState;
@@ -255,7 +268,7 @@
                     this.primSelection = undefined;
                     this.sdrySelection = undefined;
                     this.$slider.slider('disable');
-                    core.ajaxGet(c.versionContentUri + this.contextTabs.reference.path, {},
+                    core.ajaxGet(u.base + u._.list + this.contextTabs.reference.path, {},
                         undefined, undefined, _.bind(function (data) {
                             if (data.status === 200) {
                                 this.$versionContent.html(data.responseText);

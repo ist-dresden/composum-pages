@@ -2,25 +2,20 @@ package com.composum.pages.commons.servlet;
 
 import com.composum.pages.commons.PagesConfiguration;
 import com.composum.pages.commons.service.ResourceManager;
-import com.composum.pages.commons.service.VersionsService;
 import com.composum.pages.commons.util.RequestUtil;
 import com.composum.pages.commons.util.ResourceTypeUtil;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.ResourceHandle;
-import com.composum.sling.core.mapping.MappingRules;
 import com.composum.sling.core.servlet.ServletOperation;
 import com.composum.sling.core.servlet.Status;
 import com.composum.sling.core.util.I18N;
 import com.composum.sling.core.util.ResourceUtil;
 import com.composum.sling.core.util.ResponseUtil;
-import com.google.gson.Gson;
 import com.google.gson.stream.JsonWriter;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.jackrabbit.api.JackrabbitSession;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.request.RequestDispatcherOptions;
-import org.apache.sling.api.request.RequestParameter;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -30,13 +25,10 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nonnull;
 import javax.jcr.ItemExistsException;
 import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-import javax.jcr.version.VersionManager;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -51,11 +43,7 @@ public abstract class PagesContentServlet extends ContentServlet {
     public static final String EDIT_RESOURCE_KEY = EditServlet.class.getName() + "_resource";
     public static final String EDIT_RESOURCE_TYPE_KEY = EditServlet.class.getName() + "_resourceType";
 
-    public static final String VERSIONS_RESOURCE_TYPE = "composum/pages/stage/edit/tools/page/versions";
-
     protected abstract PagesConfiguration getPagesConfiguration();
-
-    protected abstract VersionsService getVersionsService();
 
     // TreeNodeServlet...
 
@@ -212,7 +200,7 @@ public abstract class PagesContentServlet extends ContentServlet {
                            ResourceResolver resolver, ResourceHandle resource,
                            Resource target, String name)
                 throws IOException {
-            Status status = new Status(request,response);
+            Status status = new Status(request, response);
             ResourceManager resourceManager = getResourceManager();
             BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
 
@@ -255,7 +243,7 @@ public abstract class PagesContentServlet extends ContentServlet {
         public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
                          ResourceHandle resource)
                 throws IOException {
-            Status status = new Status(request,response);
+            Status status = new Status(request, response);
             String name = request.getParameter(PARAM_NAME);
 
             if (LOG.isDebugEnabled()) {
@@ -293,7 +281,7 @@ public abstract class PagesContentServlet extends ContentServlet {
         public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
                          ResourceHandle resource)
                 throws IOException {
-            Status status = new Status(request,response);
+            Status status = new Status(request, response);
 
             String targetPath = request.getParameter("targetPath");
             String name = request.getParameter(PARAM_NAME);
@@ -336,114 +324,23 @@ public abstract class PagesContentServlet extends ContentServlet {
     }
 
     //
-    // Versions
+    // general request forward to render an editing resource of a resource to edit
     //
 
-    static class VersionPutParameters {
-
-        public String path;
-        public String version;
-        public String label;
-
-        public void setPath(String path) {
-            this.path = path;
-        }
-
-        public void setVersion(String version) {
-            this.version = version;
-        }
-
-        public void setLabel(String label) {
-            this.label = label;
-        }
-    }
-
-    protected class CheckpointOperation implements ServletOperation {
-
-        @Override
-        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response, ResourceHandle resource)
-                throws IOException {
-            try {
-                final ResourceResolver resolver = request.getResourceResolver();
-                final JackrabbitSession session = (JackrabbitSession) resolver.adaptTo(Session.class);
-                final RequestParameter paths = request.getRequestParameter("paths");
-                if (session != null && paths != null) {
-                    final VersionManager versionManager = session.getWorkspace().getVersionManager();
-                    for (String path : paths.getString().split(",")) {
-                        if (versionManager.isCheckedOut(path + "/jcr:content")) {
-                            versionManager.checkpoint(path + "/jcr:content");
-                        }
-                    }
-                    ResponseUtil.writeEmptyArray(response);
-                } else {
-                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "no 'paths' parameter found");
-                }
-            } catch (final RepositoryException ex) {
-                LOG.error(ex.getMessage(), ex);
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, ex.getMessage());
-            }
-
-        }
-    }
-
-    protected class GetVersions implements ServletOperation {
-
-        @Override
-        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
-                         ResourceHandle resource)
-                throws ServletException, IOException {
-
-            String selectors = RequestUtil.getSelectorString(request, null, 1);
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("GetVersions({},{})...", resource, selectors);
-            }
-
-            RequestDispatcherOptions options = new RequestDispatcherOptions();
-            options.setForceResourceType(VERSIONS_RESOURCE_TYPE);
-            if (StringUtils.isNotBlank(selectors)) {
-                options.setReplaceSelectors(selectors);
-            }
-
-            forward(request, response, resource, null, options);
-        }
-    }
-
-    protected class RestoreVersion implements ServletOperation {
-
-        @Override
-        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
-                         ResourceHandle resource)
-                throws IOException {
-
-            final Gson gson = new Gson();
-            final VersionPutParameters params = gson.fromJson(
-                    new InputStreamReader(request.getInputStream(), MappingRules.CHARSET.name()),
-                    VersionPutParameters.class);
-
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("RestoreVersion({},{})...", params.path, params.version);
-            }
-
-            try {
-                BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
-                getVersionsService().restoreVersion(context, params.path, params.version);
-                ResponseUtil.writeEmptyArray(response);
-
-            } catch (RepositoryException ex) {
-                LOG.error(ex.getMessage(), ex);
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, ex.getMessage());
-            }
-        }
-    }
-
-    //
-
-    protected void forward(SlingHttpServletRequest request, SlingHttpServletResponse response,
-                           Resource resource, String typeHint, RequestDispatcherOptions options)
+    /**
+     * forward to the edit component
+     *
+     * @param request  the current request
+     * @param response the current response
+     * @param resource the resource to edit (maybe synthetic)
+     * @param typeHint the type of the resource to edit (maybe overlayed)
+     * @param options  sling include options (selectors, suffix, resource type) for the edit component
+     */
+    protected static void forward(SlingHttpServletRequest request, SlingHttpServletResponse response,
+                                  Resource resource, String typeHint, RequestDispatcherOptions options)
             throws ServletException, IOException {
         RequestDispatcher dispatcher = request.getRequestDispatcher(resource, options);
         if (dispatcher != null) {
-
             request.setAttribute(EDIT_RESOURCE_KEY, resource);
             request.setAttribute(EDIT_RESOURCE_TYPE_KEY,
                     StringUtils.isNotBlank(typeHint) ? typeHint : resource.getResourceType());
