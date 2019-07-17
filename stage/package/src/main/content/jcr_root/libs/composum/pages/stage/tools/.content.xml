@@ -27,6 +27,7 @@
             hint="Component Selector"
             title="Components"
             order="{Long}80"/>
+    <!-- FIXME develop mode - unlock if useful
     <developmentTree
             jcr:primaryType="nt:unstructured"
             sling:resourceType="composum/pages/stage/edit/tools/main/develop"
@@ -34,7 +35,7 @@
             iconClass="wrench"
             hint="Development Tree"
             title="Development"
-            order="{Long}90"/>
+            order="{Long}90"/>-->
     <siteReleases
             jcr:primaryType="nt:unstructured"
             sling:resourceType="composum/pages/stage/edit/tools/site/releases"
@@ -112,6 +113,7 @@
             hint="Component Help"
             title="Help"
             order="{Long}222"/>
+    <!-- FIXME develop mode - unlock if useful
     <componentContext
             jcr:primaryType="nt:unstructured"
             sling:resourceType="composum/pages/stage/edit/tools/component/edit"
@@ -119,5 +121,5 @@
             iconClass="wrench"
             hint="Component Implementation"
             title="Component"
-            order="{Long}90"/>
+            order="{Long}90"/>-->
 </jcr:root>
