@@ -1,4 +1,3 @@
-<%@ page import="static com.composum.pages.commons.PagesConstants.RA_STICKY_LOCALE" %>
 <%@page session="false" pageEncoding="UTF-8" %>
 <%@taglib prefix="cpn" uri="http://sling.composum.com/cpnl/1.0" %>
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
@@ -17,9 +16,6 @@
         </div>
     </cpn:div>
     <div class="${elementCssBase}_panel">
-        <% request.setAttribute(RA_STICKY_LOCALE, request.getLocale()); // use editors locale %>
-        <cpp:include
-                resourceType="composum/pages/stage/edit/tools/component/help/${element.developMode?'edit':'view'}"/>
-        <% request.removeAttribute(RA_STICKY_LOCALE); %>
+        <cpp:include replaceSelectors="content"/>
     </div>
 </cpp:element>

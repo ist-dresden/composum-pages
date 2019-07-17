@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static com.composum.pages.commons.PagesConstants.NODE_TYPE_PAGE;
 import static com.composum.pages.commons.PagesConstants.NT_COMPONENT;
 import static com.composum.pages.commons.PagesConstants.PN_CATEGORY;
 import static com.composum.pages.commons.PagesConstants.PN_COMPONENT_TYPE;
@@ -265,8 +266,14 @@ public class Component extends AbstractModel {
 
     public String getHelpContent() {
         if (helpContent == null) {
-            Resource contentRes = getResource().getChild(EDIT_HELP_PATH);
-            helpContent = contentRes != null ? contentRes.getPath() : "";
+            Resource helpRes = getResource().getChild(EDIT_HELP_PATH);
+            if (ResourceUtil.isResourceType(helpRes, NODE_TYPE_PAGE)){
+                Resource contentRes = helpRes.getChild(JcrConstants.JCR_CONTENT);
+                if (contentRes != null) {
+                    helpRes = contentRes;
+                }
+            }
+            helpContent = helpRes != null ? helpRes.getPath() : "";
         }
         return helpContent;
     }
