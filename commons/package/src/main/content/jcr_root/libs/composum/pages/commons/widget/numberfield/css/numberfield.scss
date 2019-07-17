@@ -1,0 +1,32 @@
+@charset "UTF-8";
+
+@import "../../../css/variables";
+@import "../../../css/mixins";
+
+.composum-pages-edit-widget {
+
+    &_numberfield {
+
+        .input-group-addon {
+
+            &.clear {
+                padding: 0 4px;
+                color: $bootstrap-color-mute;
+            }
+
+            &.spinner {
+                width: 21px;
+
+                .increment {
+                    top: 0;
+                    padding: 4px 7px 0;
+                }
+
+                .decrement {
+                    bottom: 0;
+                    padding: 1px 7px 3px;
+                }
+            }
+        }
+    }
+}

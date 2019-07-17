@@ -4,4 +4,4 @@
         jcr:description="a combination of a rich text block and an image (both optional)"
         jcr:title="Text &amp; Image"
         category="[Text,Image,General,Blueprint]"
-        sling:resourceSuperType="composum/pages/components/element"/>
+        sling:resourceSuperType="composum/pages/components/element/text"/>

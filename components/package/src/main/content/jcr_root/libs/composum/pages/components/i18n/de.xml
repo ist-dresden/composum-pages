@@ -37,6 +37,8 @@
                 sling:key="Edit Image" sling:message="Bild bearbeiten"/>
         <edit-teaser jcr:primaryType="sling:MessageEntry"
                 sling:key="Edit Teaser" sling:message="Teaser bearbeiten"/>
+        <edit-text jcr:primaryType="sling:MessageEntry"
+                sling:key="Edit Text" sling:message="Text bearbeiten"/>
         <edit-text-image jcr:primaryType="sling:MessageEntry"
                 sling:key="Edit Text and Image" sling:message="Text und Bild bearbeiten"/>
         <parsys jcr:primaryType="sling:MessageEntry"
@@ -102,6 +104,8 @@
                 sling:key="Text Alignment" sling:message="Text-Ausrichtung"/>
         <title jcr:primaryType="sling:MessageEntry"
                 sling:key="Title" sling:message="Titel"/>
+        <title-level jcr:primaryType="sling:MessageEntry"
+                sling:key="Title Level" sling:message="Titel-Ebene"/>
         <to jcr:primaryType="sling:MessageEntry"
                 sling:key="to" sling:message="bis"/>
         <type jcr:primaryType="sling:MessageEntry"

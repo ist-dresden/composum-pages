@@ -50,22 +50,29 @@ public class Menuitem extends Page {
     }
 
     public String getCssClasses() {
-        String currentPagePath = getCurrentPage().getPath();
-        String menuitemPath = resource.getPath();
         StringBuilder cssClasses = new StringBuilder();
-        if (menuitemPath.equals(currentPagePath)) {
-            cssClasses.append(" current");
-        }
-        if (isActive()) {
-            cssClasses.append(" active");
+        Page currentPage = getCurrentPage();
+        if (currentPage != null) {
+            String currentPagePath = currentPage.getPath();
+            String menuitemPath = resource.getPath();
+            if (menuitemPath.equals(currentPagePath)) {
+                cssClasses.append(" current");
+            }
+            if (isActive()) {
+                cssClasses.append(" active");
+            }
         }
         return cssClasses.toString();
     }
 
     public boolean isActive() {
-        String currentPagePath = getCurrentPage().getPath();
-        String menuitemPath = resource.getPath();
-        return menuitemPath.equals(currentPagePath) || currentPagePath.startsWith(menuitemPath + "/");
+        Page currentPage = getCurrentPage();
+        if (currentPage != null) {
+            String currentPagePath = currentPage.getPath();
+            String menuitemPath = resource.getPath();
+            return menuitemPath.equals(currentPagePath) || currentPagePath.startsWith(menuitemPath + "/");
+        }
+        return false;
     }
 
     public boolean isMenuOnly() {
