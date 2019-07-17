@@ -314,7 +314,12 @@
                 pages.log.warn('trigger@' + key + ' > ' + event
                     + JSON.stringify(argsToLog !== undefined ? argsToLog : (args ? args : [])));
             }
-            $(document).trigger(event, args);
+            try {
+                $(document).trigger(event, args);
+            } catch (ex) {
+                pages.log.error('trigger@' + key + ' > ' + event
+                    + JSON.stringify(argsToLog !== undefined ? argsToLog : (args ? args : [])) + '\n', ex);
+            }
         };
 
         pages.contextTools = {

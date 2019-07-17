@@ -161,9 +161,7 @@
         tools.Elements = Backbone.View.extend({
 
             initialize: function (options) {
-                var e = pages.const.event;
                 var c = tools.const.elements.css;
-                var id = tools.const.elements.event.id;
                 this.log = {
                     tools: pages.contextTools.log,
                     dnd: log.getLogger('dnd')
@@ -180,27 +178,6 @@
                 this.$moveDown.click(_.bind(this.moveDown, this));
                 this.$goUp.click(_.bind(this.selectContainer, this));
                 this.$select.click(_.bind(this.selectElement, this));
-                $(document)
-                    .on(e.element.selected + id, _.bind(this.onElementSelected, this))
-                    .on(e.element.inserted + id, _.bind(this.onElementInserted, this))
-                    .on(e.element.changed + id, _.bind(this.onElementChanged, this))
-                    .on(e.element.deleted + id, _.bind(this.onElementDeleted, this))
-                    .on(e.dnd.finished + id, _.bind(this.onDragFinished, this));
-                this.$el
-                    .on('dragenter' + id, _.bind(this.onDragEnter, this))
-                    .on('dragover' + id, _.bind(this.onDragOver, this))
-                    .on('drop' + id, _.bind(this.onDrop, this));
-            },
-
-            beforeClose: function () {
-                var e = pages.const.event;
-                var id = tools.const.elements.event.id;
-                $(document)
-                    .off(e.element.selected + id)
-                    .off(e.element.inserted + id)
-                    .off(e.element.changed + id)
-                    .off(e.element.deleted + id)
-                    .off(e.dnd.finished + id);
             },
 
             initContent: function (options) {
@@ -220,6 +197,34 @@
                     this.log.tools.debug('context.elements.init.content[' + this.elements.length + ']');
                 }
                 this.selectPath(pages.current.element);
+                var e = pages.const.event;
+                var id = tools.const.elements.event.id;
+                this.beforeClose(); // reset event handlers
+                $(document)
+                    .on(e.element.selected + id, _.bind(this.onElementSelected, this))
+                    .on(e.element.inserted + id, _.bind(this.onElementInserted, this))
+                    .on(e.element.changed + id, _.bind(this.onElementChanged, this))
+                    .on(e.element.deleted + id, _.bind(this.onElementDeleted, this))
+                    .on(e.dnd.finished + id, _.bind(this.onDragFinished, this));
+                this.$el
+                    .on('dragenter' + id, _.bind(this.onDragEnter, this))
+                    .on('dragover' + id, _.bind(this.onDragOver, this))
+                    .on('drop' + id, _.bind(this.onDrop, this));
+            },
+
+            beforeClose: function () {
+                var e = pages.const.event;
+                var id = tools.const.elements.event.id;
+                this.$el
+                    .off('dragenter' + id)
+                    .off('dragover' + id)
+                    .off('drop' + id);
+                $(document)
+                    .off(e.element.selected + id)
+                    .off(e.element.inserted + id)
+                    .off(e.element.changed + id)
+                    .off(e.element.deleted + id)
+                    .off(e.dnd.finished + id);
             },
 
             getElement: function (reference) {
