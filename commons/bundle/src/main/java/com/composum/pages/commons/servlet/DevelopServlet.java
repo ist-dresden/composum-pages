@@ -12,6 +12,7 @@ import com.composum.pages.commons.service.EditService;
 import com.composum.pages.commons.service.VersionsService;
 import com.composum.pages.commons.util.ResolverUtil;
 import com.composum.pages.commons.util.ResourceTypeUtil;
+import com.composum.sling.core.ResourceHandle;
 import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.filter.StringFilter;
 import com.composum.sling.core.servlet.NodeTreeServlet;
@@ -33,6 +34,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
+import java.util.Comparator;
+import java.util.List;
 
 import static com.composum.pages.commons.model.Component.isComponent;
 import static com.composum.pages.commons.util.ResourceTypeUtil.DEVELOP_ACTIONS_PATH;
@@ -142,6 +145,17 @@ public class DevelopServlet extends NodeTreeServlet {
         protected ResourceFilter getNodeFilter(SlingHttpServletRequest request) {
             return pagesConfiguration.getDevelopmentTreeFilter();
         }
+    }
+
+    /**
+     * sort children of nodes which are not marked 'orderable'
+     */
+    @Override
+    protected List<Resource> prepareTreeItems(ResourceHandle resource, List<Resource> items) {
+        if (!pagesConfiguration.getOrderableNodesFilter().accept(resource)) {
+            items.sort(Comparator.comparing(this::getSortName));
+        }
+        return items;
     }
 
     //
