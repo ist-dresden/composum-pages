@@ -71,6 +71,7 @@ public class PagesReleaseServiceImpl implements ReleaseChangeEventListener, Page
                 Resource resource = stagedResolver.getResource(removedPath);
                 while (resource == null && StringUtils.isNotBlank(removedPath)) {
                     removedPath = ResourceUtil.getParent(removedPath);
+                    resource = stagedResolver.getResource(removedPath);
                 }
                 if (resource != null)
                     pathsToReplicate.add(removedPath);
