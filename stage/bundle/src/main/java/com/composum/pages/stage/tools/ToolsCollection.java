@@ -1,10 +1,12 @@
 package com.composum.pages.stage.tools;
 
+import com.composum.pages.commons.service.PageManager;
+import com.composum.pages.commons.service.SiteManager;
+import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.filter.ResourceFilter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
 
 import javax.annotation.Nonnull;
@@ -18,14 +20,19 @@ import java.util.List;
 public class ToolsCollection {
 
     public static final String CATEGORIES = "categories";
+    public static final String CONDITION = "condition";
 
     public static final String CONTENT_QUERY_BASE = "/jcr:root";
     public static final String CONTENT_QUERY_RULE = "//*[@sling:resourceType='composum/pages/tools/collection']";
     public static final String CONTENT_QUERY_LIBS = CONTENT_QUERY_BASE + "/libs" + CONTENT_QUERY_RULE;
     public static final String CONTENT_QUERY_APPS = CONTENT_QUERY_BASE + "/apps" + CONTENT_QUERY_RULE;
 
-    protected final ResourceResolver resolver;
+    protected final BeanContext context;
+    protected final Resource targetResource;
     protected final List<String> categories;
+
+    private transient SiteManager siteManager;
+    private transient PageManager pageManager;
 
     public class Component implements Comparable<Component> {
 
@@ -82,8 +89,9 @@ public class ToolsCollection {
 
     private transient List<Component> componentList;
 
-    public ToolsCollection(ResourceResolver resolver, String... categories) {
-        this.resolver = resolver;
+    public ToolsCollection(BeanContext context, Resource targetResource, String... categories) {
+        this.context = context;
+        this.targetResource = targetResource;
         this.categories = Arrays.asList(categories);
     }
 
@@ -100,7 +108,7 @@ public class ToolsCollection {
     protected void findComponents(List<Component> list, String query) {
 
         @SuppressWarnings("deprecation")
-        Iterator<Resource> toolsContentResources = resolver.findResources(query, Query.XPATH);
+        Iterator<Resource> toolsContentResources = context.getResolver().findResources(query, Query.XPATH);
 
         ResourceFilter toolsFilter = new ToolsFilter();
         while (toolsContentResources.hasNext()) {
@@ -133,6 +141,25 @@ public class ToolsCollection {
                     return false;
                 }
             }
+            if (targetResource != null) {
+                String[] condition = values.get(CONDITION, new String[0]);
+                if (condition.length > 0) {
+                    for (String key : condition) {
+                        switch (key) {
+                            case "site":
+                                if (getSiteManager().getContainingSite(context, targetResource) == null) {
+                                    return false;
+                                }
+                                break;
+                            case "page":
+                                if (getPageManager().getContainingPage(context, targetResource) == null) {
+                                    return false;
+                                }
+                                break;
+                        }
+                    }
+                }
+            }
             return true;
         }
 
@@ -145,5 +172,19 @@ public class ToolsCollection {
         public void toString(StringBuilder builder) {
             builder.append("tools(").append(StringUtils.join(categories, ',')).append(")");
         }
+    }
+
+    protected SiteManager getSiteManager() {
+        if (siteManager == null) {
+            siteManager = context.getService(SiteManager.class);
+        }
+        return siteManager;
+    }
+
+    protected PageManager getPageManager() {
+        if (pageManager == null) {
+            pageManager = context.getService(PageManager.class);
+        }
+        return pageManager;
     }
 }

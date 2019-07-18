@@ -4,6 +4,7 @@
 <cpp:defineObjects/>
 <cpp:element var="model" type="com.composum.pages.components.model.reference.Reference">
     <cpp:include test="${model.valid}" path="${model.contentReference}" mode="none"/>
-    <cpn:div test="${not model.valid}" class="${modelCSS}_placeholder placeholder"><i class="fa fa-chain"><span
+    <cpn:div test="${!model.valid && model.editMode}" class="${modelCSS}_placeholder placeholder"><i
+            class="fa fa-chain"><span
             class="${modelCSS}_label">${cpn:i18n(slingRequest,'content reference')}</span></i></cpn:div>
 </cpp:element>

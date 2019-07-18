@@ -3,7 +3,6 @@ package com.composum.pages.stage.tools;
 import com.composum.pages.commons.request.DisplayMode;
 import com.composum.pages.stage.model.edit.FrameModel;
 import com.composum.sling.core.BeanContext;
-import org.apache.sling.api.resource.ResourceResolver;
 
 import java.util.List;
 
@@ -19,8 +18,7 @@ public class ContextTools extends FrameModel {
     public ToolsCollection.Component getStatus() {
         if (status == null) {
             BeanContext context = getDelegate().getContext();
-            ResourceResolver resolver = context.getResolver();
-            ToolsCollection statusCollection = new ToolsCollection(resolver,
+            ToolsCollection statusCollection = new ToolsCollection(context, getResource(),
                     "status",
                     DisplayMode.requested(context).name().toLowerCase(),
                     getComponentTypeName());
@@ -34,8 +32,7 @@ public class ContextTools extends FrameModel {
     public ToolsCollection getTools() {
         if (tools == null) {
             BeanContext context = getDelegate().getContext();
-            ResourceResolver resolver = context.getResolver();
-            tools = new ToolsCollection(resolver,
+            tools = new ToolsCollection(context, getResource(),
                     "context",
                     DisplayMode.requested(context).name().toLowerCase(),
                     getComponentTypeName());

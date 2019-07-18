@@ -1,0 +1,18 @@
+@charset "UTF-8";
+
+@import "../../../css/variables";
+@import "../../../css/mixins";
+
+.composum-pages-components-element-reference {
+
+    &_placeholder {
+
+        .composum-pages-components-element-reference {
+
+            &_label {
+                margin-left: $bootstrap-spacing-h;
+                @include default-font;
+            }
+        }
+    }
+}

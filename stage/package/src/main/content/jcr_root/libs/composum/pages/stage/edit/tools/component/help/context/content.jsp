@@ -7,7 +7,8 @@
            cssBase="composum-pages-tools">
     <div class="${elementCssBase}_help-view">
         <cpp:include test="${not empty element.component.helpContent}" path="${element.component.helpContent}"
-                     resourceType="composum/pages/stage/edit/tools/component/help/page" replaceSelectors="content"/>
+                     resourceType="composum/pages/stage/edit/tools/component/help/page" replaceSelectors="content"
+                     mode="none"/>
     </div>
 </cpp:model>
 <% request.removeAttribute(RA_STICKY_LOCALE); %>
