@@ -12,6 +12,7 @@ import com.composum.sling.core.util.ResourceUtil;
 import com.composum.sling.platform.security.AccessMode;
 import com.composum.sling.platform.staging.ReleaseNumberCreator;
 import com.composum.sling.platform.staging.StagingReleaseManager;
+import com.composum.sling.platform.staging.impl.StagingUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.SlingHttpServletRequest;
@@ -37,8 +38,6 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.Objects;
 import java.util.regex.Matcher;
-
-import static com.composum.pages.commons.model.SiteRelease.RELEASE_PATH_PATTERN;
 
 /**
  * @author Mirko Zeibig
@@ -289,7 +288,7 @@ public class ReleaseServlet extends AbstractServiceServlet {
         String releaseKey = request.getParameter(PARAM_RELEASE_KEY);
         if (releaseKey == null && resource != null) {
             final String path = resource.getPath();
-            final Matcher pathMatcher = RELEASE_PATH_PATTERN.matcher(path);
+            final Matcher pathMatcher = StagingUtils.RELEASE_PATH_PATTERN.matcher(path);
             if (pathMatcher.matches()) {
                 final String sitePath = pathMatcher.group(1);
                 releaseKey = pathMatcher.group(2);

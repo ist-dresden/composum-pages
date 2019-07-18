@@ -5,7 +5,9 @@ import com.composum.pages.commons.model.SiteRelease;
 import org.apache.sling.api.resource.Resource;
 
 /**
- * a Site model to view a release resource or a resource referenced by the url suffix
+ * A Site model to view a release resource or a resource referenced by the url suffix.
+ * The resource this is created from is the metadata resource of a release below
+ * {@value StagingConstants#RELEASE_ROOT_PATH}, e.g. /var/composum/content/ist/composum/cpl:releases/r1.0/metaData .
  */
 public class ReleaseModel extends SiteModel {
 

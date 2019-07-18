@@ -5,7 +5,6 @@ import com.composum.pages.commons.service.SiteManager;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.platform.staging.ReleaseChangeEventListener;
 import com.composum.sling.platform.staging.ReleaseChangeEventPublisher;
-import com.composum.sling.platform.staging.StagingConstants;
 import com.composum.sling.platform.staging.StagingReleaseManager;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.LoginException;
@@ -45,7 +44,7 @@ public class PagesChangeEventListener implements ResourceChangeListener {
     private static final Logger LOG = LoggerFactory.getLogger(PagesChangeEventListener.class);
 
     /** Property on the release node that saves the last {@link Site#PROP_PUBLIC_MODE} to recognize changes. */
-    public static final String PROP_LAST_PUBLIC_MODE = "last-publicMode";
+    public static final String PROP_LAST_PUBLIC_MODE = "cpl:last-publicMode";
 
     /**
      * Resourced pattern where we might need to retrigger a refresh - see {@link #onChange(List)}. This needs to be consistent
@@ -134,18 +133,17 @@ public class PagesChangeEventListener implements ResourceChangeListener {
         ResourceResolver resolver = giveServiceResolver();
         boolean doUpdate = false;
         String currentlyInPlace = null;
+        Resource resource;
         synchronized (resolver) {
             resolver.revert();
             resolver.refresh();
-            Resource resource = resolver.getResource(change.getPath());
+            resource = resolver.getResource(change.getPath());
             if (resource == null) {
                 LOG.error("Cannot find resource {} with resolver {} - permissions wrong?", change.getPath(), resolver.getUserID());
                 return;
             }
             if (Site.isSiteConfiguration(resource)) {
-                Resource releaseNode = resource.getChild(StagingConstants.NODE_RELEASES);
-                if (releaseNode == null) { return; }
-                String previouslyInPlace = releaseNode.getValueMap().get(PROP_LAST_PUBLIC_MODE, String.class);
+                String previouslyInPlace = resource.getValueMap().get(PROP_LAST_PUBLIC_MODE, String.class);
 
                 BeanContext beanContext = new BeanContext.Service(resolver);
                 Site site = siteManager.getContainingSite(beanContext, resource.getParent());
@@ -163,8 +161,7 @@ public class PagesChangeEventListener implements ResourceChangeListener {
             synchronized (resolver) {
                 resolver.revert();
                 resolver.refresh();
-                Resource releaseNode = resolver.getResource(change.getPath()).getChild(StagingConstants.NODE_RELEASES);
-                ModifiableValueMap modVm = releaseNode.adaptTo(ModifiableValueMap.class);
+                ModifiableValueMap modVm = resource.adaptTo(ModifiableValueMap.class);
                 modVm.put(PROP_LAST_PUBLIC_MODE, currentlyInPlace);
                 resolver.commit();
             }

@@ -4,7 +4,9 @@ import com.composum.pages.commons.request.DisplayMode;
 import com.composum.pages.commons.util.PagesUtil;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.util.I18N;
+import com.composum.sling.platform.staging.StagingConstants;
 import com.composum.sling.platform.staging.StagingReleaseManager;
+import com.composum.sling.platform.staging.impl.StagingUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.apache.sling.api.resource.Resource;
@@ -21,9 +23,12 @@ import java.util.regex.Pattern;
 
 import static com.composum.pages.commons.PagesConstants.KEY_CURRENT_RELEASE;
 import static com.composum.pages.commons.PagesConstants.PROP_LAST_MODIFIED;
+import static com.composum.sling.platform.staging.StagingConstants.NODE_RELEASES;
+import static com.composum.sling.platform.staging.StagingConstants.RELEASE_ROOT_PATH;
 
 /**
- * Created by rw on 22.01.17.
+ * Models a release for a site. The actual resource is the metadata node of the release, which is located below
+ * {@value StagingConstants#RELEASE_ROOT_PATH}, e.g. /var/composum/content/ist/composum/cpl:releases/r1.0/metaData .
  */
 public class SiteRelease extends AbstractModel implements Comparable<SiteRelease> {
 
@@ -33,10 +38,9 @@ public class SiteRelease extends AbstractModel implements Comparable<SiteRelease
     private transient Calendar creationDate;
     private transient Calendar lastModified;
 
-    public static final Pattern RELEASE_PATH_PATTERN = Pattern.compile("^(/.*)/jcr:content/cpl:releases/(.+)$");
 
     public static boolean isSiteRelease(Resource resource) {
-        return resource != null && RELEASE_PATH_PATTERN.matcher(resource.getPath()).matches();
+        return resource != null && StagingUtils.RELEASE_PATH_PATTERN.matcher(resource.getPath()).matches();
     }
 
     public SiteRelease() {
