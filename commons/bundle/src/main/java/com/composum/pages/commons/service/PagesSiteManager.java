@@ -8,6 +8,7 @@ import com.composum.pages.commons.model.Site;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.util.ResourceUtil;
+import com.composum.sling.platform.staging.StagingReleaseManager;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.resource.ModifiableValueMap;
@@ -68,6 +69,9 @@ public class PagesSiteManager extends PagesContentManager<Site> implements SiteM
     @Reference
     protected PageManager pageManager;
 
+    @Reference
+    protected StagingReleaseManager releaseManager;
+
     @Override
     public Site createBean(BeanContext context, Resource resource) {
         return new Site(this, context, resource);
@@ -92,11 +96,21 @@ public class PagesSiteManager extends PagesContentManager<Site> implements SiteM
     @Override
     public Resource getContainingSiteResource(Resource resource) {
         if (resource != null) {
-            if (Site.isSite(resource)) {
-                return resource;
-            } else {
-                return getContainingSiteResource(resource.getParent());
+            Resource checkResource = resource;
+            while (checkResource != null) {
+                if (Site.isSite(checkResource)) {
+                    return checkResource;
+                }
+                checkResource = checkResource.getParent();
             }
+        }
+        try { // for resources from the release tree at com.composum.sling.platform.staging.StagingConstants.RELEASE_ROOT_PATH :
+            Resource releaseRoot = releaseManager.findReleaseRoot(resource);
+            if (Site.isSite(releaseRoot)) {
+                return releaseRoot;
+            }
+        } catch (RuntimeException e) {
+            // give up
         }
         return null;
     }
