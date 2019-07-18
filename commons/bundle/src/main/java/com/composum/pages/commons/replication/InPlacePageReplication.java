@@ -34,8 +34,7 @@ public class InPlacePageReplication extends InPlaceReplicationStrategy {
         boolean result = canReplicateSite(context, resource);
         if (result) {
             if (Page.isPage(resource)) {
-                result = resource != null &&
-                        (Page.isPage(resource) && resource.getChild(JcrConstants.JCR_CONTENT) != null);
+                result = true;
             } else if (Page.isPageContent(resource)) {
                 return Page.isPage(resource.getParent());
             } else {
