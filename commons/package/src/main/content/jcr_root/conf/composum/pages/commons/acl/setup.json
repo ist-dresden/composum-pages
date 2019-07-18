@@ -30,6 +30,15 @@
             "privileges": "jcr:all"
           }
         ]
+      },
+      {
+        "principal": "composum-pages-service",
+        "acl": [
+          {
+            "allow": true,
+            "privileges": "jcr:all"
+          }
+        ]
       }
     ]
   }
