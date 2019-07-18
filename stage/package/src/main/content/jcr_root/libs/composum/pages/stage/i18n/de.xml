@@ -196,6 +196,16 @@
                 sling:key="Page Template" sling:message="Seitenvorlage"/>
         <select-page-template jcr:primaryType="sling:MessageEntry"
                 sling:key="select a template or type" sling:message="eine Vorlage oder den Typ auswählen"/>
+
+        <locked jcr:primaryType="sling:MessageEntry"
+                sling:key="locked" sling:message="gesperrt"/>
+        <unlocked jcr:primaryType="sling:MessageEntry"
+                sling:key="unlocked" sling:message="nicht gesperrt"/>
+        <checked-out jcr:primaryType="sling:MessageEntry"
+                sling:key="checked out" sling:message="ausgecheckt"/>
+        <checked-in jcr:primaryType="sling:MessageEntry"
+                sling:key="checked in" sling:message="eingecheckt"/>
+
     </page>
 
     <content jcr:primaryType="sling:Folder"><!-- Content operations -->

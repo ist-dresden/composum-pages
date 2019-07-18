@@ -535,6 +535,18 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
 
     // release
 
+    public boolean isLocked() {
+        return getContent().isLocked();
+    }
+
+    public String getLockOwner() {
+        return getContent().getLockOwner();
+    }
+
+    public boolean isCheckedOut() {
+        return getContent().isCheckedOut();
+    }
+
     /** Pages-Adapter around {@link PlatformVersionsService.Status}. */
     public static class StatusModel {
 

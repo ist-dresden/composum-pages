@@ -192,6 +192,7 @@ public class PagesVersionServlet extends AbstractServiceServlet {
                     if (session != null) {
                         final VersionManager versionManager = session.getWorkspace().getVersionManager();
                         performIt(status, versionManager, versionable);
+                        session.save();
                     } else {
                         status.withLogging(LOG).error("can't adapt to session");
                     }
@@ -365,6 +366,7 @@ public class PagesVersionServlet extends AbstractServiceServlet {
                         Workspace workspace = session.getWorkspace();
                         LockManager lockManager = workspace.getLockManager();
                         performIt(status, session, lockManager, lockable);
+                        session.save();
                     } else {
                         status.withLogging(LOG).error("can't adapt to session");
                     }
@@ -381,11 +383,13 @@ public class PagesVersionServlet extends AbstractServiceServlet {
                                    @Nonnull final List<Resource> lockable, @Nullable final String path) {
             if (StringUtils.isNotBlank(path)) {
                 Resource resource = resolver.getResource(path);
-                if (!ResourceUtil.isNodeType(resource, JcrConstants.MIX_LOCKABLE) && resource != null) {
-                    resource = resource.getChild(JcrConstants.JCR_CONTENT);
-                }
-                if (ResourceUtil.isNodeType(resource, JcrConstants.MIX_LOCKABLE)) {
-                    lockable.add(resource);
+                if (resource != null) {
+                    if (!JcrConstants.JCR_CONTENT.equals(resource.getName())) {
+                        resource = resource.getChild(JcrConstants.JCR_CONTENT);
+                    }
+                    if (resource != null) {
+                        lockable.add(resource);
+                    }
                 }
             }
         }
@@ -409,6 +413,10 @@ public class PagesVersionServlet extends AbstractServiceServlet {
                         lockManager.addLockToken(token);
                         lockManager.unlock(path);
                     } else {
+                        if (!node.isNodeType(JcrConstants.MIX_LOCKABLE)){
+                            node.addMixin(JcrConstants.MIX_LOCKABLE);
+                            session.save();
+                        }
                         lockManager.lock(path, true, false, Long.MAX_VALUE, session.getUserID());
                     }
                 }
@@ -422,11 +430,15 @@ public class PagesVersionServlet extends AbstractServiceServlet {
         void performIt(@Nonnull final Status status,
                        @Nonnull final Session session,
                        @Nonnull final LockManager lockManager,
-                       @Nonnull final Collection<Resource> versionable)
+                       @Nonnull final Collection<Resource> lockable)
                 throws RepositoryException {
-            for (Resource resource : versionable) {
+            for (Resource resource : lockable) {
                 Node node = resource.adaptTo(Node.class);
                 if (node != null && !node.isLocked()) {
+                    if (!node.isNodeType(JcrConstants.MIX_LOCKABLE)){
+                        node.addMixin(JcrConstants.MIX_LOCKABLE);
+                        session.save();
+                    }
                     lockManager.lock(node.getPath(), true, false, Long.MAX_VALUE, session.getUserID());
                 }
             }
@@ -439,9 +451,9 @@ public class PagesVersionServlet extends AbstractServiceServlet {
         void performIt(@Nonnull final Status status,
                        @Nonnull final Session session,
                        @Nonnull final LockManager lockManager,
-                       @Nonnull final Collection<Resource> versionable)
+                       @Nonnull final Collection<Resource> lockable)
                 throws RepositoryException {
-            for (Resource resource : versionable) {
+            for (Resource resource : lockable) {
                 Node node = resource.adaptTo(Node.class);
                 if (node != null && node.isLocked()) {
                     String path = node.getPath();
