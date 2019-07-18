@@ -5,16 +5,6 @@
 <cpp:element var="element" type="com.composum.pages.stage.model.edit.FrameElement" mode="none"
              cssBase="composum-pages-tools"
              cssAdd="@{elementCssBase}_help-context pages-mode_@{element.displayMode}">
-    <cpn:div test="${element.developMode}" class="composum-pages-tools_actions btn-toolbar">
-        <div class="${elementCssBase}_left-actions">
-        </div>
-        <div class="${elementCssBase}_right-actions">
-            <div class="${elementCssBase}_button-group btn-group btn-group-sm" role="group">
-            </div>
-            <div class="${elementCssBase}_button-group btn-group btn-group-sm" role="group">
-            </div>
-        </div>
-    </cpn:div>
     <div class="${elementCssBase}_panel">
         <cpp:include replaceSelectors="content"/>
     </div>

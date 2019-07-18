@@ -418,8 +418,24 @@
                     '/libs/composum/pages/stage/edit/default/develop/component/dialog.html');
             },
 
+            manageElements: function (event, name, path, type) {
+                pages.dialogs.openDialog(name, path, type);
+            },
+
+            rename: function (event, name, path, type) {
+                pages.dialogs.openRenameContentDialog(name, path, type)
+            },
+
+            move: function (event, name, path, type) {
+                pages.dialogs.openMoveContentDialog(name, path, type)
+            },
+
             copy: function (event, name, path, type) {
                 actions.content.copy(path);
+            },
+
+            paste: function (event, name, path, type) {
+                actions.content.paste(path);
             },
 
             delete: function (event, name, path, type) {

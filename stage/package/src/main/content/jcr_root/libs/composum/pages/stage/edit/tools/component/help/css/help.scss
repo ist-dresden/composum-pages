@@ -9,40 +9,44 @@ $help-text-title-size: $default-font-size + 5;
 $help-text-default-margin: $tools-pane-padding 0;
 $help-text-title-margin: $tools-pane-padding*1.5 0 $tools-pane-padding;
 
-.composum-pages-tools {
+.composum-pages-help-page_body {
 
-    &_help-context {
+    .composum-pages-components {
 
-        &.pages-mode {
+        &-element {
 
-            &_EDIT {
-                top: 0;
+            &-title {
+                margin: $help-text-title-margin;
+                font-size: $help-text-title-size;
             }
-        }
 
-        .composum-pages-components {
+            &-text {
+                margin: $help-text-default-margin;
+                font-size: $help-text-default-size;
 
-            &-element {
-
-                &-title {
+                &_title {
                     margin: $help-text-title-margin;
                     font-size: $help-text-title-size;
                 }
+            }
 
-                &-text {
-                    margin: $help-text-default-margin;
-                    font-size: $help-text-default-size;
-
-                    &_title {
-                        margin: $help-text-title-margin;
-                        font-size: $help-text-title-size;
-                    }
-                }
-
-                &-image {
-                    margin: $help-text-default-margin;
-                }
+            &-image {
+                margin: $help-text-default-margin;
             }
         }
+    }
+}
+
+.composum-pages-stage-edit-tools-component-help-page {
+    padding: 30px 10px;
+    background: #fff;
+
+    .composum-pages-help-page_body {
+        max-width: 500px;
+        margin: 0 auto;
+        padding: $tools-pane-padding;
+        background: $tools-pane-background;
+        color: $tools-pane-foreground;
+        @include default-font;
     }
 }

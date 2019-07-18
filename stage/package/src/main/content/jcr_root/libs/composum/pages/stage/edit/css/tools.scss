@@ -911,6 +911,23 @@
         }
     }
 
+    .composum-pages-tools {
+
+        .composum-pages-stage-edit-sidebar & {
+
+            &_help-context {
+                top: 0;
+
+                .composum-pages-tools {
+
+                    &_panel {
+                        top: 44px;
+                    }
+                }
+            }
+        }
+    }
+
     .composum-pages-component-tile {
         position: absolute;
         left: 0;
