@@ -39,7 +39,7 @@
                 <ul class="composum-pages-stage-edit-toolbar_more composum-pages-tools_menu dropdown-menu" role="menu">
                     <li><a href="#" class="${versionsCssBase}_action_purge"
                            title="${cpn:i18n(slingRequest,'purge unused versions of the current page')}"><i
-                            class="fa fa-trash-o"></i>${cpn:i18n(slingRequest,'Purge Versions (unused)')}</a></li>
+                            class="fa fa-trash-o"></i>${cpn:i18n(slingRequest,'Purge unused Versions')}</a></li>
                     <li><a href="#" class="${versionsCssBase}_action_check-in"
                            title="${cpn:i18n(slingRequest,'check in the current page')}"><i
                             class="fa fa-sign-in"></i>${cpn:i18n(slingRequest,'Check In')}</a></li>

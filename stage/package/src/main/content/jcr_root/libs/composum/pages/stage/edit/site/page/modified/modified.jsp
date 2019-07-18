@@ -29,9 +29,9 @@
                         <c:if test="${site.editMode}">
                             <th class="_input"><input type="checkbox" class="${siteCssBase}_page-select-all"/></th>
                         </c:if>
-                        <th class="${siteCssBase}_page-path">${cpn:i18n(slingRequest,'relative Path')}</th>
+                        <th class="${siteCssBase}_page-path">${cpn:i18n(slingRequest,'Relative Path')}</th>
                         <th class="${siteCssBase}_page-title">${cpn:i18n(slingRequest,'Title')}</th>
-                        <th class="${siteCssBase}_page-time">${cpn:i18n(slingRequest,'modification Date')}</th>
+                        <th class="${siteCssBase}_page-time">${cpn:i18n(slingRequest,'Modification Date')}</th>
                     </tr>
                     </thead>
                     <tbody class="${siteCssBase}_tbody">

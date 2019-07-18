@@ -10,9 +10,9 @@
         <by-someone jcr:primaryType="sling:MessageEntry"
                 sling:key="by" sling:message="von"/>
         <relative-path jcr:primaryType="sling:MessageEntry"
-                sling:key="relative Path" sling:message="relativer Pfad"/>
+                       sling:key="Relative Path" sling:message="Relativer Pfad"/>
         <modification-Date jcr:primaryType="sling:MessageEntry"
-                sling:key="modification Date" sling:message="Änderungsdatum"/>
+                           sling:key="Modification Date" sling:message="Änderungsdatum"/>
         <settings jcr:primaryType="sling:MessageEntry"
                 sling:key="Settings" sling:message="Einstellungen"/>
 
@@ -58,7 +58,7 @@
         <Checkpoint jcr:primaryType="sling:MessageEntry"
                 sling:key="Checkpoint (In/Out) - new version" sling:message="Ein- und Auschecken (neue Version)"/>
         <Purge-Versions jcr:primaryType="sling:MessageEntry"
-                sling:key="Purge Versions (unused)" sling:message="Versionen löschen (ungenutzte)"/>
+                        sling:key="Purge unused Versions" sling:message="Ungenutzte Versionen löschen"/>
         <Purge-Versions-title jcr:primaryType="sling:MessageEntry"
                 sling:key="purge unused versions of the current page"
                 sling:message="ungenutzte versionen der aktuellen Seite löschen"/>

@@ -24,9 +24,9 @@
                 <thead class="${modelCSS}_thead">
                 <tr>
                     <th class="${modelCSS}_page-state"></th>
-                    <th class="${modelCSS}_page-path">${cpn:i18n(slingRequest,'relative Path')}</th>
+                    <th class="${modelCSS}_page-path">${cpn:i18n(slingRequest,'Relative Path')}</th>
                     <th class="${modelCSS}_page-title">${cpn:i18n(slingRequest,'Title')}</th>
-                    <th class="${modelCSS}_page-time">${cpn:i18n(slingRequest,'modification Date')}</th>
+                    <th class="${modelCSS}_page-time">${cpn:i18n(slingRequest,'Modification Date')}</th>
                 </tr>
                 </thead>
                 <tbody class="${modelCSS}_tbody">
