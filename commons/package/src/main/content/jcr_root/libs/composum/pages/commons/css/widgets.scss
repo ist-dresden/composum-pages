@@ -89,9 +89,10 @@
             }
         }
 
-        .item-select {
+
+        .item-select { // align bottom(!)
             top: auto;
-            bottom: 5px;
+            bottom: 0;
         }
 
         .row {

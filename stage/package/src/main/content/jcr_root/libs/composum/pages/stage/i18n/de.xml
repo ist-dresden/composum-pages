@@ -251,6 +251,36 @@
                 sling:key="Select the element type" sling:message="Auswahl des Element-Typs"/>
     </element>
 
+    <component jcr:primaryType="sling:Folder"><!-- Element operations -->
+
+        <primarytype jcr:primaryType="sling:MessageEntry"
+                sling:key="Primary Type" sling:message="Primary Type"/>
+        <supertype jcr:primaryType="sling:MessageEntry"
+                sling:key="Supertype" sling:message="Supertyp"/>
+        <quick-help jcr:primaryType="sling:MessageEntry"
+                sling:key="Quick Help" sling:message="Kurzer Hinweis"/>
+        <quick-help-hint jcr:primaryType="sling:MessageEntry"
+                sling:key="a tool tip text" sling:message="ein Tooltip-Text"/>
+
+        <edit-component-props jcr:primaryType="sling:MessageEntry"
+                sling:key="Edit Component Properties" sling:message="Komponenteneigenschaften bearbeiten"/>
+
+        <delete-component jcr:primaryType="sling:MessageEntry"
+                sling:key="Delete Component" sling:message="Komponente Löschen"/>
+        <delete-question jcr:primaryType="sling:MessageEntry"
+                sling:key="Do you really want to delete the selected component?"
+                sling:message="Wollen Sie die markierte Komponente wirklich löschen?"/>
+        <delete-selected-component jcr:primaryType="sling:MessageEntry"
+                sling:key="Delete the selected Component" sling:message="Die ausgewählte Komponente löschen"/>
+        <edit-selected-element jcr:primaryType="sling:MessageEntry"
+                sling:key="Edit the selected Component" sling:message="Die ausgewählte Komponente bearbeiten"/>
+
+        <category-hint jcr:primaryType="sling:MessageEntry"
+                sling:key="the first category declares the group in a structured component view"
+                sling:message="die erste Kategorie bestimmt die Gruppe in einer gegliederten Komponenten-Ansicht"/>
+
+    </component>
+
     <dialog jcr:primaryType="sling:Folder"><!-- Stage Dialogs -->
 
         <cancel jcr:primaryType="sling:MessageEntry"

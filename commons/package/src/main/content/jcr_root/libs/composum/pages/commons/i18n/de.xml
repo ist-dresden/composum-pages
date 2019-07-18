@@ -7,6 +7,9 @@
 
     <general jcr:primaryType="sling:Folder"><!-- Pages entities -->
 
+        <category jcr:primaryType="sling:MessageEntry"
+                sling:key="Category" sling:message="Kategorie"/>
+
         <create jcr:primaryType="sling:MessageEntry"
                 sling:key="Create" sling:message="Anlegen"/>
         <open jcr:primaryType="sling:MessageEntry"
