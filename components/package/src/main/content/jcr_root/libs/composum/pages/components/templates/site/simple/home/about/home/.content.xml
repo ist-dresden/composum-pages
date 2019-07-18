@@ -8,16 +8,16 @@
             jcr:primaryType="cpp:PageContent"
             sling:resourceType="composum/pages/components/page/subsite">
         <top
-                jcr:primaryType="nt:unstructured"
+                jcr:primaryType="cpp:Container"
                 sling:resourceType="composum/pages/components/container/parsys">
             <row
-                    jcr:primaryType="cpp:Element"
+                    jcr:primaryType="cpp:Container"
                     sling:resourceType="composum/pages/components/container/row"
                     cells="-6--6-">
                 <column-0
-                        jcr:primaryType="nt:unstructured"/>
+                        jcr:primaryType="cpp:Container"/>
                 <column-1
-                        jcr:primaryType="nt:unstructured"/>
+                        jcr:primaryType="cpp:Container"/>
             </row>
         </top>
         <main

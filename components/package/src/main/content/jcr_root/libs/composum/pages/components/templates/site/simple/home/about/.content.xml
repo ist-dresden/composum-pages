@@ -10,13 +10,13 @@
             sling:target="${site}/home/about/home"
             template="/libs/composum/pages/components/templates/page/subsite/root">
         <logo
-                jcr:primaryType="nt:unstructured"
+                jcr:primaryType="cpp:Element"
                 sling:resourceType="composum/pages/components/element/image"
                 imageRef="/content/shared/composum/pages/assets/logo/Commons-logo.svg"/>
         <search
                 jcr:primaryType="nt:unstructured">
             <field
-                    jcr:primaryType="nt:unstructured"
+                    jcr:primaryType="cpp:Element"
                     sling:resourceType="composum/pages/components/search/field"
                     buttonSymbol="search"
                     searchResultPath="${site}/home/about/meta/search">

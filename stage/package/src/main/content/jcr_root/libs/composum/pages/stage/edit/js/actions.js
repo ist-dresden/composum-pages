@@ -411,6 +411,22 @@
             }
         };
 
+        actions.component = {
+
+            edit: function (event, name, path, type) {
+                pages.dialogs.openEditDialog(name, path, type, undefined,
+                    '/libs/composum/pages/stage/edit/default/develop/component/dialog.html');
+            },
+
+            copy: function (event, name, path, type) {
+                actions.content.copy(path);
+            },
+
+            delete: function (event, name, path, type) {
+                pages.dialogs.openDeleteContentDialog('component', name, path, type);
+            }
+        };
+
         //
         // DnD operations
         //

@@ -12,5 +12,6 @@
                 composum/pages/commons/widget/pathfield/css/pathfield.css,
                 composum/pages/commons/widget/imagefield/css/imagefield.css,
                 composum/pages/commons/widget/radiolist/css/radiolist.css,
-                composum/pages/commons/widget/slider/css/slider.css]">
+                composum/pages/commons/widget/slider/css/slider.css,
+                composum/pages/commons/widget/static/css/static.css]">
 </jcr:root>

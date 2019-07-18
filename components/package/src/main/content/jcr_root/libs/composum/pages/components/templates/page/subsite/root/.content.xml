@@ -12,7 +12,8 @@
         <search
                 jcr:primaryType="nt:unstructured">
             <field
-                    jcr:primaryType="nt:unstructured"
+                    jcr:primaryType="cpp:Element"
+                    sling:resourceType="composum/pages/components/search/field"
                     buttonSymbol="search"
                     searchResultPath="${site}/home/about/meta/search">
                 <i18n
