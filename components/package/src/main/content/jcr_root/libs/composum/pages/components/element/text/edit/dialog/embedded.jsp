@@ -8,6 +8,7 @@
     <div class="col col-xs-8">
     </div>
     <div class="col col-xs-4">
-        <cpp:widget label="Alignment" property="textAlignment" type="select" options="left,right,center,justify"/>
+        <cpp:widget label="Alignment" property="textAlignment" type="select"
+                    options="left,right,center,justify" default="left"/>
     </div>
 </div>

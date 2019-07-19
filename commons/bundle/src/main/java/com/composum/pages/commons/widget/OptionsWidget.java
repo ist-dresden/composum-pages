@@ -76,6 +76,10 @@ public abstract class OptionsWidget<T> extends PropertyEditHandle<T> implements 
             return data;
         }
 
+        public boolean isDefault() {
+            return value.equals(getDefaultOption());
+        }
+
         public abstract boolean isSelected();
     }
 
@@ -133,7 +137,7 @@ public abstract class OptionsWidget<T> extends PropertyEditHandle<T> implements 
     }
 
     @Nullable
-    public T getDefaultOption(){
+    public T getDefaultOption() {
         return defaultOption;
     }
 
