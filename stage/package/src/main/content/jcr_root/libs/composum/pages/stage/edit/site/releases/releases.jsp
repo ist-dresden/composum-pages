@@ -20,10 +20,11 @@
                 </div>
                 <div class="btn-group" role="group" aria-label="...">
                     <button type="button" class="btn btn-default release-public"
-                            title="${cpn:i18n(slingRequest,'switch Public Release to the selected release (publish)')}..."><i
+                            title="${cpn:i18n(slingRequest,'Switch Public Release to the selected release (publish)')}...">
+                        <i
                             class="fa fa-globe"></i>${cpn:i18n(slingRequest,'Public')}</button>
                     <button type="button" class="btn btn-default release-preview"
-                            title="${cpn:i18n(slingRequest,'switch Preview Release to the selected release')}..."><i
+                            title="${cpn:i18n(slingRequest,'Switch Preview Release to the selected release')}..."><i
                             class="fa fa-eye"></i>${cpn:i18n(slingRequest,'Preview')}</button>
                 </div>
                 <div class="btn-group" role="group" aria-label="...">

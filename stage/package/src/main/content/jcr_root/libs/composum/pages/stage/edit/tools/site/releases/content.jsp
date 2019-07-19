@@ -19,10 +19,10 @@
             <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
                 <button type="button"
                         class="fa fa-globe composum-pages-tools_button btn btn-default release-public"
-                        title="${cpn:i18n(slingRequest,'switch Public Release to the selected release (publish)')}..."></button>
+                        title="${cpn:i18n(slingRequest,'Switch Public Release to the selected release (publish)')}..."></button>
                 <button type="button"
                         class="fa fa-eye composum-pages-tools_button btn btn-default release-preview"
-                        title="${cpn:i18n(slingRequest,'switch Preview Release to the selected release')}..."></button>
+                        title="${cpn:i18n(slingRequest,'Switch Preview Release to the selected release')}..."></button>
             </div>
             <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
                 <button type="button"

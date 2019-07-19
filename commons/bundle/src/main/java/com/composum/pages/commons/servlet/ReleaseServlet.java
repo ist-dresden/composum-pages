@@ -242,6 +242,9 @@ public class ReleaseServlet extends AbstractServiceServlet {
                     LOG.info("Release deleted {}", release);
                     request.getResourceResolver().commit();
                 }
+            } catch (StagingReleaseManager.ReleaseProtectedException e) {
+                LOG.warn("Trying to delete a release carrying a mark: " + e);
+                status.error("Cannot delete a release marked with preview or public.");
             } catch (Exception ex) {
                 status.withLogging(LOG).error("error deleting release: {}", ex);
             }

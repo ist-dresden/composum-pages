@@ -62,9 +62,9 @@
         <Purge-Versions-title jcr:primaryType="sling:MessageEntry"
                 sling:key="purge unused versions of the current page"
                 sling:message="ungenutzte versionen der aktuellen Seite löschen"/>
-        <Restore-Version jcr:primaryType="sling:MessageEntry"
+        <Rollback-Version jcr:primaryType="sling:MessageEntry"
                 sling:key="Rollback Version" sling:message="Zu Version Zurückrollen"/>
-        <Restore-Version-title jcr:primaryType="sling:MessageEntry"
+        <Rollback-Version-title jcr:primaryType="sling:MessageEntry"
                 sling:key="rollback the selected version ot the current page"
                 sling:message="Zurückrollen zur selektierten Version der aktuellen Seite"/>
 
@@ -132,16 +132,22 @@
                 sling:key="public" sling:message="publiziert"/>
 
         <release-edit jcr:primaryType="sling:MessageEntry"
-                sling:key="Edit Release properties" sling:message="die Release-Eigenschaften bearbeiten"/>
+                sling:key="Edit Release properties" sling:message="Die Release-Eigenschaften bearbeiten"/>
         <release-public jcr:primaryType="sling:MessageEntry"
-                sling:key="switch Public Release to the selected release (publish)"
-                sling:message="das markierte Release als Public-Release verwenden (veröffentlichen)"/>
+                sling:key="Switch Public Release to the selected release (publish)"
+                sling:message="Das markierte Release als Public-Release verwenden (veröffentlichen)"/>
         <release-preview jcr:primaryType="sling:MessageEntry"
-                sling:key="switch Preview Release to the selected release"
-                sling:message="das markierte Release als Preview-Release verwenden"/>
+                sling:key="Switch Preview Release to the selected release"
+                sling:message="Das markierte Release als Preview-Release verwenden"/>
         <release-delete jcr:primaryType="sling:MessageEntry"
-                sling:key="Delete the selected release" sling:message="das markierte Release Löschen"/>
-
+                sling:key="Delete the selected release" sling:message="Das markierte Release Löschen"/>
+        <release-delete-confirmation
+                jcr:primaryType="sling:MessageEntry"
+                sling:key="Do you really want to delete this release?"
+                sling:message="Möchten Sie wirklich dieses Release löschen?"/>
+        <release-delete-marked-error jcr:primaryType="sling:MessageEntry"
+                sling:key="Cannot delete a release marked with preview or public."
+                sling:message="Ein Release, dass als public oder preview gekennzeichnet ist, kann nicht gelöscht werden."/>
     </releases>
     <site jcr:primaryType="sling:Folder"><!-- Site actions -->
 

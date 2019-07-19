@@ -84,7 +84,6 @@ public class PagesVersionsService implements VersionsService {
             LOG.info("rollbackVersion(" + path + "," + versionName + ")");
         }
         manager.restore(path, versionName, false);
-        // TODO(hps,2019-05-20) removing everything that came later is wrong from a users perspective.
         // Unfortunately, the VersionManager does not offer any way to copy out an old version, and if we just
         // restore an old version, we'll another branch when checking in again, which would be ... inconvenient. ...
         VersionHistory history = manager.getVersionHistory(path);
