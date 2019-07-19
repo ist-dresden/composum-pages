@@ -41,5 +41,20 @@
         ]
       }
     ]
+  },
+  {
+    "path": "/content",
+    "jcr:primaryType": "sling:Folder",
+    "acl": [
+      {
+        "principal": "composum-pages-service",
+        "acl": [
+          {
+            "allow": true,
+            "privileges": "jcr:read"
+          }
+        ]
+      }
+    ]
   }
 ]
