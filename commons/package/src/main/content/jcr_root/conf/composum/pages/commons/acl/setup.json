@@ -1,46 +1,11 @@
 [
   {
     "path": "/public",
-    "jcr:primaryType": "sling:Folder",
-    "acl": [
-      {
-        "principal": "everyone",
-        "acl": [
-          {
-            "allow": true,
-            "privileges": "jcr:read"
-          }
-        ]
-      }
-    ]
+    "jcr:primaryType": "sling:Folder"
   },
   {
     "path": "/preview",
     "jcr:primaryType": "sling:Folder"
-  },
-  {
-    "path": "/var/composum/content",
-    "jcr:primaryType": "sling:Folder",
-    "acl": [
-      {
-        "principal": "composum-pages-token-service",
-        "acl": [
-          {
-            "allow": true,
-            "privileges": "jcr:all"
-          }
-        ]
-      },
-      {
-        "principal": "composum-pages-service",
-        "acl": [
-          {
-            "allow": true,
-            "privileges": "jcr:all"
-          }
-        ]
-      }
-    ]
   },
   {
     "path": "/content",
@@ -52,6 +17,30 @@
           {
             "allow": true,
             "privileges": "jcr:read"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "path": "/var/composum/content",
+    "jcr:primaryType": "sling:Folder",
+    "acl": [
+      {
+        "principal": "composum-pages-service",
+        "acl": [
+          {
+            "allow": true,
+            "privileges": "jcr:all"
+          }
+        ]
+      },
+      {
+        "principal": "composum-pages-token-service",
+        "acl": [
+          {
+            "allow": true,
+            "privileges": "jcr:all"
           }
         ]
       }
