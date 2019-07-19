@@ -7,5 +7,5 @@
     <cpn:link class="${menuCSS}_brand navbar-brand"
               href="${menu.currentPage.homepage.url}"><img
             class="${menuCSS}_logo" src="${menu.currentPage.homepage.logoUrl}"/><span
-            class="${menuCSS}_title">${menu.currentPage.homepage.title}</span></cpn:link>
+            class="${menuCSS}_title">${cpn:text(menu.currentPage.homepage.title)}</span></cpn:link>
 </cpp:element>

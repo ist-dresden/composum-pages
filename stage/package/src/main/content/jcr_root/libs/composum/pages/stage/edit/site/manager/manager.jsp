@@ -4,11 +4,11 @@
 <cpp:defineFrameObjects/>
 <cpp:model var="sites" type="com.composum.pages.commons.model.Sites"
            cssBase="composum-pages-stage-sites">
-    <div class="${sitesCssBase} ${sitesCssBase}_manager">
-        <ul class="${sitesCssBase}_list">
+    <div class="${sitesCSS} ${sitesCSS}_manager">
+        <ul class="${sitesCSS}_list">
             <c:forEach items="${sites.sites}" var="site">
-                <li class="${sitesCssBase}_site">
-                    <input type="radio" name="select" value="${site.path}" class="${sitesCssBase}_radio"/>
+                <li class="${sitesCSS}_site">
+                    <input type="radio" name="select" value="${site.path}" class="${sitesCSS}_radio"/>
                     <cpp:include resource="${site.resource}" subtype="edit/tile" replaceSelectors="select"/>
                 </li>
             </c:forEach>

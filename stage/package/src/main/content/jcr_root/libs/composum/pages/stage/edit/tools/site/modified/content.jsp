@@ -26,16 +26,16 @@
         </div>
     </div>
     <div class="composum-pages-stage-edit-tools-site-modified_tools-panel">
-        <ul class="${siteCssBase}_list">
+        <ul class="${siteCSS}_list">
             <c:forEach items="${site.site.modifiedPages}" var="page">
-                <li class="${siteCssBase}_listentry">
-                    <input type="checkbox" class="${siteCssBase}_page-select" data-path="${page.path}"/>
-                    <div class="${siteCssBase}_page-entry" data-path="${page.path}">
-                        <div class="${siteCssBase}_page-head">
-                            <div class="${siteCssBase}_page-title">${not empty page.title?cpn:text(page.title):'-- --'}</div>
-                            <cpn:text class="${siteCssBase}_page-time">${page.lastModifiedString}</cpn:text>
+                <li class="${siteCSS}_listentry">
+                    <input type="checkbox" class="${siteCSS}_page-select" data-path="${page.path}"/>
+                    <div class="${siteCSS}_page-entry" data-path="${page.path}">
+                        <div class="${siteCSS}_page-head">
+                            <div class="${siteCSS}_page-title">${not empty page.title?cpn:text(page.title):'-- --'}</div>
+                            <cpn:text class="${siteCSS}_page-time">${page.lastModifiedString}</cpn:text>
                         </div>
-                        <cpn:text class="${siteCssBase}_page-path" type="path">${page.siteRelativePath}</cpn:text>
+                        <cpn:text class="${siteCSS}_page-path" type="path">${page.siteRelativePath}</cpn:text>
                     </div>
                 </li>
             </c:forEach>

@@ -14,8 +14,8 @@
                         action="window.composum.pages.actions.file.upload"/>
     </div>
     <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
-        <cpn:link title="Link to open or download the file" href="${resource.path}" target="_blank"
-                  class="fa fa-external-link composum-pages-tools_button btn btn-default"><span
+        <cpn:link title="${cpn:i18n(slingRequest,'Link to open or download the file')}" href="${resource.path}"
+                  target="_blank" class="fa fa-external-link composum-pages-tools_button btn btn-default"><span
                 class="composum-pages-tools_button-label">${cpn:i18n(slingRequest,'Open or Download')}</span></cpn:link>
         <cpp:treeAction icon="copy" label="Copy" title="Copy the selected file"
                         action="window.composum.pages.actions.file.copy"/>

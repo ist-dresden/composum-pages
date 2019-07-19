@@ -37,7 +37,7 @@
         </div>
     </div>
     <div class="composum-pages-stage-edit-tools-site-releases_tools-panel">
-        <ul class="${siteCssBase}_list">
+        <ul class="${siteCSS}_list">
             <c:forEach items="${site.site.releases}" var="release">
                 <sling:include resource="${release.resource}"
                                resourceType="composum/pages/stage/edit/tools/site/releases/release"/>

@@ -17,7 +17,8 @@
     </div>
     <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
         <cpn:link href="/bin/cpm/edit/code.html${resource.path}" target="_blank" map="false"
-                  title="Open file for editing" class="fa fa-edit composum-pages-tools_button btn btn-default"><span
+                  title="${cpn:i18n(slingRequest,'Open file for editing')}"
+                  class="fa fa-edit composum-pages-tools_button btn btn-default"><span
                 class="composum-pages-tools_button-label">${cpn:i18n(slingRequest,'Edit')}</span></cpn:link>
     </div>
 </cpp:editToolbar>

@@ -16,10 +16,11 @@
         <cpp:widget label="Subtitle" property="subtitle" type="textfield" i18n="true"/>
         <cpp:widget label="Text" property="text" type="richtext" i18n="true" required="true"
                     height="200px"/>
-        <cpp:include resourceType="composum/pages/components/element/link/edit/dialog" replaceSelectors="embedded"/>
+        <cpp:include resourceType="composum/pages/components/element/link" subtype="edit/dialog"
+                     replaceSelectors="embedded"/>
     </cpp:editDialogTab>
     <cpp:editDialogTab tabId="image" label="Image">
-        <cpp:include path="image" replaceSelectors="embedded"
-                     resourceType="composum/pages/components/element/image/edit/dialog"/>
+        <cpp:include path="image" resourceType="composum/pages/components/element/image" subtype="edit/dialog"
+                     replaceSelectors="embedded"/>
     </cpp:editDialogTab>
 </cpp:editDialog>

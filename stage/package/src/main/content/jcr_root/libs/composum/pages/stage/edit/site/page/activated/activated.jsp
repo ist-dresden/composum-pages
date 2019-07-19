@@ -22,29 +22,29 @@
         </div>
         <div id="releaseChangesPanel" class="panel-collapse collapse in" role="tabpanel"
              aria-labelledby="releaseChangesHead">
-            <div class="${siteCssBase}_content panel-body">
-                <table class="${siteCssBase}_table table table-condensed">
-                    <thead class="${siteCssBase}_thead">
+            <div class="${siteCSS}_content panel-body">
+                <table class="${siteCSS}_table table table-condensed">
+                    <thead class="${siteCSS}_thead">
                     <tr>
                         <c:if test="${site.editMode}">
-                            <th class="_input"><input type="checkbox" class="${siteCssBase}_page-select-all"/></th>
+                            <th class="_input"><input type="checkbox" class="${siteCSS}_page-select-all"/></th>
                         </c:if>
-                        <th class="${siteCssBase}_page-path">${cpn:i18n(slingRequest,'Relative Path')}</th>
-                        <th class="${siteCssBase}_page-title">${cpn:i18n(slingRequest,'Title')}</th>
-                        <th class="${siteCssBase}_page-time">${cpn:i18n(slingRequest,'Modification Date')}</th>
+                        <th class="${siteCSS}_page-path">${cpn:i18n(slingRequest,'Relative Path')}</th>
+                        <th class="${siteCSS}_page-title">${cpn:i18n(slingRequest,'Title')}</th>
+                        <th class="${siteCSS}_page-time">${cpn:i18n(slingRequest,'Modification Date')}</th>
                     </tr>
                     </thead>
-                    <tbody class="${siteCssBase}_tbody">
+                    <tbody class="${siteCSS}_tbody">
                     <c:forEach items="${site.releaseChanges}" var="pageVersion">
                         <tr class="release-status_${pageVersion.releaseStatus.activationState}">
                             <c:if test="${site.editMode}">
-                                <td class="_input"><input type="checkbox" class="${siteCssBase}_page-select"
+                                <td class="_input"><input type="checkbox" class="${siteCSS}_page-select"
                                                           data-path="${pageVersion.path}"></td>
                             </c:if>
-                            <td class="${siteCssBase}_page-path"><a
+                            <td class="${siteCSS}_page-path"><a
                                     href="${pageVersion.url}" target="_blank">${cpn:path(pageVersion.path)}</a></td>
-                            <td class="${siteCssBase}_page-title">${cpn:text(pageVersion.title)}</td>
-                            <td class="${siteCssBase}_page-time">${cpn:text(pageVersion.lastModifiedString)}</td>
+                            <td class="${siteCSS}_page-title">${cpn:text(pageVersion.title)}</td>
+                            <td class="${siteCSS}_page-time">${cpn:text(pageVersion.lastModifiedString)}</td>
                         </tr>
                     </c:forEach>
                     </tbody>

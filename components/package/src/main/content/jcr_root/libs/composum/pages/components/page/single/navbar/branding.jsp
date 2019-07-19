@@ -7,5 +7,5 @@
     <cpn:link class="${navbarCSS}_brand navbar-brand"
               href="${navbar.singlePage.logoLinkUrl}"><cpn:image
             class="${navbarCSS}_logo" src="${navbar.singlePage.logoImageUrl}"/><span
-            class="${navbarCSS}_title">${navbar.singlePage.title}</span></cpn:link>
+            class="${navbarCSS}_title">${cpn:text(navbar.singlePage.title)}</span></cpn:link>
 </cpp:element>

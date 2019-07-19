@@ -4,10 +4,10 @@
 <cpp:defineObjects/>
 <cpp:model var="page_item" type="com.composum.pages.commons.model.Page"
            cssBase="composum-pages-components-page">
-    <div class="${page_itemCssBase}_search-item">
+    <div class="${page_itemCSS}_search-item">
         <cpn:link href="${page_item.url}" body="true">
-            <cpn:text class="${page_itemCssBase}_title" value="${page_item.title}"/>
-            <cpn:text class="${page_itemCssBase}_description" value="${page_item.description}"/>
+            <cpn:text class="${page_itemCSS}_title" value="${page_item.title}"/>
+            <cpn:text class="${page_itemCSS}_description" value="${page_item.description}"/>
         </cpn:link>
     </div>
 </cpp:model>

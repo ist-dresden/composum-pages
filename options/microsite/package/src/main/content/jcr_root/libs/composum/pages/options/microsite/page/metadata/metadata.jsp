@@ -10,7 +10,7 @@
         <sling:call script="head.jsp"/>
     </cpp:head>
     <cpp:body cssAdd="composum-pages-options-microsite-page">
-        <div class="${pageModelCssBase}_data">
+        <div class="${pageModelCSS}_data">
             <table class="table">
                 <tr>
                     <th colspan="2">Composum Pages Options Microsite</th>
@@ -33,8 +33,8 @@
                 </tr>
             </table>
         </div>
-        <div class="${pageModelCssBase}_preview">
-            <iframe class="${pageModelCssBase}_frame" width="100%" src="${pageModel.embeddedPreviewUrl}"></iframe>
+        <div class="${pageModelCSS}_preview">
+            <iframe class="${pageModelCSS}_frame" width="100%" src="${pageModel.embeddedPreviewUrl}"></iframe>
         </div>
     </cpp:body>
     </html>

@@ -24,14 +24,14 @@
                             aria-haspopup="true" aria-expanded="false"
                             class="fa fa-filter composum-pages-tools_button btn btn-default dropdown dropdown-toggle"><span
                             class="composum-pages-tools_button-label">${cpn:i18n(slingRequest,'Filter')}</span></button>
-                    <ul class="${treeCssBase}_filter composum-pages-tools_menu dropdown-menu" role="menu">
-                        <li class="${treeCssBase}_filter-value"
+                    <ul class="${treeCSS}_filter composum-pages-tools_menu dropdown-menu" role="menu">
+                        <li class="${treeCSS}_filter-value"
                             data-value="page"><a href="#" title="Show pages only">Page</a>
                         </li>
-                        <li class="${treeCssBase}_filter-value"
+                        <li class="${treeCSS}_filter-value"
                             data-value="container"><a href="#" title="Show pages and containers">Container</a>
                         </li>
-                        <li class="${treeCssBase}_filter-value"
+                        <li class="${treeCSS}_filter-value"
                             data-value="element"><a href="#" title="Show all elements">Element</a>
                         </li>
                     </ul>

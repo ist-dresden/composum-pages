@@ -9,8 +9,8 @@
         <c:choose>
             <c:when test="${image.valid}">
                 <div class="${imageCSS}_frame">
-                    <cpn:image classes="${imageCSS}_picture" src="${image.src}" alt="${cpn:text(image.alt)}"
-                               title="${cpn:text(image.title)}"/>
+                    <cpn:image class="${imageCSS}_picture" src="${image.src}"
+                               alt="${image.alt}" title="${image.title}"/>
                 </div>
             </c:when>
             <c:otherwise>

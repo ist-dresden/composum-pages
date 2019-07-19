@@ -6,8 +6,8 @@
              cssAdd="@{teaserCSS}_variation_bg-image"
              style="background-image:url(@{teaser.imageUrl})">
     <cpp:dropZone property="image/imageRef" filter="asset:image">
-        <cpn:link test="${teaser.hasLink}" body="true" classes="${teaserCSS}_link"
-                  href="${teaser.linkUrl}" target="${teaser.linkTarget}" title="${cpn:text(teaser.linkTitle)}">
+        <cpn:link test="${teaser.hasLink}" body="true" class="${teaserCSS}_link"
+                  href="${teaser.linkUrl}" target="${teaser.linkTarget}" title="${teaser.linkTitle}">
             <cpp:include replaceSelectors="${teaser.textSelector}"/>
         </cpn:link>
     </cpp:dropZone>

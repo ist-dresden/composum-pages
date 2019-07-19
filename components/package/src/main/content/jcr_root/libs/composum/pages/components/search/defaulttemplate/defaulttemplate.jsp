@@ -4,8 +4,8 @@
 <cpp:defineObjects/>
 <cpp:model var="searchresult" type="com.composum.pages.commons.service.search.SearchService.Result" scope="request">
     <p>
-        <cpn:link href="${searchresult.targetUrl}" classes="title"><cpn:text value="${searchresult.title}"/></cpn:link>
-        <span class="score">(Score ${searchresult.score})</span><br/>
-        <span class="excerpt">${searchresult.excerpt}</span>
+        <cpn:link href="${searchresult.targetUrl}" class="title"><cpn:text value="${searchresult.title}"/></cpn:link>
+        <span class="score">(Score ${cpn:text(searchresult.score)})</span><br/>
+        <span class="excerpt">${cpn:text(searchresult.excerpt)}</span>
     </p>
 </cpp:model>

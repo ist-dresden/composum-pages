@@ -26,7 +26,7 @@
         </div>
     </div>
     <div class="composum-pages-stage-edit-tools-site-activated_tools-panel">
-        <ul class="${siteCssBase}_list">
+        <ul class="${siteCSS}_list">
             <c:forEach items="${site.site.releaseChanges}" var="pageVersion">
                 <li class="${siteCssBase}_listentry">
                     <input type="checkbox" class="${siteCssBase}_page-select" data-path="${pageVersion.path}"/>
