@@ -413,13 +413,19 @@
 
         actions.component = {
 
+            create: function (event, name, path, type) {
+                pages.dialogs.openEditDialog(name, path, type, undefined,
+                    '/libs/composum/pages/stage/edit/default/develop/component/create.html');
+            },
+
             edit: function (event, name, path, type) {
                 pages.dialogs.openEditDialog(name, path, type, undefined,
-                    '/libs/composum/pages/stage/edit/default/develop/component/dialog.html');
+                    '/libs/composum/pages/stage/edit/default/develop/component/properties.html');
             },
 
             manageElements: function (event, name, path, type) {
-                pages.dialogs.openDialog(name, path, type);
+                pages.dialogs.openEditDialog(name, path, type, undefined,
+                    '/libs/composum/pages/stage/edit/default/develop/component/manage.html');
             },
 
             rename: function (event, name, path, type) {

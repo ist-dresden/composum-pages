@@ -22,8 +22,10 @@
             <cpp:treeAction icon="edit" label="Edit" title="Edit component properties"
                             action="window.composum.pages.actions.component.edit"/>
             <cpp:treeMenu key="insert" icon="plus" label="Add" title="add / open component pieces">
-                <cpp:menuItem icon="puzzle-piece" label="Elements..." title="manage component implemenmtation elements"
+                <cpp:menuItem icon="puzzle-piece" label="Elements..." title="manage component implementation elements"
                               action="window.composum.pages.actions.component.manageElements"/>
+                <cpp:menuItem icon="plus" label="Create Component" title="create another component inside this component area"
+                              action="window.composum.pages.actions.component.create"/>
                 <cpp:menuItem icon="folder-open" label="Folder"
                               title="insert a new folder as direct child of the component"
                               action="window.composum.pages.actions.folder.insertFolder"/>

@@ -24,6 +24,8 @@
                         action="window.composum.pages.actions.folder.edit"/>
         <div class="btn-group btn-group-sm" role="group">
             <cpp:treeMenu key="insert" icon="plus" label="Insert" title="insert a new content element">
+                <cpp:menuItem icon="puzzle-piece" label="Component" title="create a new component"
+                              action="window.composum.pages.actions.component.create"/>
                 <cpp:menuItem icon="image" label="File" title="upload a file as direct child of the selected folder"
                               action="window.composum.pages.actions.folder.insertFile"/>
                 <cpp:menuItem icon="folder-open" label="Folder"
