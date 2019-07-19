@@ -21,12 +21,15 @@ public class TextWidget extends PropertyEditHandle<String> implements WidgetMode
 
     @Override
     public String filterWidgetAttribute(@Nonnull String attributeKey, Object attributeValue) {
-        if (PATTERN_ATTR.equals(attributeKey) || DATA_PATTERN_ATTR.equals(attributeKey)) {
-            return DATA_PATTERN_ATTR;
-        } else if (PATTERN_HINT_ATTR.equals(attributeKey) || DATA_PATTERN_HINT_ATTR.equals(attributeKey)) {
-            return DATA_PATTERN_HINT_ATTR;
-        } else {
-            return attributeKey;
+        switch (attributeKey) {
+            case PATTERN_ATTR:
+            case DATA_PATTERN_ATTR:
+                return DATA_PATTERN_ATTR;
+            case PATTERN_HINT_ATTR:
+            case DATA_PATTERN_HINT_ATTR:
+                return DATA_PATTERN_HINT_ATTR;
+            default:
+                return attributeKey;
         }
     }
 }

@@ -6,6 +6,10 @@
 <cpp:defineFrameObjects/>
 <div class="${widgetCSS}_${widget.widgetType} ${widgetCSS}_${widget.cssName}${widget.required?' required':''} form-group">
     <sling:call script="label.jsp"/>
+    <c:if test="${!widget.blankAllowed}">
+        <input type="hidden" class="sling-post-hint" name="${widget.name}@Delete" value="true"/>
+        <input type="hidden" class="sling-post-hint" name="${widget.name}@IgnoreBlanks" value="true"/>
+    </c:if>
     <div class="${widgetCSS}_path-field input-group widget pathfield-widget widget-name_${widget.cssName}" ${widget.attributes}>
         <input name="${widget.name}" class="${widgetCSS}_input form-control"
                data-label="${widget.label}" data-i18n="${widget.i18n}"

@@ -6,6 +6,10 @@
 <cpp:defineFrameObjects/>
 <div class="${widgetCSS}_${widget.widgetType} ${widgetCSS}_${widget.cssName}${widget.required?' required':''} form-group">
     <sling:call script="label.jsp"/>
+    <c:if test="${!widget.blankAllowed}">
+        <input type="hidden" class="sling-post-hint" name="${widget.name}@Delete" value="true"/>
+        <input type="hidden" class="sling-post-hint" name="${widget.name}@IgnoreBlanks" value="true"/>
+    </c:if>
     <div class="${widgetCSS}_wrapper composum-widgets-richtext richtext-widget widget form-control widget-name_${widget.cssName}"
          data-style="height:${widget.model.height}"
          data-label="${widget.label}" data-i18n="${widget.i18n}" ${widget.attributes}>

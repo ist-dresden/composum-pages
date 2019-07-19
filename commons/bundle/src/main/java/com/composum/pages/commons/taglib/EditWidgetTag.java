@@ -27,8 +27,12 @@ import static com.composum.pages.commons.taglib.EditMultiWidgetTag.MULTIWIDGET_T
  */
 public class EditWidgetTag extends AbstractWidgetTag implements LoopTag {
 
+    public static final String OPTION_REQUIRED = "required";
+    public static final String OPTION_BLANK = "blank";
+    public static final String OPTION_UNIQUE = "unique";
+
     public static final List<String> RULES_OPTIONS = Arrays.asList(
-            "required", "mandatory", "blank", "unique");
+            OPTION_REQUIRED, "mandatory", OPTION_BLANK, OPTION_UNIQUE);
 
     public static final String RULES_ATTR = "rules";
     public static final String DATA_RULES_ATTR = "data-" + RULES_ATTR;
@@ -206,6 +210,10 @@ public class EditWidgetTag extends AbstractWidgetTag implements LoopTag {
         } else {
             super.setDynamicAttribute(key, value);
         }
+    }
+
+    public boolean isBlankAllowed() {
+        return dynamicAttributes.isOption(DATA_RULES_ATTR, OPTION_BLANK);
     }
 
     /**
