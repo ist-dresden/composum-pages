@@ -45,7 +45,7 @@ public class PageReferrers extends ReferencesWidget {
     }
 
     @Override
-    public String filterWidgetAttribute(String attributeKey, Object attributeValue) {
+    public String filterWidgetAttribute(@Nonnull String attributeKey, Object attributeValue) {
         if (ATTR_SCOPE.equals(attributeKey)) {
             scope = attributeValue instanceof Site ? ((Site) attributeValue).getResource()
                     : attributeValue instanceof Page ? ((Page) attributeValue).getResource()

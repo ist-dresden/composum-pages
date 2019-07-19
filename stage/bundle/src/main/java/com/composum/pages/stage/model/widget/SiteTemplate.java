@@ -4,6 +4,7 @@ import com.composum.pages.commons.model.Site;
 import com.composum.pages.commons.taglib.PropertyEditHandle;
 import com.composum.pages.commons.widget.WidgetModel;
 
+import javax.annotation.Nonnull;
 import java.util.Collection;
 
 /**
@@ -21,7 +22,7 @@ public class SiteTemplate extends PropertyEditHandle<String> implements WidgetMo
      * transforms a tag attribute name (dynamic attribute) into the key expected by the widgets view
      */
     @Override
-    public String filterWidgetAttribute(String attributeKey, Object attributeValue) {
+    public String filterWidgetAttribute(@Nonnull String attributeKey, Object attributeValue) {
         return attributeKey;
     }
 

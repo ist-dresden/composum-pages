@@ -104,7 +104,7 @@ public abstract class ReferencesWidget extends MultiSelect implements WidgetMode
     }
 
     @Override
-    public String filterWidgetAttribute(String attributeKey, Object attributeValue) {
+    public String filterWidgetAttribute(@Nonnull String attributeKey, Object attributeValue) {
         if (ATTR_PAGE.equals(attributeKey)) {
             Page page = getPageAttribute(attributeValue);
             pages = page != null ? Collections.singleton(page) : null;

@@ -6,6 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -29,7 +30,7 @@ public class Hidden extends PropertyEditHandle<Object> implements WidgetModel {
      * - request: the name of a request attribute to retrieve the hidden input values
      */
     @Override
-    public String filterWidgetAttribute(String attributeKey, Object attributeValue) {
+    public String filterWidgetAttribute(@Nonnull String attributeKey, Object attributeValue) {
         if (ATTR_REQUEST.equals(attributeKey)) {
             isCollection = true;
             // retrieve values from request

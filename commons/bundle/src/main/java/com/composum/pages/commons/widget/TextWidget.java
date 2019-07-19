@@ -2,6 +2,8 @@ package com.composum.pages.commons.widget;
 
 import com.composum.pages.commons.taglib.PropertyEditHandle;
 
+import javax.annotation.Nonnull;
+
 public class TextWidget extends PropertyEditHandle<String> implements WidgetModel {
 
     public static final String PATTERN_ATTR = "pattern";
@@ -18,7 +20,7 @@ public class TextWidget extends PropertyEditHandle<String> implements WidgetMode
     }
 
     @Override
-    public String filterWidgetAttribute(String attributeKey, Object attributeValue) {
+    public String filterWidgetAttribute(@Nonnull String attributeKey, Object attributeValue) {
         if (PATTERN_ATTR.equals(attributeKey) || DATA_PATTERN_ATTR.equals(attributeKey)) {
             return DATA_PATTERN_ATTR;
         } else if (PATTERN_HINT_ATTR.equals(attributeKey) || DATA_PATTERN_HINT_ATTR.equals(attributeKey)) {

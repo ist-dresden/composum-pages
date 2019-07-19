@@ -4,6 +4,8 @@ import com.composum.pages.commons.widget.RadioGroup;
 import com.composum.pages.commons.widget.WidgetModel;
 import com.composum.pages.stage.model.edit.page.Components;
 
+import javax.annotation.Nonnull;
+
 import static com.composum.pages.commons.servlet.EditServlet.PAGE_COMPONENT_TYPES;
 
 /**
@@ -30,7 +32,7 @@ public class ElementTypeSelect extends RadioGroup implements WidgetModel {
     }
 
     @Override
-    public String filterWidgetAttribute(String attributeKey, Object attributeValue) {
+    public String filterWidgetAttribute(@Nonnull String attributeKey, Object attributeValue) {
         if (ATTR_CONTAINER.equals(attributeKey)) {
             containerRef = (String) attributeValue;
             return null;

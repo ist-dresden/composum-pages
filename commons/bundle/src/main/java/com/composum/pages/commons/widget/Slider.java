@@ -2,6 +2,7 @@ package com.composum.pages.commons.widget;
 
 import com.composum.pages.commons.taglib.PropertyEditHandle;
 
+import javax.annotation.Nonnull;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 
@@ -78,7 +79,7 @@ public class Slider extends PropertyEditHandle<BigDecimal> implements WidgetMode
     }
 
     @Override
-    public String filterWidgetAttribute(String attributeKey, Object attributeValue) {
+    public String filterWidgetAttribute(@Nonnull String attributeKey, Object attributeValue) {
         if (ATTR_OPTIONS.equals(attributeKey)) {
             options = new Options(attributeValue instanceof String ? (String) attributeValue : "");
             return null;

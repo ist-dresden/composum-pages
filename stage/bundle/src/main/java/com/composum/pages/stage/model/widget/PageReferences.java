@@ -38,7 +38,7 @@ public class PageReferences extends ReferencesWidget {
     }
 
     @Override
-    public String filterWidgetAttribute(String attributeKey, Object attributeValue) {
+    public String filterWidgetAttribute(@Nonnull String attributeKey, Object attributeValue) {
         if (ATTR_SCOPE.equals(attributeKey)) {
             scope = attributeValue instanceof ReferenceType ? (ReferenceType) attributeValue
                     : attributeValue != null ? ReferenceType.valueOf(attributeValue.toString()) : null;

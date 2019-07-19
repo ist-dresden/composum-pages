@@ -25,6 +25,11 @@ public abstract class OptionsWidget<T> extends PropertyEditHandle<T> implements 
     public static final String ATTR_OPTIONS = "options";
 
     /**
+     * a 'default' option value triggers a property deletion if that default value  is selected
+     */
+    public static final String ATTR_DEFAULT = "default";
+
+    /**
      * the separators are useful if the default separators (',' and ':'; separators=", :") of a string based
      * options list are not useful to split the options attribute string (e.g. if the default separators are
      * necessary for the values ot labels of the options); the 'separators' attribute is splitted by a ' ' to
@@ -40,6 +45,7 @@ public abstract class OptionsWidget<T> extends PropertyEditHandle<T> implements 
     protected String prepend;
     protected String append;
 
+    private transient T defaultOption;
     private transient List<Option> options;
     private transient List<T> optionValues;
 
@@ -78,8 +84,12 @@ public abstract class OptionsWidget<T> extends PropertyEditHandle<T> implements 
     }
 
     @Override
-    public String filterWidgetAttribute(String attributeKey, Object attributeValue) {
+    public String filterWidgetAttribute(@Nonnull final String attributeKey, Object attributeValue) {
         switch (attributeKey) {
+            case ATTR_DEFAULT:
+                //noinspection unchecked
+                defaultOption = (T) attributeValue;
+                return null;
             case ATTR_PREPEND:
                 prepend = (String) attributeValue;
                 return null;
@@ -91,6 +101,7 @@ public abstract class OptionsWidget<T> extends PropertyEditHandle<T> implements 
         }
     }
 
+    @Nonnull
     protected String[] getSeparators() {
         if (separators == null) {
             separators = StringUtils.split(widget.consumeDynamicAttribute(ATTR_SEPARATORS, DEFAULT_SEPARATORS), " ", 2);
@@ -98,10 +109,11 @@ public abstract class OptionsWidget<T> extends PropertyEditHandle<T> implements 
         return separators;
     }
 
-    public void setOptions(List<Option> options) {
+    public void setOptions(@Nonnull final List<Option> options) {
         this.options = options;
     }
 
+    @Nonnull
     public List<Option> getOptions() {
         if (options == null) {
             options = retrieveOptions(); // lazy load(!)
@@ -109,6 +121,7 @@ public abstract class OptionsWidget<T> extends PropertyEditHandle<T> implements 
         return options;
     }
 
+    @Nonnull
     public List<T> getOptionValues() {
         if (optionValues == null) {
             optionValues = new ArrayList<>();
@@ -117,6 +130,11 @@ public abstract class OptionsWidget<T> extends PropertyEditHandle<T> implements 
             }
         }
         return optionValues;
+    }
+
+    @Nullable
+    public T getDefaultOption(){
+        return defaultOption;
     }
 
     protected abstract Option newOption(String label, String value, Object data);

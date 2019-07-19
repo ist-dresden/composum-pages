@@ -2,6 +2,8 @@ package com.composum.pages.commons.widget;
 
 import com.composum.pages.commons.taglib.PropertyEditHandle;
 
+import javax.annotation.Nonnull;
+
 public class CodeArea extends PropertyEditHandle<String> implements WidgetModel {
 
     public static final String LANGUAGE_ATTR = "language";
@@ -20,7 +22,7 @@ public class CodeArea extends PropertyEditHandle<String> implements WidgetModel 
     }
 
     @Override
-    public String filterWidgetAttribute(String attributeKey, Object attributeValue) {
+    public String filterWidgetAttribute(@Nonnull String attributeKey, Object attributeValue) {
         if (LANGUAGE_ATTR.equals(attributeKey) || DATA_LANGUAGE_ATTR.equals(attributeKey)) {
             return DATA_LANGUAGE_ATTR;
         }

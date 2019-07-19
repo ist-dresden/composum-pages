@@ -3,6 +3,8 @@ package com.composum.pages.commons.widget;
 import com.composum.pages.commons.taglib.PropertyEditHandle;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.annotation.Nonnull;
+
 public class StaticText extends PropertyEditHandle<String> implements WidgetModel {
 
     public static final String ATTR_LEVEL = "level";
@@ -22,7 +24,7 @@ public class StaticText extends PropertyEditHandle<String> implements WidgetMode
     }
 
     @Override
-    public String filterWidgetAttribute(String attributeKey, Object attributeValue) {
+    public String filterWidgetAttribute(@Nonnull String attributeKey, Object attributeValue) {
         if (ATTR_LEVEL.equals(attributeKey)) {
             level = attributeValue != null ? attributeValue.toString() : null;
             return null;

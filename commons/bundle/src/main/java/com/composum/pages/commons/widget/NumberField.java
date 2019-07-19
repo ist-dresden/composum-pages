@@ -2,6 +2,8 @@ package com.composum.pages.commons.widget;
 
 import com.composum.pages.commons.taglib.PropertyEditHandle;
 
+import javax.annotation.Nonnull;
+
 import static com.composum.pages.commons.widget.Util.getIntegerOption;
 
 public class NumberField extends PropertyEditHandle<Integer> implements WidgetModel {
@@ -77,7 +79,7 @@ public class NumberField extends PropertyEditHandle<Integer> implements WidgetMo
     }
 
     @Override
-    public String filterWidgetAttribute(String attributeKey, Object attributeValue) {
+    public String filterWidgetAttribute(@Nonnull String attributeKey, Object attributeValue) {
         if (ATTR_OPTIONS.equals(attributeKey)) {
             options = new Options(attributeValue instanceof String ? (String) attributeValue : "");
             return null;
