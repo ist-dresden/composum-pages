@@ -46,9 +46,9 @@
                     <li><a href="#" class="${versionsCssBase}_action_check-out"
                            title="${cpn:i18n(slingRequest,'check out the current page')}"><i
                             class="fa fa-sign-out"></i>${cpn:i18n(slingRequest,'Check Out')}</a></li>
-                    <li><a href="#" class="${versionsCssBase}_action_restore"
-                           title="${cpn:i18n(slingRequest,'restore the selected version ot the current page')}"><i
-                            class="fa fa-undo"></i>${cpn:i18n(slingRequest,'Restore Version')}</a></li>
+                    <li><a href="#" class="${versionsCssBase}_action_rollback"
+                           title="${cpn:i18n(slingRequest,'rollback the selected version ot the current page')}"><i
+                            class="fa fa-undo"></i>${cpn:i18n(slingRequest,'Rollback Version')}</a></li>
                 </ul>
             </div>
         </div>

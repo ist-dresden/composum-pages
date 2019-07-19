@@ -89,7 +89,7 @@ public class PagesVersionServlet extends AbstractServiceServlet {
     public enum Operation {
         list,
         checkpoint, checkin, checkout, toggleCheckout,
-        restoreVersion,
+        rollbackVersion,
         lock, unlock, toggleLock
     }
 
@@ -128,7 +128,7 @@ public class PagesVersionServlet extends AbstractServiceServlet {
 
         // PUT
         operations.setOperation(ServletOperationSet.Method.PUT, Extension.json,
-                Operation.restoreVersion, new RestoreVersion());
+                Operation.rollbackVersion, new RollbackVersion());
     }
 
     public class PagesEditOperationSet extends
@@ -304,7 +304,7 @@ public class PagesVersionServlet extends AbstractServiceServlet {
         }
     }
 
-    protected class RestoreVersion implements ServletOperation {
+    protected class RollbackVersion implements ServletOperation {
 
         @Override
         public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
@@ -318,12 +318,12 @@ public class PagesVersionServlet extends AbstractServiceServlet {
                     VersionPutParameters.class);
 
             if (LOG.isDebugEnabled()) {
-                LOG.debug("RestoreVersion({},{})...", params.path, params.version);
+                LOG.debug("RollbackVersoin({},{})...", params.path, params.version);
             }
 
             try {
                 BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
-                versionsService.restoreVersion(context, params.path, params.version);
+                versionsService.rollbackVersion(context, params.path, params.version);
 
             } catch (RepositoryException ex) {
                 status.withLogging(LOG).error(ex.getLocalizedMessage(), ex);

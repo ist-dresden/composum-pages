@@ -19,7 +19,8 @@ public interface VersionsService {
 
     boolean isModified(Page page);
 
-    void restoreVersion(BeanContext context, String path, String versionName)
+    /** Resets a versionable to a version, but deletes all versions after that version. */
+    void rollbackVersion(BeanContext context, String path, String versionName)
             throws RepositoryException;
 
     /**

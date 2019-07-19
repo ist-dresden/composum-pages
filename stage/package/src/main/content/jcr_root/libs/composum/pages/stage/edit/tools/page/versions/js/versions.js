@@ -45,7 +45,7 @@
                 purgeAction: 'purge',
                 checkInAction: 'check-in',
                 checkOutAction: 'check-out',
-                restoreAction: 'restore',
+                rollbackAction: 'rollback',
                 disabled: 'disabled',
                 hidden: 'hidden',
                 uri: {
@@ -58,7 +58,7 @@
                             checkin: '.checkin.jason',
                             checkout: '.checkout.json',
                             purge: '.purge.json',
-                            restore: '.restoreVersion.json'
+                            rollback: '.rollbackVersion.json'
                         }
                     }
                 }
@@ -103,7 +103,7 @@
                 this.$purgeAction = this.$('.' + c.cssBase + c.actionKey + c.purgeAction);
                 this.$checkInAction = this.$('.' + c.cssBase + c.actionKey + c.checkInAction);
                 this.$checkOutAction = this.$('.' + c.cssBase + c.actionKey + c.checkOutAction);
-                this.$restoreAction = this.$('.' + c.cssBase + c.actionKey + c.restoreAction);
+                this.$rollbackAction = this.$('.' + c.cssBase + c.actionKey + c.rollbackAction);
                 this.right = [
                     this.$activateAction,
                     this.$deactivateAction,
@@ -118,7 +118,7 @@
                 this.$purgeAction.click(_.bind(this.purgeVersions, this));
                 this.$checkInAction.click(_.bind(this.checkIn, this));
                 this.$checkOutAction.click(_.bind(this.checkOut, this));
-                this.$restoreAction.click(_.bind(this.restoreVersion, this));
+                this.$rollbackAction.click(_.bind(this.rollbackVersion, this));
             },
 
             setActionsState: function () {
@@ -138,9 +138,9 @@
                     this.$checkInAction.addClass(c.hidden);
                 }
                 if (this.versions.primSelection) {
-                    this.$restoreAction.prop(c.disabled, false);
+                    this.$rollbackAction.prop(c.disabled, false);
                 } else {
-                    this.$restoreAction.prop(c.disabled, true);
+                    this.$rollbackAction.prop(c.disabled, true);
                 }
             },
 
@@ -199,14 +199,14 @@
                 pages.actions.page.checkout(event, ref.name, path, ref.type);
             },
 
-            restoreVersion: function (event) {
+            rollbackVersion: function (event) {
                 if (event) {
                     event.preventDefault();
                 }
                 var u = tools.const.versions.uri.version;
                 var path = this.versions.data.jcrContent.path;
                 var version = this.versions.primSelection.name;
-                core.ajaxPut(u.base + u._.restore + path, JSON.stringify({
+                core.ajaxPut(u.base + u._.rollback + path, JSON.stringify({
                         path: path,
                         version: version
                     }), {}, _.bind(function (result) {

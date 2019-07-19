@@ -63,10 +63,10 @@
                 sling:key="purge unused versions of the current page"
                 sling:message="ungenutzte versionen der aktuellen Seite löschen"/>
         <Restore-Version jcr:primaryType="sling:MessageEntry"
-                sling:key="Restore Version" sling:message="Version Wiederherstellen"/>
+                sling:key="Rollback Version" sling:message="Zu Version Zurückrollen"/>
         <Restore-Version-title jcr:primaryType="sling:MessageEntry"
-                sling:key="restore the selected version ot the current page"
-                sling:message="Wiederherstellen der selektieren Version der aktuellen Seite"/>
+                sling:key="rollback the selected version ot the current page"
+                sling:message="Zurückrollen zur selektierten Version der aktuellen Seite"/>
 
         <Page-References
                 jcr:primaryType="sling:MessageEntry"

@@ -77,11 +77,11 @@ public class PagesVersionsService implements VersionsService {
     }
 
     @Override
-    public void restoreVersion(final BeanContext context, String path, String versionName)
+    public void rollbackVersion(final BeanContext context, String path, String versionName)
             throws RepositoryException {
         VersionManager manager = getVersionManager(context);
         if (LOG.isInfoEnabled()) {
-            LOG.info("restoreVersion(" + path + "," + versionName + ")");
+            LOG.info("rollbackVersion(" + path + "," + versionName + ")");
         }
         manager.restore(path, versionName, false);
         // TODO(hps,2019-05-20) removing everything that came later is wrong from a users perspective.
@@ -98,7 +98,7 @@ public class PagesVersionsService implements VersionsService {
         while (allVersions.hasNext()) {
             final Version version = allVersions.nextVersion();
             if (LOG.isDebugEnabled()) {
-                LOG.debug("restoreVersion.remove(" + path + "," + version.getName() + ")");
+                LOG.debug("rollbackVersion.remove(" + path + "," + version.getName() + ")");
             }
             history.removeVersion(version.getName());
         }
