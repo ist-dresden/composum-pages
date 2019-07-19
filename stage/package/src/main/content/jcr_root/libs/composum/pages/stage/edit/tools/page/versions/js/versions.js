@@ -210,9 +210,10 @@
                         path: path,
                         version: version
                     }), {}, _.bind(function (result) {
-                        this.versions.contextTabs.reloadPage();
+                        var e = pages.const.event;
+                        pages.trigger('versions.rollback', e.page.changed, [this.versions.data.reference]);
                     }, this), _.bind(function (result) {
-                        this.error('on restoring version', result);
+                        this.error('on rollback version', result);
                     }, this)
                 );
             },
