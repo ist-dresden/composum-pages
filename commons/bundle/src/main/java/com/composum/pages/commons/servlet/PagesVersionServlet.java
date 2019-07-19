@@ -383,13 +383,11 @@ public class PagesVersionServlet extends AbstractServiceServlet {
                                    @Nonnull final List<Resource> lockable, @Nullable final String path) {
             if (StringUtils.isNotBlank(path)) {
                 Resource resource = resolver.getResource(path);
-                if (resource != null) {
-                    if (!JcrConstants.JCR_CONTENT.equals(resource.getName())) {
-                        resource = resource.getChild(JcrConstants.JCR_CONTENT);
-                    }
-                    if (resource != null) {
-                        lockable.add(resource);
-                    }
+                if (!ResourceUtil.isNodeType(resource, JcrConstants.MIX_LOCKABLE) && resource != null) {
+                    resource = resource.getChild(JcrConstants.JCR_CONTENT);
+                }
+                if (ResourceUtil.isNodeType(resource, JcrConstants.MIX_LOCKABLE)) {
+                    lockable.add(resource);
                 }
             }
         }

@@ -52,7 +52,7 @@
                 <cpn:div test="${model.currentPage.locked}" tagName="span"
                          class="text-danger">${cpn:i18n(slingRequest,'locked')} ${cpn:i18n(slingRequest,'by')} ${cpn:text(model.currentPage.lockOwner)}</cpn:div>
                 <cpn:div test="${!model.currentPage.locked}" tagName="span"
-                         class="text-'success">${cpn:i18n(slingRequest,'unlocked')}</cpn:div>
+                         class="text-success">${cpn:i18n(slingRequest,'unlocked')}</cpn:div>
             </div>
         </div>
     </div>
