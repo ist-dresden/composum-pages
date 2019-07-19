@@ -163,7 +163,7 @@
             },
 
             initialKey: function () {
-                return pages.profile.get('tabs', 'navigation', undefined);
+                return pages.profile.get('tabs.' + pages.current.mode, 'navigation', undefined);
             },
 
             keyChanged: function (key, $panel) {
@@ -176,7 +176,7 @@
                         }
                     }
                 }
-                pages.profile.set('tabs', 'navigation', key)
+                pages.profile.set('tabs.' + pages.current.mode, 'navigation', key)
             },
 
             selectPath: function (event, path, name, type) {
@@ -330,7 +330,11 @@
                 var view = this.tools[key];
                 if (view) {
                     if (_.isFunction(view.onTabSelected)) {
-                        view.onTabSelected.call(view);
+                        try {
+                            view.onTabSelected.call(view);
+                        } catch (ex) {
+                            pages.contextTools.log.error('exception: onTabSelected[' + key + ']\n', ex);
+                        }
                     }
                 }
                 pages.profile.set('tabs', 'context.' + this.componentType, key)
