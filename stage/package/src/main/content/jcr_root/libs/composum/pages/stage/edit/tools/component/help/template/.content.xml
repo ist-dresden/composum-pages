@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:cpp="http://sling.composum.com/pages/1.0"
+        xmlns:jcr="http://www.jcp.org/jcr/1.0"
+        xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+        xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+        jcr:primaryType="cpp:Page">
+    <jcr:content
+            jcr:primaryType="cpp:PageContent"
+            jcr:title="Pages Components Help Page"
+            jcr:description="A page describing a component type."
+            sling:resourceType="composum/pages/stage/edit/tools/component/help/page"
+            allowedParentTemplates="[]"
+            allowedChildTemplates="[]">
+        <main
+                jcr:primaryType="cpp:Container"
+                sling:resourceType="composum/pages/stage/edit/tools/component/help/parsys">
+        </main>
+        <cpp:design jcr:primaryType="nt:unstructured">
+            <main
+                    jcr:primaryType="nt:unstructured"
+                    typePatterns="[
+                        ^(.*/)?composum/pages/stage/edit/tools/component/help/parsys$
+                    ]"
+                    allowedElements="[
+                        ^(.*/)?composum/pages/components/element/(image|text|textimage|title|link(/.+)?)$,
+                        ^(.*/)?composum/pages/components/composed/(accordion|list)$
+                    ]">
+            </main>
+            <containers
+                    jcr:primaryType="nt:unstructured"
+                    typePatterns="[
+                        ^(.*/)?composum/pages/components/composed/accordion/item$,
+                        ^(.*/)?composum/pages/components/composed/list$
+                    ]"
+                    allowedElements="[
+                        ^(.*/)?composum/pages/components/element/(image|text|textimage|link(/.+)?)$
+                    ]">
+            </containers>
+        </cpp:design>
+    </jcr:content>
+</jcr:root>

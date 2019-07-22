@@ -11,6 +11,36 @@ $help-text-title-margin: $tools-pane-padding*1.5 0 $tools-pane-padding;
 
 .composum-pages-help-page_body {
 
+    .panel {
+        border-color: $tools-pane-tabs-tab-color;
+        box-shadow: none;
+        background-color: inherit;
+    }
+
+    &, & .panel-group {
+
+        .panel-default,
+        .panel-collapse {
+
+            > {
+                .panel-heading {
+                    border-color: $tools-pane-tabs-tab-color;
+                    padding: $tools-pane-padding;
+                    background-image: -webkit-linear-gradient(top, $tools-pane-tabs-tab-color 0%, $tools-pane-background 100%);
+                    background-image: -o-linear-gradient(top, $tools-pane-tabs-tab-color 0%, $tools-pane-background 100%);
+                    background-image: -webkit-gradient(linear, left top, left bottom, from($tools-pane-tabs-tab-color), to($tools-pane-background));
+                    background-image: linear-gradient(to bottom, $tools-pane-tabs-tab-color 0%, $tools-pane-background 100%);
+                    background-repeat: repeat-x;
+                    color: $tools-pane-foreground;
+                }
+
+                .panel-body {
+                    border-top-color: $tools-pane-tabs-tab-color;
+                }
+            }
+        }
+    }
+
     .composum-pages-components {
 
         &-element {
