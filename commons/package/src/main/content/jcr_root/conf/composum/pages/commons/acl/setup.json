@@ -23,6 +23,10 @@
     ]
   },
   {
+    "path": "/content/sites",
+    "jcr:primaryType": "sling:Folder"
+  },
+  {
     "path": "/var/composum/content",
     "jcr:primaryType": "sling:Folder",
     "acl": [

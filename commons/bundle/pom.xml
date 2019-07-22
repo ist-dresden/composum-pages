@@ -5,11 +5,11 @@
 
     <parent>
         <groupId>com.composum.sling.pages</groupId>
-        <artifactId>composum-sling-pages-commons</artifactId>
+        <artifactId>composum-pages-commons</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>composum-sling-pages-commons-bundle</artifactId>
+    <artifactId>composum-pages-commons-bundle</artifactId>
     <packaging>bundle</packaging>
 
     <name>Composum Pages Commons Bundle</name>
@@ -106,23 +106,23 @@
         <!-- Composum Platform -->
         <dependency>
             <groupId>com.composum.sling.platform</groupId>
-            <artifactId>composum-sling-platform-commons-bundle</artifactId>
+            <artifactId>composum-platform-commons-bundle</artifactId>
         </dependency>
         <dependency>
             <groupId>com.composum.sling.platform</groupId>
-            <artifactId>composum-sling-platform-cache-bundle</artifactId>
+            <artifactId>composum-platform-cache-bundle</artifactId>
         </dependency>
         <dependency>
             <groupId>com.composum.sling.platform</groupId>
-            <artifactId>composum-sling-platform-staging-bundle</artifactId>
+            <artifactId>composum-platform-staging-bundle</artifactId>
         </dependency>
         <dependency>
             <groupId>com.composum.sling.platform</groupId>
-            <artifactId>composum-sling-platform-security-bundle</artifactId>
+            <artifactId>composum-platform-security-bundle</artifactId>
         </dependency>
         <dependency>
             <groupId>com.composum.sling.platform</groupId>
-            <artifactId>composum-sling-platform-models-bundle</artifactId>
+            <artifactId>composum-platform-models-bundle</artifactId>
         </dependency>
 
         <!-- Composum Core -->
@@ -280,7 +280,7 @@
         </dependency>
         <dependency>
             <groupId>com.composum.sling.platform</groupId>
-            <artifactId>composum-sling-platform-testing-testutil</artifactId>
+            <artifactId>composum-platform-testing-testutil</artifactId>
         </dependency>
 
         <!-- TODO Temporary workaround for https://issues.apache.org/jira/browse/SLING-8576 . Once that's fixed this

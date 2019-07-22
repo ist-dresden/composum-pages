@@ -142,6 +142,7 @@ public class PagesSiteManager extends PagesContentManager<Site> implements SiteM
     }
 
     @Override
+    @Nonnull
     public Resource getSitesRoot(@Nonnull final BeanContext context, @Nullable final String tenantId) {
         ResourceResolver resolver = context.getResolver();
         String sitesRootPath = null;

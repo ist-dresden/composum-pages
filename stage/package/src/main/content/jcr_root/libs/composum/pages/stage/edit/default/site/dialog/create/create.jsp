@@ -1,4 +1,5 @@
 <%@page session="false" pageEncoding="utf-8" %>
+<%@taglib prefix="cpn" uri="http://sling.composum.com/cpnl/1.0" %>
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <cpp:defineFrameObjects/>
 <cpp:editDialog var="sites" type="com.composum.pages.commons.model.Sites" selector="wizard" languageContext="false"
@@ -10,12 +11,12 @@
     <cpp:editDialogTab tabId="site" label="Site">
         <div class="row">
             <cpn:div test="${sites.tenantSupport}" class="col col-xs-5">
-                <cpp:widget label="Tenant" name="tenant" type="select" rules="required"
+                <cpp:widget label="Tenant" name="tenant" type="select" required="true"
                             options="${sites.tenantOptions}"/>
             </cpn:div>
             <div class="col col-xs-${sites.tenantSupport?'7':'12'}">
                 <cpp:widget label="Name" name="name" placeholder="the repository name" type="textfield"
-                            rules="required" pattern="^[A-Za-z_][\\- \\w]*$"/>
+                            required="true" pattern="^[A-Za-z_][\\- \\w]*$"/>
             </div>
         </div>
         <cpp:widget label="Title" name="jcr:title" placeholder="the more readable title" type="textfield"/>

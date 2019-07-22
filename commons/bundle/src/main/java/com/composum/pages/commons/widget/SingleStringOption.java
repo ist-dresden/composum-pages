@@ -1,7 +1,5 @@
 package com.composum.pages.commons.widget;
 
-import org.apache.commons.lang3.StringUtils;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -19,7 +17,9 @@ public class SingleStringOption extends OptionsWidget<String> {
         }
 
         public boolean isSelected() {
-            return getValue().equals(getCurrent());
+            String current = getCurrent();
+            String value = getValue();
+            return current != null ? value.equals(current) : value.equals(getDefaultOption());
         }
     }
 
@@ -36,12 +36,6 @@ public class SingleStringOption extends OptionsWidget<String> {
     public String getCurrent() {
         if (current == null) {
             current = getValue();
-            if (StringUtils.isBlank(current)) {
-                String defaultValue = getDefaultValue();
-                if (defaultValue != null) {
-                    current = defaultValue;
-                }
-            }
         }
         return current;
     }

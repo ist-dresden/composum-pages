@@ -5,11 +5,11 @@
 
     <parent>
         <groupId>com.composum.sling.pages.options</groupId>
-        <artifactId>composum-sling-pages-options-microsite</artifactId>
+        <artifactId>composum-pages-options-microsite</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>composum-sling-pages-options-microsite-package</artifactId>
+    <artifactId>composum-pages-options-microsite-package</artifactId>
     <packaging>content-package</packaging>
 
     <name>Composum Pages Options - Microsite Package</name>
@@ -81,7 +81,7 @@
                         <filter>
                             <root>/libs/composum/pages/install</root>
                             <includes>
-                                <include>.*/composum-sling-pages-options-microsite-bundle.*\.jar</include>
+                                <include>.*/composum-pages-options-microsite-bundle.*\.jar</include>
                             </includes>
                         </filter>
                     </filters>
@@ -89,7 +89,7 @@
                     <embeddeds>
                         <embedded>
                             <groupId>com.composum.sling.pages.options</groupId>
-                            <artifactId>composum-sling-pages-options-microsite-bundle</artifactId>
+                            <artifactId>composum-pages-options-microsite-bundle</artifactId>
                             <target>/libs/composum/pages/install</target>
                         </embedded>
                     </embeddeds>
@@ -103,14 +103,14 @@
 
         <dependency>
             <groupId>com.composum.sling.pages.options</groupId>
-            <artifactId>composum-sling-pages-options-microsite-bundle</artifactId>
+            <artifactId>composum-pages-options-microsite-bundle</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <!-- Composum Pages -->
         <dependency>
             <groupId>com.composum.sling.pages</groupId>
-            <artifactId>composum-sling-pages-commons-bundle</artifactId>
+            <artifactId>composum-pages-commons-bundle</artifactId>
             <version>${project.version}</version>
         </dependency>
 
