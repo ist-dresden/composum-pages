@@ -27,7 +27,7 @@
 
             <!-- Composum Pages -->
             <dependency>
-                <groupId>com.composum.sling.pages</groupId>
+                <groupId>com.composum.pages</groupId>
                 <artifactId>composum-pages-commons-bundle</artifactId>
                 <version>${composum.pages.version}</version>
                 <scope>provided</scope>

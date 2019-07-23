@@ -9,7 +9,7 @@
         <version>1.1</version>
     </parent>
 
-    <groupId>com.composum.sling.pages</groupId>
+    <groupId>com.composum.pages</groupId>
     <artifactId>composum-pages</artifactId>
     <packaging>pom</packaging>
     <version>1.0.0-SNAPSHOT</version>
@@ -23,7 +23,7 @@
         <package.company>IST GmbH Dresden</package.company>
         <bundle.category>composum,pages</bundle.category>
         <composum.nodes.version>1.11.1</composum.nodes.version>
-        <composum.platform.version>[1.0.0,1.0.3]</composum.platform.version>
+        <composum.platform.version>1.0.4</composum.platform.version>
     </properties>
 
     <scm>
@@ -66,37 +66,37 @@
 
             <!-- Composum Platform -->
             <dependency>
-                <groupId>com.composum.sling.platform</groupId>
+                <groupId>com.composum.platform</groupId>
                 <artifactId>composum-platform-commons-bundle</artifactId>
                 <version>${composum.platform.version}</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
-                <groupId>com.composum.sling.platform</groupId>
+                <groupId>com.composum.platform</groupId>
                 <artifactId>composum-platform-cache-bundle</artifactId>
                 <version>${composum.platform.version}</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
-                <groupId>com.composum.sling.platform</groupId>
+                <groupId>com.composum.platform</groupId>
                 <artifactId>composum-platform-staging-bundle</artifactId>
                 <version>${composum.platform.version}</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
-                <groupId>com.composum.sling.platform</groupId>
+                <groupId>com.composum.platform</groupId>
                 <artifactId>composum-platform-security-bundle</artifactId>
                 <version>${composum.platform.version}</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
-                <groupId>com.composum.sling.platform</groupId>
+                <groupId>com.composum.platform</groupId>
                 <artifactId>composum-platform-models-bundle</artifactId>
                 <version>${composum.platform.version}</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
-                <groupId>com.composum.sling.platform</groupId>
+                <groupId>com.composum.platform</groupId>
                 <artifactId>composum-platform-testing-testutil</artifactId>
                 <version>${composum.platform.version}</version>
                 <scope>test</scope>
