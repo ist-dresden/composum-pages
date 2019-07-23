@@ -42,7 +42,7 @@
 
             <!-- Composum Assets -->
             <dependency>
-                <groupId>com.composum.sling.assets</groupId>
+                <groupId>com.composum.assets</groupId>
                 <artifactId>composum-assets-commons-bundle</artifactId>
                 <version>${composum.assets.version}</version>
                 <scope>provided</scope>
