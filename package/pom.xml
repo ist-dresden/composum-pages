@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd ">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.composum.sling.pages</groupId>
+        <artifactId>composum-pages</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>composum-pages-package</artifactId>
+    <packaging>content-package</packaging>
+
+    <name>Composum Pages Package</name>
+    <description>The couple of all Pages packages</description>
+    <url>https://github.com/ist-dresden/composum</url>
+
+    <build>
+        <plugins>
+
+            <plugin>
+                <groupId>com.day.jcr.vault</groupId>
+                <artifactId>content-package-maven-plugin</artifactId>
+                <configuration>
+
+                    <group>${package.group}</group>
+                    <properties>
+                        <createdBy>${package.company}</createdBy>
+                    </properties>
+
+                    <subPackages>
+                        <subPackage>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>composum-pages-commons-package</artifactId>
+                            <filter>true</filter>
+                        </subPackage>
+                        <subPackage>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>composum-pages-components-package</artifactId>
+                            <filter>true</filter>
+                        </subPackage>
+                        <subPackage>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>composum-pages-stage-package</artifactId>
+                            <filter>true</filter>
+                        </subPackage>
+                    </subPackages>
+
+                </configuration>
+            </plugin>
+
+        </plugins>
+    </build>
+    <dependencies>
+
+        <dependency>
+            <groupId>com.composum.sling.pages</groupId>
+            <artifactId>composum-pages-commons-package</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+        </dependency>
+
+        <dependency>
+            <groupId>com.composum.sling.pages</groupId>
+            <artifactId>composum-pages-components-package</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+        </dependency>
+
+        <dependency>
+            <groupId>com.composum.sling.pages</groupId>
+            <artifactId>composum-pages-stage-package</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+        </dependency>
+
+    </dependencies>
+    <profiles>
+
+        <profile>
+            <id>installPackage</id><!-- prevent from install concurrent to the collections content -->
+        </profile>
+
+    </profiles>
+</project>
