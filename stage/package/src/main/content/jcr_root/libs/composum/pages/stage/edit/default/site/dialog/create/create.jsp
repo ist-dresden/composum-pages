@@ -4,7 +4,7 @@
 <cpp:defineFrameObjects/>
 <cpp:editDialog var="sites" type="com.composum.pages.commons.model.Sites" selector="wizard" languageContext="false"
                 title="Create a new Site" resourcePath="*" submitLabel="Create"
-                submit="/bin/cpm/pages/edit.createSite.json" successEvent="site:created">
+                submit="/bin/cpm/pages/edit.createSite.json">
     <cpp:editDialogTab tabId="template" label="Template">
         <cpp:widget label="Select a template" name="template" type="site-template"/>
     </cpp:editDialogTab>
@@ -19,7 +19,7 @@
                             required="true" pattern="^[A-Za-z_][\\- \\w]*$"/>
             </div>
         </div>
-        <cpp:widget label="Title" name="jcr:title" placeholder="the more readable title" type="textfield"/>
-        <cpp:widget label="Description" name="jcr:description" type="richtext"/>
+        <cpp:widget label="Title" name="title" placeholder="the more readable title" type="textfield"/>
+        <cpp:widget label="Description" name="description" type="richtext"/>
     </cpp:editDialogTab>
 </cpp:editDialog>

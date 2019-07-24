@@ -3,5 +3,6 @@
 <cpp:defineFrameObjects/>
 <cpp:editDialog var="list" type="com.composum.pages.components.model.composed.List"
                 title="@{dialog.selector=='create'?'Create a List':'Edit List'}">
-    <cpp:widget label="Choose ordered or unordered list" property="listType" type="select" options="ul:unordered,ol:ordered"/>
+    <cpp:widget label="Choose ordered or unordered list" property="listType" type="select"
+                options="ul:unordered,ol:ordered" default="ul"/>
 </cpp:editDialog>

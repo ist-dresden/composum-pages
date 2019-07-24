@@ -7,7 +7,7 @@
         <div class="row">
             <div class="col col-xs-6">
                 <cpp:widget label="Button Symbol" property="buttonSymbol" type="select" i18n="false"
-                            options="search,question,filter,eye,bullseye" rules="optional"
+                            options="search,question,filter,eye,bullseye" default="search"
                             hint="Symbol for the search button; optional, default: 'search'."/>
             </div>
             <div class="col col-xs-6">

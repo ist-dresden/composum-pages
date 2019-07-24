@@ -892,9 +892,8 @@
 
             doSubmit: function () {
                 this.submitForm(_.bind(function (result) {
-                    this.data.name = result.name;
-                    this.data.path = result.path;
-                    this.triggerEvents(result, pages.const.event.site.created);
+                    pages.trigger('dialog.site.create', pages.const.event.site.created,
+                        [new pages.Reference(result.name, result.path)]);
                 }, this));
             }
         });
@@ -912,7 +911,8 @@
 
             doSubmit: function () {
                 this.submitForm(_.bind(function (result) {
-                    this.triggerEvents(result, pages.const.event.site.deleted);
+                    pages.trigger('dialog.site.delete', pages.const.event.site.deleted,
+                        [new pages.Reference(result.name, result.path)]);
                 }, this));
             }
         });

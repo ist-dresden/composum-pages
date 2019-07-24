@@ -9,7 +9,7 @@
                 hint="the default resource type of the embedded element"/>
     <div class="row">
         <div class="col col-xs-6">
-            <cpp:widget label="Warning Level" property="level" type="select"
+            <cpp:widget label="Warning Level" property="level" type="select" default="default"
                         hint="<a href='https://getbootstrap.com/docs/3.3/components/#panels-alternatives' target='_blank'>'Bootstrap' background</a>"
                         options="none,default,primary,info,success,warning,danger"/>
         </div>

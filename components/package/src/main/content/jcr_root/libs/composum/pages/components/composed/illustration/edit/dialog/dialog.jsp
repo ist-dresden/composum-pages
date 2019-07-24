@@ -8,6 +8,7 @@
                      replaceSelectors="embedded"/>
     </cpp:editDialogTab>
     <cpp:editDialogTab tabId="shape" label="Shape">
-        <cpp:widget label="Behavior" property="shape/behavior" type="select" options="accordion,independent"/>
+        <cpp:widget label="Behavior" property="shape/behavior" type="select"
+                    options="accordion,independent" default="accordion"/>
     </cpp:editDialogTab>
 </cpp:editDialog>

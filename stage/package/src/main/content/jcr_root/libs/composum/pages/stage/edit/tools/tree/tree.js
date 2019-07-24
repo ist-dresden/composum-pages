@@ -137,10 +137,15 @@
 
             onContentInserted: function (event, parentRef, /*optional*/ resultRef) {
                 var path = parentRef && parentRef.path ? parentRef.path : parentRef;
-                if (this.log.getLevel() <= log.levels.DEBUG) {
-                    this.log.debug(this.nodeIdPrefix + 'tree.onContentInserted(' + path + ')');
+                if (path) {
+                    if (!resultRef && path.indexOf('/content/') === 0) {
+                        path = core.getParentPath(path);
+                    }
+                    if (this.log.getLevel() <= log.levels.DEBUG) {
+                        this.log.debug(this.nodeIdPrefix + 'tree.onContentInserted(' + path + ')');
+                    }
+                    this.onPathInserted(event, path, resultRef && resultRef.name ? resultRef.name : '*');
                 }
-                this.onPathInserted(event, path, resultRef && resultRef.name ? resultRef.name : '*');
             },
 
             onContentMoved: function (event, oldRefOrPath, newRefOrPath) {

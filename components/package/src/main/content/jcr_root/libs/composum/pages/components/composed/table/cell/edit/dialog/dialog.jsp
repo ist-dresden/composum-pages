@@ -8,7 +8,7 @@
     <div class="row">
         <div class="col col-xs-4">
             <cpp:widget label="Vertical Align" property="verticalAlign" type="select"
-                        options=",top,bottom,middle,baseline"/>
+                        options="top,bottom,middle,baseline" default="top"/>
         </div>
         <div class="col col-xs-3">
             <cpp:widget label="Table Head" name="head" type="checkbox"/>
@@ -23,7 +23,7 @@
     <div class="row">
         <div class="col col-xs-4">
             <cpp:widget label="Text Alignment" property="textAlignment" type="select"
-                        options=",left,right,center,justify"/>
+                        options="left,right,center,justify" default="left"/>
         </div>
         <div class="col col-xs-6">
             <cpp:widget label="Warning Level" property="level" type="select"
