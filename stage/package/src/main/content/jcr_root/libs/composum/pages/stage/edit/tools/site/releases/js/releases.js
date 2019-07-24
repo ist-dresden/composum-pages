@@ -9,7 +9,7 @@
         tools.const = _.extend(tools.const || {}, {
             releases: {
                 event: {
-                    id: 'tools.SiteReleases'
+                    id: '.tools.SiteReleases'
                 },
                 css: {
                     site: {

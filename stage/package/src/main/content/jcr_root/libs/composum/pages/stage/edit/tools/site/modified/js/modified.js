@@ -9,7 +9,7 @@
         tools.const = _.extend(tools.const || {}, {
             modified: {
                 event: {
-                    id: 'tools.ModifiedPages'
+                    id: '.tools.ModifiedPages'
                 },
                 page: {
                     base: 'composum-pages-stage-edit-site-page-modified',
