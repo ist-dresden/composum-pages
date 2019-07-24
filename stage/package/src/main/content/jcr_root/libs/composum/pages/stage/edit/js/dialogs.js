@@ -484,8 +484,8 @@
                 var postData = {
                     _charset_: 'UTF-8',
                     name: name,
-                    title: title,
-                    description: description
+                    'jcr:title': title,
+                    'jcr:description': description
                 };
                 this.hide(); // this is resetting the dialog
                 if (template) {

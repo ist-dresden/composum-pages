@@ -19,7 +19,7 @@
                             required="true" pattern="^[A-Za-z_][\\- \\w]*$"/>
             </div>
         </div>
-        <cpp:widget label="Title" name="title" placeholder="the more readable title" type="textfield"/>
-        <cpp:widget label="Description" name="description" type="richtext"/>
+        <cpp:widget label="Title" name="jcr:title" placeholder="the more readable title" type="textfield"/>
+        <cpp:widget label="Description" name="jcr:description" type="richtext"/>
     </cpp:editDialogTab>
 </cpp:editDialog>

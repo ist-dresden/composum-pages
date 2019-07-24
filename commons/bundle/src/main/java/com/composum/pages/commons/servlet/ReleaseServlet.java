@@ -59,7 +59,6 @@ public class ReleaseServlet extends AbstractServiceServlet {
     public static final String PARAM_RELEASE_KEY = "releaseKey";
 
     public static final String PARAM_NUMBER = "number";
-    public static final String PARAM_DESCRIPTION = "description";
 
     protected BundleContext bundleContext;
 
@@ -177,8 +176,8 @@ public class ReleaseServlet extends AbstractServiceServlet {
 
                     if (status.isValid()) {
 
-                        final String title = request.getParameter(PARAM_TITLE);
-                        final String description = request.getParameter(PARAM_DESCRIPTION);
+                        final String title = request.getParameter(ResourceUtil.JCR_TITLE);
+                        final String description = request.getParameter(ResourceUtil.JCR_DESCRIPTION);
 
                         ReleaseNumberCreator releaseType;
                         try {
@@ -256,15 +255,15 @@ public class ReleaseServlet extends AbstractServiceServlet {
                                          @Nonnull final StagingReleaseManager.Release release)
             throws RepositoryException {
 
-        final String title = request.getParameter(PARAM_TITLE);
-        final String description = request.getParameter(PARAM_DESCRIPTION);
+        final String title = request.getParameter(ResourceUtil.JCR_TITLE);
+        final String description = request.getParameter(ResourceUtil.JCR_DESCRIPTION);
 
         ResourceHandle metaData = ResourceHandle.use(release.getMetaDataNode());
         if (StringUtils.isNotBlank(title)) {
-            metaData.setProperty(ResourceUtil.PROP_TITLE, title);
+            metaData.setProperty(ResourceUtil.JCR_TITLE, title);
         }
         if (StringUtils.isNotBlank(description)) {
-            metaData.setProperty(ResourceUtil.PROP_DESCRIPTION, description);
+            metaData.setProperty(ResourceUtil.JCR_DESCRIPTION, description);
         }
         metaData.setProperty(JcrConstants.JCR_LASTMODIFIED, Calendar.getInstance());
         metaData.setProperty(JcrConstants.JCR_LASTMODIFIED + "By", request.getResourceResolver().getUserID());

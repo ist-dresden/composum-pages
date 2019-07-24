@@ -11,12 +11,12 @@
                         options="MAJOR:major (+1._._),MINOR:minor (_.+1._),BUGFIX:bugfix (_._.+1)"/>
         </div>
         <div class="col col-xs-9">
-            <cpp:widget name="title" label="Title" type="textfield" value="${site.currentRelease.properties.title}"/>
+            <cpp:widget name="jcr:title" label="Title" type="textfield" value="${site.currentRelease.properties.title}"/>
         </div>
     </div>
     <div class="row">
         <div class="col col-xs-12">
-            <cpp:widget name="description" label="Description" type="richtext"
+            <cpp:widget name="jcr:description" label="Description" type="richtext"
                         value="${site.currentRelease.description}"/>
         </div>
     </div>

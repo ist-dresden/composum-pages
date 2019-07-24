@@ -29,6 +29,7 @@ import com.composum.sling.core.servlet.NodeTreeServlet;
 import com.composum.sling.core.servlet.ServletOperation;
 import com.composum.sling.core.servlet.ServletOperationSet;
 import com.composum.sling.core.servlet.Status;
+import com.composum.sling.core.util.ResourceUtil;
 import com.composum.sling.core.util.ResponseUtil;
 import com.composum.sling.platform.staging.versions.PlatformVersionsService;
 import com.google.gson.stream.JsonReader;
@@ -985,8 +986,8 @@ public class EditServlet extends PagesContentServlet {
             try {
                 Page page;
                 String name = request.getParameter("name");
-                String title = request.getParameter("title");
-                String description = request.getParameter("description");
+                String title = request.getParameter(ResourceUtil.JCR_TITLE);
+                String description = request.getParameter(ResourceUtil.JCR_DESCRIPTION);
 
                 Resource template = null;
                 String templatePath;
@@ -1107,8 +1108,8 @@ public class EditServlet extends PagesContentServlet {
                 }
                 String tenant = request.getParameter("tenant");
                 String name = request.getParameter("name");
-                String title = request.getParameter("title");
-                String description = request.getParameter("description");
+                String title = request.getParameter(ResourceUtil.JCR_TITLE);
+                String description = request.getParameter(ResourceUtil.JCR_DESCRIPTION);
                 Site site = siteManager.createSite(context, tenant, name, title, description, template, true);
 
                 JsonWriter jsonWriter = ResponseUtil.getJsonWriter(response);
