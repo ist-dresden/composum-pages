@@ -7,8 +7,6 @@
                       action="window.composum.pages.actions.page.insertPage"/>
         <cpp:menuItem icon="folder-open" label="Folder" title="insert a new folder as direct child of the current page"
                       action="window.composum.pages.actions.page.insertFolder"/>
-        <cpp:menuItem icon="image" label="File" title="upload a file as direct child of the current page"
-                      action="window.composum.pages.actions.page.insertFile"/>
     </cpp:treeMenu>
 </div>
 <div class="btn-group btn-group-sm" role="group">
