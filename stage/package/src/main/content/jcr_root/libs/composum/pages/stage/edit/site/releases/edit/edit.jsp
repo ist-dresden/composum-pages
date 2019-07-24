@@ -5,7 +5,7 @@
                 title="Edit Release" submit="/bin/cpm/pages/release.change.json" successEvent="site:changed">
     <div class="row">
         <div class="col col-xs-9">
-            <cpp:widget property="jcr:title" label="Title" type="textfield"/>
+            <cpp:widget name="jcr:title" label="Title" type="textfield" value="${release.title}"/>
         </div>
         <div class="col col-xs-3">
             <cpp:widget label="Key" type="textfield" value="${release.key}" disabled="true"/>
