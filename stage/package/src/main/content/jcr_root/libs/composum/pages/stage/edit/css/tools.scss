@@ -260,7 +260,9 @@
     &_icon,
     &_title {
         display: inline-block;
+        margin-bottom: 4px;
         height: 24px;
+        @include title-font;
         line-height: 24px;
     }
 
@@ -390,6 +392,7 @@
                     &_title {
                         margin: 4px 0 8px;
                         font-size: $default-font-size;
+                        line-height: 20px;
                     }
 
                     &_description {
@@ -402,6 +405,7 @@
                         bottom: 4px;
                         margin: 0;
                         font-size: $hint-font-size;
+                        line-height: 17px;
                     }
                 }
             }
@@ -800,7 +804,7 @@
                 &_title {
                     top: auto;
                     bottom: 26px;
-                    font-size: $default-font-size;
+                    @include title-font;
                 }
 
                 &_status {

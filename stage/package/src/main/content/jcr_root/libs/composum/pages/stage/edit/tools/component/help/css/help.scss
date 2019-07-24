@@ -3,13 +3,11 @@
 @import "../../../../css/variables";
 @import "../../../../css/mixins";
 
-$help-text-default-size: $default-font-size;
-$help-text-title-size: $default-font-size + 5;
-
 $help-text-default-margin: $tools-pane-padding 0;
 $help-text-title-margin: $tools-pane-padding*1.5 0 $tools-pane-padding;
 
 .composum-pages-help-page_body {
+    @include text-font;
 
     .panel {
         border-color: $tools-pane-tabs-tab-color;
@@ -47,16 +45,16 @@ $help-text-title-margin: $tools-pane-padding*1.5 0 $tools-pane-padding;
 
             &-title {
                 margin: $help-text-title-margin;
-                font-size: $help-text-title-size;
+                @include title-font;
             }
 
             &-text {
                 margin: $help-text-default-margin;
-                font-size: $help-text-default-size;
+                @include text-font;
 
                 &_title {
                     margin: $help-text-title-margin;
-                    font-size: $help-text-title-size;
+                    font-size: $title-font-size;
                 }
             }
 
