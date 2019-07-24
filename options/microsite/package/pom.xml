@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.composum.sling.pages.options</groupId>
+        <groupId>com.composum.pages.options</groupId>
         <artifactId>composum-pages-options-microsite</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
@@ -88,7 +88,7 @@
 
                     <embeddeds>
                         <embedded>
-                            <groupId>com.composum.sling.pages.options</groupId>
+                            <groupId>com.composum.pages.options</groupId>
                             <artifactId>composum-pages-options-microsite-bundle</artifactId>
                             <target>/libs/composum/pages/install</target>
                         </embedded>
@@ -102,7 +102,7 @@
     <dependencies>
 
         <dependency>
-            <groupId>com.composum.sling.pages.options</groupId>
+            <groupId>com.composum.pages.options</groupId>
             <artifactId>composum-pages-options-microsite-bundle</artifactId>
             <version>${project.version}</version>
         </dependency>
