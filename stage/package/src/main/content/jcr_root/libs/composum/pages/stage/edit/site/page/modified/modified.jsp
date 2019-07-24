@@ -26,25 +26,27 @@
                 <table class="${siteCSS}_table table table-condensed">
                     <thead class="${siteCSS}_thead">
                     <tr>
-                        <c:if test="${site.editMode}">
-                            <th class="_input"><input type="checkbox" class="${siteCSS}_page-select-all"/></th>
-                        </c:if>
-                        <th class="${siteCSS}_page-path">${cpn:i18n(slingRequest,'Relative Path')}</th>
-                        <th class="${siteCSS}_page-title">${cpn:i18n(slingRequest,'Title')}</th>
-                        <th class="${siteCSS}_page-time">${cpn:i18n(slingRequest,'Modification Date')}</th>
+                        <th class="_input _page-state"><c:if test="${site.editMode}"><input type="checkbox"
+                                                                                            class="${siteCSS}_page-select-all"/></c:if>
+                        </th>
+                        <th class="_page-path">${cpn:i18n(slingRequest,'Relative Path')}</th>
+                        <th class="_page-title">${cpn:i18n(slingRequest,'Title')}</th>
+                        <th class="_page-time">${cpn:i18n(slingRequest,'Modification Date')}</th>
                     </tr>
                     </thead>
                     <tbody class="${siteCSS}_tbody">
                     <c:forEach items="${site.modifiedPages}" var="page">
                         <tr class="release-status_${page.releaseStatus.activationState}">
-                            <c:if test="${site.editMode}">
-                                <td class="_input"><input type="checkbox" class="${siteCSS}_page-select"
-                                                          data-path="${page.path}"></td>
-                            </c:if>
-                            <td class="${siteCSS}_page-path"><a
+                            <td class="_input _page-state"
+                                title="${cpn:i18n(slingRequest,page.releaseStatus.activationState)}"><c:if
+                                    test="${site.editMode}"><input type="checkbox"
+                                                                   class="${siteCSS}_page-select"
+                                                                   data-path="${page.path}"></c:if>
+                            </td>
+                            <td class="_page-path"><a
                                     href="${page.url}">${cpn:path(page.siteRelativePath)}</a></td>
-                            <td class="${siteCSS}_page-title">${cpn:text(page.title)}</td>
-                            <td class="${siteCSS}_page-time">${cpn:text(page.lastModifiedString)}</td>
+                            <td class="_page-title">${cpn:text(page.title)}</td>
+                            <td class="_page-time">${cpn:text(page.lastModifiedString)}</td>
                         </tr>
                     </c:forEach>
                     </tbody>

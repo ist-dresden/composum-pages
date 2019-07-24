@@ -532,8 +532,8 @@
 
             label {
                 position: absolute;
-                margin-top: 6px;
-                margin-left: 9px;
+                margin-top: 8px;
+                margin-left: 4px;
                 white-space: nowrap;
                 color: $tools-pane-tabs-tab-color;
             }
@@ -658,6 +658,12 @@
 .composum-pages-stage-edit-sidebar-context {
 
     .composum-pages-tools {
+
+        .tools-title {
+            .title-text {
+                @include title-font;
+            }
+        }
 
         &_actions {
 

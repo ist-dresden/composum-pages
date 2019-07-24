@@ -7,9 +7,9 @@
              cssBase="composum-pages-stage-edit-site-page-modified" data-path="@{site.site.path}">
     <div class="composum-pages-tools_actions btn-toolbar">
         <div class="composum-pages-tools_left-actions">
-            <label title="${cpn:i18n(slingRequest,'modified but last changes not activated yet')}">
+            <label class="tools-title" title="${cpn:i18n(slingRequest,'modified but last changes not activated yet')}">
                 <input type="checkbox" class="composum-pages-stage-edit-site-page-modified_page-select-all"/>
-                <span>${cpn:i18n(slingRequest,'Modified Pages')}</span>
+                <span class="title-text">${cpn:i18n(slingRequest,'Modified Pages')}</span>
             </label>
         </div>
         <div class="composum-pages-tools_right-actions">

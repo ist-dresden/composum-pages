@@ -7,9 +7,10 @@
              cssBase="composum-pages-stage-edit-site-page-activated" data-path="@{site.site.path}">
     <div class="composum-pages-tools_actions btn-toolbar">
         <div class="composum-pages-tools_left-actions">
-            <label title="${cpn:i18n(slingRequest,'pages activated with changes since the previous release')}">
+            <label class="tools-title"
+                   title="${cpn:i18n(slingRequest,'pages activated with changes since the previous release')}">
                 <input type="checkbox" class="composum-pages-stage-edit-site-page-activated_page-select-all"/>
-                <span>${cpn:i18n(slingRequest,'Activated Pages')}</span>
+                <span class="title-text">${cpn:i18n(slingRequest,'Activated Pages')}</span>
             </label>
         </div>
         <div class="composum-pages-tools_right-actions">

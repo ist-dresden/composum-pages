@@ -64,6 +64,7 @@
             height: 37px;
 
             .panel-title {
+                @include title-font;
                 float: left;
             }
         }
@@ -83,7 +84,9 @@
     .composum-pages-stage-edit-site {
 
         &-page-modified,
-        &-page-activated {
+        &-page-activated,
+        &-release-changes,
+        &-languages {
 
             &_content {
                 overflow-x: scroll;
@@ -105,13 +108,14 @@
             }
 
             &_thead, &_tbody {
+                @include text-font;
 
                 th {
                     white-space: nowrap;
                     overflow: hidden;
                 }
 
-                ._input {
+                ._page-state {
                     width: 33px;
                     max-width: 33px;
                     min-width: 33px;
@@ -124,28 +128,28 @@
 
                     &_initial {
 
-                        ._input {
+                        ._page-state {
                             background-color: $release-status-initial;
                         }
                     }
 
                     &_activated {
 
-                        ._input {
+                        ._page-state {
                             background-color: $release-status-activated;
                         }
                     }
 
                     &_modified {
 
-                        ._input {
+                        ._page-state {
                             background-color: $release-status-modified;
                         }
                     }
 
                     &_deactivated {
 
-                        ._input {
+                        ._page-state {
                             background-color: $release-status-deactivated;
                         }
                     }
@@ -175,6 +179,10 @@
 
             &:last-child {
                 padding-bottom: 0;
+            }
+
+            &_tile {
+                @include text-font;
             }
 
             &_title, &_categories {

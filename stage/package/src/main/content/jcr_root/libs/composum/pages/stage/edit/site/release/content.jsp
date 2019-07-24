@@ -4,7 +4,7 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <cpp:defineFrameObjects/>
 <cpp:model var="model" type="com.composum.pages.stage.model.edit.site.ReleaseModel"
-           cssBase="composum-pages-stage-edit-site-page-activated">
+           cssBase="composum-pages-stage-edit-site-release-changes">
     <div class="${modelCSS}_details panel panel-default">
         <div class="${modelCSS}_details-head panel-heading"><h4
                 class="panel-title">${cpn:i18n(slingRequest,'Release Details')}</h4></div>
@@ -23,21 +23,22 @@
             <table class="${modelCSS}_table table table-condensed">
                 <thead class="${modelCSS}_thead">
                 <tr>
-                    <th class="${modelCSS}_page-state"></th>
-                    <th class="${modelCSS}_page-path">${cpn:i18n(slingRequest,'Relative Path')}</th>
-                    <th class="${modelCSS}_page-title">${cpn:i18n(slingRequest,'Title')}</th>
-                    <th class="${modelCSS}_page-time">${cpn:i18n(slingRequest,'Modification Date')}</th>
+                    <th class="_page-state"></th>
+                    <th class="_page-path">${cpn:i18n(slingRequest,'Relative Path')}</th>
+                    <th class="_page-title">${cpn:i18n(slingRequest,'Title')}</th>
+                    <th class="_page-time">${cpn:i18n(slingRequest,'Modification Date')}</th>
                 </tr>
                 </thead>
                 <tbody class="${modelCSS}_tbody">
                 <c:forEach items="${model.release.changes}" var="pageVersion">
-                    <tr>
-                        <td class="${modelCSS}_page-state release-status_${pageVersion.releaseStatus.activationState}">${cpn:text(pageVersion.releaseStatus.activationState)}</td>
-                        <td class="${modelCSS}_page-path"><a href="${pageVersion.url}"
-                                                             target="_blank">${cpn:path(pageVersion.path)}</a>
+                    <tr class="release-status_${pageVersion.releaseStatus.activationState}">
+                        <td class="_page-state"
+                            title="${cpn:i18n(slingRequest,pageVersion.releaseStatus.activationState)}"></td>
+                        <td class="_page-path"><a href="${pageVersion.url}"
+                                                  target="_blank">${cpn:path(pageVersion.path)}</a>
                         </td>
-                        <td class="${modelCSS}_page-title">${cpn:text(pageVersion.title)}</td>
-                        <td class="${modelCSS}_page-time">${cpn:text(pageVersion.releaseStatus.lastModified)}</td>
+                        <td class="_page-title">${cpn:text(pageVersion.title)}</td>
+                        <td class="_page-time">${cpn:text(pageVersion.releaseStatus.lastModified)}</td>
                     </tr>
                 </c:forEach>
                 </tbody>

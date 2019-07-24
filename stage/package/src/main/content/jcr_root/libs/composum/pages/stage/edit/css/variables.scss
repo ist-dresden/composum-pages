@@ -44,13 +44,16 @@ $dnd-drop-zone-min-size: 30px;
 $tabbed-widget-tab-height: 28px;
 
 $default-font-family: 'robotolight', sans-serif;
-$default-font-size: 17px;
-$hint-font-size: $default-font-size - 3;
+$default-font-size: 15px;
+$text-font-size: 14px;
+$tree-font-size: 16px;
+$title-font-size: 17px;
+$hint-font-size: $default-font-size - 2;
 
 $edit-label-font-family: $default-font-family;
 $edit-label-font-size: $default-font-size;
 $edit-mono-font-size: $default-font-size - 1;
-$edit-hint-font-size: $default-font-size - 4;
+$edit-hint-font-size: $default-font-size - 2;
 $edit-hint-color: #888;
 
 $edit-tools-layer: 2995;
@@ -117,7 +120,7 @@ $sidebar-handle-font-size: $edit-actions-icon-font-size;
 $sidebar-mode-icon-height: 24px;
 $sidebar-mode-font-size: $default-font-size;
 
-$dialog-default-font-size: $default-font-size - 2;
+$dialog-default-font-size: $default-font-size;
 $dialog-label-font-size: $dialog-default-font-size;
 $dialog-input-font-size: $dialog-default-font-size;
 

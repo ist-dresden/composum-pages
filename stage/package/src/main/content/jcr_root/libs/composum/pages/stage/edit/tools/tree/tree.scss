@@ -31,7 +31,7 @@ $frame-tree-dnd-border: 1px dashed rgba(255, 255, 255, 0.7);
         &-icon {
             color: $frame-tree-fg-color;
             text-decoration: none;
-            font-size: $default-font-size;
+            font-size: $tree-font-size;
         }
 
         &-icon {
@@ -40,7 +40,7 @@ $frame-tree-dnd-border: 1px dashed rgba(255, 255, 255, 0.7);
 
         &-node,
         &-node > .jstree-anchor {
-            @include default-font;
+            @include tree-font;
         }
 
         &-node.intermediate,
@@ -83,17 +83,12 @@ $frame-tree-dnd-border: 1px dashed rgba(255, 255, 255, 0.7);
         }
 
         &-wholerow {
-            height: 23px;
             margin-top: 2px; /* important gap for */
             margin-bottom: 2px; /* DnD reordering */
         }
 
         &-ocl {
             margin: 1px 0;
-        }
-
-        &-anchor {
-            margin: 2px 0 3px;
         }
 
         &-themeicon {

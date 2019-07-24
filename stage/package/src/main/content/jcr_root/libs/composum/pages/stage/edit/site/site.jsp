@@ -4,7 +4,8 @@
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <cpp:defineObjects/>
 <html data-context-path="${slingRequest.contextPath}">
-<cpp:model var="model" type="com.composum.pages.stage.model.edit.site.SiteModel">
+<cpp:model var="model" type="com.composum.pages.stage.model.edit.site.SiteModel"
+           cssBase="composum-pages-stage-edit-site">
     <head>
         <title>"${cpn:text(model.site.title)}"</title>
         <sling:call script="head.jsp"/>
