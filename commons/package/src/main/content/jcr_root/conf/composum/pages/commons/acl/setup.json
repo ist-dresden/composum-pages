@@ -1,11 +1,33 @@
 [
   {
     "path": "/public",
-    "jcr:primaryType": "sling:Folder"
+    "jcr:primaryType": "sling:Folder",
+    "acl": [
+      {
+        "principal": "composum-pages-service",
+        "acl": [
+          {
+            "allow": true,
+            "privileges": "jcr:all"
+          }
+        ]
+      }
+    ]
   },
   {
     "path": "/preview",
-    "jcr:primaryType": "sling:Folder"
+    "jcr:primaryType": "sling:Folder",
+    "acl": [
+      {
+        "principal": "composum-pages-service",
+        "acl": [
+          {
+            "allow": true,
+            "privileges": "jcr:all"
+          }
+        ]
+      }
+    ]
   },
   {
     "path": "/content",
@@ -16,7 +38,7 @@
         "acl": [
           {
             "allow": true,
-            "privileges": "jcr:read"
+            "privileges": "jcr:all"
           }
         ]
       }
