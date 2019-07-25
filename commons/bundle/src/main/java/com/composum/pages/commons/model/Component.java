@@ -263,10 +263,6 @@ public class Component extends AbstractModel {
         return type;
     }
 
-    public String getQuickHelp() {
-        return getDescription();
-    }
-
     public String getHelpContent() {
         if (helpContent == null) {
             Resource helpRes = getResource().getChild(EDIT_HELP_PATH);

@@ -9,5 +9,6 @@
     <div class="${elementCssBase}_title">${cpn:i18n(slingRequest,element.title)}</div>
     <cpn:text value="${element.name}" format="{Message}({0})" class="${elementCssBase}_name"/>
     <cpn:text value="${element.component.typeHint}" class="${elementCssBase}_type"/>
-    <cpn:text value="${element.description}" class="${elementCssBase}_description"/>
+    <cpn:text value="${element.description}" class="${elementCssBase}_description"
+              title="${cpn:text(element.description)}"/>
 </cpp:model>

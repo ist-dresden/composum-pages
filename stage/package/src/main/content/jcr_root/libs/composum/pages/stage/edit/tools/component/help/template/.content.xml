@@ -16,7 +16,9 @@
                 jcr:primaryType="cpp:Container"
                 sling:resourceType="composum/pages/stage/edit/tools/component/help/parsys">
         </main>
-        <cpp:design jcr:primaryType="nt:unstructured">
+        <cpp:design
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="composum/pages/stage/edit/page/design">
             <main
                     jcr:primaryType="nt:unstructured"
                     typePatterns="[
