@@ -3,12 +3,11 @@
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <cpp:defineFrameObjects/>
 <cpp:editDialog var="model" type="com.composum.pages.commons.model.Component"
-                title="Edit Component Properties" languageContext="false">
+                title="Edit Component Properties">
     <div class="row" style="align-items: flex-start;">
         <div class="col col-xs-8">
-            <cpp:widget label="Title" property="jcr:title" type="textfield"/>
-            <cpp:widget label="Quick Help" property="quickHelp" type="textfield" hint="a tool tip text"/>
-            <cpp:widget label="Description" property="jcr:description" type="textarea"/>
+            <cpp:widget label="Title" property="jcr:title" type="textfield" i18n="true"/>
+            <cpp:widget label="Description" property="jcr:description" type="textarea" i18n="true"/>
             <cpp:widget label="Supertype" property="sling:resourceSuperType" type="textfield"/>
         </div>
         <div class="col col-xs-4">

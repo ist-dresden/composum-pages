@@ -2,7 +2,6 @@
 <jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
         jcr:primaryType="cpp:Component"
         jcr:description="a reference is including the content of another element (reuses content)"
-        quickHelp="a reference to a content element"
         jcr:title="Reference"
         category="[Special,Blueprint]"
         sling:resourceSuperType="composum/pages/components/element"/>

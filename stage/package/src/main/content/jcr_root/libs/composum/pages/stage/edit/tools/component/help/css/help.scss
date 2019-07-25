@@ -77,4 +77,42 @@ $help-text-title-margin: $tools-pane-padding*1.5 0 $tools-pane-padding;
         color: $tools-pane-foreground;
         @include default-font;
     }
+
+    &_meta {
+        text-align: right;
+        font-size: $hint-font-size;
+
+        .label {
+            padding: 0;
+        }
+
+        .value {
+        }
+    }
+
+    &_title, &_link {
+        clear: both;
+    }
+
+    &_title {
+        @include title-font;
+    }
+
+    &_link {
+        margin-bottom: 3px;
+        float: right;
+
+        &:last-child {
+            margin-bottom: $tools-pane-padding;
+        }
+
+        &, &:focus, &:visited, &:hover {
+            color: $tools-pane-foreground;
+            text-decoration: none;
+        }
+
+        &:hover {
+            color: $tools-pane-main-selection-color;
+        }
+    }
 }

@@ -123,6 +123,7 @@ public interface PagesConstants {
     String PROP_TEMPLATE_REF = "templateRef";
 
     String NODE_NAME_DESIGN = CPP_PREFIX + "design";
+    String PROP_DESIGN_REF = "designRef";
     String PROP_TYPE_PATTERNS = "typePatterns";
 
     String PROP_ALLOWED_PARENT_TEMPLATES = "allowedParentTemplates";

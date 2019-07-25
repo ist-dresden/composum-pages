@@ -9,6 +9,7 @@
             jcr:title="Pages Components Help Page"
             jcr:description="A page describing a component type."
             sling:resourceType="composum/pages/stage/edit/tools/component/help/page"
+            isTemplate="{Boolean}false"
             allowedParentTemplates="[]"
             allowedChildTemplates="[]">
         <main

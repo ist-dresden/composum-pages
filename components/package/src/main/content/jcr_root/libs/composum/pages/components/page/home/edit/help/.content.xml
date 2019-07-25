@@ -7,12 +7,9 @@
         <main jcr:primaryType="cpp:Container"
                 sling:resourceType="composum/pages/stage/edit/tools/component/help/parsys">
             <text_01 jcr:primaryType="cpp:Element"
-                    sling:resourceType="composum/pages/components/element/text"
-                    title="Homepage"
-                    text="">
+                    sling:resourceType="composum/pages/components/element/text">
                 <i18n jcr:primaryType="nt:unstructured">
-                    <de jcr:primaryType="nt:unstructured"
-                            text=""/>
+                    <de jcr:primaryType="nt:unstructured"/>
                 </i18n>
             </text_01>
         </main>

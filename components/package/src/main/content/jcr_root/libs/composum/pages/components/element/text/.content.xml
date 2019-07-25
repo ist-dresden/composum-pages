@@ -2,7 +2,6 @@
 <jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
         jcr:primaryType="cpp:Component"
         jcr:description="a rich text block with an optional title"
-        quickHelp="text element help"
         jcr:title="Text"
         category="[Text,General,Blueprint]"
         sling:resourceSuperType="composum/pages/components/element"/>

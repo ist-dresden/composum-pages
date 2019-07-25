@@ -114,7 +114,6 @@ public class Component extends AbstractModel {
     private transient String type;
     private transient List<String> category;
 
-    private transient String quickHelp;
     private transient String helpContent;
 
     /** delegate initialization */
@@ -247,6 +246,13 @@ public class Component extends AbstractModel {
 
     // component aspect of AbstractModel
 
+    @Nonnull
+    public String getTitleOrName() {
+        Component component = getComponent();
+        String title = component.getTitle();
+        return StringUtils.isNotBlank(title) ? title : component.getName();
+    }
+
     /** the type of a component is the the components resource path relative to the resolver root path */
     @Nonnull
     @Override
@@ -258,10 +264,7 @@ public class Component extends AbstractModel {
     }
 
     public String getQuickHelp() {
-        if (quickHelp == null) {
-            quickHelp = ResolverUtil.getTypeProperty(getResource(), "quickHelp", "");
-        }
-        return quickHelp;
+        return getDescription();
     }
 
     public String getHelpContent() {

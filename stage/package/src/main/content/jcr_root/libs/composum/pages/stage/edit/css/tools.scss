@@ -270,6 +270,7 @@
         position: absolute;
         top: $tools-pane-padding;
         left: $tools-pane-padding;
+        font-family: "FontAwesome", sans-serif;
 
         &.release-status {
 
@@ -926,12 +927,11 @@
         .composum-pages-stage-edit-sidebar & {
 
             &_help-context {
-                top: 0;
 
                 .composum-pages-tools {
 
                     &_panel {
-                        top: 44px;
+                        top: 5px;
                     }
                 }
             }

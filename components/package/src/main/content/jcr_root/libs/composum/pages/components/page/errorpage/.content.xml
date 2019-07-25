@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
         jcr:primaryType="cpp:Component"
-        jcr:description="a custom error page"
+        jcr:title="Error Page"
+        jcr:description="a custom error page in the sites context (navigation)"
         sling:resourceSuperType="composum/pages/components/page"/>

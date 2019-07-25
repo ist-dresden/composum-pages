@@ -6,8 +6,6 @@
         jcr:primaryType="cpp:Page">
     <jcr:content
             jcr:primaryType="cpp:PageContent"
-            jcr:description="&lt;p>a text only component has an optional title on top of the text and a rich text body which can contain a subset of HTML elements:&lt;/p>&lt;p>&lt;ul>&lt;li>simple lists&lt;/li>&lt;li>hyperlinks&lt;/li>&lt;/ul>&lt;/p>&lt;p>the formatting options are&lt;/p>&lt;p>&lt;ul>&lt;li>bold&lt;/li>&lt;li>italic&lt;/li>&lt;li>underline&lt;/li>&lt;li>strike though&lt;/li>&lt;li>code&lt;/li>&lt;li>superscript&lt;/li>&lt;li>subscript&lt;/li>&lt;/ul>&lt;/p>"
-            jcr:title="Text"
             sling:resourceType="composum/pages/stage/edit/tools/component/help/page"
             template="/libs/composum/pages/stage/edit/tools/component/help/template">
         <main
@@ -16,11 +14,7 @@
             <text_01
                     jcr:primaryType="cpp:Element"
                     sling:resourceType="composum/pages/components/element/text"
-                    text="&lt;p>a text only component has an optional title on top of the text and a rich text body which can contain a subset of HTML elements:&lt;/p>&lt;p>&lt;/p>&lt;ul>&lt;li>simple lists&lt;/li>&lt;li>hyperlinks&lt;/li>&lt;/ul>&lt;p>the formatting options are&lt;/p>&lt;p>&lt;/p>&lt;ul>&lt;li>bold&lt;/li>&lt;li>italic&lt;/li>&lt;li>underline&lt;/li>&lt;li>strike though&lt;/li>&lt;li>code&lt;/li>&lt;li>superscript&lt;/li>&lt;li>subscript&lt;/li>&lt;/ul>&lt;p>&lt;/p>&lt;p>&lt;/p>"
-                    textAlignment="left"
-                    title="Text"/>
+                    text="&lt;p>a text only component has an optional title on top of the text and a rich text body which can contain a subset of HTML elements:&lt;/p>&lt;p>&lt;/p>&lt;ul>&lt;li>simple lists&lt;/li>&lt;li>hyperlinks&lt;/li>&lt;/ul>&lt;p>the formatting options are&lt;/p>&lt;p>&lt;/p>&lt;ul>&lt;li>bold&lt;/li>&lt;li>italic&lt;/li>&lt;li>underline&lt;/li>&lt;li>strike though&lt;/li>&lt;li>code&lt;/li>&lt;li>superscript&lt;/li>&lt;li>subscript&lt;/li>&lt;/ul>&lt;p>&lt;/p>&lt;p>&lt;/p>"/>
         </main>
-        <navigation
-                jcr:primaryType="nt:unstructured"/>
     </jcr:content>
 </jcr:root>

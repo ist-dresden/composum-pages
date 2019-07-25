@@ -8,7 +8,6 @@
                 sling:resourceType="composum/pages/stage/edit/tools/component/help/parsys">
             <text_01 jcr:primaryType="cpp:Element"
                     sling:resourceType="composum/pages/components/element/text"
-                    title="Teaser"
                     text="a 'Teaser' is a quick view to a link target to animate a visitor to follow the link">
                 <i18n jcr:primaryType="nt:unstructured">
                     <de jcr:primaryType="nt:unstructured"

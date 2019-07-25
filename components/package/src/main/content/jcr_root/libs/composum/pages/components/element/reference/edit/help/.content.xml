@@ -8,7 +8,6 @@
                 sling:resourceType="composum/pages/stage/edit/tools/component/help/parsys">
             <text_01 jcr:primaryType="cpp:Element"
                     sling:resourceType="composum/pages/components/element/text"
-                    title="Reference"
                     text="a reference points to another content path in the repository and embeds the content of that path as the content of the reference element">
                 <i18n jcr:primaryType="nt:unstructured">
                     <de jcr:primaryType="nt:unstructured"
