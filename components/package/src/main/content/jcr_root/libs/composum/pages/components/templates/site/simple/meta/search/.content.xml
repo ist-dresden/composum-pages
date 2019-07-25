@@ -6,7 +6,8 @@
     <jcr:content
             jcr:primaryType="cpp:PageContent"
             sling:resourceType="composum/pages/components/page"
-            template="/libs/composum/pages/components/templates/page/content">
+            template="/libs/composum/pages/components/templates/page/content"
+            isTemplate="{Boolean}false">
         <top
                 jcr:primaryType="cpp:Container">
             <title

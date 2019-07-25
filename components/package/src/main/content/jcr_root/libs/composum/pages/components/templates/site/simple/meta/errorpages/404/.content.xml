@@ -7,7 +7,8 @@
     <jcr:content
             jcr:primaryType="cpp:PageContent"
             sling:resourceType="composum/pages/components/page/errorpage"
-            template="/libs/composum/pages/components/templates/page/meta/errorpage">
+            template="/libs/composum/pages/components/templates/page/meta/errorpage"
+            isTemplate="{Boolean}false">
         <top
                 jcr:primaryType="cpp:Container">
             <title

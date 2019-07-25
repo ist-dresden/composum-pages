@@ -8,7 +8,8 @@
             jcr:primaryType="cpp:PageContent"
             sling:resourceType="composum/pages/components/page/subsite/root"
             sling:target="${site}/home/about/home"
-            template="/libs/composum/pages/components/templates/page/subsite/root">
+            template="/libs/composum/pages/components/templates/page/subsite/root"
+            isTemplate="{Boolean}false">
         <logo
                 jcr:primaryType="cpp:Element"
                 sling:resourceType="composum/pages/components/element/image"

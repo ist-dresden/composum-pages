@@ -7,5 +7,6 @@
             jcr:primaryType="cpp:PageContent"
             sling:resourceType="composum/pages/components/page/redirect"
             sling:target="${site}/home/content"
-            template="/libs/composum/pages/components/templates/page/redirect"/>
+            template="/libs/composum/pages/components/templates/page/redirect"
+            isTemplate="{Boolean}false"/>
 </jcr:root>

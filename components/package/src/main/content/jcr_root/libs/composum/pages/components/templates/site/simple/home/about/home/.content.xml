@@ -6,7 +6,8 @@
         jcr:primaryType="cpp:Page">
     <jcr:content
             jcr:primaryType="cpp:PageContent"
-            sling:resourceType="composum/pages/components/page/subsite">
+            sling:resourceType="composum/pages/components/page/subsite"
+            isTemplate="{Boolean}false">
         <top
                 jcr:primaryType="cpp:Container"
                 sling:resourceType="composum/pages/components/container/parsys">

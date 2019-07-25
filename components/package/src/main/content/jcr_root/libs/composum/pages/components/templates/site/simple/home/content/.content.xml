@@ -4,7 +4,8 @@
         jcr:primaryType="cpp:Page">
     <jcr:content
             jcr:primaryType="cpp:PageContent"
-            templateRef="/libs/composum/pages/components/templates/page/content"/>
+            templateRef="/libs/composum/pages/components/templates/page/content"
+            isTemplate="{Boolean}false"/>
     <overview/>
     <page/>
 </jcr:root>
