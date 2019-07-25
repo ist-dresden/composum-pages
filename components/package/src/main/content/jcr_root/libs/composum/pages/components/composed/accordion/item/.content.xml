@@ -5,7 +5,4 @@
         jcr:title="Accordion Item"
         category="[Layout,Blueprint]"
         sling:resourceSuperType="composum/pages/components/container/parsys"
-        allowedContainers="[composum/pages/components/composed/accordion]"
-        allowedElements="[composum/pages/components/element/.*,
-                          composum/pages/components/composed/.*,
-                          .*/pages/components/demo/.*]"/>
+        allowedContainers="[composum/pages/components/composed/accordion]"/>

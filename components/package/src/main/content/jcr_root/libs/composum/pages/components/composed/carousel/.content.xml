@@ -4,5 +4,4 @@
         jcr:description="a rotating set of elements"
         jcr:title="Carousel"
         category="[Teaser,Blueprint]"
-        sling:resourceSuperType="composum/pages/components/composed"
-        allowedElements="[composum/pages/components/element/teaser]"/>
+        sling:resourceSuperType="composum/pages/components/composed"/>

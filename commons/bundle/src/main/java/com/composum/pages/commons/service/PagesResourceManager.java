@@ -72,6 +72,7 @@ import java.util.regex.Pattern;
 
 import static com.composum.pages.commons.PagesConstants.META_NODE_NAME;
 import static com.composum.pages.commons.PagesConstants.NODE_NAME_DESIGN;
+import static com.composum.pages.commons.PagesConstants.PROP_DESIGN_REF;
 import static com.composum.pages.commons.PagesConstants.PROP_TEMPLATE;
 import static com.composum.pages.commons.PagesConstants.PROP_TEMPLATE_REF;
 import static com.composum.pages.commons.PagesConstants.PROP_TYPE_PATTERNS;
@@ -273,18 +274,20 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
                 if (contentChild != null) {
                     Resource templateChild = templateNode.getChild(path[0]);
                     if (templateChild != null) {
-                        design = findDesign(templateChild, contentChild, path.length > 1 ? path[1] : "", elementType, weight * 10);
+                        design = findDesign(templateChild, contentChild,
+                                path.length > 1 ? path[1] : "", elementType, weight * 10);
                         if (design == null) {
-                            Resource designNode = templateNode.getChild(NODE_NAME_DESIGN);
+                            Resource designNode = getDesignNode(templateNode);
                             if (designNode != null) {
-                                design = findInDesign(designNode, contentChild, path.length > 1 ? path[1] : "", elementType, weight + 5);
+                                design = findInDesign(designNode,
+                                        contentChild, path.length > 1 ? path[1] : "", elementType, weight + 5);
                             }
                         }
                     }
                 }
             }
             if (design == null) {
-                Resource designNode = templateNode.getChild(NODE_NAME_DESIGN);
+                Resource designNode = getDesignNode(templateNode);
                 if (designNode != null) {
                     design = findInDesign(designNode, contentNode, relativePath, elementType, weight);
                 }
@@ -328,7 +331,7 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
                 }
             }
             if (design == null) {
-                design = findBestInDesign(templateNode, contentNode, relativePath, elementType, weight, design, contentNode);
+                design = findBestInDesign(templateNode, contentNode, relativePath, elementType, weight, null, contentNode);
             }
             if (design == null && StringUtils.isBlank(relativePath)) {
                 if (isMatchingType(templateNode, contentNode.getResourceType())) {
@@ -341,6 +344,7 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
             return design;
         }
 
+        @Nullable
         protected DesignImpl findBestInDesign(@Nonnull final Resource templateNode, @Nonnull final Resource contentNode,
                                               @Nonnull final String relativePath, @Nullable final String elementType, int weight,
                                               @Nullable DesignImpl design, @Nonnull final Resource contentChild) {
@@ -355,6 +359,32 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
                 }
             }
             return design;
+        }
+
+        @Nullable
+        protected Resource getDesignNode(@Nonnull final Resource templateNode) {
+            Resource designNode = templateNode.getChild(NODE_NAME_DESIGN);
+            if (designNode != null) {
+                String designRef = designNode.getValueMap().get(PROP_DESIGN_REF, "");
+                if (StringUtils.isNotBlank(designRef)) {
+                    ResourceResolver resolver = designNode.getResourceResolver();
+                    if (designRef.startsWith("/")) {
+                        Resource referenced = resolver.getResource(designRef);
+                        if (referenced != null) {
+                            designNode = referenced;
+                        }
+                    } else {
+                        for (String root : resolver.getSearchPath()) {
+                            Resource referenced = resolver.getResource(root + designRef);
+                            if (referenced != null) {
+                                designNode = referenced;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            return designNode;
         }
 
         /**
