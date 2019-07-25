@@ -86,12 +86,12 @@
                 return this.$content.find('.' + tools.const.panelClass + '.' + key);
             },
 
-            activateTab: function (shortKey) {
+            activateTab: function (shortKey, onlyIfKnown) {
                 var c = tools.const.css.tabs;
-                this.selectTab(undefined, c.base + c._tab + '_' + shortKey);
+                return this.selectTab(undefined, c.base + c._tab + '_' + shortKey, onlyIfKnown);
             },
 
-            selectTab: function (event, key) {
+            selectTab: function (event, key, onlyIfKnown) {
                 if (!this.locked) {
                     var $handle = undefined;
                     if (!key) {
@@ -102,28 +102,32 @@
                     } else {
                         $handle = this.$tabs.find('[data-tab="' + key + '"]');
                     }
-                    if (!$handle || $handle.length < 1) {
+                    if ((!$handle || $handle.length < 1) && !onlyIfKnown) {
                         $handle = $(this.$handles[0]);
                         key = $handle.data('tab');
                     }
-                    if (this.currentKey !== key) {
-                        if (this.currentKey) {
-                            var $prevPanel = this.getTabPanel(this.currentKey);
-                            var $prevHandle = this.$tabs.find('[data-tab="' + this.currentKey + '"]');
-                            this.beforeHideTab(this.currentKey);
-                            $prevHandle.removeClass('active');
-                            $prevPanel.removeClass('active');
+                    if ($handle && $handle.length > 0) {
+                        if (this.currentKey !== key) {
+                            if (this.currentKey) {
+                                var $prevPanel = this.getTabPanel(this.currentKey);
+                                var $prevHandle = this.$tabs.find('[data-tab="' + this.currentKey + '"]');
+                                this.beforeHideTab(this.currentKey);
+                                $prevHandle.removeClass('active');
+                                $prevPanel.removeClass('active');
+                            }
+                            this.currentKey = key;
+                            if (this.currentKey) {
+                                var $nextPanel = this.getTabPanel(this.currentKey);
+                                $nextPanel.addClass('active');
+                                $handle.addClass('active');
+                                this.stackHandles();
+                                this.keyChanged(key, $nextPanel);
+                            }
                         }
-                        this.currentKey = key;
-                        if (this.currentKey) {
-                            var $nextPanel = this.getTabPanel(this.currentKey);
-                            $nextPanel.addClass('active');
-                            $handle.addClass('active');
-                            this.stackHandles();
-                            this.keyChanged(key, $nextPanel);
-                        }
+                        return true;
                     }
                 }
+                return false;
             },
 
             beforeHideTab: function (key) {
@@ -155,6 +159,7 @@
                 tools.TabPanel.prototype.initialize.apply(this, [options]);
                 var e = pages.const.event;
                 $(document).on(e.path.select + '.Navigation', _.bind(this.selectPath, this));
+                $(document).on(e.pages.open + '.Navigation', _.bind(this.onOpen, this));
                 $(document).on(e.pages.ready + '.Navigation', _.bind(this.ready, this));
             },
 
@@ -179,9 +184,26 @@
                 pages.profile.set('tabs.' + pages.current.mode, 'navigation', key)
             },
 
+            onOpen: function (event, key, pathOrRef) {
+                if (key) {
+                    var path = pathOrRef && pathOrRef.path ? pathOrRef.path : pathOrRef;
+                    if (path) {
+                        if (this.activateTab(key, true)) {
+                            this.selectPath(event, path);
+                        }
+                    }
+                }
+            },
+
             selectPath: function (event, path, name, type) {
                 if (!type) {
-
+                    var ref = new pages.Reference(name, path, type);
+                    ref.complete(_.bind(function (ref) {
+                        if (ref && ref.path && ref.type) {
+                            this.selectPath(event, ref.path, ref.name, ref.type);
+                        }
+                    }, this));
+                    return;
                 }
                 if (path && type) {
                     pages.log.debug('tools.Navigation.selectPath(' + path + ')');

@@ -12,12 +12,12 @@
                 <div class="value">${cpn:text(model.component.path)}</div>
             </cpn:link>
             <cpn:link class="${modelCSS}_template ${modelCSS}_link" href="#"
-                      data-path="${model.component.path}" title="${cpn:text(model.templatePath)}">
+                      data-path="${model.templatePath}" title="${cpn:text(model.templatePath)}">
                 <div class="label">${cpn:i18n(slingRequest,'Template')}</div>
                 <div class="value">${cpn:text(model.templatePath)}</div>
             </cpn:link>
             <cpn:link class="${modelCSS}_design ${modelCSS}_link" href="#"
-                      data-path="${model.component.path}" title="${cpn:text(model.designPath)}">
+                      data-path="${model.designPath}" title="${cpn:text(model.designPath)}">
                 <div class="label">${cpn:i18n(slingRequest,'Design')}</div>
                 <div class="value">${cpn:text(model.designPath)}</div>
             </cpn:link>

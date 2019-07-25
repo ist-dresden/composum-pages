@@ -46,7 +46,8 @@
                 messagePattern: new RegExp('^([^{\\[]+)([{\\[].*[}\\]])$'),
                 pages: {
                     ready: 'pages:ready',
-                    locale: 'pages:locale'
+                    locale: 'pages:locale',
+                    open: 'pages:open'
                 },
                 scope: {
                     changed: 'scope:changed'

@@ -11,5 +11,6 @@
             jslibs/chartist/0.11.0/chartist.js,
             composum/pages/stage/edit/tools/page/statistics/js/statistics.js,
             composum/pages/stage/edit/tools/container/elements/js/elements.js,
-            composum/pages/stage/edit/tools/component/edit/js/edit.js
+            composum/pages/stage/edit/tools/component/edit/js/edit.js,
+            composum/pages/stage/edit/tools/component/help/js/help-context.js
         ]"/>

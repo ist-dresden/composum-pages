@@ -46,7 +46,9 @@
             event: {
                 messagePattern: new RegExp('^([^{\\[]+)([{\\[].*[}\\]])$'),
                 pages: {
-                    ready: 'pages:ready'
+                    ready: 'pages:ready',
+                    locale: 'pages:locale',
+                    open: 'pages:open'
                 },
                 scope: {
                     changed: 'scope:changed'
