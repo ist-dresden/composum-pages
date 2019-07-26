@@ -18,7 +18,7 @@
                         tagName="span" class="composum-pages-tools_button-label"
                         i18n="true">Search</cpn:text></button>
             </div>
-            <div class="composum-pages-tools_button-group btn-group btn-group-sm browse-hidden" role="group">
+            <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
                 <c:if test="${tree.editMode}">
                     <button type="button" title="${cpn:i18n(slingRequest,'Filter')}" data-toggle="dropdown"
                             aria-haspopup="true" aria-expanded="false"

@@ -16,6 +16,38 @@
         <main
                 jcr:primaryType="cpp:Container"
                 sling:resourceType="composum/pages/components/container/parsys">
+            <cpp:design
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="composum/pages/stage/edit/page/design"
+                    typePatterns="[
+                        ^(/[^/]+/)?composum/pages/components/container/(parsys|iparsys|section)$
+                    ]"
+                    allowedElements="[
+                        ^(/[^/]+/)?composum/pages/components/(container)/.*$,
+                        ^(/[^/]+/)?composum/pages/components/(element|composed|search)/.*$
+                    ]">
+                <column
+                        jcr:primaryType="nt:unstructured"
+                        typePatterns="[
+                            ^(/[^/]+/)?composum/pages/components/container/row/column$
+                        ]"
+                        allowedElements="[
+                            ^(/[^/]+/)?composum/pages/components/(element|composed|search)/.*$
+                        ]">
+                </column>
+            </cpp:design>
         </main>
+        <cpp:design
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="composum/pages/stage/edit/page/design">
+            <container
+                    jcr:primaryType="nt:unstructured"
+                    typePatterns="[
+                        ^(/[^/]+/)?composum/pages/components/container/.*$
+                    ]"
+                    allowedElements="[
+                        ^(/[^/]+/)?composum/pages/components/(element|composed|search)/.*$
+                    ]"/>
+        </cpp:design>
     </jcr:content>
 </jcr:root>

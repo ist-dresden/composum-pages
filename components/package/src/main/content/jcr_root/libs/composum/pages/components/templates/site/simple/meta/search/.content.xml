@@ -16,7 +16,7 @@
                     title="Search">
                 <image
                         jcr:primaryType="cpp:Element"
-                        imageRef="/content/shared/composum/pages/assets/background/apres_midi_dun_faune.jpg"/>
+                        imageRef="/content/shared/composum/pages/components/assets/background/apres_midi_dun_faune.jpg"/>
             </title>
         </top>
         <main
