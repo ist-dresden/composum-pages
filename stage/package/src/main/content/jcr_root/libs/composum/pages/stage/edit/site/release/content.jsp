@@ -35,7 +35,7 @@
                         <td class="_page-state"
                             title="${cpn:i18n(slingRequest,pageVersion.releaseStatus.activationState)}"></td>
                         <td class="_page-path"><a href="${pageVersion.url}"
-                                                  target="_blank">${cpn:path(pageVersion.path)}</a>
+                                                  target="_blank">${cpn:path(pageVersion.siteRelativePath)}</a>
                         </td>
                         <td class="_page-title">${cpn:text(pageVersion.title)}</td>
                         <td class="_page-time">${cpn:text(pageVersion.releaseStatus.lastModified)}</td>

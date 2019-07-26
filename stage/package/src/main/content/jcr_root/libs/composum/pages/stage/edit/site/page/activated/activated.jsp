@@ -36,7 +36,7 @@
                     </thead>
                     <tbody class="${siteCSS}_tbody">
                     <c:forEach items="${site.releaseChanges}" var="pageVersion">
-                        <tr class="release-status_${pageVersion.releaseStatus.activationState}">
+                        <tr class="release-status_${pageVersion.pageActivationState}">
                             <td class="_input _page-state"
                                 title="${cpn:i18n(slingRequest,pageVersion.releaseStatus.activationState)}"><c:if
                                     test="${site.editMode}"><input type="checkbox"
@@ -44,7 +44,8 @@
                                                                    data-path="${pageVersion.path}"></c:if>
                             </td>
                             <td class="_page-path"><a
-                                    href="${pageVersion.url}" target="_blank">${cpn:path(pageVersion.path)}</a></td>
+                                    href="${pageVersion.url}"
+                                    target="_blank">${cpn:path(pageVersion.siteRelativePath)}</a></td>
                             <td class="_page-title">${cpn:text(pageVersion.title)}</td>
                             <td class="_page-time">${cpn:text(pageVersion.lastModifiedString)}</td>
                         </tr>

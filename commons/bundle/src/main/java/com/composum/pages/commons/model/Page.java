@@ -20,6 +20,8 @@ import com.composum.sling.core.util.ResourceUtil;
 import com.composum.sling.core.util.SlingResourceUtil;
 import com.composum.sling.platform.security.AccessMode;
 import com.composum.sling.platform.staging.versions.PlatformVersionsService;
+import com.composum.sling.platform.staging.versions.PlatformVersionsService.ActivationState;
+import com.composum.sling.platform.staging.versions.PlatformVersionsService.Status;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.apache.sling.api.SlingHttpServletRequest;
@@ -263,9 +265,9 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
 
     public String getSiteRelativePath() {
         final Site containingSite = getSite();
-        final String sitePath = containingSite.getPath();
+        final String siteRoot = containingSite.getPath() + "/";
         final String path = getPath();
-        return path.replace(sitePath, ".");
+        return path.startsWith(siteRoot) ? "./" + path.substring(siteRoot.length()) : path;
     }
 
     public boolean isTemplate() {
@@ -547,16 +549,38 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
         return getContent().isCheckedOut();
     }
 
-    /** Pages-Adapter around {@link PlatformVersionsService.Status}. */
+    /**
+     * @return 'modified' if the page is modified after last activation in th current release
+     */
+    public PlatformVersionsService.ActivationState getPageActivationState() {
+        PlatformVersionsService.ActivationState status = null;
+        Page.StatusModel state = getReleaseStatus();
+        Calendar lastModified = getContent().getLastModified();
+        if (lastModified != null) {
+            Calendar lastActivated = state.getLastActivatedTime();
+            if (lastActivated != null && lastActivated.before(lastModified)) {
+                status = ActivationState.modified;
+            }
+        }
+        if (status == null) {
+            status = state.getActivationState();
+            if (status == ActivationState.modified) {
+                status = ActivationState.activated;
+            }
+        }
+        return status;
+    }
+
+    /** Pages-Adapter around {@link Status}. */
     public static class StatusModel {
 
-        protected final PlatformVersionsService.Status releaseStatus;
+        protected final Status releaseStatus;
 
-        public StatusModel(PlatformVersionsService.Status status) {
+        public StatusModel(Status status) {
             releaseStatus = status;
         }
 
-        public PlatformVersionsService.ActivationState getActivationState() {
+        public ActivationState getActivationState() {
             return releaseStatus.getActivationState();
         }
 
@@ -575,8 +599,12 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
             return matcher.matches() ? matcher.group(1) : label;
         }
 
+        public Calendar getLastActivatedTime() {
+            return releaseStatus.getActivationInfo() != null ? releaseStatus.getActivationInfo().getLastActivated() : null;
+        }
+
         public String getLastActivated() {
-            Calendar calendar = releaseStatus.getActivationInfo() != null ? releaseStatus.getActivationInfo().getLastActivated() : null;
+            Calendar calendar = getLastActivatedTime();
             return calendar != null ? new SimpleDateFormat(VERSION_DATE_FORMAT).format(calendar.getTime()) : "";
         }
 
@@ -597,7 +625,7 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
     public StatusModel getReleaseStatus() {
         if (releaseStatus == null) {
             try {
-                PlatformVersionsService.Status status = getPlatformVersionsService().getStatus(getResource(), null);
+                Status status = getPlatformVersionsService().getStatus(getResource(), null);
                 if (status == null) { // rare strange case - needs to be investigated.
                     LOG.warn("No release status for {}", SlingResourceUtil.getPath(getResource()));
                 }

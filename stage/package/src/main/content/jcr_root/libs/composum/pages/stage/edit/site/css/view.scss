@@ -123,6 +123,13 @@
                     text-align: center;
                     vertical-align: top;
                 }
+            }
+        }
+
+        &-page-modified,
+        &-page-activated {
+
+            &_thead, &_tbody {
 
                 .release-status {
 
@@ -151,6 +158,58 @@
 
                         ._page-state {
                             background-color: $release-status-deactivated;
+                        }
+                    }
+                }
+            }
+        }
+
+        &-release-changes {
+
+            &_thead, &_tbody {
+
+                ._page-state {
+
+                    &:after {
+                        display: inline-block;
+                        padding: 5px;
+                        font-family: 'FontAwesome', sans-serif;
+                        color: #fff;
+                    }
+                }
+
+                .release-status {
+
+                    &_initial, &_activated {
+
+                        ._page-state {
+                            background-color: $release-status-activated;
+
+                            &:after {
+                                content: '\f069';
+                            }
+                        }
+                    }
+
+                    &_modified {
+
+                        ._page-state {
+                            background-color: $release-status-changed;
+
+                            &:after {
+                                content: '\f040';
+                            }
+                        }
+                    }
+
+                    &_deactivated {
+
+                        ._page-state {
+                            background-color: $release-status-deactivated;
+
+                            &:after {
+                                content: '\f1f8';
+                            }
                         }
                     }
                 }
