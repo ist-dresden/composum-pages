@@ -1,5 +1,6 @@
 package com.composum.pages.commons.filter;
 
+import com.composum.pages.commons.PagesConstants;
 import com.composum.pages.commons.model.Container;
 import com.composum.pages.commons.model.ElementTypeFilter;
 import com.composum.pages.commons.service.ResourceManager;
@@ -23,8 +24,11 @@ public class ElementFilter extends ResourceFilter.AbstractResourceFilter {
     }
 
     @Override
-    public boolean accept(@Nonnull final Resource resource) {
-        return !resource.getName().startsWith("_") // assuming that '_' elements are static included
+    public boolean accept(final Resource resource) {
+        PagesConstants.ComponentType type;
+        return resource != null && !resource.getName().startsWith("_") // assuming that '_' elements are static included
+                && ((type = PagesConstants.ComponentType.typeOf(resource.getResourceResolver(), resource, null))
+                == PagesConstants.ComponentType.element || type == PagesConstants.ComponentType.container)
                 && typeFilter.isAllowedElement(resourceManager.getReference(resource, null));
     }
 

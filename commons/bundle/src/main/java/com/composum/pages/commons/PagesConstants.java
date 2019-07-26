@@ -17,6 +17,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.regex.Pattern;
 
 public interface PagesConstants {
@@ -186,7 +188,7 @@ public interface PagesConstants {
 
         site, page, container, element, something;
 
-        public static ComponentType typeOf(String string) {
+        public static ComponentType typeOf( @Nullable String string) {
             ComponentType type = something;
             if (StringUtils.isNotBlank(string)) {
                 if (string.startsWith(CPP_PREFIX)) {
@@ -201,7 +203,8 @@ public interface PagesConstants {
             return type;
         }
 
-        public static ComponentType typeOf(ResourceResolver resolver, Resource resource, String typeHint) {
+        public static ComponentType typeOf(@Nonnull final ResourceResolver resolver,
+                                           @Nullable final Resource resource, @Nullable final String typeHint) {
             if (Site.isSite(resource)) {
                 return site;
             } else if (Page.isPage(resource) || Page.isPageContent(resource)) {
@@ -217,7 +220,7 @@ public interface PagesConstants {
             }
         }
 
-        public static String getPrimaryType(ComponentType type) {
+        public static String getPrimaryType(@Nullable final ComponentType type) {
             if (type != null) {
                 switch (type) {
                     case site:

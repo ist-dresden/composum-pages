@@ -6,6 +6,7 @@
 package com.composum.pages.commons.service;
 
 import com.composum.pages.commons.PagesConstants;
+import com.composum.pages.commons.PagesConstants.ComponentType;
 import com.composum.pages.commons.model.ElementTypeFilter;
 import com.composum.pages.commons.util.ResolverUtil;
 import com.composum.sling.core.BeanContext;
@@ -134,8 +135,8 @@ public class PagesEditService implements EditService {
         List<String> allowedTypes = new ArrayList<>();
         QueryBuilder queryBuilder = resolver.adaptTo(QueryBuilder.class);
         if (queryBuilder != null) {
-            for (String path : resolver.getSearchPath()) {
-                Query query = queryBuilder.createQuery().path(path).type(NT_COMPONENT);
+            for (String root : resolver.getSearchPath()) {
+                Query query = queryBuilder.createQuery().path(root).type(NT_COMPONENT);
                 QueryConditionDsl.QueryCondition condition = null;
                 if (scope != null) {
                     condition = scope.queryCondition(query.conditionBuilder());
@@ -145,13 +146,16 @@ public class PagesEditService implements EditService {
                 }
                 try {
                     for (Resource component : query.execute()) {
-                        String type = component.getPath().substring(path.length());
-                        if (!allowedTypes.contains(type) && filter.isAllowedType(type)) {
-                            allowedTypes.add(resourceTypePath ? path + type : type);
+                        ComponentType componentType = ComponentType.typeOf(resolver, component, null);
+                        if (componentType == ComponentType.element || componentType == ComponentType.container) {
+                            String resourceType = component.getPath().substring(root.length());
+                            if (!allowedTypes.contains(resourceType) && filter.isAllowedType(resourceType)) {
+                                allowedTypes.add(resourceTypePath ? root + resourceType : resourceType);
+                            }
                         }
                     }
                 } catch (SlingException ex) {
-                    LOG.error("On path {} : {}", path, ex.toString(), ex);
+                    LOG.error("On path {} : {}", root, ex.toString(), ex);
                 }
             }
         }
@@ -210,8 +214,8 @@ public class PagesEditService implements EditService {
         String newName = checkNameCollision(collection, name);
 
         // determine the primary type for the designated resource type
-        PagesConstants.ComponentType componentType = PagesConstants.ComponentType.typeOf(resolver, null, resourceType);
-        String primaryType = PagesConstants.ComponentType.getPrimaryType(componentType);
+        ComponentType componentType = ComponentType.typeOf(resolver, null, resourceType);
+        String primaryType = ComponentType.getPrimaryType(componentType);
 
         Map<String, Object> properties = new HashMap<>();
         properties.put(JcrConstants.JCR_PRIMARYTYPE, primaryType);
@@ -269,11 +273,11 @@ public class PagesEditService implements EditService {
     /**
      * Moves a resource and adopts all references to the moved resource or one of its children.
      *
-     * @param resolver     the resolver (session context)
-     * @param changeRoot   the root element for reference search and change
-     * @param source       the resource to move
-     * @param targetParent the target (a reference to the parent resource) of the move
-     * @param before       the designated sibling in an ordered target collection
+     * @param resolver         the resolver (session context)
+     * @param changeRoot       the root element for reference search and change
+     * @param source           the resource to move
+     * @param targetParent     the target (a reference to the parent resource) of the move
+     * @param before           the designated sibling in an ordered target collection
      * @param updatedReferrers output parameter: the List of referers found - these were changed and might need setting a last modification date
      * @return the new resource at the target path
      */
