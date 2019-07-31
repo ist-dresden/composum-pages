@@ -24,6 +24,26 @@
 
             &_thumbnail {
                 left: 30px;
+
+
+                &_wrapper {
+                    @include aspect-ratio-wrapper(4, 3);
+                }
+
+                &_picture {
+                    @include aspect-ratio-element();
+                }
+
+                &_image {
+                    width: 100%;
+                }
+
+                .composum-pages-components-element-image {
+
+                    &_picture {
+                        width: 100%;
+                    }
+                }
             }
         }
 
