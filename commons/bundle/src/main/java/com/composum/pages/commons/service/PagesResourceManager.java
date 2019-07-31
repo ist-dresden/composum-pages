@@ -472,7 +472,7 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
     @Nullable
     public Template getTemplateOf(@Nullable Resource resource) {
         Template template = null;
-        if (resource != null && !ResourceUtil.isNonExistingResource(resource)) {
+        if (resource != null) {
             String path = resource.getPath();
             template = get(path);
             if (template == null) {
