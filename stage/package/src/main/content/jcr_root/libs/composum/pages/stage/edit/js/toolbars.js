@@ -26,7 +26,8 @@
                         base: 'composum-pages-stage-edit-toolbar',
                         _reload: '_reload-page',
                         _open: '_open-page',
-                        _separate: '_open-separate'
+                        _separate: '_open-separate',
+                        _width: '_surface-width'
                     }
                 }
             }
@@ -152,10 +153,12 @@
                 this.$view = this.$('.' + toolbars.const.pageViewActions);
                 this.$component = this.$('.' + toolbars.const.componentActions);
                 this.initPageView();
-                var c = pages.const.event;
-                $(document).on(c.page.view + '.PageToolbar', _.bind(this.onPageView, this));
-                $(document).on(c.page.selected + '.PageToolbar', _.bind(this.onPageSelected, this));
-                $(document).on(c.element.selected + '.PageToolbar', _.bind(this.onComponentSelected, this));
+                var e = pages.const.event;
+                $(document)
+                    .on(e.page.view + '.PageToolbar', _.bind(this.onPageView, this))
+                    .on(e.page.selected + '.PageToolbar', _.bind(this.onPageSelected, this))
+                    .on(e.element.selected + '.PageToolbar', _.bind(this.onComponentSelected, this))
+                    .on('body:size.PageToolbar', _.bind(this.onResize, this));
                 this.loadProfile();
                 this.$el.css('right', this.profile.position + '%');
             },
@@ -165,6 +168,8 @@
                 this.currentPage = path;
                 this.handle = core.getWidget(this.el, '.' + toolbars.const.toolbarHandleClass, toolbars.ToolbarHandle);
                 this.handle.toolbar = this;
+                this.$surfaceWidth = this.handle.$('.' + c.tbar.base + c.tbar._width);
+                this.onResize();
                 this.$('.' + toolbars.const.previewAction).attr('href',
                     '?pages.mode=' + pages.profile.get('mode', 'preview', 'preview'));
                 this.$('.' + toolbars.const.editAction).attr('href',
@@ -192,6 +197,10 @@
                 if (this.profile) {
                     pages.profile.set(this.profileAspect(), 'position', this.profile.position);
                 }
+            },
+
+            onResize: function () {
+                this.$surfaceWidth.text(pages.surface.surface.width);
             },
 
             reloadPage: function (event) {

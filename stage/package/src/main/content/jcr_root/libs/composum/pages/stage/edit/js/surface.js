@@ -17,7 +17,15 @@
             modeIconClass: 'composum-pages-stage-edit-sidebar_mode-icon',
             modeOverlapClass: 'composum-pages-stage-edit-sidebar_overlap',
             versionPrimaryClass: 'composum-pages-stage-version-frame_primary',
-            versionSecondaryClass: 'composum-pages-stage-version-frame_secondary'
+            versionSecondaryClass: 'composum-pages-stage-version-frame_secondary',
+            css: {
+                tools: {
+                    base: 'composum-pages-stage-edit-tools',
+                    _: {
+                        context: '_context'
+                    }
+                }
+            }
         });
 
         surface.Surface = Backbone.View.extend({
@@ -45,8 +53,11 @@
                     this.$versionPrimary.css('width', '100%');
                     this.$versionSecondary.css('left', 0);
                     this.$versionSecondary.css('width', '100%');
+                    this.width = this.$body.width();
                     this.$body = undefined;
                 }
+                this.width = $('body').width();
+                $(document).trigger("body:size", [this, this.width]);
             },
 
             bodySync: function (sidebar) {
@@ -73,13 +84,18 @@
                             var contextWidth = surface.contextTools.$el.width();
                             width -= contextWidth;
                         }
+                        this.width = width;
                         this.$body.css('margin-left', margin + 'px');
                         this.$body.css('width', width + 'px');
                         this.$versionPrimary.css('left', margin + 'px');
                         this.$versionPrimary.css('width', width + 'px');
                         this.$versionSecondary.css('left', margin + 'px');
                         this.$versionSecondary.css('width', width + 'px');
+
+                    } else {
+                        this.width = $('body').width();
                     }
+                    $(document).trigger("body:size", [this, this.width]);
                 } else {
                     this.bodySyncOff();
                 }
@@ -419,7 +435,7 @@
 
         surface.logo = core.getView('.' + surface.const.logoClass, surface.Logo);
         surface.navigation = core.getView('.' + surface.const.navigationClass, surface.Navigation);
-        surface.contextTools = core.getView('.' + surface.const.contextToolsClass, surface.ContextTools);
+        surface.contextTools = core.getView('.' + surface.const.css.tools.base + surface.const.css.tools._.context, surface.ContextTools);
         surface.surface = core.getView('.' + surface.const.toolsPanelClass, surface.Surface);
 
     })(window.composum.pages.surface, window.composum.pages, window.core);

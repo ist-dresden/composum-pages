@@ -11,6 +11,10 @@
                 tabs: {
                     base: 'tabbed-widget',
                     _tab: '_tab'
+                },
+                context: {
+                    base: 'composum-pages-stage-edit-sidebar-context',
+                    _: {}
                 }
             },
             tabsClass: 'tabbed-widget_tabs',
@@ -426,8 +430,8 @@
                         _.bind(function (data) {
                             this.closeCurrent();
                             this.$el.html(data);
-                            this.contextTabs = core.getWidget(this.el,
-                                '.' + tools.const.contextTabs, tools.ContextTabs);
+                            var c = tools.const.css.context;
+                            this.contextTabs = core.getWidget(this.el, '.' + c.base, tools.ContextTabs);
                             // noinspection JSPrimitiveTypeWrapperUsage
                             this.contextTabs.reference = reference;
                             this.contextTabs.initTools();
