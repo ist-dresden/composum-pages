@@ -44,8 +44,11 @@ public class FrameComponent extends FrameModel {
                     String relativePath = getResource().getPath();
                     if (relativePath.startsWith(contentPath)) {
                         relativePath = relativePath.substring(contentPath.length());
+                    } else {
+                        relativePath = "";
                     }
-                    design = template.getDesign(content.getResource(), relativePath, null);
+                    String type = getType();
+                    design = template.getDesign(content.getResource(), relativePath, type);
                 }
             }
         }
