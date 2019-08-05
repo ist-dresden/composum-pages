@@ -2,14 +2,14 @@
 <%@taglib prefix="cpn" uri="http://sling.composum.com/cpnl/1.0" %>
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <cpp:defineFrameObjects/>
-<cpp:model var="file" type="com.composum.pages.commons.model.File" mode="none"
+<cpp:model var="model" type="com.composum.pages.commons.model.File" mode="none"
            cssBase="composum-pages-stage-file_tile">
-    <div class="${fileCssBase} ${file.mimeTypeCss}" title="${file.filePath}"
-         draggable="true" data-pages-edit-encoded="${file.encodedReference}">
-        <div class="${fileCssBase}_frame">
-            <div class="${fileCssBase}_properties">
-                <cpn:text value="${file.fileName}" class="${fileCssBase}_name"></cpn:text>
-                <cpn:text value="${file.mimeType}" class="${fileCssBase}_mime-type"></cpn:text>
+    <div class="${modelCSS} ${model.mimeTypeCss}" title="${model.path}"
+         draggable="true" data-pages-edit-encoded="${model.encodedReference}">
+        <div class="${modelCSS}_frame">
+            <div class="${modelCSS}_properties">
+                <cpn:text value="${model.name}" class="${modelCSS}_name"></cpn:text>
+                <cpn:text value="${model.mimeType}" class="${modelCSS}_mime-type"></cpn:text>
             </div>
         </div>
     </div>

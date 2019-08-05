@@ -134,46 +134,48 @@
             onFrameLoad: function (event) {
                 if (!this.busy) {
                     this.busy = true;
-                    var frameUrl = event.currentTarget.contentDocument.URL;
-                    this.getPageData(undefined, _.bind(function (data) {
-                        if (this.currentPath !== data.path || this.currentLocale !== data.meta.language) {
-                            var url = new core.SlingUrl(frameUrl);
-                            if (this.log.frame.getLevel() <= log.levels.DEBUG) {
-                                this.log.frame.debug('pages.EditFrame.onFrameLoad(' + frameUrl + '): ' + data.path);
-                            }
-                            var displayMode = url.parameters ? url.parameters['pages.view'] : undefined;
-                            if (!displayMode && pages.isEditMode()) {
-                                // reload with the right display mode if no mode specified in the URL
-                                // this is generally happens if the content navigation is used
-                                var parameters = url.parameters || {};
-                                parameters['pages.locale'] = data.meta.language;
-                                this.reloadPage(parameters, data.path);
+                    if (event.currentTarget.contentDocument) {
+                        var frameUrl = event.currentTarget.contentDocument.URL;
+                        this.getPageData(undefined, _.bind(function (data) {
+                            if (this.currentPath !== data.path || this.currentLocale !== data.meta.language) {
+                                var url = new core.SlingUrl(frameUrl);
+                                if (this.log.frame.getLevel() <= log.levels.DEBUG) {
+                                    this.log.frame.debug('pages.EditFrame.onFrameLoad(' + frameUrl + '): ' + data.path);
+                                }
+                                var displayMode = url.parameters ? url.parameters['pages.view'] : undefined;
+                                if (!displayMode && pages.isEditMode()) {
+                                    // reload with the right display mode if no mode specified in the URL
+                                    // this is generally happens if the content navigation is used
+                                    var parameters = url.parameters || {};
+                                    parameters['pages.locale'] = data.meta.language;
+                                    this.reloadPage(parameters, data.path);
+                                } else {
+                                    // no event for explicit 'preview' - probably site page scanning
+                                    if (!displayMode || displayMode !== 'preview') {
+                                        // trigger all necessary events after loading a different page
+                                        pages.current.page = data.path;
+                                        var eventData = [data.path, url.parameters];
+                                        pages.trigger('frame.on.load', pages.const.event.page.selected, eventData);
+                                    }
+                                }
                             } else {
-                                // no event for explicit 'preview' - probably site page scanning
-                                if (!displayMode || displayMode !== 'preview') {
-                                    // trigger all necessary events after loading a different page
-                                    pages.current.page = data.path;
-                                    var eventData = [data.path, url.parameters];
-                                    pages.trigger('frame.on.load', pages.const.event.page.selected, eventData);
+                                var select = this.selectOnLoad;
+                                if (!select) {
+                                    select = pages.toolbars.pageToolbar.getSelectedComponent();
+                                }
+                                if (select) {
+                                    pages.trigger('frame.on.load', pages.const.event.element.select,
+                                        [new pages.Reference(select)]);
                                 }
                             }
-                        } else {
-                            var select = this.selectOnLoad;
-                            if (!select) {
-                                select = pages.toolbars.pageToolbar.getSelectedComponent();
-                            }
-                            if (select) {
-                                pages.trigger('frame.on.load', pages.const.event.element.select,
-                                    [new pages.Reference(select)]);
-                            }
-                        }
-                        // get current locale from request if present to keep locale switching
-                        pages.setLocale(this.currentLocale = data.meta.language, data.meta.defaultLanguage);
-                        this.selectOnLoad = undefined;
-                        this.busy = false;
-                    }, this), _.bind(function (data) {
-                        this.busy = false;
-                    }, this), frameUrl);
+                            // get current locale from request if present to keep locale switching
+                            pages.setLocale(this.currentLocale = data.meta.language, data.meta.defaultLanguage);
+                            this.selectOnLoad = undefined;
+                            this.busy = false;
+                        }, this), _.bind(function (data) {
+                            this.busy = false;
+                        }, this), frameUrl);
+                    }
                 } else {
                     this.busy = false;
                 }

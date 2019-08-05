@@ -358,6 +358,13 @@
                         width: 100%;
                     }
 
+                    .composum-pages-components-element-image {
+
+                        &_picture {
+                            width: 100%;
+                        }
+                    }
+
                     &_placeholder {
                         width: 100%;
                         height: 100%;
@@ -783,6 +790,26 @@
                 top: 4px;
                 left: 4px;
                 width: 96px;
+
+
+                &_wrapper {
+                    @include aspect-ratio-wrapper(4, 3);
+                }
+
+                &_picture {
+                    @include aspect-ratio-element();
+                }
+
+                &_image {
+                    width: 100%;
+                }
+
+                .composum-pages-components-element-image {
+
+                    &_picture {
+                        width: 100%;
+                    }
+                }
 
                 &_placeholder:before {
                     font-size: 48px;

@@ -3,14 +3,14 @@
 <%@taglib prefix="cpn" uri="http://sling.composum.com/cpnl/1.0" %>
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <cpp:defineFrameObjects/>
-<cpp:model var="file" type="com.composum.pages.commons.model.File" mode="none"
+<cpp:model var="model" type="com.composum.pages.commons.model.File" mode="none"
            cssBase="composum-pages-stage-file_tile">
-    <div class="${fileCssBase} ${file.mimeTypeCss}" title="${file.filePath}"
-         draggable="true" data-pages-edit-encoded="${file.encodedReference}">
-        <div class="${fileCssBase}_video-frame">
-            <div class="${fileCssBase}_video-background">
-                <video class="${fileCssBase}_video-player" controls>
-                    <source src="${cpn:url(slingRequest,file.path)}"/>
+    <div class="${modelCSS} ${model.mimeTypeCss}" title="${model.path}"
+         draggable="true" data-pages-edit-encoded="${model.encodedReference}">
+        <div class="${modelCSS}_video-frame">
+            <div class="${modelCSS}_video-background">
+                <video class="${modelCSS}_video-player" controls>
+                    <source src="${cpn:url(slingRequest,model.path)}"/>
                 </video>
             </div>
         </div>

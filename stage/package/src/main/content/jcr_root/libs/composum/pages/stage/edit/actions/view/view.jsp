@@ -18,21 +18,16 @@
     </c:otherwise>
     </c:choose>
     <a class="fa fa-refresh ${toolbarCssBase}_reload-page ${toolbarCssBase}_button" href="#"
-       title="${cpn:i18n(slingRequest,'Reload Page')}"><span
-            class="${toolbarCssBase}_label">${cpn:i18n(slingRequest,'Reload Page')}</span></a>
+       title="${cpn:i18n(slingRequest,'Reload Page')}"></a>
     <a class="fa fa-bullseye ${toolbarCssBase}_open-page ${toolbarCssBase}_button" href="#"
-       title="${cpn:i18n(slingRequest,'Open Page')}"><span
-            class="${toolbarCssBase}_label">${cpn:i18n(slingRequest,'Open Page')}</span></a>
+       title="${cpn:i18n(slingRequest,'Open Page')}"></a>
     <a class="fa fa-eye ${toolbarCssBase}_preview ${toolbarCssBase}_button" href="?pages.mode=preview"
-       title="${cpn:i18n(slingRequest,'Preview Mode')}"><span
-            class="${toolbarCssBase}_label">${cpn:i18n(slingRequest,'Preview Mode')}</span></a>
+       title="${cpn:i18n(slingRequest,'Preview Mode')}"></a>
     <a class="fa fa-edit ${toolbarCssBase}_edit ${toolbarCssBase}_button" href="?pages.mode=edit"
-       title="${cpn:i18n(slingRequest,'Edit Mode')}"><span
-            class="${toolbarCssBase}_label">${cpn:i18n(slingRequest,'Edit Mode')}</span></a>
+       title="${cpn:i18n(slingRequest,'Edit Mode')}"></a>
     <a class="fa fa-external-link ${toolbarCssBase}_open-separate ${toolbarCssBase}_button" href="#" target="_blank"
-       title="${cpn:i18n(slingRequest,'Open Page in separate View')}"><span
-            class="${toolbarCssBase}_label">${cpn:i18n(slingRequest,'Open Page in separate View')}</span></a>
+       title="${cpn:i18n(slingRequest,'Open Page in separate View')}"></a>
     <a class="fa fa-arrows-h ${toolbarCssBase}_handle ${toolbarCssBase}_button" href="#"
        title="${cpn:i18n(slingRequest,'Toolbar Handle')}"><span
-            class="${toolbarCssBase}_label">${cpn:i18n(slingRequest,'Toolbar Handle')}</span></a>
+            class="${toolbarCssBase}_surface-width"></span></a>
 </cpp:editToolbar>

@@ -140,6 +140,23 @@ body {
 
         &_handle {
             margin: 0;
+
+            &:before {
+                display: inline-block;
+                margin-top: 4px;
+            }
+
+            .composum-pages-stage-edit-toolbar {
+
+                &_surface-width {
+                    position: absolute;
+                    top: 2px;
+                    right: 3px;
+                    @include font('robotolight', 10px);
+                    line-height: 12px;
+                    text-align: right;
+                }
+            }
         }
 
         .composum-pages-language-menu {
