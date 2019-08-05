@@ -22,7 +22,7 @@
         <package.group>com/composum/pages</package.group>
         <package.company>IST GmbH Dresden</package.company>
         <bundle.category>composum,pages</bundle.category>
-        <composum.nodes.version>1.11.1</composum.nodes.version>
+        <composum.nodes.version>1.11.2</composum.nodes.version>
         <composum.platform.version>1.0.4</composum.platform.version>
     </properties>
 
