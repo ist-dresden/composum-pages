@@ -33,7 +33,7 @@ public class Homepage extends Page {
     public String getLogoUrl() {
         if (logoUrl == null) {
             Image logo = getLogo();
-            logoUrl = logo.getImageUrl();
+            logoUrl = logo.getAssetUrl();
         }
         return logoUrl;
     }

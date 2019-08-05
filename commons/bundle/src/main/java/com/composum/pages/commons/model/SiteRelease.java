@@ -19,12 +19,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
-import java.util.regex.Pattern;
 
 import static com.composum.pages.commons.PagesConstants.KEY_CURRENT_RELEASE;
 import static com.composum.pages.commons.PagesConstants.PROP_LAST_MODIFIED;
-import static com.composum.sling.platform.staging.StagingConstants.NODE_RELEASES;
-import static com.composum.sling.platform.staging.StagingConstants.RELEASE_ROOT_PATH;
 
 /**
  * Models a release for a site. The actual resource is the metadata node of the release, which is located below
@@ -59,7 +56,7 @@ public class SiteRelease extends AbstractModel implements Comparable<SiteRelease
     @Override
     protected Resource determineResource(Resource initialResource) {
         if (stagingRelease == null) {
-            StagingReleaseManager releaseManager = context.getService(StagingReleaseManager.class);
+            StagingReleaseManager releaseManager = this.context.getService(StagingReleaseManager.class);
             stagingRelease = releaseManager.findReleaseByReleaseResource(initialResource);
         }
         return Objects.requireNonNull(stagingRelease).getMetaDataNode();

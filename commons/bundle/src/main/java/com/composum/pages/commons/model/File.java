@@ -5,34 +5,15 @@
  */
 package com.composum.pages.commons.model;
 
+import com.composum.sling.clientlibs.handle.FileHandle;
 import com.composum.sling.core.BeanContext;
-import com.composum.sling.core.util.MimeTypeUtil;
 import com.composum.sling.core.util.ResourceUtil;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ValueMap;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
-
-public class File extends AbstractModel {
+public class File extends ContentDriven<FileResource> {
 
     enum Type {asset, document, file, image, video}
-
-    public static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
-
-    public static final Map<String, Type> TYPE_MAP;
-
-    static {
-        TYPE_MAP = new HashMap<>();
-        TYPE_MAP.put("image", Type.image);
-        TYPE_MAP.put("video", Type.video);
-        TYPE_MAP.put("application/pdf", Type.document);
-        TYPE_MAP.put("cpa:Asset", Type.asset);
-    }
 
     /**
      * check the 'nt:file' or 'asset' type for a resource
@@ -41,9 +22,6 @@ public class File extends AbstractModel {
         return ResourceUtil.isResourceType(resource, JcrConstants.NT_FILE)
                 || ResourceUtil.isResourceType(resource, "cpa:Asset");
     }
-
-    private transient Type fileType;
-    private transient String mimeType;
 
     public File() {
     }
@@ -56,54 +34,48 @@ public class File extends AbstractModel {
         initialize(context, resource);
     }
 
-    public String getFileName() {
-        return (JcrConstants.JCR_CONTENT.equals(getName())) ? getResource().getParent().getName() : getName();
-    }
-
-    public String getFileDate() {
-        Resource content = JcrConstants.JCR_CONTENT.equals(getName()) ? getResource().getParent() : getResource();
-        ValueMap values = content.getValueMap();
-        Calendar date = values.get(JcrConstants.JCR_LASTMODIFIED, Calendar.class);
-        if (date == null) {
-            date = values.get(JcrConstants.JCR_CREATED, Calendar.class);
-        }
-        return date != null ? new SimpleDateFormat(DATE_FORMAT).format(date.getTime()) : "";
-    }
-
-    public String getFilePath() {
-        return (JcrConstants.JCR_CONTENT.equals(getName())) ? getResource().getParent().getPath() : getPath();
+    @Override
+    protected FileResource createContentModel(BeanContext context, Resource contentResource) {
+        return new FileResource(context, contentResource);
     }
 
     public Type getFileType() {
-        if (fileType == null) {
-            Resource resource = getResource();
-            String primaryType = ResourceUtil.getPrimaryType(resource);
-            if (StringUtils.isNotBlank(primaryType)) {
-                fileType = TYPE_MAP.get(primaryType);
-            }
-            if (fileType == null) {
-                String mimeType = getMimeType();
-                fileType = TYPE_MAP.get(getMimeType());
-                if (fileType == null) {
-                    String category = StringUtils.substringBefore(mimeType, "/");
-                    fileType = TYPE_MAP.get(category);
-                }
-            }
-            if (fileType == null) {
-                fileType = Type.file;
-            }
-        }
-        return fileType;
+        return getContent().getFileType();
+    }
+
+    public String getFileDate() {
+        return getContent().getDateString();
+    }
+
+    public FileHandle getFileHandle() {
+        return new FileHandle(getResource());
     }
 
     public String getMimeType() {
-        if (mimeType == null) {
-            mimeType = MimeTypeUtil.getMimeType(resource, "");
-        }
-        return mimeType;
+        return getContent().getMimeType();
     }
 
     public String getMimeTypeCss() {
-        return getMimeType().replace('/', ' ').replace('+', ' ');
+        return getContent().getMimeTypeCss();
+    }
+
+    public boolean isShowCopyright() {
+        return getContent().isShowCopyright();
+    }
+
+    public String getCopyright() {
+        return getContent().getCopyright();
+    }
+
+    public String getCopyrightUrl() {
+        return getContent().getCopyrightUrl();
+    }
+
+    public String getLicense() {
+        return getContent().getLicense();
+    }
+
+    public String getLicenseUrl() {
+        return getContent().getLicenseUrl();
     }
 }

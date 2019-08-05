@@ -1,13 +1,15 @@
 package com.composum.pages.commons.model;
 
-import com.composum.sling.core.BeanContext;
 import com.composum.pages.commons.util.LinkUtil;
+import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.util.ResourceUtil;
+import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
 
 import javax.annotation.Nonnull;
 import java.util.Locale;
+import java.util.Objects;
 
 import static com.composum.pages.commons.PagesConstants.PROP_TEMPLATE;
 
@@ -27,6 +29,9 @@ public abstract class ContentDriven<ContentType extends ContentModel> extends Ab
     // initializer extensions
 
     protected void initializeWithResource(Resource resource) {
+        if (JcrConstants.JCR_CONTENT.equals(resource.getName())) {
+            resource = Objects.requireNonNull(resource.getParent());
+        }
         super.initializeWithResource(resource);
         Resource contentRes = resource.getChild(ResourceUtil.CONTENT_NODE);
         if (contentRes == null || ResourceUtil.isNonExistingResource(contentRes)) {
@@ -52,7 +57,7 @@ public abstract class ContentDriven<ContentType extends ContentModel> extends Ab
 
     public String getTemplatePath() {
         if (template == null) {
-            content.getProperty(PROP_TEMPLATE, null,"");
+            content.getProperty(PROP_TEMPLATE, null, "");
         }
         return template;
     }

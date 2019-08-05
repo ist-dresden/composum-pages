@@ -236,7 +236,7 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
 
     // initializer extensions
 
-    /** Compatible to Page{@link #determineResource(Resource)}. */
+    /** Compatible to Page{@link AbstractModel#determineResource(Resource)}. */
     public static class ContainingPageResourceStrategy implements DetermineResourceStategy {
         @Override
         public Resource determineResource(BeanContext beanContext, Resource requestResource) {
