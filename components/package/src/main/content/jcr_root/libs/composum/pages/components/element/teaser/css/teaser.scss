@@ -113,9 +113,7 @@
             }
         }
 
-        &_bg-image {
-            background-position: center;
-            background-size: 100%;
+        &_bg-image, &_bg-video {
 
             .composum-pages-components-element-teaser {
 
@@ -149,6 +147,23 @@
                             }
                         }
                     }
+                }
+            }
+        }
+
+        &_bg-image {
+            background-position: center;
+            background-size: 100%;
+        }
+
+        &_bg-video {
+
+            .composum-pages-components-element-video-background {
+
+                &_content {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
                 }
             }
         }

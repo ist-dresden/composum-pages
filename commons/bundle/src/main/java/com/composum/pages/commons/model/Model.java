@@ -43,6 +43,9 @@ public interface Model extends SlingBean {
     String getTitle();
 
     @Nonnull
+    String getTileTitle();
+
+    @Nonnull
     String getDescription();
 
     /**

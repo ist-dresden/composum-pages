@@ -92,6 +92,12 @@ public class ModelWrapper implements Model {
 
     @Nonnull
     @Override
+    public String getTileTitle() {
+        return delegate.getTileTitle();
+    }
+
+    @Nonnull
+    @Override
     public String getDescription() {
         return delegate.getDescription();
     }

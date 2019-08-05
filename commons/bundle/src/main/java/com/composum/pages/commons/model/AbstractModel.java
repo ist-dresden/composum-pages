@@ -413,6 +413,15 @@ public abstract class AbstractModel implements SlingBean, Model {
         return PN_TITLE_KEYS;
     }
 
+    /**
+     * @return the title for the tile rendering, maybe a part of a value if not title property set
+     */
+    @Nonnull
+    @Override
+    public String getTileTitle() {
+        return getTitle();
+    }
+
     @Override
     @Nonnull
     public String getDescription() {

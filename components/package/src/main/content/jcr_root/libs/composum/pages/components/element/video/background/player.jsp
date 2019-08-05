@@ -3,7 +3,6 @@
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <cpp:defineObjects/>
 <cpp:model var="model" type="com.composum.pages.components.model.asset.Video">
-    <video class="${modelCSS}_player" src="${model.src}"${model.controls?' controls="controls"':''}
-        ${model.autoplay?' autoplay="autoplay"':''}${model.muted?' muted="muted"':''}${model.loop?' loop="loop"':''}
-        ${model.posterAttr}></video>
+    <video class="${modelCSS}_player" src="${model.src}" ${model.editMode?'':'autoplay="autoplay"'} muted="muted"
+        ${model.loop?'loop="true"':''}></video>
 </cpp:model>

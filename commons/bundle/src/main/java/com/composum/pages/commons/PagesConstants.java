@@ -182,6 +182,10 @@ public interface PagesConstants {
     String DEF_DATE_FMT = "yyyy-MM-dd";
     String DEF_DATETIME_FMT = DEF_DATE_FMT + " " + DEF_TIME_FMT;
 
+    /** general rendering */
+
+    Pattern TILE_TITLE_URL = Pattern.compile("^(.*/)?([^/?#;]+)([^?#;].*)?");
+
     /**
      *
      */

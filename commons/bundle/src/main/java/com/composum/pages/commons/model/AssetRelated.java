@@ -7,7 +7,11 @@ import org.apache.sling.api.resource.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nonnull;
 import java.io.InputStream;
+import java.util.regex.Matcher;
+
+import static com.composum.pages.commons.PagesConstants.TILE_TITLE_URL;
 
 public class AssetRelated extends Element {
 
@@ -28,11 +32,31 @@ public class AssetRelated extends Element {
     private transient String license;
     private transient String licenseUrl;
 
+    private transient String tileTitle;
+
     public AssetRelated() {
     }
 
     public AssetRelated(BeanContext context, Resource resource) {
         super(context, resource);
+    }
+
+    @Nonnull
+    @Override
+    public String getTileTitle() {
+        if (tileTitle == null) {
+            tileTitle = super.getTileTitle();
+            if (StringUtils.isBlank(tileTitle)) {
+                String url = getAssetUrl();
+                if (StringUtils.isNotBlank(url)) {
+                    Matcher matcher = TILE_TITLE_URL.matcher(url);
+                    if (matcher.matches()) {
+                        tileTitle = matcher.group(2);
+                    }
+                }
+            }
+        }
+        return tileTitle;
     }
 
     protected String getRefPropName() {

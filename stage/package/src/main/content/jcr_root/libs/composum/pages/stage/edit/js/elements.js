@@ -807,6 +807,17 @@
                 return result;
             },
 
+            /**
+             * @returns {{parent}|*} the root element of nested elements (useful on redraw static includes)
+             */
+            getNestedRoot: function (component) {
+                while (component && !component.$el.hasClass(elements.const.class.container)
+                && component.parent && component.parent.$el.hasClass(elements.const.class.element)) {
+                    component = component.parent;
+                }
+                return component;
+            },
+
             // change event handling
 
             elementInserted: function (event, parentRef, /*optional*/ resultRef) {
@@ -836,7 +847,7 @@
                 var i;
                 for (i = 0; i < index.length; i++) {
                     if (index[i].component >= 0) {
-                        toRefresh.push(this.components[index[i].component]);
+                        toRefresh.push(this.getNestedRoot(this.components[index[i].component]));
                     }
                 }
                 for (i = 0; i < toRefresh.length; i++) {
@@ -847,7 +858,7 @@
                             if (selection) {
                                 this.selectPath(selection.path, true);
                             }
-                        }, this), 200);
+                        }, this), 300);
                     }, this));
                 }
             },

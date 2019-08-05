@@ -9,6 +9,9 @@ import com.composum.pages.commons.util.LinkUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nonnull;
+import java.util.regex.Matcher;
+
+import static com.composum.pages.commons.PagesConstants.TILE_TITLE_URL;
 
 public class Link extends Element {
 
@@ -20,6 +23,8 @@ public class Link extends Element {
     private transient String linkTitle;
     private transient String linkUrl;
     private transient String target;
+
+    private transient String tileTitle;
 
     public boolean isValid() {
         return isHasLink();
@@ -46,6 +51,24 @@ public class Link extends Element {
             }
         }
         return title;
+    }
+
+    @Nonnull
+    @Override
+    public String getTileTitle() {
+        if (tileTitle == null) {
+            tileTitle = super.getTitle();
+            if (StringUtils.isBlank(tileTitle)) {
+                String url = getLinkUrl();
+                if (StringUtils.isNotBlank(url)) {
+                    Matcher matcher = TILE_TITLE_URL.matcher(url);
+                    if (matcher.matches()) {
+                        tileTitle = matcher.group(2);
+                    }
+                }
+            }
+        }
+        return tileTitle;
     }
 
     public String getLinkTitle() {
