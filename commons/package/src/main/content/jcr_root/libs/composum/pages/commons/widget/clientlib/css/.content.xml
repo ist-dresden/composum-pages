@@ -13,5 +13,6 @@
                 composum/pages/commons/widget/imagefield/css/imagefield.css,
                 composum/pages/commons/widget/radiolist/css/radiolist.css,
                 composum/pages/commons/widget/slider/css/slider.css,
-                composum/pages/commons/widget/static/css/static.css]">
+                composum/pages/commons/widget/static/css/static.css,
+                composum/pages/commons/widget/videofield/css/videofield.css]">
 </jcr:root>

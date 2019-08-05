@@ -31,7 +31,7 @@
                 this.$preview = this.$('.' + c.edit + c._preview);
                 this.$previewImage = this.$preview.find('.' + c.edit + c._picture);
                 this.$data = this.$preview.find('.' + c.edit + c._data);
-                this.$textField.on('change.imagefield', _.bind(this.onChange, this));
+                this.$input.on('change.imagefield', _.bind(this.onChange, this));
                 this.onPreviewShown();
             },
 

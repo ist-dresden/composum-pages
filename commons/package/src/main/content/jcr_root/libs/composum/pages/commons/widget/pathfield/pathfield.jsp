@@ -13,7 +13,7 @@
     <div class="${widgetCSS}_path-field input-group widget pathfield-widget widget-name_${widget.cssName}" ${widget.attributes}>
         <input name="${widget.name}" class="${widgetCSS}_input form-control"
                data-label="${widget.label}" data-i18n="${widget.i18n}"
-               type="text" value="${cpn:path(widget.model.path)}" placeholder="${cpn:path(widget.placeholder)}"
+               type="text" value="${widget.model.path}" placeholder="${widget.placeholder}"
                <c:if test="${widget.disabled}">disabled</c:if> />
         <span class="${widgetCSS}_popup-button input-group-btn">
                   <button class="${widgetCSS}_select select btn btn-default" type="button"

@@ -5,6 +5,16 @@
 
 .composum-pages-edit-widget_static {
 
+    .composum-pages-edit-widget {
+
+        &_text {
+
+            p {
+                margin: 0;
+            }
+        }
+    }
+
     .hint {
 
         &.hint-remark {
