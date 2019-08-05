@@ -11,7 +11,7 @@ public class DisplayMode extends Stack<DisplayMode.Value> {
 
     public enum Value {
 
-        NONE, PREVIEW, BROWSE, EDIT, DEVELOP;
+        NONE, PREVIEW, BROWSE, EDIT, DEVELOP, REQUEST;
 
         public static DisplayMode.Value displayModeValue(Object value, Value defaultValue) {
             Value mode = null;
@@ -26,7 +26,9 @@ public class DisplayMode extends Stack<DisplayMode.Value> {
         }
     }
 
-    /** display mode string values */
+    /**
+     * display mode string values
+     */
     public static final String DISPLAY_MODE_NONE = Value.NONE.name();
     public static final String DISPLAY_MODE_PREVIEW = Value.PREVIEW.name();
     public static final String DISPLAY_MODE_BROWSE = Value.BROWSE.name();
@@ -71,7 +73,8 @@ public class DisplayMode extends Stack<DisplayMode.Value> {
      * returns the current (topmost) value of the stack instance in the given context
      */
     public static Value current(BeanContext context) {
-        return get(context).peek();
+        Value value = get(context).peek();
+        return value == Value.REQUEST ? requested(context) : value;
     }
 
     /**
@@ -102,7 +105,9 @@ public class DisplayMode extends Stack<DisplayMode.Value> {
         push(requestedValue);
     }
 
-    /** at least one value must always be in the stack */
+    /**
+     * at least one value must always be in the stack
+     */
     @Override
     public synchronized Value pop() {
         return size() > 1 ? super.pop() : peek();

@@ -274,6 +274,9 @@ public class DropZoneTag extends ModelTag {
     @Override
     public int doStartTag() throws JspException {
         super.doStartTag();
+        if (displayMode != null) {
+            DisplayMode.get(context).push(displayMode);
+        }
         if (DisplayMode.isEditMode(context)) {
             setAttribute(DROP_ZONE_VAR, this, PageContext.REQUEST_SCOPE);
             if (StringUtils.isNotBlank(cssBase)) {
@@ -297,6 +300,9 @@ public class DropZoneTag extends ModelTag {
             } catch (IOException ioex) {
                 LOG.error(ioex.getMessage(), ioex);
             }
+        }
+        if (displayMode != null) {
+            DisplayMode.get(context).pop();
         }
         return super.doEndTag();
     }

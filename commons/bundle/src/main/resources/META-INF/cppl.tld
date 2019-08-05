@@ -535,6 +535,15 @@
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>
+                the optional display mode for the include (Pages editing mode), or "request" to take the mode from the
+                request itself (to reset overrides).
+            </description>
+            <name>mode</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
             <name>cssBase</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
