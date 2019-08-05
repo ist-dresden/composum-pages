@@ -60,7 +60,7 @@ $section-spacing-default: 3rem;
 $icon-default-font-family: 'FontAwesome';
 $site-default-font-family: 'robotolight', sans-serif;
 $site-bold-font-family: 'robotomedium', sans-serif;
-$site-title-font-family: 'robotothin', sans-serif;
+$site-title-font-family: 'robotolight', sans-serif;
 $site-symbol-font-family: $site-bold-font-family;
 
 $site-small-font-size: 14px;
@@ -68,15 +68,11 @@ $site-default-font-size: 16px;
 
 $main-title-margin: 15px;
 $main-title-padding: 10px;
-$main-title-font-size: 48px;
-$main-title-font-size-xs: 36px;
 $main-title-align-top-xs: -13px;
 $main-subtitle-margin: 10px;
-$main-subtitle-font-size: 36px;
-$main-subtitle-font-size-xs: 27px;
 
-$site-title-padding: 20px;
-$site-title-font-size: 32px;
+$site-title-padding: 10px;
+$site-title-font-size: 36px;
 $site-title-align-top: -10px;
 $site-title-font-size-xs: 24px;
 $site-title-align-top-xs: -7px;
@@ -86,14 +82,19 @@ $site-subtitle-align-top-xs: -4px;
 
 $column-title-margin: 20px;
 $column-title-padding: 0;
-$column-title-font-size: $site-title-font-size;
-$column-title-font-size-xs: $site-title-font-size-xs;
+$column-title-font-size: $site-subtitle-font-size;
+$column-title-font-size-xs: $site-subtitle-font-size-xs;
 $column-subtitle-margin: 15px;
-$column-subtitle-font-size: $site-subtitle-font-size;
-$column-subtitle-font-size-xs: $site-subtitle-font-size-xs;
+$column-subtitle-font-size: 20px;
+$column-subtitle-font-size-xs: 16px;
 
-$text-title-font-size: $column-subtitle-font-size;
-$text-title-font-size-xs: $column-subtitle-font-size-xs;
+$text-title-font-size: $column-title-font-size;
+$text-title-font-size-xs: $column-title-font-size-xs;
+
+$symbol-title-top: 2px;
+$symbol-width: 4.2rem;
+$symbol-font-size: 2.5rem;
+$symbol-color: $main-title-text-color;
 
 $list-title-gap: 4px;
 $list-item-indent: 32px;

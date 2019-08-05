@@ -4,14 +4,13 @@
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <cpp:defineObjects/>
-<cpp:element var="model" type="com.composum.pages.commons.model.Image"
+<cpp:element var="model" type="com.composum.pages.components.model.asset.Video"
              test="@{model.valid||model.editMode}">
-    <cpp:dropZone property="imageRef" i18n="true" filter="asset:image">
+    <cpp:dropZone property="videoRef" i18n="true" filter="asset:video">
         <c:choose>
             <c:when test="${model.valid}">
                 <div class="${modelCSS}_frame">
-                    <cpn:image class="${modelCSS}_picture" src="${model.src}"
-                               alt="${model.alt}" title="${model.title}"/>
+                    <sling:call script="player.jsp"/>
                 </div>
                 <sling:call script="meta.jsp"/>
             </c:when>

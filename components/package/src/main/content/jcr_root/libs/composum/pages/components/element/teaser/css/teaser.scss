@@ -8,25 +8,25 @@
     @include default-font;
     color: $site-default-text-color;
 
-    a,
-    a:visited {
+    &_link,
+    &_link:visited {
         @include default-font;
+        line-height: inherit;
         text-decoration: none;
         color: $site-default-text-color;
     }
 
-    a:hover {
+    &_link:hover {
         color: $site-default-text-color;
     }
 
     &_title {
         @include inline-title;
-        font-size: $column-title-font-size;
     }
 
     &_subtitle {
         @include inline-title;
-        font-size: $column-subtitle-font-size;
+        font-size: $text-title-font-size-xs;
     }
 
     &_variation {
@@ -84,6 +84,29 @@
                             &_subtitle {
                                 color: $site-default-link-hover;
                             }
+                        }
+                    }
+                }
+            }
+
+            &.composum-pages-components-element-teaser {
+
+                &_symbol {
+                    display: flex;
+                    padding: 0 11px;
+
+                    .composum-pages-components-element-teaser {
+
+                        &_link {
+                            display: flex;
+                        }
+
+                        &_icon {
+                            min-width: $symbol-width;
+                            max-width: $symbol-width;
+                            padding: $symbol-title-top 0 0;
+                            font-size: $symbol-font-size;
+                            color: $symbol-color;
                         }
                     }
                 }

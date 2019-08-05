@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+        jcr:primaryType="cpp:Page">
+    <jcr:content jcr:primaryType="cpp:PageContent"
+            sling:resourceType="composum/pages/stage/edit/tools/component/help/page"
+            template="/libs/composum/pages/stage/edit/tools/component/help/template">
+        <main
+                jcr:primaryType="cpp:Container"
+                sling:resourceType="composum/pages/stage/edit/tools/component/help/parsys">
+            <text_01
+                    jcr:primaryType="cpp:Element"
+                    sling:resourceType="composum/pages/components/element/text"
+                    text="a simple video player which can be embedded as content element in a container (paragraph) or embedded in another component statically">
+                <i18n
+                        jcr:primaryType="nt:unstructured">
+                    <de
+                            jcr:primaryType="nt:unstructured"
+                            text="&lt;p>ein einfacher Video-Player welches als Inhaltselement in einen Container (Absatz) oder statisch in eine andere Komponente eingebettet werden kann&lt;/p>"/>
+                </i18n>
+            </text_01>
+            <text_02
+                    jcr:primaryType="cpp:Element"
+                    sling:resourceType="composum/pages/components/element/text"
+                    text="&lt;ul>&lt;li>videoRef (imagefield)&lt;br>the repository path to the video file or an external URL&lt;/li>&lt;li>title (textfield, i18n)&lt;br>the video tag &apos;title&apos; attribute text&lt;/li>&lt;li>alt (textfield, i18n)&lt;br>the alternative image text for text based rendering&lt;/li>&lt;/ul>"
+                    title="Properties">
+                <i18n
+                        jcr:primaryType="nt:unstructured">
+                    <de
+                            jcr:primaryType="nt:unstructured"
+                            text="&lt;p>&lt;ul>&lt;li>videoRef (imagefield)&lt;br>der Repository-Pfad oder eine externe URL&lt;/li>&lt;li>title (textfield, i18n)&lt;br>der Text des &apos;title&apos;-Attributs im Video-Tag&lt;/li>&lt;li>alt (textfield, i18n)&lt;br>der alternative Text&amp;nbsp; für&amp;nbsp;reine Text-Ansichten&lt;/li>&lt;/ul>&lt;/p>"
+                            title="Eigenschaften"/>
+                </i18n>
+            </text_02>
+        </main>
+    </jcr:content>
+</jcr:root>

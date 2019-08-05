@@ -9,6 +9,7 @@
 
 .composum-pages-components-element-title {
     width: 100%;
+    margin: $column-title-margin 0;
 
     &_text {
         padding: $column-title-padding;
@@ -17,13 +18,12 @@
     }
 
     &_title {
-        margin: $column-title-margin 0;
-        font-size: $column-title-font-size;
+        margin: 0;
+        @include title-font;
     }
 
     &_subtitle {
-        margin: $column-subtitle-margin 0;
-        font-size: $column-subtitle-font-size;
+        @include subtitle-font;
     }
 
     &_bg-image {
@@ -42,34 +42,33 @@
     }
 }
 
+.composum-pages-components-container-row {
+
+    &_column {
+
+        .composum-pages-components-element-title {
+            margin: $column-title-margin 0;
+            background: none;
+
+            &_text {
+                padding: $column-title-padding;
+                text-align: left;
+            }
+
+            &_title {
+                font-size: $column-title-font-size;
+            }
+
+            &_subtitle {
+                font-size: $column-subtitle-font-size;
+            }
+        }
+    }
+}
+
 .composum-pages-components-page {
 
     &_content {
-
-        .composum-pages-components-container-row {
-
-            &_cell {
-
-                .composum-pages-components-element-title {
-
-                    &_text {
-                        padding: $column-title-padding;
-                        text-align: left;
-                        background: none;
-                    }
-
-                    &_title {
-                        margin: $column-title-margin 0;
-                        font-size: $column-title-font-size;
-                    }
-
-                    &_subtitle {
-                        margin: $column-subtitle-margin 0;
-                        font-size: $column-subtitle-font-size;
-                    }
-                }
-            }
-        }
 
         &_top {
 
@@ -88,25 +87,8 @@
 
         &_main {
 
-            .composum-pages-components-element-title {
-
-                &_text {
-                    padding: $main-title-padding;
-                    @include title-font;
-                    text-align: center;
-                    color: $main-title-text-color;
-                    background-color: $main-title-background-color;
-                }
-
-                &_title {
-                    margin: $main-title-margin 0;
-                    font-size: $main-title-font-size;
-                }
-
-                &_subtitle {
-                    margin: $main-subtitle-margin 0;
-                    font-size: $main-subtitle-font-size;
-                }
+            > .composum-pages-components-element-title {
+                background-color: $main-title-background-color;
             }
         }
     }
@@ -128,7 +110,7 @@
                     padding: 6px 24px 12px;
 
                     &_title {
-                        @include a-title-font($main-title-font-size / 2);
+                        @include a-title-font($site-title-font-size-xs);
                     }
                 }
             }
@@ -143,12 +125,12 @@
 
                     &_title {
                         margin: 0;
-                        @include a-title-font($main-title-font-size / 2);
+                        @include a-title-font($site-title-font-size-xs);
                     }
 
                     &_subtitle {
                         margin: 0;
-                        @include a-title-font($main-subtitle-font-size / 2);
+                        @include a-title-font($site-subtitle-font-size-xs);
                     }
                 }
             }

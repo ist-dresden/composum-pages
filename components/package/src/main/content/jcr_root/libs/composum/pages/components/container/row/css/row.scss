@@ -1,6 +1,7 @@
 @charset "UTF-8";
 
 @import "../../../css/variables";
+@import "../../../css/mixins";
 
 .composum-pages-components-container-row {
     display: inline-block;
@@ -12,11 +13,37 @@
     }
 
     &_header, &_footer {
-        padding: 0 15px;
+        margin: 0;
+        padding: 10px 15px;
+    }
+
+    &_header {
+        margin: $main-title-margin 0;
+        background-color: $main-title-background-color;
+    }
+
+    &_title {
+        margin: 0;
+        @include a-title-font($site-title-font-size);
+        color: $column-title-text-color;
+        text-align: center;
     }
 
     /* the 'float' and 'padding' (Bootstrap) disables margin collapse... */
     &_column {
         margin: 0;
+    }
+}
+
+/*
+ * bootstrap -xs-
+ */
+@media screen and (max-width: 767px) {
+
+    .composum-pages-components-container-row {
+
+        &_title {
+            @include a-title-font($site-title-font-size-xs);
+        }
     }
 }

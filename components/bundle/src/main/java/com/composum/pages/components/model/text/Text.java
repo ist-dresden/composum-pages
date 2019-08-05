@@ -8,39 +8,43 @@ import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 
 import javax.annotation.Nonnull;
+import java.util.regex.Pattern;
 
 public class Text extends Element {
 
     public static final String PROP_TEXT = "text";
     public static final String PROP_ALIGNMENT = "textAlignment";
 
-    private transient Integer titleLevel;
+    public static final Pattern IGNORE_IN_TITLE_LEVEL = Pattern.compile("^.*/(column)$");
+
+    private transient String titleLevel;
     private transient String text;
 
     public boolean isValid() {
         return StringUtils.isNotBlank(getTitle()) || StringUtils.isNotBlank(getText());
     }
 
-    public int getTitleLevel() {
+    public String getTitleLevel() {
         if (titleLevel == null) {
-            titleLevel = getProperty("titleLevel", Integer.class);
+            titleLevel = getProperty("titleLevel", String.class);
             if (titleLevel == null) {
-                titleLevel = Text.getTitleLevel(getResource());
+                titleLevel = Integer.toString(Text.getTitleLevel(getResource()));
             }
         }
         return titleLevel;
     }
 
     public static int getTitleLevel(@Nonnull Resource element) {
-        int titleLevel = 2;
+        int titleLevel = 1;
         ResourceResolver resolver = element.getResourceResolver();
         while (element != null && titleLevel < 5 && !Page.isPage(element)) {
-            if (Container.isContainer(resolver, element, null)) {
+            if (Container.isContainer(resolver, element, null)
+                    && !IGNORE_IN_TITLE_LEVEL.matcher(element.getResourceType()).matches()) {
                 titleLevel++;
             }
             element = element.getParent();
         }
-        return titleLevel < 3 ? 3 : titleLevel;
+        return Math.max(titleLevel, 3);
     }
 
     @Nonnull

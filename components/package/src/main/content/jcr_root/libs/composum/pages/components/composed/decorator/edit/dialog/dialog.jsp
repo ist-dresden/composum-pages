@@ -5,8 +5,7 @@
 <cpp:defineFrameObjects/>
 <cpp:editDialog var="decorator" type="com.composum.pages.components.model.composed.Decorator"
                 title="@{dialog.selector=='create'?'Create a Decorator':'Edit Decorator'}">
-    <cpp:widget label="Content Type" property="elementType" type="textfield"
-                hint="the default resource type of the embedded element"/>
+    <cpp:include resourceType="composum/pages/components/element/text" subtype="edit/dialog" replaceSelectors="title"/>
     <div class="row">
         <div class="col col-xs-6">
             <cpp:widget label="Warning Level" property="level" type="select" default="default"

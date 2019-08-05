@@ -24,6 +24,8 @@ public class Teaser extends ImageRelatedElement {
     public static final String NODE_IMAGE = "image";
     public static final String PROP_IMAGE_REF = NODE_IMAGE + "/imageRef";
 
+    public static final String PROP_ICON = "icon";
+
     public static final String NODE_LINKS = "links";
     public static final String SELECTOR_LINK_SET = NODE_LINKS;
 
@@ -34,6 +36,8 @@ public class Teaser extends ImageRelatedElement {
 
     private transient String subtitle;
     private transient String text;
+
+    private transient String icon;
 
     public String getVariation() {
         if (variation == null) {
@@ -47,6 +51,17 @@ public class Teaser extends ImageRelatedElement {
 
     public boolean isHasImage() {
         return StringUtils.isNotBlank(getProperty(PROP_IMAGE_REF, ""));
+    }
+
+    public boolean isUseIcon() {
+        return !isHasImage() && StringUtils.isNotBlank(getIcon());
+    }
+
+    public String getIcon() {
+        if (icon == null) {
+            icon = getProperty(PROP_ICON, "");
+        }
+        return icon;
     }
 
     public String getSubtitle() {
