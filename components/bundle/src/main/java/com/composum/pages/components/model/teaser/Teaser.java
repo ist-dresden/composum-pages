@@ -24,6 +24,9 @@ public class Teaser extends ImageRelatedElement {
     public static final String NODE_IMAGE = "image";
     public static final String PROP_IMAGE_REF = NODE_IMAGE + "/imageRef";
 
+    public static final String NODE_VIDEO = "video";
+    public static final String PROP_VIDEO_REF = NODE_VIDEO + "/videoRef";
+
     public static final String PROP_ICON = "icon";
 
     public static final String NODE_LINKS = "links";
@@ -49,12 +52,20 @@ public class Teaser extends ImageRelatedElement {
         return variation;
     }
 
-    public boolean isHasImage() {
-        return StringUtils.isNotBlank(getProperty(PROP_IMAGE_REF, ""));
+    public String getShape() {
+        return isUseVideo() ? "video" : isUseImage() ? "image" : isUseIcon() ? "symbol" : "text";
+    }
+
+    public boolean isUseVideo() {
+        return StringUtils.isNotBlank(getProperty(PROP_VIDEO_REF, ""));
+    }
+
+    public boolean isUseImage() {
+        return !isUseVideo() && StringUtils.isNotBlank(getProperty(PROP_IMAGE_REF, ""));
     }
 
     public boolean isUseIcon() {
-        return !isHasImage() && StringUtils.isNotBlank(getIcon());
+        return !isUseImage() && StringUtils.isNotBlank(getIcon());
     }
 
     public String getIcon() {

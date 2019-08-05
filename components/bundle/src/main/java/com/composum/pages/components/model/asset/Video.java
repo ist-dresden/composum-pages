@@ -8,9 +8,15 @@ import org.apache.sling.api.resource.Resource;
 
 public class Video extends AssetRelated {
 
-    public static final String PROP_VIDEO_REF = "videoRef";
+    public static final String PN_VIDEO_REF = "videoRef";
+    public static final String PN_CONTROLS = "controls";
+    public static final String PN_AUTOPLAY = "autoplay";
+    public static final String PN_MUTED = "muted";
+    public static final String PN_LOOP = "loop";
+    public static final String PN_POSTER_REF = "posterRef";
 
     private transient String src;
+    private transient String poster;
 
     public Video() {
     }
@@ -21,7 +27,7 @@ public class Video extends AssetRelated {
 
     @Override
     protected String getRefPropName() {
-        return PROP_VIDEO_REF;
+        return PN_VIDEO_REF;
     }
 
     public String getSrc() {
@@ -32,5 +38,34 @@ public class Video extends AssetRelated {
             }
         }
         return src;
+    }
+
+    public boolean getControls() {
+        return getProperty(PN_CONTROLS, Boolean.FALSE);
+    }
+
+    public boolean getAutoplay() {
+        return getProperty(PN_AUTOPLAY, Boolean.FALSE);
+    }
+
+    public boolean getMuted() {
+        return getProperty(PN_MUTED, Boolean.FALSE);
+    }
+
+    public boolean getLoop() {
+        return getProperty(PN_LOOP, Boolean.FALSE);
+    }
+
+    public String getPoster() {
+        if (poster == null) {
+            String uri = getProperty(PN_POSTER_REF, "");
+            poster = StringUtils.isNotBlank(uri) ? LinkUtil.getUrl(context.getRequest(), uri) : "";
+        }
+        return poster;
+    }
+
+    public String getPosterAttr() {
+        String poster = getPoster();
+        return StringUtils.isNotBlank(poster) ? " poster=\"" + poster + "\"" : "";
     }
 }
