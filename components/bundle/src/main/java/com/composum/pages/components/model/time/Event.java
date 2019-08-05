@@ -13,7 +13,7 @@ public class Event extends TimeRelated {
 
     @Override
     protected Resource determineResource(Resource initialResource) {
-        Page containingPage = getPageManager().getContainingPage(context, initialResource);
+        Page containingPage = getPageManager().getContainingPage(this.context, initialResource);
         return containingPage != null ? containingPage.getResource() : initialResource;
     }
 

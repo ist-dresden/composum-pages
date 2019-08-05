@@ -37,7 +37,7 @@ public class SinglePage extends Page {
     public String getLogoImageUrl() {
         if (logoImageUrl == null) {
             Image logo = getLogoImage();
-            logoImageUrl = logo.getImageUrl();
+            logoImageUrl = logo.getAssetUrl();
         }
         return logoImageUrl;
     }
