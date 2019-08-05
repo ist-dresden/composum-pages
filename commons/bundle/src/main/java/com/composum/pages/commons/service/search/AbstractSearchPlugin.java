@@ -24,9 +24,13 @@ import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.jcr.RepositoryException;
 import java.net.URISyntaxException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static com.composum.pages.commons.service.search.SearchService.PARAMETER_SEARCHTERM;
 import static com.composum.pages.commons.service.search.SearchTermParseException.Kind.Empty;
@@ -212,8 +216,7 @@ public abstract class AbstractSearchPlugin implements SearchPlugin {
         }
     }
 
-    protected Resource findTarget(Resource resource, ResourceFilter
-            targetResourceFilter) {
+    protected Resource findTarget(Resource resource, ResourceFilter targetResourceFilter) {
         Resource target = resource;
         if (targetResourceFilter != null) {
             while (null != target && !targetResourceFilter.accept(target)) target = target.getParent();

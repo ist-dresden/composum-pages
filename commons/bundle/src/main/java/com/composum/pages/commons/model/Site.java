@@ -92,7 +92,7 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
 
     // initializer extensions
 
-    /** Compatible to {@link Site#determineResource(Resource)}. */
+    /** Compatible to {@link AbstractModel#determineResource(Resource)}. */
     public static class ContainingSiteResourceStrategy implements DetermineResourceStategy {
         @Override
         public Resource determineResource(BeanContext beanContext, Resource requestResource) {

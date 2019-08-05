@@ -1,10 +1,14 @@
 package com.composum.pages.commons.servlet;
 
+import com.composum.pages.commons.model.Page;
+import com.composum.pages.commons.model.Site;
 import com.composum.pages.commons.service.PageManager;
 import com.composum.pages.commons.service.ResourceManager;
+import com.composum.pages.commons.util.PagesUtil;
 import com.composum.pages.commons.util.RequestUtil;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.ResourceHandle;
+import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.servlet.NodeTreeServlet;
 import com.composum.sling.core.servlet.ServletOperation;
 import com.composum.sling.core.servlet.Status;
@@ -39,6 +43,30 @@ public abstract class ContentServlet extends NodeTreeServlet {
     //
     // JSON helpers
     //
+
+    public void writeJsonPage(@Nonnull final BeanContext context, @Nonnull final JsonWriter writer,
+                              @Nonnull final ResourceFilter filter, @Nonnull final Page page)
+            throws IOException {
+        writer.beginObject();
+        if (page.isValid()) {
+            TreeNodeStrategy nodeStrategy = new DefaultTreeNodeStrategy(filter);
+            writeJsonNodeData(writer, nodeStrategy, ResourceHandle.use(page.getResource()), LabelType.name, false);
+            writer.name("reference");
+            PagesUtil.write(writer, PagesUtil.getReference(page.getResource(), null));
+            Resource contentResource = page.getContent().getResource();
+            writer.name("jcrContent");
+            writeJsonNode(writer, nodeStrategy, ResourceHandle.use(contentResource), LabelType.name, false);
+            writer.name("meta").beginObject();
+            Site site = page.getSite();
+            writer.name("site").value(site != null ? site.getPath() : null);
+            writer.name("template").value(page.getTemplatePath());
+            writer.name("isTemplate").value(getResourceManager().isTemplate(context, page.getResource()));
+            writer.name("language").value(page.getLocale().getLanguage());
+            writer.name("defaultLanguage").value(page.getPageLanguages().getDefaultLanguage().getKey());
+            writer.endObject();
+        }
+        writer.endObject();
+    }
 
     public void writeJsonResource(@Nonnull final BeanContext context, @Nonnull final JsonWriter writer,
                                   @Nonnull final TreeNodeStrategy nodeStrategy, Resource resource)

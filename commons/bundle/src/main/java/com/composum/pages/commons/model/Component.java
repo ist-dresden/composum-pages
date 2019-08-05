@@ -147,10 +147,10 @@ public class Component extends AbstractModel {
         return TypeResourceStrategy.getTypeResource(resource, resolver, context);
     }
 
-    /** Compatible to {@link Component#determineResource(Resource)}. */
+    /** Compatible to {@link AbstractModel#determineResource(Resource)}. */
     public static class TypeResourceStrategy implements DetermineResourceStategy {
 
-        /** Compatible to {@link Component#determineResource(Resource)}. */
+        /** Compatible to {@link AbstractModel#determineResource(Resource)}. */
         @Override
         public Resource determineResource(BeanContext beanContext, Resource requestResource) {
             // ignore all resource types modified by resource wrappers

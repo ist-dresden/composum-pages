@@ -84,7 +84,7 @@ public abstract class AbstractTileSearchResult {
                 options.setForceResourceType(tileResourceType);
                 options.setReplaceSelectors(selectors);
 
-                RequestDispatcher dispatcher = request.getRequestDispatcher(content, options);
+                RequestDispatcher dispatcher = request.getRequestDispatcher(resource, options);
                 if (dispatcher != null) {
                     try {
                         dispatcher.include(request, response);

@@ -18,7 +18,6 @@ import com.composum.pages.commons.service.EditService;
 import com.composum.pages.commons.service.PageManager;
 import com.composum.pages.commons.service.ResourceManager;
 import com.composum.pages.commons.service.SiteManager;
-import com.composum.pages.commons.util.PagesUtil;
 import com.composum.pages.commons.util.RequestUtil;
 import com.composum.pages.commons.util.ResolverUtil;
 import com.composum.pages.commons.util.ResourceTypeUtil;
@@ -174,7 +173,9 @@ public class EditServlet extends PagesContentServlet {
         return operations;
     }
 
-    /** setup of the servlet operation set for this servlet instance */
+    /**
+     * setup of the servlet operation set for this servlet instance
+     */
     @Override
     @SuppressWarnings("Duplicates")
     public void init() throws ServletException {
@@ -1186,31 +1187,5 @@ public class EditServlet extends PagesContentServlet {
 
             forward(request, response, resource, paramType, options);
         }
-    }
-
-    // JSON response
-
-    public void writeJsonPage(@Nonnull final BeanContext context, @Nonnull final JsonWriter writer,
-                              @Nonnull final ResourceFilter filter, @Nonnull final Page page)
-            throws IOException {
-        writer.beginObject();
-        if (page.isValid()) {
-            TreeNodeStrategy nodeStrategy = new DefaultTreeNodeStrategy(filter);
-            writeJsonNodeData(writer, nodeStrategy, ResourceHandle.use(page.getResource()), LabelType.name, false);
-            writer.name("reference");
-            PagesUtil.write(writer, PagesUtil.getReference(page.getResource(), null));
-            Resource contentResource = page.getContent().getResource();
-            writer.name("jcrContent");
-            writeJsonNode(writer, nodeStrategy, ResourceHandle.use(contentResource), LabelType.name, false);
-            writer.name("meta").beginObject();
-            Site site = page.getSite();
-            writer.name("site").value(site != null ? site.getPath() : null);
-            writer.name("template").value(page.getTemplatePath());
-            writer.name("isTemplate").value(resourceManager.isTemplate(context, page.getResource()));
-            writer.name("language").value(page.getLocale().getLanguage());
-            writer.name("defaultLanguage").value(page.getPageLanguages().getDefaultLanguage().getKey());
-            writer.endObject();
-        }
-        writer.endObject();
     }
 }

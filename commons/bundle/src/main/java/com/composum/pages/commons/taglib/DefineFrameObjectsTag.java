@@ -7,14 +7,11 @@ import org.apache.sling.api.resource.Resource;
 public class DefineFrameObjectsTag extends DefineObjectsTag {
 
     @Override
-    protected Resource determineResource(SlingHttpServletRequest request) {
+    protected Resource determineResourceRef(SlingHttpServletRequest request) {
         Resource resource = null;
         String path = request.getRequestPathInfo().getSuffix();
         if (StringUtils.isNotBlank(path)) {
             resource = request.getResourceResolver().resolve(path);
-        }
-        if (resource == null) {
-            resource = request.getResource();
         }
         return resource;
     }

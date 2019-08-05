@@ -33,6 +33,7 @@ public interface PagesConstants {
     /** request attributes */
 
     String RA_CONTEXT_PATH = "contextPath";
+    String RA_RESOURCE_REF = "resourceRef";
     String RA_CURRENT_PAGE = "currentPage";
 
     /** I18N */
