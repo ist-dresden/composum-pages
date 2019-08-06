@@ -26,7 +26,7 @@
         }
 
         @include mobile {
-            @include aspect-ratio-wrapper(7, 8);
+            @include aspect-ratio-wrapper(1, 1);
         }
 
         .composum-pages-components-element-teaser {
@@ -121,7 +121,7 @@
 
                 &_bg-image {
                     margin: 0;
-                    background-position: 50% 10%;
+                    background-position: 50% 30%;
                     background-repeat: no-repeat;
 
                     .composum-pages-components-element-teaser {
@@ -145,7 +145,7 @@
 
                         &_player {
 
-                            @include screen-size-s-min {
+                            @include screen-size-s-max {
                                 width: 200%;
                             }
                         }
