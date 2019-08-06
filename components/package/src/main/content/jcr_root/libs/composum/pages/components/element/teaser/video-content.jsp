@@ -5,6 +5,8 @@
 <cpp:model var="teaser" type="com.composum.pages.components.model.teaser.Teaser">
     <cpn:link test="${teaser.hasLink}" body="true" class="${teaserCSS}_link"
               href="${teaser.linkUrl}" target="${teaser.linkTarget}" title="${teaser.linkTitle}">
+        <cpn:div test="${teaser.hasIcon}" class="${teaserCSS}_icon"><i
+                class="fa fa-${teaser.icon}"></i></cpn:div>
         <cpp:include replaceSelectors="${teaser.textSelector}"/>
     </cpn:link>
 </cpp:model>

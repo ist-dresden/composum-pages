@@ -4,16 +4,15 @@
 <cpp:defineObjects/>
 <cpp:element var="teaser" type="com.composum.pages.components.model.teaser.Teaser"
              cssAdd="@{teaserCSS}_variation_default @{teaserCSS}_link-set @{teaserCSS}_@{teaser.shape}">
-    <cpn:div test="${teaser.useImage}" class="${teaserCSS}_image">
-        <cpn:link test="${teaser.hasLink}" body="true" class="${teaserCSS}_link"
+    <cpn:div test="${!teaser.noAsset||teaser.authorMode}" class="${teaserCSS}_asset">
+        <cpn:link test="${teaser.hasLink&&!teaser.noAsset}" body="true" class="${teaserCSS}_link"
                   href="${teaser.linkUrl}" title="${teaser.linkTitle}">
-            <cpp:include path="image" resourceType="composum/pages/components/element/image"/>
-        </cpn:link>
-    </cpn:div>
-    <cpn:div test="${teaser.useVideo}" class="${teaserCSS}_video">
-        <cpn:link test="${teaser.hasLink}" body="true" class="${teaserCSS}_link"
-                  href="${teaser.linkUrl}" title="${teaser.linkTitle}">
-            <cpp:include path="video" resourceType="composum/pages/components/element/video"/>
+            <cpn:div test="${teaser.useImage||teaser.authorMode}" class="${teaserCSS}_image">
+                <cpp:include path="image" resourceType="composum/pages/components/element/image"/>
+            </cpn:div>
+            <cpn:div test="${teaser.useVideo||teaser.authorMode}" class="${teaserCSS}_video">
+                <cpp:include path="video" resourceType="composum/pages/components/element/video"/>
+            </cpn:div>
         </cpn:link>
     </cpn:div>
     <cpn:div test="${teaser.useIcon}" class="${teaserCSS}_icon"><i

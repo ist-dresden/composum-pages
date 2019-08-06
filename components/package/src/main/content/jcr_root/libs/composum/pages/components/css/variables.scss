@@ -5,7 +5,7 @@
  */
 $screen-size-xl: 1500px;
 $screen-size-l: 1200px; // bootstrap -lg-
-$screen-size-m: 976px; // bootstrap -md-
+$screen-size-m: 992px; // bootstrap -md-
 $screen-size-s: 768px; // bootstrap -sm-
 $screen-size-xs: 624px;
 $screen-size-xxs: 480px;
@@ -49,6 +49,7 @@ $site-default-text-color: $bootstrap-color-default;
 $site-default-link-color: #c33;
 $site-default-link-hover: #e33;
 $site-bright-text-color: #eee;
+$site-bright-icon-color: #ccc;
 $site-bright-text-hover: #f8f8f8;
 $main-title-background-color: #eee;
 $main-title-text-color: #444;

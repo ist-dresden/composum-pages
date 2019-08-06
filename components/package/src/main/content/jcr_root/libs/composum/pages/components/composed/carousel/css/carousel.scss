@@ -9,7 +9,7 @@
     &_element {
         @include aspect-ratio-wrapper(2, 1);
 
-        @include screen-size-xl {
+        @include screen-size-xl-min {
             @include aspect-ratio-wrapper(4, 1);
         }
 
@@ -58,7 +58,7 @@
             &_title {
                 @include title-font;
 
-                @include screen-size-xxs {
+                @include screen-size-xxs-max {
                     font-size: $site-title-font-size * (3/4);
                 }
             }
@@ -66,7 +66,7 @@
             &_subtitle {
                 @include subtitle-font;
 
-                @include screen-size-xxs {
+                @include screen-size-xxs-max {
                     font-size: $site-subtitle-font-size * (5/6);
                 }
             }
@@ -75,14 +75,50 @@
                 @include font('robotolight', $stage-default-font-size);
                 color: $site-bright-text-color;
 
-                @include screen-size-xxs {
+                @include screen-size-xxs-max {
                     font-size: $stage-default-font-size-xs;
                 }
             }
 
             &_variation {
 
-                &_default,
+                &_default {
+                    width: 100%;
+                    height: 100%;
+                    margin: 0;
+                    overflow: hidden;
+                    padding: 2% 15% !important;
+
+                    .composum-pages-components-element-teaser {
+
+                        &_asset {
+                            display: none !important;
+                        }
+
+                        &_content {
+                            width: 100%;
+                            height: 100%;
+                        }
+                    }
+
+                    &.composum-pages-components-element-teaser {
+
+                        &_symbol {
+
+                            .composum-pages-components-element-teaser {
+
+                                &_icon {
+                                    font-size: 3.5rem;
+                                    min-width: 5rem;
+                                    max-width: 5rem;
+                                    padding-top: 8px;
+                                    color: $site-bright-icon-color;
+                                }
+                            }
+                        }
+                    }
+                }
+
                 &_bg-image {
                     margin: 0;
                     background-position: 50% 10%;
@@ -109,7 +145,7 @@
 
                         &_player {
 
-                            @include screen-size-s {
+                            @include screen-size-s-min {
                                 width: 200%;
                             }
                         }

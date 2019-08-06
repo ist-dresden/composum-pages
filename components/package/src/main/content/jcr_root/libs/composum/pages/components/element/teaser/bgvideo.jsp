@@ -4,5 +4,5 @@
 <cpp:defineObjects/>
 <cpp:element var="teaser" type="com.composum.pages.components.model.teaser.Teaser"
              cssAdd="@{teaserCSS}_variation_bg-video">
-    <cpp:include path="video" resourceType="composum/pages/components/element/video/background"/>
+    <cpp:include path="video" resourceType="composum/pages/components/element/video/background" mode="none"/>
 </cpp:element>

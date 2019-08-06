@@ -56,6 +56,10 @@ public class Teaser extends ImageRelatedElement {
         return isUseVideo() ? "video" : isUseImage() ? "image" : isUseIcon() ? "symbol" : "text";
     }
 
+    public boolean isNoAsset() {
+        return !isUseVideo() && !isUseImage();
+    }
+
     public boolean isUseVideo() {
         return StringUtils.isNotBlank(getProperty(PROP_VIDEO_REF, ""));
     }
@@ -66,6 +70,10 @@ public class Teaser extends ImageRelatedElement {
 
     public boolean isUseIcon() {
         return !isUseImage() && StringUtils.isNotBlank(getIcon());
+    }
+
+    public boolean isHasIcon() {
+        return StringUtils.isNotBlank(getIcon());
     }
 
     public String getIcon() {

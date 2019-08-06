@@ -15,10 +15,43 @@
                 .composum-pages-components-element {
 
                     &-image_drop-zone,
+                    &-video_drop-zone,
                     &-teaser_drop-zone {
                         display: list-item;
                         list-style: none;
                     }
+                }
+
+                &.composum-pages-components-element-teaser {
+
+                    &_symbol, &_text {
+
+                        .composum-pages-components-element-teaser {
+
+                            &_asset {
+                                display: inline-block;
+                                max-width: 90px !important;
+                            }
+                        }
+                    }
+                }
+            }
+
+            &_bg-image,
+            &_bg-video {
+
+                .composum-pages-components-element {
+
+                    &-image_drop-zone,
+                    &-video_drop-zone {
+                        position: relative;
+                    }
+                }
+
+                .composum-pages-components-placeholder {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
                 }
             }
         }

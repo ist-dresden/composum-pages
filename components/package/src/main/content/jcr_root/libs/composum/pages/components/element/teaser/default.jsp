@@ -6,11 +6,13 @@
              cssAdd="@{teaserCSS}_variation_default @{teaserCSS}_@{teaser.shape}">
     <cpn:link test="${teaser.hasLink}" body="true" class="${teaserCSS}_link"
               href="${teaser.linkUrl}" target="${teaser.linkTarget}" title="${teaser.linkTitle}">
-        <cpn:div test="${teaser.useImage}" class="${teaserCSS}_image">
-            <cpp:include path="image" resourceType="composum/pages/components/element/image"/>
-        </cpn:div>
-        <cpn:div test="${teaser.useVideo}" class="${teaserCSS}_video">
-            <cpp:include path="video" resourceType="composum/pages/components/element/video"/>
+        <cpn:div test="${teaser.useImage||teaser.useVideo||teaser.authorMode}" class="${teaserCSS}_asset">
+            <cpn:div test="${teaser.useImage||teaser.authorMode}" class="${teaserCSS}_image">
+                <cpp:include path="image" resourceType="composum/pages/components/element/image"/>
+            </cpn:div>
+            <cpn:div test="${teaser.useVideo||teaser.authorMode}" class="${teaserCSS}_video">
+                <cpp:include path="video" resourceType="composum/pages/components/element/video"/>
+            </cpn:div>
         </cpn:div>
         <cpn:div test="${teaser.useIcon}" class="${teaserCSS}_icon"><i
                 class="fa fa-${teaser.icon}"></i></cpn:div>

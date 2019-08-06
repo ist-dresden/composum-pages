@@ -37,22 +37,11 @@
     &_variation {
 
         &_default {
-            clear: both;
             margin: $section-spacing-default 0;
+            display: flex;
+            flex-wrap: wrap;
 
             .composum-pages-components-element-teaser {
-
-                &_image {
-                    width: 40%;
-                    float: left;
-
-                    .composum-pages-components-element {
-
-                        &-image {
-                            margin: 0 0 $text-spacing-default 0;
-                        }
-                    }
-                }
 
                 &_title,
                 &_subtitle {
@@ -60,18 +49,16 @@
                 }
 
                 &_text-block {
-                    width: 60%;
-                    float: right;
                     padding-left: $text-spacing-default;
 
-                    &.no-image {
+                    &.no-asset {
                         width: 100%;
-                        float: none;
                         padding: 0;
                     }
                 }
 
                 &_link {
+                    display: flex;
 
                     .composum-pages-components-element-teaser {
 
@@ -96,15 +83,48 @@
 
             &.composum-pages-components-element-teaser {
 
-                &_symbol {
-                    display: flex;
-                    padding: 0 11px;
+                &_video,
+                &_image {
+
+                    .composum-pages-components-element-teaser {
+
+                        &_asset {
+                            min-width: 40%;
+                            max-width: 40%;
+
+                            .composum-pages-components-element {
+
+                                &-image, &-video {
+                                    margin: 0 0 $text-spacing-default 0;
+                                }
+                            }
+                        }
+
+                        &_content {
+                            min-width: 60%;
+                            max-width: 60%;
+                        }
+                    }
+                }
+
+                &_symbol, &_text {
 
                     .composum-pages-components-element-teaser {
 
                         &_link {
-                            display: flex;
+                            width: 100%;
                         }
+
+                        &_asset {
+                            display: none;
+                        }
+                    }
+                }
+
+                &_symbol {
+                    padding: 0 11px;
+
+                    .composum-pages-components-element-teaser {
 
                         &_icon {
                             min-width: $symbol-width;
@@ -113,6 +133,25 @@
                             font-size: $symbol-font-size;
                             color: $symbol-color;
                         }
+                    }
+                }
+            }
+
+            .composum-pages-components-element {
+
+                &-link-set {
+                    padding-left: 40px;
+                }
+
+                &-link {
+
+                    a,
+                    a:visited {
+                        color: $site-default-link-color;
+                    }
+
+                    a:hover {
+                        color: $site-default-link-hover;
                     }
                 }
             }
@@ -180,35 +219,15 @@
             margin: $text-spacing-default 0;
         }
     }
-
-    &_link-set {
-
-        .composum-pages-components-element {
-
-            &-link {
-
-                a,
-                a:visited {
-                    color: $site-default-link-color;
-                }
-
-                a:hover {
-                    color: $site-default-link-hover;
-                }
-            }
-        }
-    }
 }
 
 .composum-pages-components-container-row {
 
-    &_cell {
+    &_column {
 
-        &.col-sm-1,
-        &.col-sm-2,
-        &.col-sm-3,
-        &.col-sm-4,
-        &.col-md-4 {
+        &.col-md-5, &.col-md-4, &.col-md-3, &.col-md-2, &.col-md-1,
+        &.col-sm-6, &.col-sm-5, &.col-sm-4, &.col-sm-3, &.col-sm-2, &.col-sm-1,
+        &.col-xs-8, &.col-xs-7, &.col-xs-6, &.col-xs-5, &.col-xs-4, &.col-xs-3, &.col-xs-2, &.col-xs-1 {
 
             .composum-pages-components-element-teaser {
 
@@ -218,43 +237,41 @@
 
                         .composum-pages-components-element-teaser {
 
-                            &_image,
                             &_text-block {
-                                width: 100%;
-                                float: none;
                                 padding: 0;
                             }
                         }
-                    }
-                }
-            }
-        }
-    }
-}
 
-@media screen and (max-width: $bootstrap-screen-sm-max) {
+                        &.composum-pages-components-element-teaser {
 
-    .composum-pages-components-container-row {
+                            &_video,
+                            &_image {
 
-        &_cell {
+                                .composum-pages-components-element-teaser {
 
-            &.col-sm-5,
-            &.col-sm-6,
-            &.col-md-3 {
+                                    &_asset,
+                                    &_content {
+                                        display: block;
+                                        min-width: 100%;
+                                        max-width: 100%;
+                                        padding: 0;
+                                    }
 
-                .composum-pages-components-element-teaser {
+                                    &_link {
+                                        display: block;
+                                        width: 100%;
+                                        padding: 0;
+                                    }
+                                }
+                            }
 
-                    &_variation {
+                            &_symbol {
 
-                        &_default {
+                                .composum-pages-components-element-teaser {
 
-                            .composum-pages-components-element-teaser {
-
-                                &_image,
-                                &_text-block {
-                                    width: 100%;
-                                    float: none;
-                                    padding: 0;
+                                    &_link {
+                                        display: flex;
+                                    }
                                 }
                             }
                         }
@@ -265,7 +282,71 @@
     }
 }
 
-@media screen and (max-width: $bootstrap-screen-xs-max) {
+@include screen-size-m-l {
+
+    .composum-pages-components-container-row {
+
+        &_column {
+
+            &.col-md-6, &.col-md-5, &.col-md-4, &.col-md-3, &.col-md-2, &.col-md-1,
+            &.col-sm-9, &.col-sm-8, &.col-sm-7, &.col-sm-6, &.col-sm-5, &.col-sm-4, &.col-sm-3, &.col-sm-2, &.col-sm-1,
+            &.col-xs-10, &.col-xs-9, &.col-xs-8, &.col-xs-7, &.col-xs-6, &.col-xs-5, &.col-xs-4, &.col-xs-3, &.col-xs-2, &.col-xs-1 {
+
+                .composum-pages-components-element-teaser {
+
+                    &_variation {
+
+                        &_default {
+
+                            .composum-pages-components-element-teaser {
+
+                                &_text-block {
+                                    padding: 0;
+                                }
+                            }
+
+                            &.composum-pages-components-element-teaser {
+
+                                &_video,
+                                &_image {
+
+                                    .composum-pages-components-element-teaser {
+
+                                        &_asset,
+                                        &_content {
+                                            display: block;
+                                            min-width: 100%;
+                                            max-width: 100%;
+                                            padding: 0;
+                                        }
+
+                                        &_link {
+                                            display: block;
+                                            width: 100%;
+                                            padding: 0;
+                                        }
+                                    }
+                                }
+
+                                &_symbol {
+
+                                    .composum-pages-components-element-teaser {
+
+                                        &_link {
+                                            display: flex;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@include screen-size-xs-max {
 
     .composum-pages-components-element-teaser {
 
@@ -275,11 +356,42 @@
 
                 .composum-pages-components-element-teaser {
 
-                    &_image,
                     &_text-block {
-                        width: 100%;
-                        float: none;
                         padding: 0;
+                    }
+                }
+
+                &.composum-pages-components-element-teaser {
+
+                    &_video,
+                    &_image {
+
+                        .composum-pages-components-element-teaser {
+
+                            &_asset,
+                            &_content {
+                                display: block;
+                                min-width: 100%;
+                                max-width: 100%;
+                                padding: 0;
+                            }
+
+                            &_link {
+                                display: block;
+                                width: 100%;
+                                padding: 0;
+                            }
+                        }
+                    }
+
+                    &_symbol {
+
+                        .composum-pages-components-element-teaser {
+
+                            &_link {
+                                display: flex;
+                            }
+                        }
                     }
                 }
             }

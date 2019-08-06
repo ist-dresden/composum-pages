@@ -19,7 +19,6 @@
             @include aspect-ratio-wrapper(5, 1);
 
             .composum-pages-components-element-teaser {
-                padding: 0; // the drop zone should occupy the entire space
 
                 .composum-pages-edit_drop-zone {
                     height: 100%;
@@ -27,6 +26,14 @@
 
                 &_title {
                     margin-top: 0;
+                }
+
+                &_variation {
+
+                    &_bg-image,
+                    &_bg-video {
+                        padding: 0; // the drop zone should occupy the entire space
+                    }
                 }
             }
         }
