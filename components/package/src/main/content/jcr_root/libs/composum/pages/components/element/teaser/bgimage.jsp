@@ -8,7 +8,9 @@
     <cpp:dropZone property="image/imageRef" filter="asset:image">
         <cpn:link test="${teaser.hasLink}" body="true" class="${teaserCSS}_link"
                   href="${teaser.linkUrl}" target="${teaser.linkTarget}" title="${teaser.linkTitle}">
-            <cpp:include replaceSelectors="${teaser.textSelector}"/>
+            <div class="${teaserCSS}_content">
+                <cpp:include replaceSelectors="${teaser.textSelector}"/>
+            </div>
         </cpn:link>
     </cpp:dropZone>
 </cpp:element>

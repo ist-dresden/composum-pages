@@ -8,6 +8,10 @@
     @include default-font;
     color: $site-default-text-color;
 
+    a, a:visited, a:hover, a:focus {
+        text-decoration: none;
+    }
+
     &_link,
     &_link:visited {
         @include default-font;
@@ -21,12 +25,13 @@
     }
 
     &_title {
-        @include inline-title;
+        @include a-title-font($column-subtitle-font-size);
+        color: $column-title-text-color;
     }
 
     &_subtitle {
-        @include inline-title;
-        font-size: $text-title-font-size-xs;
+        @include a-title-font($text-title-font-size-xs);
+        color: $column-title-text-color;
     }
 
     &_variation {
@@ -122,7 +127,6 @@
                     .composum-pages-components-element-teaser {
 
                         &_text-block {
-                            padding: $text-spacing-default;
                             color: $site-bright-text-color;
                             mix-blend-mode: difference;
                         }

@@ -31,30 +31,32 @@
 
         .composum-pages-components-element-teaser {
             @include aspect-ratio-element;
-            background-position: 50% 10%;
-            background-repeat: no-repeat;
             background-color: #000;
-            padding: 2rem 15%;
             @include bright-font;
             color: $site-bright-text-color;
 
-            a,
-            a:visited {
-                text-decoration: none;
-                color: $site-bright-text-color;
-            }
+            &, &_title, &_subtitle, &_text {
 
-            a:hover {
-                color: $site-bright-text-hover;
+                a, a:visited, a:hover, a:focus {
+                    color: $site-bright-text-color !important;
+                }
+
+                a:hover {
+                    color: $site-bright-text-hover !important;
+                }
             }
 
             &_text-block {
                 overflow: unset;
             }
 
+            &_title, &_subtitle {
+                margin: 0 0 $text-spacing-default 0;
+                color: $site-bright-text-color !important;
+            }
+
             &_title {
                 @include title-font;
-                color: $site-bright-text-color;
 
                 @include screen-size-xxs {
                     font-size: $site-title-font-size * (3/4);
@@ -63,7 +65,6 @@
 
             &_subtitle {
                 @include subtitle-font;
-                color: $site-bright-text-color;
 
                 @include screen-size-xxs {
                     font-size: $site-subtitle-font-size * (5/6);
@@ -71,11 +72,55 @@
             }
 
             &_text {
-                @include default-font;
+                @include font('robotolight', $stage-default-font-size);
                 color: $site-bright-text-color;
 
                 @include screen-size-xxs {
-                    font-size: $site-default-font-size * (9/10);
+                    font-size: $stage-default-font-size-xs;
+                }
+            }
+
+            &_variation {
+
+                &_default,
+                &_bg-image {
+                    margin: 0;
+                    background-position: 50% 10%;
+                    background-repeat: no-repeat;
+
+                    .composum-pages-components-element-teaser {
+
+                        &_content {
+                            width: 100%;
+                            height: 100%;
+                            overflow: hidden;
+                            padding: 2% 15%;
+                        }
+                    }
+                }
+
+                &_bg-video {
+
+                    .composum-pages-components-element-video-background {
+
+                        &_frame {
+                            height: 100%;
+                        }
+
+                        &_player {
+
+                            @include screen-size-s {
+                                width: 200%;
+                            }
+                        }
+
+                        &_content {
+                            width: 100%;
+                            height: 100%;
+                            overflow: hidden;
+                            padding: 2% 15%;
+                        }
+                    }
                 }
             }
         }

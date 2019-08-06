@@ -6,8 +6,8 @@
 <cpp:defineObjects/>
 <cpp:element var="model" type="com.composum.pages.components.model.asset.Video"
              test="@{model.valid||model.editMode}">
-    <cpp:dropZone property="videoRef" i18n="true" filter="asset:video">
-        <div class="${modelCSS}_frame">
+    <div class="${modelCSS}_frame">
+        <cpp:dropZone property="videoRef" i18n="true" filter="asset:video">
             <c:choose>
                 <c:when test="${model.valid}">
                     <sling:call script="player.jsp"/>
@@ -17,9 +17,9 @@
                     <cpp:include replaceSelectors="placeholder"/>
                 </c:otherwise>
             </c:choose>
-        </div>
-        <div class="${modelCSS}_content">
-            <cpp:include path=".." replaceSelectors="video-content"/>
-        </div>
-    </cpp:dropZone>
+        </cpp:dropZone>
+    </div>
+    <div class="${modelCSS}_content">
+        <cpp:include path=".." replaceSelectors="video-content"/>
+    </div>
 </cpp:element>

@@ -14,9 +14,9 @@
         </cpn:div>
         <cpn:div test="${teaser.useIcon}" class="${teaserCSS}_icon"><i
                 class="fa fa-${teaser.icon}"></i></cpn:div>
-        <cpn:div test="${teaser.useIcon}" body="true" class="${teaserCSS}_text-wrapper">
+        <div class="${teaserCSS}_content">
             <cpp:include replaceSelectors="${teaser.textSelector}"/>
             <cpp:include path="links" resourceType="composum/pages/components/element/link/set"/>
-        </cpn:div>
+        </div>
     </cpn:link>
 </cpp:element>

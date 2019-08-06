@@ -18,11 +18,11 @@
     </cpn:div>
     <cpn:div test="${teaser.useIcon}" class="${teaserCSS}_icon"><i
             class="fa fa-${teaser.icon}"></i></cpn:div>
-    <cpn:div test="${teaser.useIcon}" body="true" class="${teaserCSS}_text-wrapper">
+    <div class="${teaserCSS}_content">
         <cpn:link test="${teaser.hasLink}" body="true" class="${teaserCSS}_link"
                   href="${teaser.linkUrl}" title="${teaser.linkTitle}">
             <cpp:include replaceSelectors="${teaser.textSelector}"/>
         </cpn:link>
         <cpp:include path="links" resourceType="composum/pages/components/element/link/set"/>
-    </cpn:div>
+    </div>
 </cpp:element>
