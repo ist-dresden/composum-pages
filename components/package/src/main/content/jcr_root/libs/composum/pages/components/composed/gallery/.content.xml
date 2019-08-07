@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
-        jcr:primaryType="cpp:Component"
-        sling:resourceSuperType="composum/pages/components/element"/>
+        jcr:primaryType="sling:Folder"
+        sling:resourceSuperType="composum/pages/components/element">
+    <!-- not ready, not useful - type is sling:Folder instead of cpp:Component to hide in component selection -->
+</jcr:root>
