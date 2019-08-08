@@ -24,7 +24,7 @@
             value="the component type is inherited form the supertype if not specified here"/>
 <div class="row" style="align-items: flex-start;">
     <div class="col col-xs-8">
-        <cpp:widget label="Description" property="jcr:description" type="textarea"/>
+        <cpp:widget label="Description" property="jcr:description" type="textarea" rows="8"/>
     </div>
     <div class="col col-xs-4">
         <cpp:widget label="Category" property="category" type="textfield" multi="true"/>

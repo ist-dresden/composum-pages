@@ -413,6 +413,14 @@
 
         actions.component = {
 
+            folder: {
+
+                edit: function (event, name, path, type) {
+                    pages.dialogs.openEditDialog(name, path, type, undefined,
+                        '/libs/composum/pages/stage/edit/default/develop/component/folder.html');
+                }
+            },
+
             create: function (event, name, path, type) {
                 pages.dialogs.openEditDialog(name, path, type, undefined,
                     '/libs/composum/pages/stage/edit/default/develop/component/create.html');

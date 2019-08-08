@@ -21,7 +21,7 @@
     </div>
     <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
         <cpp:treeAction icon="edit" label="Rename" title="Edit folder title / type"
-                        action="window.composum.pages.actions.folder.edit"/>
+                        action="window.composum.pages.actions.component.folder.edit"/>
         <div class="btn-group btn-group-sm" role="group">
             <cpp:treeMenu key="insert" icon="plus" label="Insert" title="insert a new content element">
                 <cpp:menuItem icon="puzzle-piece" label="Component" title="create a new component"
