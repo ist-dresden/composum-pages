@@ -5,8 +5,8 @@
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <%@taglib prefix="cpn" uri="http://sling.composum.com/cpnl/1.0" %>
 <cpp:defineFrameObjects/>
-<cpn:div test="${not empty widget.model.text}" class="${widgetCSS}_${widget.widgetType} form-group">
+<div class="${widgetCSS}_${widget.widgetType} form-group" ${widget.attributes}>
     <cpn:div test="${not empty widget.model.level}" class="hint hint-${widget.model.level}" body="true">
         <cpn:text class="${widgetCSS}_text" value="${widget.model.text}" i18n="${widget.i18n}" type="rich"/>
     </cpn:div>
-</cpn:div>
+</div>
