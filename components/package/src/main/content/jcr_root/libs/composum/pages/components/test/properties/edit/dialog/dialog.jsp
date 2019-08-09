@@ -1,8 +1,7 @@
 <%@page session="false" pageEncoding="utf-8" %>
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <cpp:defineFrameObjects/>
-<cpp:editDialog var="code" type="com.composum.pages.commons.model.GenericModel"
-                title="Property Edit Test">
+<cpp:editDialog title="Property Edit Test">
     <cpp:editDialogTab tabId="single" label="Single Value">
         <cpp:editDialogGroup label="checkboxes" expanded="true">
             <div class="row">

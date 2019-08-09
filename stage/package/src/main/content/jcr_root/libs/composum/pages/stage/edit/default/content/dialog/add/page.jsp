@@ -1,8 +1,7 @@
 <%@page session="false" pageEncoding="utf-8" %>
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <cpp:defineFrameObjects/>
-<cpp:editDialog var="page" type="com.composum.pages.commons.model.Page" selector="wizard" languageContext="false"
-                title="Insert a new Page" resourcePath="*" submitLabel="Create" successEvent="content:inserted">
+<cpp:editDialog title="Insert a new Page" resourcePath="*" submitLabel="Create" successEvent="content:inserted">
     <cpp:editDialogTab tabId="template" label="Page Template">
         <cpp:widget label="Template" name="template" type="page-template" rules="required"
                     hint="select a template or type"/>

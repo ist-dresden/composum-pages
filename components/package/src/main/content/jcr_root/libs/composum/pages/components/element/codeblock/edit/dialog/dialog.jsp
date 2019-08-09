@@ -1,8 +1,7 @@
 <%@page session="false" pageEncoding="utf-8" %>
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <cpp:defineFrameObjects/>
-<cpp:editDialog var="code" type="com.composum.pages.components.model.codeblock.CodeBlock"
-                title="@{dialog.selector=='create'?'Create a Code View':'Edit Code View'}">
+<cpp:editDialog title="@{dialog.selector=='create'?'Create a Code View':'Edit Code View'}">
     <cpp:widget label="Title" property="title" type="textfield"
                 hint="the title shown in the box header"/>
     <cpp:widget label="Service URI" property="serviceUri" type="textfield" i18n="false"

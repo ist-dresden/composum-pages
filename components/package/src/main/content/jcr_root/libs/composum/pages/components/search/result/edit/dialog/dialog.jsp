@@ -1,8 +1,7 @@
 <%@page session="false" pageEncoding="utf-8" %>
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <cpp:defineObjects/>
-<cpp:editDialog var="result" type="com.composum.pages.components.model.search.SearchField"
-                title="Edit Search Result">
+<cpp:editDialog title="Edit Search Result">
     <div class="row">
         <div class="col col-xs-8">
             <cpp:widget label="Selector" property="selector" type="textfield"

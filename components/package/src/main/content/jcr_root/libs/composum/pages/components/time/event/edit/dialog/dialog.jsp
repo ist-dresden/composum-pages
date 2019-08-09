@@ -2,8 +2,7 @@
 <%@taglib prefix="sling" uri="http://sling.apache.org/taglibs/sling/1.2" %>
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <cpp:defineFrameObjects/>
-<cpp:editDialog var="pageProps" type="com.composum.pages.commons.model.Page"
-                title="Edit Event Properties">
+<cpp:editDialog title="Edit Event Properties">
     <cpp:editDialogTab tabId="page" label="Event">
         <sling:call script="event.jsp"/>
         <sling:call script="general.jsp"/>

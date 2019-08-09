@@ -1,8 +1,7 @@
 <%@page session="false" pageEncoding="utf-8" %>
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <cpp:defineFrameObjects/>
-<cpp:editDialog var="teaser" type="com.composum.pages.components.model.teaser.Teaser"
-                title="@{dialog.selector=='create'?'Create a Teaser':'Edit Teaser'}">
+<cpp:editDialog title="@{dialog.selector=='create'?'Create a Teaser':'Edit Teaser'}">
     <cpp:editDialogTab tabId="teaser" label="Properties">
         <div class="row">
             <div class="col col-xs-8">

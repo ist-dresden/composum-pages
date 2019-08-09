@@ -2,8 +2,7 @@
 <%@taglib prefix="sling" uri="http://sling.apache.org/taglibs/sling/1.2" %>
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <cpp:defineFrameObjects/>
-<cpp:editDialog var="text" type="com.composum.pages.components.model.composed.table.Cell"
-                title="@{dialog.selector=='create'?'Create Cell':'Edit Cell'}">
+<cpp:editDialog title="@{dialog.selector=='create'?'Create Cell':'Edit Cell'}">
     <cpp:widget label="Text" property="text" type="richtext" i18n="true"/>
     <div class="row">
         <div class="col col-xs-4">

@@ -3,8 +3,7 @@
 <%@taglib prefix="cpn" uri="http://sling.composum.com/cpnl/1.0" %>
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <cpp:defineFrameObjects/>
-<cpp:editDialog var="row" type="com.composum.pages.components.model.composed.table.Row"
-                title="@{dialog.selector=='create'?'Create a Table Row':'Table Row Properties'}">
+<cpp:editDialog title="@{dialog.selector=='create'?'Create a Table Row':'Table Row Properties'}">
     <div class="row">
         <div class="col col-xs-3">
         </div>
