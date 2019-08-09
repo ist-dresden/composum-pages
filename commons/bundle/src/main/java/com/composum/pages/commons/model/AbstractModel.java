@@ -672,7 +672,7 @@ public abstract class AbstractModel implements SlingBean, Model {
         @Override
         @Nullable
         public Object getValue(@Nonnull final String key) {
-            return getProperty(key, Object.class);
+            return getProperty(key, (Class<?>) null);
         }
 
     }
@@ -682,7 +682,7 @@ public abstract class AbstractModel implements SlingBean, Model {
         @Override
         @Nullable
         public Object getValue(@Nonnull final String key) {
-            return getInherited(key, Object.class);
+            return getInherited(key, (Class<?>) null);
         }
 
     }
