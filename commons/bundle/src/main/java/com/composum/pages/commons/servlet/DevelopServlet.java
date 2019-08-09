@@ -16,8 +16,10 @@ import com.composum.sling.core.ResourceHandle;
 import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.filter.StringFilter;
 import com.composum.sling.core.servlet.NodeTreeServlet;
+import com.composum.sling.core.servlet.ServletOperation;
 import com.composum.sling.core.servlet.ServletOperationSet;
 import org.apache.sling.api.SlingHttpServletRequest;
+import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.servlets.HttpConstants;
@@ -32,8 +34,10 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.jcr.RepositoryException;
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
+import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
 
@@ -93,7 +97,8 @@ public class DevelopServlet extends NodeTreeServlet {
     }
 
     public enum Operation {
-        tree, treeActions
+        tree, treeActions,
+        createComponent, adjustComponent
     }
 
     protected PagesEditOperationSet operations = new PagesEditOperationSet();
@@ -103,7 +108,9 @@ public class DevelopServlet extends NodeTreeServlet {
         return operations;
     }
 
-    /** setup of the servlet operation set for this servlet instance */
+    /**
+     * setup of the servlet operation set for this servlet instance
+     */
     @Override
     @SuppressWarnings("Duplicates")
     public void init() throws ServletException {
@@ -195,4 +202,17 @@ public class DevelopServlet extends NodeTreeServlet {
         }
     }
 
+    //
+    // Component Editing
+    //
+
+    protected class AdjustComponent implements ServletOperation {
+
+        @Override
+        public void doIt(@Nonnull final SlingHttpServletRequest request,
+                         @Nonnull final SlingHttpServletResponse response,
+                         @Nonnull final ResourceHandle resource)
+                throws RepositoryException, IOException, ServletException {
+        }
+    }
 }

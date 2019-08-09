@@ -60,8 +60,11 @@ public class DefineObjectsTag extends org.apache.sling.scripting.jsp.taglib.Defi
                 ? Boolean.TRUE : Boolean.FALSE, BeanContext.Scope.request);
 
         request.adaptTo(PagesLocale.class);
-        setCurrentPage(resourceRef != null ? resourceRef : request.getResource());
-        setLanguages();
+        if (resourceRef == null) {
+            resourceRef = request.getResource();
+        }
+        setCurrentPage(resourceRef);
+        setLanguages(resourceRef);
 
         return result;
     }
@@ -84,10 +87,8 @@ public class DefineObjectsTag extends org.apache.sling.scripting.jsp.taglib.Defi
         }
     }
 
-    protected void setLanguages() {
+    protected void setLanguages(Resource resource) {
         if (Languages.get(context) == null) {
-            SlingHttpServletRequest request = context.getRequest();
-            Resource resource = determineResourceRef(request);
             Languages.set(context, resource);
         }
     }

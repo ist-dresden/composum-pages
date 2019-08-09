@@ -5,8 +5,11 @@
  */
 package com.composum.pages.commons.service;
 
+import com.composum.pages.commons.model.Component.ComponentPieces;
 import com.composum.sling.platform.staging.query.QueryConditionDsl;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.sling.api.resource.PersistenceException;
+import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 
 import javax.annotation.Nonnull;
@@ -46,4 +49,13 @@ public interface ComponentManager {
     }
 
     Collection<String> getComponentCategories(ResourceResolver resolver);
+
+    void createComponent(@Nonnull Resource parent, @Nonnull String name,
+                         @Nullable String primaryType, @Nullable String componentType,
+                         @Nullable String superType, @Nullable String title, @Nullable String description,
+                         @Nullable String[] categories, @Nonnull ComponentPieces requested)
+            throws PersistenceException;
+
+    void adjustComponent(@Nonnull Resource component, @Nonnull ComponentPieces requested)
+            throws PersistenceException;
 }

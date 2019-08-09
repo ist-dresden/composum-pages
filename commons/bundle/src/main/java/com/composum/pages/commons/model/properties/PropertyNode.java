@@ -69,7 +69,7 @@ public abstract class PropertyNode implements SlingBean {
     public void initialize(final BeanContext context, final Resource resource) {
         this.context = context;
         this.resource = resource;
-        values = ResourceUtil.isNonExistingResource(resource)
+        values = resource == null || ResourceUtil.isNonExistingResource(resource)
                 ? new ValueMapDecorator(new HashMap<>()) : resource.getValueMap();
         model = determineElementModel();
         initialize();
