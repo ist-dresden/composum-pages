@@ -228,6 +228,28 @@ public interface ResourceManager {
     }
 
     /**
+     * the 'transform nothing' context used in case of a copy operation
+     */
+    class NopTemplateContext implements TemplateContext {
+
+        protected final ResourceResolver resolver;
+
+        public NopTemplateContext(ResourceResolver resolver) {
+            this.resolver = resolver;
+        }
+
+        @Override
+        public ResourceResolver getResolver() {
+            return resolver;
+        }
+
+        @Override
+        public String applyTemplatePlaceholders(@Nonnull Resource target, @Nonnull String value) {
+            return value;
+        }
+    }
+
+    /**
      * only properties of a template accepted by this filter are copied (filter out template settings)
      */
     StringFilter CONTENT_PROPERTY_FILTER = new StringFilter.BlackList(

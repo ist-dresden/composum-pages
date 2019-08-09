@@ -24,7 +24,7 @@
     <cpp:editDialogGroup label="Shapes" expanded="true">
         <div class="row">
             <div class="col col-xs-4">
-                <cpp:widget type="checkbox" name="tile" label="Component Tile"
+                <cpp:widget type="checkbox" name="editTile" label="Component Tile"
                             value="${model.component.pieces.editTile}"/>
             </div>
             <div class="col col-xs-4">
@@ -32,7 +32,7 @@
                             value="${model.component.pieces.thumbnail}"/>
             </div>
             <div class="col col-xs-4">
-                <cpp:widget type="checkbox" name="help" label="Help Page"
+                <cpp:widget type="checkbox" name="helpPage" label="Help Page"
                             value="${model.component.pieces.helpPage}"/>
             </div>
         </div>
@@ -42,15 +42,15 @@
     <cpp:editDialogGroup label="Actions" expanded="true">
         <div class="row">
             <div class="col col-xs-4">
-                <cpp:widget type="checkbox" name="toolbar" label="Edit Toolbar"
+                <cpp:widget type="checkbox" name="editToolbar" label="Edit Toolbar"
                             value="${model.component.pieces.editToolbar}"/>
             </div>
             <div class="col col-xs-4">
-                <cpp:widget type="checkbox" name="tree" label="Tree Actions"
+                <cpp:widget type="checkbox" name="treeActions" label="Tree Actions"
                             value="${model.component.pieces.treeActions}"/>
             </div>
             <div class="col col-xs-4">
-                <cpp:widget type="checkbox" name="context" label="Context Actions"
+                <cpp:widget type="checkbox" name="contextActions" label="Context Actions"
                             value="${model.component.pieces.contextActions}"/>
             </div>
         </div>

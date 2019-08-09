@@ -21,13 +21,13 @@
     <cpp:editDialogGroup label="Shapes" expanded="true">
         <div class="row">
             <div class="col col-xs-4">
-                <cpp:widget type="checkbox" name="tile" label="Component Tile" value="true"/>
+                <cpp:widget type="checkbox" name="editTile" label="Component Tile" value="true"/>
             </div>
             <div class="col col-xs-4">
                 <cpp:widget type="checkbox" name="thumbnail" label="Thumbnail"/>
             </div>
             <div class="col col-xs-4">
-                <cpp:widget type="checkbox" name="help" label="Help Page"/>
+                <cpp:widget type="checkbox" name="helpPage" label="Help Page"/>
             </div>
         </div>
         <cpp:widget type="static" i18n="true" style="margin-top:-15px;"
@@ -36,13 +36,13 @@
     <cpp:editDialogGroup label="Actions" expanded="true">
         <div class="row">
             <div class="col col-xs-4">
-                <cpp:widget type="checkbox" name="toolbar" label="Edit Toolbar"/>
+                <cpp:widget type="checkbox" name="editToolbar" label="Edit Toolbar"/>
             </div>
             <div class="col col-xs-4">
-                <cpp:widget type="checkbox" name="tree" label="Tree Actions"/>
+                <cpp:widget type="checkbox" name="treeActions" label="Tree Actions"/>
             </div>
             <div class="col col-xs-4">
-                <cpp:widget type="checkbox" name="context" label="Context Actions"/>
+                <cpp:widget type="checkbox" name="contextActions" label="Context Actions"/>
             </div>
         </div>
         <cpp:widget type="static" i18n="true" style="margin-top:-15px;"

@@ -6,10 +6,13 @@
 package com.composum.pages.commons.servlet;
 
 import com.composum.pages.commons.PagesConfiguration;
+import com.composum.pages.commons.PagesConstants;
+import com.composum.pages.commons.model.Component.ComponentPieces;
 import com.composum.pages.commons.model.Page;
 import com.composum.pages.commons.service.ComponentManager;
 import com.composum.pages.commons.service.EditService;
 import com.composum.pages.commons.service.VersionsService;
+import com.composum.pages.commons.util.RequestUtil;
 import com.composum.pages.commons.util.ResolverUtil;
 import com.composum.pages.commons.util.ResourceTypeUtil;
 import com.composum.sling.core.ResourceHandle;
@@ -18,6 +21,9 @@ import com.composum.sling.core.filter.StringFilter;
 import com.composum.sling.core.servlet.NodeTreeServlet;
 import com.composum.sling.core.servlet.ServletOperation;
 import com.composum.sling.core.servlet.ServletOperationSet;
+import com.composum.sling.core.servlet.Status;
+import com.composum.sling.core.util.ResourceUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.resource.Resource;
@@ -49,9 +55,7 @@ import static com.composum.pages.commons.util.ResourceTypeUtil.DEVELOP_ACTIONS_P
                 Constants.SERVICE_DESCRIPTION + "=Pages Develop Servlet",
                 ServletResolverConstants.SLING_SERVLET_PATHS + "=/bin/cpm/pages/develop",
                 ServletResolverConstants.SLING_SERVLET_METHODS + "=" + HttpConstants.METHOD_GET,
-                ServletResolverConstants.SLING_SERVLET_METHODS + "=" + HttpConstants.METHOD_POST,
-                ServletResolverConstants.SLING_SERVLET_METHODS + "=" + HttpConstants.METHOD_PUT,
-                ServletResolverConstants.SLING_SERVLET_METHODS + "=" + HttpConstants.METHOD_DELETE
+                ServletResolverConstants.SLING_SERVLET_METHODS + "=" + HttpConstants.METHOD_POST
         })
 public class DevelopServlet extends NodeTreeServlet {
 
@@ -123,11 +127,10 @@ public class DevelopServlet extends NodeTreeServlet {
                 Operation.treeActions, new GetTreeActions());
 
         // POST
-
-        // PUT
-
-        // DELETE
-
+        operations.setOperation(ServletOperationSet.Method.POST, Extension.json,
+                Operation.createComponent, new CreateComponent());
+        operations.setOperation(ServletOperationSet.Method.POST, Extension.json,
+                Operation.adjustComponent, new AdjustComponent());
     }
 
     public class PagesEditOperationSet extends ServletOperationSet<Extension, Operation> {
@@ -206,6 +209,57 @@ public class DevelopServlet extends NodeTreeServlet {
     // Component Editing
     //
 
+    protected ComponentPieces getComponentPieces(SlingHttpServletRequest request) {
+        return new ComponentPieces(
+                RequestUtil.getParameter(request, "editDialog", false),
+                RequestUtil.getParameter(request, "createDialog", false),
+                RequestUtil.getParameter(request, "deleteDialog", false),
+                RequestUtil.getParameter(request, "editTile", false),
+                RequestUtil.getParameter(request, "thumbnail", false),
+                RequestUtil.getParameter(request, "helpPage", false),
+                RequestUtil.getParameter(request, "editToolbar", false),
+                RequestUtil.getParameter(request, "treeActions", false),
+                RequestUtil.getParameter(request, "contextActions", false));
+    }
+
+    protected class CreateComponent implements ServletOperation {
+
+        @Override
+        public void doIt(@Nonnull final SlingHttpServletRequest request,
+                         @Nonnull final SlingHttpServletResponse response,
+                         @Nonnull final ResourceHandle resource)
+                throws RepositoryException, IOException, ServletException {
+            Status status = new Status(request, response);
+            try {
+                ResourceResolver resolver = request.getResourceResolver();
+                Resource parent;
+                String path = request.getParameter(PARAM_PATH);
+                String name = request.getParameter(PARAM_NAME);
+                if (StringUtils.isNotBlank(path)) {
+                    parent = resolver.getResource(path);
+                } else {
+                    parent = resource;
+                }
+                if (parent != null && StringUtils.isNotBlank(name)) {
+                    componentManager.createComponent(resolver, parent, name,
+                            request.getParameter(ResourceUtil.JCR_PRIMARYTYPE),
+                            request.getParameter(PagesConstants.PN_COMPONENT_TYPE),
+                            request.getParameter(ResourceUtil.PROP_RESOURCE_SUPER_TYPE),
+                            request.getParameter(ResourceUtil.JCR_TITLE),
+                            request.getParameter(ResourceUtil.JCR_DESCRIPTION),
+                            request.getParameterValues(PagesConstants.PN_CATEGORY),
+                            getComponentPieces(request));
+                    resolver.commit();
+                } else {
+                    status.withLogging(LOG).error("can't create component - path or name missed");
+                }
+            } catch (Exception ex) {
+                status.withLogging(LOG).error("error creating component: {}", ex);
+            }
+            status.sendJson();
+        }
+    }
+
     protected class AdjustComponent implements ServletOperation {
 
         @Override
@@ -213,6 +267,15 @@ public class DevelopServlet extends NodeTreeServlet {
                          @Nonnull final SlingHttpServletResponse response,
                          @Nonnull final ResourceHandle resource)
                 throws RepositoryException, IOException, ServletException {
+            Status status = new Status(request, response);
+            try {
+                ResourceResolver resolver = request.getResourceResolver();
+                componentManager.adjustComponent(resolver, resource, getComponentPieces(request));
+                resolver.commit();
+            } catch (Exception ex) {
+                status.withLogging(LOG).error("error adjusting component: {}", ex);
+            }
+            status.sendJson();
         }
     }
 }

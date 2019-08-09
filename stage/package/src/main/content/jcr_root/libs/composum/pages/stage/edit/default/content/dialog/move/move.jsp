@@ -12,13 +12,13 @@
     <cpp:widget label="From" name="oldPath" value="${model.resource.parent.path}" disabled="true" type="pathfield"/>
     <cpp:widget label="To" name="newPath" type="pathfield" value="${model.resource.parent.path}" required="true"/>
     <div class="row">
-        <div class="col col-xs-6">
+        <div class="col col-xs-5">
             <cpp:widget label="Name" name="name" value="${model.name}" type="textfield" required="true"/>
         </div>
         <div class="col col-xs-4">
             <cpp:widget label="Order Before" name="before" hint="or ..." type="textfield"/>
         </div>
-        <div class="col col-xs-2">
+        <div class="col col-xs-3">
             <cpp:widget label="Position" name="index" type="numberfield" options="-1"/>
         </div>
     </div>

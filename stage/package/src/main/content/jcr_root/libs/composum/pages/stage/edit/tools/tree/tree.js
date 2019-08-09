@@ -197,9 +197,11 @@
                     name: newName
                 }, {}, _.bind(function (data) {
                     if (this.isElementType(node)) {
-                        pages.trigger('tree.content.rename', pages.const.event.element.moved, [oldPath, data.path]);
+                        pages.trigger('tree.content.rename', pages.const.event.element.moved,
+                            [oldPath, data.reference.path]);
                     } else {
-                        pages.trigger('tree.content.rename', pages.const.event.content.moved, [oldPath, data.path]);
+                        pages.trigger('tree.content.rename', pages.const.event.content.moved,
+                            [oldPath, data.reference.path]);
                     }
                 }, this), _.bind(function (result) {
                     this.refreshNodeById(node.id);

@@ -7,7 +7,7 @@
         <cpp:widget label="Title" name="jcr:title" type="textfield"/>
     </div>
     <div class="col col-xs-4">
-        <cpp:widget label="Primary Type" name="jcr:primaryType" type="select" required="true"
+        <cpp:widget label="Primary Type" name="jcr:primaryType" type="select" required="true" value="cpp:Component"
                     options="cpp:Component,sling:Folder,nt:unstructured" separators=", |"/>
     </div>
 </div>

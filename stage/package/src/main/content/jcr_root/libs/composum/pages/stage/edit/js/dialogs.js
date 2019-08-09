@@ -29,7 +29,8 @@
                         path: '/content/dialog/remove',
                         _page: '.page.html',
                         _folder: '.folder.html',
-                        _file: '.file.html'
+                        _file: '.file.html',
+                        _component: '.component.html'
                     },
                     _move: {
                         dialog: '/content/dialog/move.html',
@@ -669,9 +670,10 @@
             doSubmit: function () {
                 var config = this.getConfig();
                 var oldPath = this.$path.val();
+                var newPath = this.newPath.getValue();
                 core.ajaxPost(config.action + core.encodePath(oldPath), {
                     _charset_: 'UTF-8',
-                    targetPath: this.newPath.getValue(),
+                    targetPath: newPath,
                     name: this.name.getValue(),
                     before: this.before.getValue(),
 
@@ -713,7 +715,8 @@
                     _charset_: 'UTF-8',
                     name: this.name.getValue()
                 }, {}, _.bind(function (data) {
-                    pages.trigger('dialog.content.rename', pages.const.event.content.moved, [oldPath, data.path]);
+                    pages.trigger('dialog.content.rename', pages.const.event.content.moved,
+                        [oldPath, data.reference.path]);
                     this.hide();
                 }, this));
             }

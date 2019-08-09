@@ -1132,28 +1132,6 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
     //
 
     /**
-     * the 'transform nothing' context used in case of a copy operation
-     */
-    public static class NopTemplateContext implements TemplateContext {
-
-        protected final ResourceResolver resolver;
-
-        public NopTemplateContext(ResourceResolver resolver) {
-            this.resolver = resolver;
-        }
-
-        @Override
-        public ResourceResolver getResolver() {
-            return resolver;
-        }
-
-        @Override
-        public String applyTemplatePlaceholders(@Nonnull Resource target, @Nonnull String value) {
-            return value;
-        }
-    }
-
-    /**
      * Creates a new resource as a copy of another resource.
      *
      * @param resolver the resolver to use for CRUD operations

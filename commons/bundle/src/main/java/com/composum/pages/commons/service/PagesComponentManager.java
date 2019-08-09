@@ -6,6 +6,8 @@
 package com.composum.pages.commons.service;
 
 import com.composum.pages.commons.model.Component.ComponentPieces;
+import com.composum.sling.core.filter.ResourceFilter;
+import com.composum.sling.core.filter.StringFilter;
 import com.composum.sling.core.util.ResourceUtil;
 import com.composum.sling.platform.staging.query.Query;
 import com.composum.sling.platform.staging.query.QueryBuilder;
@@ -18,6 +20,7 @@ import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,10 +28,14 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static com.composum.pages.commons.PagesConstants.NT_COMPONENT;
 import static com.composum.pages.commons.PagesConstants.PN_CATEGORY;
@@ -54,6 +61,25 @@ import static com.composum.pages.commons.model.Component.TREE_ACTIONS_PATH;
 public class PagesComponentManager implements ComponentManager {
 
     protected static final Logger LOG = LoggerFactory.getLogger(PagesComponentManager.class);
+
+    public static final List<String> COPY_DEEP = Collections.singletonList(
+            HELP_PAGE_PATH
+    );
+    public static final List<String> COPY_FILES = Arrays.asList(
+            EDIT_DIALOG_PATH,
+            CREATE_DIALOG_PATH,
+            DELETE_DIALOG_PATH,
+            EDIT_TILE_PATH,
+            THUMBNAIL_PATH,
+            EDIT_TOOLBAR_PATH,
+            TREE_ACTIONS_PATH,
+            CONTEXT_ACTIONS_PATH
+    );
+    public static final ResourceFilter FILE_FILTER =
+            new ResourceFilter.PrimaryTypeFilter(new StringFilter.WhiteList(JcrConstants.NT_FILE));
+
+    @Reference
+    protected ResourceManager resourceManager;
 
     @Override
     public Collection<String> getComponentCategories(ResourceResolver resolver) {
@@ -81,22 +107,23 @@ public class PagesComponentManager implements ComponentManager {
     }
 
     @Override
-    public void createComponent(@Nonnull final Resource parent,
+    public void createComponent(@Nonnull final ResourceResolver resolver,
+                                @Nonnull final Resource parent,
                                 @Nonnull final String name,
                                 @Nullable final String primaryType,
                                 @Nullable final String componentType,
                                 @Nullable final String superType,
                                 @Nullable final String title,
                                 @Nullable final String description,
-                                @Nullable final String[] categories,
-                                @Nonnull final ComponentPieces requested) throws PersistenceException {
-        ResourceResolver resolver = parent.getResourceResolver();
+                                @Nullable final String[] category,
+                                @Nonnull final ComponentPieces requested)
+            throws PersistenceException {
         Map<String, Object> properties = new HashMap<>();
         properties.put(JcrConstants.JCR_PRIMARYTYPE, StringUtils.isNotBlank(primaryType) ? primaryType : NT_COMPONENT);
         if (StringUtils.isNotBlank(componentType)) {
             properties.put(PN_COMPONENT_TYPE, componentType);
         }
-        if (StringUtils.isNotBlank(componentType)) {
+        if (StringUtils.isNotBlank(superType)) {
             properties.put(ResourceUtil.PROP_RESOURCE_SUPER_TYPE, superType);
         }
         if (StringUtils.isNotBlank(title)) {
@@ -105,85 +132,97 @@ public class PagesComponentManager implements ComponentManager {
         if (StringUtils.isNotBlank(description)) {
             properties.put(ResourceUtil.JCR_DESCRIPTION, description);
         }
-        if (categories != null && categories.length > 0) {
-            properties.put(PN_CATEGORY, categories);
+        if (category != null && category.length > 0) {
+            properties.put(PN_CATEGORY, category);
         }
         Resource component = resolver.create(parent, name, properties);
-        adjustComponent(component, requested);
+        Resource templateRoot = getTemplateRoot(resolver);
+        if (templateRoot != null) {
+            copyFiles(resolver, templateRoot, component);
+        }
+        adjustComponent(resolver, component, requested);
     }
 
     @Override
-    public void adjustComponent(@Nonnull final Resource component, @Nonnull final ComponentPieces requested) throws PersistenceException {
+    public void adjustComponent(@Nonnull final ResourceResolver resolver,
+                                @Nonnull final Resource component,
+                                @Nonnull final ComponentPieces requested)
+            throws PersistenceException {
         final ComponentPieces existing = new ComponentPieces(component);
         if (existing.editDialog != requested.editDialog) {
             if (requested.editDialog) {
-                applyComponentPieceTemplate(component, EDIT_DIALOG_PATH);
+                applyComponentPieceTemplate(resolver, component, EDIT_DIALOG_PATH);
             } else {
-                removeComponentPiece(component, EDIT_DIALOG_PATH);
+                removeComponentPiece(resolver, component, EDIT_DIALOG_PATH);
             }
         }
         if (existing.createDialog != requested.createDialog) {
             if (requested.createDialog) {
-                applyComponentPieceTemplate(component, CREATE_DIALOG_PATH);
+                applyComponentPieceTemplate(resolver, component, CREATE_DIALOG_PATH);
             } else {
-                removeComponentPiece(component, CREATE_DIALOG_PATH);
+                removeComponentPiece(resolver, component, CREATE_DIALOG_PATH);
             }
         }
         if (existing.deleteDialog != requested.deleteDialog) {
             if (requested.deleteDialog) {
-                applyComponentPieceTemplate(component, DELETE_DIALOG_PATH);
+                applyComponentPieceTemplate(resolver, component, DELETE_DIALOG_PATH);
             } else {
-                removeComponentPiece(component, DELETE_DIALOG_PATH);
+                removeComponentPiece(resolver, component, DELETE_DIALOG_PATH);
             }
         }
         if (existing.editTile != requested.editTile) {
             if (requested.editTile) {
-                applyComponentPieceTemplate(component, EDIT_TILE_PATH);
+                applyComponentPieceTemplate(resolver, component, EDIT_TILE_PATH);
             } else {
-                removeComponentPiece(component, EDIT_TILE_PATH);
+                removeComponentPiece(resolver, component, EDIT_TILE_PATH);
             }
         }
         if (existing.thumbnail != requested.thumbnail) {
             if (requested.thumbnail) {
-                applyComponentPieceTemplate(component, THUMBNAIL_PATH);
+                applyComponentPieceTemplate(resolver, component, THUMBNAIL_PATH);
             } else {
-                removeComponentPiece(component, THUMBNAIL_PATH);
+                removeComponentPiece(resolver, component, THUMBNAIL_PATH);
             }
         }
         if (existing.helpPage != requested.helpPage) {
             if (requested.helpPage) {
-                applyComponentPieceTemplate(component, HELP_PAGE_PATH);
+                applyComponentPieceTemplate(resolver, component, HELP_PAGE_PATH);
             } else {
-                removeComponentPiece(component, HELP_PAGE_PATH);
+                removeComponentPiece(resolver, component, HELP_PAGE_PATH);
             }
         }
         if (existing.editToolbar != requested.editToolbar) {
             if (requested.editToolbar) {
-                applyComponentPieceTemplate(component, EDIT_TOOLBAR_PATH);
+                applyComponentPieceTemplate(resolver, component, EDIT_TOOLBAR_PATH);
             } else {
-                removeComponentPiece(component, EDIT_TOOLBAR_PATH);
+                removeComponentPiece(resolver, component, EDIT_TOOLBAR_PATH);
             }
         }
         if (existing.treeActions != requested.treeActions) {
             if (requested.treeActions) {
-                applyComponentPieceTemplate(component, TREE_ACTIONS_PATH);
+                applyComponentPieceTemplate(resolver, component, TREE_ACTIONS_PATH);
             } else {
-                removeComponentPiece(component, TREE_ACTIONS_PATH);
+                removeComponentPiece(resolver, component, TREE_ACTIONS_PATH);
             }
         }
         if (existing.contextActions != requested.contextActions) {
             if (requested.contextActions) {
-                applyComponentPieceTemplate(component, CONTEXT_ACTIONS_PATH);
+                applyComponentPieceTemplate(resolver, component, CONTEXT_ACTIONS_PATH);
             } else {
-                removeComponentPiece(component, CONTEXT_ACTIONS_PATH);
+                removeComponentPiece(resolver, component, CONTEXT_ACTIONS_PATH);
             }
         }
     }
 
-    protected void applyComponentPieceTemplate(@Nonnull final Resource component,
-                                               @Nonnull final String piecePath) throws PersistenceException {
-        ResourceResolver resolver = component.getResourceResolver();
-        Resource templateRoot = resolver.getResource("/libs/composum/pages/commons/template/component");
+    protected Resource getTemplateRoot(@Nonnull final ResourceResolver resolver) {
+        return resolver.getResource("/libs/composum/pages/commons/template/component");
+    }
+
+    protected void applyComponentPieceTemplate(@Nonnull final ResourceResolver resolver,
+                                               @Nonnull final Resource component,
+                                               @Nonnull final String piecePath)
+            throws PersistenceException {
+        Resource templateRoot = getTemplateRoot(resolver);
         if (templateRoot != null) {
             Resource templateNode = templateRoot;
             Resource componentNode = component;
@@ -193,7 +232,11 @@ public class PagesComponentManager implements ComponentManager {
                 if (templateNode != null) {
                     Resource child = componentNode.getChild(path[i]);
                     if (child == null) {
-                        child = resolver.create(componentNode, templateNode.getName(), templateNode.getValueMap());
+                        if (i == path.length - 1) {
+                            child = applyTemplateTarget(resolver, piecePath, templateNode, componentNode);
+                        } else {
+                            child = resolver.create(componentNode, templateNode.getName(), templateNode.getValueMap());
+                        }
                     }
                     componentNode = child;
                 }
@@ -201,12 +244,45 @@ public class PagesComponentManager implements ComponentManager {
         }
     }
 
-    protected void removeComponentPiece(@Nonnull final Resource component,
+    protected Resource applyTemplateTarget(@Nonnull final ResourceResolver resolver,
+                                           @Nonnull final String piecePath,
+                                           @Nonnull final Resource templateNode,
+                                           @Nonnull final Resource componentNode)
+            throws PersistenceException {
+        Resource child;
+        if (COPY_DEEP.contains(piecePath)) {
+            child = resourceManager.createFromTemplate(new ResourceManager.NopTemplateContext(resolver),
+                    componentNode, templateNode.getName(), templateNode, false);
+        } else {
+            child = resolver.create(componentNode, templateNode.getName(), templateNode.getValueMap());
+            if (COPY_FILES.contains(piecePath)) {
+                copyFiles(resolver, templateNode, child);
+            }
+        }
+        return child;
+    }
+
+    protected void copyFiles(@Nonnull final ResourceResolver resolver,
+                             @Nonnull final Resource templateNode,
+                             @Nonnull final Resource componentNode)
+            throws PersistenceException {
+        Pattern templateNodeNameFile = Pattern.compile("^" + templateNode.getName() + "(\\.[\\w]+)$");
+        for (Resource child : templateNode.getChildren()) {
+            if (FILE_FILTER.accept(child)) {
+                Matcher matcher = templateNodeNameFile.matcher(child.getName());
+                resourceManager.createFromTemplate(new ResourceManager.NopTemplateContext(resolver), componentNode,
+                        matcher.matches() ? componentNode.getName() + matcher.group(1) : child.getName(),
+                        child, false);
+            }
+        }
+    }
+
+    protected void removeComponentPiece(@Nonnull final ResourceResolver resolver,
+                                        @Nonnull final Resource component,
                                         @Nonnull String piecePath) throws PersistenceException {
         if (StringUtils.isNotBlank(piecePath)) {
             Resource piece = component.getChild(piecePath);
             if (piece != null) {
-                ResourceResolver resolver = component.getResourceResolver();
                 do {
                     resolver.delete(piece);
                     piecePath = StringUtils.substringBeforeLast(piecePath, "/");

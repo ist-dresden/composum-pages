@@ -50,12 +50,14 @@ public interface ComponentManager {
 
     Collection<String> getComponentCategories(ResourceResolver resolver);
 
-    void createComponent(@Nonnull Resource parent, @Nonnull String name,
+    void createComponent(@Nonnull ResourceResolver resolver,
+                         @Nonnull Resource parent, @Nonnull String name,
                          @Nullable String primaryType, @Nullable String componentType,
                          @Nullable String superType, @Nullable String title, @Nullable String description,
-                         @Nullable String[] categories, @Nonnull ComponentPieces requested)
+                         @Nullable String[] category, @Nonnull ComponentPieces requested)
             throws PersistenceException;
 
-    void adjustComponent(@Nonnull Resource component, @Nonnull ComponentPieces requested)
+    void adjustComponent(@Nonnull ResourceResolver resolver,
+                         @Nonnull Resource component, @Nonnull ComponentPieces requested)
             throws PersistenceException;
 }
