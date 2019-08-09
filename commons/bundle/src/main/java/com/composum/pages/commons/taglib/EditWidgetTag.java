@@ -147,6 +147,14 @@ public class EditWidgetTag extends AbstractWidgetTag implements LoopTag {
         placeholder = val;
     }
 
+    public void setRequired(boolean value) {
+        dynamicAttributes.setOption(DATA_RULES_ATTR, OPTION_REQUIRED, value);
+    }
+
+    public void setBlank(boolean value) {
+        dynamicAttributes.setOption(DATA_RULES_ATTR, OPTION_BLANK, value);
+    }
+
     /**
      * adds all pre configured attributes to the attribute set
      */
@@ -204,7 +212,9 @@ public class EditWidgetTag extends AbstractWidgetTag implements LoopTag {
             String string = (String) value;
             if (StringUtils.isNotBlank(string)) {
                 for (String option : StringUtils.split(string, ",")) {
-                    dynamicAttributes.setOption(DATA_RULES_ATTR, option, Boolean.TRUE);
+                    dynamicAttributes.setOption(DATA_RULES_ATTR,
+                            RULES_OPTIONS.get(1).equals(option) ? RULES_OPTIONS.get(0) : option,
+                            Boolean.TRUE);
                 }
             }
         } else {

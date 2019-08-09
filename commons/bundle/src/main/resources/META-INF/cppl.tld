@@ -811,6 +811,20 @@
             <type>java.lang.Boolean</type>
         </attribute>
         <attribute>
+            <description>If true, the property is mandatory.</description>
+            <name>required</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.Boolean</type>
+        </attribute>
+        <attribute>
+            <description>If true, a blank property is stored, otherwise the property is removed if the value is blank.</description>
+            <name>blank</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.Boolean</type>
+        </attribute>
+        <attribute>
             <name>hint</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
