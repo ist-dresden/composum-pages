@@ -418,12 +418,21 @@
                 edit: function (event, name, path, type) {
                     pages.dialogs.openEditDialog(name, path, type, undefined,
                         '/libs/composum/pages/stage/edit/default/develop/component/folder.html');
+                },
+
+                insertFile: function (event, name, path, type) {
+                    pages.dialogs.openNewFileDialog(name, path, type, pages.dialogs.const.edit.url._add._source);
                 }
             },
 
             create: function (event, name, path, type) {
                 pages.dialogs.openEditDialog(name, path, type, undefined,
                     '/libs/composum/pages/stage/edit/default/develop/component/create.html');
+            },
+
+            fromTemplate: function (event, name, path, type) {
+                pages.dialogs.openEditDialog(name, path, type, undefined,
+                    '/libs/composum/pages/stage/edit/default/develop/component/create.template.html');
             },
 
             edit: function (event, name, path, type) {

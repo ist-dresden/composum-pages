@@ -23,7 +23,8 @@
                         path: '/content/dialog/add',
                         _page: '.page.html',
                         _folder: '.folder.html',
-                        _file: '.file.html'
+                        _file: '.file.html',
+                        _source: '.source.html'
                     },
                     _remove: {
                         path: '/content/dialog/remove',
@@ -564,6 +565,13 @@
                 dialogs.EditDialog.prototype.initView.apply(this);
                 this.file = core.getWidget(this.el, '.widget-name_STAR', core.components.FileUploadWidget);
                 this.name = core.getWidget(this.el, '.widget-name_name', core.components.TextFieldWidget);
+                this.source = core.getWidget(this.el, '.widget-name_code', pages.widgets.CodeAreaWidget);
+                this.type = core.getWidget(this.el, '.widget-name_type', core.components.SelectWidget);
+                if (this.source && this.type) {
+                    this.type.$input.on('change.NewFileDialog', _.bind(function () {
+                        this.source.setType(this.type.getValue());
+                    }, this));
+                }
             },
 
             getDefaultSuccessEvents: function () {
@@ -571,20 +579,41 @@
             },
 
             doSubmit: function () {
+                var fileName = this.file.getFileName();
                 var name = this.name.getValue();
                 if (!name) {
-                    name = this.file.getFileName();
+                    name = fileName;
                 }
                 if (name && (name = core.mangleNameValue(name))) {
-                    this.file.setName(name);
+                    var type;
+                    if (this.type && (type = this.type.getValue())) {
+                        if (new RegExp('^.*\\.' + type + '$', 'i').exec(name) === null) {
+                            name += '.' + type;
+                        }
+                    }
                 }
-                dialogs.EditDialog.prototype.doSubmit.apply(this);
+                if (name) {
+                    if (!fileName && this.source) {
+                        this.source.saveAs(this.data.path + '/' + name, _.bind(function () {
+                            this.triggerEvents();
+                            this.hide();
+                        }, this), _.bind(this.onError, this));
+                    } else {
+                        this.file.setName(name); // apply name mangling
+                        dialogs.EditDialog.prototype.doSubmit.apply(this);
+                    }
+                } else {
+                    core.i18n.get(['Validation Error', 'Name', 'the Name or a File must be specified'],
+                        _.bind(function (msgs) {
+                            this.messages('danger', msgs[0], [{level: 'danger', label: msgs[1], text: msgs[2]}]);
+                        }, this));
+                }
             }
         });
 
-        dialogs.openNewFileDialog = function (name, path, type) {
+        dialogs.openNewFileDialog = function (name, path, type, dialogKey) {
             var c = dialogs.const.edit.url;
-            pages.dialogHandler.openEditDialog(c.path + c._add.path + c._add._file,
+            pages.dialogHandler.openEditDialog(c.path + c._add.path + (dialogKey ? dialogKey : c._add._file),
                 dialogs.NewFileDialog, name, path, type);
         };
 

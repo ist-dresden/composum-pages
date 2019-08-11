@@ -5,6 +5,7 @@
  */
 package com.composum.pages.commons.servlet;
 
+import com.composum.pages.commons.AssetsConfiguration;
 import com.composum.pages.commons.PagesConfiguration;
 import com.composum.pages.commons.PagesConstants;
 import com.composum.pages.commons.model.Component.ComponentPieces;
@@ -50,16 +51,22 @@ import java.util.List;
 import static com.composum.pages.commons.model.Component.isComponent;
 import static com.composum.pages.commons.util.ResourceTypeUtil.DEVELOP_ACTIONS_PATH;
 
+/**
+ * the servlet for develop mode retrieval and changes
+ */
 @Component(service = Servlet.class,
         property = {
                 Constants.SERVICE_DESCRIPTION + "=Pages Develop Servlet",
                 ServletResolverConstants.SLING_SERVLET_PATHS + "=/bin/cpm/pages/develop",
                 ServletResolverConstants.SLING_SERVLET_METHODS + "=" + HttpConstants.METHOD_GET,
-                ServletResolverConstants.SLING_SERVLET_METHODS + "=" + HttpConstants.METHOD_POST
+                ServletResolverConstants.SLING_SERVLET_METHODS + "=" + HttpConstants.METHOD_POST,
+                ServletResolverConstants.SLING_SERVLET_METHODS + "=" + HttpConstants.METHOD_PUT
         })
 public class DevelopServlet extends NodeTreeServlet {
 
     private static final Logger LOG = LoggerFactory.getLogger(DevelopServlet.class);
+
+    public static final String PARAM_TEMPLATE_PATH = "templatePath";
 
     public static final String DEFAULT_FILTER = "page";
 
@@ -70,6 +77,9 @@ public class DevelopServlet extends NodeTreeServlet {
 
     @Reference
     protected PagesConfiguration pagesConfiguration;
+
+    @Reference
+    protected AssetsConfiguration assetsConfiguration;
 
     @Reference
     protected ComponentManager componentManager;
@@ -102,7 +112,8 @@ public class DevelopServlet extends NodeTreeServlet {
 
     public enum Operation {
         tree, treeActions,
-        createComponent, adjustComponent
+        createComponent, adjustComponent,
+        updateFile
     }
 
     protected PagesEditOperationSet operations = new PagesEditOperationSet();
@@ -131,6 +142,10 @@ public class DevelopServlet extends NodeTreeServlet {
                 Operation.createComponent, new CreateComponent());
         operations.setOperation(ServletOperationSet.Method.POST, Extension.json,
                 Operation.adjustComponent, new AdjustComponent());
+
+        // PUT
+        operations.setOperation(ServletOperationSet.Method.PUT, Extension.json,
+                Operation.updateFile, new UpdateFile());
     }
 
     public class PagesEditOperationSet extends ServletOperationSet<Extension, Operation> {
@@ -141,7 +156,7 @@ public class DevelopServlet extends NodeTreeServlet {
     }
 
     //
-    // Tree
+    // 'develop' Tree
     //
 
     @Override
@@ -169,7 +184,7 @@ public class DevelopServlet extends NodeTreeServlet {
     }
 
     //
-    // Editing
+    // Editing Action requests
     //
 
     protected static final ResourceFilter SOURCE_FILE_FILTER =
@@ -198,6 +213,8 @@ public class DevelopServlet extends NodeTreeServlet {
                 editResource = ResolverUtil.getResourceType(resolver, ResourceTypeUtil.DEVELOP_SOURCE_ACTIONS);
             } else if (Page.isPage(contentResource) || Page.isPageContent(contentResource)) {
                 editResource = ResolverUtil.getResourceType(resolver, ResourceTypeUtil.DEVELOP_PAGE_ACTIONS);
+            } else if (assetsConfiguration.getAnyFileFilter().accept(contentResource)) {
+                editResource = ResolverUtil.getResourceType(resolver, ResourceTypeUtil.DEVELOP_FILE_ACTIONS);
             } else {
                 editResource = ResolverUtil.getResourceType(resolver, ResourceTypeUtil.NO_DEVELOP_ACTIONS);
             }
@@ -206,7 +223,7 @@ public class DevelopServlet extends NodeTreeServlet {
     }
 
     //
-    // Component Editing
+    // Component Editing change requests
     //
 
     protected ComponentPieces getComponentPieces(SlingHttpServletRequest request) {
@@ -233,6 +250,7 @@ public class DevelopServlet extends NodeTreeServlet {
             try {
                 ResourceResolver resolver = request.getResourceResolver();
                 Resource parent;
+                String templatePath = request.getParameter(PARAM_TEMPLATE_PATH);
                 String path = request.getParameter(PARAM_PATH);
                 String name = request.getParameter(PARAM_NAME);
                 if (StringUtils.isNotBlank(path)) {
@@ -241,7 +259,9 @@ public class DevelopServlet extends NodeTreeServlet {
                     parent = resource;
                 }
                 if (parent != null && StringUtils.isNotBlank(name)) {
-                    componentManager.createComponent(resolver, parent, name,
+                    componentManager.createComponent(resolver,
+                            StringUtils.isNotBlank(templatePath) ? resolver.getResource(templatePath) : null,
+                            parent, name,
                             request.getParameter(ResourceUtil.JCR_PRIMARYTYPE),
                             request.getParameter(PagesConstants.PN_COMPONENT_TYPE),
                             request.getParameter(ResourceUtil.PROP_RESOURCE_SUPER_TYPE),
@@ -270,10 +290,36 @@ public class DevelopServlet extends NodeTreeServlet {
             Status status = new Status(request, response);
             try {
                 ResourceResolver resolver = request.getResourceResolver();
-                componentManager.adjustComponent(resolver, resource, getComponentPieces(request));
+                String templatePath = request.getParameter(PARAM_TEMPLATE_PATH);
+                componentManager.adjustComponent(resolver,
+                        StringUtils.isNotBlank(templatePath) ? resolver.getResource(templatePath) : null,
+                        resource, getComponentPieces(request));
                 resolver.commit();
             } catch (Exception ex) {
                 status.withLogging(LOG).error("error adjusting component: {}", ex);
+            }
+            status.sendJson();
+        }
+    }
+
+    //
+    // source code editing
+    //
+
+    protected class UpdateFile implements ServletOperation {
+
+        @Override
+        public void doIt(@Nonnull final SlingHttpServletRequest request,
+                         @Nonnull final SlingHttpServletResponse response,
+                         @Nonnull final ResourceHandle resource)
+                throws RepositoryException, IOException, ServletException {
+            Status status = new Status(request, response);
+            try {
+                ResourceResolver resolver = request.getResourceResolver();
+                componentManager.updateFile(resolver, resource.getPath(), request.getInputStream());
+                resolver.commit();
+            } catch (Exception ex) {
+                status.withLogging(LOG).error("error updating file: {}", ex);
             }
             status.sendJson();
         }

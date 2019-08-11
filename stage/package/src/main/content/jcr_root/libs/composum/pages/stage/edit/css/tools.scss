@@ -140,7 +140,7 @@
         left: 4px !important;
         right: 4px;
         max-width: inherit;
-        color: $bootstrap-default-color;
+        color: $bootstrap-color-default;
 
         &.bottom > .arrow {
             left: 31px !important;
@@ -191,7 +191,7 @@
         &_logout {
             font-size: $hint-font-size;
             line-height: $hint-font-size;
-            color: $bootstrap-color-mute;
+            color: $bootstrap-color-muted;
         }
 
         &_actions {
@@ -214,7 +214,7 @@
             p {
                 font-size: $hint-font-size;
                 line-height: $hint-font-size + 2;
-                color: $bootstrap-color-mute;
+                color: $bootstrap-color-muted;
             }
         }
     }
@@ -908,7 +908,7 @@
 
                 &_popover {
                     @include hint-font;
-                    color: $bootstrap-default-color;
+                    color: $bootstrap-color-default;
 
                     hr {
                         margin: $tools-pane-padding 0;

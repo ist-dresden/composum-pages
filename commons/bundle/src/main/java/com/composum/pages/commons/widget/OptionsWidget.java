@@ -32,7 +32,7 @@ public abstract class OptionsWidget<T> extends PropertyEditHandle<T> implements 
     /**
      * the separators are useful if the default separators (',' and ':'; separators=", :") of a string based
      * options list are not useful to split the options attribute string (e.g. if the default separators are
-     * necessary for the values ot labels of the options); the 'separators' attribute is splitted by a ' ' to
+     * necessary for the values or labels of the options); the 'separators' attribute is splitted by a ' ' to
      * separate the list separator (default ',') from the key separator (default ':')
      */
     public static final String ATTR_SEPARATORS = "separators";
@@ -196,8 +196,6 @@ public abstract class OptionsWidget<T> extends PropertyEditHandle<T> implements 
         List<Option> options = new ArrayList<>();
         String[] values = string.split(listSeparator);
         for (String value : values) {
-            String[] keyAndLabel = StringUtils.split(value.trim(), keySeparator, 2);
-            String key = (keyAndLabel.length > 0 ? keyAndLabel[0] : value).trim();
             options.add(createOption(value, keySeparator));
         }
         return options;
@@ -205,7 +203,7 @@ public abstract class OptionsWidget<T> extends PropertyEditHandle<T> implements 
 
     @Nonnull
     protected Option createOption(@Nonnull final String value, @Nonnull final String keySeparator) {
-        String[] keyAndLabel = StringUtils.split(value.trim(), keySeparator, 2);
+        String[] keyAndLabel = StringUtils.splitPreserveAllTokens(value.trim(), keySeparator, 2);
         String key = (keyAndLabel.length > 0 ? keyAndLabel[0] : value).trim();
         return newOption((keyAndLabel.length > 1 ? keyAndLabel[1] : key), key, null);
     }

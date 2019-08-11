@@ -295,7 +295,7 @@
  * media queries
  */
 
-@mixin screen-size-xl {
+@mixin screen-size-xl-min {
     @media (min-width: #{$screen-size-xl}) {
         @content;
     }
@@ -307,7 +307,7 @@
     }
 }
 
-@mixin screen-size-l {
+@mixin screen-size-l-min {
     @media (min-width: #{$screen-size-l}) {
         @content;
     }
@@ -319,7 +319,7 @@
     }
 }
 
-@mixin screen-size-m {
+@mixin screen-size-m-min {
     @media (min-width: #{$screen-size-m}) {
         @content;
     }
@@ -331,8 +331,14 @@
     }
 }
 
-@mixin screen-size-s {
-    @media (max-width: #{$screen-size-s}) {
+@mixin screen-size-s-min {
+    @media (min-width: #{$screen-size-s}) {
+        @content;
+    }
+}
+
+@mixin screen-size-s-max {
+    @media (max-width: #{$screen-size-s - 1px}) {
         @content;
     }
 }
@@ -343,8 +349,8 @@
     }
 }
 
-@mixin screen-size-xs {
-    @media (max-width: #{$screen-size-xs}) {
+@mixin screen-size-xs-max {
+    @media (max-width: #{$screen-size-xs - 1px}) {
         @content;
     }
 }
@@ -355,26 +361,26 @@
     }
 }
 
-@mixin screen-size-xxs {
-    @media (max-width: #{$screen-size-xxs}) {
+@mixin screen-size-xxs-max {
+    @media (max-width: #{$screen-size-xxs - 1px}) {
         @content;
     }
 }
 
 @mixin desktop {
-    @include screen-size-m {
+    @include screen-size-m-min {
         @content;
     }
 }
 
 @mixin tablet {
-    @include screen-size-s {
+    @include screen-size-s-m {
         @content;
     }
 }
 
 @mixin mobile {
-    @include screen-size-xs {
+    @include screen-size-xs-max {
         @content;
     }
 }

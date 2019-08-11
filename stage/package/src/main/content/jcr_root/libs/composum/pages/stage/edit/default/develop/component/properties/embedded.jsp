@@ -1,5 +1,4 @@
 <%@page session="false" pageEncoding="utf-8" %>
-<%@taglib prefix="sling" uri="http://sling.apache.org/taglibs/sling/1.2" %>
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <cpp:defineFrameObjects/>
 <div class="row">
@@ -21,7 +20,7 @@
     </div>
 </div>
 <cpp:widget type="static" i18n="true" level="remark"
-            value="the component type is inherited form the supertype if not specified here"/>
+            value="the component type is inherited form the components supertype if not specified here"/>
 <div class="row" style="align-items: flex-start;">
     <div class="col col-xs-8">
         <cpp:widget label="Description" property="jcr:description" type="textarea" rows="8"/>

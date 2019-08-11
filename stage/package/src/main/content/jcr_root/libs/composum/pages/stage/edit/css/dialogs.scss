@@ -13,6 +13,20 @@
     .composum-pages-stage-edit-dialog {
         z-index: $dialogs-layer;
 
+        @media (min-width: 840px) {
+
+            .modal-dialog {
+                width: 800px;
+            }
+        }
+
+        @media (min-width: 768px) and (max-width: 839px) {
+
+            .modal-dialog {
+                width: 748px;
+            }
+        }
+
         &_header, &_content, &_footer {
             @include dialog-font;
         }
@@ -50,7 +64,7 @@
                     margin-top: 1px;
                     margin-left: $edit-actions-spacing-h;
                     @include monospace;
-                    color: $bootstrap-color-mute;
+                    color: $bootstrap-color-muted;
                 }
             }
         }
@@ -73,7 +87,7 @@
 
             .row {
                 display: flex;
-                align-items: flex-end;  /* align on bottom */
+                align-items: flex-end; /* align on bottom */
             }
 
             .panel.tile-panel {

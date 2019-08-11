@@ -1,5 +1,4 @@
 <%@page session="false" pageEncoding="utf-8" %>
-<%@taglib prefix="sling" uri="http://sling.apache.org/taglibs/sling/1.2" %>
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <cpp:defineFrameObjects/>
 <cpp:model var="model" type="com.composum.pages.stage.model.edit.FrameComponent">
@@ -18,7 +17,7 @@
         <cpp:widget type="static" i18n="true" style="margin-top:-15px;"
                     value="Normally a component should have an edit dialog. This dialog is used also for creation if no special 'create' dialog exists. A delete dialog can be useful if the standard delete dialog is not enough."/>
     </cpp:editDialogGroup>
-    <cpp:editDialogGroup label="Shapes" expanded="true">
+    <cpp:editDialogGroup label="Presentation" expanded="true">
         <div class="row">
             <div class="col col-xs-4">
                 <cpp:widget type="checkbox" name="editTile" label="Component Tile" value="true"/>

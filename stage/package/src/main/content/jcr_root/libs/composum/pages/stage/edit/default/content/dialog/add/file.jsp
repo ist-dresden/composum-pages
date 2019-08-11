@@ -35,9 +35,9 @@
                 submitLabel="Upload" submit="@{model.path}" successEvent="content:inserted">
     <cpp:widget type="hidden" name="*@TypeHint" value="nt:file"/>
     <%-- the name is replaced by the mangeled file or name input field value --%>
-    <cpp:widget label="Select File" name="*" type="fileupload" rules="required"/>
+    <cpp:widget label="Select File" name="*" type="fileupload" required="true"/>
     <%-- the name field is only used by the dialog (not submitted; starts with '#') --%>
     <cpp:widget label="Name" name="#name" placeholder="the repository name" type="textfield"
-                rules="blank" pattern="^[A-Za-z_][- \\w]*(\\.\\w+)?$"
+                pattern="^[A-Za-z_][- \\w]*(\\.\\w+)?$"
                 hint="add a name if the file name is not the right choice"/>
 </cpp:editDialog>

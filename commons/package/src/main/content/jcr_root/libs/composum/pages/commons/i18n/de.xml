@@ -5,7 +5,7 @@
         jcr:primaryType="sling:Folder"
         sling:basename="composum-pages">
 
-    <general jcr:primaryType="sling:Folder"><!-- Pages entities -->
+    <general jcr:primaryType="sling:Folder"><!-- general phrases -->
 
         <category jcr:primaryType="sling:MessageEntry"
                 sling:key="Category" sling:message="Kategorie"/>
@@ -30,7 +30,7 @@
 
     </entity>
 
-    <format jcr:primaryType="sling:Folder"><!-- Pages entities -->
+    <format jcr:primaryType="sling:Folder"><!-- message formatting -->
 
         <created jcr:primaryType="sling:MessageEntry"
                 sling:key="created: {}" sling:message="erzeugt: {}"/>
@@ -90,5 +90,111 @@
                 sling:key="the open next release" sling:message="das offene, nächste Release"/>
 
     </release>
+
+    <components jcr:primaryType="sling:Folder"><!-- component editing -->
+
+        <dialog-create jcr:primaryType="sling:MessageEntry"
+                sling:key="Create a new Component" sling:message="Eine neue Komponente Anlegen"/>
+        <dialog-edit jcr:primaryType="sling:MessageEntry"
+                sling:key="Edit Component Properties" sling:message="Komponenteneigenschaften Bearbeiten"/>
+        <dialog-adjust jcr:primaryType="sling:MessageEntry"
+                sling:key="Manage Component Elements" sling:message="Komponentenelemente Einstellen"/>
+
+        <dialog-group-dialog jcr:primaryType="sling:MessageEntry" sling:key="Dialogs" sling:message="Dialoge"/>
+        <dialog-group-shapes jcr:primaryType="sling:MessageEntry" sling:key="Presentation" sling:message="Darstellung"/>
+        <dialog-group-actions jcr:primaryType="sling:MessageEntry" sling:key="Actions" sling:message="Aktionen"/>
+
+        <label-elements jcr:primaryType="sling:MessageEntry"
+                sling:key="Elements" sling:message="Elemente"/>
+        <label-template jcr:primaryType="sling:MessageEntry"
+                sling:key="Template Path" sling:message="Template-Pfad"/>
+        <label-path jcr:primaryType="sling:MessageEntry"
+                sling:key="Component Path" sling:message="Komponentenpfad"/>
+        <label-name jcr:primaryType="sling:MessageEntry"
+                sling:key="Component Name" sling:message="Komponentenname"/>
+        <label-component-type jcr:primaryType="sling:MessageEntry"
+                sling:key="Component Type" sling:message="Komponententyp"/>
+        <label-super-type jcr:primaryType="sling:MessageEntry"
+                sling:key="Supertype" sling:message="Super-Typ"/>
+
+        <hint-component-type jcr:primaryType="sling:MessageEntry"
+                sling:key="the component type is inherited form the components supertype if not specified here"
+                sling:message="der Komponententyp wird vom Super-Typ der Komponente übernommen, falls hier nicht festgelegt"/>
+        <hint-category jcr:primaryType="sling:MessageEntry"
+                sling:key="the first category declares the group in a structured component view"
+                sling:message="die erste Kategorie bestimmt die Gruppe in eine strukturierten Ansicht"/>
+
+        <hint-dialogs jcr:primaryType="sling:MessageEntry"
+                sling:key="Normally a component should have an edit dialog. This dialog is used also for creation if no special 'create' dialog exists. A delete dialog can be useful if the standard delete dialog is not enough."
+                sling:message="Jede Komponente sollte einen Edit-Dialog besitzen. Dieser Dialog wird auch zum Erzeugen der Komponente verwendet, wenn kein Create-Dialog existiert. Ein Delete-Dialog kann sinnvoll sein, wenn die Standard-Bestätigung nicht ausreicht."/>
+        <hint-tiles jcr:primaryType="sling:MessageEntry"
+                sling:key="The component tile is inherited from the supertype but its useful to create derived tile component and overwrite the '_icon.jsp' and/or '_title.jsp' scripts."
+                sling:message="Die Komponentenkachel wird vom Super-Typ geerbt; es ist jedoch sinnvoll, eine Ableitung anzulegen und Icon- und/oder Titel-Code anzupassen."/>
+        <hint-actions jcr:primaryType="sling:MessageEntry"
+                sling:key="All actions are derived from the supertype by default. The different tree actions are useful if the supertype has it not and the component is visible in the tree. The context actions are necessary only if the context actions should be different from the edit actions."
+                sling:message="Alle Aktionen werden vom Super-Typ automatisch übernommen. Abweichende Tree-Aktionen sind sinnvoll, wenn der Supertyp keine solchen Aktionen definiert und die Komponente im Baum sichtbar ist. Kontext-Aktionen sind nur sinnvoll, wenn sie von den Edit-Aktionen abweichen"/>
+
+        <err-path-or-name jcr:primaryType="sling:MessageEntry"
+                sling:key="can't create component - path or name missed"
+                sling:message="Komponente kann nicht erzeugt werden - Pfad oder Name fehlt"/>
+        <err-create-general jcr:primaryType="sling:MessageEntry"
+                sling:key="error creating component: {}"
+                sling:message="Fehler beim Anlegen der Komponente: {}"/>
+        <err-adjust-general jcr:primaryType="sling:MessageEntry"
+                sling:key="error adjusting component: {}"
+                sling:message="Fehler beim Anpassen der Komponente: {}"/>
+
+        <action-edit-hint jcr:primaryType="sling:MessageEntry"
+                sling:key="Edit component properties"
+                sling:message="Komponenteneigenschaften bearbeiten"/>
+        <action-add-hint jcr:primaryType="sling:MessageEntry"
+                sling:key="add / manage components and component pieces"
+                sling:message="Komponenten- oder Komponentenelemente hinzufügen / verwalten"/>
+        <action-create jcr:primaryType="sling:MessageEntry"
+                sling:key="Create Component"
+                sling:message="Komponente Anlegen"/>
+        <action-create-new jcr:primaryType="sling:MessageEntry"
+                sling:key="Create a new Component"
+                sling:message="eine neue Komponente Anlegen"/>
+        <action-create-hint jcr:primaryType="sling:MessageEntry"
+                sling:key="create another component inside this component area"
+                sling:message="eine weitere Komponente innerhalb der Komponente anlegen"/>
+        <action-template jcr:primaryType="sling:MessageEntry"
+                sling:key="Use as Template..."
+                sling:message="Als Vorlage verwenden..."/>
+        <action-template-hint jcr:primaryType="sling:MessageEntry"
+                sling:key="create another component based on the selected component"
+                sling:message="eine neue Komponente auf der Basis der selektierten anlegen"/>
+        <action-elements jcr:primaryType="sling:MessageEntry"
+                sling:key="Elements..."
+                sling:message="Elemente..."/>
+        <action-elements-hint jcr:primaryType="sling:MessageEntry"
+                sling:key="manage component implementation elements"
+                sling:message="Elemente der Komponentenimplementierung verwalten"/>
+
+        <action-copy jcr:primaryType="sling:MessageEntry"
+                sling:key="Copy the selected component"
+                sling:message="die ausgewählte Komponente Kopieren"/>
+        <action-paste jcr:primaryType="sling:MessageEntry"
+                sling:key="Paste element as child of the component"
+                sling:message="das kopierte Element in die Komponente einfügen"/>
+        <action-rename jcr:primaryType="sling:MessageEntry"
+                sling:key="Rename the selected component"
+                sling:message="die ausgewählte Komponente Umbenennen"/>
+        <action-move jcr:primaryType="sling:MessageEntry"
+                sling:key="Move the selected component"
+                sling:message="die ausgewählte Komponente Verschieben"/>
+        <action-delete jcr:primaryType="sling:MessageEntry"
+                sling:key="Delete the selected component"
+                sling:message="die ausgewählte Komponente Löschen"/>
+
+        <action-folder-create-hint jcr:primaryType="sling:MessageEntry"
+                sling:key="insert a new folder as direct child of the component"
+                sling:message="eine neues Verzeichnis in der Komponente erzeugen"/>
+        <action-file-create-hint jcr:primaryType="sling:MessageEntry"
+                sling:key="upload or create a file as direct child of the component"
+                sling:message="eine Datei als Element der Komponente hochladen oder erzeugen"/>
+
+    </components>
 
 </jcr:root>

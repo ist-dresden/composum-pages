@@ -11,7 +11,11 @@
                 cssBase: 'codearea-widget',
                 editorSelector: '.code-editor',
                 textareaSelector: '.codearea-value',
-                textarea:'<textarea class="codearea-value" style="display:none"></textarea>'
+                textarea: '<textarea class="codearea-value" style="display:none"></textarea>',
+                type: {
+                    js: 'javascript',
+                    txt: 'text'
+                }
             }
         });
 
@@ -27,6 +31,12 @@
                 this.onChange();
                 this.ace.getSession().on('change', _.bind(this.onChange, this));
                 this.$el.resize(_.bind(this.resize, this));
+            },
+
+            codeArea: function () {
+                return this.$el.is(widgets.const.codearea.editorSelector)
+                    ? this.$el
+                    : this.$(widgets.const.codearea.editorSelector);
             },
 
             retrieveInput: function () {
@@ -66,16 +76,22 @@
             initEditor: function () {
                 this.ace = ace.edit(this.$editor[0]);
                 this.ace.setTheme('ace/theme/clouds');
-                var type = this.$editor.data('language');
-                if (type) {
-                    this.ace.getSession().setMode('ace/mode/' + type);
-                }
+                this.setType();
             },
 
-            codeArea: function () {
-                return this.$el.is(widgets.const.codearea.editorSelector)
-                    ? this.$el
-                    : this.$(widgets.const.codearea.editorSelector);
+            setType: function (type) {
+                if (!type) {
+                    type = this.$editor.data('language');
+                }
+                type = widgets.const.codearea.type[type] || type || 'text';
+                this.ace.getSession().setMode({path: 'ace/mode/' + type, v: Date.now()});
+            },
+
+            saveAs: function (path, onSuccess, onError, onComplete) {
+                if (path) {
+                    core.ajaxPut('/bin/cpm/pages/develop.updateFile.json' + path,
+                        this.getValue(), {}, onSuccess, onError, onComplete);
+                }
             }
         });
 

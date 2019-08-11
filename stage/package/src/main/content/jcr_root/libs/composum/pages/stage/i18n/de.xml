@@ -10,9 +10,9 @@
         <by-someone jcr:primaryType="sling:MessageEntry"
                 sling:key="by" sling:message="von"/>
         <relative-path jcr:primaryType="sling:MessageEntry"
-                       sling:key="Relative Path" sling:message="Relativer Pfad"/>
+                sling:key="Relative Path" sling:message="Relativer Pfad"/>
         <modification-Date jcr:primaryType="sling:MessageEntry"
-                           sling:key="Modification Date" sling:message="Änderungsdatum"/>
+                sling:key="Modification Date" sling:message="Änderungsdatum"/>
         <settings jcr:primaryType="sling:MessageEntry"
                 sling:key="Settings" sling:message="Einstellungen"/>
 
@@ -58,7 +58,7 @@
         <Checkpoint jcr:primaryType="sling:MessageEntry"
                 sling:key="Checkpoint (In/Out) - new version" sling:message="Ein- und Auschecken (neue Version)"/>
         <Purge-Versions jcr:primaryType="sling:MessageEntry"
-                        sling:key="Purge unused Versions" sling:message="Ungenutzte Versionen löschen"/>
+                sling:key="Purge unused Versions" sling:message="Ungenutzte Versionen löschen"/>
         <Purge-Versions-title jcr:primaryType="sling:MessageEntry"
                 sling:key="purge unused versions of the current page"
                 sling:message="ungenutzte versionen der aktuellen Seite löschen"/>
@@ -305,9 +305,26 @@
                 sling:key="Copy" sling:message="Kopieren"/>
         <delete jcr:primaryType="sling:MessageEntry"
                 sling:key="Delete" sling:message="Löschen"/>
+        <file-source-type jcr:primaryType="sling:MessageEntry"
+                sling:key="Source Type" sling:message="Datei-Typ"/>
+        <file-source-type-hint jcr:primaryType="sling:MessageEntry"
+                sling:key="if you want to paste source code select the type:"
+                sling:message="Typ auswählen, wenn Quelltext eingefügt werden soll:"/>
+        <file-source-input jcr:primaryType="sling:MessageEntry"
+                sling:key="Input Source" sling:message="Quelltext"/>
+        <file-source-hint jcr:primaryType="sling:MessageEntry"
+                sling:key="you can input or paste the code to upload here instead of a file upload"
+                sling:message="statt eine Datei hochzuladen kann der Code hier eingegeben oder eingefügt werden"/>
+        <file-upload-select jcr:primaryType="sling:MessageEntry"
+                sling:key="Select File" sling:message="Datei auswählen"/>
         <file-upload-name-hint jcr:primaryType="sling:MessageEntry"
                 sling:key="add a name if the file name is not the right choice"
                 sling:message="der Name, falls der Dateiname nicht genutzt werden soll"/>
+        <file-upload-name-err jcr:primaryType="sling:MessageEntry"
+                sling:key="the Name or a File must be specified"
+                sling:message="der Name oder eine Datei muss angegeben werden"/>
+        <validation-error jcr:primaryType="sling:MessageEntry"
+                sling:key="Validation Error" sling:message="Validierungsfehler"/>
         <move jcr:primaryType="sling:MessageEntry"
                 sling:key="Move" sling:message="Verschieben"/>
         <paste jcr:primaryType="sling:MessageEntry"
