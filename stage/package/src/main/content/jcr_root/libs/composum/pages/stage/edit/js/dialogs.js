@@ -17,7 +17,8 @@
                     base: '/bin/cpm/pages/edit',
                     path: '/libs/composum/pages/stage/edit/default',
                     _edit: {
-                        _folder: '/folder/dialog.html'
+                        _folder: '/folder/dialog.html',
+                        _source: '/file/dialog.html'
                     },
                     _add: {
                         path: '/content/dialog/add',
@@ -88,6 +89,7 @@
                     base: 'composum-pages-stage-edit-dialog',
                     _wizard: '_selector_wizard',
                     _form: '_form',
+                    _hints: '_hints',
                     _tab: '_tab',
                     _tabbed: '_tabbed',
                     _tabList: '_tabs',
@@ -112,6 +114,12 @@
                         _list: '_sites-list',
                         _radio: '_radio',
                         _site: '_site'
+                    },
+                    code: {
+                        editor: {
+                            base: 'code-editor-dialog',
+                            _toolbar: '_toolbar'
+                        }
                     }
                 },
                 data: {
@@ -621,6 +629,76 @@
             var c = dialogs.const.edit.url;
             pages.dialogHandler.openEditDialog(c.path + c._upload.dialog,
                 dialogs.EditDialog, name, path, type);
+        };
+
+        /**
+         * the dialog to edit a source file
+         */
+        dialogs.EditSourceFileDialog = dialogs.EditDialog.extend({
+
+            initView: function () {
+                var c = dialogs.const.edit.css;
+                dialogs.EditDialog.prototype.initView.apply(this);
+                this.$title = this.$('.modal-title');
+                this.source = core.getWidget(this.el, '.widget-name_code', pages.widgets.CodeAreaWidget);
+                var $hints = this.$('.' + c.base + c._hints);
+                var $tools = this.$('.' + c.code.editor.base + c.code.editor._toolbar);
+                $hints.append($tools);
+                $tools.removeClass('hidden');
+                $tools = this.$('.' + c.code.editor.base + c.code.editor._toolbar);
+                this.$findText = $tools.find('.search .find-text');
+                this.$findNext = $tools.find('.search .find-next');
+                this.$findPrev = $tools.find('.search .find-prev');
+                this.$matchCase = $tools.find('.match-case');
+                this.$findRegEx = $tools.find('.find-regex');
+                this.$replText = $tools.find('.replace .replace-text');
+                this.$replCurrent = $tools.find('.replace .replace');
+                this.$replAll = $tools.find('.replace .replace-all');
+                this.$undo = $tools.find('.undo');
+                this.$redo = $tools.find('.redo');
+                this.$findText.on('input', _.bind(function (event) {
+                    this.source.findText(this.$findText.val());
+                }, this));
+                this.$findText.keypress(_.bind(function (event) {
+                    this.source.findText(this.$findText.val());
+                }, this));
+                this.$findNext.click(_.bind(this.source.findNext, this.source));
+                this.$findPrev.click(_.bind(this.source.findPrev, this.source));
+                this.$matchCase.change(_.bind(this.source.toggleCaseSensitive, this.source));
+                this.$findRegEx.change(_.bind(this.source.toggleRegExp, this.source));
+                this.$replCurrent.click(_.bind(function () {
+                    this.source.replace(this.$replText.val());
+                }, this));
+                this.$replAll.click(_.bind(function () {
+                    this.source.replaceAll(this.$replText.val());
+                }, this));
+                this.$undo.click(_.bind(this.source.undo, this.source));
+                this.$redo.click(_.bind(this.source.redo, this.source));
+            },
+
+            onShown: function () {
+                dialogs.EditDialog.prototype.onShown.apply(this);
+                this.$title.text(this.data.path);
+                this.source.open(this.data.path);
+                this.source.focus();
+            },
+
+            getDefaultSuccessEvents: function () {
+                return pages.const.event.content.changed;
+            },
+
+            doSubmit: function () {
+                this.source.saveAs(this.data.path, _.bind(function () {
+                    this.triggerEvents();
+                    this.hide();
+                }, this), _.bind(this.onError, this));
+            }
+        });
+
+        dialogs.openEditSourceFileDialog = function (name, path, type) {
+            var c = dialogs.const.edit.url;
+            pages.dialogHandler.openEditDialog(c.path + c._edit._source,
+                dialogs.EditSourceFileDialog, name, path, type);
         };
 
         /**

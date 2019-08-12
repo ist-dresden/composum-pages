@@ -22,6 +22,11 @@
         widgets.CodeAreaWidget = window.widgets.Widget.extend({
 
             initialize: function (options) {
+                this.searchOptions = {
+                    wrap: true,
+                    caseSensitive: false,
+                    regExp: false
+                };
                 this.$editor = this.codeArea();
                 this.$editor.css('height', this.$el.data('height') || '150px');
                 this.initEditor();
@@ -75,6 +80,14 @@
 
             initEditor: function () {
                 this.ace = ace.edit(this.$editor[0]);
+                this.ace.commands.addCommand({
+                    name: 'save',
+                    bindKey: {
+                        win: 'Ctrl-S',
+                        mac: 'Command-S'
+                    },
+                    exec: _.bind(this.save, this)
+                });
                 this.ace.setTheme('ace/theme/clouds');
                 this.setType();
             },
@@ -87,11 +100,98 @@
                 this.ace.getSession().setMode({path: 'ace/mode/' + type, v: Date.now()});
             },
 
+            focus: function () {
+                this.ace.focus();
+            },
+
+            open: function (path, onSuccess, onError, onComplete) {
+                if (path) {
+                    core.ajaxGet(path, {
+                        contentType: 'text/plain;charset=UTF-8',
+                        dataType: 'text'
+                    }, _.bind(function (content) {
+                        this.setValue(content);
+                        var ext = /^.*\.([^./]+)$/.exec(path);
+                        if (ext) {
+                            this.setType(ext[1]);
+                        }
+                        this.ace.clearSelection();
+                        if (_.isFunction(onSuccess)) {
+                            onSuccess();
+                        }
+                    }, this), onError, onComplete);
+                }
+            },
+
+            save: function () {
+                this.saveAs(this.$el.data('path'));
+            },
+
             saveAs: function (path, onSuccess, onError, onComplete) {
                 if (path) {
+                    this.$el.data('path', path);
                     core.ajaxPut('/bin/cpm/pages/develop.updateFile.json' + path,
-                        this.getValue(), {}, onSuccess, onError, onComplete);
+                        this.getValue(), {
+                            contentType: 'text/plain;charset=UTF-8',
+                            dataType: 'text'
+                        }, onSuccess, onError, onComplete);
                 }
+            },
+
+            // actions...
+
+            findText: function (text) {
+                if (text) {
+                    this.searchTerm = text;
+                }
+                if (this.searchTerm) {
+                    this.searchOptions.backwards = false;
+                    this.ace.findAll(this.searchTerm, this.searchOptions, false);
+                }
+            },
+
+            findNext: function () {
+                this.searchOptions.backwards = false;
+                this.ace.findNext(this.searchOptions, false);
+            },
+
+            findPrev: function () {
+                this.searchOptions.backwards = true;
+                this.ace.findPrevious(this.searchOptions, false);
+            },
+
+            toggleCaseSensitive: function (event) {
+                this.searchOptions.caseSensitive = event
+                    ? $(event.currentTarget).prop('checked')
+                    : !this.searchOptions.caseSensitive;
+                this.findText();
+            },
+
+            toggleRegExp: function (event) {
+                this.searchOptions.regExp = event
+                    ? $(event.currentTarget).prop('checked')
+                    : !this.searchOptions.regExp;
+                this.findText();
+            },
+
+            replace: function (text) {
+                if (text) {
+                    this.ace.replace(text, this.searchOptions);
+                }
+            },
+
+            replaceAll: function (text) {
+                if (text) {
+                    this.ace.replaceAll(text, this.searchOptions);
+                }
+            },
+
+            undo: function () {
+                this.ace.undo();
+            },
+
+            redo: function () {
+                this.ace.redo();
             }
         });
 

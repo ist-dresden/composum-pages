@@ -18,6 +18,14 @@
             .modal-dialog {
                 width: 800px;
             }
+
+            &.extra-wide {
+
+                .modal-dialog {
+                    width: 96%;
+                    max-width: 1200px;
+                }
+            }
         }
 
         @media (min-width: 768px) and (max-width: 839px) {
@@ -292,6 +300,58 @@
             input {
                 @include dialog-input-font;
             }
+        }
+    }
+}
+
+.code-editor-dialog {
+
+    .modal-header {
+        padding-bottom: 12px;
+
+        .modal-title {
+            padding-top: 3px;
+            font-size: 100%
+        }
+    }
+
+    &_toolbar {
+        display: flex;
+        flex-wrap: nowrap;
+        padding-top: 4px;
+
+        .input-group {
+            margin-right: 5px;
+
+            .input-group-addon {
+                padding: 5px 8px;
+            }
+        }
+
+        .flags {
+            margin: 0 10px 0 0;
+
+            .checkbox {
+                margin: 0;
+
+                label {
+                    min-height: 0;
+                    height: 14px;
+                    font-size: 11px;
+
+                    input {
+                        top: -1px;
+                        margin-left: -18px
+                    }
+                }
+            }
+        }
+
+        button {
+            height: 30px;
+            padding: 0 8px;
+            text-align: center;
+            vertical-align: center;
         }
     }
 }

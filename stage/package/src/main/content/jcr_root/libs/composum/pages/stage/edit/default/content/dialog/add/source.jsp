@@ -2,7 +2,7 @@
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <cpp:defineFrameObjects/>
 <cpp:editDialog var="model" type="com.composum.pages.commons.model.GenericModel" languageContext="false"
-                title="Insert a new File" selector="generic" resourcePath="*" cssAdd="more-width"
+                title="Insert a new File" selector="generic" resourcePath="*"
                 submitLabel="Upload" submit="@{model.path}" successEvent="content:inserted">
     <cpp:widget type="hidden" name="*@TypeHint" value="nt:file"/>
     <div class="row">

@@ -16,9 +16,11 @@
                         action="window.composum.pages.actions.file.copy"/>
     </div>
     <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
+        <cpp:treeAction icon="edit" label="Edit" title="Edit the selected file"
+                        action="window.composum.pages.actions.component.file.editSource"/>
         <cpn:link href="/bin/cpm/edit/code.html${resource.path}" target="_blank" map="false"
                   title="${cpn:i18n(slingRequest,'Open file for editing')}"
-                  class="fa fa-edit composum-pages-tools_button btn btn-default"><span
+                  class="fa fa-pencil composum-pages-tools_button btn btn-default"><span
                 class="composum-pages-tools_button-label">${cpn:i18n(slingRequest,'Edit')}</span></cpn:link>
     </div>
 </cpp:editToolbar>

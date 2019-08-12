@@ -425,6 +425,13 @@
                 }
             },
 
+            file: {
+
+                editSource: function (event, name, path, type) {
+                    pages.dialogs.openEditSourceFileDialog(name, path, type);
+                }
+            },
+
             create: function (event, name, path, type) {
                 pages.dialogs.openEditDialog(name, path, type, undefined,
                     '/libs/composum/pages/stage/edit/default/develop/component/create.html');
