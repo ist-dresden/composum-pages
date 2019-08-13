@@ -44,7 +44,7 @@ import static com.composum.pages.commons.PagesConstants.RA_PAGES_LOCALE;
  * Each aspect value specified by a parameter is kept in the session and reused in further request.
  * </p>
  */
-@Component(name = "Composum Pages Request Aspects Adapter Factory",
+@Component(
         property = {
                 Constants.SERVICE_DESCRIPTION + "=the adapter factory for all request aspects - access mode, display mode, language",
                 AdapterFactory.ADAPTER_CLASSES + "=com.composum.sling.platform.security.AccessMode",
