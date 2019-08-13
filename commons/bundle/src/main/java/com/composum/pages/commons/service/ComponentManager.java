@@ -62,6 +62,11 @@ public interface ComponentManager {
                          @Nonnull Resource component, @Nonnull ComponentPieces requested)
             throws PersistenceException;
 
+    void createPath(@Nonnull final ResourceResolver resolver,
+                    @Nonnull Resource parent,
+                    @Nonnull final String relativePath)
+            throws PersistenceException;
+
     void updateFile(@Nonnull ResourceResolver resolver, @Nonnull String path, @Nonnull InputStream stream)
             throws PersistenceException;
 }

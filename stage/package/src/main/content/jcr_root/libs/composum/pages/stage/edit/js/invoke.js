@@ -92,6 +92,9 @@
                     select: 'asset:select',         // do it!...
                     selected: 'asset:selected'      // done.
                 },
+                folder: {
+                    inserted: 'folder:inserted'     //done.
+                },
                 path: {
                     select: 'path:select',          // do it!...
                     selected: 'path:selected'       // done.

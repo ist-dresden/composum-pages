@@ -420,6 +420,11 @@
                         '/libs/composum/pages/stage/edit/default/develop/component/folder.html');
                 },
 
+                insertFolder: function (event, name, path, type) {
+                    pages.dialogs.openNewFolderDialog(name, path, type,
+                        '/libs/composum/pages/stage/edit/default/develop/component/folder.add.html');
+                },
+
                 insertFile: function (event, name, path, type) {
                     pages.dialogs.openNewFileDialog(name, path, type, pages.dialogs.const.edit.url._add._source);
                 }

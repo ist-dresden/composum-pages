@@ -113,7 +113,7 @@ public class DevelopServlet extends NodeTreeServlet {
     public enum Operation {
         tree, treeActions,
         createComponent, adjustComponent,
-        updateFile
+        createPath, updateFile
     }
 
     protected PagesEditOperationSet operations = new PagesEditOperationSet();
@@ -142,6 +142,8 @@ public class DevelopServlet extends NodeTreeServlet {
                 Operation.createComponent, new CreateComponent());
         operations.setOperation(ServletOperationSet.Method.POST, Extension.json,
                 Operation.adjustComponent, new AdjustComponent());
+        operations.setOperation(ServletOperationSet.Method.POST, Extension.json,
+                Operation.createPath, new CreatePath());
 
         // PUT
         operations.setOperation(ServletOperationSet.Method.PUT, Extension.json,
@@ -305,6 +307,30 @@ public class DevelopServlet extends NodeTreeServlet {
     //
     // source code editing
     //
+
+    protected class CreatePath implements ServletOperation {
+
+        @Override
+        public void doIt(@Nonnull final SlingHttpServletRequest request,
+                         @Nonnull final SlingHttpServletResponse response,
+                         @Nonnull final ResourceHandle resource)
+                throws RepositoryException, IOException, ServletException {
+            Status status = new Status(request, response);
+            try {
+                ResourceResolver resolver = request.getResourceResolver();
+                String path = request.getParameter(PARAM_PATH);
+                if (StringUtils.isNotBlank(path)) {
+                    componentManager.createPath(resolver, resource, path);
+                    resolver.commit();
+                } else {
+                    status.withLogging(LOG).error("can't create resources - path missed");
+                }
+            } catch (Exception ex) {
+                status.withLogging(LOG).error("error creating path: {}", ex);
+            }
+            status.sendJson();
+        }
+    }
 
     protected class UpdateFile implements ServletOperation {
 

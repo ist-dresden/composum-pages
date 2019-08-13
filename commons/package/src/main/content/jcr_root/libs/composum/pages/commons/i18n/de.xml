@@ -7,6 +7,11 @@
 
     <general jcr:primaryType="sling:Folder"><!-- general phrases -->
 
+        <path jcr:primaryType="sling:MessageEntry"
+                sling:key="Path" sling:message="Pfad"/>
+        <name-or-path jcr:primaryType="sling:MessageEntry"
+                sling:key="Name or Path" sling:message="Name oder Pfad"/>
+
         <category jcr:primaryType="sling:MessageEntry"
                 sling:key="Category" sling:message="Kategorie"/>
 

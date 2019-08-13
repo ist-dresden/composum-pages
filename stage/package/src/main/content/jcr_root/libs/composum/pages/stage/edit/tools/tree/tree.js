@@ -636,6 +636,7 @@
                 var id = this.nodeIdPrefix + 'Tree';
                 $(document)
                     .on(e.content.selected + '.' + id, _.bind(this.onContentSelected, this))
+                    .on(e.folder.inserted + '.' + id, _.bind(this.onFolderInserted, this))
                     .on(e.content.inserted + '.' + id, _.bind(this.onContentInserted, this))
                     .on(e.content.changed + '.' + id, _.bind(this.onContentChanged, this))
                     .on(e.content.deleted + '.' + id, _.bind(this.onContentDeleted, this))
@@ -662,6 +663,17 @@
                 this.onPathSelected(event, path);
                 var p = pages.const.profile.component.tree;
                 pages.profile.set(p.aspect, p.path, path);
+            },
+
+            onFolderInserted: function (event, refOrPath, relativePath) {
+                var path = refOrPath && refOrPath.path ? refOrPath.path : refOrPath;
+                if (this.log.getLevel() <= log.levels.DEBUG) {
+                    this.log.debug(this.nodeIdPrefix + 'tree.onFolderInserted(' + path + ',' + relativePath + ')');
+                }
+                this.onContentInserted(event, refOrPath);
+                window.setTimeout(_.bind(function () {
+                    this.onContentSelected(event, path + '/' + relativePath);
+                }, this), 100);
             }
         });
 

@@ -30,7 +30,7 @@
                               action="window.composum.pages.actions.component.folder.insertFile"/>
                 <cpp:menuItem icon="folder-open" label="Folder"
                               title="insert a new folder as direct child of the selected folder"
-                              action="window.composum.pages.actions.folder.insertFolder"/>
+                              action="window.composum.pages.actions.component.folder.insertFolder"/>
             </cpp:treeMenu>
         </div>
     </div>

@@ -248,8 +248,12 @@
             },
 
             triggerEvents: function (result, defaultEvents) {
-                var event = (this.$el.data('pages-edit-success') || defaultEvents
-                    || this.getDefaultSuccessEvents()).split(';');
+                var event = this.$el.data('pages-edit-success');
+                if (event) {
+                    event = event.split(';');
+                } else {
+                    event = defaultEvents || this.getDefaultSuccessEvents().split(';');
+                }
                 for (var i = 0; i < event.length; i++) {
                     switch (event[i]) {
                         case 'messages':
@@ -260,8 +264,18 @@
                             }
                             break;
                         default:
-                            pages.trigger('dialog.event.final', event[i],
-                                [new pages.Reference(this.data.name, this.data.path, this.data.type)]);
+                            var key = event[i].split('#');
+                            var args;
+                            if (key.length > 1) {
+                                var values = key[1].split(',');
+                                args = [new pages.Reference(undefined, values[0])];
+                                for (var j = 1; j < values.length; j++) {
+                                    args.push(values[j])
+                                }
+                            } else {
+                                args = [new pages.Reference(this.data.name, this.data.path, this.data.type)];
+                            }
+                            pages.trigger('dialog.event.final', key[0], args);
                             break;
                     }
                 }
@@ -545,11 +559,14 @@
             initView: function () {
                 dialogs.EditDialog.prototype.initView.apply(this);
                 this.$primaryType = this.$('.widget-name_jcr_primaryType');
+                this.pathfield = core.getWidget(this.el, '.widget-name_path', core.components.TextFieldWidget);
                 this.ordered = core.getWidget(this.el, '.widget-name_ordered', core.components.CheckboxWidget);
             },
 
             getDefaultSuccessEvents: function () {
-                return pages.const.event.content.inserted;
+                return this.pathfield
+                    ? pages.const.event.folder.inserted + '#' + this.data.path + ',' + this.pathfield.getValue()
+                    : pages.const.event.content.inserted;
             },
 
             doSubmit: function () {
@@ -558,9 +575,9 @@
             }
         });
 
-        dialogs.openNewFolderDialog = function (name, path, type) {
+        dialogs.openNewFolderDialog = function (name, path, type, url) {
             var c = dialogs.const.edit.url;
-            pages.dialogHandler.openEditDialog(c.path + c._add.path + c._add._folder,
+            pages.dialogHandler.openEditDialog(url ? url : (c.path + c._add.path + c._add._folder),
                 dialogs.NewFolderDialog, name, path, type);
         };
 

@@ -86,6 +86,9 @@ public class PagesComponentManager implements ComponentManager {
     public static final ResourceFilter FILE_FILTER =
             new ResourceFilter.PrimaryTypeFilter(new StringFilter.WhiteList(JcrConstants.NT_FILE));
 
+    public static final Map<String, Object> CREATE_FOLDER_PROPS = new HashMap<String, Object>() {{
+        put(JcrConstants.JCR_PRIMARYTYPE, ResourceUtil.TYPE_SLING_FOLDER);
+    }};
     public static final Map<String, Object> CREATE_FILE_PROPS = new HashMap<String, Object>() {{
         put(JcrConstants.JCR_PRIMARYTYPE, JcrConstants.NT_FILE);
     }};
@@ -146,6 +149,9 @@ public class PagesComponentManager implements ComponentManager {
                                 @Nullable final String[] category,
                                 @Nonnull final ComponentPieces requested)
             throws PersistenceException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("createComponent({},{})", parent.getPath(), name);
+        }
         Map<String, Object> properties = new HashMap<>();
         properties.put(JcrConstants.JCR_PRIMARYTYPE, StringUtils.isNotBlank(primaryType) ? primaryType : NT_COMPONENT);
         if (StringUtils.isNotBlank(componentType)) {
@@ -177,6 +183,9 @@ public class PagesComponentManager implements ComponentManager {
             throws PersistenceException {
         if (template == null) {
             template = getDefaultTemplate(resolver);
+        }
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("adjustComponent({}->{})", template.getPath(), component.getPath());
         }
         final ComponentPieces existing = new ComponentPieces(component);
         if (existing.editDialog != requested.editDialog) {
@@ -249,6 +258,9 @@ public class PagesComponentManager implements ComponentManager {
                                                @Nonnull final Resource component,
                                                @Nonnull final String piecePath)
             throws PersistenceException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("applyComponentPieceTemplate({}->{},{})", template.getPath(), component.getPath(), piecePath);
+        }
         Resource templateNode = template;
         Resource componentNode = component;
         String[] path = piecePath.split(("/"));
@@ -281,6 +293,9 @@ public class PagesComponentManager implements ComponentManager {
                                              @Nonnull final Resource templateNode,
                                              @Nonnull final Resource componentNode)
             throws PersistenceException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("applyTemplateResource({}->{},{})", templateNode.getPath(), componentNode.getPath(), piecePath);
+        }
         Resource child;
         if (COPY_DEEP.contains(piecePath)) {
             child = resourceManager.createFromTemplate(new ResourceManager.NopTemplateContext(resolver),
@@ -301,6 +316,9 @@ public class PagesComponentManager implements ComponentManager {
                              @Nonnull final Resource templateNode,
                              @Nonnull final Resource componentNode)
             throws PersistenceException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("copyFiles({}->{})", templateNode.getPath(), componentNode.getPath());
+        }
         Pattern templateNodeNameFile = Pattern.compile("^" + templateNode.getName() + "(\\.[\\w]+)$");
         for (Resource child : templateNode.getChildren()) {
             if (FILE_FILTER.accept(child)) {
@@ -316,6 +334,9 @@ public class PagesComponentManager implements ComponentManager {
     protected void removeComponentPiece(@Nonnull final ResourceResolver resolver,
                                         @Nonnull final Resource component,
                                         @Nonnull String piecePath) throws PersistenceException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("removeComponentPiece({})", component.getPath());
+        }
         if (StringUtils.isNotBlank(piecePath)) {
             Resource piece = component.getChild(piecePath);
             if (piece != null) {
@@ -329,10 +350,31 @@ public class PagesComponentManager implements ComponentManager {
         }
     }
 
+    @Override
+    public void createPath(@Nonnull final ResourceResolver resolver,
+                           @Nonnull Resource parent,
+                           @Nonnull final String path)
+            throws PersistenceException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("createPath({},{})", parent.getPath(), path);
+        }
+        for (String name : StringUtils.split(path, "/")) {
+            Resource child = parent.getChild(name);
+            if (child == null) {
+                child = resolver.create(parent, name, CREATE_FOLDER_PROPS);
+            }
+            parent = child;
+        }
+    }
+
+    @Override
     public void updateFile(@Nonnull final ResourceResolver resolver,
                            @Nonnull final String path,
                            @Nonnull final InputStream stream)
             throws PersistenceException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("updateFile({})", path);
+        }
         String fileName = StringUtils.substringAfterLast(path, "/");
         Resource resource = resolver.getResource(path);
         if (resource == null) {
