@@ -15,7 +15,7 @@
         <cpp:widget label="Supertype" name="sling:resourceSuperType" type="textfield"/>
     </div>
     <div class="col col-xs-4">
-        <cpp:widget label="Component Type" name="componentType" type="select"
+        <cpp:widget label="Component Type" name="componentType" type="select" default=""
                     options=",cpp:Element,cpp:Container,cpp:Page" separators=", |"/>
     </div>
 </div>

@@ -61,6 +61,10 @@
 
             &_image {
                 width: 34%;
+
+                .composum-pages-components-element-image {
+                    margin: 0 0 10px 15px;
+                }
             }
         }
     }
@@ -75,6 +79,10 @@
 
             &_image {
                 float: left;
+
+                .composum-pages-components-element-image {
+                    margin: 0 15px 10px 0;
+                }
             }
         }
     }

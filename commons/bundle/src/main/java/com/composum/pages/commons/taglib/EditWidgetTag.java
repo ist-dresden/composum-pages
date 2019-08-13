@@ -7,6 +7,8 @@ import com.composum.sling.core.SlingBean;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ValueMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.servlet.jsp.JspException;
@@ -15,10 +17,13 @@ import javax.servlet.jsp.jstl.core.LoopTag;
 import javax.servlet.jsp.jstl.core.LoopTagStatus;
 import java.io.IOException;
 import java.io.Writer;
+import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static com.composum.pages.commons.taglib.EditMultiWidgetTag.MULTIWIDGET_TYPE;
 
@@ -26,6 +31,8 @@ import static com.composum.pages.commons.taglib.EditMultiWidgetTag.MULTIWIDGET_T
  * the EditWidgetTag is rendering a dialog widget as an element of the edit dialog form
  */
 public class EditWidgetTag extends AbstractWidgetTag implements LoopTag {
+
+    private static final Logger LOG = LoggerFactory.getLogger(EditWidgetTag.class);
 
     public static final String OPTION_REQUIRED = "required";
     public static final String OPTION_BLANK = "blank";
@@ -60,8 +67,11 @@ public class EditWidgetTag extends AbstractWidgetTag implements LoopTag {
     protected String status;
     private transient MultiValueStatus loopStatus;
 
+    private Set<String> usedAttributeKeys = new HashSet<>();
+
     @Override
     protected void clear() {
+        usedAttributeKeys = new HashSet<>();
         loopStatus = null;
         status = null;
         rules = null;
@@ -149,16 +159,18 @@ public class EditWidgetTag extends AbstractWidgetTag implements LoopTag {
 
     public void setRequired(boolean value) {
         dynamicAttributes.setOption(DATA_RULES_ATTR, OPTION_REQUIRED, value);
+        usedAttributeKeys.add(OPTION_REQUIRED);
     }
 
     public void setBlank(boolean value) {
         dynamicAttributes.setOption(DATA_RULES_ATTR, OPTION_BLANK, value);
+        usedAttributeKeys.add(OPTION_BLANK);
     }
 
     /**
      * adds all pre configured attributes to the attribute set
      */
-    protected void collectConfiguredAttributes(Map<String, Object> attributeSet) {
+    protected void collectConfiguredAttributes() {
         Resource widget = ResolverUtil.getResourceType(resourceResolver, getSnippetResourceType());
         while (widget != null) {
             Resource attributes = widget.getChild(NN_ATTRIBUTES);
@@ -171,7 +183,22 @@ public class EditWidgetTag extends AbstractWidgetTag implements LoopTag {
                         if (value instanceof String) {
                             value = eval(value, value);
                         }
-                        useDynamicAttribute(attributeSet, key, value.toString());
+                        try {
+                            try {
+                                // support non dynamic predefined attributes...
+                                Field field = getClass().getField(key);
+                                if (field.get(this) == null) {
+                                    field.set(this, value);
+                                }
+                            } catch (NoSuchFieldException | IllegalAccessException ex) {
+                                // ...with a 'fallback' to a dynamic attribute
+                                if (!usedAttributeKeys.contains(key)) {
+                                    setDynamicAttribute(key, value.toString());
+                                }
+                            }
+                        } catch (JspException ex) {
+                            LOG.error(ex.toString());
+                        }
                     }
                 }
             }
@@ -182,7 +209,6 @@ public class EditWidgetTag extends AbstractWidgetTag implements LoopTag {
     @Override
     protected void collectAttributes(Map<String, Object> attributeSet) {
         collectDynamicAttributes(attributeSet);
-        collectConfiguredAttributes(attributeSet);
     }
 
     @Override
@@ -203,12 +229,12 @@ public class EditWidgetTag extends AbstractWidgetTag implements LoopTag {
      */
     @Override
     protected void setDynamicAttribute(String key, Object value) throws JspException {
-        String attributeKey = key.toLowerCase();
-        if (RULES_OPTIONS.contains(attributeKey)) {
+        usedAttributeKeys.add(key);
+        if (RULES_OPTIONS.contains(key)) {
             dynamicAttributes.setOption(DATA_RULES_ATTR,
-                    RULES_OPTIONS.get(1).equals(attributeKey) ? RULES_OPTIONS.get(0) : attributeKey,
+                    RULES_OPTIONS.get(1).equals(key) ? RULES_OPTIONS.get(0) : key,
                     value);
-        } else if (RULES_ATTR.equals(attributeKey) || DATA_RULES_ATTR.equals(attributeKey)) {
+        } else if (RULES_ATTR.equals(key) || DATA_RULES_ATTR.equals(key)) {
             String string = (String) value;
             if (StringUtils.isNotBlank(string)) {
                 for (String option : StringUtils.split(string, ",")) {
@@ -298,6 +324,7 @@ public class EditWidgetTag extends AbstractWidgetTag implements LoopTag {
 
     @Override
     protected void prepareTagStart() {
+        collectConfiguredAttributes();
         if (multi) {
             PropertyEditHandle editHandle = (PropertyEditHandle) component;
             loopStatus = new MultiValueStatus(editHandle);

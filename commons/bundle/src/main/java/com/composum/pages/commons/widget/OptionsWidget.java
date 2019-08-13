@@ -141,6 +141,10 @@ public abstract class OptionsWidget<T> extends PropertyEditHandle<T> implements 
         return defaultOption;
     }
 
+    public boolean isHasDefaultOption() {
+        return getDefaultOption() != null;
+    }
+
     protected abstract Option newOption(String label, String value, Object data);
 
     /**
