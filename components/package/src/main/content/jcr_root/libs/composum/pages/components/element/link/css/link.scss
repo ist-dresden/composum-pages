@@ -18,9 +18,9 @@
     }
 
     &-set {
-        display: inline-block;
-        margin: $text-spacing-default 0 0;
-        padding: 0 30px 0;
+        width: 100%;
+        margin: $text-spacing-default 0;
+        padding: 0 20px 0 40px;
         @include default-font;
     }
 }

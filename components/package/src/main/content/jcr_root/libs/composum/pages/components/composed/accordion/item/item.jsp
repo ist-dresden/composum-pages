@@ -17,9 +17,7 @@
          role="tabpanel" aria-labelledby="${itemId}_head">
         <div class="panel-body">
             <c:forEach items="${item.elements}" var="element" varStatus="loop">
-                <div class="${itemCSS}_element">
-                    <cpp:include resource="${element.resource}"/>
-                </div>
+                <cpp:include resource="${element.resource}"/>
             </c:forEach>
         </div>
     </div>

@@ -141,6 +141,10 @@
                             }
                         }
                     }
+
+                    .composum-pages-components-element-link-set {
+                        padding-left: 51px;
+                    }
                 }
             }
 
@@ -224,6 +228,10 @@
 
         p {
             margin: $text-spacing-default 0;
+
+            &:last-child {
+                margin-bottom: 0;
+            }
         }
     }
 }
@@ -241,13 +249,6 @@
                 &_variation {
 
                     &_default {
-
-                        .composum-pages-components-element-teaser {
-
-                            &_text-block {
-                                padding: 0;
-                            }
-                        }
 
                         &.composum-pages-components-element-teaser {
 
@@ -267,6 +268,10 @@
                                     &_link {
                                         display: block;
                                         width: 100%;
+                                        padding: 0;
+                                    }
+
+                                    &_text-block {
                                         padding: 0;
                                     }
                                 }
