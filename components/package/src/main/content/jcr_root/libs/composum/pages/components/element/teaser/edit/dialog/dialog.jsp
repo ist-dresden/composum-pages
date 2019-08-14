@@ -9,7 +9,7 @@
             </div>
             <div class="col col-xs-4">
                 <cpp:widget label="Variation" property="variation" type="select" hint="render type"
-                            options="default,bgimage,bgvideo" default="default"/>
+                            options="default,bgimage,bgvideo,symbol" default="default"/>
             </div>
         </div>
         <cpp:widget label="Subtitle" property="subtitle" type="textfield" i18n="true"/>

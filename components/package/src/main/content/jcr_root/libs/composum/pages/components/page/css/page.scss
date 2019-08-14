@@ -82,6 +82,13 @@ html {
 
     &_content {
 
+        /* general changes to modify to the bootstrap presets... */
+
+        code {
+            color: #fff;
+            background-color: #bbb;
+        }
+
         &_top {
             min-height: $bootstrap-spacing-v*4;
 

@@ -1,7 +1,11 @@
 @charset "UTF-8";
 
+@import "../../../css/variables";
+@import "../../../css/mixins";
+
 .composum-pages-components-element-codeblock {
     margin: 0 0 10px;
+    @include default-font;
 
     &_heading {
         position: relative;

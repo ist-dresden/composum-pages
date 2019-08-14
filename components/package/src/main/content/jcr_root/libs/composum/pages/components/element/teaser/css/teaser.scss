@@ -133,6 +133,12 @@
                             padding: $symbol-title-top 0 0;
                             font-size: $symbol-font-size;
                             color: $symbol-color;
+
+                            .composum-pages-components-element-image {
+                                margin: 0 0 0 -11px;
+                                border: none;
+                                padding: 0;
+                            }
                         }
                     }
                 }
@@ -299,13 +305,6 @@
 
                         &_default {
 
-                            .composum-pages-components-element-teaser {
-
-                                &_text-block {
-                                    padding: 0;
-                                }
-                            }
-
                             &.composum-pages-components-element-teaser {
 
                                 &_video,
@@ -324,6 +323,10 @@
                                         &_link {
                                             display: block;
                                             width: 100%;
+                                            padding: 0;
+                                        }
+
+                                        &_text-block {
                                             padding: 0;
                                         }
                                     }
@@ -355,13 +358,6 @@
 
             &_default {
 
-                .composum-pages-components-element-teaser {
-
-                    &_text-block {
-                        padding: 0;
-                    }
-                }
-
                 &.composum-pages-components-element-teaser {
 
                     &_video,
@@ -380,6 +376,10 @@
                             &_link {
                                 display: block;
                                 width: 100%;
+                                padding: 0;
+                            }
+
+                            &_text-block {
                                 padding: 0;
                             }
                         }
