@@ -10,9 +10,6 @@
             <cpn:text tagName="h2" class="${teaserCSS}_title" value="${teaser.title}"/>
             <cpn:text class="${teaserCSS}_subtitle" value="${teaser.subtitle}"/>
             <cpn:text type="rich" class="${teaserCSS}_text" value="${teaser.text}"/>
-            <c:if test="">
-                <cpp:include path="links"/>
-            </c:if>
         </div>
     </cpp:dropZone>
 </cpp:element>

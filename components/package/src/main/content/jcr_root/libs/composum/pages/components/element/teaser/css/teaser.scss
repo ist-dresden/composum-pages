@@ -140,10 +140,13 @@
                                 padding: 0;
                             }
                         }
-                    }
 
-                    .composum-pages-components-element-link-set {
-                        padding-left: 51px;
+                        &_content.image-symbol {
+
+                            .composum-pages-components-element-link-set {
+                                padding-left: 50px;
+                            }
+                        }
                     }
                 }
             }

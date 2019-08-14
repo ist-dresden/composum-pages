@@ -10,7 +10,7 @@
         <cpn:div test="${teaser.useIcon}" class="${teaserCSS}_icon"><i
                 class="fa fa-${teaser.icon}"></i></cpn:div>
     </cpn:div>
-    <div class="${teaserCSS}_content">
+    <div class="${teaserCSS}_content ${teaser.useImage?'image-symbol':''}">
         <cpn:link test="${teaser.hasLink}" body="true" class="${teaserCSS}_link"
                   href="${teaser.linkUrl}" title="${teaser.linkTitle}">
             <cpp:include replaceSelectors="${teaser.textSelector}"/>
