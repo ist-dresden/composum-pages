@@ -5,7 +5,7 @@
 <cpp:defineObjects/>
 <cpp:container var="model" type="com.composum.pages.commons.model.Container" tagName="section">
     <cpn:anchor test="${not empty model.properties.anchor}" name="${model.properties.anchor}" title="${model.title}"/>
-    <cpn:div test="${not empty model.title}" class="${modelCSS}_header">
+    <cpn:div test="${not empty model.title && !model.properties.hideTitle}" class="${modelCSS}_header">
         <cpn:text tagName="${model.titleTagName}" value="${model.title}" i18n="true" class="${modelCSS}_title"/>
     </cpn:div>
     <sling:call script="elements.jsp"/>

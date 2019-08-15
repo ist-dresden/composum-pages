@@ -5,12 +5,20 @@ import org.apache.commons.lang3.StringUtils;
 
 public class Title extends ImageRelatedElement {
 
+    private transient Boolean hideTitle;
     private transient String subtitle;
     private transient String cssType;
     private transient String style;
 
     public boolean isValid() {
         return StringUtils.isNotBlank(getTitle()) || StringUtils.isNotBlank(getSubtitle());
+    }
+
+    public boolean isHideTitle() {
+        if (hideTitle == null) {
+            hideTitle = getProperty("hideTitle", Boolean.FALSE);
+        }
+        return hideTitle;
     }
 
     public String getSubtitle() {

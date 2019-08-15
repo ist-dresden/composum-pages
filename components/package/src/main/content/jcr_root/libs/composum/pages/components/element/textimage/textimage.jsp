@@ -13,8 +13,8 @@
     <c:choose>
         <c:when test="${model.textValid}">
             <div class="${modelCSS}_text-block">
-                <cpn:text tagName="h${model.titleLevel}" class="${modelCSS}_title"
-                          value="${model.title}"/>
+                <cpn:text tagName="${model.titleTagName}" test="${!model.hideTitle}"
+                          class="${modelCSS}_title" value="${model.title}"/>
                 <cpn:text class="${modelCSS}_text ${modelCSS}_align-${model.alignment}"
                           value="${model.text}" type="rich"/>
             </div>

@@ -105,7 +105,7 @@
         <title jcr:primaryType="sling:MessageEntry"
                 sling:key="Title" sling:message="Titel"/>
         <title-level jcr:primaryType="sling:MessageEntry"
-                sling:key="Title Level" sling:message="Titel-Ebene"/>
+                sling:key="Hide Title" sling:message="Titel verbergen"/>
         <to jcr:primaryType="sling:MessageEntry"
                 sling:key="to" sling:message="bis"/>
         <type jcr:primaryType="sling:MessageEntry"

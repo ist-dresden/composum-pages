@@ -14,7 +14,7 @@
                         hint="optional navigation id"/>
         </div>
         <div class="col col-xs-2">
-            <cpp:widget label="Show Title" property="showTitle" type="checkbox"/>
+            <cpp:widget label="Hide Title" property="hideTitle" type="checkbox"/>
         </div>
     </div>
 </cpp:editDialog>

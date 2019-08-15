@@ -3,15 +3,16 @@
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <cpp:defineObjects/>
-<cpp:model var="text" type="com.composum.pages.components.model.text.Text">
+<cpp:model var="model" type="com.composum.pages.components.model.text.Text">
     <c:choose>
-        <c:when test="${text.valid}">
-            <cpn:text tagName="${text.titleTagName}" class="${textCSS}_title" value="${text.title}"/>
-            <cpn:text class="${textCSS}_text" value="${text.text}"
+        <c:when test="${model.valid}">
+            <cpn:text tagName="${model.titleTagName}" test="${!model.hideTitle}"
+                      class="${modelCSS}_title" value="${model.title}"/>
+            <cpn:text class="${modelCSS}_text" value="${model.text}"
                       type="rich"/>
         </c:when>
         <c:otherwise>
-            <cpp:include test="${text.editMode}" replaceSelectors="placeholder"/>
+            <cpp:include test="${model.editMode}" replaceSelectors="placeholder"/>
         </c:otherwise>
     </c:choose>
 </cpp:model>

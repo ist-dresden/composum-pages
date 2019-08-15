@@ -1,11 +1,7 @@
 package com.composum.pages.components.model.text;
 
-import com.composum.pages.commons.model.Container;
 import com.composum.pages.commons.model.Element;
-import com.composum.pages.commons.model.Page;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ResourceResolver;
 
 import javax.annotation.Nonnull;
 import java.util.regex.Pattern;
@@ -17,23 +13,18 @@ public class Text extends Element {
 
     public static final Pattern IGNORE_IN_TITLE_LEVEL = Pattern.compile("^.*/(column)$");
 
+    private transient Boolean hideTitle;
     private transient String text;
 
     public boolean isValid() {
         return StringUtils.isNotBlank(getTitle()) || StringUtils.isNotBlank(getText());
     }
 
-    public static int getTitleLevel(@Nonnull Resource element) {
-        int titleLevel = 1;
-        ResourceResolver resolver = element.getResourceResolver();
-        while (element != null && titleLevel < 5 && !Page.isPage(element)) {
-            if (Container.isContainer(resolver, element, null)
-                    && !IGNORE_IN_TITLE_LEVEL.matcher(element.getResourceType()).matches()) {
-                titleLevel++;
-            }
-            element = element.getParent();
+    public boolean isHideTitle() {
+        if (hideTitle == null) {
+            hideTitle = getProperty("hideTitle", Boolean.FALSE);
         }
-        return Math.max(titleLevel, 3);
+        return hideTitle;
     }
 
     @Nonnull
