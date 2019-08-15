@@ -5,6 +5,6 @@
 <cpp:model var="model" type="com.composum.pages.commons.model.Component" mode="none"
            cssBase="composum-pages-component-tile_thumbnail">
     <picture class="${modelCssBase}_picture">
-        <cpn:image src="${model.path}/edit/thumbnail"/>
+        <cpn:image src="${model.thumbnail.imageRef}"/>
     </picture>
 </cpp:model>

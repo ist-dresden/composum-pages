@@ -153,13 +153,14 @@ public class Component extends AbstractModel {
             resource = Component.this.getResource().getChild(THUMBNAIL_PATH);
             if (resource != null) {
                 ValueMap values = resource.getValueMap();
-                String primaryType = values.get(JcrConstants.JCR_PRIMARYTYPE, "");
-                if (JcrConstants.NT_FILE.equals(primaryType)) {
-                    type = TumbnailType.imageFile;
+                imageRef = values.get(Image.PROP_IMAGE_REF, "");
+                if (StringUtils.isNotBlank(imageRef)) {
+                    type = TumbnailType.imageRef;
                 } else {
-                    imageRef = values.get(Image.PROP_IMAGE_REF, "");
-                    if (StringUtils.isNotBlank(imageRef)) {
-                        type = TumbnailType.imageRef;
+                    List<Resource> files = ResourceUtil.getChildrenByType(resource, JcrConstants.NT_FILE);
+                    if (files.size() > 0) {
+                        type = TumbnailType.imageFile;
+                        imageRef = files.get(0).getPath();
                     }
                 }
             }

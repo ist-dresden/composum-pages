@@ -19,18 +19,18 @@
             width: 100%;
             margin: 0;
             padding: 5px 5px 5px 30px;
-            height: 87px;
+            height: 86px;
             background: #eee;
             color: #444;
 
             &_thumbnail {
                 position: absolute;
-                top: 0;
+                top: 3px;
                 left: 30px;
-                width: 130px;
+                width: 160px;
 
                 &_wrapper {
-                    @include aspect-ratio-wrapper(3, 2);
+                    @include aspect-ratio-wrapper(2, 1);
                 }
 
                 &_picture {
@@ -53,13 +53,13 @@
 
             &_text {
                 position: relative;
-                margin-left: 140px;
+                margin-left: 170px;
                 @include font('robotolight', 17px);
 
                 .composum-pages-component-tile {
 
                     &_title {
-                        margin-bottom: 2px;
+                        margin-bottom: 1px;
                     }
 
                     &_type {
