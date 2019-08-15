@@ -3,20 +3,20 @@
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <cpp:defineObjects/><%-- the 'independent' selector is used to enable multiple open items --%>
-<cpp:container var="item" type="com.composum.pages.components.model.composed.accordion.AccordionItem"
+<cpp:container var="model" type="com.composum.pages.components.model.composed.accordion.AccordionItem"
                cssBase="composum-pages-components-accordion-item" cssAdd="panel panel-default">
     <div id="${itemId}_head" class="panel-heading" role="tab">
-        <h4 class="panel-title">
+        <cpn:div tagName="${model.titleTagName}" class="panel-title">
             <a role="button" data-toggle="collapse" href="#${itemId}_body"
-               aria-expanded="${item.initialOpen||item.editMode}" aria-controls="${itemId}_body">
-                <cpn:text value="${item.title}"/>
+               aria-expanded="${model.initialOpen||model.editMode}" aria-controls="${itemId}_body">
+                <cpn:text value="${model.title}"/>
             </a>
-        </h4>
+        </cpn:div>
     </div>
-    <div id="${itemId}_body" class="panel-collapse collapse ${item.initialOpen||item.editMode?'in':''}"
+    <div id="${itemId}_body" class="panel-collapse collapse ${model.initialOpen||model.editMode?'in':''}"
          role="tabpanel" aria-labelledby="${itemId}_head">
         <div class="panel-body">
-            <c:forEach items="${item.elements}" var="element" varStatus="loop">
+            <c:forEach items="${model.elements}" var="element" varStatus="loop">
                 <cpp:include resource="${element.resource}"/>
             </c:forEach>
         </div>

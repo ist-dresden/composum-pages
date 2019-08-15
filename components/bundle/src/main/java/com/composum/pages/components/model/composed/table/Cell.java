@@ -92,7 +92,7 @@ public class Cell extends Element {
         return vericalAlign;
     }
 
-    public String getLevel() {
+    public String getWarningLevel() {
         if (level == null) {
             level = getProperty(PN_LEVEL, DEFAULT_LEVEL);
         }

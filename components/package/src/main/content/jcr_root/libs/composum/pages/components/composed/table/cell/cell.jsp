@@ -6,7 +6,7 @@
 <cpp:defineObjects/>
 <cpp:element var="column" type="com.composum.pages.components.model.composed.table.Cell"
              tagName="@{column.type}" tagAttributes="@{column.tdAttributes}"
-             cssAdd="valign_@{column.verticalAlign} @{column.level}">
+             cssAdd="valign_@{column.verticalAlign} @{column.warningLevel}">
     <c:choose>
         <c:when test="${column.hasText}">
             <cpn:text class="${columnCSS}_text align_${column.textAlign}" value="${column.text}" type="rich"/>

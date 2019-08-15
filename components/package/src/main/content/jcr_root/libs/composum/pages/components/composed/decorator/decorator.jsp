@@ -4,7 +4,7 @@
 <%@ taglib prefix="cpn" uri="http://sling.composum.com/cpnl/1.0" %>
 <cpp:defineObjects/>
 <cpp:container var="decorator" type="com.composum.pages.components.model.composed.Decorator"
-               cssAdd="@{decoratorCSS}_@{decorator.level} panel panel-@{decorator.level} title-level-@{decorator.titleLevel}">
+               cssAdd="@{decoratorCSS}_@{decorator.level} panel panel-@{decorator.warningLevel} title-level-@{decorator.titleLevel}">
     <div class="${decoratorCSS}_body panel-body">
         <c:forEach var="element" items="${decorator.elements}">
             <div class="${decoratorCSS}_item${decorator.hasIcon?' has-symbol':''}">
@@ -12,7 +12,7 @@
                     <div class="${decoratorCSS}_icon"><i class="fa fa-${decorator.icon}"></i></div>
                 </c:if>
                 <div class="${decoratorCSS}_element">
-                    <cpn:text tagName="h${decorator.titleLevel}" class="${decoratorCSS}_title"
+                    <cpn:text tagName="${decorator.titleTagName}" class="${decoratorCSS}_title"
                               value="${decorator.title}"/>
                     <cpp:include resource="${element.resource}"/>
                 </div>

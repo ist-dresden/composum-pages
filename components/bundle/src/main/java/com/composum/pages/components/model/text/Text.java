@@ -17,21 +17,10 @@ public class Text extends Element {
 
     public static final Pattern IGNORE_IN_TITLE_LEVEL = Pattern.compile("^.*/(column)$");
 
-    private transient String titleLevel;
     private transient String text;
 
     public boolean isValid() {
         return StringUtils.isNotBlank(getTitle()) || StringUtils.isNotBlank(getText());
-    }
-
-    public String getTitleLevel() {
-        if (titleLevel == null) {
-            titleLevel = getProperty("titleLevel", String.class);
-            if (titleLevel == null) {
-                titleLevel = Integer.toString(Text.getTitleLevel(getResource()));
-            }
-        }
-        return titleLevel;
     }
 
     public static int getTitleLevel(@Nonnull Resource element) {

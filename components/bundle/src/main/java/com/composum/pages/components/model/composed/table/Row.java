@@ -24,7 +24,7 @@ public class Row extends Container {
         return head;
     }
 
-    public String getLevel() {
+    public String getWarningLevel() {
         if (level == null) {
             level = getProperty(PN_LEVEL, DEFAULT_LEVEL);
         }

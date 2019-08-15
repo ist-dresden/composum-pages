@@ -1,7 +1,6 @@
 package com.composum.pages.components.model.composed;
 
 import com.composum.pages.commons.model.Container;
-import com.composum.pages.components.model.text.Text;
 import org.apache.commons.lang3.StringUtils;
 
 public class Decorator extends Container {
@@ -16,22 +15,7 @@ public class Decorator extends Container {
     private transient String level;
     private transient String icon;
 
-    public String getTitleLevel() {
-        if (titleLevel == null) {
-            String title = getTitle();
-            if (StringUtils.isNotBlank(title)) {
-                titleLevel = getProperty("titleLevel", String.class);
-                if (titleLevel == null) {
-                    titleLevel = Integer.toString(Text.getTitleLevel(getResource()));
-                }
-            } else {
-                titleLevel = "";
-            }
-        }
-        return titleLevel;
-    }
-
-    public String getLevel() {
+    public String getWarningLevel() {
         if (level == null) {
             level = getProperty(PROP_LEVEL, DEFAULT_LEVEL);
         }
