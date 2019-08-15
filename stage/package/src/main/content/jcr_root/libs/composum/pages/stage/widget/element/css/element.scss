@@ -4,7 +4,6 @@
  *
  * /libs/composum/pages/stage/widget/element
  */
-
 @import "../../../edit/css/variables";
 @import "../../../edit/css/mixins";
 
@@ -20,7 +19,7 @@
             width: 100%;
             margin: 0;
             padding: 5px 5px 5px 30px;
-            min-height: 80px;
+            height: 87px;
             background: #eee;
             color: #444;
 
@@ -36,10 +35,10 @@
 
                 &_picture {
                     @include aspect-ratio-element();
-                }
 
-                &_image {
-                    width: 100%;
+                    img {
+                        width: 100%;
+                    }
                 }
 
                 &_placeholder {
@@ -56,6 +55,23 @@
                 position: relative;
                 margin-left: 140px;
                 @include font('robotolight', 17px);
+
+                .composum-pages-component-tile {
+
+                    &_title {
+                        margin-bottom: 2px;
+                    }
+
+                    &_type {
+                        margin-bottom: 2px;
+                    }
+
+                    &_description {
+                        height: 3rem;
+                        line-height: 1.5rem;
+                        white-space: unset;
+                    }
+                }
             }
 
             &_icon {

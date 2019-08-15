@@ -13,6 +13,7 @@ import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.NonExistingResource;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.ValueMap;
 
 import javax.annotation.Nonnull;
 import java.util.Arrays;
@@ -138,6 +139,41 @@ public class Component extends AbstractModel {
         }
     }
 
+    enum TumbnailType {component, imageRef, imageFile}
+
+    public class Thumbnail {
+
+        protected TumbnailType type = TumbnailType.component;
+
+        protected Resource resource;
+
+        protected String imageRef;
+
+        public Thumbnail() {
+            resource = Component.this.getResource().getChild(THUMBNAIL_PATH);
+            if (resource != null) {
+                ValueMap values = resource.getValueMap();
+                String primaryType = values.get(JcrConstants.JCR_PRIMARYTYPE, "");
+                if (JcrConstants.NT_FILE.equals(primaryType)) {
+                    type = TumbnailType.imageFile;
+                } else {
+                    imageRef = values.get(Image.PROP_IMAGE_REF, "");
+                    if (StringUtils.isNotBlank(imageRef)) {
+                        type = TumbnailType.imageRef;
+                    }
+                }
+            }
+        }
+
+        public TumbnailType getType() {
+            return type;
+        }
+
+        public String getImageRef() {
+            return imageRef;
+        }
+    }
+
     /**
      * the delegate of the components dialog implemented as a 'subcomponent'
      */
@@ -209,6 +245,7 @@ public class Component extends AbstractModel {
     private transient String type;
     private transient List<String> category;
 
+    private transient Thumbnail thumbnail;
     private transient String helpContent;
 
     private transient ComponentPieces componentPieces;
@@ -366,6 +403,13 @@ public class Component extends AbstractModel {
             type = ResourceTypeUtil.relativeResourceType(getContext().getResolver(), getPath());
         }
         return type;
+    }
+
+    public Thumbnail getThumbnail() {
+        if (thumbnail == null) {
+            thumbnail = new Thumbnail();
+        }
+        return thumbnail;
     }
 
     public String getHelpContent() {
