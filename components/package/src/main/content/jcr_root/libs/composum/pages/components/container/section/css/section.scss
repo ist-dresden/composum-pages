@@ -8,7 +8,7 @@
     width: 100%;
 
     &_title {
-        margin: $main-title-margin 0;
+        margin: $main-title-margin;
         @include a-title-font($column-title-font-size);
         color: $column-title-text-color;
     }

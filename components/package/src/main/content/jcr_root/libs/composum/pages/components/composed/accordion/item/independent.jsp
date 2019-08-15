@@ -5,16 +5,16 @@
 <cpp:defineObjects/><%-- the 'independent' selector is used to enable multiple open items --%>
 <cpp:container var="model" type="com.composum.pages.components.model.composed.accordion.AccordionItem"
                cssBase="composum-pages-components-accordion-item" cssAdd="panel panel-default">
-    <div id="${itemId}_head" class="panel-heading" role="tab">
+    <div id="${modelId}_head" class="panel-heading" role="tab">
         <cpn:div tagName="${model.titleTagName}" class="panel-title">
-            <a role="button" data-toggle="collapse" href="#${itemId}_body"
-               aria-expanded="${model.initialOpen||model.editMode}" aria-controls="${itemId}_body">
+            <a role="button" data-toggle="collapse" href="#${modelId}_body"
+               aria-expanded="${model.initialOpen||model.editMode}" aria-controls="${modelId}_body">
                 <cpn:text value="${model.title}"/>
             </a>
         </cpn:div>
     </div>
-    <div id="${itemId}_body" class="panel-collapse collapse ${model.initialOpen||model.editMode?'in':''}"
-         role="tabpanel" aria-labelledby="${itemId}_head">
+    <div id="${modelId}_body" class="panel-collapse collapse ${model.initialOpen||model.editMode?'in':''}"
+         role="tabpanel" aria-labelledby="${modelId}_head">
         <div class="panel-body">
             <c:forEach items="${model.elements}" var="element" varStatus="loop">
                 <cpp:include resource="${element.resource}"/>
