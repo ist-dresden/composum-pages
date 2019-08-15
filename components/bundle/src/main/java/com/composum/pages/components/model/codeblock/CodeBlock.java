@@ -157,9 +157,9 @@ public class CodeBlock extends Element {
             if (StringUtils.isBlank(code)) {
                 ContentRefService service = context.getService(ContentRefService.class);
                 String codeRef = getProperty(PN_CODE_REF, "");
-                String servicveUri = getServiceUri();
-                if (StringUtils.isNotBlank(servicveUri)) {
-                    codeRef = servicveUri + codeRef;
+                String serviceUri = getServiceUri();
+                if (StringUtils.isNotBlank(serviceUri)) {
+                    codeRef = serviceUri + codeRef;
                 }
                 code = service.getReferencedContent(resolver, codeRef);
                 if (StringUtils.isBlank(code)) {

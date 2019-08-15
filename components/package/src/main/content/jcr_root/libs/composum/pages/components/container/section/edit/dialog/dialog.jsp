@@ -3,7 +3,7 @@
 <%@taglib prefix="cpn" uri="http://sling.composum.com/cpnl/1.0" %>
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <cpp:defineFrameObjects/>
-<cpp:editDialog title="@{dialog.selector=='create'?'Create a Row':'Row Properties'}">
+<cpp:editDialog title="@{dialog.selector=='create'?'Create a Section':'Section Properties'}">
     <div class="row">
         <div class="col col-xs-7">
             <cpp:widget label="Title" property="jcr:title" type="textfield" i18n="true"
