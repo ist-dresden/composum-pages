@@ -481,8 +481,10 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
         SlingHttpServletRequest request = context.getRequest();
         String pageUrl = LinkUtil.getUrl(request, getPath(), null, null);
         Parameters parameters = preserveParameters ? new Parameters(request) : new Parameters();
-        if (!language.equals(getPageLanguages().getDefaultLanguage())) {
-            parameters.add("pages.locale", language.getKey());
+        if (language.equals(getPageLanguages().getDefaultLanguage())) {
+            parameters.remove(LOCALE_REQUEST_PARAM);
+        } else {
+            parameters.add(LOCALE_REQUEST_PARAM, language.getKey());
         }
         pageUrl += parameters.toString();
         return pageUrl;

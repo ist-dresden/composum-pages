@@ -117,6 +117,11 @@ public class LinkUtil extends com.composum.sling.core.util.LinkUtil {
             return set.put(name, values);
         }
 
+        @Nullable
+        public List<String> remove(@Nonnull final String name) {
+            return set.remove(name);
+        }
+
         @Override
         @Nonnull
         public String toString() {
