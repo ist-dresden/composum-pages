@@ -1,13 +1,23 @@
 <%@page session="false" pageEncoding="UTF-8" %>
 <%@taglib prefix="cpn" uri="http://sling.composum.com/cpnl/1.0" %>
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <cpp:defineObjects/>
-<cpp:model var="page_item" type="com.composum.pages.commons.model.Page"
-           cssBase="composum-pages-components-page">
-    <div class="${page_itemCSS}_search-item">
-        <cpn:link href="${page_item.url}" body="true">
-            <cpn:text class="${page_itemCSS}_title" value="${page_item.title}"/>
-            <cpn:text class="${page_itemCSS}_description" value="${page_item.description}"/>
-        </cpn:link>
-    </div>
+<cpp:model var="model" type="com.composum.pages.commons.model.Page"
+           cssBase="composum-pages-components-page_search-item">
+    <cpn:link href="${model.url}" class="${modelCSS}_link" body="true">
+        <cpn:text class="${modelCSS}_title" value="${model.title}"/>
+    </cpn:link>
+    <cpp:include resourceType="composum/pages/components/navigation/breadcrumbs" replaceSelectors="search"/>
+    <cpn:link test="${(searchresult != null && not empty searchresult.excerpt) || not empty model.description}"
+              href="${model.url}" class="${modelCSS}_link">
+        <c:choose>
+            <c:when test="${searchresult != null && not empty searchresult.excerpt}">
+                <cpn:text class="${modelCSS}_excerpt" value="${searchresult.excerpt}"/>
+            </c:when>
+            <c:otherwise>
+                <cpn:text class="${modelCSS}_description" value="${model.description}"/>
+            </c:otherwise>
+        </c:choose>
+    </cpn:link>
 </cpp:model>

@@ -9,7 +9,7 @@
 
 .composum-pages-components-element-title {
     width: 100%;
-    margin: $column-title-margin 0;
+    margin: $column-title-margin;
 
     &_text {
         padding: $column-title-padding;
@@ -47,7 +47,7 @@
     &_column {
 
         .composum-pages-components-element-title {
-            margin: $column-title-margin 0;
+            margin: $column-title-margin;
             background: none;
 
             &_text {

@@ -6,9 +6,11 @@
 package com.composum.pages.components.model.search;
 
 import com.composum.pages.commons.model.Element;
-import com.composum.platform.commons.content.service.PlaceholderService;
+import com.composum.pages.commons.model.Page;
+import com.composum.pages.commons.model.Site;
 import com.composum.pages.commons.service.search.SearchService;
 import com.composum.pages.commons.service.search.SearchTermParseException;
+import com.composum.platform.commons.content.service.PlaceholderService;
 import com.composum.sling.core.BeanContext;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.utils.URIBuilder;
@@ -19,7 +21,6 @@ import javax.annotation.Nonnull;
 import javax.jcr.RepositoryException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -38,57 +39,107 @@ import static org.slf4j.LoggerFactory.getLogger;
  */
 public class SearchResult extends Element {
 
-    /** The request attribute where the {@link SearchService.Result} is saved during rendering. */
+    /**
+     * The request attribute where the {@link SearchService.Result} is saved during rendering.
+     */
     public static final String REQUEST_ATTRIBUTE_SEARCHRESULT = "searchresult";
-    /** Mandatory parameter for the fulltext search expression to search for. */
+    /**
+     * Mandatory parameter for the fulltext search expression to search for.
+     */
     public static final String PARAMETER_TERM = "search.term";
-    /** Optional parameter that determines the offset of the first shown search result (in items, not in pages). */
+    /**
+     * Optional parameter that determines the offset of the first shown search result (in items, not in pages).
+     */
     public static final String PARAMETER_OFFSET = "search.offset";
-    /** Optional parameter that determines the number of searchresults to be shown in the page. */
+    /**
+     * Optional parameter that determines the number of searchresults to be shown in the page.
+     */
     public static final String PARAMETER_PAGESIZE = "search.pagesize";
-    /** Property name for {@link #getHead()}. */
+    /**
+     * Property name for {@link #getHeadline()}.
+     */
     public static final String PROP_HEADLINE = "headline";
-    /** Property name for {@link #getSearchRoot()}. */
+    /**
+     * Property name for {@link #getSearchRoot()}.
+     */
     public static final String PROP_SEARCH_ROOT = "searchRoot";
-    /** Property name for {@link #getSelector()}. */
+    /**
+     * Property name for {@link #getSelector()}.
+     */
     public static final String PROP_SELECTOR = "selector";
-    /** Property name for {@link #getTemplate()}. */
+    /**
+     * Property name for {@link #getTemplate()}.
+     */
     public static final String PROP_TEMPLATE = "template";
-    /** Property for the default number of items per page. */
+    /**
+     * Property for the default number of items per page.
+     */
     public static final int DEFAULT_PAGESIZE = 25;
-    /** Property for the number of items per page, if not overridden by {PROP_PAGESIZE}. */
+    /**
+     * Property for the number of items per page, if not overridden by {PROP_PAGESIZE}.
+     */
     public static final String PROP_PAGESIZE = "pagesize";
-    /** Property name for {@link #getSearchtermErrorText()}. */
+    /**
+     * Property name for {@link #getSearchtermErrorText()}.
+     */
     public static final String PROP_SEARCHTERM_ERROR_TEXT = "searchtermErrorText";
     private static final Logger LOG = getLogger(SearchResult.class);
-    /** @see #getSelector() */
+    /**
+     * @see #getSelector()
+     */
     private transient String selector;
-    /** @see #getTemplate() */
+    /**
+     * @see #getTemplate()
+     */
     private transient String template;
-    /** The search results. */
+    /**
+     * The search results.
+     */
     private List<SearchService.Result> results;
-    /** @see #getSearchRoot() */
+    /**
+     * @see #getSearchRoot()
+     */
     private transient String searchRoot;
-    /** @see #getSearchTerm() */
+    /**
+     * @see #getSearchTerm()
+     */
     private transient String searchTerm;
-    /** @see #getHead() */
+    /**
+     * @see #getHeadline()
+     */
     private transient String head;
-    /** @see #getOffset() */
+    /**
+     * @see #getOffset()
+     */
     private transient Integer offset;
-    /** @see #getPageSize() */
+    /**
+     * @see #getPageSize()
+     */
     private transient Integer pageSize;
-    /** Number of the current page, starting with 1. */
+    /**
+     * Number of the current page, starting with 1.
+     */
     private transient Integer currentSearchPage;
-    /** True iff there are more pages than the currentPage. */
+    /**
+     * True iff there are more pages than the currentPage.
+     */
     private transient boolean hasMoreSearchPages = false;
-    /** @see #getSearchPages() */
+    /**
+     * @see #getSearchPages()
+     */
     private transient List<SearchPage> searchPages;
-    /** @see #isHasError() */
+    /**
+     * @see #isHasError()
+     */
     private transient Boolean hasError;
-    /** @see #getSearchtermErrorText() */
+    /**
+     * @see #getSearchtermErrorText()
+     */
     private transient String searchtermErrorText;
 
-    /** Sling selector which renders a found resource as search result. Optional, default "searchItem". */
+    /**
+     * Sling selector which renders a found resource as search result. Optional, default "searchItem".
+     */
     public String getSelector() {
         if (selector == null) {
             selector = getInherited(PROP_SELECTOR, "searchItem");
@@ -107,16 +158,30 @@ public class SearchResult extends Element {
         return template;
     }
 
+    protected String applyPlaceholders(String text) {
+        BeanContext context = getContext();
+        Map<String, Object> values = Collections.<String, Object>singletonMap("term", getSearchTerm());
+        return context.getService(PlaceholderService.class).applyPlaceholders(context, text, values);
+    }
+
     /**
-     * The head for the search result (HTML) used as {@link MessageFormat} with the search expression used as argument
-     * {0}.
+     * The head for the search result (HTML); is applying placeholder ${term} to embed the search term.
      */
-    public String getHead() {
+    @Override
+    @Nonnull
+    public String getTitle() {
+        if (title == null) {
+            title = applyPlaceholders(super.getTitle());
+        }
+        return title;
+    }
+
+    /**
+     * The head for the search result (HTML); is applying placeholder ${term} to embed the search term.
+     */
+    public String getHeadline() {
         if (head == null) {
-            BeanContext context = getContext();
-            Map<String, Object> values = Collections.<String, Object>singletonMap("term", getSearchTerm());
-            head = context.getService(PlaceholderService.class)
-                    .applyPlaceholders(context, getProperty(PROP_HEADLINE, ""), values);
+            head = applyPlaceholders(getProperty(PROP_HEADLINE, ""));
         }
         return head;
     }
@@ -126,22 +191,23 @@ public class SearchResult extends Element {
      */
     public String getSearchRoot() {
         if (searchRoot == null) {
-            String siteRoot = getCurrentPage().getSite().getPath();
             searchRoot = getInherited(PROP_SEARCH_ROOT, "").trim();
-            if (StringUtils.isBlank(searchRoot)) {
-                // use the site root if not property or a blank property was found
-                searchRoot = siteRoot;
-            } else {
-                if (!searchRoot.startsWith("/")) {
-                    // use a root relative to the site root if not absolute
-                    searchRoot = siteRoot + "/" + searchRoot;
+            if (StringUtils.isBlank(searchRoot) || !searchRoot.startsWith("/")) {
+                Page page = getCurrentPage();
+                if (page != null) {
+                    Site site = page.getSite();
+                    if (site != null) {
+                        searchRoot = StringUtils.isBlank(searchRoot) ? site.getPath() : searchRoot + "/" + site.getPath();
+                    }
                 }
             }
         }
         return searchRoot;
     }
 
-    /** The fulltext search expression, from the request parameter {@link #PARAMETER_TERM}. */
+    /**
+     * The fulltext search expression, from the request parameter {@link #PARAMETER_TERM}.
+     */
     public String getSearchTerm() {
         if (searchTerm == null) {
             searchTerm = getContext().getRequest().getParameter(PARAMETER_TERM);
@@ -152,7 +218,9 @@ public class SearchResult extends Element {
         return searchTerm;
     }
 
-    /** Offset of the shown results. */
+    /**
+     * Offset of the shown results.
+     */
     public int getOffset() {
         if (offset == null) {
             String offsetString = context.getRequest().getParameter(PARAMETER_OFFSET);
@@ -164,7 +232,9 @@ public class SearchResult extends Element {
         return offset;
     }
 
-    /** Page size for the shown results. */
+    /**
+     * Page size for the shown results.
+     */
     public int getPageSize() {
         if (pageSize == null) {
             String parameterString = context.getRequest().getParameter(PARAMETER_PAGESIZE);
@@ -201,7 +271,9 @@ public class SearchResult extends Element {
     }
 
 
-    /** Returns or fetches the search results. Not null. If there are errors, we set {@link #isHasError()}. */
+    /**
+     * Returns or fetches the search results. Not null. If there are errors, we set {@link #isHasError()}.
+     */
     @Nonnull
     public List<SearchService.Result> getResults() {
         try {
@@ -209,7 +281,8 @@ public class SearchResult extends Element {
                 if (isNotBlank(getSearchTerm())) {
                     SearchService searchService = context.getService(SearchService.class);
                     // easiest way to tell whether there are more pages is to fetch one more result than needed
-                    results = searchService.search(context, SELECTOR_PAGE, getSearchRoot(), getSearchTerm(),
+                    results = searchService.search(context, SELECTOR_PAGE, getSearchRoot(),
+                            getSearchTerm().replace('/', '?'),
                             null, getOffset(), getPageSize() + 1);
                     if (results.size() > getPageSize()) {
                         hasMoreSearchPages = true;
@@ -226,7 +299,9 @@ public class SearchResult extends Element {
         return results;
     }
 
-    /** Returns the number of the currently displayed search page (starting with 1). */
+    /**
+     * Returns the number of the currently displayed search page (starting with 1).
+     */
     public int getCurrentPageNumber() {
         if (null == currentSearchPage) {
             currentSearchPage = getOffset() / getPageSize() + 1;
@@ -258,36 +333,50 @@ public class SearchResult extends Element {
         return getSearchPages().get(getSearchPages().size() - 1);
     }
 
-    /** Data for a page in the paging selector. */
+    /**
+     * Data for a page in the paging selector.
+     */
     public class SearchPage {
-        /** @see #getNumber() */
+        /**
+         * @see #getNumber()
+         */
         private final int number;
 
         protected SearchPage(int number) {
             this.number = number;
         }
 
-        /** Number of the page, starting with 1. */
+        /**
+         * Number of the page, starting with 1.
+         */
         public int getNumber() {
             return number;
         }
 
-        /** Whether this is the first page (1). */
+        /**
+         * Whether this is the first page (1).
+         */
         public boolean isFirst() {
             return 1 == number;
         }
 
-        /** Whether this is the last page to display in the selector. */
+        /**
+         * Whether this is the last page to display in the selector.
+         */
         public boolean isLast() {
             return hasMoreSearchPages ? number == getCurrentPageNumber() + 1 : number == getCurrentPageNumber();
         }
 
-        /** Whether this is the current page, for which the {@link #getResults()} are presented. */
+        /**
+         * Whether this is the current page, for which the {@link #getResults()} are presented.
+         */
         public boolean isActive() {
             return number == currentSearchPage;
         }
 
-        /** A link to display this page. */
+        /**
+         * A link to display this page.
+         */
         public URI getLink() throws URISyntaxException {
             if (number == currentSearchPage) return null;
             SlingHttpServletRequest request = getContext().getRequest();

@@ -11,7 +11,7 @@
 }
 
 .composum-pages-components-title {
-    margin: $column-title-margin 0;
+    margin: $column-title-margin;
     padding: $column-title-padding;
     @include title-font;
     text-align: left;
@@ -19,7 +19,7 @@
 }
 
 .composum-pages-components-subtitle {
-    margin: $column-title-margin 0;
+    margin: $column-subtitle-margin;
     padding: $column-title-padding;
     @include subtitle-font;
     text-align: left;

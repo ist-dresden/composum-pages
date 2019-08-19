@@ -25,12 +25,12 @@
     }
 
     &_title {
-        @include a-title-font($column-subtitle-font-size);
+        @include a-title-font($column-title-font-size);
         color: $column-title-text-color;
     }
 
     &_subtitle {
-        @include a-title-font($text-title-font-size-xs);
+        @include a-title-font($column-title-font-size-xs);
         color: $column-title-text-color;
     }
 

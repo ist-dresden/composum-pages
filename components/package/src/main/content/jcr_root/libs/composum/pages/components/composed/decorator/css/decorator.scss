@@ -66,7 +66,7 @@
 
     &_title {
         @include inline-title;
-        font-size: $text-title-font-size;
+        font-size: $column-title-font-size;
     }
 
     &.title-level-2,

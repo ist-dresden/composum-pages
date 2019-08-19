@@ -69,7 +69,14 @@ $site-default-font-size: 16px;
 $stage-default-font-size: 18px;
 $stage-default-font-size-xs: $stage-default-font-size;
 
-$main-title-margin: 3rem 0 2.5rem;
+$title-margin-level-1: 3rem 0 2.5rem;
+$title-margin-level-2: 2.5rem 0 2rem;
+$title-margin-level-3: 2rem 0 1.5rem;
+$title-margin-level-4: 1.5rem 0 1rem;
+$title-margin-level-5: 1em 0 0.5rem;
+$title-margin-level-6: 0;
+
+$main-title-margin: $title-margin-level-1;
 $main-title-padding: 10px;
 $main-title-align-top-xs: -13px;
 $main-subtitle-margin: 10px;
@@ -83,16 +90,16 @@ $site-subtitle-font-size: 24px;
 $site-subtitle-font-size-xs: 18px;
 $site-subtitle-align-top-xs: -4px;
 
-$column-title-margin: 20px;
+$column-title-margin: $title-margin-level-2;
 $column-title-padding: 0;
 $column-title-font-size: $site-subtitle-font-size;
 $column-title-font-size-xs: $site-subtitle-font-size-xs;
-$column-subtitle-margin: 15px;
+$column-subtitle-margin: $title-margin-level-3;
 $column-subtitle-font-size: 20px;
 $column-subtitle-font-size-xs: 16px;
 
-$text-title-font-size: $column-title-font-size;
-$text-title-font-size-xs: $column-title-font-size-xs;
+$text-title-font-size: $column-subtitle-font-size;
+$text-title-font-size-xs: $column-subtitle-font-size-xs;
 
 $symbol-title-top: 2px;
 $symbol-width: 4.2rem;

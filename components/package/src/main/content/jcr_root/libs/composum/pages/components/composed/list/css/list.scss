@@ -11,18 +11,16 @@
     color: $site-default-text-color;
 
     h1, h2, h3, h4, h5, h6 {
-        margin-top: $column-title-margin;
+        margin: $column-title-margin;
         padding: 0;
         font-size: 100%;
     }
 
     h1, h2, h3, h4 {
-        margin-bottom: $list-title-gap;
         font-weight: bold;
     }
 
     h5, h6 {
-        margin-bottom: 0;
         font-weight: normal;
     }
 }

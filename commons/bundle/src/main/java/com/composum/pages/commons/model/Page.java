@@ -12,6 +12,7 @@ import com.composum.pages.commons.model.properties.Languages;
 import com.composum.pages.commons.request.DisplayMode;
 import com.composum.pages.commons.service.PageManager;
 import com.composum.pages.commons.util.LinkUtil;
+import com.composum.pages.commons.util.LinkUtil.Parameters;
 import com.composum.platform.models.annotations.DetermineResourceStategy;
 import com.composum.platform.models.annotations.PropertyDetermineResourceStrategy;
 import com.composum.sling.core.BeanContext;
@@ -199,6 +200,7 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
 
     private transient Site site;
     private transient Page parent;
+    private transient List<Page> pagesPath;
 
     private transient String subtitle;
 
@@ -236,7 +238,9 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
 
     // initializer extensions
 
-    /** Compatible to Page{@link AbstractModel#determineResource(Resource)}. */
+    /**
+     * Compatible to Page{@link AbstractModel#determineResource(Resource)}.
+     */
     public static class ContainingPageResourceStrategy implements DetermineResourceStategy {
         @Override
         public Resource determineResource(BeanContext beanContext, Resource requestResource) {
@@ -304,6 +308,17 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
             }
         }
         return parent;
+    }
+
+    public Collection<Page> getPagesPath() {
+        if (pagesPath == null) {
+            pagesPath = new ArrayList<>();
+            Page parent = this;
+            while ((parent = parent.getParentPage()) != null) {
+                pagesPath.add(0, parent);
+            }
+        }
+        return pagesPath;
     }
 
     /**
@@ -444,7 +459,15 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
     @Override
     public String getUrl() {
         if (url == null) {
-            url = getUrl(getLanguage());
+            url = getUrl(getLanguage(), false);
+        }
+        return url;
+    }
+
+    @Nonnull
+    public String getUrl(boolean preserveParameters) {
+        if (url == null) {
+            url = getUrl(getLanguage(), preserveParameters);
         }
         return url;
     }
@@ -454,12 +477,14 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
      * - decorated with the locale URL parameter if the language is not the default language
      */
     @Nonnull
-    public String getUrl(@Nonnull final Language language) {
+    public String getUrl(@Nonnull final Language language, boolean preserveParameters) {
         SlingHttpServletRequest request = context.getRequest();
         String pageUrl = LinkUtil.getUrl(request, getPath(), null, null);
+        Parameters parameters = preserveParameters ? new Parameters(request) : new Parameters();
         if (!language.equals(getPageLanguages().getDefaultLanguage())) {
-            pageUrl += "?pages.locale=" + language.getKey();
+            parameters.add("pages.locale", language.getKey());
         }
+        pageUrl += parameters.toString();
         return pageUrl;
     }
 
@@ -571,7 +596,9 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
         return status;
     }
 
-    /** Pages-Adapter around {@link Status}. */
+    /**
+     * Pages-Adapter around {@link Status}.
+     */
     public static class StatusModel {
 
         protected final Status releaseStatus;

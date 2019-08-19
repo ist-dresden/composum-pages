@@ -8,7 +8,7 @@
         embed="[composum/pages/components/css/general.css,
                 composum/pages/components/page/css/page.css,
                 composum/pages/components/css/token.css,
-                composum/pages/components/search/field/css/field.css,
+                composum/pages/components/navigation/breadcrumbs/css/breadcrumbs.css,
                 composum/pages/components/navigation/navbar/css/navbar.css,
                 composum/pages/components/container/row/css/row.css,
                 composum/pages/components/container/section/css/section.css,
@@ -26,4 +26,5 @@
                 composum/pages/components/element/textimage/css/textimage.css,
                 composum/pages/components/element/title/css/title.css,
                 composum/pages/components/element/video/css/video.css,
+                composum/pages/components/search/css/search.css,
                 composum/pages/components/time/event/css/event.css]"/>

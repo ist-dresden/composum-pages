@@ -1,0 +1,39 @@
+@charset "UTF-8";
+
+@import "../../../css/variables";
+@import "../../../css/mixins";
+
+.composum-pages-components-page {
+
+    &_breadcrumbs {
+        @include default-font;
+        font-size: $site-small-font-size;
+
+        &_list {
+            padding: 0;
+            list-style: none;
+
+            a, a:hover, a:focus, a:visited {
+                text-decoration: none;
+                color: $bootstrap-color-muted;
+            }
+        }
+
+        &_path, &_current {
+            position: relative;
+            display: inline-block;
+
+            &:before {
+                content: '/';
+                display: inline-block;
+                margin: 0 5px;
+            }
+
+            &:first-child {
+                &:before {
+                    margin-left: 3px;
+                }
+            }
+        }
+    }
+}
