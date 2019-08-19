@@ -282,7 +282,7 @@ public class SearchResult extends Element {
                     SearchService searchService = context.getService(SearchService.class);
                     // easiest way to tell whether there are more pages is to fetch one more result than needed
                     results = searchService.search(context, SELECTOR_PAGE, getSearchRoot(),
-                            getSearchTerm().replace('/', '?'),
+                            filterTerm(getSearchTerm()),
                             null, getOffset(), getPageSize() + 1);
                     if (results.size() > getPageSize()) {
                         hasMoreSearchPages = true;
@@ -297,6 +297,10 @@ public class SearchResult extends Element {
             results = Collections.emptyList();
         }
         return results;
+    }
+
+    public String filterTerm(String term) {
+        return term.replaceAll("[/:;#+*&%?$§\"<>~]", "");
     }
 
     /**
