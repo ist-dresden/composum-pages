@@ -33,6 +33,10 @@
                 this.$el.append(widgets.const.codearea.textarea);
                 window.widgets.Widget.prototype.initialize.apply(this, [options]);
                 this.$input.attr('name', this.name);
+                var encoded = this.$el.data('encoded');
+                if (encoded) {
+                    this.setValue(atob(encoded));
+                }
                 this.onChange();
                 this.ace.getSession().on('change', _.bind(this.onChange, this));
                 this.$el.resize(_.bind(this.resize, this));
@@ -60,6 +64,7 @@
 
             setValue: function (value, triggerChange) {
                 this.ace.setValue(value);
+                this.ace.clearSelection();
                 this.onChange();
                 if (triggerChange) {
                     this.$el.trigger('change');
@@ -115,7 +120,6 @@
                         if (ext) {
                             this.setType(ext[1]);
                         }
-                        this.ace.clearSelection();
                         if (_.isFunction(onSuccess)) {
                             onSuccess();
                         }

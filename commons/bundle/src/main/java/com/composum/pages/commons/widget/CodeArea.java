@@ -1,8 +1,10 @@
 package com.composum.pages.commons.widget;
 
 import com.composum.pages.commons.taglib.PropertyEditHandle;
+import org.apache.commons.codec.binary.Base64;
 
 import javax.annotation.Nonnull;
+import java.nio.charset.StandardCharsets;
 
 public class CodeArea extends PropertyEditHandle<String> implements WidgetModel {
 
@@ -15,6 +17,10 @@ public class CodeArea extends PropertyEditHandle<String> implements WidgetModel 
 
     public String getText() {
         return getValue();
+    }
+
+    public String getEncoded() {
+        return Base64.encodeBase64String(getText().getBytes(StandardCharsets.UTF_8));
     }
 
     public String getHeight() {

@@ -1,14 +1,15 @@
 <%@page session="false" pageEncoding="utf-8" %>
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <cpp:defineFrameObjects/>
-<cpp:editDialog title="@{dialog.selector=='create'?'Create a Code View':'Edit Code View'}">
+<cpp:editDialog var="model" type="com.composum.pages.commons.model.Element"
+                title="@{dialog.selector=='create'?'Create a Code View':'Edit Code View'}">
     <cpp:widget label="Title" property="title" type="textfield"
                 hint="the title shown in the box header"/>
     <cpp:widget label="Service URI" property="serviceUri" type="textfield" i18n="false"
                 hint="an optional URI of a servlet prepended to the reference"/>
     <cpp:widget label="Reference" property="codeRef" type="pathfield" i18n="false"
                 hint="the resource path of an element to render or load from repository"/>
-    <cpp:widget label="Code" property="code" type="codearea" i18n="false"
+    <cpp:widget label="Code" property="code" type="codearea" language="${model.properties.language}"
                 hint="the code to show (hides each reference)"/>
     <cpp:widget label="Copyright" property="copyright" type="textfield"
                 hint="copyright notice if necessary or useful"/>

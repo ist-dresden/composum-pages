@@ -7,5 +7,5 @@
     <sling:call script="label.jsp"/>
     <div class="${widgetCSS}_editor codearea-widget widget code-editor form-control widget-name_${widget.cssName}"
          data-name="${widget.name}" data-height="${widget.model.height}" data-label="${widget.label}"
-         data-i18n="${widget.i18n}" ${widget.attributes}>${widget.model.text}</div>
+         data-i18n="${widget.i18n}" ${widget.attributes} data-encoded="${widget.model.encoded}"></div>
 </div>
