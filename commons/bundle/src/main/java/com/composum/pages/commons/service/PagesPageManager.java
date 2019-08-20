@@ -87,6 +87,7 @@ public class PagesPageManager extends PagesContentManager<Page> implements PageM
     @Reference
     protected PlatformVersionsService versionsService;
 
+    @Override
     @Nullable
     public Page getPage(@Nonnull BeanContext context, @Nonnull String absPath) {
         Resource resource = context.getResolver().getResource(absPath);
@@ -426,15 +427,6 @@ public class PagesPageManager extends PagesContentManager<Page> implements PageM
         // recursive traversal
         for (Resource child : resource.getChildren()) {
             retrieveReferences(references, resourceFilter, propertyFilter, child, site, visited, transitive);
-        }
-        // Parent pages also count as references since otherwise the page isn't displayed in the navigation tree
-        Resource parent = resource.getParent();
-        while (parent != null && isSameOrDescendant(site.getPath(), parent.getPath())) {
-            Resource contentNode = parent.getChild(CoreConstants.CONTENT_NODE);
-            if (contentNode != null && !isSameOrDescendant(contentNode.getPath(), resource.getPath())) {
-                retrieveReferences(references, resourceFilter, propertyFilter, contentNode, site, visited, transitive);
-            }
-            parent = parent.getParent();
         }
         // check transitive references, too
         if (transitive) {
