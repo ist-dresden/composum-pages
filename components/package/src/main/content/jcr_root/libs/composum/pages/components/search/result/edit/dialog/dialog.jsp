@@ -5,7 +5,7 @@
     <div class="row">
         <div class="col col-xs-5">
             <cpp:widget label="Title" property="title" type="textfield" i18n="true"
-                        hint="The title for the search result block; use \${term} to embed the search term."/>
+                        hint="The title for the search result block; use \\${term} to embed the search term."/>
         </div>
         <div class="col col-xs-4">
             <cpp:widget label="Selector" property="selector" type="textfield"
@@ -27,7 +27,7 @@
     <div class="row">
         <div class="col col-xs-12">
             <cpp:widget label="Headline" property="headline" type="richtext" i18n="true" height="55px"
-                        hint="An optional text block at the top of the result list; use \${term} to embed the search term."/>
+                        hint="An optional text block at the top of the result list; use \\${term} to embed the search term."/>
             <cpp:widget label="Error text" property="searchtermErrorText" type="richtext" height="100px"
                         hint="A text to show when the user inputs faulty search terms. Describing the syntax is recommended."/>
         </div>
