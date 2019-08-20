@@ -99,7 +99,9 @@ public class PagesReleaseFilter implements Filter {
                 "^/(apps|libs)/.*\\.(css|js|jpg|jpeg|gif|png|ttf|woff)$",
                 "^/libs/sling/servlet/errorhandler/.*$",
                 "^/libs/(themes|fonts|jslibs|composum|sling)/.*$",
-                "^/libs(/composum/platform/security)?/login.*$"
+                "^/libs(/composum/platform/security)?/login.*$",
+                "^/libs/composum/pages/home(/.*)?$",
+                "^/content/shared/.*$"
         };
     }
 
