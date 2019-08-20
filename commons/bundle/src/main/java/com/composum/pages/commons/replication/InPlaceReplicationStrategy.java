@@ -81,7 +81,7 @@ public abstract class InPlaceReplicationStrategy implements ReplicationStrategy 
             if (relativePath.startsWith("/"))
                 throw new IllegalStateException("Not relative path - content path config broken? " + config.contentPath());
             // delegation to the extension hook...
-            replicate(context, targetRoot, resource, relativePath, recursive, false);
+            replicate(context, targetRoot, resource, relativePath, recursive, !recursive);
         } else {
             throw new IllegalStateException("Target path not found: " + targetPath);
         }
@@ -105,7 +105,7 @@ public abstract class InPlaceReplicationStrategy implements ReplicationStrategy 
             }
         }
         if (replicate != null) {
-            copyReleasedResource(context, targetRoot.getPath(), released, replicate, recursive, false);
+            copyReleasedResource(context, targetRoot.getPath(), released, replicate, recursive, merge);
         } else {
             LOG.error("can't create replication target for '{}', accessMode={}", released.getPath(), context.accessMode);
         }
@@ -140,6 +140,7 @@ public abstract class InPlaceReplicationStrategy implements ReplicationStrategy 
     /**
      * makes a replication copy of one resource and their 'jcr:content' child if such a child exists
      * does this also with the other children if 'recursive' is 'on'
+     * Caution: calling this with merge=false && recursive=false deletes all children except jcr:content .
      */
     protected void copyReleasedResource(ReplicationContext context, String targetRoot, Resource released, Resource replicate,
                                         boolean recursive, boolean merge)
@@ -177,7 +178,8 @@ public abstract class InPlaceReplicationStrategy implements ReplicationStrategy 
     }
 
     /**
-     * the replication of a 'jcr:content' resource is done recursive with this strategy
+     * the replication of a 'jcr:content' resource is done recursive with this strategy.
+     * Caution: calling this with merge=false && recursive=false deletes all children.
      */
     protected void copyReleasedContent(ReplicationContext context, String targetRoot, Resource released, Resource replicate,
                                        boolean recursive, boolean merge)
@@ -203,7 +205,7 @@ public abstract class InPlaceReplicationStrategy implements ReplicationStrategy 
                 if (replicateChild == null) {
                     replicateChild = createReplicate(targetResolver, releasedChild, replicate);
                 }
-                copyReleasedContent(context, targetRoot, releasedChild, replicateChild, true, merge);
+                copyReleasedContent(context, targetRoot, releasedChild, replicateChild, recursive, merge);
             }
         }
     }
