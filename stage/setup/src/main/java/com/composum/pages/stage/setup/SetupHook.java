@@ -7,10 +7,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.jcr.Node;
+import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SetupHook implements InstallHook {
 
@@ -23,6 +26,17 @@ public class SetupHook implements InstallHook {
 
     private static final String PROP_SLING_RESOURCE_TYPE = "sling:resourceType";
     private static final String PROP_SLING_TARGET = "sling:target";
+
+    private static final List<String> ROOT_NODES_ORDER = new ArrayList<String>() {{
+        add("public");
+        add("preview");
+        add("content");
+        add("conf");
+        add("etc");
+        add("apps");
+        add("libs");
+        add("var");
+    }};
 
     @Override
     public void execute(InstallContext ctx) throws PackageException {
@@ -41,6 +55,7 @@ public class SetupHook implements InstallHook {
             Node rootNode = session.getNode("/");
             setPropertyIfNotChanged(rootNode, PROP_SLING_RESOURCE_TYPE, TYPE_SLING_REDIRECT, null);
             setPropertyIfNotChanged(rootNode, PROP_SLING_TARGET, PAGES_STAGE_INDEX, DEFAULT_SLING_INDEX);
+            nodeOrdering(rootNode, ROOT_NODES_ORDER);
             session.save();
         } catch (RepositoryException | RuntimeException rex) {
             LOG.error(rex.getMessage(), rex);
@@ -59,6 +74,17 @@ public class SetupHook implements InstallHook {
         } catch (PathNotFoundException ignore) {
             // no target property set...
             node.setProperty(name, value);
+        }
+    }
+
+    @SuppressWarnings("StatementWithEmptyBody")
+    protected void nodeOrdering(Node node, List<String> namesOrder)
+            throws RepositoryException {
+        String refNodeName = null;
+        NodeIterator nodes = node.getNodes();
+        while (nodes.hasNext() && namesOrder.contains(refNodeName = nodes.nextNode().getName())) ;
+        for (String name : namesOrder) {
+            node.orderBefore(name, refNodeName);
         }
     }
 }
