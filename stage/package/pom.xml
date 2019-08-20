@@ -111,6 +111,9 @@
                             <root>/libs/composum/pages/stage</root>
                         </filter>
                         <filter>
+                            <root>/libs/composum/pages/home</root>
+                        </filter>
+                        <filter>
                             <root>/libs/composum/pages/install</root>
                             <includes>
                                 <include>.*/composum-pages-stage-bundle.*\.jar</include>
