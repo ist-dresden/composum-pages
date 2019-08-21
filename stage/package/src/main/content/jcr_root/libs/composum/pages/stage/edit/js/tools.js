@@ -31,6 +31,12 @@
             contextLoadUrl: '/bin/cpm/pages/edit.contextTools.html',
 
             navigation: {
+                main: {
+                    tabs: {
+                        key: 'navigation',
+                        default: 'tabbed-widget_tab_pagesTree'
+                    }
+                },
                 context: {
                     url: {
                         base: '/libs/composum/pages/stage/edit/sidebar/navigation/context',
@@ -172,10 +178,12 @@
             },
 
             initialKey: function () {
-                return pages.profile.get('tabs.' + pages.current.mode, 'navigation', undefined);
+                var d = tools.const.navigation.main;
+                return pages.profile.get('tabs.' + pages.current.mode, d.tabs.key, d.tabs.default);
             },
 
             keyChanged: function (key, $panel) {
+                var d = tools.const.navigation.main;
                 if ($panel && $panel.length === 1) {
                     var $content = $panel.children();
                     if ($content.length === 1) {
@@ -185,7 +193,7 @@
                         }
                     }
                 }
-                pages.profile.set('tabs.' + pages.current.mode, 'navigation', key)
+                pages.profile.set('tabs.' + pages.current.mode, d.tabs.key, key)
             },
 
             onOpen: function (event, key, pathOrRef) {
