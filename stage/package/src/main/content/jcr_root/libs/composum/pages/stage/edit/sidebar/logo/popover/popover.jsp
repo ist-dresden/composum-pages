@@ -7,7 +7,7 @@
     <div class="${frameCssBase}_user">
         <cpn:text class="${frameCssBase}_username">${frame.userId}</cpn:text>
         <cpn:link class="${frameCssBase}_logout"
-                  href="/system/sling/logout.html?logout=true&GLO=true&resource=${slingRequest.requestURI}">${cpn:i18n(slingRequest, 'Logout')}</cpn:link>
+                  href="/system/sling/logout.html?logout=true&GLO=true&resource=/">${cpn:i18n(slingRequest, 'Logout')}</cpn:link>
     </div>
     <div class="${frameCssBase}_actions">
         <cpn:link href="?pages.mode=${frame.developMode?'edit':'develop'}" test="${frame.developModeAllowed}"

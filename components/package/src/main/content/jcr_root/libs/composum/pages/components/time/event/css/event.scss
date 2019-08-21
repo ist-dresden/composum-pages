@@ -3,8 +3,8 @@
 @import "../../../css/variables";
 @import "../../../css/mixins";
 
-$event-tile-main-bg-color: #aaa;
-$event-tile-secd-bg-color: #ccc;
+$event-tile-main-bg-color: #888;
+$event-tile-secd-bg-color: #aaa;
 
 $event-tile-arrow-width: 30px;
 $event-tile-arrow-height: 10px;
@@ -14,21 +14,23 @@ $event-icon-font-size: 18px;
 .composum-pages-components-time-event {
 
     &_teaser {
+        display: flex;
+        width: 60%;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
         margin: $text-spacing-default 0;
         @include default-font;
+        background-color: rgba(0, 0, 0, 0.6);
 
         .composum-pages-components-time-event {
 
             &_tile {
                 display: inline-block;
-                float: left;
-                width: 76px;
-                min-height: 100px;
-                margin-top: -$site-title-align-top;
+                min-width: 76px;
+                max-width: 76px;
                 margin-right: 15px;
-                margin-bottom: 10px;
+                margin-bottom: 15px;
                 @include font($site-symbol-font-family, $site-default-font-size);
-                background-color: $event-tile-main-bg-color;
                 color: #fff;
 
                 .tile-date {
@@ -45,6 +47,7 @@ $event-icon-font-size: 18px;
 
                     &_date {
                         padding-bottom: 7px;
+                        background-color: $event-tile-main-bg-color;
                     }
 
                     &_date-end {
@@ -164,24 +167,30 @@ $event-icon-font-size: 18px;
                 }
             }
 
+            &_teaser-text {
+
+                &, & a, & a:hover, & a:focus, & a:visited {
+                    color: inherit;
+                    text-decoration: none;
+                }
+            }
+
             &_title, &_subtitle {
-                padding-left: 92px;
+                margin: 0 0 $title-spacing-default;
             }
 
             &_title {
-                margin: $site-title-align-top 0 $section-spacing-default;
-                @include a-title-font($site-title-font-size);
+                font-size: $site-title-font-size;
             }
 
             &_subtitle {
-                margin: -($text-spacing-default * 1.25) 0 $section-spacing-default;
-                @include a-title-font($site-subtitle-font-size);
+                font-size: $site-subtitle-font-size;
             }
 
             &_line {
                 margin: $text-spacing-default 0 $text-spacing-default;
-                padding-left: 120px;
-                text-indent: -28px;
+                padding-left: 24px;
+                text-indent: -24px;
 
                 .date {
                     white-space: nowrap;
@@ -196,7 +205,7 @@ $event-icon-font-size: 18px;
                 font-size: $event-icon-font-size;
             }
 
-            &_text {
+            &_description {
                 margin-top: $text-spacing-default;
             }
         }
@@ -207,41 +216,42 @@ $event-icon-font-size: 18px;
         &_content {
 
             &_top {
+                position: relative;
 
                 .composum-pages-components-page {
 
-                    &_teaser, &_map {
-                        padding: 30px 15px;
+                    &_image {
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        right: 0;
+                        bottom: 0;
+                        z-index: -1;
+
+                        .composum-pages-components-element-image-background {
+                            height: 100%;
+
+                            &_picture {
+                                background-repeat: no-repeat;
+                                background-color: #000;
+                            }
+                        }
                     }
 
                     &_teaser {
-                        float: left;
-                        width: 66.6%;
+                        padding: 30px 15px;
 
                         .composum-pages-components-time-event {
 
                             &_teaser {
                                 margin: 0;
                             }
-                        }
-                    }
 
-                    &_map {
-                        float: right;
-                        width: 33.3%;
+                            &_teaser-text {
 
-                        .composum-pages-components-element-map-google {
-                            @include aspect-ratio-wrapper(4, 3);
-
-                            &_wrapper {
-                                @include aspect-ratio-element;
-
-                                iframe {
-                                    position: absolute;
-                                    top: 0;
-                                    left: 0;
-                                    right: 0;
-                                    bottom: 0;
+                                &, & a, & a:hover, & a:focus, & a:visited {
+                                    color: $site-bright-text-color;
+                                    @include bright-font;
                                 }
                             }
                         }
@@ -278,14 +288,6 @@ $event-icon-font-size: 18px;
                                 @include aspect-ratio-wrapper(6, 1);
                             }
                         }
-
-                        &_teaser {
-                            width: 75%;
-                        }
-
-                        &_map {
-                            width: 25%;
-                        }
                     }
                 }
             }
@@ -301,15 +303,52 @@ $event-icon-font-size: 18px;
     .composum-pages-components-time-event {
 
         &_teaser {
+            width: 100%;
 
             .composum-pages-components-time-event {
 
                 &_tile {
-                    margin-top: -$site-title-align-top-xs;
+                    min-width: 54px;
+                    max-width: 54px;
+                    margin-right: 10px;
+                    margin-bottom: 10px;
+
+                    .composum-pages-components-time-event {
+
+                        &_date {
+                            padding-bottom: 4px;
+                        }
+
+                        &_date-end {
+                            padding: 8px 0 5px;
+                        }
+
+                        &_day {
+                            font-size: 30px;
+                            line-height: 30px;
+                        }
+
+                        &_month {
+                            padding: 1px 0 3px;
+                        }
+                    }
+
+                    &.style-d-dm {
+
+                        .composum-pages-components-time-event {
+
+                            &_date {
+                                padding-bottom: 8px;
+                            }
+                        }
+                    }
+                }
+
+                &_title, &_subtitle {
+                    margin: 0 0 $title-spacing-default * 0.6;
                 }
 
                 &_title {
-                    margin-top: $site-title-align-top-xs;
                     @include a-title-font($site-title-font-size-xs);
                 }
 
@@ -323,27 +362,6 @@ $event-icon-font-size: 18px;
 
                 &_icon {
                     margin-right: 10px;
-                }
-            }
-        }
-
-        .composum-pages-components-page {
-
-            &_content {
-
-                &_top {
-
-                    .composum-pages-components-page {
-
-                        &_teaser {
-                            float: none;
-                            width: 100%;
-                        }
-
-                        &_map {
-                            display: none;
-                        }
-                    }
                 }
             }
         }

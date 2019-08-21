@@ -52,6 +52,11 @@ public class TimeRelated extends Page {
             return value == EMPTY ? null : value;
         }
 
+        public boolean isDateOnly() {
+            Calendar value = getValue();
+            return value == null || value.get(Calendar.HOUR) == 0;
+        }
+
         @Nonnull
         public String getDay() {
             if (day == null) {

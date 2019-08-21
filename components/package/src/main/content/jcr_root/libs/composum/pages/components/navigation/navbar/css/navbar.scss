@@ -13,22 +13,24 @@
         padding-right: 0;
     }
 
-    &_navbar-nav {
-
-        .composum-pages-components-navigation-menuitem {
-
-            a {
-                background-color: $bootstrap-navbar-background;
-            }
-        }
-    }
-
     .dropdown-menu {
 
+        .composum-pages-components-navigation-submenu {
+            list-style: none;
+        }
+
         .composum-pages-components-navigation-menuitem {
+            white-space: nowrap;
 
             &_link {
-                color: $bootstrap-color-muted;
+
+                &.active {
+
+                    &, &:focus, &:visited {
+                        color: inherit;
+                        background-color: inherit;
+                    }
+                }
             }
         }
     }

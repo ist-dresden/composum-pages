@@ -22,20 +22,22 @@
             <cpn:text class="${eventCSS}_time" value="${event.endDate.time}"/>
         </cpn:div>
     </div>
-    <h1 class="${eventCSS}_title">${cpn:text(event.title)}</h1>
-    <cpn:div test="${not empty event.subtitle}"
-             class="${eventCSS}_subtitle">${cpn:text(event.subtitle)}</cpn:div>
-    <div class="${eventCSS}_line">
-        <span class="${eventCSS}_icon fa fa-calendar"></span>
-        <cpn:text tagName="span" class="${eventCSS}_date date" value="${event.date.dateTime}"/>
-        <cpn:text tagName="span" class="${eventCSS}_end-date date"
-                  test="${not empty event.endDate.dateTime}"
-                  value="- ${event.oneDayOnly ? event.endDate.time : event.endDate.dateTime}"/>
+    <div class="${eventCSS}_teaser-text">
+        <h1 class="${eventCSS}_title">${cpn:text(event.title)}</h1>
+        <cpn:text test="${not empty event.subtitle}" class="${eventCSS}_subtitle">${event.subtitle}</cpn:text>
+        <div class="${eventCSS}_line">
+            <span class="${eventCSS}_icon fa fa-calendar"></span>
+            <cpn:text tagName="span" class="${eventCSS}_date date"
+                      value="${event.date.dateOnly ? event.date.date : event.date.dateTime}"/>
+            <cpn:text tagName="span" class="${eventCSS}_end-date date"
+                      test="${not empty event.endDate.dateTime}"
+                      value="- ${event.oneDayOnly ? event.endDate.time : (event.endDate.dateOnly ? event.endDate.date : event.endDate.dateTime)}"/>
+        </div>
+        <cpn:div test="${not empty event.location}" class="${eventCSS}_line">
+            <span class="${eventCSS}_icon fa fa-map-marker"></span>
+            <cpn:link class="${eventCSS}_location" body="true"
+                      href="${event.locationUrl}">${cpn:text(event.location)}</cpn:link>
+        </cpn:div>
+        <cpn:text class="${eventCSS}_description" value="${event.description}"/>
     </div>
-    <cpn:div test="${not empty event.location}" class="${eventCSS}_line">
-        <span class="${eventCSS}_icon fa fa-map-marker"></span>
-        <cpn:link class="${eventCSS}_location" body="true"
-                  href="${event.locationUrl}">${cpn:text(event.location)}</cpn:link>
-    </cpn:div>
-    <cpn:text class="${eventCSS}_text" value="${event.description}"/>
 </cpp:element>
