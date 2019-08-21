@@ -216,7 +216,9 @@ public abstract class OptionsWidget<T> extends PropertyEditHandle<T> implements 
     protected List<Option> useMap(Map<String, Object> map) {
         List<Option> options = new ArrayList<>();
         for (Map.Entry<String, Object> entry : map.entrySet()) {
-            options.add(newOption(entry.getValue().toString(), entry.getKey(), entry.getValue()));
+            String key = entry.getKey();
+            Object value = entry.getValue();
+            options.add(newOption(value != null ? value.toString() : key, key, value));
         }
         return options;
     }
