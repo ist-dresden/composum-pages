@@ -19,6 +19,7 @@ import com.composum.platform.cache.service.CacheConfiguration;
 import com.composum.platform.cache.service.CacheManager;
 import com.composum.platform.cache.service.impl.CacheServiceImpl;
 import com.composum.sling.core.BeanContext;
+import com.composum.sling.core.ResourceHandle;
 import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.filter.StringFilter;
 import com.composum.sling.core.util.PropertyUtil;
@@ -60,6 +61,7 @@ import java.io.Serializable;
 import java.io.StringReader;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -968,7 +970,36 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
             // ordering not supported - ignore it
         }
 
-        return Objects.requireNonNull(resolver.getResource(newPath));
+        Resource movedResource = Objects.requireNonNull(resolver.getResource(newPath));
+        updateLastModified(movedResource, oldPath.equals(newPath));
+
+        return movedResource;
+    }
+
+    /**
+     * In the case of a plain reordering, we need to mark just one cpp:PageContent (preferrably the content of this page)
+     * as modified since publishing that would fix the order. In case of a move to a different path all subpages must be modified
+     * to have their location in the release updated on publication.
+     */
+    private boolean updateLastModified(@Nonnull Resource movedResource, boolean justReordered) throws RepositoryException {
+        ResourceResolver resolver = movedResource.getResourceResolver();
+        ResourceHandle resource = ResourceHandle.use(movedResource);
+        if (ResourceUtil.isNodeType(movedResource, ResourceUtil.MIX_VERSIONABLE)) {
+            if (ResourceUtil.isNodeType(movedResource, ResourceUtil.TYPE_LAST_MODIFIED)) {
+                resource.setProperty(ResourceUtil.PROP_LAST_MODIFIED, Calendar.getInstance());
+                resource.setProperty(ResourceUtil.JCR_LASTMODIFIED_BY, resolver.getUserID());
+                return true;
+            }
+            return false; // doesn't make sense to consult subnodes.
+        }
+        boolean updated = false;
+        for (Resource child : resource.getChildren()) {
+            if (updateLastModified(child, justReordered)) {
+                updated = true;
+            }
+            if (justReordered && updated) { return true; }
+        }
+        return updated;
     }
 
     //
