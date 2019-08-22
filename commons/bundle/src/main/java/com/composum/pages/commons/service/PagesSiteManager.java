@@ -104,13 +104,15 @@ public class PagesSiteManager extends PagesContentManager<Site> implements SiteM
                 checkResource = checkResource.getParent();
             }
         }
-        try { // for resources from the release tree at com.composum.sling.platform.staging.StagingConstants.RELEASE_ROOT_PATH :
-            Resource releaseRoot = releaseManager.findReleaseRoot(resource);
-            if (Site.isSite(releaseRoot)) {
-                return releaseRoot;
+        if (resource != null) {
+            try { // for resources from the release tree at com.composum.sling.platform.staging.StagingConstants.RELEASE_ROOT_PATH :
+                Resource releaseRoot = releaseManager.findReleaseRoot(resource);
+                if (Site.isSite(releaseRoot)) {
+                    return releaseRoot;
+                }
+            } catch (RuntimeException e) {
+                // give up
             }
-        } catch (RuntimeException e) {
-            // give up
         }
         return null;
     }
@@ -141,6 +143,11 @@ public class PagesSiteManager extends PagesContentManager<Site> implements SiteM
         return tenantSupport != null ? tenantSupport.getTenants(context) : Collections.emptyMap();
     }
 
+    @Nonnull
+    protected Resource getContentRoot(ResourceResolver resolver) {
+        return Objects.requireNonNull(resolver.getResource("/content"));
+    }
+
     @Override
     @Nonnull
     public Resource getSitesRoot(@Nonnull final BeanContext context, @Nullable final String tenantId) {
@@ -157,6 +164,9 @@ public class PagesSiteManager extends PagesContentManager<Site> implements SiteM
             LOG.debug("getSitesRoot({},{}): {}", context.getResolver().getUserID(), tenantId,
                     sitesRoot != null ? sitesRoot.getPath() : "NULL");
         }
+        if (sitesRoot == null) {
+            sitesRoot = getContentRoot(resolver);
+        }
         return sitesRoot;
     }
 
@@ -166,6 +176,9 @@ public class PagesSiteManager extends PagesContentManager<Site> implements SiteM
         Set<Site> sites = new HashSet<>();
         if (tenantSupport == null) {
             sites.addAll(getSites(context, getSitesRoot(context, null), ResourceFilter.ALL));
+            if (sites.size() < 1) {
+                sites.addAll(getSites(context, getContentRoot(context.getResolver()), ResourceFilter.ALL));
+            }
         } else {
             for (String tenantId : tenantSupport.getTenants(context).keySet()) {
                 sites.addAll(getSites(context, getSitesRoot(context, tenantId), ResourceFilter.ALL));
@@ -264,9 +277,11 @@ public class PagesSiteManager extends PagesContentManager<Site> implements SiteM
 
                 @Override
                 public String applyTemplatePlaceholders(@Nonnull final Resource target, @Nonnull final String value) {
-                    Resource pageResource = pageManager.getContainingPageResource(target);
                     String result = value.replaceAll("\\$\\{path}", target.getPath());
-                    result = result.replaceAll("\\$\\{page}", pageResource.getPath());
+                    Resource pageResource = pageManager.getContainingPageResource(target);
+                    if (pageResource != null) {
+                        result = result.replaceAll("\\$\\{page}", pageResource.getPath());
+                    }
                     result = result.replaceAll("\\$\\{site}", sitePath);
                     if (!value.equals(result)) {
                         result = result.replaceAll("/[^/]+/\\.\\./", "/");

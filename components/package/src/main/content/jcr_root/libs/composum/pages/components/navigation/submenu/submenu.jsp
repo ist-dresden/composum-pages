@@ -6,6 +6,7 @@
              test="@{not empty menu.menuItems}" tagName="ul"
              cssBase="composum-pages-components-navigation-submenu" cssAdd="menu">
     <c:forEach items="${menu.menuItems}" var="item">
-        <cpp:include path="${item.content.path}" resourceType="composum/pages/components/navigation/menuitem"/>
+        <cpp:include path="${item.content.path}" resourceType="composum/pages/components/navigation/menuitem"
+                     replaceSelectors="link"/>
     </c:forEach>
 </cpp:element>

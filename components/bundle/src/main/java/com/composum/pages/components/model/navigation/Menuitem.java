@@ -99,13 +99,17 @@ public class Menuitem extends Page {
     }
 
     public boolean isSubmenu() {
-        return !getSubmenu().isEmpty();
+        return !getMenu().isEmpty();
     }
 
-    public Menu getSubmenu() {
+    public Menu getMenu() {
         if (submenu == null) {
-            submenu = new Menu(context, resource);
+            submenu = buildMenu();
         }
         return submenu;
+    }
+
+    protected Menu buildMenu() {
+        return new Menu(context, resource);
     }
 }

@@ -3,6 +3,7 @@ package com.composum.pages.components.model.navigation;
 import com.composum.pages.commons.model.Element;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.filter.ResourceFilter;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 
 import java.util.ArrayList;
@@ -27,16 +28,31 @@ public class Menu extends Element {
     }
 
     public boolean isEmpty() {
-        return getMenuItems().size() == 0;
+        return getSize() == 0;
+    }
+
+    public boolean isParentUsed() {
+        return false;
+    }
+
+    public int getSize() {
+        return getMenuItems().size();
     }
 
     public List<Menuitem> getMenuItems() {
         if (menuItems == null) {
-            menuItems = new ArrayList<>();
-            ResourceFilter filter = getFilter();
-            for (Resource child : resource.getChildren()) {
-                if (filter.accept(child)) {
-                    Menuitem item = new Menuitem(context, child);
+            menuItems = buildMenuItems(resource);
+        }
+        return menuItems;
+    }
+
+    public List<Menuitem> buildMenuItems(Resource resource) {
+        List<Menuitem> menuItems = new ArrayList<>();
+        ResourceFilter filter = getFilter();
+        for (Resource child : resource.getChildren()) {
+            if (filter.accept(child)) {
+                Menuitem item = new Menuitem(context, child);
+                if (StringUtils.isNotBlank(item.getTitle())) {
                     menuItems.add(item);
                 }
             }
