@@ -55,8 +55,9 @@ public class PagesReleaseServiceImpl implements ReleaseChangeEventListener, Page
         try {
             StagingReleaseManager.Release release = event.release();
             List<AccessMode> accessModes = release.getMarks().stream().map(AccessMode::accessModeValue).filter(Objects::nonNull).collect(Collectors.toList());
-            if (accessModes.isEmpty())
+            if (accessModes.isEmpty()) {
                 return; // not published
+            }
 
             BeanContext beanContext = new BeanContext.Service(release.getReleaseRoot().getResourceResolver());
             Site site = siteManager.getContainingSite(beanContext, release.getReleaseRoot());
@@ -73,8 +74,7 @@ public class PagesReleaseServiceImpl implements ReleaseChangeEventListener, Page
                     removedPath = ResourceUtil.getParent(removedPath);
                     resource = stagedResolver.getResource(removedPath);
                 }
-                if (resource != null)
-                    pathsToReplicate.add(removedPath);
+                if (resource != null) { pathsToReplicate.add(removedPath); }
             }
             pathsToReplicate = removeRedundantPaths(pathsToReplicate);
 
@@ -102,8 +102,10 @@ public class PagesReleaseServiceImpl implements ReleaseChangeEventListener, Page
     private List<String> removeRedundantPaths(List<String> pathsToReplicate) {
         List<String> res = new ArrayList<>();
         for (String path : pathsToReplicate) {
-            if (res.stream().noneMatch(p -> SlingResourceUtil.isSameOrDescendant(p, path)))
+            if (res.stream().noneMatch(p -> SlingResourceUtil.isSameOrDescendant(p, path))) {
+                res.removeIf(p -> SlingResourceUtil.isSameOrDescendant(path, p));
                 res.add(path);
+            }
         }
         return res;
     }

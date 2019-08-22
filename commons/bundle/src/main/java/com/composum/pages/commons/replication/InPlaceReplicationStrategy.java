@@ -226,8 +226,7 @@ public abstract class InPlaceReplicationStrategy implements ReplicationStrategy 
             String key = entry.getKey();
             if (ReplicationManager.REPLICATE_PROPERTY_FILTER.accept(key)) {
                 // copy content properties if not always present or a 'reset' is requested
-                if (replicateValues.get(key) == null ||
-                        (!merge && !ReplicationManager.REPLICATE_PROPERTY_KEEP.accept(key))) {
+                if (replicateValues.get(key) == null || !merge) {
                     Object value = entry.getValue();
                     if (value instanceof String) {
                         value = transformStringProperty(context, targetRoot, (String) value);

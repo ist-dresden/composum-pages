@@ -17,12 +17,12 @@ public interface ReplicationManager extends ReleaseMapper {
      * only properties of a released resource accepted by this filter are copied
      */
     StringFilter REPLICATE_PROPERTY_FILTER = new StringFilter.BlackList(
-            "^jcr:(primaryType|mixinTypes|created.*|uuid)$",
+            "^jcr:(created.*|uuid)$",
             "^jcr:(baseVersion|predecessors|versionHistory|isCheckedOut)$"
     );
 
     /**
-     * properties of a target accepted by this filter are not replaced by values from a released resource
+     * properties of a target accepted by this filter cannot be deleted
      */
     StringFilter REPLICATE_PROPERTY_KEEP = new StringFilter.WhiteList(
             "^jcr:(primaryType|mixinTypes|created.*|uuid)$",
