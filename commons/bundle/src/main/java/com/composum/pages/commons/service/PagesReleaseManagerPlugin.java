@@ -3,6 +3,8 @@ package com.composum.pages.commons.service;
 import com.composum.pages.commons.PagesConstants;
 import com.composum.sling.core.ResourceHandle;
 import com.composum.sling.core.util.ResourceUtil;
+import com.composum.sling.core.util.SlingResourceUtil;
+import com.composum.sling.platform.staging.ReleaseChangeEventListener;
 import com.composum.sling.platform.staging.StagingConstants;
 import com.composum.sling.platform.staging.StagingReleaseManager;
 import com.composum.sling.platform.staging.StagingReleaseManagerPlugin;
@@ -37,8 +39,8 @@ public class PagesReleaseManagerPlugin implements StagingReleaseManagerPlugin {
      * change the resource type to {@link com.composum.sling.core.util.ResourceUtil#TYPE_SLING_ORDERED_FOLDER}.
      */
     @Override
-    public void fixupReleaseForChanges(@Nonnull StagingReleaseManager.Release release, Resource workspaceCopyNode, @Nonnull Set<String> changedPaths) throws RepositoryException {
-        fixup(release, workspaceCopyNode.getPath(), workspaceCopyNode);
+    public void fixupReleaseForChanges(@Nonnull StagingReleaseManager.Release release, Resource workspaceCopyNode, @Nonnull Set<String> changedPaths, ReleaseChangeEventListener.ReleaseChangeEvent event) throws RepositoryException {
+        fixup(release, workspaceCopyNode.getPath(), workspaceCopyNode, event);
     }
 
     /**
@@ -49,7 +51,7 @@ public class PagesReleaseManagerPlugin implements StagingReleaseManagerPlugin {
      *
      * @return true if the resource is an activated versionable or has active subnodes, and thus needs to be kept in the release.
      */
-    private boolean fixup(StagingReleaseManager.Release release, String workspaceCopyPath, Resource rawResource) throws RepositoryException {
+    private boolean fixup(StagingReleaseManager.Release release, String workspaceCopyPath, Resource rawResource, ReleaseChangeEventListener.ReleaseChangeEvent event) throws RepositoryException {
         ResourceHandle resource = ResourceHandle.use(rawResource);
         if (resource.isOfType(StagingConstants.TYPE_VERSIONREFERENCE)) {
             Boolean disabled = resource.getProperty(StagingConstants.PROP_DEACTIVATED, false);
@@ -59,13 +61,16 @@ public class PagesReleaseManagerPlugin implements StagingReleaseManagerPlugin {
         boolean hasActiveChildren = false;
         boolean hasActivePageContent = false;
         for (Resource child : resource.getChildren()) {
-            boolean childActive = fixup(release, workspaceCopyPath, child);
+            boolean childActive = fixup(release, workspaceCopyPath, child, event);
             hasActiveChildren = hasActiveChildren || childActive;
             if (isPage && child.getName().equals(ResourceUtil.CONTENT_NODE)) {
                 hasActivePageContent = childActive;
             }
         }
         if (isPage && !hasActivePageContent) {
+            String relativePath = SlingResourceUtil.relativePath(workspaceCopyPath, resource.getPath());
+            String workspacePath = release.absolutePath(relativePath);
+            event.addMoveOrUpdate(workspacePath, workspacePath);
             if (hasActiveChildren) {
                 resource.setProperty(ResourceUtil.JCR_FROZENPRIMARYTYPE, ResourceUtil.TYPE_SLING_ORDERED_FOLDER);
             } else {
