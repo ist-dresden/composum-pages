@@ -18,6 +18,8 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.jcr.RepositoryException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -65,7 +67,7 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
     private transient String publicMode;
     private transient Homepage homepage;
 
-    private transient Collection<Page> modifiedPages;
+    private transient List<PageVersion> modifiedPages;
     private transient Collection<PageVersion> releaseChanges;
 
     private transient String templateType;
@@ -222,9 +224,14 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
     /**
      * @return the list of pages changed after last activation
      */
-    public Collection<Page> getModifiedPages() {
+    public List<PageVersion> getModifiedPages() {
         if (modifiedPages == null) {
-            modifiedPages = getVersionsService().findModifiedPages(getContext(), getResource());
+            try {
+                modifiedPages = getVersionsService().findModifiedPages(getContext(), getCurrentRelease());
+            } catch (RepositoryException e) {
+                LOG.error("Retrieving modified pages for " + getResource().getPath(), e);
+                modifiedPages = new ArrayList<>();
+            }
         }
         return modifiedPages;
     }
