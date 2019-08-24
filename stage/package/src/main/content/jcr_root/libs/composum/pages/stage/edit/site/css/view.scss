@@ -4,6 +4,59 @@
 @import "../../css/mixins";
 
 .composum-pages-stage-edit-site {
+    min-width: 600px;
+
+    &_title, &-release_title {
+        margin: 15px 0;
+    }
+
+    &_title-type, &-release_title-type {
+        font-size: $default-font-size;
+        color: $edit-hint-color;
+    }
+
+    .nav-tabs {
+
+        .badge-pill {
+            min-width: 26px;
+            margin-left: 10px;
+        }
+    }
+
+    .btn-group, .heading-input {
+        float: right;
+        margin-left: 10px;
+    }
+
+    .btn-group {
+        margin-top: -6px;
+
+        .btn {
+            padding-top: 3px;
+            padding-bottom: 3px;
+
+            .fa {
+                margin-right: 8px;
+            }
+        }
+    }
+
+    .heading-input {
+        margin-top: -2px;
+        margin-bottom: 8px;
+
+        .checkbox {
+            display: inline;
+            margin-right: 5px;
+        }
+    }
+
+    .tab-pane {
+
+        .panel:first-child {
+            margin-top: 15px;
+        }
+    }
 
     .panel {
 
@@ -11,36 +64,227 @@
             height: 37px;
 
             .panel-title {
+                @include title-font;
                 float: left;
             }
+        }
 
-            .btn-group {
-                float: right;
-                margin-top: -6px;
+        .panel-body {
+            padding: 10px;
 
-                .btn {
-                    padding-top: 3px;
-                    padding-bottom: 3px;
+            .table {
 
-                    &.release-delete {
-                        margin-right: 10px;
-                    }
+                &:last-child {
+                    margin-bottom: 0;
                 }
             }
         }
     }
 
-
     .composum-pages-stage-edit-site {
 
         &-page-modified,
-        &-page-finished {
+        &-page-activated,
+        &-release-changes,
+        &-languages {
+
+            &_content {
+                overflow-x: scroll;
+
+                &.panel-body {
+                    padding: 5px 0 0;
+                }
+            }
 
             &_page {
 
                 &-select-all {
-                    margin: 0 0 4px;
+                    margin: 8px 0 0;
                 }
+
+                &-select {
+                    margin: 7px 0 0;
+                }
+            }
+
+            &_thead, &_tbody {
+                @include text-font;
+
+                th {
+                    white-space: nowrap;
+                    overflow: hidden;
+                }
+
+                ._page-state {
+                    width: 33px;
+                    max-width: 33px;
+                    min-width: 33px;
+                    padding: 0;
+                    text-align: center;
+                    vertical-align: top;
+                }
+            }
+        }
+
+        &-page-modified,
+        &-page-activated {
+
+            &_thead, &_tbody {
+
+                .release-status {
+
+                    &_initial {
+
+                        ._page-state {
+                            background-color: $release-status-initial;
+                        }
+                    }
+
+                    &_activated {
+
+                        ._page-state {
+                            background-color: $release-status-activated;
+                        }
+                    }
+
+                    &_modified {
+
+                        ._page-state {
+                            background-color: $release-status-modified;
+                        }
+                    }
+
+                    &_deactivated {
+
+                        ._page-state {
+                            background-color: $release-status-deactivated;
+                        }
+                    }
+                }
+            }
+        }
+
+        &-release-changes {
+
+            &_thead, &_tbody {
+
+                ._page-state {
+
+                    &:after {
+                        display: inline-block;
+                        padding: 5px;
+                        font-family: 'FontAwesome', sans-serif;
+                        color: #fff;
+                    }
+                }
+
+                .release-status {
+
+                    &_initial, &_activated {
+
+                        ._page-state {
+                            background-color: $release-status-activated;
+
+                            &:after {
+                                content: '\f069';
+                            }
+                        }
+                    }
+
+                    &_modified {
+
+                        ._page-state {
+                            background-color: $release-status-changed;
+
+                            &:after {
+                                content: '\f040';
+                            }
+                        }
+                    }
+
+                    &_deactivated {
+
+                        ._page-state {
+                            background-color: $release-status-deactivated;
+
+                            &:after {
+                                content: '\f00d';
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+.composum-pages-stage-edit-site,
+.composum-pages-stage-edit-site-release {
+
+    .composum-pages-stage-edit-site-releases {
+
+        &-release {
+            padding-bottom: 5px;
+
+            &:first-child {
+
+                .composum-pages-stage-edit-site-releases-release {
+
+                    &_input, &_content {
+                        border-top: none;
+                    }
+                }
+            }
+
+            &:last-child {
+                padding-bottom: 0;
+            }
+
+            &_tile {
+                @include text-font;
+            }
+
+            &_title, &_categories {
+                flex-grow: 9;
+                margin-right: 20px;
+            }
+
+            &_key, &_creationDate, &_actions {
+                margin: 0;
+                text-align: right;
+            }
+
+            &_categories {
+                display: inline-block;
+                margin-top: 5px;
+                white-space: nowrap;
+            }
+
+            &_description {
+
+                &, & p, & ul {
+                    margin: 5px 0 0;
+                }
+            }
+
+            &_description, &_row {
+                display: inline-block;
+                width: 100%;
+                clear: both;
+            }
+
+            &_row {
+                display: flex;
+            }
+
+            &_input {
+                width: 30px;
+                min-width: 30px;
+                max-width: 30px;
+            }
+
+            &_content {
+                width: 100%;
             }
         }
     }

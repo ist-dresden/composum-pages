@@ -3,6 +3,13 @@
 @import "variables";
 @import "mixins";
 
+html {
+    width: 100%;
+    height: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
 body {
     margin: 0;
     border: none;
@@ -22,13 +29,20 @@ body {
             padding: 0;
             overflow: auto;
         }
+
+        /* iframe not scrolling in IOS !... but this has no effect
+        &_wrapper {
+            -webkit-overflow-scrolling: touch;
+            overflow: auto;
+        }
+        */
     }
 
     .composum-pages-stage-version-frame {
 
         &,
         &_wrapper,
-        &_main,
+        &_primary,
         &_secondary {
             width: 100%;
             height: 100%;
@@ -41,7 +55,7 @@ body {
             overflow: auto;
         }
 
-        &_main,
+        &_primary,
         &_secondary {
             position: fixed;
             background: transparent;

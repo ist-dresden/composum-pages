@@ -4,7 +4,20 @@
 @import "../../css/mixins";
 
 $frame-tree-fg-color: #fff;
+$frame-tree-icon-color: $release-status-initial;
 $frame-tree-dnd-border: 1px dashed rgba(255, 255, 255, 0.7);
+
+.composum-pages-EDIT,
+.composum-pages-DEVELOP {
+
+    &_body {
+
+        #jstree-marker {
+            z-index: 3001;
+            color: $frame-tree-fg-color;
+        }
+    }
+}
 
 .composum-pages-tools {
 
@@ -18,12 +31,16 @@ $frame-tree-dnd-border: 1px dashed rgba(255, 255, 255, 0.7);
         &-icon {
             color: $frame-tree-fg-color;
             text-decoration: none;
-            font-size: $default-font-size;
+            font-size: $tree-font-size;
+        }
+
+        &-icon {
+            color: $frame-tree-icon-color;
         }
 
         &-node,
         &-node > .jstree-anchor {
-            @include default-font;
+            @include tree-font;
         }
 
         &-node.intermediate,
@@ -31,18 +48,47 @@ $frame-tree-dnd-border: 1px dashed rgba(255, 255, 255, 0.7);
             font-family: 'robotolight_italic', sans-serif;
         }
 
+        &-node {
+
+            &.release-status {
+
+                &_initial {
+
+                    > .jstree-anchor > .jstree-icon {
+                        color: $release-status-initial;
+                    }
+                }
+
+                &_activated {
+
+                    > .jstree-anchor > .jstree-icon {
+                        color: $release-status-activated;
+                    }
+                }
+
+                &_modified {
+
+                    > .jstree-anchor > .jstree-icon {
+                        color: $release-status-modified;
+                    }
+                }
+
+                &_deactivated {
+
+                    > .jstree-anchor > .jstree-icon {
+                        color: $release-status-deactivated;
+                    }
+                }
+            }
+        }
+
         &-wholerow {
-            height: 23px;
             margin-top: 2px; /* important gap for */
             margin-bottom: 2px; /* DnD reordering */
         }
 
         &-ocl {
             margin: 1px 0;
-        }
-
-        &-anchor {
-            margin: 2px 0 3px;
         }
 
         &-themeicon {

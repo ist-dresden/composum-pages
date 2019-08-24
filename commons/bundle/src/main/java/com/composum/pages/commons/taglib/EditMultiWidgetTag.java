@@ -17,6 +17,7 @@ import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.jstl.core.LoopTag;
 import javax.servlet.jsp.jstl.core.LoopTagStatus;
 import java.io.IOException;
+import java.io.Writer;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +28,8 @@ import java.util.Map;
 public class EditMultiWidgetTag extends AbstractWidgetTag implements LoopTag {
 
     public static final String MULTIWIDGET_VAR = "multiwidget";
-    public static final String MULTIWIDGET_CSS_VAR = MULTIWIDGET_VAR + "CssBase";
+    public static final String MULTIWIDGET_CSS_VAR = MULTIWIDGET_VAR + "CSS";
+    public static final String MULTIWIDGET_CSSBASE_VAR = MULTIWIDGET_VAR + "CssBase";
     public static final String MULTIWIDGET_TYPE = "multiwidget";
 
     public static final String DEFAULT_CSS_BASE = "composum-pages-edit-" + MULTIWIDGET_TYPE;
@@ -90,7 +92,7 @@ public class EditMultiWidgetTag extends AbstractWidgetTag implements LoopTag {
         collection.addAll(FORM_CSS_CLASES);
     }
 
-    protected void collectAttributes(Map<String, String> attributeSet) {
+    protected void collectAttributes(Map<String, Object> attributeSet) {
         attributeSet.put("data-name", getPropertyName());
         super.collectAttributes(attributeSet);
     }
@@ -101,6 +103,15 @@ public class EditMultiWidgetTag extends AbstractWidgetTag implements LoopTag {
             cssBase = DEFAULT_CSS_BASE;
         }
         return super.doStartTag();
+    }
+
+    @Override
+    @SuppressWarnings("Duplicates")
+    protected void getTagDebug(Writer writer) throws IOException {
+        super.getTagDebug(writer);
+        writer.append("\n    name: '").append(getName()).append("'; property: '").append(getProperty())
+                .append("'; propertyName: '").append(getPropertyName())
+                .append("'; relativePath: '").append(getRelativePath()).append("'");
     }
 
     protected String getSnippetResourceType() {
@@ -124,6 +135,7 @@ public class EditMultiWidgetTag extends AbstractWidgetTag implements LoopTag {
         setAttribute(MULTIWIDGET_VAR, this, PageContext.REQUEST_SCOPE);
         if (StringUtils.isNotBlank(cssBase)) {
             setAttribute(MULTIWIDGET_CSS_VAR, cssBase, PageContext.REQUEST_SCOPE);
+            setAttribute(MULTIWIDGET_CSSBASE_VAR, cssBase, PageContext.REQUEST_SCOPE);
         }
     }
 

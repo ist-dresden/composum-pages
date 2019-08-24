@@ -12,6 +12,7 @@
             languageMenuLabel: 'composum-pages-stage-edit-toolbar_language-label',
             languageMenu: 'composum-pages-language-menu',
             languageMenuLink: 'composum-pages-language-menu_link',
+            openPageLink: 'composum-pages-stage-edit-toolbar_open-separate',
             pageViewActionsUri: '/libs/composum/pages/stage/edit/actions/view.html',
             previewAction: 'composum-pages-stage-edit-toolbar_preview',
             editAction: 'composum-pages-stage-edit-toolbar_edit',
@@ -23,7 +24,10 @@
                 css: {
                     tbar: {
                         base: 'composum-pages-stage-edit-toolbar',
-                        _open: '_open-page'
+                        _reload: '_reload-page',
+                        _open: '_open-page',
+                        _separate: '_open-separate',
+                        _width: '_surface-width'
                     }
                 }
             }
@@ -36,19 +40,14 @@
             },
 
             onClick: function (event) {
-                var name = this.toolbar.data.name;
-                var path = this.toolbar.data.path;
-                var type = this.toolbar.data.type;
-                var action = eval(this.$el.data('action'));
-                if (_.isFunction(action)) {
-                    action(event, name, path, type);
-                }
+                pages.actions.trigger(event, this.$el.data('action'), this.toolbar.reference);
             }
         });
 
         toolbars.EditToolbar = Backbone.View.extend({
 
             initialize: function (options) {
+                this.reference = new pages.Reference(this);
                 var toolbar = this;
                 this.$('[data-action]').each(function () {
                     var action = core.getWidget(toolbar.$el, this, toolbars.EditAction);
@@ -68,6 +67,13 @@
                     .find('.' + toolbars.const.languageMenuLabel);
                 this.$menuItems = this.$('.' + toolbars.const.languageMenuLink);
                 this.$menuItems.click(_.bind(this.onClick, this));
+                this.setCurrentLanguage();
+                var e = pages.const.event.pages;
+                $(document).on(e.locale + '.LocaleSelector', _.bind(this.setCurrentLanguage, this));
+            },
+
+            setCurrentLanguage: function () {
+                this.$menuLabel.text(pages.getLocale().replace(/_/g, '.'));
             },
 
             onClick: function (event) {
@@ -77,15 +83,30 @@
                 var $menuItem = $(event.currentTarget);
                 var key = $menuItem.data('value');
                 if (pages.editFrame) {
-                    var label = key.replace(/_/g, '.');
                     var parameters = {'pages.locale': key};
                     if (this.currentPage && pages.current.page !== this.currentPage) {
-                        parameters['pages.mode'] = 'preview'
+                        parameters['pages.view'] = 'preview'
                     }
                     pages.editFrame.reloadPage(parameters, this.currentPage);
-                    this.$menuLabel.text(label);
                 } else {
                     location.href = (this.currentPage ? this.currentPage : ".") + "?pages.locale=" + key;
+                }
+            }
+        });
+
+        toolbars.OpenPageLink = Backbone.View.extend({
+
+            initialize: function (options) {
+                var e = pages.const.event;
+                $(document).on(e.page.selected + '.OpenPageLink', _.bind(this.setPageLink, this));
+                $(document).on(e.pages.locale + '.OpenPageLink', _.bind(this.setPageLink, this));
+            },
+
+            setPageLink: function () {
+                var link = pages.getPageUrl();
+                if (this.link !== link) {
+                    this.link = link;
+                    this.$el.attr('href', link);
                 }
             }
         });
@@ -132,16 +153,14 @@
                 this.$view = this.$('.' + toolbars.const.pageViewActions);
                 this.$component = this.$('.' + toolbars.const.componentActions);
                 this.initPageView();
-                var c = pages.const.event;
-                $(document).on(c.page.view + '.PageToolbar', _.bind(this.onPageSelected, this));
-                $(document).on(c.page.selected + '.PageToolbar', _.bind(this.onPageSelected, this));
-                $(document).on(c.element.selected + '.PageToolbar', _.bind(this.onComponentSelected, this));
+                var e = pages.const.event;
+                $(document)
+                    .on(e.page.view + '.PageToolbar', _.bind(this.onPageView, this))
+                    .on(e.page.selected + '.PageToolbar', _.bind(this.onPageSelected, this))
+                    .on(e.element.selected + '.PageToolbar', _.bind(this.onComponentSelected, this))
+                    .on('body:size.PageToolbar', _.bind(this.onResize, this));
                 this.loadProfile();
                 this.$el.css('right', this.profile.position + '%');
-                if (pages.current.mode === pages.const.modes.edit ||
-                    pages.current.mode === pages.const.modes.develop) {
-                    this.onComponentSelected();
-                }
             },
 
             initPageView: function (path) {
@@ -149,13 +168,19 @@
                 this.currentPage = path;
                 this.handle = core.getWidget(this.el, '.' + toolbars.const.toolbarHandleClass, toolbars.ToolbarHandle);
                 this.handle.toolbar = this;
+                this.$surfaceWidth = this.handle.$('.' + c.tbar.base + c.tbar._width);
+                this.onResize();
                 this.$('.' + toolbars.const.previewAction).attr('href',
-                    '?pages.mode.switch=' + pages.profile.get('mode', 'preview', 'preview'));
+                    '?pages.mode=' + pages.profile.get('mode', 'preview', 'preview'));
                 this.$('.' + toolbars.const.editAction).attr('href',
-                    '?pages.mode.switch=' + pages.profile.get('mode', 'edit', 'edit'));
+                    '?pages.mode=' + pages.profile.get('mode', 'edit', 'edit'));
                 this.$('.' + c.tbar.base + c.tbar._open).click(_.bind(this.openPage, this));
+                this.$('.' + c.tbar.base + c.tbar._reload).click(_.bind(this.reloadPage, this));
                 toolbars.localeSelector = core.getView('.' + toolbars.const.languageMenu, toolbars.LocaleSelector);
-                toolbars.localeSelector.currentPage = this.currentPage;
+                if (toolbars.localeSelector) {
+                    toolbars.localeSelector.currentPage = this.currentPage;
+                }
+                core.getView('.' + toolbars.const.openPageLink, toolbars.OpenPageLink);
             },
 
             profileAspect: function () {
@@ -174,13 +199,39 @@
                 }
             },
 
+            onResize: function () {
+                this.$surfaceWidth.text(pages.surface.surface.width);
+            },
+
+            reloadPage: function (event) {
+                if (event) {
+                    event.preventDefault();
+                }
+                pages.editFrame.reloadPage();
+                return false;
+            },
+
             openPage: function (event) {
+                if (event) {
+                    event.preventDefault();
+                }
                 if (this.currentPage) {
                     pages.editFrame.selectPage(event, this.currentPage);
                 }
+                return false;
+            },
+
+            onPageView: function (event, path) {
+                this.onViewChanged(path, false);
             },
 
             onPageSelected: function (event, path) {
+                this.onViewChanged(path,
+                    pages.current.mode === pages.const.modes.edit ||
+                    pages.current.mode === pages.const.modes.develop);
+            },
+
+            onViewChanged: function (path, loadToolbar) {
                 if (path) {
                     if (this.currentPage !== path) {
                         pages.log.debug('toolbars.PageToolbar.onPageSelected(' + path + ')');
@@ -188,8 +239,7 @@
                             _.bind(function (data) {
                                 this.$view.html(data);
                                 this.initPageView(path);
-                                if (pages.current.mode === pages.const.modes.edit ||
-                                    pages.current.mode === pages.const.modes.develop) {
+                                if (loadToolbar) {
                                     this.loadComponentToolbar(path);
                                 }
                             }, this));
@@ -201,10 +251,11 @@
                 return this.componentToolbar ? this.componentToolbar.data : undefined;
             },
 
-            onComponentSelected: function (event, name, path, type) {
+            onComponentSelected: function (event, refOrPath) {
+                var path = refOrPath && refOrPath.path ? refOrPath.path : refOrPath;
                 if (this.componentToolbar) {
-                    if (this.componentToolbar.data.path === path) {
-                        return;
+                    if (path && this.componentToolbar.data.path === path) {
+                        return true;
                     }
                     this.componentToolbar.dispose();
                     this.componentToolbar = undefined;
@@ -214,7 +265,7 @@
                 }
                 pages.log.debug('toolbars.PageToolbar.onComponentSelected(' + path + ')');
                 if (path) {
-                    this.loadComponentToolbar(path, type);
+                    this.loadComponentToolbar(path, refOrPath && refOrPath.type ? refOrPath.type : undefined);
                 }
             },
 

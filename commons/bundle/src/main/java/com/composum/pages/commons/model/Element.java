@@ -11,11 +11,16 @@ import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import static com.composum.pages.commons.PagesConstants.NODE_TYPE_ELEMENT;
 import static com.composum.pages.commons.PagesConstants.PROP_ALLOWED_CONTAINERS;
 import static com.composum.pages.commons.servlet.EditServlet.EDIT_RESOURCE_TYPE_KEY;
 
 public class Element extends AbstractModel {
+
+    protected static final Container NO_PARENT = null;
 
     // static resource type determination
 
@@ -26,16 +31,22 @@ public class Element extends AbstractModel {
      * @param resource the resource (can be 'null' if type is available)
      * @param type     the optional resource type (necessary if resource is 'null')
      */
-    public static boolean isElement(ResourceResolver resolver, Resource resource, String type) {
+    public static boolean isElement(@Nonnull ResourceResolver resolver,
+                                    @Nullable Resource resource, @Nullable String type) {
         return (resource != null && (resource.isResourceType(NODE_TYPE_ELEMENT) ||
                 NODE_TYPE_ELEMENT.equals(ResolverUtil.getTypeProperty(
-                        resource, type, PagesConstants.PROP_COMPONENT_TYPE, "")))) ||
+                        resource, type, PagesConstants.PN_COMPONENT_TYPE, "")))) ||
                 (StringUtils.isNotBlank(type) &&
                         NODE_TYPE_ELEMENT.equals(ResolverUtil.getTypeProperty(
-                                resolver, type, PagesConstants.PROP_COMPONENT_TYPE, "")));
+                                resolver, type, PagesConstants.PN_COMPONENT_TYPE, "")));
     }
 
     // transient attributes
+
+    private transient Container parent;
+
+    private transient Integer level;
+    private transient Integer titleLevel;
 
     private transient PathPatternSet allowedContainers;
 
@@ -81,7 +92,7 @@ public class Element extends AbstractModel {
     }
 
     public boolean isAllowedContainer(String resourceType) {
-        return getAllowedContainers().matches(resourceType);
+        return getAllowedContainers().matches(getContext().getResolver(), resourceType);
     }
 
     /**
@@ -92,5 +103,55 @@ public class Element extends AbstractModel {
             allowedContainers = new PathPatternSet(getResourceManager().getReference(this), PROP_ALLOWED_CONTAINERS);
         }
         return allowedContainers;
+    }
+
+    // hierarchy
+
+    public Container getParent() {
+        if (parent == null) {
+            Resource resource = getResource();
+            ResourceResolver resolver = resource.getResourceResolver();
+            while ((resource = resource.getParent()) != null) {
+                if (Container.isContainer(resolver, resource, null)) {
+                    break;
+                }
+                if (Page.isPageContent(resource)) {
+                    resource = null;
+                    break;
+                }
+            }
+            parent = resource != null ? new Container(getContext(), resource) : NO_PARENT;
+        }
+        return parent != NO_PARENT ? parent : null;
+    }
+
+    /**
+     * @return the level in the element hierarchy
+     */
+    public int getLevel() {
+        if (level == null) {
+            Container parent = getParent();
+            level = parent != null ? parent.getLevel() + 1 : 0;
+        }
+        return level;
+    }
+
+    /**
+     * @return the level of all parents with a title property in the element hierarchy
+     */
+    public int getTitleLevel() {
+        if (titleLevel == null) {
+            Container parent = getParent();
+            String title = getTitle();
+            titleLevel = parent != null ? parent.getTitleLevel() : 0;
+            if (StringUtils.isNotBlank(title)) {
+                titleLevel++;
+            }
+        }
+        return titleLevel;
+    }
+
+    public String getTitleTagName() {
+        return "h" + Math.max(1, Math.min(6, getTitleLevel()));
     }
 }

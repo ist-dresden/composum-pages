@@ -1,12 +1,16 @@
-<%@page session="false" pageEncoding="utf-8" %><%--
---%><%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%><%--
---%><%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %><%--
---%><%@taglib prefix="cpn" uri="http://sling.composum.com/cpnl/1.0" %><%--
---%><%@ taglib prefix="sling" uri="http://sling.apache.org/taglibs/sling" %><%--
---%><cpp:defineObjects/><%--
---%><jsp:useBean id="searchresult" type="com.composum.pages.commons.service.SearchService.Result" scope="request" />
-<p>
-    <cpn:link href="${searchresult.targetUrl}" classes="title"><cpn:text value="${searchresult.title}"/></cpn:link>
-    <span class="score">(Score ${searchresult.score})</span><br/>
-    <span class="excerpt">${searchresult.excerpt}</span>
-</p>
+<%@page session="false" pageEncoding="utf-8" %>
+<%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
+<%@taglib prefix="cpn" uri="http://sling.composum.com/cpnl/1.0" %>
+<cpp:defineObjects/>
+<cpp:model var="searchresult" type="com.composum.pages.commons.service.search.SearchService.Result" scope="request"
+           cssBase="composum-pages-components-page_search-item">
+    <cpn:link href="${searchresult.targetUrl}" class="${searchresultCSS}_link" body="true">
+        <cpn:text value="${searchresult.title}"/>
+    </cpn:link>
+    <cpp:include path="${searchresult.target.path}" replaceSelectors="search"
+                 resourceType="composum/pages/components/navigation/breadcrumbs"/>
+    <cpn:link test="${not empty searchresult.excerpt}"
+              href="${searchresult.targetUrl}" class="${searchresultCSS}_link">
+        <span class="${searchresultCSS}_excerpt">${cpn:rich(slingRequest,searchresult.excerpt)}</span>
+    </cpn:link>
+</cpp:model>

@@ -15,21 +15,33 @@
         position: relative;
 
         &.has-symbol {
-            padding-left: 4rem;
+            padding-left: $symbol-width;
         }
     }
 
     &_icon {
         position: absolute;
         top: 0;
-        left: 0.4rem;
-        width: 2rem;
-        text-align: center;
-        font-size: 2.5rem;
+        left: 0;
+        font-size: $symbol-font-size;
+        color: $symbol-color;
     }
 
-    &_element {
-        margin: -0.75rem 0;
+    &_none {
+        margin: 0.5rem 0;
+        border: none;
+        border-radius: 0;
+        -webkit-box-shadow: none;
+        -moz-box-shadow: none;
+        box-shadow: none;
+
+        .composum-pages-components-composed-decorator {
+
+            &_body {
+                border: none;
+                padding: 0 11px;
+            }
+        }
     }
 
     &_info {
@@ -50,5 +62,23 @@
     &_danger {
         color: $bootstrap-color-danger;
         background-color: $bootstrap-background-danger;
+    }
+
+    &_title {
+        @include inline-title;
+        font-size: $column-title-font-size;
+    }
+
+    &.title-level-2,
+    &.title-level-3,
+    &.title-level-4,
+    &.title-level-5 {
+
+        .composum-pages-components-composed-decorator {
+
+            &_icon {
+                top: $symbol-title-top;
+            }
+        }
     }
 }

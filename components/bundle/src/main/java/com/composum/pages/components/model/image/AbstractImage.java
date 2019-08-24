@@ -7,7 +7,7 @@ package com.composum.pages.components.model.image;
 
 import com.composum.pages.commons.model.Element;
 import com.composum.sling.core.BeanContext;
-import com.composum.sling.core.util.LinkUtil;
+import com.composum.pages.commons.util.LinkUtil;
 import org.apache.sling.api.resource.Resource;
 
 /**

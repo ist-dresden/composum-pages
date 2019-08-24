@@ -7,16 +7,17 @@
     <jcr:content
             jcr:primaryType="cpp:PageContent"
             sling:resourceType="composum/pages/components/page/errorpage"
-            template="/libs/composum/pages/components/templates/page/meta/errorpage">
+            template="/libs/composum/pages/components/templates/page/meta/errorpage"
+            isTemplate="{Boolean}false">
         <top
-                jcr:primaryType="nt:unstructured">
+                jcr:primaryType="cpp:Container">
             <title
                     jcr:primaryType="cpp:Element"
                     sling:resourceType="composum/pages/components/element/title"
                     title="404 - ooops... not found">
                 <image
-                        jcr:primaryType="nt:unstructured"
-                        imageRef="/content/shared/composum/pages/assets/background/apres_midi_dun_faune.jpg"/>
+                        jcr:primaryType="cpp:Element"
+                        imageRef="/content/shared/composum/pages/components/assets/background/apres_midi_dun_faune.jpg"/>
             </title>
         </top>
         <main

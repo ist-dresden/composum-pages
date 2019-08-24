@@ -13,27 +13,170 @@ import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.NonExistingResource;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.ValueMap;
 
+import javax.annotation.Nonnull;
+import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static com.composum.pages.commons.PagesConstants.NODE_TYPE_PAGE;
+import static com.composum.pages.commons.PagesConstants.NT_COMPONENT;
+import static com.composum.pages.commons.PagesConstants.PN_CATEGORY;
+import static com.composum.pages.commons.PagesConstants.PN_COMPONENT_TYPE;
 import static com.composum.pages.commons.servlet.EditServlet.EDIT_RESOURCE_TYPE_KEY;
+import static com.composum.pages.commons.util.ResourceTypeUtil.isSyntheticResource;
 
 /**
- * the model class for a component itself (the implementation)
+ * the delegate class for a component itself (the implementation)
  */
 @PropertyDetermineResourceStrategy(Component.TypeResourceStrategy.class)
 public class Component extends AbstractModel {
+
+    public static final String EDIT_PATH = "edit/";
+
+    public static final String EDIT_DIALOG_PATH = EDIT_PATH + "dialog";
+    public static final String CREATE_DIALOG_PATH = EDIT_DIALOG_PATH + "/create";
+    public static final String DELETE_DIALOG_PATH = EDIT_DIALOG_PATH + "/delete";
+
+    public static final String EDIT_TILE_PATH = EDIT_PATH + "tile";
+    public static final String THUMBNAIL_PATH = EDIT_PATH + "thumbnail";
+    public static final String HELP_PAGE_PATH = EDIT_PATH + "help";
+
+    public static final String EDIT_TOOLBAR_PATH = EDIT_PATH + "toolbar";
+    public static final String TREE_ACTIONS_PATH = EDIT_PATH + "tree";
+    public static final String CONTEXT_ACTIONS_PATH = EDIT_PATH + "context/actions";
 
     public static final String TYPE_HINT_PARAM = "type";
 
     public static final Pattern PRIMARY_TYPE_PATTERN = Pattern.compile("^[^:/]+:.+");
     public static final Pattern EDIT_SUBTYPE_PATTERN = Pattern.compile(
-            "^(.+)/edit(/(default|actions)/[^/]+)?/(dialog|toolbar|tree|tile)$"
+            "^(.+)/edit(/(default|actions)/[^/]+)?/(dialog(/.+)?|toolbar|tree|tile|context/.+)$"
     );
 
     /**
-     * the model of the components dialog implemented as a 'subcomponent'
+     * check the 'cpp:Component' type for a resource
+     */
+    public static boolean isComponent(Resource resource) {
+        return ResourceUtil.isResourceType(resource, NT_COMPONENT);
+    }
+
+    public static class ComponentPieces {
+
+        public final boolean editDialog;
+        public final boolean createDialog;
+        public final boolean deleteDialog;
+
+        public final boolean editTile;
+        public final boolean thumbnail;
+        public final boolean helpPage;
+
+        public final boolean editToolbar;
+        public final boolean treeActions;
+        public final boolean contextActions;
+
+        public ComponentPieces(Resource component) {
+            this(component.getChild(EDIT_DIALOG_PATH) != null,
+                    component.getChild(CREATE_DIALOG_PATH) != null,
+                    component.getChild(DELETE_DIALOG_PATH) != null,
+                    component.getChild(EDIT_TILE_PATH) != null,
+                    component.getChild(THUMBNAIL_PATH) != null,
+                    component.getChild(HELP_PAGE_PATH) != null,
+                    component.getChild(EDIT_TOOLBAR_PATH) != null,
+                    component.getChild(TREE_ACTIONS_PATH) != null,
+                    component.getChild(CONTEXT_ACTIONS_PATH) != null);
+        }
+
+        public ComponentPieces(boolean editDialog, boolean createDialog, boolean deleteDialog,
+                               boolean editTile, boolean thumbnail, boolean helpPage,
+                               boolean editToolbar, boolean treeActions, boolean contextActions) {
+            this.editDialog = editDialog;
+            this.createDialog = createDialog;
+            this.deleteDialog = deleteDialog;
+            this.editTile = editTile;
+            this.thumbnail = thumbnail;
+            this.helpPage = helpPage;
+            this.editToolbar = editToolbar;
+            this.treeActions = treeActions;
+            this.contextActions = contextActions;
+        }
+
+        public boolean isEditDialog() {
+            return editDialog;
+        }
+
+        public boolean isCreateDialog() {
+            return createDialog;
+        }
+
+        public boolean isDeleteDialog() {
+            return deleteDialog;
+        }
+
+        public boolean isEditTile() {
+            return editTile;
+        }
+
+        public boolean isThumbnail() {
+            return thumbnail;
+        }
+
+        public boolean isHelpPage() {
+            return helpPage;
+        }
+
+        public boolean isEditToolbar() {
+            return editToolbar;
+        }
+
+        public boolean isTreeActions() {
+            return treeActions;
+        }
+
+        public boolean isContextActions() {
+            return contextActions;
+        }
+    }
+
+    enum TumbnailType {component, imageRef, imageFile}
+
+    public class Thumbnail {
+
+        protected TumbnailType type = TumbnailType.component;
+
+        protected Resource resource;
+
+        protected String imageRef;
+
+        public Thumbnail() {
+            resource = Component.this.getResource().getChild(THUMBNAIL_PATH);
+            if (resource != null) {
+                ValueMap values = resource.getValueMap();
+                imageRef = values.get(Image.PROP_IMAGE_REF, "");
+                if (StringUtils.isNotBlank(imageRef)) {
+                    type = TumbnailType.imageRef;
+                } else {
+                    List<Resource> files = ResourceUtil.getChildrenByType(resource, JcrConstants.NT_FILE);
+                    if (files.size() > 0) {
+                        type = TumbnailType.imageFile;
+                        imageRef = files.get(0).getPath();
+                    }
+                }
+            }
+        }
+
+        public TumbnailType getType() {
+            return type;
+        }
+
+        public String getImageRef() {
+            return imageRef;
+        }
+    }
+
+    /**
+     * the delegate of the components dialog implemented as a 'subcomponent'
      */
     public class EditDialog extends AbstractModel {
 
@@ -50,12 +193,16 @@ public class Component extends AbstractModel {
                     Component.this.getPath() + "/" + ResourceTypeUtil.EDIT_DIALOG_PATH));
         }
 
-        /** returns false if no dialog is configured */
+        /**
+         * returns false if no dialog is configured
+         */
         public boolean isValid() {
             return !ResourceUtil.isNonExistingResource(resource);
         }
 
-        /** returns true if the dialog of a resource supertype is used */
+        /**
+         * returns true if the dialog of a resource supertype is used
+         */
         public boolean isInherited() {
             String path = getPath();
             return StringUtils.isNotBlank(path) && !path.startsWith(Component.this.getPath());
@@ -77,7 +224,7 @@ public class Component extends AbstractModel {
     }
 
     /**
-     * the model of the components tile implemented as a 'subcomponent'
+     * the delegate of the components tile implemented as a 'subcomponent'
      */
     public class EditTile extends AbstractModel {
 
@@ -89,12 +236,24 @@ public class Component extends AbstractModel {
         }
     }
 
-    /** transient (lazy loaded) attributes */
+    /**
+     * transient (lazy loaded) attributes
+     */
 
     private transient EditDialog editDialog;
     private transient EditTile editTile;
 
-    /** model initialization */
+    private transient String type;
+    private transient List<String> category;
+
+    private transient Thumbnail thumbnail;
+    private transient String helpContent;
+
+    private transient ComponentPieces componentPieces;
+
+    /**
+     * delegate initialization
+     */
 
     public Component() {
     }
@@ -103,14 +262,17 @@ public class Component extends AbstractModel {
         initialize(context, resource);
     }
 
-
     /**
      * determine the components resource even if the initial resource is an instance of the component
      */
     @Override
     protected Resource determineResource(Resource initialResource) {
-        // ignore all resource types modified by resource wrappers
-        Resource typeResource = getTypeResource(initialResource);
+        Resource typeResource;
+        if (Component.isComponent(initialResource)) {
+            typeResource = initialResource;
+        } else {
+            typeResource = getTypeResource(initialResource);
+        }
         return typeResource != null ? typeResource : initialResource;
     }
 
@@ -122,10 +284,14 @@ public class Component extends AbstractModel {
         return TypeResourceStrategy.getTypeResource(resource, resolver, context);
     }
 
-    /** Compatible to {@link Component#determineResource(Resource)}. */
+    /**
+     * Compatible to {@link AbstractModel#determineResource(Resource)}.
+     */
     public static class TypeResourceStrategy implements DetermineResourceStategy {
 
-        /** Compatible to {@link Component#determineResource(Resource)}. */
+        /**
+         * Compatible to {@link AbstractModel#determineResource(Resource)}.
+         */
         @Override
         public Resource determineResource(BeanContext beanContext, Resource requestResource) {
             // ignore all resource types modified by resource wrappers
@@ -139,11 +305,11 @@ public class Component extends AbstractModel {
          */
         public static Resource getTypeResource(Resource resource, ResourceResolver resolver, BeanContext context) {
             Resource typeResource = null;
-            if (!ResourceUtil.isNonExistingResource(resource)) {
+            if (!isSyntheticResource(resource)) {
                 // ignore all resource types modified by resource wrappers
                 typeResource = resolver.getResource(resource.getPath());
                 if (typeResource != null &&
-                        !typeResource.isResourceType(PagesConstants.NODE_TYPE_COMPONENT)) {
+                        !typeResource.isResourceType(PagesConstants.NT_COMPONENT)) {
                     // the initialResource is probably an instance of a component not a component itself
                     // in this case we have to switch to the resource of the resource type
                     String resourceType = typeResource.getResourceType();
@@ -159,14 +325,15 @@ public class Component extends AbstractModel {
                             if (StringUtils.isBlank(resourceType)) {
                                 resourceType = resource.getResourceType();
                             }
-                            Matcher matcher = EDIT_SUBTYPE_PATTERN.matcher(resourceType);
-                            if (matcher.matches()) {
-                                // if type is a subtype use the component type instead
-                                resourceType = matcher.group(1);
-                            }
+                            resourceType = getTypeOfSubtype(resourceType);
                         }
                     }
                     if (StringUtils.isNotBlank(resourceType)) {
+                        Matcher matcher = EDIT_SUBTYPE_PATTERN.matcher(resourceType);
+                        if (matcher.matches()) {
+                            // if type is a subtype use the component type instead
+                            resourceType = matcher.group(1);
+                        }
                         typeResource = ResolverUtil.getResourceType(typeResource, resourceType);
                     }
                 }
@@ -177,15 +344,31 @@ public class Component extends AbstractModel {
                 if (StringUtils.isNotBlank(resourceType)) {
                     typeResource = ResolverUtil.getResourceType(resolver, resourceType);
                 }
+                if (typeResource == null) {
+                    String type = request.getParameter(TYPE_HINT_PARAM);
+                    if (StringUtils.isNotBlank(type)) {
+                        typeResource = ResolverUtil.getResourceType(resolver, type);
+                    }
+                }
             }
             return typeResource;
         }
-
     }
 
-    /** the type of a component is the the components absolute resource path */
-    public String getType() {
-        return getPath();
+    public static String getTypeOfSubtype(String resourceType) {
+        Matcher matcher = EDIT_SUBTYPE_PATTERN.matcher(resourceType);
+        if (matcher.matches()) {
+            // if type is a subtype use the component type instead
+            return matcher.group(1);
+        }
+        return resourceType;
+    }
+
+    public List<String> getCategory() {
+        if (category == null) {
+            category = Arrays.asList(getProperty(PN_CATEGORY, null, new String[0]));
+        }
+        return category;
     }
 
     public EditDialog getEditDialog() {
@@ -202,4 +385,66 @@ public class Component extends AbstractModel {
         return editTile;
     }
 
+    // component aspect of AbstractModel
+
+    @Nonnull
+    public String getTitleOrName() {
+        Component component = getComponent();
+        String title = component.getTitle();
+        return StringUtils.isNotBlank(title) ? title : component.getName();
+    }
+
+    /**
+     * the type of a component is the the components resource path relative to the resolver root path
+     */
+    @Nonnull
+    @Override
+    public String getType() {
+        if (type == null) {
+            type = ResourceTypeUtil.relativeResourceType(getContext().getResolver(), getPath());
+        }
+        return type;
+    }
+
+    public Thumbnail getThumbnail() {
+        if (thumbnail == null) {
+            thumbnail = new Thumbnail();
+        }
+        return thumbnail;
+    }
+
+    public String getHelpContent() {
+        if (helpContent == null) {
+            Resource helpRes = getResource().getChild(HELP_PAGE_PATH);
+            if (ResourceUtil.isResourceType(helpRes, NODE_TYPE_PAGE)) {
+                Resource contentRes = helpRes.getChild(JcrConstants.JCR_CONTENT);
+                if (contentRes != null) {
+                    helpRes = contentRes;
+                }
+            }
+            helpContent = helpRes != null ? helpRes.getPath() : "";
+        }
+        return helpContent;
+    }
+
+    public ComponentPieces getPieces() {
+        if (componentPieces == null) {
+            componentPieces = new ComponentPieces(getResource());
+        }
+        return componentPieces;
+    }
+
+    @Override
+    public Component getComponent() {
+        return this;
+    }
+
+    @Override
+    public PagesConstants.ComponentType getComponentType() {
+        if (componentType == null) {
+            componentType = PagesConstants.ComponentType.typeOf(
+                    ResolverUtil.getTypeProperty(getResource(), PN_COMPONENT_TYPE, ""));
+        }
+        return componentType;
+    }
 }

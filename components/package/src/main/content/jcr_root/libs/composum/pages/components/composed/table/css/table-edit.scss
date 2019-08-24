@@ -1,0 +1,37 @@
+@charset "UTF-8";
+
+.composum-pages-EDIT_body {
+
+    .composum-pages-components-composed-table {
+
+        &_table {
+            background-color: #eee;
+        }
+
+        &_handle, &-row_handle {
+            display: table-cell;
+            width: 24px;
+            padding: 6px 0;
+            text-align: center;
+            mix-blend-mode: difference;
+        }
+
+        &_end {
+            height: 10px;
+            padding: 0;
+        }
+
+        &-row_end {
+            width: 10px;
+            padding: 0;
+        }
+
+        &-cell {
+            background-color: #fff;
+
+            &_placeholder {
+                mix-blend-mode: difference;
+            }
+        }
+    }
+}

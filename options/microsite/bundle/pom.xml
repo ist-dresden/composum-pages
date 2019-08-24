@@ -4,12 +4,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.composum.sling.pages.options</groupId>
-        <artifactId>composum-sling-pages-options-microsite</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <groupId>com.composum.pages.options</groupId>
+        <artifactId>composum-pages-options-microsite</artifactId>
+        <version>1.0.0</version>
     </parent>
 
-    <artifactId>composum-sling-pages-options-microsite-bundle</artifactId>
+    <artifactId>composum-pages-options-microsite-bundle</artifactId>
     <packaging>bundle</packaging>
 
     <name>Composum Pages Options - Microsite Bundle</name>
@@ -21,11 +21,6 @@
 
     <build>
         <plugins>
-
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-scr-plugin</artifactId>
-            </plugin>
 
             <plugin>
                 <groupId>org.apache.felix</groupId>
@@ -42,6 +37,7 @@
                             com.composum.pages.options.microsite.*
                         </Export-Package>
                         <Import-Package>
+                            com.composum.sling.core.*;version="[1.11,2.1)",
                             javax.annotation.*;version="[0,4)",
                             *
                         </Import-Package>
@@ -66,8 +62,8 @@
 
         <!-- Composum Pages -->
         <dependency>
-            <groupId>com.composum.sling.pages</groupId>
-            <artifactId>composum-sling-pages-commons-bundle</artifactId>
+            <groupId>com.composum.pages</groupId>
+            <artifactId>composum-pages-commons-bundle</artifactId>
         </dependency>
 
         <!-- Composum Core -->
@@ -127,26 +123,6 @@
             <groupId>org.osgi</groupId>
             <artifactId>osgi.cmpn</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.annotation</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.service.component.annotations</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.service.metatype.annotations</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.scr</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.scr.annotations</artifactId>
-        </dependency>
 
         <!-- Java Annotations -->
         <dependency>
@@ -155,17 +131,4 @@
         </dependency>
 
     </dependencies>
-    <profiles>
-
-        <profile>
-            <id>installBundle</id>
-        </profile>
-        <profile>
-            <id>installPackage</id>
-        </profile>
-        <profile>
-            <id>installTestContent</id>
-        </profile>
-
-    </profiles>
 </project>

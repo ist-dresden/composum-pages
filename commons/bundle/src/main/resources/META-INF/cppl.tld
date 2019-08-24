@@ -68,6 +68,12 @@
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <name>decoration</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.Boolean</type>
+        </attribute>
+        <attribute>
             <name>tagId</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -98,7 +104,7 @@
             <type>java.lang.String</type>
         </attribute>
         <attribute>
-            <name>cssClasses</name>
+            <name>tagAttributes</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
@@ -181,7 +187,7 @@
             <type>java.lang.String</type>
         </attribute>
         <attribute>
-            <name>cssClasses</name>
+            <name>tagAttributes</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
@@ -226,6 +232,12 @@
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <name>test</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.Object</type>
         </attribute>
         <dynamic-attributes>true</dynamic-attributes>
     </tag>
@@ -435,10 +447,101 @@
             <type>java.lang.String</type>
         </attribute>
         <attribute>
-            <name>data</name>
+            <name>cssBase</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <name>cssSet</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <name>cssAdd</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
+        <dynamic-attributes>true</dynamic-attributes>
+    </tag>
+
+    <tag>
+        <description>
+            the wrapper for the HTML HEAD tag
+        </description>
+        <name>head</name>
+        <tag-class>com.composum.pages.commons.taglib.PageHeadTag</tag-class>
+        <tei-class>com.composum.pages.commons.taglib.PageHeadTagTEI</tei-class>
+        <body-content>JSP</body-content>
+    </tag>
+
+    <tag>
+        <description>
+            the wrapper for a drop target on editing
+        </description>
+        <name>dropZone</name>
+        <tag-class>com.composum.pages.commons.taglib.DropZoneTag</tag-class>
+        <tei-class>com.composum.pages.commons.taglib.DropZoneTagTEI</tei-class>
+        <body-content>JSP</body-content>
+        <attribute>
+            <description>the name of the HTML tag; default: 'div'</description>
+            <name>tagName</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <description>the resource to modify (default is the resoiurce of the enclosing 'element')</description>
+            <name>resource</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>org.apache.sling.api.resource.Resource</type>
+        </attribute>
+        <attribute>
+            <description>the path of the resource to modify (alternative to the 'resource' attribute)</description>
+            <name>resourcePath</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <description>the path (name) of the property relative to the resource</description>
+            <name>property</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <description>use localized property path if 'true'</description>
+            <name>i18n</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.Boolean</type>
+        </attribute>
+        <attribute>
+            <description>the filter key set to determine an appropriate drag operation</description>
+            <name>filter</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <description>the event key of the event to trigger after a successful change request</description>
+            <name>successEvent</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <description>
+                the optional display mode for the include (Pages editing mode), or "request" to take the mode from the
+                request itself (to reset overrides).
+            </description>
+            <name>mode</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
         </attribute>
         <attribute>
             <name>cssBase</name>
@@ -458,23 +561,7 @@
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
-        <attribute>
-            <name>cssClasses</name>
-            <required>false</required>
-            <rtexprvalue>true</rtexprvalue>
-            <type>java.lang.String</type>
-        </attribute>
         <dynamic-attributes>true</dynamic-attributes>
-    </tag>
-
-    <tag>
-        <description>
-            the wrapper for the HTML HEAD tag
-        </description>
-        <name>head</name>
-        <tag-class>com.composum.pages.commons.taglib.PageHeadTag</tag-class>
-        <tei-class>com.composum.pages.commons.taglib.PageHeadTagTEI</tei-class>
-        <body-content>JSP</body-content>
     </tag>
 
     <tag>
@@ -576,12 +663,6 @@
             <type>java.lang.String</type>
         </attribute>
         <attribute>
-            <name>cssClasses</name>
-            <required>false</required>
-            <rtexprvalue>true</rtexprvalue>
-            <type>java.lang.String</type>
-        </attribute>
-        <attribute>
             <name>submit</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -593,6 +674,12 @@
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <name>disabled</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.Object</type>
         </attribute>
         <dynamic-attributes>true</dynamic-attributes>
     </tag>
@@ -616,6 +703,18 @@
             <required>true</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <name>disabled</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.Object</type>
+        </attribute>
+        <attribute>
+            <name>test</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.Object</type>
         </attribute>
         <dynamic-attributes>true</dynamic-attributes>
     </tag>
@@ -645,6 +744,18 @@
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.Boolean</type>
+        </attribute>
+        <attribute>
+            <name>disabled</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.Object</type>
+        </attribute>
+        <attribute>
+            <name>test</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.Object</type>
         </attribute>
         <dynamic-attributes>true</dynamic-attributes>
     </tag>
@@ -700,6 +811,20 @@
             <type>java.lang.Boolean</type>
         </attribute>
         <attribute>
+            <description>If true, the property is mandatory.</description>
+            <name>required</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.Boolean</type>
+        </attribute>
+        <attribute>
+            <description>If true, a blank property is stored, otherwise the property is removed if the value is blank.</description>
+            <name>blank</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.Boolean</type>
+        </attribute>
+        <attribute>
             <name>hint</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -716,6 +841,12 @@
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <name>test</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.Object</type>
         </attribute>
         <attribute>
             <name>modelClass</name>
@@ -837,12 +968,6 @@
         </attribute>
         <attribute>
             <name>cssAdd</name>
-            <required>false</required>
-            <rtexprvalue>true</rtexprvalue>
-            <type>java.lang.String</type>
-        </attribute>
-        <attribute>
-            <name>cssClasses</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>

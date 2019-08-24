@@ -1,3 +1,7 @@
+/**
+ * functions for a content page to invoke edit functions of the Pages edit frame
+ * strong dependency to: 'commons.js' (libs: 'backbone.js', 'underscore.js', 'loglevel.js', 'jquery.js')
+ */
 (function (window) {
     window.composum = window.composum || {};
     window.composum.pages = window.composum.pages || {};
@@ -6,8 +10,13 @@
     /**
      * the JS hook for content pages to trigger Pages stage actions and synchronize the page view with the edit state
      */
-    (function (elements, core) { // the small hook to use edit functions in a normal content page
+    (function (elements, pages, core) { // the small hook to use edit functions in a normal content page
         'use strict';
+
+        pages.current = {
+            element: undefined,
+            dnd: {}
+        };
 
         elements.const = _.extend(elements.const || {}, {
             data: { // the data attribute names of a component
@@ -22,17 +31,52 @@
                 component: 'composum-pages-component',
                 container: 'composum-pages-container',
                 element: 'composum-pages-element',
+                dropzone: 'composum-pages-edit_drop-zone',
                 action: 'composum-pages-action'
             },
-            event: { // event handling rules and keys (inter frame communication)
-                messagePattern: new RegExp('^([^{\\[]+)([{\\[].*[}\\]])$'),
-                trigger: 'event:trigger',
+            trigger: {
+                event: 'trigger:event',
+                action: 'trigger:action',
                 dialog: {
                     edit: 'dialog:edit',
+                    generic: 'dialog:generic',
                     alert: 'dialog:alert'
+                }
+            },
+            event: {
+                messagePattern: new RegExp('^([^{\\[]+)([{\\[].*[}\\]])$'),
+                pages: {
+                    ready: 'pages:ready',
+                    locale: 'pages:locale',
+                    open: 'pages:open'
+                },
+                scope: {
+                    changed: 'scope:changed'
+                },
+                site: {
+                    select: 'site:select',          // do it!...
+                    selected: 'site:selected',      // done.
+                    created: 'site:created',        // done.
+                    changed: 'site:changed',        // done.
+                    deleted: 'site:deleted'         // done.
                 },
                 page: {
+                    view: 'page:view',              // do it!...
+                    select: 'page:select',          // do it!...
+                    selected: 'page:selected',      // done.
+                    inserted: 'page:inserted',      // done.
+                    changed: 'page:changed',        // done.
+                    deleted: 'page:deleted',        // done.
+                    state: 'page:state',            // changed state of the page itself only (no structure change)
                     containerRefs: 'page:containerRefs'
+                },
+                content: {
+                    select: 'content:select',       // do it!...
+                    selected: 'content:selected',   // done.
+                    inserted: 'content:inserted',   // done.
+                    changed: 'content:changed',     // done.
+                    deleted: 'content:deleted',     // done.
+                    moved: 'content:moved'          // done.
                 },
                 element: {
                     select: 'element:select',       // do it!...
@@ -43,11 +87,50 @@
                     deleted: 'element:deleted',     // done.
                     move: 'element:move',           // do it!...
                     moved: 'element:moved'          // done.
+                },
+                asset: {
+                    select: 'asset:select',         // do it!...
+                    selected: 'asset:selected'      // done.
+                },
+                folder: {
+                    inserted: 'folder:inserted'     //done.
+                },
+                path: {
+                    select: 'path:select',          // do it!...
+                    selected: 'path:selected'       // done.
+                },
+                dnd: {
+                    object: 'dnd:object',           // prepare dragging
+                    drop: 'dnd:drop',               // do it!...
+                    finished: 'dnd:finished'        // done, reset state.
                 }
+            },
+            url: {
+                edit: '/bin/cpm/pages/edit',
+                _info: '.resourceInfo.json'
             }
         });
 
-        elements.log = log.getLogger("elements");
+        elements.log = {
+            std: log.getLogger("elements:std"),
+            dnd: log.getLogger("elements:dnd"),
+            ptr: log.getLogger("elements:ptr")
+        };
+
+        /**
+         * the general $(document) trigger point for the 'element' widgets of the edited page
+         * @param key the logging key which identifies the code source
+         * @param event the event to trigger
+         * @param args the event arguments (array of objects or values)
+         * @param argsToLog optional; used for logging instead of the event args if args should not be logged
+         */
+        elements.trigger = function (key, event, /*array,optional*/ args, /*optional*/ argsToLog) {
+            if (elements.log.std.getLevel() <= log.levels.WARN) { // use WARN to cause a call stack
+                elements.log.std.warn('trigger@' + key + ' > ' + event
+                    + JSON.stringify(argsToLog !== undefined ? argsToLog : (args ? args : [])));
+            }
+            $(document).trigger(event, args);
+        };
 
         /**
          * show an alert message in the edit frame
@@ -57,8 +140,8 @@
          * @param data
          */
         elements.alertMessage = function (type, title, message, data) {
-            if (elements.log.getLevel() <= log.levels.DEBUG) {
-                elements.log.debug('elements.postMessage.' + elements.const.event.dialog.alert + '('
+            if (elements.log.std.getLevel() <= log.levels.DEBUG) {
+                elements.log.std.debug('elements.postMessage.' + elements.const.trigger.dialog.alert + '('
                     + type + ','
                     + title + ','
                     + message + ','
@@ -66,7 +149,7 @@
 
             }
             // call the action in the 'edit' layer of the UI
-            parent.postMessage(elements.const.event.dialog.alert
+            parent.postMessage(elements.const.trigger.dialog.alert
                 + JSON.stringify({
                     type: type,
                     title: title,
@@ -81,17 +164,60 @@
          * @param data
          */
         elements.triggerEvent = function (event, data) {
-            if (elements.log.getLevel() <= log.levels.DEBUG) {
-                elements.log.debug('elements.postMessage.' + elements.const.event.trigger + '('
+            if (elements.log.std.getLevel() <= log.levels.DEBUG) {
+                elements.log.std.debug('elements.postMessage.' + elements.const.trigger.event + '('
                     + event + ','
                     + data + ')');
 
             }
             // trigger the event in the 'edit' layer of the UI
-            parent.postMessage(elements.const.event.trigger
+            parent.postMessage(elements.const.trigger.event
                 + JSON.stringify({
                     event: event,
                     data: data
+                }), '*');
+        };
+
+        /**
+         * perform an action in the edit frame
+         * @param event
+         * @param data
+         */
+        elements.triggerAction = function (action, reference) {
+            if (elements.log.std.getLevel() <= log.levels.DEBUG) {
+                elements.log.std.debug('elements.postMessage.' + elements.const.trigger.action + '('
+                    + action + ','
+                    + reference + ')');
+
+            }
+            // trigger the action in the 'edit' layer of the UI
+            parent.postMessage(elements.const.trigger.action
+                + JSON.stringify({
+                    action: action,
+                    reference: reference
+                }), '*');
+        };
+
+        /**
+         * open a dialog loaded via PUT with the generic 'editResource' selector
+         * @param target
+         * @param dialog
+         * @param values the values object transmitted as PUT data object (JSON)
+         */
+        elements.openGenericDialog = function (target, dialog, values) {
+            if (elements.log.std.getLevel() <= log.levels.DEBUG) {
+                elements.log.std.debug('elements.postMessage.' + elements.const.trigger.dialog.generic + '('
+                    + target + ','
+                    + dialog + ','
+                    + values + ')');
+
+            }
+            // call the action in the 'edit' layer of the UI
+            parent.postMessage(elements.const.trigger.dialog.generic
+                + JSON.stringify({
+                    target: target,
+                    dialog: dialog,
+                    values: values
                 }), '*');
         };
 
@@ -102,15 +228,15 @@
          * @param values
          */
         elements.openEditDialog = function (target, dialog, values) {
-            if (elements.log.getLevel() <= log.levels.DEBUG) {
-                elements.log.debug('elements.postMessage.' + elements.const.dialog.edit + '('
+            if (elements.log.std.getLevel() <= log.levels.DEBUG) {
+                elements.log.std.debug('elements.postMessage.' + elements.const.trigger.dialog.edit + '('
                     + target + ','
                     + dialog + ','
                     + values + ')');
 
             }
             // call the action in the 'edit' layer of the UI
-            parent.postMessage(elements.const.event.dialog.edit
+            parent.postMessage(elements.const.trigger.dialog.edit
                 + JSON.stringify({
                     target: target,
                     dialog: dialog,
@@ -152,5 +278,5 @@
             core.getView(this, elements.OpenEditDialogAction);
         });
 
-    })(window.composum.pages.elements, window.core);
+    })(window.composum.pages.elements, window.composum.pages, window.core);
 })(window);

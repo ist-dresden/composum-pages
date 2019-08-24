@@ -11,7 +11,7 @@ public class NavigationTools extends FramePage {
 
     public ToolsCollection getTools() {
         if (tools == null) {
-            tools = new ToolsCollection(resolver,
+            tools = new ToolsCollection(context, null,
                     "navigation",
                     DisplayMode.requested(context).name().toLowerCase());
         }

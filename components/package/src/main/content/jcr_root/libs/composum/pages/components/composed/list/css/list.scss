@@ -4,27 +4,27 @@
 @import "../../../css/mixins";
 
 .composum-pages-components-composed-list {
-    clear: both;
+    display: inline-block;
+    margin: $text-spacing-default 0 0;
+    padding: 0 30px 0;
     @include default-font;
     color: $site-default-text-color;
 
-    > ol {
-        list-style: lower-alpha;
-    }
-
     h1, h2, h3, h4, h5, h6 {
-        margin-top: $column-title-margin;
+        margin: $column-title-margin;
         padding: 0;
         font-size: 100%;
     }
 
     h1, h2, h3, h4 {
-        margin-bottom: $list-title-gap;
         font-weight: bold;
     }
 
     h5, h6 {
-        margin-bottom: 0;
         font-weight: normal;
     }
+}
+
+ol.composum-pages-components-composed-list {
+    list-style: lower-alpha;
 }

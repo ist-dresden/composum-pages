@@ -1,48 +1,27 @@
+/*
+ * copyright (c) 2015ff IST GmbH Dresden, Germany - https://www.ist-software.com
+ *
+ * This software may be modified and distributed under the terms of the MIT license.
+ */
 package com.composum.pages.commons.service.search;
 
-import com.composum.pages.commons.service.SearchService;
-import com.composum.pages.commons.service.search.SearchTermParseException.Kind;
 import com.composum.sling.core.BeanContext;
-import com.composum.sling.core.ResourceHandle;
 import com.composum.sling.core.filter.ResourceFilter;
-import com.composum.sling.core.filter.StringFilter;
-import com.composum.sling.core.util.LinkUtil;
-import com.composum.sling.platform.staging.query.Query;
-import com.composum.sling.platform.staging.query.QueryBuilder;
-import com.composum.sling.platform.staging.query.QueryConditionDsl;
-import com.composum.sling.platform.staging.query.QueryValueMap;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.exception.ContextedRuntimeException;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.jackrabbit.JcrConstants;
-import org.apache.sling.api.SlingHttpServletRequest;
-import org.apache.sling.api.resource.Resource;
 import org.osgi.framework.Constants;
-import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Modified;
+import org.osgi.service.component.annotations.*;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.jcr.RepositoryException;
-import java.net.URISyntaxException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-import static com.composum.pages.commons.PagesConstants.NODE_TYPE_PAGE;
-import static com.composum.pages.commons.PagesConstants.NODE_TYPE_PAGE_CONTENT;
-import static com.composum.sling.core.util.ResourceUtil.CONTENT_NODE;
-import static com.composum.sling.core.util.ResourceUtil.PROP_TITLE;
-import static com.composum.sling.platform.staging.query.Query.COLUMN_PATH;
-import static com.composum.sling.platform.staging.query.Query.COLUMN_SCORE;
-import static com.composum.sling.platform.staging.query.Query.JoinCondition.Descendant;
-import static com.composum.sling.platform.staging.query.Query.JoinType.LeftOuter;
-import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.apache.jackrabbit.JcrConstants.JCR_SCORE;
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
@@ -61,11 +40,27 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class PagesSearchService implements SearchService {
 
     private static final Logger LOG = getLogger(PagesSearchService.class);
-    /** Default target resource filter matching {@link com.composum.pages.commons.model.Page}s . */
-    protected final ResourceFilter PAGE_FILTER =
-            new ResourceFilter.PrimaryTypeFilter(new StringFilter.WhiteList("^" + NODE_TYPE_PAGE + "$"));
+
+    @ObjectClassDefinition(name = "Composum Pages Search Service Configuration",
+            description = "Configurations for the Composum Pages Search Service")
+    public @interface PagesSearchServiceConfiguration {
+
+        @AttributeDefinition(name = "Overshoot", description = "Internal tuning property")
+        int overshoot() default 3;
+
+        @AttributeDefinition(name = "Maximum number of search matches", description = "Limits the number of search " +
+                "matches e.g. if there is an extremely common search term entered.")
+        int maximumMatchCount() default 100;
+
+        @AttributeDefinition()
+        String webconsole_configurationFactory_nameHint() default
+                "{name} (maximumMatchCount: {maximumMatchCount})";
+    }
+
     protected PagesSearchServiceConfiguration config;
-    protected ExcerptGenerator excerptGenerator = new ExcerptGeneratorImpl();
+
+    protected List<SearchPlugin> searchPlugins =
+            Collections.synchronizedList(new ArrayList<SearchPlugin>());
 
     @Activate
     @Modified
@@ -73,68 +68,59 @@ public class PagesSearchService implements SearchService {
         this.config = config;
     }
 
-    protected interface LimitedQuery {
-        /**
-         * Executes the query with the given limit; returns a pair of a boolean that is true when we are sure that all
-         * results have been found in spite of the limit, and the results themselves.
-         */
-        Pair<Boolean, List<Result>> execQuery(int matchLimit) throws RepositoryException;
-
-    }
-
     @Nonnull
     @Override
-    public List<Result> searchPages(@Nonnull final BeanContext context, final String root,
-                                    @Nonnull final String searchExpression, final int offset, final Integer limit)
+    public List<Result> search(final @Nonnull BeanContext context, @Nonnull String selectors,
+                               final @Nonnull String root, final @Nonnull String searchExpression,
+                               final @Nullable ResourceFilter searchFilter,
+                               final int offset, final Integer limit)
             throws RepositoryException, SearchTermParseException {
-        if (isBlank(searchExpression)) throw new SearchTermParseException(Kind.Empty,
-                searchExpression, searchExpression);
-        final Set<String> positiveTerms = new SearchtermParser(searchExpression).getPositiveSearchterms();
-        if (positiveTerms.isEmpty()) throw new SearchTermParseException(Kind.NoPositivePhrases,
-                searchExpression, searchExpression);
+        List<Result> result;
+        List<SearchPlugin> matchingPlugins = getMatchingPlugins(selectors);
+        if (matchingPlugins.size() > 0) {
+            SearchPlugin plugin = matchingPlugins.get(matchingPlugins.size() - 1);
+            result = plugin.search(context, root, searchExpression, searchFilter, offset, limit);
+        } else {
+            LOG.error("no search plugin found for selectors '{}'", selectors);
+            result = new ArrayList<>();
+        }
+        return result;
+    }
 
-        LimitedQuery limitedQuery = new LimitedQuery() {
-            @Override
-            public Pair<Boolean, List<Result>> execQuery(int matchLimit) throws RepositoryException {
-                Query q = context.getResolver().adaptTo(QueryBuilder.class).createQuery();
-                q.path(root).type(NODE_TYPE_PAGE_CONTENT).orderBy(JCR_SCORE).descending();
-                QueryConditionDsl.QueryCondition matchJoin = q.joinConditionBuilder()
-                        .contains(StringUtils.join(positiveTerms, " OR "));
-                q.condition(q.conditionBuilder().contains(searchExpression));
-                q.join(LeftOuter, Descendant, matchJoin);
-                q.limit(matchLimit);
+    @Reference(
+            service = SearchPlugin.class,
+            policy = ReferencePolicy.DYNAMIC,
+            cardinality = ReferenceCardinality.MULTIPLE
+    )
+    protected void addSearchPlugin(@Nonnull final SearchPlugin plugin) {
+        LOG.info("addSearchPlugin: {}", plugin.getClass().getSimpleName());
+        plugin.setService(this);
+        searchPlugins.add(plugin);
+    }
 
-                SearchPageFilter filter = new SearchPageFilter(context);
-                final int neededResults = null != limit ? offset + limit : Integer.MAX_VALUE;
+    protected void removeSearchPlugin(@Nonnull final SearchPlugin plugin) {
+        LOG.info("removeSearchPlugin: {}", plugin.getClass().getSimpleName());
+        searchPlugins.remove(plugin);
+        plugin.setService(null);
+    }
 
-                List<Result> results = new ArrayList<>();
-                Map<String, SubmatchResultImpl> targetToResultMap = new HashMap<>();
-                Iterable<QueryValueMap> rows = q.selectAndExecute(COLUMN_PATH, COLUMN_SCORE,
-                        matchJoin.joinSelector(COLUMN_PATH));
-                int rowcount = 0;
-
-                for (QueryValueMap row : rows) {
-                    rowcount++;
-                    String path = row.get(COLUMN_PATH, String.class);
-                    SubmatchResultImpl result = targetToResultMap.get(path);
-                    if (null == result) {
-                        result = new SubmatchResultImpl(context, row.getResource().getParent(),
-                                row.get(COLUMN_SCORE, Float.class),
-                                new ArrayList<Resource>(Arrays.asList(row.getResource())),
-                                searchExpression, positiveTerms);
-                        targetToResultMap.put(path, result);
-                        if (filter.accept(result.getTarget())) {
-                            if (results.size() >= neededResults) return Pair.of(true, results);
-                            results.add(result);
-                        }
+    /** Returns list of matching plugins sorted ascending by their rating, so that the plugin with best rating is last. */
+    protected List<SearchPlugin> getMatchingPlugins(String selectors) {
+        List<SearchPlugin> result = new ArrayList<>();
+        for (SearchPlugin plugin : searchPlugins) {
+            int rating = plugin.rating(selectors);
+            if (rating > 0) {
+                int index = 0;
+                for (SearchPlugin p : result) {
+                    if (p.rating(selectors) >= rating) {
+                        break;
                     }
-                    Resource match = row.getJoinResource(matchJoin.getSelector());
-                    if (null != match) result.getMatches().add(match);
+                    index++;
                 }
-                return Pair.of(rowcount < matchLimit, results);
+                result.add(index, plugin);
             }
-        };
-        return executeQueryWithRaisingLimits(limitedQuery, offset, limit);
+        }
+        return result;
     }
 
     /**
@@ -145,8 +131,9 @@ public class PagesSearchService implements SearchService {
      *
      * @return up to limit elements of the result list with the offset first elements skipped.
      */
-    protected List<Result> executeQueryWithRaisingLimits(LimitedQuery limitedQuery, int offset, Integer limit)
-            throws RepositoryException {
+    @Nonnull
+    @Override
+    public List<Result> executeQueryWithRaisingLimits(LimitedQuery limitedQuery, int offset, Integer limit) {
         Pair<Boolean, List<Result>> result;
         int neededResults = Integer.MAX_VALUE;
         int currentLimit = Integer.MAX_VALUE;
@@ -167,182 +154,5 @@ public class PagesSearchService implements SearchService {
         } while (true);
         if (result.getRight().size() <= offset) return Collections.emptyList();
         else return result.getRight().subList(offset, Math.min(result.getRight().size(), neededResults));
-    }
-
-    @Override
-    @Nonnull
-    public List<Result> search(final @Nonnull BeanContext context, final String root,
-                               final @Nonnull String searchExpression,
-                               final ResourceFilter targetResourceFilter, final int offset, final Integer limit)
-            throws RepositoryException, SearchTermParseException {
-        if (isBlank(searchExpression)) throw new SearchTermParseException(Kind.Empty,
-                searchExpression, searchExpression);
-        final Set<String> positiveTerms = new SearchtermParser(searchExpression).getPositiveSearchterms();
-        if (positiveTerms.isEmpty()) throw new SearchTermParseException(Kind.NoPositivePhrases,
-                searchExpression, searchExpression);
-
-        LimitedQuery limitedQuery = new LimitedQuery() {
-            @Override
-            public Pair<Boolean, List<Result>> execQuery(int matchLimit) throws RepositoryException {
-                Query q = context.getResolver().adaptTo(QueryBuilder.class).createQuery();
-                q.path(root).orderBy(JCR_SCORE).descending();
-                q.condition(q.conditionBuilder().contains(searchExpression));
-                q.limit(matchLimit);
-
-                final int neededResults = null != limit ? offset + limit : Integer.MAX_VALUE;
-                int rowcount = 0;
-
-                List<Result> results = new ArrayList<>();
-                Map<String, SubmatchResultImpl> targetToResultMap = new HashMap<>();
-                for (Resource match : q.execute()) {
-                    rowcount++;
-                    Resource target = findTarget(match, null != targetResourceFilter ? targetResourceFilter : PAGE_FILTER);
-
-                    SubmatchResultImpl result = targetToResultMap.get(target.getPath());
-                    if (null == result) {
-                        result = new SubmatchResultImpl(context, target, null, new ArrayList<Resource>(),
-                                searchExpression, positiveTerms);
-                        targetToResultMap.put(target.getPath(), result);
-                        if (results.size() >= neededResults) return Pair.of(true, results);
-                        results.add(result);
-                    }
-                    result.getMatches().add(match);
-                }
-                return Pair.of(rowcount < matchLimit, results);
-            }
-        };
-        return executeQueryWithRaisingLimits(limitedQuery, offset, limit);
-    }
-
-    protected Resource findTarget(Resource resource, ResourceFilter
-            targetResourceFilter) {
-        Resource target = resource;
-        while (null != target && !targetResourceFilter.accept(target)) target = target.getParent();
-        return null != target ? target : resource;
-    }
-
-    protected String createTargetUrl(String path, SlingHttpServletRequest request, Collection<String> positiveTerms) {
-        String basicUrl = LinkUtil.getUrl(request, path);
-        try {
-            URIBuilder builder = new URIBuilder(basicUrl);
-            for (String term : positiveTerms) {
-                builder.addParameter(PARAMETER_SEARCHTERM, term);
-            }
-            return builder.build().toString();
-        } catch (URISyntaxException e) {
-            LOG.error("Bug: " + basicUrl + " : " + e, e);
-            throw new ContextedRuntimeException(e).addContextValue("url", basicUrl)
-                    .addContextValue("target", path);
-        }
-    }
-
-    protected String determineTitle(Resource target) {
-        String title = null;
-        ResourceHandle targetHandle = ResourceHandle.use(target);
-        title = null == title ? targetHandle.getProperty("title") : title;
-        title = null == title ? targetHandle.getProperty(PROP_TITLE) : title;
-        if (null == title) {
-            ResourceHandle contentnode = ResourceHandle.use(targetHandle.getChild(CONTENT_NODE));
-            title = null == title ? contentnode.getProperty("title") : title;
-            title = null == title ? contentnode.getProperty(PROP_TITLE) : title;
-        }
-        if (null == title) {
-            LOG.info("Cannot determine a search title for ", target);
-            title = targetHandle.getResourceTitle(); // resource name as fallback
-        }
-        return title;
-    }
-
-    @ObjectClassDefinition(name = "Composum Pages Search Service Configuration",
-            description = "Configurations for the Composum Pages Search Service")
-    public @interface PagesSearchServiceConfiguration {
-
-        @AttributeDefinition(name = "Overshoot", description = "Internal tuning property")
-        int overshoot() default 3;
-
-        @AttributeDefinition(name = "Maximum number of search matches", description = "Limits the number of search " +
-                "matches e.g. if there is an extremely common search term entered.")
-        int maximumMatchCount() default 100;
-
-        @AttributeDefinition()
-        String webconsole_configurationFactory_nameHint() default
-                "{name} (maximumMatchCount: {maximumMatchCount})";
-    }
-
-    protected class SubmatchResultImpl implements SearchService.Result {
-
-        private final BeanContext context;
-        private final Resource target;
-        private final List<Resource> matches;
-        private final String searchExpression;
-        private final Set<String> positiveTerms;
-        private final Float score;
-        private String title;
-        private String excerpt;
-
-        public SubmatchResultImpl(BeanContext context, Resource target, Float score, List<Resource> matches, String
-                searchExpression, Set<String> positiveTerms) {
-            this.context = context;
-            this.target = target;
-            this.score = score;
-            this.matches = matches;
-            this.searchExpression = searchExpression;
-            this.positiveTerms = positiveTerms;
-        }
-
-        @Override
-        public Resource getTarget() {
-            return target;
-        }
-
-        @Override
-        public Resource getTargetContent() {
-            Resource content = target.getChild(JcrConstants.JCR_CONTENT);
-            return content != null ? content : target;
-        }
-
-        @Override
-        public String getTargetUrl() {
-            return createTargetUrl(target.getPath(), context.getRequest(), positiveTerms);
-        }
-
-        @Override
-        public String getTitle() {
-            if (null == title) {
-                title = determineTitle(target);
-            }
-            return title;
-        }
-
-        @Override
-        public Float getScore() {
-            return score;
-        }
-
-        @Override
-        public String getExcerpt() throws SearchTermParseException {
-            if (null == excerpt) {
-                excerpt = excerptGenerator.excerpt(matches, searchExpression);
-            }
-            return excerpt;
-        }
-
-        @Override
-        public List<Resource> getMatches() {
-            return matches;
-        }
-
-        @Override
-        public String getSearchExpression() {
-            return searchExpression;
-        }
-
-        @Override
-        public String toString() {
-            return new ToStringBuilder(this)
-                    .append("target", target)
-                    .append("matches", matches)
-                    .toString();
-        }
     }
 }

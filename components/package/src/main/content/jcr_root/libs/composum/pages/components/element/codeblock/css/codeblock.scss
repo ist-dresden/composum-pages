@@ -1,11 +1,16 @@
 @charset "UTF-8";
 
+@import "../../../css/variables";
+@import "../../../css/mixins";
+
 .composum-pages-components-element-codeblock {
     margin: 0 0 10px;
+    @include default-font;
 
     &_heading {
         position: relative;
         min-height: 40px;
+        overflow: hidden;
     }
 
     &_panel {
@@ -13,6 +18,8 @@
     }
 
     &_language {
+        position: absolute;
+        top: 13px;
         margin: -2px 0 0 10px;
     }
 
@@ -28,23 +35,33 @@
     }
 
     &_content-block {
+        width: 100%;
         padding: 0;
         overflow: auto;
     }
 
     &_content {
+        width: 100%;
         margin: 0;
         border: none;
         padding: 0;
+        overflow: auto;
         background: transparent;
 
         code {
             white-space: pre;
+            color: inherit;
+            background-color: transparent;
 
             code * {
                 white-space: pre;
             }
         }
+    }
+
+    &_footer {
+        white-space: nowrap;
+        overflow: hidden;
     }
 
     &.wrap-lines {
@@ -71,14 +88,14 @@
             &_content {
 
                 code {
-                    padding: 0 10px;
+                    padding: 0;
                 }
             }
 
             &_footer {
                 opacity: 0.8;
                 margin-top: 10px;
-                padding: 0 10px;
+                padding: 0;
             }
         }
     }
@@ -100,14 +117,14 @@
             }
         }
 
-        &.medium .composum-pages-components-element-codeblock {
+        &.collapsed-medium .composum-pages-components-element-codeblock {
 
             &_content-block {
                 max-height: 244px;
             }
         }
 
-        &.large .composum-pages-components-element-codeblock {
+        &.collapsed-large .composum-pages-components-element-codeblock {
 
             &_content-block {
                 max-height: 496px;

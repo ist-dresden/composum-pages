@@ -1,3 +1,7 @@
+/**
+ * the 'pages' namespace and core Pages edit frame functions
+ * strong dependency to: 'commons.js' (libs: 'backbone.js', 'underscore.js', 'loglevel.js', 'jquery.js')
+ */
 (function (window) {
     window.composum = window.composum || {};
     window.composum.pages = window.composum.pages || {};
@@ -29,16 +33,24 @@
                     site: 'site'
                 }
             },
-            event: {
-                messagePattern: new RegExp('^([^{\\[]+)([{\\[].*[}\\]])$'),
-                trigger: 'event:trigger',
-                ready: 'pages:ready',
-                scope: {
-                    changed: 'scope:changed'
-                },
+            trigger: {
+                event: 'trigger:event',
+                action: 'trigger:action',
                 dialog: {
                     edit: 'dialog:edit',
+                    generic: 'dialog:generic',
                     alert: 'dialog:alert'
+                }
+            },
+            event: {
+                messagePattern: new RegExp('^([^{\\[]+)([{\\[].*[}\\]])$'),
+                pages: {
+                    ready: 'pages:ready',
+                    locale: 'pages:locale',
+                    open: 'pages:open'
+                },
+                scope: {
+                    changed: 'scope:changed'
                 },
                 site: {
                     select: 'site:select',          // do it!...
@@ -54,6 +66,7 @@
                     inserted: 'page:inserted',      // done.
                     changed: 'page:changed',        // done.
                     deleted: 'page:deleted',        // done.
+                    state: 'page:state',            // changed state of the page itself only (no structure change)
                     containerRefs: 'page:containerRefs'
                 },
                 content: {
@@ -63,6 +76,14 @@
                     changed: 'content:changed',     // done.
                     deleted: 'content:deleted',     // done.
                     moved: 'content:moved'          // done.
+                },
+                component: {
+                    select: 'component:select',     // do it!...
+                    selected: 'component:selected', // done.
+                    inserted: 'component:inserted', // done.
+                    changed: 'component:changed',   // done.
+                    deleted: 'component:deleted',   // done.
+                    moved: 'component:moved'        // done.
                 },
                 element: {
                     select: 'element:select',       // do it!...
@@ -74,18 +95,32 @@
                     move: 'element:move',           // do it!...
                     moved: 'element:moved'          // done.
                 },
+                asset: {
+                    select: 'asset:select',         // do it!...
+                    selected: 'asset:selected'      // done.
+                },
+                folder: {
+                    inserted: 'folder:inserted'     //done.
+                },
                 path: {
                     select: 'path:select',          // do it!...
                     selected: 'path:selected'       // done.
+                },
+                dnd: {
+                    object: 'dnd:object',           // prepare dragging
+                    drop: 'dnd:drop',               // do it!...
+                    finished: 'dnd:finished'        // done, reset state.
                 }
             },
             url: {
                 get: {
+                    edit: '/bin/cpm/pages/edit',
+                    _resourceInfo: '.resourceInfo.json',
                     pageData: '/bin/cpm/pages/edit.pageData.json'
                 },
                 edit: {
-                    insert: '/bin/cpm/pages/edit.insertComponent.json',
-                    move: '/bin/cpm/pages/edit.moveComponent.json'
+                    insert: '/bin/cpm/pages/edit.insertElement.json',
+                    move: '/bin/cpm/pages/edit.moveElement.json'
                 }
             },
             sling: {
@@ -93,12 +128,13 @@
             },
             login: {
                 id: 'composum-platform-commons-login-dialog',
-                url: '/libs/composum/platform/security/login/dialog.html'
+                url: '/libs/composum/platform/public/login/dialog.html'
             },
             profile: {
                 pages: {
                     aspect: 'pages',
-                    scope: 'scope'      // the scope of the edit UI: 'site' or 'content'
+                    scope: 'scope',     // the scope of the edit UI: 'site' or 'content'
+                    locale: 'locale'
                 },
                 page: {
                     tree: {
@@ -113,10 +149,37 @@
                         term: 'term'
                     }
                 },
-                develop: {
+                asset: {
                     tree: {
-                        aspect: 'develop-tree',
+                        aspect: 'asset-tree',
+                        view: 'view',
+                        filter: 'filter',
                         path: 'path'
+                    },
+                    search: {
+                        aspect: 'asset-search',
+                        scope: 'scope',
+                        term: 'term'
+                    }
+                },
+                component: {
+                    tree: {
+                        aspect: 'component-tree',
+                        view: 'view',
+                        filter: 'filter',
+                        path: 'path'
+                    },
+                    search: {
+                        aspect: 'component-search',
+                        scope: 'scope',
+                        term: 'term'
+                    }
+                },
+                components: {
+                    list: {
+                        aspect: 'components-list',
+                        filter: 'filter',
+                        search: 'search'
                     }
                 }
             },
@@ -171,13 +234,18 @@
         };
 
         pages.$body = $('body');
-        pages.current = {
-            mode: pages.$body.data(pages.const.data.body.mode),
-            locale: pages.$body.data(pages.const.data.body.locale),
-            folder: undefined,
-            site: undefined,
-            page: undefined
-        };
+        pages.current = function () {
+            var g = pages.const.profile.pages;
+            return {
+                mode: pages.$body.data(pages.const.data.body.mode),
+                locale: pages.profile.get(g.aspect, g.locale, 'en'),
+                folder: undefined,
+                site: undefined,
+                page: undefined,
+                element: undefined,
+                dnd: {}
+            }
+        }();
 
         switch (pages.current.mode) {
             case 'PREVIEW':
@@ -189,6 +257,22 @@
                 pages.profile.set('mode', 'edit', pages.current.mode.toLowerCase());
                 break;
         }
+
+        pages.getLocale = function () {
+            return pages.current.locale;
+        };
+
+        pages.setLocale = function (locale, localeDefault) {
+            if (pages.current.locale !== locale || (localeDefault && localeDefault !== pages.current.localeDefault)) {
+                pages.current.locale = locale;
+                pages.current.localeDefault = localeDefault;
+                var e = pages.const.event.pages;
+                var g = pages.const.profile.pages;
+                pages.profile.set(g.aspect, g.locale, locale);
+                pages.log.debug('pages.trigger.' + e.locale + '(' + locale + ')');
+                pages.trigger('pages.locale.set', e.locale, [locale]);
+            }
+        };
 
         pages.getScope = function () {
             var c = pages.const.css;
@@ -214,23 +298,52 @@
             if (triggerEvent) {
                 var e = pages.const.event.scope;
                 pages.log.debug('pages.trigger.' + e.changed + '(' + scope + ')');
-                $(document).trigger(e.changed, [scope]);
+                pages.trigger('pages.scope.set', e.changed, [scope]);
             }
+        };
+
+        pages.getPageUrl = function (/*optional*/ path, /*optional*/ locale) {
+            if (!locale) {
+                locale = pages.getLocale();
+            }
+            var url = core.getContextUrl((path || pages.current.page) + '.html');
+            if (locale !== pages.current.localeDefault) {
+                url += '?pages.locale=' + locale;
+            }
+            return url;
         };
 
         pages.isEditMode = function () {
             return pages.current.mode === 'EDIT' || pages.current.mode === 'DEVELOP';
         };
 
-        pages.getPageData = function (path, callback) {
-            core.ajaxGet(pages.const.url.get.pageData + path, {}, callback);
-        };
-
         pages.versionsVisible = function () {
             return $('body').hasClass(pages.const.versionViewCssClass);
         };
 
+        /**
+         * the general $(document) trigger point for the 'pages' widgets which is logging the event and the args
+         * @param key the logging key which identifies the code source
+         * @param event the event to trigger
+         * @param args the event arguments (array of objects or values)
+         * @param argsToLog optional; used for logging instead of the event args if args should not be logged
+         */
+        pages.trigger = function (key, event, /*array,optional*/ args, /*optional*/ argsToLog) {
+            if (pages.log.getLevel() <= log.levels.WARN) { // use WARN to cause a call stack
+                pages.log.warn('trigger@' + key + ' > ' + event
+                    + JSON.stringify(argsToLog !== undefined ? argsToLog : (args ? args : [])));
+            }
+            try {
+                $(document).trigger(event, args);
+            } catch (ex) {
+                pages.log.error('trigger@' + key + ' > ' + event
+                    + JSON.stringify(argsToLog !== undefined ? argsToLog : (args ? args : [])) + '\n', ex);
+            }
+        };
+
         pages.contextTools = {
+
+            log: log.getLogger("context"),
 
             initializers: [],
 
@@ -245,41 +358,33 @@
             }
         };
 
+        pages.loadFrameContent = function (uri, callback) {
+            var target = pages.current.page || pages.current.site;
+            if (target) {
+                uri += target;
+            }
+            uri += '?pages.view=' + pages.current.mode;
+            core.getHtml(uri, _.bind(function (content) {
+                callback(content);
+            }, this));
+        };
+
         //
         // Dialog container
         //
 
         pages.DialogHandler = Backbone.View.extend({
 
-            openEditDialog: function (url, viewType, name, path, type, setupDialog, onNotFound) {
+            openEditDialog: function (url, viewType, name, path, type, context, setupDialog, onNotFound) {
                 core.ajaxGet(url + (path ? path : ''), {
                         data: {
                             name: name ? name : '',
-                            type: type ? type : ''
+                            type: type ? type : '',
+                            'pages.locale': pages.getLocale()
                         }
                     },
                     _.bind(function (data) {
-                        this.$el.append(data);
-                        var $dialog = this.$el.children(':last-child');
-                        var dialog = core.getWidget(this.el, $dialog[0], viewType);
-                        if (dialog) {
-                            dialog.data = {
-                                name: name,
-                                path: path,
-                                type: type
-                            };
-                            if (_.isFunction(dialog.afterLoad)) {
-                                dialog.afterLoad(name, path, type);
-                            }
-                            if (_.isFunction(setupDialog)) {
-                                setupDialog(dialog);
-                            }
-                            if (dialog.useDefault) {
-                                dialog.doSubmit(dialog.useDefault);
-                            } else {
-                                dialog.show();
-                            }
-                        }
+                        this.showDialogContent(data, viewType, name, path, type, context, setupDialog);
                     }, this), _.bind(function (xhr) {
                         if (xhr.status === 404) {
                             if (_.isFunction(onNotFound)) {
@@ -289,8 +394,32 @@
                     }, this));
             },
 
+            showDialogContent: function (content, viewType, name, path, type, context, setupDialog) {
+                this.$el.append(content);
+                var $dialog = this.$el.children(':last-child');
+                var dialog = core.getWidget(this.el, $dialog[0], viewType);
+                if (dialog) {
+                    dialog.data = {
+                        name: name,
+                        path: path,
+                        type: type
+                    };
+                    if (_.isFunction(dialog.afterLoad)) {
+                        dialog.afterLoad(name, path, type, context);
+                    }
+                    if (_.isFunction(setupDialog)) {
+                        setupDialog(dialog);
+                    }
+                    dialog.show();
+                }
+            },
+
             openDialog: function (id, url, viewType, initView, callback) {
-                this.getDialog(id, url, {}, viewType, _.bind(function (dialog) {
+                this.getDialog(id, url, {
+                    data: {
+                        'pages.locale': pages.getLocale()
+                    }
+                }, viewType, _.bind(function (dialog) {
                     dialog.show(initView, callback);
                 }, this));
             },
@@ -318,147 +447,6 @@
         });
 
         pages.dialogHandler = core.getView('.' + pages.const.editDialogsClass, pages.DialogHandler);
-
-        //
-        // page frame message handler
-        //
-
-        window.addEventListener("message", function (event) {
-            var message = pages.const.event.messagePattern.exec(event.data);
-            if (message) {
-                var args = JSON.parse(message[2]);
-                switch (message[1]) {
-                    case pages.const.event.element.selected:
-                        // transform selection messages into the corresponding event for the edit frame components
-                        if (args.path) {
-                            pages.log.debug('pages.trigger.' + pages.const.event.path.selected + '(' + args.path + ')');
-                            $(document).trigger(pages.const.event.path.selected, [args.path]);
-                            var eventData = [
-                                args.name,
-                                args.path,
-                                args.type
-                            ];
-                            pages.log.debug('pages.trigger.' + pages.const.event.element.selected + '(' + args.path + ')');
-                            $(document).trigger(pages.const.event.element.selected, eventData);
-                        } else {
-                            pages.log.debug('pages.trigger.' + pages.const.event.path.selected + '()');
-                            $(document).trigger(pages.const.event.path.selected, []);
-                            pages.log.debug('pages.trigger.' + pages.const.event.element.selected + '()');
-                            $(document).trigger(pages.const.event.element.selected, []);
-                        }
-                        break;
-                    case pages.const.event.page.containerRefs:
-                        // forward container references list to the edit frame components
-                        pages.log.trace('pages.event.' + pages.const.event.page.containerRefs + '(' + message[2] + ')');
-                        $(document).trigger(pages.const.event.page.containerRefs, [args]);
-                        break;
-                    case pages.const.event.element.insert:
-                        // apply insert action messages from the edited page
-                        pages.log.info('pages.event.element.insert(' + message[2] + ')');
-                        if (args.type && args.target) {
-                            core.ajaxPost(pages.const.url.edit.insert + args.target.path, {
-                                elementType: args.type,
-                                targetType: args.target.type,
-                                before: args.before ? args.before : ''
-                            }, {}, function (result) {
-                                pages.editFrame.reloadPage();
-                            }, function (xhr) {
-                                core.alert('error', 'Error', 'Error on inserting component', xhr);
-                            });
-                        }
-                        break;
-                    case pages.const.event.element.move:
-                        // apply move action messages from the edited page
-                        pages.log.info('pages.event.element.move(' + message[2] + ')');
-                        if (args.source && args.target) {
-                            core.ajaxPost(pages.const.url.edit.move + args.source, {
-                                targetPath: args.target.path,
-                                targetType: args.target.type,
-                                before: args.before ? args.before : ''
-                            }, {}, function (result) {
-                                pages.editFrame.reloadPage();
-                            }, function (xhr) {
-                                core.alert('error', 'Error', 'Error on moving component', xhr);
-                            });
-                        }
-                        break;
-                    case pages.const.event.dialog.edit:
-                        // opens an edit dialog to perform editing of the content of the path transmitted
-                        pages.log.trace('pages.event.dialog.edit(' + message[2] + ')');
-                        if (args.target) {
-                            var url = undefined;
-                            if (args.dialog) {
-                                url = args.dialog.url;
-                            }
-                            pages.dialogs.openEditDialog(args.target.name, args.target.path, args.target.type, url,
-                                function (dialog) {
-                                    if (args.values) {
-                                        dialog.applyData(args.values);
-                                    }
-                                });
-                        }
-                        break;
-                    case pages.const.event.trigger:
-                        // triggers an event in the frame document context
-                        pages.log.debug('pages.event.' + args.event + '(' + message[2] + ')');
-                        $(document).trigger(args.event, args.data);
-                        break;
-                    case pages.const.event.dialog.alert:
-                        // displays an alert message by opening an alert dialog
-                        pages.log.trace('pages.event.dialog.alert(' + message[2] + ')');
-                        core.alert(args.type, args.title, args.message, args.data);
-                        break;
-                }
-            }
-        }, false);
-
-        //
-        // clipboard operations
-        //
-
-        /**
-         * stored the path in the profile for a later 'paste' which will copy the content of the stored path
-         */
-        pages.clipboardCopyContent = function (path) {
-            if (!path) {
-                path = this.getCurrentPath();
-            }
-            pages.profile.set('pages', 'contentClipboard', {
-                path: path
-            });
-        };
-
-        /**
-         * copy path from clipboard to the target path, open copy dialog if an error is occurring
-         * @param path the target path for the copy operation
-         */
-        pages.clipboardPasteContent = function (path) {
-            var clipboard = pages.profile.get('pages', 'contentClipboard');
-            if (path && clipboard && clipboard.path) {
-                var name = core.getNameFromPath(clipboard.path);
-                // copy to the target with the same name
-                core.ajaxPost("/bin/cpm/pages/edit.copyContent.json" + clipboard.path, {
-                    targetPath: path,
-                    name: name
-                }, {}, _.bind(function (result) {
-                    // trigger content change
-                    $(document).trigger(pages.const.event.content.inserted, [path, name]);
-                }, this), _.bind(function (result) {
-                    // on error - display copy dialog initialized with the known data
-                    var data = result.responseJSON;
-                    pages.dialogs.openCopyContentDialog(undefined, clipboard.path, undefined,
-                        _.bind(function (dialog) {
-                            dialog.setValues(clipboard.path, path);
-                            if (data.messages) {
-                                dialog.validationHint(data.messages[0].level, null, data.messages[0].text, data.messages[0].hint);
-                            } else if (data.response) {
-                                dialog.validationHint(data.response.level, null, data.response.text);
-                            }
-                            dialog.hintsMessage('error');
-                        }, this));
-                }, this));
-            }
-        };
 
         //
         // login dialog and session expired (unauthorized) fallback
@@ -500,7 +488,7 @@
                     this.showing = true;
                     this.callsToRetry = [retryThisFailedCall];
                     this.show(undefined, _.bind(function () {
-                        // retry after login all collected calls
+                        // retry all collected calls after login
                         this.callsToRetry.forEach(function (retryThisFailedCall) {
                             retryThisFailedCall();
                         });

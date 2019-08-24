@@ -4,7 +4,8 @@ import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 @ObjectClassDefinition(
-        name = "Composum Pages Replication Configuration"
+        name = "Composum Pages Replication Configuration",
+        description = "Enables InPlace replication and configures the paths it uses."
 )
 public @interface PagesReplicationConfig {
 

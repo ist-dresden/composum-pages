@@ -12,7 +12,7 @@ import static com.composum.pages.commons.PagesConstants.PROP_IGNORE_IN_SEARCH;
  * Filter that removes pages from the search that should be ignored
  * {@link com.composum.pages.commons.PagesConstants#PROP_IGNORE_IN_SEARCH}.
  */
-public class SearchPageFilter implements ResourceFilter {
+public class SearchPageFilter extends ResourceFilter.AbstractResourceFilter {
 
     protected final BeanContext context;
 

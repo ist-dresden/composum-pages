@@ -6,45 +6,78 @@
 /*
  * default (bootstrap -sm,md-)
  */
+
+.composum-pages-components-element-title {
+    width: 100%;
+    margin: $column-title-margin;
+
+    &_text {
+        padding: $column-title-padding;
+        text-align: left;
+        background: none;
+    }
+
+    &_title {
+        margin: 0;
+        @include title-font;
+    }
+
+    &_subtitle {
+        @include subtitle-font;
+    }
+
+    &_bg-image {
+        background: transparent center;
+        background-size: 100%;
+
+        .composum-pages-components-element-title {
+
+            &_title,
+            &_subtitle,
+            &_text {
+                color: $site-bright-text-color;
+                mix-blend-mode: difference;
+            }
+        }
+    }
+}
+
+.composum-pages-components-container-row {
+
+    &_column {
+
+        .composum-pages-components-element-title {
+            margin: $column-title-margin;
+            background: none;
+
+            &_text {
+                padding: $column-title-padding;
+                text-align: left;
+            }
+
+            &_title {
+                font-size: $column-title-font-size;
+            }
+
+            &_subtitle {
+                font-size: $column-subtitle-font-size;
+            }
+        }
+    }
+}
+
 .composum-pages-components-page {
 
     &_content {
 
-        .composum-pages-components-container-row {
-
-            &_column {
-
-                .composum-pages-components-element-title {
-
-                    &_text {
-                        @include inline-title;
-                        text-align: left;
-                        background: none;
-                    }
-
-                    &_title,
-                    &_subtitle {
-                        margin: 0;
-                    }
-
-                    &_title {
-                        font-size: $column-title-font-size;
-                    }
-
-                    &_subtitle {
-                        margin-top: $column-title-gap;
-                        font-size: $column-subtitle-font-size;
-                    }
-                }
-            }
-        }
-
         &_top {
 
             .composum-pages-components-element-title {
-                background-position: 30% 40%;
-                height: 100px;
-                padding: 12px 36px;
+                margin: 0;
+                height: 120px;
+                padding: 24px 36px;
+                background-position: 0 40%;
+                background-size: 200%;
 
                 &_title {
                     @include bright-font;
@@ -56,29 +89,8 @@
 
         &_main {
 
-            .composum-pages-components-element-title {
-
-                &_text {
-                    @include title-font;
-                    padding: $main-title-padding;
-                    background-color: $main-title-background-color;
-                    text-align: center;
-                    color: $main-title-text-color;
-                }
-
-                &_title,
-                &_subtitle {
-                    margin: 0;
-                }
-
-                &_title {
-                    font-size: $main-title-font-size;
-                }
-
-                &_subtitle {
-                    margin-top: $main-title-padding / 2;
-                    font-size: $main-subtitle-font-size;
-                }
+            > .composum-pages-components-element-title {
+                background-color: $main-title-background-color;
             }
         }
     }
@@ -93,20 +105,38 @@
 
         &_content {
 
+            &_top {
+
+                .composum-pages-components-element-title {
+                    height: 80px;
+                    padding: 16px 24px;
+
+                    &_title {
+                        @include a-title-font($site-title-font-size-xs);
+                    }
+
+                    &_subtitle {
+                        @include a-title-font($site-subtitle-font-size-xs);
+                    }
+                }
+            }
+
             &_main {
 
                 .composum-pages-components-element-title {
 
                     &_text {
-                        padding: $main-title-padding * (2/3);
+                        padding: $main-title-padding  / 2;
                     }
 
                     &_title {
-                        font-size: $main-title-font-size * (2/3);
+                        margin: 0;
+                        @include a-title-font($site-title-font-size-xs);
                     }
 
                     &_subtitle {
-                        font-size: $main-subtitle-font-size * (2/3);
+                        margin: 0;
+                        @include a-title-font($site-subtitle-font-size-xs);
                     }
                 }
             }

@@ -76,7 +76,7 @@ public class TokenServlet extends SlingSafeMethodsServlet {
                     String referer = null;
                     if (StringUtils.isNotBlank(suffix)) {
                         referer = suffix.substring(1);
-                        // the base64 encoded referer is NOT decoded here (the encoded string is used as a node name)
+                        // the base64 encoded referer is NOT decoded here
                     }
                     trackingService.trackToken(
                             new BeanContext.Servlet(getServletContext(), bundleContext, request, response),

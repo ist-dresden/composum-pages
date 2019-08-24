@@ -3,9 +3,10 @@ package com.composum.pages.commons.replication;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.filter.StringFilter;
 import com.composum.sling.platform.security.AccessMode;
+import com.composum.sling.platform.staging.ReleaseMapper;
 import org.apache.sling.api.resource.Resource;
 
-public interface ReplicationManager {
+public interface ReplicationManager extends ReleaseMapper {
 
     /**
      * the blacklist to filter out mixin types during replication
@@ -16,12 +17,12 @@ public interface ReplicationManager {
      * only properties of a released resource accepted by this filter are copied
      */
     StringFilter REPLICATE_PROPERTY_FILTER = new StringFilter.BlackList(
-            "^jcr:(primaryType|mixinTypes|created.*|uuid)$",
+            "^jcr:(created.*|uuid)$",
             "^jcr:(baseVersion|predecessors|versionHistory|isCheckedOut)$"
     );
 
     /**
-     * properties of a target accepted by this filter are not replaced by values from a released resource
+     * properties of a target accepted by this filter cannot be deleted
      */
     StringFilter REPLICATE_PROPERTY_KEEP = new StringFilter.WhiteList(
             "^jcr:(primaryType|mixinTypes|created.*|uuid)$",

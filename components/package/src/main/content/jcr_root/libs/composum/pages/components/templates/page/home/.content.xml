@@ -13,16 +13,18 @@
                 ^(.*/)?pages/components/templates/site/.*$
             ]"
             allowedChildTemplates="[
-                ^(.*/)?pages/components/templates/page/.*$
+                ^(.*/)?pages/components/templates/page/.*$,
+                ^(.*/)?pages/options/.*/template(s(/page)?(/.+)?)?$
             ]">
+        <!-- all nodes in the 'jcr:content' node without the 'cpp:design' nodes are copied on applying the template -->
         <logo
-                jcr:primaryType="nt:unstructured"
+                jcr:primaryType="cpp:Element"
                 sling:resourceType="composum/pages/components/element/image"
-                imageRef="/content/shared/composum/pages/assets/logo/Composum-color.svg"/>
+                imageRef="/content/shared/composum/pages/components/assets/logo/Composum-color.svg"/>
         <search
                 jcr:primaryType="nt:unstructured">
             <field
-                    jcr:primaryType="nt:unstructured"
+                    jcr:primaryType="cpp:Element"
                     sling:resourceType="composum/pages/components/search/field"
                     buttonSymbol="search"
                     searchResultPath="${site}/meta/search">
@@ -35,10 +37,30 @@
                 interval="10000"
                 showIndicators="{Boolean}true"
                 useControls="{Boolean}true">
+            <cpp:design
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="composum/pages/stage/edit/page/design"
+                    typePatterns="[
+                        ^(/[^/]+/)?composum/pages/components/composed/carousel$
+                    ]"
+                    allowedElements="[
+                        ^(/[^/]+/)?composum/pages/components/element/teaser$
+                    ]">
+                <!-- restrict allowed elements in the stage (of type 'carousel') to 'teasers' only -->
+            </cpp:design>
         </stage>
         <main
                 jcr:primaryType="cpp:Container"
                 sling:resourceType="composum/pages/components/container/parsys">
+            <cpp:design
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="composum/pages/stage/edit/page/design"
+                    designRef="composum/pages/components/templates/page/content/jcr:content/main/cpp:design"/>
+            <!-- the design rules are the same as of a content page - rules are referenced here -->
         </main>
+        <cpp:design
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="composum/pages/stage/edit/page/design"
+                designRef="composum/pages/components/templates/page/content/jcr:content/cpp:design"/>
     </jcr:content>
 </jcr:root>

@@ -1,0 +1,23 @@
+.composum-pages-options-microsite-page {
+    background: #eee;
+
+    &_data, &_preview {
+        margin: 0 auto;
+    }
+
+    &_data {
+        width: 60%;
+        margin-top: 70px;
+    }
+
+    &_preview {
+        margin-top: 20px;
+    }
+
+    &_frame {
+        height: 100%;
+        border: none;
+        transform: scale(0.6);
+        transform-origin: top center;
+    }
+}

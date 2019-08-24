@@ -1,50 +1,11 @@
 @charset "UTF-8";
-
+/*
+ * the style of the element-type-select-widget
+ *
+ * /libs/composum/pages/stage/widget/element
+ */
 @import "../../../edit/css/variables";
 @import "../../../edit/css/mixins";
-
-.composum-pages-component-tile {
-    position: relative;
-    display: block;
-    width: 100%;
-    margin: 0;
-    padding: 5px;
-    min-height: 80px;
-    color: #444;
-
-    &_thumbnail {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 130px;
-
-        &_wrapper {
-            @include aspect-ratio-wrapper(3, 2);
-        }
-
-        &_picture {
-            @include aspect-ratio-element();
-        }
-
-        &_image {
-            width: 100%;
-        }
-
-        &_placeholder {
-            width: 100%;
-            height: 100%;
-            padding: 7px 14px;
-            background: rgba(255, 255, 255, 0.4);
-            color: #ddd;
-            font-size: 60px;
-        }
-    }
-
-    &_text {
-        margin-left: 140px;
-        @include font('robotolight', 17px);
-    }
-}
 
 .composum-pages-edit-widget {
 
@@ -53,22 +14,164 @@
         @include font('robotolight', 17px);
 
         .composum-pages-component-tile {
-            padding-left: 30px;
+            position: relative;
+            display: block;
+            width: 100%;
+            margin: 0;
+            padding: 5px 5px 5px 30px;
+            height: 86px;
             background: #eee;
+            color: #444;
 
             &_thumbnail {
+                position: absolute;
+                top: 3px;
                 left: 30px;
+                width: 160px;
+
+                &_wrapper {
+                    @include aspect-ratio-wrapper(2, 1);
+                }
+
+                &_picture {
+                    @include aspect-ratio-element();
+
+                    img {
+                        width: 100%;
+                    }
+                }
+
+                &_placeholder {
+                    width: 100%;
+                    height: 100%;
+                    padding: 7px 14px;
+                    background: rgba(255, 255, 255, 0.4);
+                    color: #ddd;
+                    font-size: 60px;
+                }
+            }
+
+            &_text {
+                position: relative;
+                margin-left: 170px;
+                @include font('robotolight', 17px);
+
+                .composum-pages-component-tile {
+
+                    &_title {
+                        margin-bottom: 1px;
+                    }
+
+                    &_type {
+                        margin-bottom: 2px;
+                    }
+
+                    &_description {
+                        height: 3rem;
+                        line-height: 1.5rem;
+                        white-space: unset;
+                    }
+                }
+            }
+
+            &_icon {
+                top: 0;
+                left: 0;
             }
         }
 
         .composum-pages-edit-widget {
 
-            &_list {
-                list-style: none;
-                max-height: 600px;
+            &_label {
+                width: 40%;
+                float: left;
+            }
+
+            &_search {
+                width: 40%;
+                float: right;
+
+                .input-group-addon {
+                    font-size: 16px;
+                    padding: 1px 7px 0;
+                }
+            }
+
+            &_filter {
+                margin-left: 10px;
+                margin-bottom: 5px;
+                float: right;
+
+                .popover {
+
+                    .composum-pages-edit-widget {
+
+                        &_label {
+                            white-space: nowrap;
+                        }
+                    }
+                }
+            }
+
+            &_filter-toggle {
+                font-size: 16px;
+                padding: 3px 8px 1px;
+
+                &.active {
+                    color: $bootstrap-color-danger;
+                }
+            }
+
+            &_filter-menu {
+                display: none;
+            }
+
+            &_select-content {
+                clear: both;
+            }
+
+            &_empty {
+                display: inline-block;
+                width: 100%;
+                margin-top: 10px;
+
+                > div {
+                    margin: 0;
+                }
+            }
+
+            &_categories {
+                max-height: 60%;
                 padding: 0;
                 margin-bottom: 0;
-                overflow: scroll;
+                overflow-x: hidden;
+                overflow-y: auto;
+            }
+
+            &_category_title {
+                font-size: 14px;
+
+                &, &:hover, &:focus, &:active {
+                    text-decoration: none;
+                }
+
+                .fa {
+                    display: inline-block;
+                    width: 20px;
+                }
+
+                &.collapsed {
+
+                    .fa:before {
+                        content: "\f105";
+                    }
+                }
+            }
+
+            &_list {
+                list-style: none;
+                padding: 0;
+                margin-bottom: 0;
             }
 
             &_element-type {

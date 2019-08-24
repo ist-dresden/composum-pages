@@ -3,5 +3,5 @@
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <cpp:defineFrameObjects/>
-<c:if test="${widget.hasLabel}"><label class="control-label ${widgetCssBase}_label"><span
+<c:if test="${widget.hasLabel}"><label class="control-label ${widgetCSS}_label"><span
         class="label-text">${widget.label}</span><sling:call script="hint.jsp"/></label></c:if>

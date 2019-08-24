@@ -5,6 +5,18 @@
         jcr:primaryType="sling:Folder"
         sling:basename="composum-pages">
 
+    <general jcr:primaryType="sling:Folder"><!-- Stage frame -->
+
+        <by-someone jcr:primaryType="sling:MessageEntry"
+                sling:key="by" sling:message="von"/>
+        <relative-path jcr:primaryType="sling:MessageEntry"
+                sling:key="Relative Path" sling:message="Relativer Pfad"/>
+        <modification-Date jcr:primaryType="sling:MessageEntry"
+                sling:key="Modification Date" sling:message="Änderungsdatum"/>
+        <settings jcr:primaryType="sling:MessageEntry"
+                sling:key="Settings" sling:message="Einstellungen"/>
+
+    </general>
     <frame jcr:primaryType="sling:Folder"><!-- Stage frame -->
 
         <browser-preview jcr:primaryType="sling:MessageEntry"
@@ -15,8 +27,128 @@
                 sling:key="Toggle Favorite" sling:message="Favorit-Markierung ändern"/>
         <toolbar-handle jcr:primaryType="sling:MessageEntry"
                 sling:key="Toolbar Handle" sling:message="Toolbar positionieren"/>
-    </frame>
 
+    </frame>
+    <versions jcr:primaryType="sling:Folder"><!-- version tools -->
+
+        <activated jcr:primaryType="sling:MessageEntry"
+                sling:key="activated" sling:message="aktiviert"/>
+        <deactivated jcr:primaryType="sling:MessageEntry"
+                sling:key="deactivated" sling:message="deaktiviert"/>
+        <modified jcr:primaryType="sling:MessageEntry"
+                sling:key="modified" sling:message="geändert"/>
+
+        <last-activated jcr:primaryType="sling:MessageEntry"
+                sling:key="last activated" sling:message="zuletzt aktiviert"/>
+        <last-activated-by jcr:primaryType="sling:MessageEntry"
+                sling:key="last activated by" sling:message="zuletzt aktiviert von"/>
+        <last-deactivated jcr:primaryType="sling:MessageEntry"
+                sling:key="last deactivated" sling:message="zuletzt deaktiviert"/>
+        <last-deactivated-by jcr:primaryType="sling:MessageEntry"
+                sling:key="last deactivated by" sling:message="zuletzt deaktiviert von"/>
+        <last-modified jcr:primaryType="sling:MessageEntry"
+                sling:key="last modified" sling:message="zuletzt geändert"/>
+        <last-modified-by jcr:primaryType="sling:MessageEntry"
+                sling:key="last modified by" sling:message="zuletzt geändert von"/>
+
+        <Activate-Page jcr:primaryType="sling:MessageEntry"
+                sling:key="Activate Page" sling:message="Seite Aktivieren"/>
+        <Deactivate-Page jcr:primaryType="sling:MessageEntry"
+                sling:key="Deactivate Page" sling:message="Seite Deaktivieren"/>
+        <Checkpoint jcr:primaryType="sling:MessageEntry"
+                sling:key="Checkpoint (In/Out) - new version" sling:message="Ein- und Auschecken (neue Version)"/>
+        <Purge-Versions jcr:primaryType="sling:MessageEntry"
+                sling:key="Purge unused Versions" sling:message="Ungenutzte Versionen löschen"/>
+        <Purge-Versions-title jcr:primaryType="sling:MessageEntry"
+                sling:key="purge unused versions of the current page"
+                sling:message="ungenutzte versionen der aktuellen Seite löschen"/>
+        <Rollback-Version jcr:primaryType="sling:MessageEntry"
+                sling:key="Rollback Version" sling:message="Zu Version Zurückrollen"/>
+        <Rollback-Version-title jcr:primaryType="sling:MessageEntry"
+                sling:key="rollback the selected version ot the current page"
+                sling:message="Zurückrollen zur selektierten Version der aktuellen Seite"/>
+
+        <Page-References
+                jcr:primaryType="sling:MessageEntry"
+                sling:key="Page References"
+                sling:message="Seitenverweise"/>
+        <Page-References-hint jcr:primaryType="sling:MessageEntry"
+                sling:key="select unresolved page references for activation"
+                sling:message="Auswahl offener Seitenverweise zur gleichzeitigen Aktivierung"/>
+        <Asset-References
+                jcr:primaryType="sling:MessageEntry"
+                sling:key="Asset References"
+                sling:message="referenzierte Assets"/>
+        <Asset-References-hint jcr:primaryType="sling:MessageEntry"
+                sling:key="select unresolved assets references for activation"
+                sling:message="Auswahl offener Asset-Referenzen zur gleichzeitigen Aktivierung"/>
+        <activate-references-hint jcr:primaryType="sling:MessageEntry"
+                sling:key="The elements listed above are referenced directly or indirectly by this page and not part of the designated release (probably modified but not activated yet). All selected references will be activated together with this page."
+                sling:message="Die oben angezeigten Elemente werden direkt oder indirekt durch diese Seite referenziert und sind nicht im vorgesehenen Release enthalten (möglichweise geändert und nicht aktiviert). Alle selektierten Referenzen werden zusammen mit dieser Seite aktiviert."/>
+
+    </versions>
+    <releases jcr:primaryType="sling:Folder"><!-- version tools -->
+
+        <Activated jcr:primaryType="sling:MessageEntry"
+                sling:key="Activated" sling:message="Aktiviert"/>
+        <Activate jcr:primaryType="sling:MessageEntry"
+                sling:key="Activate" sling:message="Aktivieren"/>
+        <Activate-hint jcr:primaryType="sling:MessageEntry"
+                sling:key="Activate selected pages" sling:message="die markierten Seiten Aktivieren"/>
+        <Revert jcr:primaryType="sling:MessageEntry"
+                sling:key="Revert" sling:message="Zurücksetzen"/>
+        <Revert-hint jcr:primaryType="sling:MessageEntry"
+                sling:key="Revert selected pages" sling:message="die markierten Seiten Zurücksetzen"/>
+        <Deactivate jcr:primaryType="sling:MessageEntry"
+                sling:key="Deactivate" sling:message="Deaktivieren"/>
+        <Modified jcr:primaryType="sling:MessageEntry"
+                sling:key="Modified" sling:message="Geändert"/>
+
+        <release jcr:primaryType="sling:MessageEntry"
+                sling:key="release" sling:message="Release"/>
+        <release-list jcr:primaryType="sling:MessageEntry"
+                sling:key="Release List" sling:message="Release-Liste"/>
+        <current jcr:primaryType="sling:MessageEntry"
+                sling:key="current" sling:message="aktuell"/>
+        <Current jcr:primaryType="sling:MessageEntry"
+                sling:key="Current" sling:message="Aktuell"/>
+        <activated-pages jcr:primaryType="sling:MessageEntry"
+                sling:key="Activated Pages" sling:message="Aktivierte Seiten"/>
+        <activated-pages-hint jcr:primaryType="sling:MessageEntry"
+                sling:key="pages activated with changes since the previous release"
+                sling:message="seit dem letzten Release aktivierte Seiten"/>
+        <current-changes jcr:primaryType="sling:MessageEntry"
+                sling:key="Current Changes" sling:message="Aktuelle Änderungen"/>
+        <release-changes jcr:primaryType="sling:MessageEntry"
+                sling:key="Release Changes" sling:message="Release-Änderungen"/>
+        <modified-pages jcr:primaryType="sling:MessageEntry"
+                sling:key="Modified Pages" sling:message="Geänderte Seiten"/>
+        <modified-pages-hint jcr:primaryType="sling:MessageEntry"
+                sling:key="modified but last changes not activated yet"
+                sling:message="seit der letzten Änderung noch nicht aktiviert"/>
+        <preview jcr:primaryType="sling:MessageEntry"
+                sling:key="preview" sling:message="Vorschau"/>
+        <public jcr:primaryType="sling:MessageEntry"
+                sling:key="public" sling:message="publiziert"/>
+
+        <release-edit jcr:primaryType="sling:MessageEntry"
+                sling:key="Edit Release properties" sling:message="Die Release-Eigenschaften bearbeiten"/>
+        <release-public jcr:primaryType="sling:MessageEntry"
+                sling:key="Switch Public Release to the selected release (publish)"
+                sling:message="Das markierte Release als Public-Release verwenden (veröffentlichen)"/>
+        <release-preview jcr:primaryType="sling:MessageEntry"
+                sling:key="Switch Preview Release to the selected release"
+                sling:message="Das markierte Release als Preview-Release verwenden"/>
+        <release-delete jcr:primaryType="sling:MessageEntry"
+                sling:key="Delete the selected release" sling:message="Das markierte Release Löschen"/>
+        <release-delete-confirmation
+                jcr:primaryType="sling:MessageEntry"
+                sling:key="Do you really want to delete this release?"
+                sling:message="Möchten Sie wirklich dieses Release löschen?"/>
+        <release-delete-marked-error jcr:primaryType="sling:MessageEntry"
+                sling:key="Cannot delete a release marked with preview or public."
+                sling:message="Ein Release, dass als public oder preview gekennzeichnet ist, kann nicht gelöscht werden."/>
+    </releases>
     <site jcr:primaryType="sling:Folder"><!-- Site actions -->
 
         <copy-site jcr:primaryType="sling:MessageEntry"
@@ -45,6 +177,13 @@
                 sling:key="Site Properties" sling:message="Site-Einstellungen"/>
         <site-title jcr:primaryType="sling:MessageEntry"
                 sling:key="Site Title" sling:message="Site-Titel"/>
+        <manage-sites jcr:primaryType="sling:MessageEntry"
+                sling:key="Manage Sites" sling:message="Sites Verwalten"/>
+        <select-or-create-site jcr:primaryType="sling:MessageEntry"
+                sling:key="Select or create a Site" sling:message="Site auswählen oder anlegen"/>
+        <site-without-template jcr:primaryType="sling:MessageEntry"
+                sling:key="&lt;p>Create a new site without a template.&lt;/p>"
+                sling:message="&lt;p>Eine Website ohne Vorlage anlegen.&lt;/p>"/>
     </site>
 
     <page jcr:primaryType="sling:Folder"><!-- Page operations -->
@@ -63,6 +202,16 @@
                 sling:key="Page Template" sling:message="Seitenvorlage"/>
         <select-page-template jcr:primaryType="sling:MessageEntry"
                 sling:key="select a template or type" sling:message="eine Vorlage oder den Typ auswählen"/>
+
+        <locked jcr:primaryType="sling:MessageEntry"
+                sling:key="locked" sling:message="gesperrt"/>
+        <unlocked jcr:primaryType="sling:MessageEntry"
+                sling:key="unlocked" sling:message="nicht gesperrt"/>
+        <checked-out jcr:primaryType="sling:MessageEntry"
+                sling:key="checked out" sling:message="ausgecheckt"/>
+        <checked-in jcr:primaryType="sling:MessageEntry"
+                sling:key="checked in" sling:message="eingecheckt"/>
+
     </page>
 
     <content jcr:primaryType="sling:Folder"><!-- Content operations -->
@@ -118,6 +267,36 @@
                 sling:key="Select the element type" sling:message="Auswahl des Element-Typs"/>
     </element>
 
+    <component jcr:primaryType="sling:Folder"><!-- Element operations -->
+
+        <primarytype jcr:primaryType="sling:MessageEntry"
+                sling:key="Primary Type" sling:message="Primary Type"/>
+        <supertype jcr:primaryType="sling:MessageEntry"
+                sling:key="Supertype" sling:message="Supertyp"/>
+        <quick-help jcr:primaryType="sling:MessageEntry"
+                sling:key="Quick Help" sling:message="Kurzer Hinweis"/>
+        <quick-help-hint jcr:primaryType="sling:MessageEntry"
+                sling:key="a tool tip text" sling:message="ein Tooltip-Text"/>
+
+        <edit-component-props jcr:primaryType="sling:MessageEntry"
+                sling:key="Edit Component Properties" sling:message="Komponenteneigenschaften bearbeiten"/>
+
+        <delete-component jcr:primaryType="sling:MessageEntry"
+                sling:key="Delete Component" sling:message="Komponente Löschen"/>
+        <delete-question jcr:primaryType="sling:MessageEntry"
+                sling:key="Do you really want to delete the selected component?"
+                sling:message="Wollen Sie die markierte Komponente wirklich löschen?"/>
+        <delete-selected-component jcr:primaryType="sling:MessageEntry"
+                sling:key="Delete the selected Component" sling:message="Die ausgewählte Komponente löschen"/>
+        <edit-selected-element jcr:primaryType="sling:MessageEntry"
+                sling:key="Edit the selected Component" sling:message="Die ausgewählte Komponente bearbeiten"/>
+
+        <category-hint jcr:primaryType="sling:MessageEntry"
+                sling:key="the first category declares the group in a structured component view"
+                sling:message="die erste Kategorie bestimmt die Gruppe in einer gegliederten Komponenten-Ansicht"/>
+
+    </component>
+
     <dialog jcr:primaryType="sling:Folder"><!-- Stage Dialogs -->
 
         <cancel jcr:primaryType="sling:MessageEntry"
@@ -126,9 +305,26 @@
                 sling:key="Copy" sling:message="Kopieren"/>
         <delete jcr:primaryType="sling:MessageEntry"
                 sling:key="Delete" sling:message="Löschen"/>
+        <file-source-type jcr:primaryType="sling:MessageEntry"
+                sling:key="Source Type" sling:message="Datei-Typ"/>
+        <file-source-type-hint jcr:primaryType="sling:MessageEntry"
+                sling:key="if you want to paste source code select the type:"
+                sling:message="Typ auswählen, wenn Quelltext eingefügt werden soll:"/>
+        <file-source-input jcr:primaryType="sling:MessageEntry"
+                sling:key="Input Source" sling:message="Quelltext"/>
+        <file-source-hint jcr:primaryType="sling:MessageEntry"
+                sling:key="you can input or paste the code to upload here instead of a file upload"
+                sling:message="statt eine Datei hochzuladen kann der Code hier eingegeben oder eingefügt werden"/>
+        <file-upload-select jcr:primaryType="sling:MessageEntry"
+                sling:key="Select File" sling:message="Datei auswählen"/>
         <file-upload-name-hint jcr:primaryType="sling:MessageEntry"
                 sling:key="add a name if the file name is not the right choice"
                 sling:message="der Name, falls der Dateiname nicht genutzt werden soll"/>
+        <file-upload-name-err jcr:primaryType="sling:MessageEntry"
+                sling:key="the Name or a File must be specified"
+                sling:message="der Name oder eine Datei muss angegeben werden"/>
+        <validation-error jcr:primaryType="sling:MessageEntry"
+                sling:key="Validation Error" sling:message="Validierungsfehler"/>
         <move jcr:primaryType="sling:MessageEntry"
                 sling:key="Move" sling:message="Verschieben"/>
         <paste jcr:primaryType="sling:MessageEntry"
@@ -139,6 +335,10 @@
                 sling:key="Rename" sling:message="Umbenennen"/>
         <select jcr:primaryType="sling:MessageEntry"
                 sling:key="Select" sling:message="Auswählen"/>
+        <select-template jcr:primaryType="sling:MessageEntry"
+                sling:key="Select a template" sling:message="Vorlage auswählen"/>
+        <no-template jcr:primaryType="sling:MessageEntry"
+                sling:key="no template" sling:message="keine Vorlage"/>
         <select-in-tree jcr:primaryType="sling:MessageEntry"
                 sling:key="Select in Tree"
                 sling:message="Im Baum Auswählen"/>
@@ -149,5 +349,44 @@
                 sling:key="Selected Path"
                 sling:message="Gewählter Pfad"/>
     </dialog>
+
+    <navigation jcr:primaryType="sling:Folder"><!-- main navigation -->
+
+        <search jcr:primaryType="sling:MessageEntry"
+                sling:key="Search" sling:message="Suche"/>
+
+        <pagesTree jcr:primaryType="sling:MessageEntry"
+                sling:key="Pages Tree" sling:message="Seitennavigation"/>
+        <searchPageHint jcr:primaryType="sling:MessageEntry"
+                sling:key="Search a page"
+                sling:message="Suche nach Seiten"/>
+
+        <assetSelect jcr:primaryType="sling:MessageEntry"
+                sling:key="Assets Selector" sling:message="Asset-Auswahl"/>
+        <searchAssetHint jcr:primaryType="sling:MessageEntry"
+                sling:key="Search an asset object"
+                sling:message="Suche nach Asset-Objekten"/>
+        <all jcr:primaryType="sling:MessageEntry"
+                sling:key="All"
+                sling:message="Alles"/>
+        <allHint jcr:primaryType="sling:MessageEntry"
+                sling:key="show all available asset object types"
+                sling:message="verwende alle Asset-Objekttypen"/>
+        <assetHint jcr:primaryType="sling:MessageEntry"
+                sling:key="restrict to 'Composum Assets' objects"
+                sling:message="verwende nur 'Composum Assets'-Objekte"/>
+        <image jcr:primaryType="sling:MessageEntry"
+                sling:key="Image"
+                sling:message="Bild"/>
+        <imageHint jcr:primaryType="sling:MessageEntry"
+                sling:key="restrict to image file objects"
+                sling:message="verwende nur Bild-Dateien"/>
+        <videoHint jcr:primaryType="sling:MessageEntry"
+                sling:key="restrict to video file objects"
+                sling:message="verwende nur Video-Dateien"/>
+
+        <componentSelect jcr:primaryType="sling:MessageEntry"
+                sling:key="Component Selector" sling:message="Komponentenauswahl"/>
+    </navigation>
 
 </jcr:root>

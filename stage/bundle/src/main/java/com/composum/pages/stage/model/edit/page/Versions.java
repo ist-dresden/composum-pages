@@ -1,8 +1,9 @@
 package com.composum.pages.stage.model.edit.page;
 
-import com.composum.sling.core.filter.StringFilter;
+import com.composum.pages.commons.PagesConstants;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.api.JackrabbitSession;
+import org.apache.sling.api.resource.ResourceResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,14 +17,14 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Objects;
+import java.util.regex.Matcher;
 
-public class Versions extends PageElement {
+import static com.composum.pages.commons.PagesConstants.VERSION_DATE_FORMAT;
+
+public class Versions extends PageModel {
 
     private static final Logger LOG = LoggerFactory.getLogger(Versions.class);
-
-    public static final String VERSION_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
-
-    public static final StringFilter LABEL_FILTER = new StringFilter.BlackList("^composum-pages-.*$");
 
     public class VersionItem {
 
@@ -33,6 +34,30 @@ public class Versions extends PageElement {
 
         public VersionItem(Version version) {
             this.version = version;
+        }
+
+        public String getId() {
+            try {
+                return version.getIdentifier();
+            } catch (RepositoryException rex) {
+                LOG.error(rex.getMessage(), rex);
+                return "";
+            }
+        }
+
+        public String getRelease() {
+            try {
+                String[] versionLabels = versionHistory.getVersionLabels(version);
+                for (String label : versionLabels) {
+                    Matcher matcher = PagesConstants.RELEASE_LABEL_PATTERN.matcher(label);
+                    if (matcher.matches()) {
+                        return matcher.group(1);
+                    }
+                }
+            } catch (RepositoryException rex) {
+                LOG.error(rex.getMessage(), rex);
+            }
+            return "";
         }
 
         public String getName() {
@@ -62,8 +87,9 @@ public class Versions extends PageElement {
                 try {
                     String[] versionLabels = versionHistory.getVersionLabels(version);
                     for (String label : versionLabels) {
-                        if (LABEL_FILTER.accept(label)) {
-                            labels.add(label);
+                        Matcher matcher = PagesConstants.RELEASE_LABEL_PATTERN.matcher(label);
+                        if (matcher.matches()) {
+                            labels.add(matcher.group(1));
                         }
                     }
                 } catch (RepositoryException rex) {
@@ -75,7 +101,7 @@ public class Versions extends PageElement {
 
         public String getLabelsString() {
             List<String> labels = getLabels();
-            return labels.size() > 0 ? StringUtils.join(labels, ", ") : "no custom label";
+            return StringUtils.join(labels, ", ");
         }
     }
 
@@ -87,7 +113,8 @@ public class Versions extends PageElement {
     public VersionManager getVersionManager() {
         if (versionManager == null) {
             try {
-                final JackrabbitSession session = (JackrabbitSession) resolver.adaptTo(Session.class);
+                ResourceResolver resolver = getDelegate().getContext().getResolver();
+                final JackrabbitSession session = Objects.requireNonNull((JackrabbitSession) resolver.adaptTo(Session.class));
                 versionManager = session.getWorkspace().getVersionManager();
             } catch (RepositoryException rex) {
                 LOG.error(rex.getMessage(), rex);

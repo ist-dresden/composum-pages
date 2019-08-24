@@ -12,6 +12,10 @@ import org.apache.sling.api.resource.Resource;
 
 import javax.servlet.jsp.PageContext;
 
+import static com.composum.pages.commons.PagesConstants.RA_CONTEXT_PATH;
+import static com.composum.pages.commons.PagesConstants.RA_CURRENT_PAGE;
+import static com.composum.pages.commons.PagesConstants.RA_RESOURCE_REF;
+
 public class DefineObjectsTag extends org.apache.sling.scripting.jsp.taglib.DefineObjectsTag {
 
     public static final String PAGES_ACCESS_PREFIX = "pagesAccess";
@@ -25,9 +29,6 @@ public class DefineObjectsTag extends org.apache.sling.scripting.jsp.taglib.Defi
     public static final String PAGES_MODE_EDIT = PAGES_MODE_PREFIX + "Edit";
     public static final String PAGES_MODE_DEVELOP = PAGES_MODE_PREFIX + "Develop";
 
-    public static final String CURRENT_PAGE = "currentPage";
-    public static final String CONTEXT_PATH = "contextPath";
-
     protected BeanContext context;
 
     @Override
@@ -36,7 +37,10 @@ public class DefineObjectsTag extends org.apache.sling.scripting.jsp.taglib.Defi
         context = createContext(pageContext);
         SlingHttpServletRequest request = context.getRequest();
 
-        context.setAttribute(CONTEXT_PATH, context.getRequest().getContextPath(), BeanContext.Scope.request);
+        Resource resourceRef = determineResourceRef(request);
+        context.setAttribute(RA_CONTEXT_PATH, context.getRequest().getContextPath(), BeanContext.Scope.request);
+        context.setAttribute(RA_RESOURCE_REF, resourceRef, BeanContext.Scope.request);
+
         AccessMode accessMode = request.adaptTo(AccessMode.class);
         context.setAttribute(PAGES_ACCESS_AUTHOR, accessMode == AccessMode.AUTHOR
                 ? Boolean.TRUE : Boolean.FALSE, BeanContext.Scope.request);
@@ -56,8 +60,11 @@ public class DefineObjectsTag extends org.apache.sling.scripting.jsp.taglib.Defi
                 ? Boolean.TRUE : Boolean.FALSE, BeanContext.Scope.request);
 
         request.adaptTo(PagesLocale.class);
-        setCurrentPage();
-        setLanguages();
+        if (resourceRef == null) {
+            resourceRef = request.getResource();
+        }
+        setCurrentPage(resourceRef);
+        setLanguages(resourceRef);
 
         return result;
     }
@@ -66,30 +73,27 @@ public class DefineObjectsTag extends org.apache.sling.scripting.jsp.taglib.Defi
         return new BeanContext.Page(pageContext);
     }
 
-    protected void setCurrentPage() {
+    protected void setCurrentPage(Resource resource) {
 
-        if (context.getAttribute(CURRENT_PAGE, Page.class) == null) {
+        if (context.getAttribute(RA_CURRENT_PAGE, Page.class) == null) {
             SlingHttpServletRequest request = context.getRequest();
-            Resource resource = determineResource(request);
             PageManager pageManager = context.getService(PageManager.class);
             Resource pageResource = pageManager.getContainingPageResource(resource);
 
             if (pageResource != null) {
                 Page page = pageManager.createBean(context, pageResource);
-                request.setAttribute(CURRENT_PAGE, page);
+                request.setAttribute(RA_CURRENT_PAGE, page);
             }
         }
     }
 
-    protected void setLanguages() {
+    protected void setLanguages(Resource resource) {
         if (Languages.get(context) == null) {
-            SlingHttpServletRequest request = context.getRequest();
-            Resource resource = determineResource(request);
             Languages.set(context, resource);
         }
     }
 
-    protected Resource determineResource(SlingHttpServletRequest request) {
-        return request.getResource();
+    protected Resource determineResourceRef(SlingHttpServletRequest request) {
+        return null;
     }
 }

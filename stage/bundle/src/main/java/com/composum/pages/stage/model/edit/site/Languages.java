@@ -18,11 +18,17 @@ public class Languages extends Container {
         if (languageList == null) {
             languageList = new ArrayList<>();
             final Page currentPage = getCurrentPage();
-            final Site site = currentPage.getSite();
-            final Resource siteResource = site.getResource();
-            final Resource languagesResource = siteResource.getChild("jcr:content/languages");
-            for (Resource language : languagesResource.getChildren()) {
-                languageList.add(language);
+            if (currentPage != null) {
+                final Site site = currentPage.getSite();
+                if (site != null) {
+                    final Resource siteResource = site.getResource();
+                    final Resource languagesResource = siteResource.getChild("jcr:content/languages");
+                    if (languagesResource != null) {
+                        for (Resource language : languagesResource.getChildren()) {
+                            languageList.add(language);
+                        }
+                    }
+                }
             }
         }
         return languageList;

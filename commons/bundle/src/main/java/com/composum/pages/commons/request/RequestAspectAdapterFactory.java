@@ -1,5 +1,6 @@
 package com.composum.pages.commons.request;
 
+import com.composum.pages.commons.model.Page;
 import com.composum.sling.platform.security.AccessMode;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
@@ -10,17 +11,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 import static com.composum.pages.commons.PagesConstants.ACCESS_MODE_ATTR;
 import static com.composum.pages.commons.PagesConstants.ACCESS_MODE_REQ_PARAM;
 import static com.composum.pages.commons.PagesConstants.DISPLAY_MODE_ATTR;
-import static com.composum.pages.commons.PagesConstants.DISPLAY_MODE_REQ_PARAM;
+import static com.composum.pages.commons.PagesConstants.DISPLAY_MODE_VIEW_PARAM;
 import static com.composum.pages.commons.PagesConstants.LOCALE_REQUEST_PARAM;
-import static com.composum.pages.commons.PagesConstants.PAGES_LOCALE_ATTR;
+import static com.composum.pages.commons.PagesConstants.RA_PAGES_LOCALE;
 
 /**
  * the adapter factory for all aspects in the request context of the Pages module
@@ -41,7 +44,7 @@ import static com.composum.pages.commons.PagesConstants.PAGES_LOCALE_ATTR;
  * Each aspect value specified by a parameter is kept in the session and reused in further request.
  * </p>
  */
-@Component(name = "Composum Pages Request Aspects Adapter Factory",
+@Component(
         property = {
                 Constants.SERVICE_DESCRIPTION + "=the adapter factory for all request aspects - access mode, display mode, language",
                 AdapterFactory.ADAPTER_CLASSES + "=com.composum.sling.platform.security.AccessMode",
@@ -97,13 +100,16 @@ public class RequestAspectAdapterFactory implements AdapterFactory {
 
         String getKey();
 
-        Type getFromRequest(SlingHttpServletRequest request, String key);
+        @Nullable
+        Type getFromRequest(@Nonnull SlingHttpServletRequest request, @Nonnull String key);
 
-        Type getFromSession(SlingHttpServletRequest request, HttpSession session, String key);
+        @Nullable
+        Type getFromSession(@Nonnull SlingHttpServletRequest request, @Nonnull HttpSession session, @Nonnull String key);
 
-        Type createFromRequest(SlingHttpServletRequest request, String key);
+        @Nullable
+        Type createFromRequest(@Nonnull SlingHttpServletRequest request, @Nonnull String key);
 
-        void keepInSession(HttpSession session, String key, Object value);
+        void keepInSession(@Nonnull HttpSession session, @Nonnull String key, @Nonnull Object value);
     }
 
     /**
@@ -118,14 +124,16 @@ public class RequestAspectAdapterFactory implements AdapterFactory {
         }
 
         @Override
-        public AccessMode getFromRequest(SlingHttpServletRequest request, String key) {
+        @Nullable
+        public AccessMode getFromRequest(@Nonnull SlingHttpServletRequest request, @Nonnull String key) {
             return request.getParameter(ACCESS_MODE_REQ_PARAM) == null
                     ? AccessMode.accessModeValue(request.getAttribute(key))
                     : null;
         }
 
         @Override
-        public AccessMode getFromSession(SlingHttpServletRequest request, HttpSession session, String key) {
+        @Nullable
+        public AccessMode getFromSession(@Nonnull SlingHttpServletRequest request, @Nonnull HttpSession session, @Nonnull String key) {
             return AccessMode.accessModeValue(session.getAttribute(key));
         }
 
@@ -134,17 +142,18 @@ public class RequestAspectAdapterFactory implements AdapterFactory {
          * - but the platform access manager can be switched off...
          */
         @Override
-        public AccessMode createFromRequest(SlingHttpServletRequest request, String key) {
+        @Nonnull
+        public AccessMode createFromRequest(@Nonnull SlingHttpServletRequest request, @Nonnull String key) {
             AccessMode accessMode = AccessMode.PUBLIC;
             String parameter = request.getParameter(ACCESS_MODE_REQ_PARAM);
             if (StringUtils.isNotBlank(parameter)) {
-                accessMode = AccessMode.accessModeValue(parameter, accessMode);
+                accessMode = Objects.requireNonNull(AccessMode.accessModeValue(parameter, accessMode));
             }
             return accessMode;
         }
 
         @Override
-        public void keepInSession(HttpSession session, String key, Object value) {
+        public void keepInSession(@Nonnull HttpSession session, @Nonnull String key, @Nonnull Object value) {
             session.setAttribute(key, ((AccessMode) value).name());
             if (LOG.isDebugEnabled()) {
                 LOG.debug("keepInSession({}): {}", AccessMode.class.getSimpleName(), value);
@@ -165,24 +174,27 @@ public class RequestAspectAdapterFactory implements AdapterFactory {
         }
 
         @Override
-        public DisplayMode getFromRequest(SlingHttpServletRequest request, String key) {
+        @Nullable
+        public DisplayMode getFromRequest(@Nonnull SlingHttpServletRequest request, @Nonnull String key) {
             return (DisplayMode) request.getAttribute(key);
         }
 
         @Override
-        public DisplayMode getFromSession(SlingHttpServletRequest request, HttpSession session, String key) {
+        @Nullable
+        public DisplayMode getFromSession(@Nonnull SlingHttpServletRequest request, @Nonnull HttpSession session, @Nonnull String key) {
             return null;
         }
 
         @Override
-        public DisplayMode createFromRequest(SlingHttpServletRequest request, String key) {
-            String parameter = request.getParameter(DISPLAY_MODE_REQ_PARAM);
+        @Nonnull
+        public DisplayMode createFromRequest(@Nonnull SlingHttpServletRequest request, @Nonnull String key) {
+            String parameter = request.getParameter(DISPLAY_MODE_VIEW_PARAM);
             DisplayMode.Value value = DisplayMode.Value.displayModeValue(parameter, DisplayMode.Value.NONE);
             return new DisplayMode(value);
         }
 
         @Override
-        public void keepInSession(HttpSession session, String key, Object value) {
+        public void keepInSession(@Nonnull HttpSession session, @Nonnull String key, @Nonnull Object value) {
         }
     }
 
@@ -193,34 +205,42 @@ public class RequestAspectAdapterFactory implements AdapterFactory {
 
         @Override
         public String getKey() {
-            return PAGES_LOCALE_ATTR;
+            return RA_PAGES_LOCALE;
         }
 
         @Override
-        public PagesLocale getFromRequest(SlingHttpServletRequest request, String key) {
+        @Nullable
+        public PagesLocale getFromRequest(@Nonnull SlingHttpServletRequest request, @Nonnull String key) {
             return (PagesLocale) request.getAttribute(key);
         }
 
         @Override
-        public PagesLocale createFromRequest(SlingHttpServletRequest request, String key) {
-            Locale locale = request.getLocale();
+        @Nullable
+        public PagesLocale createFromRequest(@Nonnull SlingHttpServletRequest request, @Nonnull String key) {
+            Locale locale = null;
             String parameter = request.getParameter(LOCALE_REQUEST_PARAM);
             if (StringUtils.isNotBlank(parameter)) {
                 locale = getLocale(parameter, locale);
             }
-            return new PagesLocale(locale);
+            return locale != null ? new PagesLocale(locale) : null;
         }
 
         @Override
-        public PagesLocale getFromSession(SlingHttpServletRequest request, HttpSession session, String key) {
-            return request.getParameter(LOCALE_REQUEST_PARAM) == null
-                    ? (PagesLocale) session.getAttribute(key)
-                    : null;
+        @Nullable
+        public PagesLocale getFromSession(@Nonnull SlingHttpServletRequest request, @Nonnull HttpSession session, @Nonnull String key) {
+            PagesLocale result = null;
+            if (request.getParameter(LOCALE_REQUEST_PARAM) == null && !Page.isPage(request.getResource())) {
+                Locale locale = (Locale) session.getAttribute(key);
+                if (locale != null) {
+                    result = new PagesLocale(locale);
+                }
+            }
+            return result;
         }
 
         @Override
-        public void keepInSession(HttpSession session, String key, Object value) {
-            session.setAttribute(key, value);
+        public void keepInSession(@Nonnull HttpSession session, @Nonnull String key, @Nonnull Object value) {
+            session.setAttribute(key, ((PagesLocale) value).getLocale());
             if (LOG.isDebugEnabled()) {
                 LOG.debug("keepInSession({}): {}", Locale.class.getSimpleName(), value);
             }

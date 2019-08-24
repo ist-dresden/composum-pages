@@ -1,15 +1,8 @@
 package com.composum.pages.commons.taglib;
 
-import com.composum.pages.commons.PagesConstants;
-import com.composum.pages.commons.model.properties.Language;
-import com.composum.pages.commons.model.properties.Languages;
-import com.composum.pages.commons.util.NewResourceParent;
+import com.composum.pages.commons.util.ResourceTypeUtil;
 import com.composum.pages.commons.util.TagCssClasses;
-import com.composum.sling.core.BeanContext;
-import com.composum.sling.core.util.ResourceUtil;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ResourceResolver;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
@@ -18,37 +11,37 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import static com.composum.pages.commons.servlet.EditServlet.EDIT_RESOURCE_KEY;
-import static com.composum.pages.commons.servlet.EditServlet.EDIT_RESOURCE_TYPE_KEY;
 import static com.composum.pages.commons.taglib.AbstractPageTag.STAGE_COMPONENT_BASE;
-import static com.composum.pages.commons.taglib.ElementTag.PAGES_EDIT_DATA;
-import static com.composum.pages.commons.taglib.ElementTag.PAGES_EDIT_DATA_NAME;
-import static com.composum.pages.commons.taglib.ElementTag.PAGES_EDIT_DATA_PATH;
-import static com.composum.pages.commons.taglib.ElementTag.PAGES_EDIT_DATA_TYPE;
 import static com.composum.pages.commons.util.TagCssClasses.cssOfType;
-import static com.composum.platform.models.annotations.InternationalizationStrategy.I18NFOLDER.I18N_PROPERTY_PATH;
+import static com.composum.sling.cpnl.TagBase.TAG_NONE;
 
 /**
  * the EditDialogTag creates the HTML code for an edit dialog of a component
  */
 @SuppressWarnings("JavaDoc")
-public class EditDialogTag extends AbstractWrappingTag {
+public class EditDialogTag extends AbstractEditTag {
 
     public static final String DIALOG_VAR = "dialog";
-    public static final String DIALOG_CSS_VAR = DIALOG_VAR + "CssBase";
+    public static final String DIALOG_CSS_VAR = DIALOG_VAR + "CSS";
+    public static final String DIALOG_CSSBASE_VAR = DIALOG_VAR + "CssBase";
 
-    public static final String DEFAULT_SELECTOR = "edit";
+    public static final String SELECTOR_CHANGE = "change";
     public static final String SELECTOR_CREATE = "create";
+    public static final String SELECTOR_DELETE = "delete";
+    public static final String SELECTOR_EDIT = "edit";
+    public static final String SELECTOR_GENERIC = "generic";
+    public static final String SELECTOR_NEW = "new";
+    public static final String SELECTOR_WIZARD = "wizard";
     public static final List<String> KNOWN_SELECTORS = Arrays.asList(
-            DEFAULT_SELECTOR,
+            SELECTOR_EDIT,
             SELECTOR_CREATE,
-            "new",
-            "delete",
-            "generic",
-            "wizard"
+            SELECTOR_NEW,
+            SELECTOR_DELETE,
+            SELECTOR_CHANGE,
+            SELECTOR_GENERIC,
+            SELECTOR_WIZARD
     );
-
-    public static final String TYPE_NONE = "none";
+    public static final String DEFAULT_SELECTOR = SELECTOR_EDIT;
 
     public static final String DEFAULT_CSS_BASE = "composum-pages-stage-edit-dialog";
 
@@ -75,15 +68,6 @@ public class EditDialogTag extends AbstractWrappingTag {
 
     protected boolean languageContext = true;
 
-    protected Resource editResource;
-    protected Resource parentResource;
-    protected String resourcePath;
-    protected String resourceType;
-    protected String primaryType;
-    private transient String defaultPrimaryType;
-
-    private transient String editPath;
-
     protected String submit;
     protected String submitLabel;
     private transient EditDialogAction action;
@@ -101,13 +85,6 @@ public class EditDialogTag extends AbstractWrappingTag {
         action = null;
         submit = null;
         submitLabel = null;
-        editPath = null;
-        defaultPrimaryType = null;
-        primaryType = null;
-        resourcePath = null;
-        resourceType = null;
-        parentResource = null;
-        editResource = null;
         selectorValue = null;
         selector = null;
         titleValue = null;
@@ -115,75 +92,6 @@ public class EditDialogTag extends AbstractWrappingTag {
         tagId = null;
         dialogId = null;
         super.clear();
-    }
-
-    /**
-     * Determines the resource to edit by the form of the dialog to create by this tag. This resource is mainly
-     * determined by a 'EDIT_RESOURCE_KEY' request attribute which is declared by the edit servlet during the dialog
-     * load request; if the dialog is loaded by a dialog component URL the edit resource is expected as the URLs suffix.
-     * Dialogs to ceate a new resourceshould be marked with a '*' resourcePath attribute to avoid copying of
-     * parent properties.
-     *
-     * @param context the current request context
-     * @return the resource to edit
-     */
-    @Override
-    public Resource getModelResource(BeanContext context) {
-        if (editResource == null) {
-            ResourceResolver resolver = context.getResolver();
-            boolean isStarResource = false;
-            if (StringUtils.isNotBlank(resourcePath)) {
-                if (resourcePath.endsWith("*")) {
-                    isStarResource = true; // this is a 'create' dialog...
-                } else {
-                    editResource = resolver.getResource(resourcePath);
-                }
-            }
-            if (editResource == null) {
-                // use the resource defined by the dialog delivery servlet
-                editResource = (Resource) request.getAttribute(EDIT_RESOURCE_KEY);
-            }
-            if (editResource == null) {
-                // use the request suffix as the resource to edit
-                String suffix = request.getRequestPathInfo().getSuffix();
-                if (StringUtils.isNotBlank(suffix) && !"/".equals(suffix)) {
-                    editResource = request.getResourceResolver().getResource(suffix);
-                    if (editResource != null) {
-                        request.setAttribute(EDIT_RESOURCE_KEY, editResource);
-                    }
-                }
-            }
-            if (!(editResource instanceof Resource)) {
-                editResource = super.getModelResource(context);
-            }
-            if (isStarResource) {
-                // keep parent resource an support access to it
-                parentResource = editResource;
-                // wrap the current resource and make the resource empty
-                editResource = new NewResourceParent(editResource);
-            }
-        }
-        return editResource;
-    }
-
-    public String getEditPath() {
-        if (editPath == null) {
-            Resource editResource = getModelResource(context);
-            editPath = editResource != resource ? editResource.getPath() : "";
-        }
-        return editPath;
-    }
-
-    /**
-     * @return the result of 'getModelResource()' as the resource to drive this tag
-     */
-    @Override
-    public Resource getResource() {
-        return getModelResource(context);
-    }
-
-    public Resource getParentResource() {
-        return parentResource;
     }
 
     // tag attributes
@@ -205,6 +113,10 @@ public class EditDialogTag extends AbstractWrappingTag {
 
     public void setTitle(String text) {
         title = text;
+    }
+
+    public boolean isDisabledSet() {
+        return getDisabledValue();
     }
 
     /**
@@ -235,68 +147,27 @@ public class EditDialogTag extends AbstractWrappingTag {
         return StringUtils.isNotBlank(hint) ? hint : "element";
     }
 
-    // create: 'sling:resourceType'
-
-    public void setResource(Resource resource) {
-        editResource = resource;
-    }
-
-    public void setResourcePath(String path) {
-        resourcePath = path;
-    }
-
-    /**
-     * the resource type of a new element created by a dialog (hidden 'sling:resourceType' property value)
-     */
-    public String getResourceType() {
-        return StringUtils.isNotBlank(resourceType) ? resourceType : getDefaultResourceType();
-    }
-
-    public void setResourceType(String type) {
-        resourceType = type;
-    }
-
-    public String getDefaultResourceType() {
-        String requestedType = (String) request.getAttribute(EDIT_RESOURCE_TYPE_KEY);
-        return requestedType != null ? requestedType : "";
-    }
-
     /**
      * if this returns 'true' the hidden resource type property value must be inserted in the form
      */
     public boolean isUseResourceType() {
-        return (!TYPE_NONE.equalsIgnoreCase(resourceType)
-                && (StringUtils.isNotBlank(resourceType) || SELECTOR_CREATE.equalsIgnoreCase(getSelector())
-                || ResourceUtil.isNonExistingResource(getModelResource(context))));
-    }
-
-    // create: 'jcr:primaryType'
-
-    /**
-     * the primary type of a new element created by a dialog (hidden 'jcr:primaryType' property value)
-     */
-    public String getPrimaryType() {
-        return StringUtils.isNotBlank(primaryType) ? primaryType : getDefaultPrimaryType();
-    }
-
-    public void setPrimaryType(String type) {
-        primaryType = type;
-    }
-
-    public String getDefaultPrimaryType() {
-        if (defaultPrimaryType == null) {
-            defaultPrimaryType = PagesConstants.ComponentType.getPrimaryType(
-                    PagesConstants.ComponentType.typeOf(resourceResolver, getResource(), getResourceType()));
-        }
-        return defaultPrimaryType;
+        return useCreationType(getResourceType());
     }
 
     /**
      * if this returns 'true' the hidden primary type property value must be inserted in the form
      */
     public boolean isUsePrimaryType() {
-        return (SELECTOR_CREATE.equalsIgnoreCase(getSelector()) || primaryType != null)
-                && !TYPE_NONE.equalsIgnoreCase(primaryType);
+        return useCreationType(getPrimaryType());
+    }
+
+    public boolean useCreationType(String type) {
+        return StringUtils.isNotBlank(type) && !TAG_NONE.equalsIgnoreCase(type) && isCreateOrSynthetic();
+    }
+
+    public boolean isCreateOrSynthetic() {
+        return SELECTOR_CREATE.equalsIgnoreCase(getSelector())
+                || ResourceTypeUtil.isSyntheticResource(getModelResource(context));
     }
 
     // the dialog variation selector
@@ -409,21 +280,8 @@ public class EditDialogTag extends AbstractWrappingTag {
     //
     //
 
-    public String getPropertyPath(String name) {
-        return getAction().getPropertyPath(name);
-    }
-
-    protected String getI18nPath(String name) {
-        String path = name;
-        Languages languages = getLanguages();
-        if (languages != null) {
-            Language defaultLanguage = languages.getDefaultLanguage();
-            if (defaultLanguage != null && !defaultLanguage.isCurrent()) {
-                Language language = languages.getLanguage();
-                path = I18N_PROPERTY_PATH + language.getKey() + "/" + path;
-            }
-        }
-        return path;
+    public String getPropertyPath(String relativePath, String name) {
+        return getAction().getPropertyPath(relativePath, name);
     }
 
     public String getDialogId() {
@@ -449,7 +307,7 @@ public class EditDialogTag extends AbstractWrappingTag {
     }
 
     @Override
-    protected void collectAttributes(Map<String, String> attributeSet) {
+    protected void collectAttributes(Map<String, Object> attributeSet) {
         String value;
         if (StringUtils.isNotBlank(value = getTagId())) {
             attributeSet.put(TAG_ID, value);
@@ -457,12 +315,6 @@ public class EditDialogTag extends AbstractWrappingTag {
         super.collectAttributes(attributeSet);
         attributeSet.put("role", "dialog");
         attributeSet.put("aria-hidden", "true");
-        Resource resourceToEdit = getResource();
-        if (resourceToEdit != null) {
-            attributeSet.put(PAGES_EDIT_DATA_NAME, resourceToEdit.getName());
-            attributeSet.put(PAGES_EDIT_DATA_PATH, resourceToEdit.getPath());
-            attributeSet.put(PAGES_EDIT_DATA_TYPE, getResourceType());
-        }
         if (StringUtils.isNotBlank(value = getSuccessEvent())) {
             attributeSet.put(PAGES_EDIT_SUCCESS_EVENT, value);
         }
@@ -487,6 +339,7 @@ public class EditDialogTag extends AbstractWrappingTag {
         setAttribute(DIALOG_VAR, this, PageContext.REQUEST_SCOPE);
         if (StringUtils.isNotBlank(cssBase)) {
             setAttribute(DIALOG_CSS_VAR, cssBase, PageContext.REQUEST_SCOPE);
+            setAttribute(DIALOG_CSSBASE_VAR, cssBase, PageContext.REQUEST_SCOPE);
         }
     }
 
@@ -527,7 +380,7 @@ public class EditDialogTag extends AbstractWrappingTag {
 
         String getEncType();
 
-        String getPropertyPath(String name);
+        String getPropertyPath(String relativePath, String name);
     }
 
     public class SlingPostServletAction implements EditDialogAction {
@@ -556,8 +409,8 @@ public class EditDialogTag extends AbstractWrappingTag {
             return "multipart/form-data";
         }
 
-        public String getPropertyPath(String name) {
-            return getI18nPath(name);
+        public String getPropertyPath(String relativePath, String name) {
+            return getI18nPath(relativePath, name);
         }
     }
 
@@ -585,8 +438,8 @@ public class EditDialogTag extends AbstractWrappingTag {
             return "multipart/form-data";
         }
 
-        public String getPropertyPath(String name) {
-            return getI18nPath(name);
+        public String getPropertyPath(String relativePath, String name) {
+            return getI18nPath(relativePath, name);
         }
     }
 }

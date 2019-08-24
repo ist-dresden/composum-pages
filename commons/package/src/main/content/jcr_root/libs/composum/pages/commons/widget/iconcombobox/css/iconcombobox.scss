@@ -1,0 +1,17 @@
+@charset "UTF-8";
+
+@import "../../../css/variables";
+@import "../../../css/mixins";
+
+.composum-pages-edit-widget {
+
+    &_iconcombobox {
+
+        &_icon {
+            min-width: 47px;
+            padding-right: 10px;
+            font-size: 18px;
+            text-align: center;
+        }
+    }
+}

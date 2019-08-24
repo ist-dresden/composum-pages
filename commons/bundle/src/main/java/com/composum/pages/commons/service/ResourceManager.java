@@ -1,9 +1,16 @@
+/*
+ * copyright (c) 2015ff IST GmbH Dresden, Germany - https://www.ist-software.com
+ *
+ * This software may be modified and distributed under the terms of the MIT license.
+ */
 package com.composum.pages.commons.service;
 
 import com.composum.pages.commons.model.AbstractModel;
 import com.composum.pages.commons.model.properties.PathPatternSet;
+import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.filter.StringFilter;
+import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import org.apache.sling.api.resource.PersistenceException;
@@ -36,6 +43,15 @@ public interface ResourceManager {
 
         @Nonnull
         Resource getResource();
+
+        @Nonnull
+        String getPrimaryType();
+
+        @Nonnull
+        JsonObject getEditData();
+
+        @Nonnull
+        ResourceResolver getResolver();
 
         /**
          * returns the property value using the cascade: resource - configuration - resource type
@@ -111,12 +127,16 @@ public interface ResourceManager {
 
     ResourceReference getReference(AbstractModel model);
 
-    /** a resource and a probably overlayed type (type can be 'null') */
+    /**
+     * a resource and a probably overlayed type (type can be 'null')
+     */
     ResourceReference getReference(@Nonnull Resource resource, @Nullable String type);
 
     ResourceReference getReference(@Nonnull ResourceResolver resolver, @Nonnull String path, @Nullable String type);
 
-    /** a reference translated from a JSON object (transferred reference) */
+    /**
+     * a reference translated from a JSON object (transferred reference)
+     */
     ResourceReference getReference(ResourceResolver resolver, JsonReader reader) throws IOException;
 
     ReferenceList getReferenceList();
@@ -138,7 +158,7 @@ public interface ResourceManager {
     Template getTemplateOf(@Nullable Resource resource);
 
     @Nullable
-    Resource findContainingPageResource(Resource resource);
+    Resource findContainingPageResource(@Nullable Resource resource);
 
     /**
      * Checks the policies of the resource hierarchy for a given parent and child (for move and copy operations).
@@ -157,22 +177,25 @@ public interface ResourceManager {
     /**
      * Moves a resource and adopts all references to the moved resource or one of its children.
      *
-     * @param resolver     the resolver (session context)
-     * @param changeRoot   the root element for reference search and change
-     * @param source       the resource to move
-     * @param targetParent the target (the parent resource) of the move
-     * @param newName      an optional new name for the resource
-     * @param before       the designated sibling in an ordered target collection
+     * @param resolver         the resolver (session context)
+     * @param changeRoot       the root element for reference search and change
+     * @param source           the resource to move
+     * @param targetParent     the target (the parent resource) of the move
+     * @param newName          an optional new name for the resource
+     * @param before           the designated sibling in an ordered target collection
+     * @param updatedReferrers output parameter: the List of referers found - these were changed and might need setting a last modification date
      * @return the new resource at the target path
      */
     @Nonnull
     Resource moveContentResource(@Nonnull ResourceResolver resolver, @Nonnull Resource changeRoot,
                                  @Nonnull Resource source, @Nonnull Resource targetParent,
-                                 @Nullable String newName, @Nullable Resource before)
-            throws RepositoryException;
+                                 @Nullable String newName, @Nullable Resource before,
+                                 @Nonnull List<Resource> updatedReferrers)
+            throws RepositoryException, PersistenceException;
 
     /**
      * Changes the 'oldPath' references in each property of a tree to the 'newPath'.
+     * Caution: this does *not* update the last modification date of referrers - that has to be done later from {foundReferrers}.
      *
      * @param resourceFilter change all resources accepted by this filter, let all other resources unchanged
      * @param propertyFilter change only the properties with names matching to this property name filter
@@ -184,7 +207,8 @@ public interface ResourceManager {
      */
     void changeReferences(@Nonnull ResourceFilter resourceFilter, @Nonnull StringFilter propertyFilter,
                           @Nonnull Resource resource, @Nonnull List<Resource> foundReferrers, boolean scanOnly,
-                          @Nonnull String oldPath, @Nonnull String newPath);
+                          @Nonnull String oldPath, @Nonnull String newPath)
+            throws PersistenceException;
 
     /**
      * Changes the 'oldTypePattern' resource types in every appropriate component using the 'newTypeRule'.
@@ -195,7 +219,8 @@ public interface ResourceManager {
      * @param newTypeRule    the pattern matcher rule to build the new type
      */
     void changeResourceType(@Nonnull ResourceFilter resourceFilter, @Nonnull Resource resource,
-                            @Nonnull String oldTypePattern, @Nonnull String newTypeRule);
+                            @Nonnull String oldTypePattern, @Nonnull String newTypeRule)
+            throws PersistenceException;
 
     //
     // templates and copies
@@ -207,6 +232,47 @@ public interface ResourceManager {
 
         String applyTemplatePlaceholders(@Nonnull Resource target, @Nonnull String value);
     }
+
+    /**
+     * the 'transform nothing' context used in case of a copy operation
+     */
+    class NopTemplateContext implements TemplateContext {
+
+        protected final ResourceResolver resolver;
+
+        public NopTemplateContext(ResourceResolver resolver) {
+            this.resolver = resolver;
+        }
+
+        @Override
+        public ResourceResolver getResolver() {
+            return resolver;
+        }
+
+        @Override
+        public String applyTemplatePlaceholders(@Nonnull Resource target, @Nonnull String value) {
+            return value;
+        }
+    }
+
+    /**
+     * only properties of a template accepted by this filter are copied (filter out template settings)
+     */
+    StringFilter CONTENT_PROPERTY_FILTER = new StringFilter.BlackList(
+            "^jcr:(primaryType|created.*|uuid)$",
+            "^jcr:(baseVersion|predecessors|versionHistory|isCheckedOut)$",
+            "^(allowed|forbidden)(Child|Parent)(Elements|Containers|Templates|Types)$",
+            "^(allowed|forbidden)(Paths)$",
+            "^isTemplate$"
+    );
+
+    /**
+     * properties of a target accepted by this filter are not replaced by values from a template
+     */
+    StringFilter CONTENT_TARGET_KEEP = new StringFilter.WhiteList(
+            "^jcr:(primaryType|created.*|uuid)$",
+            "^jcr:(baseVersion|predecessors|versionHistory|isCheckedOut)$"
+    );
 
     /**
      * only properties of a template accepted by this filter are copied (filter out template settings)
@@ -247,7 +313,7 @@ public interface ResourceManager {
     /**
      * @return 'true' if the resource is a content template
      */
-    boolean isTemplate(@Nonnull Resource resource);
+    boolean isTemplate(@Nonnull BeanContext context, @Nonnull Resource resource);
 
     /**
      * Creates a new resource as a copy of a template. If content nodes of such a template are referencing

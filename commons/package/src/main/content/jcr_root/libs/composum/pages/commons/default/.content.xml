@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
         jcr:primaryType="cpp:Site">
-    <jcr:content jcr:primaryType="cpp:SiteConfiguration">
+    <jcr:content jcr:primaryType="cpp:SiteConfiguration"
+            isTemplate="{Boolean}false">
         <languages jcr:primaryType="nt:unstructured">
             <english jcr:primaryType="nt:unstructured"
                     key="en" label="english" default="true"/>

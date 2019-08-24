@@ -1,23 +1,67 @@
 @charset "UTF-8";
 
-$bootstrap-color-danger: #a94442;
-$bootstrap-color-info: #337ab7;
-$bootstrap-color-mute: #777;
-$bootstrap-btn-menu-active-bg: #e6e6e6;
+/*
+ * screen sizes (potential breakpoints)
+ */
+$screen-size-xl: 1500px;
+$screen-size-l: 1200px; // bootstrap -lg-
+$screen-size-m: 992px; // bootstrap -md-
+$screen-size-s: 768px; // bootstrap -sm-
+$screen-size-xs: 624px;
+$screen-size-xxs: 480px;
+
+/*
+ * extracted bootstrap values
+ */
+$bootstrap-screen-sm-min: 768px !default;
+$bootstrap-screen-md-min: 992px !default;
+$bootstrap-screen-lg-min: 1200px !default;
+
+$bootstrap-screen-xs-max: ($bootstrap-screen-sm-min - 1) !default;
+$bootstrap-screen-sm-max: ($bootstrap-screen-md-min - 1) !default;
+$bootstrap-screen-md-max: ($bootstrap-screen-lg-min - 1) !default;
 
 $bootstrap-spacing-v: 10px;
 $bootstrap-spacing-h: 15px;
 
+$bootstrap-color-muted: #777;
+$bootstrap-color-default: #333;
+$bootstrap-color-info: #31708f;
+$bootstrap-color-primary: #fff;
+$bootstrap-color-success: #3c763d;
+$bootstrap-color-warning: #8a6d3b;
+$bootstrap-color-danger: #a94442;
+
+$bootstrap-bg-default: #fff;
+$bootstrap-bg-info: #d9edf7;
+$bootstrap-bg-primary: #337ab7;
+$bootstrap-bg-success: #dff0d8;
+$bootstrap-bg-warning: #fcf8e3;
+$bootstrap-bg-danger: #e4b9b9;
+
+$bootstrap-link-color: #337ab7;
+$bootstrap-link-focus: #23527c;
+
+$bootstrap-btn-menu-active-bg: #e6e6e6;
+
+/*
+ * stage settings
+ */
+$dnd-drop-zone-min-size: 30px;
+
 $tabbed-widget-tab-height: 28px;
 
 $default-font-family: 'robotolight', sans-serif;
-$default-font-size: 17px;
-$hint-font-size: $default-font-size - 3;
+$default-font-size: 15px;
+$text-font-size: 14px;
+$tree-font-size: 16px;
+$title-font-size: 17px;
+$hint-font-size: $default-font-size - 2;
 
 $edit-label-font-family: $default-font-family;
 $edit-label-font-size: $default-font-size;
 $edit-mono-font-size: $default-font-size - 1;
-$edit-hint-font-size: $default-font-size - 3;
+$edit-hint-font-size: $default-font-size - 2;
 $edit-hint-color: #888;
 
 $edit-tools-layer: 2995;
@@ -26,21 +70,22 @@ $dnd-insert-layer: $edit-tools-layer - 2;
 
 /* mix-blend-mode: difference... */
 $dnd-source-content-background: rgba(50, 0, 255, 0.5);
-$dnd-target-frame-color: rgba(255, 155, 55, 0.5);
-$dnd-target-over-color: rgba(85, 55, 255, 0.8);
-$dnd-target-over-background: rgba(85, 55, 255, 0.1);
+$dnd-disabled-frame-color: rgba(220, 0, 0, 0.5);
+$dnd-target-frame-color: rgba(100, 255, 50, 0.6);
+$dnd-target-over-color: rgba(100, 255, 50, 0.9);
+$dnd-target-over-background: rgba(100, 255, 50, 0.2);
 
-$edit-handle-border: 6px;
+$edit-handle-border: 4px;
 $edit-handle-layer: $edit-tools-layer - 4;
-$edit-handle-background: rgba(220, 200, 120, 0.8);
-$edit-handle-foreground: #44a;
+$edit-handle-background: #cc66ff;
 $edit-select-layer: $edit-handle-layer - 2;
-$edit-select-background: rgba(80, 60, 200, 0.8);
-$edit-select-foreground: #ed8;
+$edit-select-background: #3392e3;
+$edit-select-foreground: #eee;
 
 $tools-pane-foreground: #eee;
 $tools-pane-background: rgba(40, 40, 40, 0.9);
 $tools-tile-background: rgba(160, 160, 160, 0.3);
+$tools-tile-bg-hover: rgba(160, 160, 160, 0.4);
 
 $tools-input-foreground: $tools-pane-foreground;
 $tools-input-background: $tools-tile-background;
@@ -54,6 +99,7 @@ $tools-pane-tabs-tab-active: rgba(55, 55, 55, 0.9);
 $tools-pane-tabs-tab-label: $tools-pane-foreground;
 
 $tools-pane-main-selection-color: #3392e3;
+$tools-pane-dnd-target-color: $dnd-target-over-color;
 $tools-pane-sec-selection-color: #929292;
 $tools-pane-main-selection-bg: rgba(255, 255, 255, 0.25);
 $tools-pane-sec-selection-bg: rgba(200, 200, 200, 0.25);
@@ -82,7 +128,7 @@ $sidebar-handle-font-size: $edit-actions-icon-font-size;
 $sidebar-mode-icon-height: 24px;
 $sidebar-mode-font-size: $default-font-size;
 
-$dialog-default-font-size: $default-font-size - 2;
+$dialog-default-font-size: $default-font-size;
 $dialog-label-font-size: $dialog-default-font-size;
 $dialog-input-font-size: $dialog-default-font-size;
 
@@ -92,3 +138,19 @@ $dialog-close-icon-size: 25px;
 
 $tile-panel-default-bg: #f8f8f8;
 $tile-panel-info-bg: #f4f8ff;
+
+$tile-file-height: 120px;
+$tile-file-bg-color: #505050;
+$tile-file-text-bg: rgba(60, 60, 60, 0.5);
+$tile-file-text-bg-selected: rgba(51, 146, 227, 0.5);
+$tile-file-text-color: #fff;
+$tile-file-text-padding: 4px;
+
+/*
+ * releases
+ */
+$release-status-initial: #aaa;
+$release-status-activated: #8c8;
+$release-status-changed: #ada;
+$release-status-modified: #ec8;
+$release-status-deactivated: #c88;

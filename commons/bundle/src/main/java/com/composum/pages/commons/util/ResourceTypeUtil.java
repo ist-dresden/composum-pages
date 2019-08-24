@@ -1,3 +1,8 @@
+/*
+ * copyright (c) 2015ff IST GmbH Dresden, Germany - https://www.ist-software.com
+ *
+ * This software may be modified and distributed under the terms of the MIT license.
+ */
 package com.composum.pages.commons.util;
 
 import com.composum.pages.commons.PagesConstants;
@@ -6,17 +11,27 @@ import com.composum.pages.commons.model.Element;
 import com.composum.pages.commons.model.Page;
 import com.composum.pages.commons.model.Site;
 import com.composum.sling.core.filter.ResourceFilter;
+import com.composum.sling.core.util.ResourceUtil;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.ResourceWrapper;
+import org.apache.sling.api.resource.SyntheticResource;
+import org.apache.sling.api.resource.ValueMap;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.apache.sling.api.resource.Resource.RESOURCE_TYPE_NON_EXISTING;
 
 /**
  * the utility to determine resource types for the rendering of editing subtypes of a component
  * (e.g. to find the dialogs, actions, tiles, ... of a component tu render this pieces of a component in the edit frame)
  */
+@SuppressWarnings("Duplicates")
 public class ResourceTypeUtil {
 
     public static final String EDIT_PATH = "edit"; // the base 'edit' folder name in a component implementation
@@ -31,16 +46,23 @@ public class ResourceTypeUtil {
     public static final String NEW_DIALOG_PATH = EDIT_DIALOG_PATH + "/new";
     public static final String CREATE_DIALOG_PATH = EDIT_DIALOG_PATH + "/create";
     public static final String DELETE_DIALOG_PATH = EDIT_DIALOG_PATH + "/delete";
+    public static final String MANAGE_DIALOG_PATH = EDIT_DIALOG_PATH + "/manage";
     public static final String EDIT_TILE_PATH = EDIT_PATH + "/tile";
+    public static final String EDIT_HELP_PATH = EDIT_PATH + "/help";
     public static final String EDIT_THUMBNAIL_PATH = EDIT_PATH + "/thumbnail";
     public static final String EDIT_TOOLBAR_PATH = EDIT_PATH + "/toolbar";
     public static final String TREE_ACTIONS_PATH = EDIT_PATH + "/tree";
+    public static final String DEVELOP_ACTIONS_PATH = EDIT_PATH + "/develop";
+    public static final String EDIT_CONTEXT_PATH = EDIT_PATH + "/context";
+    public static final String CONTEXT_ACTIONS_PATH = EDIT_CONTEXT_PATH + "/actions";
+    public static final String CONTEXT_CONTAINER_PATH = EDIT_CONTEXT_PATH + "/elements";
 
     // the default component types used if a component doesn't have its own subtype implementation...
 
     public static final String DEFAULT_ELEMENT_DIALOG = EDIT_DEFAULT_ROOT + "element/dialog";
     public static final String DEFAULT_CREATE_DIALOG = DEFAULT_ELEMENT_DIALOG + "/create";
     public static final String DEFAULT_DELETE_DIALOG = DEFAULT_ELEMENT_DIALOG + "/delete";
+    public static final String DEFAULT_MANAGE_DIALOG = DEFAULT_ELEMENT_DIALOG + "/manage";
 
     public static final String DEFAULT_CONTAINER_DIALOG = EDIT_DEFAULT_ROOT + "container/dialog";
     public static final String DEFAULT_NEW_DIALOG = DEFAULT_CONTAINER_DIALOG + "/new";
@@ -52,11 +74,18 @@ public class ResourceTypeUtil {
     public static final String DEFAULT_SITE_DIALOG = EDIT_DEFAULT_ROOT + "site/dialog";
     public static final String DEFAULT_SITE_CREATE_DIALOG = DEFAULT_SITE_DIALOG + "/create";
     public static final String DEFAULT_SITE_DELETE_DIALOG = DEFAULT_SITE_DIALOG + "/delete";
+    public static final String DEFAULT_SITE_MANAGE_DIALOG = DEFAULT_SITE_DIALOG + "/manage";
 
     public static final String DEFAULT_ELEMENT_TILE = EDIT_DEFAULT_ROOT + "element/tile";
     public static final String DEFAULT_CONTAINER_TILE = EDIT_DEFAULT_ROOT + "container/tile";
     public static final String DEFAULT_PAGE_TILE = EDIT_DEFAULT_ROOT + "page/tile";
     public static final String DEFAULT_SITE_TILE = EDIT_DEFAULT_ROOT + "site/tile";
+    public static final String DEFAULT_FILE_TILE = EDIT_DEFAULT_ROOT + "file/tile";
+
+    public static final String DEFAULT_ELEMENT_HELP = EDIT_DEFAULT_ROOT + "element/help";
+    public static final String DEFAULT_CONTAINER_HELP = EDIT_DEFAULT_ROOT + "container/help";
+    public static final String DEFAULT_PAGE_HELP = EDIT_DEFAULT_ROOT + "page/help";
+    public static final String DEFAULT_SITE_HELP = EDIT_DEFAULT_ROOT + "site/help";
 
     public static final String DEFAULT_ELEMENT_THUMBNAIL = EDIT_DEFAULT_ROOT + "element/thumbnail";
     public static final String DEFAULT_CONTAINER_THUMBNAIL = EDIT_DEFAULT_ROOT + "container/thumbnail";
@@ -73,13 +102,40 @@ public class ResourceTypeUtil {
     public static final String DEFAULT_PAGE_ACTIONS = EDIT_DEFAULT_ROOT + "page/tree";
     public static final String DEFAULT_SITE_ACTIONS = EDIT_DEFAULT_ROOT + "site/tree";
     public static final String DEFAULT_FOLDER_ACTIONS = EDIT_DEFAULT_ROOT + "folder/tree";
+    public static final String DEFAULT_FILE_ACTIONS = EDIT_DEFAULT_ROOT + "file/tree";
     public static final String DEFAULT_NONE_ACTIONS = EDIT_DEFAULT_ROOT + "none/tree";
+
+    public static final String DEVELOP_COMPONENT_ACTIONS = EDIT_DEFAULT_ROOT + "develop/component";
+    public static final String DEVELOP_SOURCE_ACTIONS = EDIT_DEFAULT_ROOT + "develop/source";
+    public static final String DEVELOP_PAGE_ACTIONS = EDIT_DEFAULT_ROOT + "develop/page";
+    public static final String DEVELOP_FILE_ACTIONS = EDIT_DEFAULT_ROOT + "develop/file";
+    public static final String DEVELOP_FOLDER_ACTIONS = EDIT_DEFAULT_ROOT + "develop/folder";
+    public static final String NO_DEVELOP_ACTIONS = EDIT_DEFAULT_ROOT + "develop/nothing";
+
+    public static final String DEFAULT_CONTEXT_ACTIONS = EDIT_DEFAULT_ROOT + "element/context/actions";
+    public static final String DEFAULT_CONTAINER_CONTEXT = EDIT_DEFAULT_ROOT + "container/context/actions";
+    public static final String DEFAULT_ELEMENT_CONTAINER = EDIT_DEFAULT_ROOT + "element/context/elements";
+    public static final String DEFAULT_CONTEXT_CONTAINER = EDIT_DEFAULT_ROOT + "container/context/elements";
+
+    public static boolean isSyntheticResource(@Nonnull Resource resource) {
+        while (resource instanceof ResourceWrapper) {
+            resource = ((ResourceWrapper) resource).getResource();
+        }
+        return resource instanceof SyntheticResource || resource.isResourceType(RESOURCE_TYPE_NON_EXISTING);
+    }
 
     /**
      * the check to support folders as intermediate nodes in the content tree
      */
     public static boolean isFolder(Resource resource) {
         return ResourceFilter.FOLDER.accept(resource);
+    }
+
+    /**
+     * the check to support folders as intermediate nodes in the content tree
+     */
+    public static boolean isFile(ResourceResolver resolver, Resource resource) {
+        return false;// ResourceFilter.FILE.accept(resource);
     }
 
     /**
@@ -98,6 +154,16 @@ public class ResourceTypeUtil {
                     : Page.isPage(resource) || Page.isPageContent(resource) ? DEFAULT_PAGE_TILE
                     : Container.isContainer(resolver, resource, type) ? DEFAULT_CONTAINER_TILE
                     : DEFAULT_ELEMENT_TILE;
+        }
+    }
+
+    public static class ComponentHelpStrategy implements SubtypeStrategy {
+
+        public String getDefaultResourcePath(ResourceResolver resolver, Resource resource, String type) {
+            return Site.isSite(resource) || Site.isSiteConfiguration(resource) ? DEFAULT_SITE_HELP
+                    : Page.isPage(resource) || Page.isPageContent(resource) ? DEFAULT_PAGE_HELP
+                    : Container.isContainer(resolver, resource, type) ? DEFAULT_CONTAINER_HELP
+                    : DEFAULT_ELEMENT_HELP;
         }
     }
 
@@ -148,6 +214,13 @@ public class ResourceTypeUtil {
         }
     }
 
+    public static class ManageDialogStrategy extends EditDialogStrategy {
+
+        public String getDefaultResourcePath(ResourceResolver resolver, Resource resource, String type) {
+            return DEFAULT_SITE_MANAGE_DIALOG;
+        }
+    }
+
     public static class EditToolbarStrategy implements SubtypeStrategy {
 
         public String getDefaultResourcePath(ResourceResolver resolver, Resource resource, String type) {
@@ -170,6 +243,23 @@ public class ResourceTypeUtil {
         }
     }
 
+    public static class ContextActionsStrategy implements SubtypeStrategy {
+
+        public String getDefaultResourcePath(ResourceResolver resolver, Resource resource, String type) {
+            return Container.isContainer(resolver, resource, type) ? DEFAULT_CONTAINER_CONTEXT
+                    : Element.isElement(resolver, resource, type) ? DEFAULT_CONTEXT_ACTIONS
+                    : DEFAULT_NONE_ACTIONS;
+        }
+    }
+
+    public static class ContextContainerStrategy implements SubtypeStrategy {
+
+        public String getDefaultResourcePath(ResourceResolver resolver, Resource resource, String type) {
+            return Container.isContainer(resolver, resource, type)
+                    ? DEFAULT_CONTEXT_CONTAINER : DEFAULT_ELEMENT_CONTAINER;
+        }
+    }
+
     /**
      * the set of declared subtypes to implement edit components for a component type
      */
@@ -178,13 +268,70 @@ public class ResourceTypeUtil {
     static {
         SUBTYPES = new HashMap<>();
         SUBTYPES.put(EDIT_TILE_PATH, new ComponentTileStrategy());
+        SUBTYPES.put(EDIT_HELP_PATH, new ComponentHelpStrategy());
         SUBTYPES.put(EDIT_THUMBNAIL_PATH, new ComponentThumbnailStrategy());
         SUBTYPES.put(EDIT_DIALOG_PATH, new EditDialogStrategy());
         SUBTYPES.put(NEW_DIALOG_PATH, new NewDialogStrategy());
         SUBTYPES.put(CREATE_DIALOG_PATH, new CreateDialogStrategy());
         SUBTYPES.put(DELETE_DIALOG_PATH, new DeleteDialogStrategy());
+        SUBTYPES.put(MANAGE_DIALOG_PATH, new ManageDialogStrategy());
         SUBTYPES.put(EDIT_TOOLBAR_PATH, new EditToolbarStrategy());
         SUBTYPES.put(TREE_ACTIONS_PATH, new TreeActionsStrategy());
+        SUBTYPES.put(CONTEXT_ACTIONS_PATH, new ContextActionsStrategy());
+        SUBTYPES.put(CONTEXT_CONTAINER_PATH, new ContextContainerStrategy());
+    }
+
+    /**
+     * retrieves the primary type of a resource; is using the parent if the resource is a content resource
+     */
+    @Nullable
+    public static String getPrimaryType(Resource resource) {
+        String primaryType = null;
+        if (JcrConstants.JCR_CONTENT.equals(resource.getName())) {
+            Resource parent = resource.getParent();
+            if (parent != null) {
+                ValueMap parentValues = parent.getValueMap();
+                primaryType = parentValues.get(JcrConstants.JCR_PRIMARYTYPE, String.class);
+            }
+        }
+        if (StringUtils.isBlank(primaryType)) {
+            ValueMap values = resource.getValueMap();
+            primaryType = values.get(JcrConstants.JCR_PRIMARYTYPE, String.class);
+        }
+        return primaryType;
+    }
+
+    /**
+     * retrieves the resource type of a resource or its content resource with a fallback to the primary type
+     */
+    @Nullable
+    public static String getResourceType(Resource resource) {
+        ValueMap values = resource.getValueMap();
+        String resourceType = values.get(ResourceUtil.PROP_RESOURCE_TYPE, String.class);
+        if (StringUtils.isBlank(resourceType)) {
+            if (JcrConstants.JCR_CONTENT.equals(resource.getName())) {
+                Resource parent = resource.getParent();
+                if (parent != null) {
+                    ValueMap parentValues = parent.getValueMap();
+                    resourceType = parentValues.get(ResourceUtil.PROP_RESOURCE_TYPE, String.class);
+                    if (StringUtils.isBlank(resourceType)) {
+                        resourceType = parentValues.get(JcrConstants.JCR_PRIMARYTYPE, String.class);
+                    }
+                }
+            } else {
+                Resource content = resource.getChild(JcrConstants.JCR_CONTENT);
+                if (content != null) {
+                    ValueMap contentValues = content.getValueMap();
+                    resourceType = contentValues.get(ResourceUtil.PROP_RESOURCE_TYPE, String.class);
+                }
+            }
+            if (StringUtils.isBlank(resourceType)) {
+                resourceType = values.get(JcrConstants.JCR_PRIMARYTYPE, String.class);
+            }
+        }
+        return StringUtils.isNotBlank(resourceType)
+                ? relativeResourceType(resource.getResourceResolver(), resourceType)
+                : null;
     }
 
     /**
@@ -251,5 +398,13 @@ public class ResourceTypeUtil {
                                                Resource resource, String type, String subtype) {
         SubtypeStrategy strategy = SUBTYPES.get(subtype);
         return strategy != null ? strategy.getDefaultResourcePath(resolver, resource, type) : null;
+    }
+
+    /**
+     * @return the 'normalized' resource type - relative to the resolver root paths
+     */
+    public static String relativeResourceType(ResourceResolver resolver, String resourceType) {
+        String rootPattern = "^(" + StringUtils.join(resolver.getSearchPath(), "|") + ")";
+        return resourceType.replaceFirst(rootPattern, "");
     }
 }

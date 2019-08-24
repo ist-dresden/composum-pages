@@ -8,13 +8,16 @@ import org.apache.sling.api.resource.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nonnull;
+
+import static com.composum.pages.commons.PagesConstants.PN_TITLE;
 import static com.composum.pages.commons.PagesConstants.PROP_NAV_TITLE;
 
 public class Menuitem extends Page {
 
     private static final Logger LOG = LoggerFactory.getLogger(Menuitem.class);
 
-    public static final String[] PROP_TITLE_KEYS = new String[]{PROP_NAV_TITLE, ResourceUtil.PROP_TITLE, PROP_TITLE};
+    public static final String[] PROP_TITLE_KEYS = new String[]{PROP_NAV_TITLE, ResourceUtil.PROP_TITLE, PN_TITLE};
 
     public static final String MENU_ITEM_CSS_BASE_TYPE = "composum/pages/components/navigation/menuitem";
 
@@ -34,6 +37,7 @@ public class Menuitem extends Page {
         return PROP_TITLE_KEYS;
     }
 
+    @Nonnull
     @Override
     public String getTitle() {
         String title = super.getTitle();
@@ -46,53 +50,66 @@ public class Menuitem extends Page {
     }
 
     public String getCssClasses() {
-        String currentPagePath = getCurrentPage().getPath();
-        String menuitemPath = resource.getPath();
         StringBuilder cssClasses = new StringBuilder();
-        if (menuitemPath.equals(currentPagePath)) {
-            cssClasses.append(" current");
-        }
-        if (isActive()) {
-            cssClasses.append(" active");
+        Page currentPage = getCurrentPage();
+        if (currentPage != null) {
+            String currentPagePath = currentPage.getPath();
+            String menuitemPath = resource.getPath();
+            if (menuitemPath.equals(currentPagePath)) {
+                cssClasses.append(" current");
+            }
+            if (isActive()) {
+                cssClasses.append(" active");
+            }
         }
         return cssClasses.toString();
     }
 
     public boolean isActive() {
-        String currentPagePath = getCurrentPage().getPath();
-        String menuitemPath = resource.getPath();
-        String homepagePath = getHomepage().getPath();
-        return menuitemPath.equals(currentPagePath) || currentPagePath.startsWith(menuitemPath + "/");
+        Page currentPage = getCurrentPage();
+        if (currentPage != null) {
+            String currentPagePath = currentPage.getPath();
+            String menuitemPath = resource.getPath();
+            return menuitemPath.equals(currentPagePath) || currentPagePath.startsWith(menuitemPath + "/");
+        }
+        return false;
     }
 
     public boolean isMenuOnly() {
         if (menuOnly == null) {
-            String target = getTarget();
-            menuOnly = target != null && StringUtils.isBlank(target);
+            String targetUrl = getSlingTargetUrl();
+            menuOnly = targetUrl != null && StringUtils.isBlank(targetUrl);
         }
         return menuOnly;
     }
 
     public boolean isRedirect() {
         if (redirect == null) {
-            String target = getTarget();
-            redirect = StringUtils.isNotBlank(target);
+            String targetUrl = getSlingTargetUrl();
+            redirect = StringUtils.isNotBlank(targetUrl);
         }
         return redirect;
     }
 
-    protected String getTarget() {
-        return getProperty("sling:target", null, (String) null);
+    @Override
+    @Nonnull
+    public String getUrl() {
+        String targetUrl = getSlingTargetUrl();
+        return StringUtils.isNotBlank(targetUrl) ? targetUrl : super.getUrl();
     }
 
     public boolean isSubmenu() {
-        return !getSubmenu().isEmpty();
+        return !getMenu().isEmpty();
     }
 
-    public Menu getSubmenu() {
+    public Menu getMenu() {
         if (submenu == null) {
-            submenu = new Menu(context, resource);
+            submenu = buildMenu();
         }
         return submenu;
+    }
+
+    protected Menu buildMenu() {
+        return new Menu(context, resource);
     }
 }

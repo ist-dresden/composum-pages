@@ -1,0 +1,78 @@
+@charset "UTF-8";
+
+@import "../../../css/variables";
+@import "../../../css/mixins";
+
+$table-head-color: rgba(51, 51, 51, 0.7);
+$table-border-color: $bootstrap-table-border-color;
+
+.composum-pages-components-composed-table {
+    margin: $text-spacing-default 0;
+
+    &_table {
+        margin: 0;
+    }
+
+    &, &_table {
+        width: 100%;
+    }
+
+    &-cell {
+        @include default-font;
+
+        &.valign {
+
+            &_top {
+                vertical-align: top;
+            }
+
+            &_middle {
+                vertical-align: middle;
+            }
+
+            &_bottom {
+                vertical-align: bottom;
+            }
+
+            &_baseline {
+                vertical-align: baseline;
+            }
+        }
+
+        &_text {
+            width: 100%;
+
+            &.align {
+
+                &_left {
+                    text-align: left;
+                }
+
+                &_center {
+                    text-align: center;
+                }
+
+                &_right {
+                    text-align: right;
+                }
+
+                &_justify {
+                    text-align: justify;
+                }
+            }
+        }
+    }
+}
+
+th.composum-pages-components-composed-table {
+
+    &-cell {
+        @include bold-font;
+        color: $table-head-color;
+
+        tr:first-child & {
+            border-top: none;
+            border-bottom: 2px solid $table-border-color;
+        }
+    }
+}

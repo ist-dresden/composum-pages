@@ -4,8 +4,10 @@
 @import "../../../css/mixins";
 
 .composum-pages-components-element-text {
+    margin: $text-spacing-default 0;
     @include default-font;
     color: $site-default-text-color;
+    text-align: left;
 
     a,
     a:visited {
@@ -25,7 +27,36 @@
     &_text {
 
         p {
-            margin: 0.75rem 0;
+            margin: $text-spacing-default 0;
+
+            &:first-child {
+                margin-top: 0;
+            }
+
+            &:last-child {
+                margin-bottom: 0;
+            }
+        }
+    }
+
+    &_align {
+
+        &-right {
+            text-align: right;
+        }
+
+        &-center {
+            text-align: center;
+        }
+
+        &-justify {
+
+            .composum-pages-components-element-text {
+
+                &_text {
+                    text-align: justify;
+                }
+            }
         }
     }
 }

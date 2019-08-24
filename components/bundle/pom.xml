@@ -4,12 +4,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.composum.sling.pages</groupId>
-        <artifactId>composum-sling-pages-components</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <groupId>com.composum.pages</groupId>
+        <artifactId>composum-pages-components</artifactId>
+        <version>1.0.0</version>
     </parent>
 
-    <artifactId>composum-sling-pages-components-bundle</artifactId>
+    <artifactId>composum-pages-components-bundle</artifactId>
     <packaging>bundle</packaging>
 
     <name>Composum Pages Components Bundle</name>
@@ -21,11 +21,6 @@
 
     <build>
         <plugins>
-
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-scr-plugin</artifactId>
-            </plugin>
 
             <plugin>
                 <groupId>org.apache.felix</groupId>
@@ -42,10 +37,9 @@
                             com.composum.pages.components.*
                         </Export-Package>
                         <Import-Package>
-                            org.apache.sling.api.adapter.*;version="[2.2.0,3)",
+                            com.composum.sling.core.*;version="[1.11,2.1)",
                             org.apache.sling.api.request.*;version="[2.4.1,3)",
                             org.apache.sling.api.resource.*;version="[2.8.0,3)",
-                            org.apache.sling.api.servlets.*;version="[2.1.1,3)",
                             org.apache.sling.api.*;version="[2.2.2,3)",
                             javax.annotation.*;version="[0,4)",
                             *
@@ -71,24 +65,18 @@
 
         <!-- Composum Pages -->
         <dependency>
-            <groupId>com.composum.sling.pages</groupId>
-            <artifactId>composum-sling-pages-commons-bundle</artifactId>
-        </dependency>
-
-        <!-- Composum Assets -->
-        <dependency>
-            <groupId>com.composum.sling.assets</groupId>
-            <artifactId>composum-sling-assets-commons-bundle</artifactId>
+            <groupId>com.composum.pages</groupId>
+            <artifactId>composum-pages-commons-bundle</artifactId>
         </dependency>
 
         <!-- Composum Platform -->
         <dependency>
-            <groupId>com.composum.sling.platform</groupId>
-            <artifactId>composum-sling-platform-commons-bundle</artifactId>
+            <groupId>com.composum.platform</groupId>
+            <artifactId>composum-platform-commons-bundle</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.composum.sling.platform</groupId>
-            <artifactId>composum-sling-platform-models-bundle</artifactId>
+            <groupId>com.composum.platform</groupId>
+            <artifactId>composum-platform-models-bundle</artifactId>
         </dependency>
 
         <!-- Composum Core -->
@@ -109,6 +97,10 @@
         <dependency>
             <groupId>org.apache.sling</groupId>
             <artifactId>org.apache.sling.jcr.api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.sling</groupId>
+            <artifactId>org.apache.sling.servlets.post</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.sling</groupId>
@@ -140,14 +132,6 @@
         </dependency>
 
         <!-- OSGi, Felix -->
-        <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.scr</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.scr.annotations</artifactId>
-        </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
@@ -186,7 +170,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.sling</groupId>
-            <artifactId>org.apache.sling.testing.sling-mock</artifactId>
+            <artifactId>org.apache.sling.testing.sling-mock.junit4</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.sling</groupId>
@@ -197,18 +181,14 @@
             <artifactId>org.apache.sling.testing.hamcrest</artifactId>
         </dependency>
 
+        <!-- TODO Temporary workaround for https://issues.apache.org/jira/browse/SLING-8576 . Once that's fixed this
+          should be removed. -->
+        <dependency>
+            <groupId>org.apache.sling</groupId>
+            <artifactId>org.apache.sling.scripting.core</artifactId>
+            <version>2.0.50</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
-    <profiles>
-
-        <profile>
-            <id>installBundle</id>
-        </profile>
-        <profile>
-            <id>installPackage</id>
-        </profile>
-        <profile>
-            <id>installTestContent</id>
-        </profile>
-
-    </profiles>
 </project>

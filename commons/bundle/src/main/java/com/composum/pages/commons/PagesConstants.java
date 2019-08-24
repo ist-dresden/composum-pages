@@ -1,14 +1,25 @@
+/*
+ * copyright (c) 2015ff IST GmbH Dresden, Germany - https://www.ist-software.com
+ *
+ * This software may be modified and distributed under the terms of the MIT license.
+ */
 package com.composum.pages.commons;
 
+import com.composum.pages.commons.model.Component;
 import com.composum.pages.commons.model.Container;
 import com.composum.pages.commons.model.Element;
 import com.composum.pages.commons.model.Page;
 import com.composum.pages.commons.model.Site;
+import com.composum.pages.commons.util.ResolverUtil;
 import com.composum.sling.core.util.ResourceUtil;
 import com.composum.sling.platform.security.PlatformAccessFilter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.regex.Pattern;
 
 public interface PagesConstants {
 
@@ -19,11 +30,16 @@ public interface PagesConstants {
     String COMPOSUM_PREFIX = "composum-";
     String PAGES_PREFIX = COMPOSUM_PREFIX + "pages-";
 
+    /** request attributes */
+
+    String RA_CONTEXT_PATH = "contextPath";
+    String RA_RESOURCE_REF = "resourceRef";
+    String RA_CURRENT_PAGE = "currentPage";
+
     /** I18N */
 
     String PROP_PAGE_LANGUAGES = "pageLanguages";
     String LANGUAGES_PATH = "jcr:content/languages";
-    String LANGUAGES_TYPE = "composum/pages/stage/edit/site/languages";
     String DEFAULT_LANGUAGES = "/libs/composum/pages/commons/default/" + LANGUAGES_PATH;
     String LANGUAGE_NAME_SEPARATOR = "_";
 
@@ -33,21 +49,31 @@ public interface PagesConstants {
     /** request aspects */
 
     String ACCESS_MODE_REQ_PARAM = PlatformAccessFilter.ACCESS_MODE_PARAM;
-    String DISPLAY_MODE_REQ_PARAM = "pages.mode";
+    String DISPLAY_MODE_SELECT_PARAM = "pages.mode";
+    String DISPLAY_MODE_VIEW_PARAM = "pages.view";
     String LOCALE_REQUEST_PARAM = "pages.locale";
 
     String ACCESS_MODE_ATTR = PlatformAccessFilter.ACCESS_MODE_KEY;
     String DISPLAY_MODE_ATTR = "composum-pages-request-display";
-    String PAGES_LOCALE_ATTR = "composum-pages-request-locale";
+    String RA_PAGES_LOCALE = "composum-pages-request-locale";
+    String RA_PAGES_LANGUAGE = "composum-pages-request-language";
+    String RA_STICKY_LOCALE = "composum-pages-sticky-locale";
 
     String PAGES_FRAME_PATH = "/bin/pages";
 
     /** Component declarations */
 
-    String NODE_TYPE_COMPONENT = CPP_PREFIX + "Component";
-    String PROP_COMPONENT_TYPE = "componentType";
+    String NT_COMPONENT = CPP_PREFIX + "Component";
+    String PN_COMPONENT_TYPE = "componentType";
+    String PN_CATEGORY = "category";
+    String CATEGORY_OTHER = "other";
 
-    /** Content elements */
+    /* Content elements */
+
+    /** the reference path property name of a reference component (for the referrers query) */
+    String PN_CONTENT_REFERENCE = "contentReference";
+    /** the key part of a reference component type (for the referrers query) */
+    String RES_TYPE_KEY_REFERENCE = "/reference";
 
     String NODE_TYPE_SOMETHING = "nt:unstructured";
     String NODE_TYPE_ELEMENT = CPP_PREFIX + "Element";
@@ -61,6 +87,8 @@ public interface PagesConstants {
     String NODE_TYPE_PAGE = CPP_PREFIX + "Page";
     String NODE_TYPE_PAGE_CONTENT = CPP_PREFIX + "PageContent";
 
+    String META_ROOT_PATH = "/var/composum/content";
+    Pattern META_PATH_PATTERN = Pattern.compile("^/[^/]+(/.+)(/jcr:content(/.*)?)?$");
     String META_NODE_NAME = CPP_PREFIX + "metaData";
     String META_NODE_TYPE = CPP_PREFIX + "MetaData";
 
@@ -85,6 +113,7 @@ public interface PagesConstants {
 
     /** Site */
 
+    String DEFAULT_SITES_ROOT = "sites";
     String NODE_TYPE_SITE = CPP_PREFIX + "Site";
     String NODE_TYPE_SITE_CONFIGURATION = CPP_PREFIX + "SiteConfiguration";
     String PROP_HOMEPAGE = "homepage";
@@ -97,6 +126,7 @@ public interface PagesConstants {
     String PROP_TEMPLATE_REF = "templateRef";
 
     String NODE_NAME_DESIGN = CPP_PREFIX + "design";
+    String PROP_DESIGN_REF = "designRef";
     String PROP_TYPE_PATTERNS = "typePatterns";
 
     String PROP_ALLOWED_PARENT_TEMPLATES = "allowedParentTemplates";
@@ -119,17 +149,51 @@ public interface PagesConstants {
 
     /** general properties */
 
+    String PN_TITLE = "title";
+    String PN_JCR_TITLE = ResourceUtil.PROP_TITLE;
+    String[] PN_TITLE_KEYS = new String[]{PN_TITLE, PN_JCR_TITLE};
+    String PN_SUBTITLE = "subtitle";
+    String PN_DESCRIPTION = "description";
+
     String PROP_CREATION_DATE = "jcr:created";
     String PROP_LAST_MODIFIED = ResourceUtil.PROP_LAST_MODIFIED;
+    String PROP_LAST_MODIFIED_BY = "jcr:lastModifiedBy";
     String TIMESTAMP_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
-    /** */
+    String NP_SETTINGS = "settings";
 
+    /** release & version */
+
+    String KEY_CURRENT_RELEASE = "current";
+    String VERSION_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
+    Pattern RELEASE_LABEL_PATTERN = Pattern.compile("^composum-release-(.+)$");
+
+    /** date & time */
+
+    String PP_FORMAT = "format/";
+
+    String SP_DAY_FMT = PP_FORMAT + "day";
+    String SP_TIME_FMT = PP_FORMAT + "time";
+    String SP_DATE_FMT = PP_FORMAT + "value";
+    String SP_DATETIME_FMT = PP_FORMAT + "datetime";
+
+    String DEF_DAY_FMT = "d";
+    String DEF_TIME_FMT = "HH:mm";
+    String DEF_DATE_FMT = "yyyy-MM-dd";
+    String DEF_DATETIME_FMT = DEF_DATE_FMT + " " + DEF_TIME_FMT;
+
+    /** general rendering */
+
+    Pattern TILE_TITLE_URL = Pattern.compile("^(.*/)?([^/?#;]+)([^?#;].*)?");
+
+    /**
+     *
+     */
     enum ComponentType {
 
         site, page, container, element, something;
 
-        public static ComponentType typeOf(String string) {
+        public static ComponentType typeOf( @Nullable String string) {
             ComponentType type = something;
             if (StringUtils.isNotBlank(string)) {
                 if (string.startsWith(CPP_PREFIX)) {
@@ -144,21 +208,24 @@ public interface PagesConstants {
             return type;
         }
 
-        public static ComponentType typeOf(ResourceResolver resolver, Resource resource, String typeHint) {
+        public static ComponentType typeOf(@Nonnull final ResourceResolver resolver,
+                                           @Nullable final Resource resource, @Nullable final String typeHint) {
             if (Site.isSite(resource)) {
                 return site;
-            } else if (Page.isPage(resource)) {
+            } else if (Page.isPage(resource) || Page.isPageContent(resource)) {
                 return page;
             } else if (Container.isContainer(resolver, resource, typeHint)) {
                 return container;
             } else if (Element.isElement(resolver, resource, typeHint)) {
                 return element;
+            } else if (Component.isComponent(resource)) {
+                return typeOf(ResolverUtil.getTypeProperty(resource, PN_COMPONENT_TYPE, ""));
             } else {
                 return something;
             }
         }
 
-        public static String getPrimaryType(ComponentType type) {
+        public static String getPrimaryType(@Nullable final ComponentType type) {
             if (type != null) {
                 switch (type) {
                     case site:
@@ -176,4 +243,6 @@ public interface PagesConstants {
             return null;
         }
     }
+
+    enum ReferenceType {page, asset}
 }

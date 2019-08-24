@@ -1,48 +1,64 @@
+/**
+ * edit user interface functions embedded in a content page to support edit interaction
+ * strong dependency to: 'invoke.js' ('commons.js'; libs: 'backbone.js', 'underscore.js', 'loglevel.js', 'jquery.js')
+ */
 (function (window) {
     window.composum = window.composum || {};
     window.composum.pages = window.composum.pages || {};
     window.composum.pages.elements = window.composum.pages.elements || {};
 
-    (function (elements, core) { // strong dependency to: 'invoke.js'
+    (function (elements, pages, core) {
         'use strict';
 
         elements.const = _.extend(elements.const || {}, {
             handle: { // selection handle CSS classes
-                handles: 'composum-pages-stage-edit-handles',
-                pointer: 'composum-pages-component-handle_pointer',
-                selection: 'composum-pages-component-handle_selection',
-                class: {
+                css: {
+                    root: 'composum-pages-stage-edit-handles',
                     base: 'composum-pages-component-handle',
-                    visible: '_visible'
+                    active: 'composum-pages-active-handle',
+                    _pointer: '_pointer',
+                    _selection: '_selection',
+                    _visible: '_visible',
+                    action: 'composum-pages-stage-edit-toolbar_button'
                 }
             },
             dnd: { // DnD handle CSS classes
-                class: {
+                css: {
                     base: 'composum-pages-stage-edit-dnd',
-                    handle: '_handle',
-                    visible: '_visible',
-                    target: '_target',
-                    targetOver: '_target-over',
+                    _handle: '_handle',
+                    _visible: '_visible',
+                    _disabled: '_disabled',
+                    _target: '_target',
+                    _targetOver: '_target-over',
                     insert: {
-                        vertical: '_vertical',
-                        horizontal: '_horizontal'
+                        _vertical: '_vertical',
+                        _horizontal: '_horizontal'
                     }
-                }
+                },
+                id: '.pagesElements'
             },
             edit: { // editing interface urls and keys
                 url: {
-                    targets: '/bin/cpm/pages/edit.targetContainers.json'
+                    targets: '/bin/cpm/pages/edit.targetContainers.json',
+                    dropzones: '/bin/cpm/pages/edit.filterDropZones.json',
+                    toolbar: '/bin/cpm/pages/edit.editToolbar.html'
                 }
-            },
-            log: { // logging switches (for debugging only)
-                operation: true,
-                dnd: {
-                    event: false,
-                    target: false
-                },
-                mouse: {
-                    position: false
-                }
+            }
+        });
+
+        //
+        // drop zones
+        //
+
+        elements.DropZone = Backbone.View.extend({
+
+            initialize: function (options) {
+                var d = pages.const.commons.data;
+                // set up the parent component DOM element (container or element)
+                this.$parent = this.$el.parent().closest('.' + elements.const.class.component);
+                // drop zone property data
+                var encoded = this.$el.data(d.encoded);
+                this.data = JSON.parse(atob(encoded));
             }
         });
 
@@ -57,36 +73,35 @@
 
             initialize: function (options) {
                 // collect the component reference data
-                this.data = {
-                    name: this.$el.data(elements.const.data.name),
-                    path: this.$el.data(elements.const.data.path),
-                    type: this.$el.data(elements.const.data.type)
-                };
+                this.reference = new pages.Reference(this);
                 // set up the parent component DOM element
                 this.$parent = this.$el.parent().closest('.' + elements.const.class.component);
                 // determine the draggable settings an set up the DnD event handling
-                this.draggable = !!this.$el.attr('draggable');
+                this.draggable = core.parseBool(this.$el.attr('draggable'));
                 if (this.draggable) {
-                    this.el.addEventListener('dragstart', _.bind(this.onDragStart, this), false);
+                    this.$el
+                        .on('dragstart', _.bind(this.onDragStart, this))
+                        .on('dragend', _.bind(this.onDragEnd, this));
                 }
                 // set up the component selection handling
-                this.$el.mouseover(_.bind(this.onMouseOver, this));
-                this.$el.mouseout(_.bind(this.onMouseOver, this));
-                this.$el.click(_.bind(this.onClick, this));
+                this.$el
+                    .on('mouseover', _.bind(elements.pageBody.onMouseOver, elements.pageBody))
+                    .on('mouseout', _.bind(elements.pageBody.onMouseOver, elements.pageBody))
+                    .on('click', _.bind(this.onClick, this));
             },
 
             /**
              * returns the resource name for visualization
              */
             getName: function () {
-                return this.data.name;
+                return this.reference.name;
             },
 
             /**
              * returns the shortened path for visualization
              */
             getPathHint: function () {
-                var path = this.data.path;
+                var path = this.reference.path;
                 path = path.replace(/^\/content\/.*\/jcr:content\//, './');
                 path = path.replace(/\/[^\/]*$/, '/');
                 return path;
@@ -96,10 +111,11 @@
              * returns the shortened resource type for visualization
              */
             getTypeHint: function () {
-                var type = this.data.type;
+                var type = this.reference.type;
                 type = type.replace(/^(.*\/)?composum\/(.*\/)?pages\//, '$2');
                 type = type.replace(/\/components?\//, '/');
                 type = type.replace(/\/containers?\//, '/');
+                type = type.replace(/\/composites?\//, '/');
                 type = type.replace(/\/elements?\//, '/');
                 return type;
             },
@@ -108,8 +124,7 @@
              * returns the current dimensions for visualization
              */
             getSizeHint: function () {
-                var size = Math.round(this.$el.width()) + 'x' + Math.round(this.$el.height()) + 'px';
-                return size;
+                return Math.round(this.$el.width()) + 'x' + Math.round(this.$el.height()) + 'px';
             },
 
             /**
@@ -138,15 +153,6 @@
                 return false;
             },
 
-            onMouseOver: function (event) {
-                if (event) {
-                    event.preventDefault();
-                }
-                var component = elements.pageBody.getPointerComponent(event, '.' + elements.const.class.component);
-                elements.pageBody.pointer.setComponent(component);
-                return false;
-            },
-
             // DnD forwarding
 
             onDragStart: function (event) {
@@ -159,6 +165,31 @@
                 } else {
                     event.preventDefault();
                     return false;
+                }
+            },
+
+            onDragEnd: function (event) {
+                elements.pageBody.onDragEnd(event);
+            },
+
+            // editing
+
+            /**
+             * calls the callback(component,html) function with the toolbar HTML snippet
+             */
+            getToolbar: function (callback) {
+                if (this.toolbar) {
+                    callback(this, this.toolbar);
+                } else {
+                    core.ajaxGet(elements.const.edit.url.toolbar + this.reference.path, {
+                            data: {
+                                type: this.reference.type
+                            }
+                        },
+                        _.bind(function (data) {
+                            this.toolbar = data;
+                            callback(this, this.toolbar);
+                        }, this));
                 }
             }
         });
@@ -194,46 +225,50 @@
         elements.Handle = Backbone.View.extend({
 
             initialize: function (options) {
-                this.$head = this.$('.' + elements.const.handle.class.base + '_head');
-                this.$left = this.$('.' + elements.const.handle.class.base + '_left');
-                this.$right = this.$('.' + elements.const.handle.class.base + '_right');
-                this.$bottom = this.$('.' + elements.const.handle.class.base + '_bottom');
-                this.$path = this.$('.' + elements.const.handle.class.base + '_path');
-                this.$name = this.$('.' + elements.const.handle.class.base + '_name');
-                this.$type = this.$('.' + elements.const.handle.class.base + '_type');
-                this.$size = this.$('.' + elements.const.handle.class.base + '_size');
-                this.setupEvents([this.$head, this.$left, this.$right, this.$bottom]);
+                var c = elements.const.handle.css;
+                this.$top = this.$('.' + c.base + '_top');
+                this.$left = this.$('.' + c.base + '_left');
+                this.$right = this.$('.' + c.base + '_right');
+                this.$bottom = this.$('.' + c.base + '_bottom');
+                this.$head = this.$('.' + c.base + '_head');
+                this.$toolbar = this.$('.' + c.base + '_toolbar');
+                this.$path = this.$('.' + c.base + '_path');
+                this.$name = this.$('.' + c.base + '_name');
+                this.$type = this.$('.' + c.base + '_type');
+                this.$size = this.$('.' + c.base + '_size');
                 $(window).resize(_.bind(this.onResize, this));
-            },
-
-            setupEvents: function (handles) {
-                for (var i = 0; i < handles.length; i++) {
-                    handles[i].click(_.bind(this.onClick, this));
-                    handles[i].mouseover(_.bind(this.onMouseOver, this));
-                    handles[i].mouseout(_.bind(this.onMouseOver, this));
-                    handles[i][0].addEventListener('dragstart', _.bind(this.onDragStart, this), false);
-                }
             },
 
             /**
              * binds the handle to a component
              */
-            setComponent: function (component) {
+            setComponent: function (component, force) {
                 if (component) {
-                    if (this.component !== component) {
+                    if (this.component !== component || force) {
+                        var c = elements.const.handle.css;
                         this.component = component;
                         this.setBounds(component);
                         this.$name.text(component.getName());
                         this.$path.text(component.getPathHint());
                         this.$type.text(component.getTypeHint());
                         this.$size.text(component.getSizeHint());
-                        this.$el.addClass(elements.const.handle.class.base + elements.const.handle.class.visible);
-                        var isDraggable = !!component.getDraggable();
+                        this.$el.addClass(c.base + c._visible);
+                        var isDraggable = core.parseBool(component.getDraggable());
+                        this.$top.attr('draggable', isDraggable);
                         this.$head.attr('draggable', isDraggable);
                         this.$left.attr('draggable', isDraggable);
                         this.$right.attr('draggable', isDraggable);
                         this.$bottom.attr('draggable', isDraggable);
+                        component.getToolbar(_.bind(function (component, html) {
+                            this.$toolbar.html(html);
+                            this.$toolbar.find('.' + elements.const.handle.css.action)
+                                .on('mouseover', _.bind(this.onMouseOver, this))
+                                .on('mouseout', _.bind(this.onMouseOver, this))
+                                .on('click', _.bind(this.onActionClick, this));
+                        }, this));
+                        return true;
                     }
+                    return false;
                 } else {
                     this.hide();
                 }
@@ -243,28 +278,23 @@
              * adapts the bounds of the handle to the bounds of the component
              */
             setBounds: function (component) {
+                this.toolsBounds = elements.pageBody.getViewRect(component.$el);
+                this.toolsBounds.y2 = this.toolsBounds.y1 + (this.toolsBounds.h = 27);
                 var handlePos = elements.pageBody.$handles.offset();
-                var bounds = elements.pageBody.getViewRect(component, {
+                var b = elements.pageBody.getViewRect(component.$el, {
                     dx: -handlePos.left,
                     dy: -handlePos.top
                 });
-                this.$head.css('top', bounds.y1);
-                this.$head.css('left', bounds.x1 + 6);
-                this.$head.css('width', bounds.w - 12);
-                this.$left.css('top', bounds.y1);
-                this.$left.css('left', bounds.x1);
-                this.$left.css('height', bounds.h);
-                this.$right.css('top', bounds.y1);
-                this.$right.css('left', bounds.x1 + bounds.w - 6);
-                this.$right.css('height', bounds.h);
-                this.$bottom.css('left', bounds.x1 + 6);
-                this.$bottom.css('top', bounds.y1 + bounds.h - 6);
-                this.$bottom.css('width', bounds.w - 12);
+                this.$top.css('top', b.y1).css('left', b.x1 + 4).css('width', b.w - 8);
+                this.$left.css('top', b.y1).css('left', b.x1).css('height', b.h);
+                this.$right.css('top', b.y1).css('left', b.x1 + b.w - 4).css('height', b.h);
+                this.$bottom.css('left', b.x1 + 4).css('top', b.y1 + b.h - 4).css('width', b.w - 8);
             },
 
             hide: function () {
                 if (this.component) {
-                    this.$el.removeClass(elements.const.handle.class.base + elements.const.handle.class.visible);
+                    var c = elements.const.handle.css;
+                    this.$el.removeClass(c.base + c._visible);
                     this.component = undefined;
                 }
             },
@@ -275,7 +305,7 @@
              */
             getComponentEl: function (domEl) {
                 if (domEl) {
-                    if (domEl === this.el || domEl === this.$head[0] || domEl === this.$left[0] ||
+                    if (domEl === this.el || domEl === this.$top[0] || domEl === this.$left[0] ||
                         domEl === this.$right[0] || domEl === this.$bottom[0] || domEl === this.$path[0] ||
                         domEl === this.$name[0] || domEl === this.$type[0] || domEl === this.$size[0]) {
                         return this.component.el;
@@ -284,20 +314,34 @@
                 return undefined;
             },
 
-            // event handling
-
-            onClick: function (event) {
-                event.preventDefault();
-                if (this.component) {
-                    elements.pageBody.setSelection(this.component);
+            setHeadVisibility: function (visible) {
+                if (visible) {
+                    elements.pageBody.$handles.addClass(elements.const.handle.css.active);
+                } else {
+                    elements.pageBody.$handles.removeClass(elements.const.handle.css.active);
                 }
             },
 
-            onMouseOver: function (event) {
-                event.preventDefault();
-                if (this.component) {
-                    this.component.onMouseOver(event);
+            // event handling
+
+            onActionClick: function (event) {
+                if (event) {
+                    event.preventDefault();
+                    event.stopPropagation();
                 }
+                if (this.component) {
+                    var action = $(event.currentTarget).data('action');
+                    elements.triggerAction(action, this.component.reference);
+                }
+                return false;
+            },
+
+            onMouseOver: function (event) {
+                if (event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                return false;
             },
 
             onResize: function (event) {
@@ -333,91 +377,161 @@
         elements.DndHandle = Backbone.View.extend({
 
             initialize: function (options) {
-                this.$insert = this.$('.' + elements.const.dnd.class.base + '_insert');
-                this.$image = this.$('.' + elements.const.dnd.class.base + '_image');
-                this.$content = this.$image.find('.' + elements.const.dnd.class.base + '_content');
-                this.$overlay = this.$image.find('.' + elements.const.dnd.class.base + '_overlay');
-                this.$path = this.$overlay.find('.' + elements.const.dnd.class.base + '_path');
-                this.$name = this.$overlay.find('.' + elements.const.dnd.class.base + '_name');
-                this.$type = this.$overlay.find('.' + elements.const.dnd.class.base + '_type');
+                var c = elements.const.dnd.css;
+                this.$insert = this.$('.' + c.base + '_insert');
+                this.$image = this.$('.' + c.base + '_image');
+                this.$content = this.$image.find('.' + c.base + '_content');
+                this.$overlay = this.$image.find('.' + c.base + '_overlay');
+                this.$path = this.$overlay.find('.' + c.base + '_path');
+                this.$name = this.$overlay.find('.' + c.base + '_name');
+                this.$type = this.$overlay.find('.' + c.base + '_type');
             },
 
             reset: function () {
+                var c = elements.const.dnd.css;
+                this.clearDropZones();
                 this.clearTargets();
-                this.$el.removeClass(elements.const.dnd.class.base + elements.const.dnd.class.visible);
-                this.currentComponent = undefined;
+                this.$el.removeClass(c.base + c._visible);
+                this.currentReference = undefined;
             },
 
             // event handlers
 
-            onDragStart: function (event, component) {
+            onDragStart: function (event, object) {
                 var self = elements.pageBody.dnd;
-                if (!self.currentComponent) {
-                    self.currentComponent = component;
-                    if (elements.const.log.dnd.event) {
-                        elements.log.debug('elements.dnd.onDragStart(' + component.data.path + ')');
+                var dnd = core.dnd.getDndData(event);
+                var reference = object.reference;
+                if (!self.currentReference) {
+                    var lgr = elements.log.dnd;
+                    var c = elements.const.dnd.css;
+                    self.currentReference = reference;
+                    var data = object;
+                    if (object instanceof elements.Component) {
+                        if (lgr.getLevel() <= log.levels.DEBUG) {
+                            lgr.debug('elements.dnd.onDragStart(' + object.reference.path + ')');
+                        }
+                        self.reset();
+                        pages.current.dnd.object = data = {
+                            type: 'element',
+                            reference: reference
+                        };
+                        var jsonData = JSON.stringify(data);
+                        dnd.ev.dataTransfer.setData('application/json', jsonData);
+                        dnd.ev.dataTransfer.effectAllowed = 'move';
+                        parent.postMessage(elements.const.event.dnd.object + jsonData, '*');
+                        if (_.isFunction(dnd.ev.dataTransfer.setDragImage)) {
+                            var pos = object.$el.offset();
+                            self.$image.css({
+                                width: Math.max(100, object.$el.width()) + 'px'
+                            });
+                            self.$content.html('').append(object.$el.clone());
+                            self.$image.addClass(c.base + c._visible);
+                            dnd.ev.dataTransfer.setDragImage(self.$image[0], Math.max(0, dnd.ev.pageX - pos.left), 50);
+                            window.setTimeout(_.bind(function () {
+                                self.$content.html('');
+                                self.$image.removeClass(c.base + c._visible);
+                            }, self), 100);
+                        }
                     }
-                    self.reset();
-                    if (_.isFunction(event.dataTransfer.setDragImage)) {
-                        var pos = component.$el.offset();
-                        self.$image.css({
-                            width: Math.max(100, component.$el.width()) + 'px'
-                        });
-                        self.$content.html('').append(component.$el.clone());
-                        self.$image.addClass(elements.const.dnd.class.base + elements.const.dnd.class.visible);
-                        event.dataTransfer.setDragImage(self.$image[0], Math.max(0, event.pageX - pos.left), 50);
-                        setTimeout(_.bind(function () {
-                            self.$content.html('');
-                            self.$image.removeClass(elements.const.dnd.class.base + elements.const.dnd.class.visible);
-                        }, self), 100);
-                    }
-                    event.dataTransfer.setData('application/component', JSON.stringify(component.data));
-                    event.dataTransfer.effectAllowed = 'move';
-                    setTimeout(_.bind(function () {
-                        self.markTargets(component);
-                        event.target.addEventListener('drag', self.onDrag, false);
-                        event.target.addEventListener('dragend', self.onDragEnd, false);
+                    window.setTimeout(_.bind(function () {
+                        if (data.type === 'component' || data.type === 'element') {
+                            self.markTargets(reference);
+                        } else {
+                            self.markDropZones(reference);
+                        }
                     }, self), 150);
                 }
             },
 
             onDragEnd: function (event) {
+                var lgr = elements.log.dnd;
                 var self = elements.pageBody.dnd;
-                if (elements.const.log.dnd.event) {
-                    elements.log.debug('elements.dnd.onDragEnd()');
+                if (lgr.getLevel() <= log.levels.DEBUG) {
+                    lgr.debug('elements.dnd.onDragEnd()');
                 }
-                event.target.removeEventListener('dragend', self.onDragEnd);
-                event.target.removeEventListener('drag', self.onDrag);
                 self.reset();
-            },
-
-            onDrag: function (event) {
-                var self = elements.pageBody.dnd;
-                var target = self.getDragTarget(event);
-                self.setDragTarget(target, event);
-            },
-
-            onDragOver: function (event) {
-                var self = elements.pageBody.dnd;
-                if (self.dragTarget && self.insert) {
-                    event.preventDefault();
-                }
+                parent.postMessage(elements.const.event.dnd.finished + '{}', '*');
             },
 
             onDrop: function (event) {
-                var self = elements.pageBody.dnd;
-                if (self.dragTarget && self.insert) {
-                    var source = JSON.parse(event.dataTransfer.getData('application/component'));
-                    var target = self.dragTarget.data;
-                    var before = self.insert.before ? self.insert.before.data : undefined;
-                    if (elements.const.log.dnd.event) {
-                        elements.log.debug('elements.dnd.onDrop(' + self.dragTarget.data.path + '): '
-                            + JSON.stringify(source) + ' > '
-                            + JSON.stringify(target) + ' < '
-                            + JSON.stringify(before)
-                        );
+                elements.pageBody.onDrop(event);
+            },
+
+            // zone markers
+
+            markDropZones: function (reference) {
+                var c = elements.const.dnd.css;
+                var candidates = [];
+                elements.pageBody.dropZones.forEach(function (candidate) {
+                    candidates.push({
+                        id: candidate.$el.attr('id'),
+                        path: candidate.data.path,
+                        property: candidate.data.property,
+                        filter: candidate.data.filter
+                    });
+                    candidate.$el.addClass(c.base + c._disabled);
+                });
+                var path = reference.path;
+                core.ajaxPut(elements.const.edit.url.dropzones + path, JSON.stringify(candidates), {},
+                    _.bind(function (result) {
+                        this.dropZones = [];
+                        result.forEach(function (dropZone) {
+                            var $target = elements.pageBody.$('.' + elements.const.class.dropzone + '[id="' + dropZone.id + '"]');
+                            if ($target.length === 1) {
+                                var view = $target[0].view;
+                                if (view) {
+                                    this.dropZones.push(view);
+                                    view.$el.addClass(c.base + c._target);
+                                    view.$el.removeClass(c.base + c._disabled);
+                                }
+                            }
+                        }, this);
+                    }, this));
+            },
+
+            clearDropZones: function () {
+                var c = elements.const.dnd.css;
+                this.setDragZone();
+                elements.pageBody.dropZones.forEach(function (dropZone) {
+                    dropZone.$el.removeClass(c.base + c._targetOver);
+                    dropZone.$el.removeClass(c.base + c._target);
+                }, this);
+                this.dropZones = undefined;
+            },
+
+            getDragZone: function (event) {
+                return elements.pageBody.getPointerComponent(event,
+                    '.' + elements.const.class.dropzone, _.bind(this.isDropZone, this));
+            },
+
+            isDropZone: function (view) {
+                if (this.dropZones) {
+                    for (var i = 0; i < this.dropZones.length; i++) {
+                        if (this.dropZones[i].data.path === view.data.path) {
+                            return true;
+                        }
                     }
-                    elements.pageBody.move(source, target, before);
+                }
+                return false;
+            },
+
+            setDragZone: function (zone, event) {
+                var lgr = elements.log.dnd;
+                var c = elements.const.dnd.css;
+                if (this.dragZone && this.dragZone !== zone) {
+                    if (lgr.getLevel() <= log.levels.DEBUG) {
+                        lgr.debug('elements.dnd.dragZone.clear! (' + this.dragZone.$el.attr('id') + ')');
+                    }
+                    this.dragZone.$el.removeClass(c.base + c._targetOver);
+                    this.dragZone = undefined;
+                }
+                if (zone && this.dragZone !== zone) {
+                    if (lgr.getLevel() <= log.levels.DEBUG) {
+                        var pointer = elements.pageBody.getPointer(event);
+                        lgr.debug('elements.dnd.dragZone.set: ' + zone.$el.attr('id') + ' ' + JSON.stringify(pointer));
+                    }
+                    this.dragZone = zone;
+                    zone.$el.addClass(c.base + c._targetOver);
                 }
             },
 
@@ -430,7 +544,7 @@
             isTarget: function (container) {
                 if (this.dropTargets) {
                     for (var i = 0; i < this.dropTargets.length; i++) {
-                        if (this.dropTargets[i].data.path === container.data.path) {
+                        if (this.dropTargets[i].reference.path === container.reference.path) {
                             return true;
                         }
                     }
@@ -441,18 +555,20 @@
             /**
              * Determines the list of allowed target containers (this.dropTargets)
              * for the given component (the drag source) and marks this containers.
-             * @param component  the component which should be inserted in an(other) container
+             * @param reference the reference of the element which should be inserted in an(other) container
              */
-            markTargets: function (component) {
+            markTargets: function (reference) {
+                var c = elements.const.dnd.css;
                 var candidates = [];
                 elements.pageBody.containers.forEach(function (candidate) {
                     candidates.push({
-                        path: candidate.data.path,
-                        type: candidate.data.type
+                        path: candidate.reference.path,
+                        type: candidate.reference.type
                     });
                 });
-                var path = component.data.path;
+                var path = reference.path;
                 core.ajaxPost(elements.const.edit.url.targets + path, {
+                    type: reference.type,
                     targetList: JSON.stringify(candidates)
                 }, {}, _.bind(function (result) {
                     this.dropTargets = [];
@@ -463,9 +579,7 @@
                             var view = $target[0].view;
                             if (view) {
                                 this.dropTargets.push(view);
-                                view.el.addEventListener('drop', this.onDrop, false);
-                                view.el.addEventListener('dragover', this.onDragOver, false);
-                                view.$el.addClass(elements.const.dnd.class.base + elements.const.dnd.class.target);
+                                view.$el.addClass(c.base + c._target);
                             }
                         }
                     }, this);
@@ -473,41 +587,33 @@
             },
 
             clearTargets: function () {
+                var c = elements.const.dnd.css;
                 this.setDragTarget();
                 elements.pageBody.containers.forEach(function (container) {
-                    container.el.removeEventListener('drop', this.onDrop);
-                    container.el.removeEventListener('dragover', this.onDragOver);
-                    container.$el.removeClass(elements.const.dnd.class.base + elements.const.dnd.class.targetOver);
-                    container.$el.removeClass(elements.const.dnd.class.base + elements.const.dnd.class.target);
+                    container.$el.removeClass(c.base + c._targetOver);
+                    container.$el.removeClass(c.base + c._target);
                 }, this);
                 this.dropTargets = undefined;
-            },
-
-            clearOver: function () {
-                if (this.dropTargets) {
-                    this.dropTargets.forEach(function (target) {
-                        target.$el.removeClass(elements.const.dnd.class.base + elements.const.dnd.class.targetOver);
-                    }, this);
-                }
             },
 
             // move / insert handling
 
             getDragTarget: function (event) {
-                var container = elements.pageBody.getPointerComponent(event,
+                return elements.pageBody.getPointerComponent(event,
                     '.' + elements.const.class.container, _.bind(this.isTarget, this));
-                return container;
             },
 
             setDragTarget: function (container, event) {
+                var lgr = elements.log.dnd;
+                var c = elements.const.dnd.css;
                 if (this.dragTarget && this.dragTarget !== container) {
-                    if (elements.const.log.dnd.target) {
-                        elements.log.debug('elements.dnd.dragTarget.clear! (' + this.dragTarget.data.path + ')');
+                    if (lgr.getLevel() <= log.levels.DEBUG) {
+                        lgr.debug('elements.dnd.dragTarget.clear! (' + this.dragTarget.reference.path + ')');
                     }
-                    this.dragTarget.$el.removeClass(elements.const.dnd.class.base + elements.const.dnd.class.targetOver);
-                    this.$insert.removeClass(elements.const.dnd.class.base + elements.const.dnd.class.visible);
-                    this.$insert.removeClass(elements.const.dnd.class.base + elements.const.dnd.class.insert.vertical);
-                    this.$insert.removeClass(elements.const.dnd.class.base + elements.const.dnd.class.insert.horizontal);
+                    this.dragTarget.$el.removeClass(c.base + c._targetOver);
+                    this.$insert.removeClass(c.base + c._visible);
+                    this.$insert.removeClass(c.base + c.insert._vertical);
+                    this.$insert.removeClass(c.base + c.insert._horizontal);
                     this.insert = undefined;
                     this.dragTarget = undefined;
                 }
@@ -515,50 +621,55 @@
                     if (this.dragTarget === container) {
                         this.moveInsertMarker(event);
                     } else {
-                        if (elements.const.log.dnd.target) {
+                        if (lgr.getLevel() <= log.levels.DEBUG) {
                             var pointer = elements.pageBody.getPointer(event);
-                            elements.log.debug('elements.dnd.dragTarget.set: ' + container.data.path + ' ' + JSON.stringify(pointer));
+                            lgr.debug('elements.dnd.dragTarget.set: ' + container.reference.path + ' ' + JSON.stringify(pointer));
                         }
                         this.dragTarget = container;
-                        container.$el.addClass(elements.const.dnd.class.base + elements.const.dnd.class.targetOver);
+                        container.$el.addClass(c.base + c._targetOver);
                         this.initInsertMarker(container);
                         this.moveInsertMarker(event);
-                        this.$insert.addClass(elements.const.dnd.class.base + elements.const.dnd.class.visible);
+                        this.$insert.addClass(c.base + c._visible);
                     }
                 }
             },
 
             initInsertMarker: function (container) {
+                var c = elements.const.dnd.css;
                 this.insert = {
                     handlePos: elements.pageBody.$handles.offset(),
-                    containerRect: elements.pageBody.getViewRect(container),
+                    containerRect: elements.pageBody.getViewRect(container.$el),
                     vertical: true,
                     before: undefined
                 };
                 if (container.elements.length > 0) {
-                    var eRect = elements.pageBody.getViewRect(container.elements[0]);
+                    var eRect = elements.pageBody.getViewRect(container.elements[0].$el);
+                    /*
                     if (container.elements.length > 1) {
-                        var eRect2 = elements.pageBody.getViewRect(container.elements[1]);
+                        var eRect2 = elements.pageBody.getViewRect(container.elements[1].$el);
                         this.insert.vertical = eRect.y2 <= eRect2.y1 || eRect2.y2 <= eRect.y1;
                     } else {
                         this.insert.vertical = Math.abs(this.insert.containerRect.x1 - eRect.x1)
                             <= Math.abs(this.insert.containerRect.y1 - eRect.y1);
                     }
-                    if (this.insert.vertical) {
+                    */
+                    //if (this.insert.vertical) {
                         this.insert.x = this.insert.containerRect.x1 - this.insert.handlePos.left;
                         this.insert.w = this.insert.containerRect.w;
                         this.$insert.css('left', this.insert.x);
                         this.$insert.css('width', this.insert.w);
                         this.$insert.css('height', 0);
-                        this.$insert.addClass(elements.const.dnd.class.base + elements.const.dnd.class.insert.vertical);
+                        this.$insert.addClass(c.base + c.insert._vertical);
+                    /*
                     } else {
                         this.insert.y = this.insert.containerRect.y1 - this.insert.handlePos.top;
                         this.insert.h = this.insert.containerRect.h;
                         this.$insert.css('top', this.insert.y);
                         this.$insert.css('height', this.insert.h);
                         this.$insert.css('width', 0);
-                        this.$insert.addClass(elements.const.dnd.class.base + elements.const.dnd.class.insert.horizontal);
+                        this.$insert.addClass(c.base + c.insert._horizontal);
                     }
+                    */
                 } else {
                     this.insert.x = this.insert.containerRect.x1 - this.insert.handlePos.left;
                     this.insert.y = this.insert.containerRect.y1 + this.insert.containerRect.h / 2 - this.insert.handlePos.top;
@@ -567,7 +678,7 @@
                     this.$insert.css('left', this.insert.x);
                     this.$insert.css('width', this.insert.w);
                     this.$insert.css('height', 0);
-                    this.$insert.addClass(elements.const.dnd.class.base + elements.const.dnd.class.insert.vertical);
+                    this.$insert.addClass(c.base + c.insert._vertical);
                 }
             },
 
@@ -575,8 +686,8 @@
                 var pointer = elements.pageBody.getPointer(event);
                 for (var i = 0; i < this.dragTarget.elements.length; i++) {
                     var element = this.dragTarget.elements[i];
-                    var eRect = elements.pageBody.getViewRect(element);
-                    if (this.insert.vertical) {
+                    var eRect = elements.pageBody.getViewRect(element.$el);
+                    //if (this.insert.vertical) {
                         if (pointer.y >= eRect.y1 && pointer.y <= eRect.y2) {
                             if (pointer.y > eRect.y1 + eRect.h / 2) {
                                 this.insert.y = eRect.y2;
@@ -590,6 +701,7 @@
                             this.$insert.css('top', this.insert.y);
                             break;
                         }
+                    /*
                     } else {
                         if (pointer.x >= eRect.x1 && pointer.x <= eRect.x2) {
                             if (pointer.x > eRect.x1 + eRect.w / 2) {
@@ -605,6 +717,7 @@
                             break;
                         }
                     }
+                    */
                 }
             }
         });
@@ -619,20 +732,26 @@
         elements.PageBody = Backbone.View.extend({
 
             initialize: function (options) {
+                var c = elements.const.handle.css;
+                var d = elements.const.dnd.css;
+                var e = elements.const.event;
+                this.params = core.url.getParameters(window.location.search);
                 // determine the editing UI components of the page
-                this.$handles = this.$('.' + elements.const.handle.handles);
-                this.pointer = core.getWidget(this.el, '.' + elements.const.handle.pointer
-                    + ' .' + elements.const.handle.class.base, elements.Pointer);
-                this.selection = core.getWidget(this.el, '.' + elements.const.handle.selection
-                    + ' .' + elements.const.handle.class.base, elements.Selection);
-                this.dnd = core.getWidget(this.el, '.' + elements.const.dnd.class.base
-                    + elements.const.dnd.class.handle, elements.DndHandle);
-                // init the component sets
-                this.initComponents();
+                this.$handles = this.$('.' + c.root);
+                this.pointer = core.getWidget(this.el, '.' + c.base + c._pointer + ' .' + c.base, elements.Pointer);
+                this.selection = core.getWidget(this.el, '.' + c.base + c._selection + ' .' + c.base, elements.Selection);
+                this.dnd = core.getWidget(this.el, '.' + d.base + d._handle, elements.DndHandle);
                 // register the handlers for component selection in interaction with the edit frame
-                $(document).on(elements.const.event.element.selected, _.bind(this.onComponentSelected, this));
-                $(document).on(elements.const.event.element.select, _.bind(this.selectComponent, this));
+                $(document).on(e.element.selected, _.bind(this.onElementSelected, this));
+                $(document).on(e.element.select, _.bind(this.selectElement, this));
                 window.addEventListener("message", _.bind(this.onMessage, this), false);
+                var id = elements.const.dnd.id;
+                this.$el
+                //.on('mouseover' + id, _.bind(this.onMouseOver, this))
+                //.on('mouseout' + id, _.bind(this.onMouseOver, this))
+                    .on('dragenter' + id, _.bind(this.onDragEnter, this))
+                    .on('dragover' + id, _.bind(this.onDragOver, this))
+                    .on('drop' + id, _.bind(this.onDrop, this));
             },
 
             initComponents: function () {
@@ -641,12 +760,13 @@
                 this.containers = [];
                 this.containerRefs = [];
                 this.elements = [];
+                this.dropZones = [];
                 var self = this;
                 this.$('.' + elements.const.class.container).each(function () {
                     var view = core.getView(this, elements.Container);
                     self.components.push(view);
                     self.containers.push(view);
-                    self.containerRefs.push(view.data);
+                    self.containerRefs.push(view.reference);
                 });
                 this.$('.' + elements.const.class.element).each(function () {
                     var view = core.getView(this, elements.Element);
@@ -663,72 +783,309 @@
                         component.container.elements.push(component);
                     }
                 }, this);
+                this.$('.' + elements.const.class.dropzone).each(function () {
+                    var view = core.getView(this, elements.DropZone);
+                    self.dropZones.push(view);
+                });
                 // send container references to the edit frame
                 parent.postMessage(elements.const.event.page.containerRefs
                     + JSON.stringify(this.containerRefs), '*');
             },
 
-            // operations
-
-            /**
-             * Insert a new component by triggering the Pages edit frame with the insert parameters.
-             * @param type    the resource type of the new component
-             * @param target  the target container path and type (element reference)
-             * @param before  the path of the following sibling (optional)
-             */
-            insert: function (type, target, before) {
-                if (elements.const.log.operation) {
-                    elements.log.debug('elements.insert(' + type + ' > '
-                        + target.path + (before ? (' < ' + before.path) : '') + ')');
+            getElementIndex: function (path) {
+                var result = [];
+                var i;
+                for (i = 0; i < this.components.length; i++) {
+                    if (this.components[i].reference.path === path) {
+                        result.push({component: i});
+                    }
                 }
-                parent.postMessage(elements.const.event.element.insert
-                    + JSON.stringify({
-                        type: type,
-                        target: {path: target.path, type: target.type},
-                        before: before ? before.path : null
-                    }), '*');
+                for (i = 0; i < this.containers.length; i++) {
+                    if (this.containers[i].reference.path === path) {
+                        result.push({container: i});
+                    }
+                }
+                for (i = 0; i < this.elements.length; i++) {
+                    if (this.elements[i].reference.path === path) {
+                        result.push({element: i});
+                    }
+                }
+                return result;
             },
 
             /**
-             * Move an existing component by triggering the Pages edit frame with the move parameters.
-             * @param source  the resource to move to the new container and/or index
-             * @param target  the target container path and type (element reference)
-             * @param before  the path of the following sibling (optional)
+             * @returns {{parent}|*} the root element of nested elements (useful on redraw static includes)
              */
-            move: function (source, target, before) {
-                if (elements.const.log.operation) {
-                    elements.log.debug('elements.move(' + source.path + ' > '
-                        + target.path + (before ? (' < ' + before.path) : '') + ')');
+            getNestedRoot: function (component) {
+                while (component && !component.$el.hasClass(elements.const.class.container)
+                && component.parent && component.parent.$el.hasClass(elements.const.class.element)) {
+                    component = component.parent;
                 }
-                parent.postMessage(elements.const.event.moveComponent
-                    + JSON.stringify({
-                        source: source.path,
-                        target: {path: target.path, type: target.type},
-                        before: before ? before.path : null
-                    }), '*');
+                return component;
             },
 
-            // DnD forwarding
+            // change event handling
 
-            onDragStart: function (event, component) {
-                this.dnd.onDragStart(event, component);
+            elementInserted: function (event, parentRef, /*optional*/ resultRef) {
+                this.redraw(parentRef);
+            },
+
+            elementChanged: function (event, reference) {
+                this.redraw(reference);
+            },
+
+            elementDeleted: function (event, reference) {
+                this.clear(reference);
+            },
+
+            /**
+             * render a piece of the page content to refresh a (changed) part of the page
+             * @param reference the element to refresh as a reference to the repository
+             */
+            redraw: function (reference) {
+                this.dnd.reset();
+                var selection = elements.pageBody.selection.component;
+                if (selection) {
+                    selection = selection.reference;
+                }
+                var index = this.getElementIndex(reference.path);
+                var toRefresh = []; // collect the views of the element on the current page...
+                var i;
+                for (i = 0; i < index.length; i++) {
+                    if (index[i].component >= 0) {
+                        toRefresh.push(this.getNestedRoot(this.components[index[i].component]));
+                    }
+                }
+                for (i = 0; i < toRefresh.length; i++) {
+                    this.redrawComponent(toRefresh[i], i + 1 < toRefresh.length ? undefined : _.bind(function () {
+                        // reinitialize view after last refresh (hoping that the reload calls are serialized)
+                        window.setTimeout(_.bind(function () {
+                            this.initComponents();
+                            if (selection) {
+                                this.selectPath(selection.path, true);
+                            }
+                        }, this), 300);
+                    }, this));
+                }
+            },
+
+            /**
+             * refresh the view of one component (element or container)
+             * @param component the component view; this views content is replaced with new HTML code
+             * @param callback some things to do after reload of the HTML code (optional)
+             */
+            redrawComponent: function (component, callback) {
+                core.ajaxGet(component.reference.path + '.html', {
+                    data: _.extend(this.params, {
+                        type: component.reference.type
+                    })
+                }, _.bind(function (content) {
+                    component.$el.replaceWith(content);
+                    if (_.isFunction(callback)) {
+                        callback(this);
+                    }
+                }, this), _.bind(function (content) {
+                    // reload page if an error has been occurred
+                    window.location.reload();
+                }, this));
+            },
+
+
+            /**
+             * remove a piece of the page content to drop a (deleted) part of the page
+             * @param reference the element to drop as a reference to the repository
+             */
+            clear: function (reference) {
+                this.dnd.reset();
+                var selection = elements.pageBody.selection.component;
+                if (selection) {
+                    selection = selection.reference;
+                }
+                var index = this.getElementIndex(reference.path);
+                for (var i = 0; i < index.length; i++) {
+                    if (index[i].component >= 0) {
+                        this.components[index[i].component].$el.remove();
+                    }
+                }
+                this.initComponents();
+                if (selection) {
+                    this.selectPath(selection.path, true);
+                }
+            },
+
+            // DnD
+
+            /**
+             * forward drag start to the DnD handle on start dragging from inside or outside
+             * @param event the jQuery DnD event
+             * @param object the dragged object (component from inside, DbD object from outside)
+             */
+            onDragStart: function (event, object) {
+                this.dnd.onDragStart(event, object);
+            },
+
+            /**
+             * start drag handling on drag from outside of the page
+             * @param event the jQuery DnD event
+             */
+            onDragEnter: function (event) {
+                var lgr = elements.log.dnd;
+                event.preventDefault();
+                if (lgr.getLevel() <= log.levels.TRACE) {
+                    lgr.trace('elements.dndEnter(' + '' + ')');
+                }
+                if (pages.current.dnd.object) {
+                    this.onDragStart(event, pages.current.dnd.object);
+                }
+                return false;
+            },
+
+            /**
+             * determine the target for the current drag position
+             * @param event the jQuery DnD event
+             */
+            onDragOver: function (event) {
+                var lgr = elements.log.dnd;
+                event.preventDefault();
+                var dnd = core.dnd.getDndData(event);
+                var object = pages.current.dnd.object;
+                if (object) {
+                    if (object.type === 'component' || object.type === 'element') {
+                        var ref = dnd.el.view.reference;
+                        var target = this.dnd.getDragTarget(event);
+                        if (lgr.getLevel() <= log.levels.TRACE) {
+                            lgr.trace('elements.dndOver(' + (ref ? ref.path : 'body') + '): '
+                                + JSON.stringify(dnd.pos) + " - " + (target ? target.reference.path : '?'));
+                        }
+                        this.dnd.setDragTarget(target, event);
+                    } else {
+                        var zone = this.dnd.getDragZone(event);
+                        if (lgr.getLevel() <= log.levels.TRACE) {
+                            lgr.trace('elements.dndOver('
+                                + JSON.stringify(dnd.pos) + " - " + (zone ? zone.$el.attr('id') : '?'));
+                        }
+                        this.dnd.setDragZone(zone, event);
+                    }
+                }
+                return false;
+            },
+
+            /**
+             * forward drag end to the DnD handle on end dragging from inside
+             * @param event the jQuery DnD event
+             */
+            onDragEnd: function (event) {
+                this.dnd.onDragEnd(event);
+            },
+
+            /**
+             * performs the drop operation if DnD status enables a change by delegating the drop to the edit frame
+             * @param event the jQuery DnD event
+             */
+            onDrop: function (event) {
+                var lgr = elements.log.dnd;
+                event.preventDefault();
+                var object, target;
+                if (this.dnd.dragTarget && this.dnd.insert) {
+                    object = JSON.parse(event.originalEvent.dataTransfer.getData('application/json'));
+                    target = this.dnd.dragTarget.reference;
+                    var before = this.dnd.insert.before ? this.dnd.insert.before.reference : undefined;
+                    if (lgr.getLevel() <= log.levels.DEBUG) {
+                        lgr.debug('elements.dnd.onDrop(' + this.dnd.dragTarget.reference.path + '): '
+                            + JSON.stringify(object) + ' > '
+                            + JSON.stringify(target) + ' < '
+                            + JSON.stringify(before)
+                        );
+                    }
+                    parent.postMessage(elements.const.event.dnd.drop
+                        + JSON.stringify({
+                            target: {
+                                container: {
+                                    reference: {
+                                        path: target.path,
+                                        type: target.type
+                                    }
+                                },
+                                before: before ? {
+                                    reference: {
+                                        path: before.path
+                                    }
+                                } : undefined
+                            },
+                            object: object
+                        }), '*');
+                } else if (this.dnd.dragZone) {
+                    object = JSON.parse(event.originalEvent.dataTransfer.getData('application/json'));
+                    target = this.dnd.dragZone.data;
+                    if (lgr.getLevel() <= log.levels.DEBUG) {
+                        lgr.debug('elements.dnd.onDrop(' + this.dnd.dragZone.$el.attr('id') + '): '
+                            + JSON.stringify(object) + ' > '
+                            + JSON.stringify(target)
+                        );
+                    }
+                    parent.postMessage(elements.const.event.dnd.drop
+                        + JSON.stringify({
+                            zone: target,
+                            object: object
+                        }), '*');
+                }
+                return false;
             },
 
             // component selection and edit frame message handling
 
+            onMouseOver: function (event) {
+                var lgr = elements.log.ptr;
+                if (event) {
+                    event.preventDefault();
+                }
+                var component = this.getPointerComponent(event, '.' + elements.const.class.component);
+                this.pointer.setComponent(component);
+                if (this.selection.component) {
+                    var pointer = this.getPointer(event);
+                    if (lgr.getLevel() <= log.levels.TRACE) {
+                        lgr.trace('elements.onMouseOver( ' + JSON.stringify(this.selection.toolsBounds) + ',' + JSON.stringify(pointer) + ')');
+                    }
+                    this.selection.setHeadVisibility(this.selection.component === component
+                        || this.isInside(this.selection.toolsBounds, pointer));
+                }
+                return false;
+            },
+
+            selectPath: function (path, force) {
+                var found = false;
+                if (path) {
+                    var $target;
+                    do { // traverse upwards if 'force' and a path has no editable element on the page
+                        $target = $('.' + elements.const.class.component
+                            + '[data-' + elements.const.data.path + '="' + path + '"]');
+                    } while ((!$target || $target.length < 1) && force && (path = core.getParentPath(path)) && path !== "/");
+                    if ($target && $target.length > 0) {
+                        var component = $target[0].view;
+                        if (component) {
+                            elements.log.std.debug('pages.elements.selectElement(' + path + ')');
+                            this.setSelection(component, force);
+                            found = true;
+                        }
+                    }
+                }
+                if (!found) {
+                    this.clearSelection();
+                }
+            },
+
             setSelection: function (component, force) {
-                elements.log.debug('pages.elements.setSelection(' + component + ',' + force + ')');
+                var lgr = elements.log.std;
+                if (lgr.getLevel() <= log.levels.DEBUG) {
+                    lgr.debug('pages.elements.setSelection(' + component + ',' + force + ')');
+                }
                 if (elements.pageBody.selection.component !== component || force) {
                     if (component) {
+                        var e = elements.const.event;
                         this.dnd.reset();
-                        elements.pageBody.selection.setComponent(component);
-                        var eventData = [
-                            component.data.name,
-                            component.data.path,
-                            component.data.type
-                        ];
-                        elements.log.debug('elements.trigger.' + elements.const.event.element.selected + '(' + component.data.path + ')');
-                        $(document).trigger(elements.const.event.element.selected, eventData);
+                        elements.pageBody.selection.setComponent(component, force);
+                        elements.pageBody.selection.setHeadVisibility(true);
+                        elements.trigger('elements.selection.set', e.element.selected, component.reference);
                     } else {
                         this.clearSelection();
                     }
@@ -738,67 +1095,92 @@
             },
 
             clearSelection: function () {
+                var lgr = elements.log.std;
                 this.dnd.reset();
                 if (elements.pageBody.selection.component) {
-                    elements.log.debug('pages.elements.clearSelection(' + elements.pageBody.selection.component + ')');
+                    var e = elements.const.event;
+                    if (lgr.getLevel() <= log.levels.DEBUG) {
+                        lgr.debug('pages.elements.clearSelection(' + elements.pageBody.selection.component + ')');
+                    }
                     elements.pageBody.selection.setComponent(undefined);
-                    elements.log.debug('elements.trigger.' + elements.const.event.element.selected + '([])');
-                    $(document).trigger(elements.const.event.element.selected, []);
+                    elements.trigger('elements.selection.clear', e.element.selected, []);
                 }
             },
 
-            selectComponent: function (event, name, path, type) {
-                if (path) {
-                    var $target = $('.' + elements.const.class.component
-                        + '[data-' + elements.const.data.path + '="' + path + '"]');
-                    var found = false;
-                    if ($target && $target.length > 0) {
-                        var component = $target[0].view;
-                        if (component) {
-                            elements.log.debug('pages.elements.selectComponent(' + path + ')');
-                            this.setSelection(component, true);
-                            found = true;
-                        }
+            selectElement: function (event, refOrPath) {
+                this.selectPath(refOrPath ? refOrPath.path : refOrPath, true);
+            },
+
+            onElementSelected: function (event, reference) {
+                var lgr = elements.log.std;
+                var e = elements.const.event;
+                if (reference && reference.path) {
+                    if (lgr.getLevel() <= log.levels.DEBUG) {
+                        lgr.debug('pages.elements.' + e.element.selected + '(' + reference.path + ')');
                     }
-                    if (!found) {
-                        elements.log.debug('elements.trigger.' + elements.const.event.element.selected + '([])');
-                        $(document).trigger(elements.const.event.element.selected, []);
+                    parent.postMessage(e.element.selected + JSON.stringify({reference: reference}), '*');
+                } else {
+                    if (lgr.getLevel() <= log.levels.DEBUG) {
+                        lgr.debug('pages.elements.selectionCleared()');
                     }
-                } else {
-                    this.clearSelection();
+                    parent.postMessage(e.element.selected + JSON.stringify({}), '*');
                 }
             },
 
-            onComponentSelected: function (event, name, path, type) {
-                if (path) {
-                    elements.log.debug('pages.elements.element.selected(' + path + ')');
-                    parent.postMessage(elements.const.event.element.selected
-                        + JSON.stringify({name: name, path: path, type: type}), '*');
-                } else {
-                    elements.log.debug('pages.elements.selectionCleared()');
-                    parent.postMessage(elements.const.event.element.selected
-                        + JSON.stringify({}), '*');
-                }
-            },
-
+            /**
+             * the message handler for all messages sent from the edit frame to the edited page (this document)
+             * @param event "<operation><argument-object|array-JSON>"
+             */
             onMessage: function (event) {
-                var message = elements.const.event.messagePattern.exec(event.data);
+                var lgr = elements.log.std;
+                var e = elements.const.event;
+                var message = e.messagePattern.exec(event.data);
+                if (lgr.getLevel() <= log.levels.TRACE) {
+                    lgr.trace('elements.message.on: "' + event.data + '"...');
+                }
                 if (message) {
-                    var args = JSON.parse(message[2]);
-                    switch (message[1]) {
-                        case elements.const.event.element.select:
-                            if (args.path) {
-                                var eventData = [
-                                    args.name,
-                                    args.path,
-                                    args.type
-                                ];
-                                elements.log.debug('elements.trigger.' + elements.const.event.element.select + '(' + args.path + ')');
-                                $(document).trigger(elements.const.event.element.select, eventData);
-                            } else {
-                                elements.log.debug('elements.trigger.' + elements.const.event.element.select + '([])');
-                                $(document).trigger(elements.const.event.element.select, []);
+                    var args = JSON.parse(message[2]); // argument object|array
+                    switch (message[1]) { // operation
+                        case e.element.select:
+                            if (lgr.getLevel() <= log.levels.DEBUG) {
+                                lgr.debug('elements.message.on.' + e.element.select + JSON.stringify(args));
                             }
+                            if (args.reference && args.reference.path) {
+                                elements.trigger('elements.msg.select', e.element.select, args.reference);
+                            } else {
+                                elements.trigger('elements.msg.select', e.element.select, []);
+                            }
+                            break;
+                        case e.element.inserted:
+                            if (lgr.getLevel() <= log.levels.DEBUG) {
+                                lgr.debug('elements.message.on.' + e.element.inserted + JSON.stringify(args));
+                            }
+                            this.elementInserted(event, args[0], args.length > 1 ? args[1] : undefined);
+                            break;
+                        case e.element.changed:
+                            if (lgr.getLevel() <= log.levels.DEBUG) {
+                                lgr.debug('elements.message.on.' + e.element.changed + JSON.stringify(args));
+                            }
+                            this.elementChanged(event, args.reference);
+                            break;
+                        case e.element.deleted:
+                            if (lgr.getLevel() <= log.levels.DEBUG) {
+                                lgr.debug('elements.message.on.' + e.element.deleted + JSON.stringify(args));
+                            }
+                            this.elementDeleted(event, args.reference);
+                            break;
+                        case e.dnd.object:
+                            if (lgr.getLevel() <= log.levels.DEBUG) {
+                                lgr.debug('elements.message.on.' + e.dnd.object + JSON.stringify(args));
+                            }
+                            pages.current.dnd.object = args;
+                            break;
+                        case e.dnd.finished:
+                            if (lgr.getLevel() <= log.levels.DEBUG) {
+                                lgr.debug('elements.message.on.' + e.dnd.finished);
+                            }
+                            pages.current.dnd.object = undefined;
+                            elements.pageBody.dnd.reset();
                             break;
                     }
                 }
@@ -811,9 +1193,20 @@
              */
             getPointer: function (event) {
                 return {
-                    x: event.pageX - window.pageXOffset,
-                    y: event.pageY - window.pageYOffset
+                    x: event.pageX,
+                    y: event.pageY
                 };
+            },
+
+            isInside: function (viewRect, pointer) {
+                var lgr = elements.log.ptr;
+                var result = viewRect && pointer &&
+                    pointer.x >= viewRect.x1 && pointer.x < viewRect.x2 &&
+                    pointer.y >= viewRect.y1 && pointer.y < viewRect.y2;
+                if (lgr.getLevel() <= log.levels.DEBUG) {
+                    lgr.debug('elements.isInside( ' + JSON.stringify(viewRect) + ',' + JSON.stringify(pointer) + '): ' + result);
+                }
+                return result;
             },
 
             /**
@@ -826,17 +1219,13 @@
              * @param view    the view instance
              * @param offset  an optional offset (move) {dx,dy} for the rectangle
              */
-            getViewRect: function (view, offset) {
-                var viewPos = view.$el.offset();
-                // FIXME: check this and find the reason... i don't know why but in the bootstrap
-                // context the views rectangle must be relative to the scroll position !?
-                viewPos.top -= $(window).scrollTop();
-                viewPos.left -= $(window).scrollLeft();
+            getViewRect: function ($el, offset) {
+                var viewPos = $el.offset();
                 var rect = {
                     x1: viewPos.left,
                     y1: viewPos.top,
-                    w: view.$el.outerWidth(),
-                    h: view.$el.outerHeight()
+                    w: $el.outerWidth(),
+                    h: $el.outerHeight()
                 };
                 if (offset) {
                     rect.x1 += offset.dx;
@@ -858,11 +1247,11 @@
             getPointerComponent: function (event, selector, condition) {
                 var component = undefined;
                 var pointer = this.getPointer(event);
-                var domEl = document.elementFromPoint(pointer.x, pointer.y);
+                var domEl = document.elementFromPoint(pointer.x - window.pageXOffset, pointer.y - window.pageYOffset);
                 if (domEl) {
                     var handleEl;
-                    if ((handleEl = elements.pageBody.pointer.getComponentEl(domEl)) ||
-                        (handleEl = elements.pageBody.selection.getComponentEl(domEl))) {
+                    if ((handleEl = (elements.pageBody.pointer.getComponentEl(domEl))
+                        || elements.pageBody.selection.getComponentEl(domEl))) {
                         domEl = handleEl;
                     }
                     var $target = $(domEl).closest(selector);
@@ -883,10 +1272,12 @@
              */
             getPointerView: function (view, pointer, selector, condition) {
                 if (view) {
+                    var lgr = elements.log.std;
                     var self = this;
-                    var viewRect = this.getViewRect(view);
-                    if (elements.const.log.mouse.position) {
-                        elements.log.debug('elements.getPointerView(' + view.data.path + ', '
+                    var viewRect = this.getViewRect(view.$el);
+                    if (lgr.getLevel() <= log.levels.TRACE) {
+                        lgr.trace('elements.getPointerView('
+                            + (view.reference ? view.reference.path : view.data.path) + ', '
                             + JSON.stringify(pointer) + ' / ' + JSON.stringify(viewRect) + ', "'
                             + selector + '"' + (condition ? ' ++' : '') + ' ...');
                     }
@@ -896,9 +1287,11 @@
                         if (!useNested) {
                             var nested = this.view; // use the elements view
                             if (nested) {
-                                var nestedRect = self.getViewRect(nested);
-                                if (elements.const.log.mouse.position) {
-                                    elements.log.debug('elements.getPointerView.try: ' + nested.data.path + ' ' + JSON.stringify(nestedRect));
+                                var nestedRect = self.getViewRect(nested.$el);
+                                if (lgr.getLevel() <= log.levels.TRACE) {
+                                    lgr.trace('elements.getPointerView.try: '
+                                        + (nested.reference ? nested.reference.path : nested.data.path) + ' '
+                                        + JSON.stringify(nestedRect));
                                 }
                                 if (nestedRect.x1 <= pointer.x && nestedRect.y1 <= pointer.y &&
                                     nestedRect.x2 >= pointer.x && nestedRect.y2 >= pointer.y) {
@@ -934,14 +1327,16 @@
                         }
                     }
                 }
-                if (elements.const.log.mouse.position) {
-                    elements.log.debug('elements.getPointerView: ' + (view ? view.data.path : 'undefined'));
+                if (lgr.getLevel() <= log.levels.TRACE) {
+                    lgr.trace('elements.getPointerView: '
+                        + (view ? (view.reference ? view.reference.path : view.data.path) : 'undefined'));
                 }
                 return view;
             }
         });
 
         elements.pageBody = core.getView('body.' + elements.const.class.editBody, elements.PageBody);
+        elements.pageBody.initComponents();
 
-    })(window.composum.pages.elements, window.core);
+    })(window.composum.pages.elements, window.composum.pages, window.core);
 })(window);

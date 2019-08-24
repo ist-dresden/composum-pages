@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+        jcr:primaryType="cpp:Widget"
+        jcr:description="the widget shows content elements which are referring a page with the ability to select the referrers"
+        sling:resourceType="composum/pages/stage/widget/page/referrers"
+        sling:resourceSuperType="composum/pages/commons/widget"
+        modelClass="com.composum.pages.stage.model.widget.PageReferrers"
+        widgetType="page-referrers"/>

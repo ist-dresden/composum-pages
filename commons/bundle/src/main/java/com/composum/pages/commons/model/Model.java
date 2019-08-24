@@ -2,12 +2,15 @@ package com.composum.pages.commons.model;
 
 import com.composum.pages.commons.PagesConstants;
 import com.composum.pages.commons.model.properties.Language;
+import com.composum.pages.commons.model.properties.Languages;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.SlingBean;
-import com.composum.sling.core.util.LinkUtil;
+import com.composum.pages.commons.util.LinkUtil;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Locale;
 
 public interface Model extends SlingBean {
@@ -28,14 +31,21 @@ public interface Model extends SlingBean {
 
     // Sites & Pages
 
+    @Nullable
     Page getCurrentPage();
 
+    @Nullable
     Page getContainingPage();
 
     //
 
+    @Nonnull
     String getTitle();
 
+    @Nonnull
+    String getTileTitle();
+
+    @Nonnull
     String getDescription();
 
     /**
@@ -43,27 +53,42 @@ public interface Model extends SlingBean {
      *
      * @see LinkUtil#getUrl(SlingHttpServletRequest, String)
      */
+    @Nonnull
     String getUrl();
 
+    @Nonnull
     String getCssBase();
 
     // i18n
 
+    @Nonnull
     Language getLanguage();
+
+    @Nonnull
+    Languages getLanguages();
 
     // resource properties
 
-    <T> T getProperty(String key, T defaultValue);
+    @Nonnull
+    <T> T getProperty(@Nonnull String key, @Nonnull T defaultValue);
 
-    <T> T getProperty(String key, Class<T> type);
+    @Nullable
+    <T> T getProperty(@Nonnull String key, @Nonnull Class<T> type);
 
-    <T> T getProperty(Locale locale, T defaultValue, String... keys);
+    @Nonnull
+    <T> T getProperty(Locale locale, @Nonnull T defaultValue, String... keys);
 
     // inherited properties
 
-    <T> T getInherited(String key, T defaultValue);
+    @Nonnull
+    <T> T getInherited(@Nonnull String key, @Nonnull T defaultValue);
 
-    <T> T getInherited(String key, Class<T> type);
+    @Nullable
+    <T> T getInherited(@Nonnull String key, @Nonnull Class<T> type);
 
-    <T> T getInherited(Locale locale, T defaultValue, String... keys);
+    @Nonnull
+    <T> T getInherited(Locale locale, @Nonnull T defaultValue, String... keys);
+
+    @Nonnull
+    String getHashKey();
 }

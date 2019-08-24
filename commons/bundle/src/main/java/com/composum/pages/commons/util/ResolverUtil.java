@@ -6,7 +6,42 @@ import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
 
+import javax.annotation.Nullable;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class ResolverUtil {
+
+    public static final Pattern URL_PATH_PATTERN =
+            Pattern.compile("^(([\\w]+:)?//[^/:]+(:[\\d]+)?)?(/[^?]*)(\\?[^#]*(#.*)?)?$");
+
+    /**
+     * Resolves a resource addressed by a URL (probably with parameters, ...).
+     *
+     * @return the resource if the path of the url can be resolved as an existing resource
+     */
+    @Nullable
+    public static Resource getUrlResource(ResourceResolver resolver, String pageUrl) {
+        Resource resource = resolver.resolve(pageUrl);
+        if (ResourceUtil.isNonExistingResource(resource)) {
+            Matcher matcher = URL_PATH_PATTERN.matcher(pageUrl);
+            if (matcher.matches()) {
+                String path = matcher.group(4);
+                Resource res = resolver.resolve(path);
+                if (ResourceUtil.isNonExistingResource(res)) {
+                    int namePos = path.lastIndexOf('/') + 1;
+                    int extPos = path.lastIndexOf('.', namePos);
+                    if (extPos > namePos) {
+                        res = resolver.resolve(path.substring(0, extPos));
+                    }
+                }
+                if (!ResourceUtil.isNonExistingResource(res)) {
+                    resource = res;
+                }
+            }
+        }
+        return ResourceUtil.isNonExistingResource(resource) ? null : resource;
+    }
 
     public static <T> T getTypeProperty(Resource resource, String type, String name, T defaultValue) {
         return getTypeProperty(getResourceType(resource, type), name, defaultValue);
@@ -35,7 +70,7 @@ public class ResolverUtil {
         if (typeResource != null) {
             ResourceResolver resolver = typeResource.getResourceResolver();
             while (typeResource != null && value == null) {
-                ValueMap values = typeResource.adaptTo(ValueMap.class);
+                ValueMap values = typeResource.getValueMap();
                 value = values.get(name, type);
                 typeResource = getResourceType(resolver, typeResource.getResourceSuperType());
             }

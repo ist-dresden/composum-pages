@@ -3,7 +3,7 @@
 <cpp:defineObjects/>
 <cpp:element var="element" type="com.composum.pages.commons.model.Element"
                 test="@{element.editMode}" cssBase="composum-pages-components-placeholder">
-    <span class="fa-stack ${elementCssBase}_icon">
+    <span class="fa-stack ${elementCSS}_icon">
         <i class="fa fa-dot-circle-o fa-stack-2x"></i>
         <i class="fa fa-plus fa-stack-1x add-plus"></i>
     </span>

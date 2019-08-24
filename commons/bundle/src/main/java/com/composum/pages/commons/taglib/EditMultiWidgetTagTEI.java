@@ -1,7 +1,7 @@
 package com.composum.pages.commons.taglib;
 
 import com.composum.sling.cpnl.AbstractTagTEI;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.jsp.jstl.core.LoopTagStatus;
 import javax.servlet.jsp.tagext.TagData;
@@ -10,6 +10,7 @@ import java.util.List;
 
 public class EditMultiWidgetTagTEI extends AbstractTagTEI {
 
+    @Override
     protected void collectVariables(TagData data, List<VariableInfo> variables) {
         String var = data.getAttributeString("var");
         if (StringUtils.isNotBlank(var)) {
@@ -20,6 +21,6 @@ public class EditMultiWidgetTagTEI extends AbstractTagTEI {
             variables.add(new VariableInfo(status, LoopTagStatus.class.getName(), true, VariableInfo.NESTED));
         }
         variables.add(new VariableInfo(EditMultiWidgetTag.MULTIWIDGET_VAR, EditMultiWidgetTag.class.getName(), true, VariableInfo.NESTED));
-        variables.add(new VariableInfo(EditMultiWidgetTag.MULTIWIDGET_CSS_VAR, "java.lang.String", true, VariableInfo.NESTED));
+        variables.add(new VariableInfo(EditMultiWidgetTag.MULTIWIDGET_CSSBASE_VAR, "java.lang.String", true, VariableInfo.NESTED));
     }
 }

@@ -3,27 +3,31 @@
 <'jcr'='http://www.jcp.org/jcr/1.0'>
 <'sling'='http://sling.apache.org/jcr/sling/1.0'>
 <'cpp'='http://sling.composum.com/pages/1.0'>
+<'cpl'='http://sling.composum.com/platform/1.0'>
 
 [cpp:MetaData] > sling:Resource, nt:unstructured
 
 [cpp:Element] > sling:Resource, nt:unstructured
+  orderable
 
 [cpp:Container] > cpp:Element
   orderable
 
-[cpp:PageContent] > nt:unstructured, mix:versionable, mix:lastModified
+[cpp:PageContent] > nt:unstructured, mix:versionable, mix:lockable, mix:created, mix:lastModified
+  orderable
 
 [cpp:Page] > sling:OrderedFolder
+  orderable
   + jcr:content (cpp:PageContent) = cpp:PageContent *
 
-[cpp:SiteConfiguration] > nt:unstructured
+[cpp:SiteConfiguration] > nt:unstructured, mix:lockable, mix:lastModified
+  orderable
 
-[cpp:Site] > sling:OrderedFolder
+[cpp:Site] > sling:OrderedFolder, cpl:releaseRoot
+  orderable
   + jcr:content (cpp:SiteConfiguration) = cpp:SiteConfiguration *
 
 [cpp:Component] > sling:Folder
   - componentType (string) < 'nt:unstructured', 'cpp:Element', 'cpp:Container', 'cpp:Page'
-
-[cpp:Theme] > sling:Folder
 
 [cpp:Widget] > sling:Resource, nt:unstructured

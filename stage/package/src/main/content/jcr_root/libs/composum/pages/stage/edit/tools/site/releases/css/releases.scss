@@ -28,28 +28,69 @@
             list-style: none;
             background-color: $tools-pane-tabs-background;
 
-            &_head {
+            &.selected {
+                @include secondary-selection-background();
+
+                body.context-driven-view & {
+                    @include main-selection-background();
+                }
+            }
+
+            &_head, &_status {
+                clear: both;
                 width: 100%;
             }
 
-            &_title {
+            &_title, &_creationDate {
                 float: left;
             }
 
-            &_key {
-                float: right;
-                margin-left: 10px;
+            &_key, &_creationDate {
                 font-size: $hint-font-size;
             }
 
-            &_description {
-                clear: both;
-                font-size: $hint-font-size;
+            &_title {
+                margin: 2px 0;
+            }
+
+            &_key {
+                margin: 4px 0 2px;
+            }
+
+            &_key, &_actions, &_categories {
+                margin-left: $tools-pane-padding;
+                float: right;
+            }
+
+            &_actions {
+                margin-top: -2px;
+                margin-bottom: 2px;
+            }
+
+            &_creationDate {
+                margin-top: 2px;
+            }
+
+            &_category {
+                display: inline-block;
+                float: left;
+                margin-top: 2px;
+                margin-left: $tools-pane-padding;
+            }
+
+            &_categories {
+                display: inline-block;
+                white-space: nowrap;
             }
 
             &_entry {
                 cursor: pointer;
                 position: relative;
+                display: inline-block;
+                width: 100%;
+                min-height: 50px;
+                margin-bottom: -2px;
+                padding: 2px 2px 0 0;
             }
 
             &_select {
@@ -60,12 +101,6 @@
 
             &_listentry {
                 padding-left: 40px;
-            }
-
-            &_category {
-                float: left;
-                margin-top: 3px;
-                margin-left: 10px;
             }
         }
     }

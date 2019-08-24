@@ -58,7 +58,11 @@ public abstract class ContentModel<ParentModel extends ContentDriven> extends Ab
     }
 
     public String getLastModifiedString() {
-        return PagesUtil.getTimestampString(getLastModified());
+        Calendar lastModified = getLastModified();
+        if (lastModified == null) {
+            lastModified = getCreationDate();
+        }
+        return PagesUtil.getTimestampString(lastModified);
     }
 
     /** returns 'true' if the content is modified after the creation of the last stored version */

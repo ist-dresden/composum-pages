@@ -3,12 +3,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.composum.sling.pages</groupId>
-        <artifactId>composum-sling-pages</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <groupId>com.composum.pages</groupId>
+        <artifactId>composum-pages</artifactId>
+        <version>1.0.0</version>
     </parent>
 
-    <artifactId>composum-sling-pages-components</artifactId>
+    <artifactId>composum-pages-components</artifactId>
     <packaging>pom</packaging>
 
     <name>Composum Pages Components</name>

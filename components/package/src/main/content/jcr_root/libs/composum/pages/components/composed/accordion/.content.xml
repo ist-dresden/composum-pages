@@ -3,6 +3,6 @@
         jcr:primaryType="cpp:Component"
         jcr:description="a container of collapsible elements"
         jcr:title="Accordion"
-        componentGroup="Layout"
-        sling:resourceSuperType="composum/pages/components/container/parsys"
+        category="[Layout,Blueprint]"
+        sling:resourceSuperType="composum/pages/components/composed"
         allowedElements="[composum/pages/components/composed/accordion/item]"/>

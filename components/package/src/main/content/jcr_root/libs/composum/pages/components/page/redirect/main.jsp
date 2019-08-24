@@ -1,13 +1,12 @@
-<%@page session="false" pageEncoding="utf-8" %><%--
---%><%@taglib prefix="sling" uri="http://sling.apache.org/taglibs/sling/1.2" %><%--
---%><%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %><%--
---%><cpp:defineObjects/>
+<%@page session="false" pageEncoding="utf-8" %>
+<%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
+<cpp:defineObjects/>
 <cpp:model var="pageModel" type="com.composum.pages.commons.model.Page" scope="request">
     <div class="composum-pages-components-page_body container-fluid">
         <div class="composum-pages-components-page_row row">
             <div class="composum-pages-components-page_main col-xs-12">
                 <div class="composum-pages-components-page-redirect_redirect-hint alert alert-info">This page
-                    redirects to: '<a href="${pageModel.slingTargetUrl}">${pageModel.slingTarget}</a>'
+                    redirects to: '<a href="${currentPage.slingTargetUrl}">${currentPage.slingTarget}</a>'
                 </div>
             </div>
         </div>

@@ -3,97 +3,160 @@
 @import "../../../css/variables";
 @import "../../../css/mixins";
 
-/*
- * default (bootstrap -sm,md-)
- */
 .composum-pages-components-composed-carousel {
     background: #000;
 
     &_element {
-        @include aspect-ratio-wrapper(16, 9);
+        @include aspect-ratio-wrapper(2, 1);
+
+        @include screen-size-xl-min {
+            @include aspect-ratio-wrapper(4, 1);
+        }
+
+        @include screen-size-l-xl {
+            @include aspect-ratio-wrapper(7, 2);
+        }
+
+        @include screen-size-m-l {
+            @include aspect-ratio-wrapper(8, 3);
+        }
+
+        @include screen-size-xs-s {
+            @include aspect-ratio-wrapper(3, 2);
+        }
+
+        @include mobile {
+            @include aspect-ratio-wrapper(1, 1);
+        }
 
         .composum-pages-components-element-teaser {
             @include aspect-ratio-element;
-            background-position: 50% 10%;
-            background-repeat: no-repeat;
             background-color: #000;
-            padding: 5% 15%;
             @include bright-font;
             color: $site-bright-text-color;
 
-            a,
-            a:visited {
-                text-decoration: none;
-                color: $site-bright-text-color;
+            &, &_title, &_subtitle, &_text {
+
+                a, a:visited, a:hover, a:focus {
+                    color: $site-bright-text-color !important;
+                }
+
+                a:hover {
+                    color: $site-bright-text-hover !important;
+                }
             }
 
-            a:hover {
-                color: $site-bright-text-hover;
+            &_text-block {
+                overflow: unset;
+            }
+
+            &_title, &_subtitle {
+                margin: 0 0 $text-spacing-default 0;
+                color: $site-bright-text-color !important;
             }
 
             &_title {
                 @include title-font;
+
+                @include screen-size-xxs-max {
+                    font-size: $site-title-font-size * (3/4);
+                }
             }
 
             &_subtitle {
                 @include subtitle-font;
+
+                @include screen-size-xxs-max {
+                    font-size: $site-subtitle-font-size * (5/6);
+                }
             }
 
             &_text {
-                @include default-font;
+                @include font('robotolight', $stage-default-font-size);
+                color: $site-bright-text-color;
+
+                @include screen-size-xxs-max {
+                    font-size: $stage-default-font-size-xs;
+                }
             }
-        }
-    }
-}
 
-/*
- * bootstrap -lg-
- */
-@media screen and (min-width: 1200px) {
+            &_variation {
 
-    .composum-pages-components-composed-carousel {
+                &_default {
+                    width: 100%;
+                    height: 100%;
+                    margin: 0;
+                    overflow: hidden;
+                    padding: 2% 15% !important;
 
-        &_element {
-            @include aspect-ratio-wrapper(3, 1);
-        }
-    }
-}
+                    .composum-pages-components-element-teaser {
 
-/*
- * bootstrap -xs-
- */
-@media screen and (max-width: 767px) {
+                        &_asset {
+                            display: none !important;
+                        }
 
-    .composum-pages-components-composed-carousel {
+                        &_content {
+                            width: 100%;
+                            height: 100%;
+                        }
+                    }
 
-        &_element {
-            @include aspect-ratio-wrapper(3, 2);
-        }
-    }
-}
+                    &.composum-pages-components-element-teaser {
 
-/*
- * self defined -xxs-
- */
-@media screen and (max-width: 480px) {
+                        &_symbol {
 
-    .composum-pages-components-composed-carousel {
+                            .composum-pages-components-element-teaser {
 
-        &_element {
-            @include aspect-ratio-wrapper(1, 1);
-
-            .composum-pages-components-element-teaser {
-
-                &_title {
-                    font-size: $site-title-font-size * (3/4);
+                                &_icon {
+                                    font-size: 3.5rem;
+                                    min-width: 5rem;
+                                    max-width: 5rem;
+                                    padding-top: 4px;
+                                    color: $site-bright-icon-color;
+                                }
+                            }
+                        }
+                    }
                 }
 
-                &_subtitle {
-                    font-size: $site-subtitle-font-size * (5/6);
+                &_bg-image {
+                    margin: 0;
+                    background-position: 50% 30%;
+                    background-repeat: no-repeat;
+
+                    .composum-pages-components-element-teaser {
+
+                        &_content {
+                            width: 100%;
+                            height: 100%;
+                            overflow: hidden;
+                            padding: 2% 15%;
+                        }
+                    }
                 }
 
-                &_text {
-                    font-size: $site-default-font-size * (4/5);
+                &_bg-video {
+
+                    .composum-pages-components-element-video-background {
+
+                        &_frame {
+                            height: 100%;
+                        }
+
+                        &_player {
+
+                            @include screen-size-s-max {
+                                width: 200%;
+                            }
+                        }
+
+                        &_content {
+                            width: 100%;
+                            height: 100%;
+                            overflow: hidden;
+                            padding: 2% 15%;
+                        }
+                    }
                 }
             }
         }

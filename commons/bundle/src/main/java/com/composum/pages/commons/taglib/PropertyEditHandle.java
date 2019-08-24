@@ -27,7 +27,7 @@ public class PropertyEditHandle<T> extends AbstractModel {
     protected boolean i18n;
 
     protected final Class<T> type;
-    private transient Boolean multiValue;
+    protected transient Boolean multiValue;
 
     protected EditWidgetTag widget; // the widget itself which is using this as model is accessible here
 
@@ -52,7 +52,7 @@ public class PropertyEditHandle<T> extends AbstractModel {
      * the values can be set by the context (an edit widget tag) as 'value' instead of a 'property' name
      */
     public void setValue(Object object) {
-        values = object != null ? new ValueSet<T>(object) : null;
+        values = object != null ? new ValueSet<>(object, type) : null;
     }
 
     /**
@@ -66,12 +66,12 @@ public class PropertyEditHandle<T> extends AbstractModel {
             if (multiValue == null && multi != null) {
                 multiValue = true;
             }
-            return new ValueSet(multi);
+            return new ValueSet(multi, type);
         } else {
             if (multiValue == null) {
                 multiValue = false;
             }
-            return new ValueSet(single);
+            return new ValueSet(single, type);
         }
     }
 

@@ -4,6 +4,7 @@ import com.composum.pages.commons.model.Site;
 import com.composum.pages.commons.taglib.PropertyEditHandle;
 import com.composum.pages.commons.widget.WidgetModel;
 
+import javax.annotation.Nonnull;
 import java.util.Collection;
 
 public class SiteSelect extends PropertyEditHandle<String> implements WidgetModel {
@@ -15,13 +16,13 @@ public class SiteSelect extends PropertyEditHandle<String> implements WidgetMode
     }
 
     @Override
-    public String getWidgetAttributeKey(String attributeKey) {
+    public String filterWidgetAttribute(@Nonnull String attributeKey, Object attributeValue) {
         return attributeKey;
     }
 
     public Collection<Site> getSites() {
         if (sites == null) {
-            sites = getSiteManager().getSites(context, "");
+            sites = getSiteManager().getSites(context);
         }
         return sites;
     }

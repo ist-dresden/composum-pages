@@ -3,5 +3,5 @@
         jcr:primaryType="cpp:Component"
         jcr:description="a rotating set of elements"
         jcr:title="Carousel"
-        sling:resourceSuperType="composum/pages/components/container"
-        allowedElements="[composum/pages/components/element/teaser]"/>
+        category="[Teaser,Blueprint]"
+        sling:resourceSuperType="composum/pages/components/composed"/>

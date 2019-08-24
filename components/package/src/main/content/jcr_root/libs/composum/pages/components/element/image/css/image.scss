@@ -1,8 +1,78 @@
 @charset "UTF-8";
 
+@import "../../../css/variables";
+@import "../../../css/mixins";
+
+$element-image-padding: 5px;
+$element-image-margin-v: 10px;
+$element-image-border: 1px solid #ccc;
+
+$element-image-meta-padding: 0 $element-image-padding 1px;
+$element-image-meta-fg: #000;
+$element-image-meta-bg: #fff;
+$element-image-meta-font-size: 11px;
+
+@mixin element-image-meta-font {
+    @include font('robotolight', $element-image-meta-font-size);
+}
+
 .composum-pages-components-element-image {
+    position: relative;
+    display: table;
+    margin: $element-image-margin-v auto;
+    border: $element-image-border;
+    padding: $element-image-padding;
+
+    &_frame {
+        display: inline-block;
+    }
 
     &_picture {
-        max-width: 100%;
+        width: 100%;
+    }
+
+    .composum-pages-components-element-image {
+
+        &_meta {
+            position: absolute;
+            right: $element-image-padding;
+            bottom: $element-image-padding;
+            padding: $element-image-meta-padding;
+            background: $element-image-meta-bg;
+            opacity: 0.6;
+            line-height: $element-image-meta-font-size;
+        }
+
+        &_copyright, &_url, &_url:hover, &_url:focus, &_url:visited, &_license {
+            display: inline;
+            color: $element-image-meta-fg;
+            text-decoration: none;
+            @include element-image-meta-font;
+
+            p {
+                display: inline;
+                margin: 0;
+                padding: 0;
+            }
+        }
+    }
+
+    &-background {
+        width: 100%;
+        @include aspect-ratio-wrapper(4, 1);
+
+        &_frame {
+            @include aspect-ratio-element;
+        }
+
+        &_picture {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-position: center;
+            background-size: 100%;
+        }
     }
 }

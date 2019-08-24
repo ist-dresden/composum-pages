@@ -10,39 +10,43 @@
             <h4 class="panel-title">
                 <a class="collapsed" role="button" data-toggle="collapse"
                    href="#modifiedPagesPanel" aria-expanded="false"
-                   aria-controls="modifiedPagesPanel">${cpn:i18n(slingRequest, 'Modified Pages')}</a>
+                   title="${cpn:i18n(slingRequest,'modified but last changes not activated yet')}"
+                   aria-controls="modifiedPagesPanel">${cpn:i18n(slingRequest,'Modified Pages')}</a>
             </h4>
             <c:if test="${site.editMode}">
                 <div class="btn-group" role="group" aria-label="...">
-                    <cpn:text tagName="button" tagClass="btn btn-default checkpoint"
-                              i18n="true">Do Finalize...</cpn:text>
+                    <button class="btn btn-default activate" i18n="true"><i
+                            class="fa fa-plaY"></i>${cpn:i18n(slingRequest,'Activate')}</button>
                 </div>
             </c:if>
         </div>
         <div id="modifiedPagesPanel" class="panel-collapse collapse in" role="tabpanel"
              aria-labelledby="modifiedPagesHead">
-            <div class="panel-body">
-                <table class="${siteCssBase}_table table">
-                    <thead class="${siteCssBase}_thead">
+            <div class="${siteCSS}_content panel-body">
+                <table class="${siteCSS}_table table table-condensed">
+                    <thead class="${siteCSS}_thead">
                     <tr>
-                        <c:if test="${site.editMode}">
-                            <th><input type="checkbox" class="${siteCssBase}_page-select-all"/></th>
-                        </c:if>
-                        <th class="${siteCssBase}_page-path">rel. Path</th>
-                        <th class="${siteCssBase}_page-title">Title</th>
-                        <th class="${siteCssBase}_page-time">modification Date</th>
+                        <th class="_input _page-state"><c:if test="${site.editMode}"><input type="checkbox"
+                                                                                            class="${siteCSS}_page-select-all"/></c:if>
+                        </th>
+                        <th class="_page-path">${cpn:i18n(slingRequest,'Relative Path')}</th>
+                        <th class="_page-title">${cpn:i18n(slingRequest,'Title')}</th>
+                        <th class="_page-time">${cpn:i18n(slingRequest,'Modification Date')}</th>
                     </tr>
                     </thead>
-                    <tbody class="${siteCssBase}_tbody">
+                    <tbody class="${siteCSS}_tbody">
                     <c:forEach items="${site.modifiedPages}" var="page">
-                        <tr>
-                            <c:if test="${site.editMode}">
-                                <td><input type="checkbox"
-                                           class="${siteCssBase}_page-select" data-path="${page.path}"></td>
-                            </c:if>
-                            <td class="${siteCssBase}_page-path">${page.siteRelativePath}</td>
-                            <td class="${siteCssBase}_page-title">${page.title}</td>
-                            <td class="${siteCssBase}_page-time">${page.lastModifiedString}</td>
+                        <tr class="release-status_${page.releaseStatus.activationState}">
+                            <td class="_input _page-state"
+                                title="${cpn:i18n(slingRequest,page.releaseStatus.activationState)}"><c:if
+                                    test="${site.editMode}"><input type="checkbox"
+                                                                   class="${siteCSS}_page-select"
+                                                                   data-path="${page.path}"></c:if>
+                            </td>
+                            <td class="_page-path"><a
+                                    href="${page.url}">${cpn:path(page.siteRelativePath)}</a></td>
+                            <td class="_page-title">${cpn:text(page.title)}</td>
+                            <td class="_page-time">${cpn:text(page.lastModifiedString)}</td>
                         </tr>
                     </c:forEach>
                     </tbody>

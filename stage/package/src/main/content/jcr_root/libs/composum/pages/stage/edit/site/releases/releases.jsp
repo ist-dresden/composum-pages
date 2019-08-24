@@ -1,24 +1,36 @@
-<%@page session="false" pageEncoding="UTF-8"%><%--
---%><%@taglib prefix="sling" uri="http://sling.apache.org/taglibs/sling/1.2" %><%--
---%><%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %><%--
---%><%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@page session="false" pageEncoding="UTF-8" %>
+<%@taglib prefix="sling" uri="http://sling.apache.org/taglibs/sling/1.2" %>
+<%@taglib prefix="cpn" uri="http://sling.composum.com/cpnl/1.0" %>
+<%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <cpp:defineFrameObjects/>
 <cpp:model var="site" type="com.composum.pages.commons.model.Site" mode="none">
     <div class="panel panel-default releasesList" data-path="${site.path}">
         <div class="panel-heading" role="tab" id="releasesHead">
             <h4 class="panel-title">
                 <a class="collapsed" role="button" data-toggle="collapse"
-                   href="#releasesPanel" aria-expanded="false" aria-controls="releasesPanel">
-                    Release List
-                </a>
+                   href="#releasesPanel" aria-expanded="false"
+                   aria-controls="releasesPanel">${cpn:i18n(slingRequest,'Release List')}</a>
             </h4>
             <c:if test="${site.editMode}">
                 <div class="btn-group" role="group" aria-label="...">
-                    <button type="button" class="btn btn-default release-public">Public</button>
-                    <button type="button" class="btn btn-default release-preview">Preview</button>
+                    <button type="button" class="btn btn-danger release-delete"
+                            title="${cpn:i18n(slingRequest,'Delete the selected release')}..."><i
+                            class="fa fa-trash"></i>${cpn:i18n(slingRequest,'Delete')}</button>
                 </div>
                 <div class="btn-group" role="group" aria-label="...">
-                    <button type="button" class="btn btn-danger release-delete">Delete</button>
+                    <button type="button" class="btn btn-default release-public"
+                            title="${cpn:i18n(slingRequest,'Switch Public Release to the selected release (publish)')}...">
+                        <i
+                            class="fa fa-globe"></i>${cpn:i18n(slingRequest,'Public')}</button>
+                    <button type="button" class="btn btn-default release-preview"
+                            title="${cpn:i18n(slingRequest,'Switch Preview Release to the selected release')}..."><i
+                            class="fa fa-eye"></i>${cpn:i18n(slingRequest,'Preview')}</button>
+                </div>
+                <div class="btn-group" role="group" aria-label="...">
+                    <button type="button" class="btn btn-default release-edit"
+                            title="${cpn:i18n(slingRequest,'Edit Release properties')}..."><i
+                            class="fa fa-pencil"></i>${cpn:i18n(slingRequest,'Edit')}</button>
                 </div>
             </c:if>
         </div>
@@ -26,17 +38,6 @@
              aria-labelledby="releasesHead">
             <div class="panel-body">
                 <table class="${siteCssBase}_table table">
-                    <thead class="${siteCssBase}_thead">
-                    <tr>
-                        <c:if test="${site.editMode}">
-                            <th class="${siteCssBase}_select"></th>
-                        </c:if>
-                        <th class="${siteCssBase}_key">Key</th>
-                        <th class="${siteCssBase}_title">Title</th>
-                        <th class="${siteCssBase}_description">Description</th>
-                        <th class="${siteCssBase}_categories">Categories</th>
-                    </tr>
-                    </thead>
                     <tbody class="${siteCssBase}_tbody">
                     <c:forEach items="${site.releases}" var="release">
                         <sling:include resource="${release.resource}"

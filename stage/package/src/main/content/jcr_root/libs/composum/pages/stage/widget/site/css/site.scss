@@ -15,10 +15,6 @@
                 padding-left: 30px;
                 background: #eee;
 
-                &_text {
-                    margin-left: 200px;
-                }
-
                 &_title,
                 &_description,
                 &_path {
@@ -28,6 +24,26 @@
 
             &_thumbnail {
                 left: 30px;
+
+
+                &_wrapper {
+                    @include aspect-ratio-wrapper(4, 3);
+                }
+
+                &_picture {
+                    @include aspect-ratio-element();
+                }
+
+                &_image {
+                    width: 100%;
+                }
+
+                .composum-pages-components-element-image {
+
+                    &_picture {
+                        width: 100%;
+                    }
+                }
             }
         }
 
@@ -38,7 +54,8 @@
                 max-height: 300px;
                 padding: 0;
                 margin-bottom: 0;
-                overflow: scroll;
+                overflow-x: hidden;
+                overflow-y: auto;
             }
 
             &_site {
@@ -50,6 +67,7 @@
 
             &_no-template {
                 margin: 0;
+                padding-top: 5px;
 
                 .composum-pages-stage-site {
 

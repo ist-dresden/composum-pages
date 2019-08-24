@@ -15,7 +15,15 @@
                 uri: {
                     base: '/libs/composum/pages/stage/edit/tools/page/statistics',
                     _content: '.content.html',
-                    _data: '/_jcr_content.statistics'
+                    data: '/libs/composum/pages/stage/edit/page/statistics'
+                },
+                options: {
+                    high: {
+                        days: 5,
+                        weeks: 10,
+                        months: 20,
+                        years: 50
+                    }
                 }
             }
         });
@@ -55,7 +63,7 @@
             },
 
             loadProfileValue: function () {
-                this.range = pages.profile.get('statistics', 'range', {date: moment(), type: 'months'})
+                this.range = pages.profile.get('statistics', 'range', {date: moment(), type: 'months'});
                 if (_.isString(this.range.date)) {
                     this.range.date = moment(this.range.date);
                 }
@@ -139,6 +147,7 @@
                 this.rangeSelector = core.getWidget(this.el, '.' + c.cssBase + c._range, tools.TimeRangeSelector);
                 this.$reload = this.$('.' + c.cssBase + c._reload);
                 this.$reload.click(_.bind(this.reload, this));
+                $(document).on('sidebarResized:contextTools.statistics', _.bind(this.adjustSize, this));
             },
 
             onTabSelected: function () {
@@ -147,7 +156,7 @@
 
             reload: function () {
                 var c = tools.const.statistics;
-                core.ajaxGet(c.uri.base + c.uri._content + this.contextTabs.data.path, {},
+                core.ajaxGet(c.uri.base + c.uri._content + this.contextTabs.reference.path, {},
                     _.bind(function (content) {
                         this.$statisticsContent.html(content);
                         this.rangeSelector.initRangeAndTarget(this);
@@ -162,11 +171,10 @@
                 this.$wrapper = this.$statisticsContent.find('.' + c.cssBase + '_chart .' + c.cssBase + '_canvas-wrapper');
                 this.$canvas = this.$wrapper.find('.' + c.cssBase + '_canvas');
                 this.$refTable = this.$statisticsContent.find('.' + c.cssBase + '_referrers table tbody');
-                $(document).on('sidebarResized:contextTools.statistics', _.bind(this.adjustSize, this));
                 if (this.$canvas.length === 1 && this.$refTable.length === 1) {
                     this.$canvas.html('');
                     this.$refTable.html('');
-                    var uri = this.contextTabs.data.path + c.uri._data + '.' + requestSelector + '.json';
+                    var uri = c.uri.data + '.' + requestSelector + '.json' + this.contextTabs.reference.path;
                     core.ajaxGet(uri, {},
                         _.bind(function (data) {
                             this.displayChart(data);
@@ -176,6 +184,7 @@
             },
 
             displayChart: function (data) {
+                var o = tools.const.statistics.options;
                 var labels = [];
                 var series = [[], []];
                 for (var i = 0; i < data.entries.length; i++) {
@@ -187,7 +196,8 @@
                     labels: labels,
                     series: series
                 }, {
-                    fullWidth: true
+                    fullWidth: true,
+                    high: o.high[this.rangeSelector.range.type] || 10
                 });
             },
 

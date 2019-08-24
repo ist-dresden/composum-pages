@@ -37,9 +37,6 @@
       },
       "cpp:design": {
         "jcr:primaryType": "nt:unstructured",
-        "typePatterns": [
-          "^(/[^/]+/)?composum/pages/components/page$"
-        ],
         "column": {
           "jcr:primaryType": "nt:unstructured",
           "typePatterns": [

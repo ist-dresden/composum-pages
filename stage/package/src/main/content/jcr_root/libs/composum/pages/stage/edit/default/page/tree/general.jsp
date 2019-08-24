@@ -8,9 +8,9 @@
         <cpp:menuItem icon="arrows-alt" label="Move" title="move the selected page in the page hierarchy"
                       action="window.composum.pages.actions.page.move"/>
         <cpp:menuItem icon="sign-in" label="Checkout/Checkin" title="chekout/checkin the selected page (toggle checkout)"
-                      action="window.composum.pages.actions.page.checkout"/>
+                      action="window.composum.pages.actions.page.toggleCheckout"/>
         <cpp:menuItem icon="lock" label="Lock/Unlock" title="lock/unlock the selected page (toggle lock)"
-                      action="window.composum.pages.actions.page.lock"/>
+                      action="window.composum.pages.actions.page.toggleLock"/>
     </cpp:treeMenu>
 </div>
 <cpp:treeAction icon="edit" label="Edit" title="Edit the page properties"

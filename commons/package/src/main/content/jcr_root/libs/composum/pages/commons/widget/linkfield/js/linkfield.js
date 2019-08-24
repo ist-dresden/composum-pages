@@ -7,15 +7,20 @@
         'use strict';
 
         widgets.const = _.extend(widgets.const || {}, {
-            link: {
-                cssBase: 'linkfield-widget'
+            linkfield: {
+                cssBase: 'linkfield-widget',
+                profile: 'linkfield'
             }
         });
 
-        widgets.LinkFieldWidget = core.components.PathWidget.extend({});
+        widgets.LinkFieldWidget = widgets.PathFieldWidget.extend({
 
-        window.widgets.register('.widget.linkfield-widget', widgets.LinkFieldWidget);
+            profileAspect: function () {
+                return widgets.const.linkfield.profile;
+            }
+        });
 
+        window.widgets.register('.widget.' + widgets.const.linkfield.cssBase, widgets.LinkFieldWidget);
 
     })(window.composum.pages.widgets, window.composum.pages, window.core);
 })(window);

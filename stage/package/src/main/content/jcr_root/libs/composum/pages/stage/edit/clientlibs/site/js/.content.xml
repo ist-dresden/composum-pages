@@ -3,5 +3,6 @@
         jcr:primaryType="sling:OrderedFolder"
         embed="[category:composum.components.core,
                 composum/pages/stage/edit/js/invoke.js,
-                composum/pages/stage/edit/site/js/releases.js]">
+                composum/pages/stage/edit/site/js/releases.js,
+                composum/pages/stage/edit/site/js/site.js]">
 </jcr:root>

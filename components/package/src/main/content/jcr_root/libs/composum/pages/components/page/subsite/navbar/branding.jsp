@@ -4,8 +4,8 @@
 <cpp:defineObjects/>
 <cpp:element var="navbar" type="com.composum.pages.components.model.subsite.SubsiteMenu" mode="none"
              tagName="none">
-    <cpn:link class="${navbarCssBase}_brand navbar-brand"
+    <cpn:link class="${navbarCSS}_brand navbar-brand"
               href="${navbar.rootPage.path}"><cpn:image
-            class="${navbarCssBase}_logo" src="${navbar.rootPage.logoUrl}"/><span
-            class="${navbarCssBase}_title">${navbar.rootPage.title}</span></cpn:link>
+            class="${navbarCSS}_logo" src="${navbar.rootPage.logoUrl}"/><span
+            class="${navbarCSS}_title">${cpn:text(navbar.rootPage.title)}</span></cpn:link>
 </cpp:element>

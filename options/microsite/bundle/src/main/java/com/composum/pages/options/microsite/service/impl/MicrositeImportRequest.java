@@ -55,7 +55,7 @@ public class MicrositeImportRequest implements MicrositeImportStatus {
     }
 
     /**
-     * the buffer to collect all delayed source transformations
+     * the buf to collect all delayed source transformations
      */
     protected final List<DelayedTransformation> delayedTransformations = new ArrayList<>();
 

@@ -1,7 +1,18 @@
 @charset "UTF-8";
 
-/** bootstrap settings */
+/*
+ * screen sizes (potential breakpoints)
+ */
+$screen-size-xl: 1500px;
+$screen-size-l: 1200px; // bootstrap -lg-
+$screen-size-m: 992px; // bootstrap -md-
+$screen-size-s: 768px; // bootstrap -sm-
+$screen-size-xs: 624px;
+$screen-size-xxs: 480px;
 
+/*
+ * bootstrap settings
+ */
 $bootstrap-screen-sm-min: 768px !default;
 $bootstrap-screen-md-min: 992px !default;
 $bootstrap-screen-lg-min: 1200px !default;
@@ -14,59 +25,95 @@ $bootstrap-spacing-v: 10px;
 $bootstrap-spacing-h: 15px;
 
 $bootstrap-color-muted: #777;
-
+$bootstrap-color-default: #333;
 $bootstrap-color-info: #31708f;
+$bootstrap-color-primary: #fff;
 $bootstrap-color-success: #3c763d;
 $bootstrap-color-warning: #8a6d3b;
 $bootstrap-color-danger: #a94442;
 
 $bootstrap-background-info: #d9edf7;
+$bootstrap-background-primary: #337ab7;
 $bootstrap-background-success: #dff0d8;
 $bootstrap-background-warning: #fcf8e3;
 $bootstrap-background-danger: #f2dede;
 
 $bootstrap-navbar-background: #f8f8f8;
+$bootstrap-table-border-color: #ddd;
 
 /**
  * general settings
  */
 
-$site-default-text-color: #333;
+$site-default-text-color: $bootstrap-color-default;
 $site-default-link-color: #c33;
 $site-default-link-hover: #e33;
 $site-bright-text-color: #eee;
+$site-bright-icon-color: #ccc;
 $site-bright-text-hover: #f8f8f8;
 $main-title-background-color: #eee;
 $main-title-text-color: #444;
-$column-title-text-color: $site-default-text-color;
+$column-title-text-color: $main-title-text-color;
 
-$site-default-font-family: 'robotolight';
-$site-title-font-family: 'robotothin';
+$text-spacing-default: 1rem;
+$title-spacing-default: 2rem;
+$section-spacing-default: 3rem;
+
+$icon-default-font-family: 'FontAwesome';
+$site-default-font-family: 'robotolight', sans-serif;
+$site-bold-font-family: 'robotomedium', sans-serif;
+$site-title-font-family: 'robotolight', sans-serif;
+$site-symbol-font-family: $site-bold-font-family;
+
 $site-small-font-size: 14px;
 $site-default-font-size: 16px;
+$stage-default-font-size: 18px;
+$stage-default-font-size-xs: $stage-default-font-size;
+
+$title-margin-level-1: 3rem 0 2.5rem;
+$title-margin-level-2: 2.5rem 0 2rem;
+$title-margin-level-3: 2rem 0 1.5rem;
+$title-margin-level-4: 1.5rem 0 1rem;
+$title-margin-level-5: 1em 0 0.5rem;
+$title-margin-level-6: 0;
+
+$main-title-margin: $title-margin-level-1;
+$main-title-padding: 10px;
+$main-title-align-top-xs: -13px;
+$main-subtitle-margin: 10px;
+
+$site-title-padding: 10px;
+$site-title-font-size: 36px;
+$site-title-align-top: -10px;
+$site-title-font-size-xs: 24px;
+$site-title-align-top-xs: -7px;
 $site-subtitle-font-size: 24px;
-$site-title-font-size: 32px;
-$site-title-padding: 20px;
-$main-subtitle-font-size: 36px;
-$main-title-font-size: 60px;
-$main-title-padding: 40px;
-$column-subtitle-font-size: 22px;
-$column-title-font-size: 28px;
-$column-title-margin: 20px 0 10px;
-$column-title-padding: 0 0 10px;
-$column-title-gap: 10px;
+$site-subtitle-font-size-xs: 18px;
+$site-subtitle-align-top-xs: -4px;
+
+$column-title-margin: $title-margin-level-2;
+$column-title-padding: 0;
+$column-title-font-size: $site-subtitle-font-size;
+$column-title-font-size-xs: $site-subtitle-font-size-xs;
+$column-subtitle-margin: $title-margin-level-3;
+$column-subtitle-font-size: 20px;
+$column-subtitle-font-size-xs: 16px;
+
+$text-title-font-size: $column-subtitle-font-size;
+$text-title-font-size-xs: $column-subtitle-font-size-xs;
+
+$symbol-title-top: 2px;
+$symbol-width: 4.2rem;
+$symbol-font-size: 2.5rem;
+$symbol-color: $main-title-text-color;
+
 $list-title-gap: 4px;
 $list-item-indent: 32px;
 $subsite-logo-padding: 50px;
-$text-title-font-size: $column-subtitle-font-size;
 
 /** illustration */
 
 $illustration-annotation-shape-size: 26px;
-
-$illustration-annotation-layer: 5;
-$illustration-annotation-handle-layer: $illustration-annotation-layer + 1;
-$illustration-annotation-content-layer: $illustration-annotation-handle-layer + 1;
 
 $illustration-annotation-background: rgba(160, 0, 0, 0.85);
 $illustration-annotation-foreground: #efefef;

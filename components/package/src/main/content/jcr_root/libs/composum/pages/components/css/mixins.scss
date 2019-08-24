@@ -14,23 +14,34 @@
     @include font($site-default-font-family, $site-default-font-size);
 }
 
+@mixin bold-font {
+    @include font($site-bold-font-family, $site-default-font-size);
+}
+
 @mixin bright-font {
     @include font($site-title-font-family, $site-default-font-size);
 }
 
-@mixin title-font {
-    @include font($site-title-font-family, $site-title-font-size);
+@mixin small-font {
+    @include font($site-default-font-family, $site-small-font-size);
+}
+
+@mixin a-title-font ($size) {
+    @include font($site-title-font-family, $size);
     opacity: 0.8;
+}
+
+@mixin title-font {
+    @include a-title-font($site-title-font-size);
 }
 
 @mixin subtitle-font {
-    @include font($site-title-font-family, $site-subtitle-font-size);
-    opacity: 0.8;
+    @include a-title-font($site-subtitle-font-size);
 }
 
 @mixin inline-title {
-    margin: $column-title-margin;
-    @include title-font;
+    margin: $column-subtitle-margin 0;
+    @include a-title-font($column-subtitle-font-size);
     color: $column-title-text-color;
 }
 
@@ -108,4 +119,98 @@
     border-left: $width solid $color;
     margin-right: (- $width);
     margin-top: (- $height / 2);
+}
+
+/*
+ * media queries
+ */
+
+@mixin screen-size-xl-min {
+    @media (min-width: #{$screen-size-xl}) {
+        @content;
+    }
+}
+
+@mixin screen-size-l-xl {
+    @media (min-width: #{$screen-size-l}) and (max-width: #{$screen-size-xl - 1px}) {
+        @content;
+    }
+}
+
+@mixin screen-size-l-min {
+    @media (min-width: #{$screen-size-l}) {
+        @content;
+    }
+}
+
+@mixin screen-size-m-l {
+    @media (min-width: #{$screen-size-m}) and (max-width: #{$screen-size-l - 1px}) {
+        @content;
+    }
+}
+
+@mixin screen-size-m-min {
+    @media (min-width: #{$screen-size-m}) {
+        @content;
+    }
+}
+
+@mixin screen-size-s-m {
+    @media (min-width: #{$screen-size-s}) and (max-width: #{$screen-size-m - 1px}) {
+        @content;
+    }
+}
+
+@mixin screen-size-s-min {
+    @media (min-width: #{$screen-size-s}) {
+        @content;
+    }
+}
+
+@mixin screen-size-s-max {
+    @media (max-width: #{$screen-size-s - 1px}) {
+        @content;
+    }
+}
+
+@mixin screen-size-xs-s {
+    @media (min-width: #{$screen-size-xs}) and (max-width: #{$screen-size-s - 1px}) {
+        @content;
+    }
+}
+
+@mixin screen-size-xs-max {
+    @media (max-width: #{$screen-size-xs - 1px}) {
+        @content;
+    }
+}
+
+@mixin screen-size-xxs-xs {
+    @media (min-width: #{$screen-size-xxs}) and (max-width: #{$screen-size-xs - 1px}) {
+        @content;
+    }
+}
+
+@mixin screen-size-xxs-max {
+    @media (max-width: #{$screen-size-xxs - 1px}) {
+        @content;
+    }
+}
+
+@mixin desktop {
+    @include screen-size-m-min {
+        @content;
+    }
+}
+
+@mixin tablet {
+    @include screen-size-s-m {
+        @content;
+    }
+}
+
+@mixin mobile {
+    @include screen-size-xs-max {
+        @content;
+    }
 }

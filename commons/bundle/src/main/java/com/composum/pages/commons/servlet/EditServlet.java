@@ -1,37 +1,44 @@
+/*
+ * copyright (c) 2015ff IST GmbH Dresden, Germany - https://www.ist-software.com
+ *
+ * This software may be modified and distributed under the terms of the MIT license.
+ */
 package com.composum.pages.commons.servlet;
 
+import com.composum.pages.commons.AssetsConfiguration;
 import com.composum.pages.commons.PagesConfiguration;
 import com.composum.pages.commons.model.Container;
 import com.composum.pages.commons.model.GenericModel;
 import com.composum.pages.commons.model.Model;
 import com.composum.pages.commons.model.Page;
 import com.composum.pages.commons.model.Site;
+import com.composum.pages.commons.model.properties.DropZone;
+import com.composum.pages.commons.service.ComponentManager;
 import com.composum.pages.commons.service.EditService;
 import com.composum.pages.commons.service.PageManager;
 import com.composum.pages.commons.service.ResourceManager;
 import com.composum.pages.commons.service.SiteManager;
-import com.composum.pages.commons.service.VersionsService;
 import com.composum.pages.commons.util.RequestUtil;
+import com.composum.pages.commons.util.ResolverUtil;
 import com.composum.pages.commons.util.ResourceTypeUtil;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.ResourceHandle;
 import com.composum.sling.core.filter.ResourceFilter;
-import com.composum.sling.core.mapping.MappingRules;
 import com.composum.sling.core.servlet.NodeTreeServlet;
 import com.composum.sling.core.servlet.ServletOperation;
 import com.composum.sling.core.servlet.ServletOperationSet;
+import com.composum.sling.core.servlet.Status;
+import com.composum.sling.core.util.ResourceUtil;
 import com.composum.sling.core.util.ResponseUtil;
-import com.composum.sling.cpnl.CpnlElFunctions;
-import com.google.gson.Gson;
+import com.composum.sling.platform.staging.versions.PlatformVersionsService;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
-import org.apache.jackrabbit.api.JackrabbitSession;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.request.RequestDispatcherOptions;
-import org.apache.sling.api.request.RequestParameter;
+import org.apache.sling.api.request.RequestPathInfo;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -47,23 +54,17 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.jcr.ItemExistsException;
 import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-import javax.jcr.version.VersionManager;
-import javax.servlet.RequestDispatcher;
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
+import java.util.Collection;
 import java.util.List;
 
-import static com.composum.pages.commons.PagesConstants.PROP_TEMPLATE;
+import static com.composum.pages.commons.util.ResourceTypeUtil.CONTEXT_ACTIONS_PATH;
+import static com.composum.pages.commons.util.ResourceTypeUtil.CONTEXT_CONTAINER_PATH;
 import static com.composum.pages.commons.util.ResourceTypeUtil.EDIT_DIALOG_PATH;
 import static com.composum.pages.commons.util.ResourceTypeUtil.EDIT_TILE_PATH;
 import static com.composum.pages.commons.util.ResourceTypeUtil.EDIT_TOOLBAR_PATH;
@@ -79,21 +80,71 @@ import static com.composum.pages.commons.util.ResourceTypeUtil.TREE_ACTIONS_PATH
                 ServletResolverConstants.SLING_SERVLET_METHODS + "=" + HttpConstants.METHOD_PUT,
                 ServletResolverConstants.SLING_SERVLET_METHODS + "=" + HttpConstants.METHOD_DELETE
         })
-public class EditServlet extends NodeTreeServlet {
+public class EditServlet extends PagesContentServlet {
 
     private static final Logger LOG = LoggerFactory.getLogger(EditServlet.class);
 
-    public static final String PARAM_FILTER = "filter";
+    public static final String PARAM_ATTR = "attr";
+
     public static final String DEFAULT_FILTER = "page";
 
-    public static final String EDIT_RESOURCE_KEY = EditServlet.class.getName() + "_resource";
-    public static final String EDIT_RESOURCE_TYPE_KEY = EditServlet.class.getName() + "_resourceType";
-
     public static final String PAGE_COMPONENTS_RES_TYPE = "composum/pages/stage/edit/tools/main/components";
+    public static final String PAGE_COMPONENTS_SEL_TYPE = "composum/pages/stage/widget/element/type/select";
     public static final String PAGE_COMPONENT_TYPES = "composum-pages-page-component-types";
+    public static final String PAGE_COMPONENT_TYPES_SCOPE = PAGE_COMPONENT_TYPES + "_scope";
 
     public static final String CONTEXT_TOOLS_RES_TYPE = "composum/pages/stage/edit/sidebar/context";
-    public static final String VERSIONS_RESOURCE_TYPE = "composum/pages/stage/edit/tools/page/versions";
+
+    @Reference
+    protected PagesConfiguration pagesConfiguration;
+
+    @Reference
+    protected AssetsConfiguration assetsConfiguration;
+
+    @Reference
+    protected ComponentManager componentManager;
+
+    @Reference
+    protected ResourceManager resourceManager;
+
+    @Reference
+    protected PageManager pageManager;
+
+    @Reference
+    protected SiteManager siteManager;
+
+    @Reference
+    protected EditService editService;
+
+    @Reference
+    protected PlatformVersionsService platformVersionsService;
+
+    protected MoveElementOperation moveElementOperation;
+
+    @Activate
+    private void activate(final BundleContext bundleContext) {
+        this.bundleContext = bundleContext;
+    }
+
+    @Override
+    protected PagesConfiguration getPagesConfiguration() {
+        return pagesConfiguration;
+    }
+
+    @Override
+    protected ResourceManager getResourceManager() {
+        return resourceManager;
+    }
+
+    @Override
+    protected PageManager getPageManager() {
+        return pageManager;
+    }
+
+    @Override
+    protected boolean isEnabled() {
+        return true;
+    }
 
     //
     // Servlet operations
@@ -105,42 +156,14 @@ public class EditServlet extends NodeTreeServlet {
 
     public enum Operation {
         pageData, isTemplate, isAllowedChild,
-        siteTree, pageTree, developTree,
-        editDialog, newDialog,
-        editTile, editToolbar, treeActions,
-        pageComponents, targetContainers,
-        insertComponent, moveComponent, copyElement,
+        siteTree, pageTree,
+        resourceInfo, editDialog, newDialog,
+        editTile, editToolbar, treeActions, editResource,
+        pageComponents, elementTypes, targetContainers, isAllowedElement, filterDropZones, componentCategories,
+        insertElement, moveElement, copyElement,
         createPage, deletePage, moveContent, renameContent, copyContent,
         createSite, deleteSite,
-        contextTools,
-        versions, restoreVersion, checkpoint, setVersionLabel
-    }
-
-    protected BundleContext bundleContext;
-
-    @Reference
-    protected ResourceManager resourceManager;
-
-    @Reference
-    protected EditService editService;
-
-    @Reference
-    protected PageManager pageManager;
-
-    @Reference
-    protected SiteManager siteManager;
-
-    @Reference
-    protected VersionsService versionsService;
-
-    @Reference
-    protected PagesConfiguration pagesConfiguration;
-
-    protected MoveComponent moveComponentOperation;
-
-    @Activate
-    private void activate(final BundleContext bundleContext) {
-        this.bundleContext = bundleContext;
+        contextTools, context
     }
 
     protected PagesEditOperationSet operations = new PagesEditOperationSet();
@@ -150,13 +173,11 @@ public class EditServlet extends NodeTreeServlet {
         return operations;
     }
 
+    /**
+     * setup of the servlet operation set for this servlet instance
+     */
     @Override
-    protected boolean isEnabled() {
-        return true;
-    }
-
-    /** setup of the servlet operation set for this servlet instance */
-    @Override
+    @SuppressWarnings("Duplicates")
     public void init() throws ServletException {
         super.init();
 
@@ -166,7 +187,7 @@ public class EditServlet extends NodeTreeServlet {
         operations.setOperation(ServletOperationSet.Method.GET, Extension.json,
                 Operation.siteTree, new SiteTreeOperation());
         operations.setOperation(ServletOperationSet.Method.GET, Extension.json,
-                Operation.developTree, new DevTreeOperation());
+                Operation.resourceInfo, new GetResourceInfo());
         operations.setOperation(ServletOperationSet.Method.GET, Extension.json,
                 Operation.pageData, new GetPageData());
         operations.setOperation(ServletOperationSet.Method.GET, Extension.json,
@@ -184,31 +205,37 @@ public class EditServlet extends NodeTreeServlet {
         operations.setOperation(ServletOperationSet.Method.GET, Extension.html,
                 Operation.treeActions, new GetTreeActions());
         operations.setOperation(ServletOperationSet.Method.GET, Extension.html,
+                Operation.editResource, new GetGenericResource());
+        operations.setOperation(ServletOperationSet.Method.GET, Extension.html,
+                Operation.context, new GetContextResource());
+        operations.setOperation(ServletOperationSet.Method.GET, Extension.html,
                 Operation.contextTools, new GetContextTools());
         operations.setOperation(ServletOperationSet.Method.GET, Extension.json,
+                Operation.isAllowedElement, new CheckIsAllowedElement());
+        operations.setOperation(ServletOperationSet.Method.GET, Extension.json,
                 Operation.targetContainers, new GetTargetContainers());
-        operations.setOperation(ServletOperationSet.Method.GET, Extension.html,
-                Operation.versions, new GetVersions());
+        operations.setOperation(ServletOperationSet.Method.GET, Extension.json,
+                Operation.componentCategories, new GetComponentCategories());
 
         // POST
         operations.setOperation(ServletOperationSet.Method.POST, Extension.json,
-                Operation.checkpoint, new CheckpointOperation());
-        operations.setOperation(ServletOperationSet.Method.POST, Extension.json,
                 Operation.targetContainers, new GetTargetContainers());
         operations.setOperation(ServletOperationSet.Method.POST, Extension.html,
-                Operation.insertComponent, new InsertComponent());
+                Operation.insertElement, new InsertElementOperation());
         operations.setOperation(ServletOperationSet.Method.POST, Extension.json,
-                Operation.moveComponent, moveComponentOperation = new MoveComponent());
+                Operation.moveElement, moveElementOperation = new MoveElementOperation());
+        operations.setOperation(ServletOperationSet.Method.POST, Extension.json,
+                Operation.copyElement, new CopyElementOperation());
         operations.setOperation(ServletOperationSet.Method.POST, Extension.json,
                 Operation.createPage, new CreatePage());
         operations.setOperation(ServletOperationSet.Method.POST, Extension.json,
                 Operation.deletePage, new DeletePage());
         operations.setOperation(ServletOperationSet.Method.POST, Extension.json,
-                Operation.moveContent, new MoveContent());
+                Operation.moveContent, new MoveContentOrElement());
         operations.setOperation(ServletOperationSet.Method.POST, Extension.json,
-                Operation.renameContent, new RenameContent());
+                Operation.renameContent, new RenameContentOperation());
         operations.setOperation(ServletOperationSet.Method.POST, Extension.json,
-                Operation.copyContent, new CopyContent());
+                Operation.copyContent, new CopyContentOperation());
         operations.setOperation(ServletOperationSet.Method.POST, Extension.json,
                 Operation.createSite, new CreateSite());
         operations.setOperation(ServletOperationSet.Method.POST, Extension.json,
@@ -217,10 +244,12 @@ public class EditServlet extends NodeTreeServlet {
         // PUT
         operations.setOperation(ServletOperationSet.Method.PUT, Extension.html,
                 Operation.pageComponents, new GetPageComponents());
+        operations.setOperation(ServletOperationSet.Method.PUT, Extension.html,
+                Operation.elementTypes, new GetElementTypes());
+        operations.setOperation(ServletOperationSet.Method.PUT, Extension.html,
+                Operation.editResource, new GetGenericResource());
         operations.setOperation(ServletOperationSet.Method.PUT, Extension.json,
-                Operation.restoreVersion, new RestoreVersion());
-        operations.setOperation(ServletOperationSet.Method.PUT, Extension.json,
-                Operation.setVersionLabel, new SetVersionLabel());
+                Operation.filterDropZones, new FilterDropZones());
 
         // DELETE
 
@@ -233,56 +262,48 @@ public class EditServlet extends NodeTreeServlet {
         }
     }
 
-    protected class CheckpointOperation implements ServletOperation {
-
-        @Override
-        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response, ResourceHandle resource)
-                throws IOException {
-            try {
-                final ResourceResolver resolver = request.getResourceResolver();
-                final JackrabbitSession session = (JackrabbitSession) resolver.adaptTo(Session.class);
-                final VersionManager versionManager = session.getWorkspace().getVersionManager();
-                final RequestParameter paths = request.getRequestParameter("paths");
-                for (String path : paths.getString().split(",")) {
-                    if (versionManager.isCheckedOut(path + "/jcr:content")) {
-                        versionManager.checkpoint(path + "/jcr:content");
-                    }
-                }
-                ResponseUtil.writeEmptyArray(response);
-            } catch (final RepositoryException ex) {
-                LOG.error(ex.getMessage(), ex);
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, ex.getMessage());
-            }
-
-        }
-    }
-
     //
     // Page
     //
 
+    /**
+     * Retrieves the data JSON object of a Pages page.
+     * #suffix the pages path, overridden by a 'url' parameter
+     * #param url a page url to resolve the page resource (optional)
+     */
     protected class GetPageData implements ServletOperation {
 
         @Override
-        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
-                         ResourceHandle resource)
+        public void doIt(@Nonnull final SlingHttpServletRequest request,
+                         @Nonnull final SlingHttpServletResponse response,
+                         @Nonnull ResourceHandle resource)
                 throws IOException {
-
             BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
+
+            String urlParam = request.getParameter(PARAM_URL);
+            if (StringUtils.isNotBlank(urlParam)) {
+                ResourceResolver resolver = context.getResolver();
+                Resource urlResource = ResolverUtil.getUrlResource(resolver, urlParam);
+                if (urlResource != null) {
+                    resource = ResourceHandle.use(urlResource);
+                }
+            }
+
             Page page = null;
-            if (resource.isValid()) {
-                page = pageManager.createBean(context, pageManager.getContainingPageResource(resource));
+            Resource pageResource = pageManager.getContainingPageResource(resource);
+            if (pageResource != null) {
+                page = pageManager.createBean(context, pageResource);
             }
 
             if (LOG.isDebugEnabled()) {
-                LOG.debug("GetPageData(" + resource + "," + page + ")...");
+                LOG.debug("GetPageData({},{})...", resource, page);
             }
 
             if (page != null && page.isValid()) {
 
                 response.setStatus(HttpServletResponse.SC_OK);
                 JsonWriter jsonWriter = ResponseUtil.getJsonWriter(response);
-                writeJsonPage(jsonWriter, pagesConfiguration.getPageNodeFilter(), page);
+                writeJsonPage(context, jsonWriter, pagesConfiguration.getPageNodeFilter(), page);
 
             } else {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -320,7 +341,7 @@ public class EditServlet extends NodeTreeServlet {
             }
 
             if (LOG.isDebugEnabled()) {
-                LOG.debug("CheckIsTemplate(" + resource + "," + model + "): " + isTemplate + " (" + template + ")");
+                LOG.debug("CheckIsTemplate({},{}): {} ({})", resource, model, isTemplate, template);
             }
             if (model != null) {
 
@@ -338,81 +359,6 @@ public class EditServlet extends NodeTreeServlet {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND);
             }
         }
-    }
-
-    protected class CheckIsAllowedChild implements ServletOperation {
-
-        @Override
-        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
-                         ResourceHandle resource)
-                throws IOException {
-
-            if (resource != null) {
-
-                ResourceResolver resolver = request.getResourceResolver();
-                String parentPath = request.getParameter(PARAM_PATH);
-                Resource parent;
-                if (StringUtils.isNotBlank(parentPath) && (parent = resolver.getResource(parentPath)) != null) {
-
-                    boolean allowed = resourceManager.isAllowedChild(resolver, parent, resource);
-
-                    response.setStatus(HttpServletResponse.SC_OK);
-                    JsonWriter jsonWriter = ResponseUtil.getJsonWriter(response);
-                    jsonWriter.beginObject();
-                    jsonWriter.name("isAllowed").value(allowed);
-                    addAllowedChildInfo(request, response, parent, resource, jsonWriter, allowed);
-                    jsonWriter.endObject();
-
-                } else {
-                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "invalid parent");
-                }
-            } else {
-                response.sendError(HttpServletResponse.SC_NOT_FOUND);
-            }
-        }
-    }
-
-    //
-    // JSON helpers
-    //
-
-    public void writeJsonResource(@Nonnull JsonWriter writer, @Nonnull TreeNodeStrategy nodeStrategy, Resource resource)
-            throws IOException {
-        ResourceHandle handle = ResourceHandle.use(resource);
-        writer.beginObject();
-        if (handle.isValid()) {
-            writeJsonNodeData(writer, nodeStrategy, handle, LabelType.name, false);
-            Resource contentResource = handle.getChild(JcrConstants.JCR_CONTENT);
-            if (contentResource != null) {
-                writer.name("jcrContent");
-                writeJsonNode(writer, nodeStrategy, ResourceHandle.use(contentResource), LabelType.name, false);
-            }
-            writer.name("meta").beginObject();
-            writer.name("template").value(handle.getProperty(PROP_TEMPLATE));
-            writer.name("isTemplate").value(resourceManager.isTemplate(handle));
-            writer.endObject();
-        }
-        writer.endObject();
-    }
-
-    public void writeJsonPage(JsonWriter writer, ResourceFilter filter,
-                              Page page)
-            throws IOException {
-        writer.beginObject();
-        if (page.isValid()) {
-            TreeNodeStrategy nodeStrategy = new DefaultTreeNodeStrategy(filter);
-            writeJsonNodeData(writer, nodeStrategy, ResourceHandle.use(page.getResource()), LabelType.name, false);
-            Resource contentResource = page.getContent().getResource();
-            writer.name("jcrContent");
-            writeJsonNode(writer, nodeStrategy, ResourceHandle.use(contentResource), LabelType.name, false);
-            writer.name("meta").beginObject();
-            Site site = page.getSite();
-            writer.name("site").value(site != null ? site.getPath() : null);
-            writer.name("template").value(page.getTemplatePath());
-            writer.name("isTemplate").value(resourceManager.isTemplate(page.getResource()));
-            writer.endObject();
-        }
-        writer.endObject();
     }
 
     //
@@ -476,41 +422,35 @@ public class EditServlet extends NodeTreeServlet {
         }
     }
 
-    public class DevTreeOperation extends TreeOperation {
-
-        @Override
-        protected ResourceFilter getNodeFilter(SlingHttpServletRequest request) {
-            return pagesConfiguration.getDevelopmentTreeFilter();
-        }
-    }
-
-    /**
-     * sort children of orderable nodes
-     */
     @Override
-    protected List<Resource> prepareTreeItems(ResourceHandle resource, List<Resource> items) {
-        if (!pagesConfiguration.getOrderableNodesFilter().accept(resource)) {
-            Collections.sort(items, new Comparator<Resource>() {
-                @Override
-                public int compare(Resource r1, Resource r2) {
-                    return getSortName(r1).compareTo(getSortName(r2));
+    public void writeNodeTreeType(JsonWriter writer, ResourceFilter filter,
+                                  ResourceHandle resource, boolean isVirtual)
+            throws IOException {
+        super.writeNodeTreeType(writer, filter, resource, isVirtual);
+        if (Page.isPage(resource)) {
+            try {
+                PlatformVersionsService.Status status = platformVersionsService.getStatus(resource, null);
+                if (null != status) {
+                    writer.name("release").beginObject();
+                    writer.name("status").value(status.getActivationState().name());
+                    writer.endObject();
                 }
-            });
+            } catch (RepositoryException ex) {
+                LOG.error(ex.getMessage(), ex);
+            }
         }
-        return items;
     }
 
     //
     //
     //
 
-    protected abstract class GetEditResource implements ServletOperation {
+    public static abstract class GetEditResource implements ServletOperation {
 
         @Override
         public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
                          ResourceHandle resource)
                 throws ServletException, IOException {
-            ResourceResolver resolver = request.getResourceResolver();
 
             Resource contentResource = resource;
             if (Page.isPage(contentResource) || Site.isSite(contentResource)) {
@@ -525,35 +465,95 @@ public class EditServlet extends NodeTreeServlet {
                 selectors = getDefaultSelectors();
             }
             String paramType = request.getParameter(PARAM_TYPE);
-            Resource editResource =
-                    ResourceTypeUtil.getSubtype(resolver, contentResource, paramType, getResourcePath(), selectors);
+            Resource editResource = getEditResource(request, contentResource, selectors, paramType);
 
             if (LOG.isDebugEnabled()) {
-                LOG.debug("GetEditResource(" + contentResource.getPath() + "," + editResource.getPath() + ")...");
+                LOG.debug("GetEditResource({},{})...", contentResource.getPath(), editResource != null ? editResource.getPath() : "null");
             }
 
             if (editResource != null) {
                 RequestDispatcherOptions options = new RequestDispatcherOptions();
                 options.setForceResourceType(editResource.getPath());
                 options.setReplaceSelectors(selectors);
-                forward(request, response, contentResource, paramType, options);
+                SlingHttpServletRequest forwardRequest = prepareForward(request, options);
+                forward(forwardRequest, response, contentResource, paramType, options);
 
             } else {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND);
             }
         }
 
-        protected abstract String getResourcePath();
+        protected Resource getEditResource(@Nonnull SlingHttpServletRequest request, @Nonnull Resource contentResource,
+                                           @Nonnull String selectors, @Nullable String type) {
+            ResourceResolver resolver = request.getResourceResolver();
+            return ResourceTypeUtil.getSubtype(resolver, contentResource, type, getResourcePath(request), selectors);
+        }
+
+        protected String getSelectors(SlingHttpServletRequest request) {
+            return RequestUtil.getSelectorString(request, null, 1);
+        }
+
+        protected abstract String getResourcePath(SlingHttpServletRequest request);
 
         protected String getDefaultSelectors() {
             return "";
+        }
+
+        protected SlingHttpServletRequest prepareForward(@Nonnull final SlingHttpServletRequest request,
+                                                         @Nonnull final RequestDispatcherOptions options) {
+            return request;
+        }
+    }
+
+    /**
+     * response with a forward to GET the rendered resource referenced by the requests suffix
+     */
+    protected class GetGenericResource extends GetEditResource {
+
+        @Override
+        protected String getResourcePath(SlingHttpServletRequest request) {
+            RequestPathInfo pathInfo = request.getRequestPathInfo();
+            String suffix = pathInfo.getSuffix();
+            if (StringUtils.isNotBlank(suffix) && !"/".equals(suffix)) {
+                Resource resource = request.getResourceResolver().getResource(suffix);
+                if (resource != null) {
+                    return resource.getPath();
+                }
+            }
+            return null;
+        }
+
+        /**
+         * in case of a PUT request the requests data are provided as request attribute
+         * assuming that the data are a JSON array of resource reference objects (multi selection)
+         */
+        @Override
+        protected SlingHttpServletRequest prepareForward(@Nonnull final SlingHttpServletRequest request,
+                                                         @Nonnull final RequestDispatcherOptions options) {
+            if (HttpConstants.METHOD_PUT.equals(request.getMethod())) {
+                String attr = request.getParameter(PARAM_ATTR); // the request attribute name for the data
+                if (StringUtils.isNotBlank(attr)) {
+                    // prepare a list of references sent via PUT for the rendering of the edit resource
+                    try (final JsonReader reader = new JsonReader(request.getReader())) {
+                        final ResourceManager.ReferenceList references =
+                                resourceManager.getReferenceList(request.getResourceResolver(), reader);
+                        // the resource can access the references via request attribute...
+                        request.setAttribute(attr, references);
+                    } catch (IOException ex) {
+                        LOG.error(ex.getMessage(), ex);
+                    }
+                }
+                // forward request with 'GET'! for right component rendering
+                return new RequestUtil.GetWrapper(request);
+            }
+            return request;
         }
     }
 
     protected class GetEditDialog extends GetEditResource {
 
         @Override
-        protected String getResourcePath() {
+        protected String getResourcePath(SlingHttpServletRequest request) {
             return EDIT_DIALOG_PATH;
         }
     }
@@ -561,7 +561,7 @@ public class EditServlet extends NodeTreeServlet {
     protected class GetNewDialog extends GetEditDialog {
 
         @Override
-        protected String getResourcePath() {
+        protected String getResourcePath(SlingHttpServletRequest request) {
             return NEW_DIALOG_PATH;
         }
     }
@@ -569,15 +569,26 @@ public class EditServlet extends NodeTreeServlet {
     protected class GetEditTile extends GetEditResource {
 
         @Override
-        protected String getResourcePath() {
+        protected String getResourcePath(SlingHttpServletRequest request) {
             return EDIT_TILE_PATH;
+        }
+
+        @Override
+        protected Resource getEditResource(@Nonnull SlingHttpServletRequest request, @Nonnull Resource contentResource,
+                                           @Nonnull String selectors, @Nullable String type) {
+            if (assetsConfiguration.getAnyFileFilter().accept(contentResource)) {
+                ResourceResolver resolver = request.getResourceResolver();
+                return ResolverUtil.getResourceType(resolver, ResourceTypeUtil.DEFAULT_FILE_TILE);
+            } else {
+                return super.getEditResource(request, contentResource, selectors, type);
+            }
         }
     }
 
     protected class GetEditToolbar extends GetEditResource {
 
         @Override
-        protected String getResourcePath() {
+        protected String getResourcePath(SlingHttpServletRequest request) {
             return EDIT_TOOLBAR_PATH;
         }
     }
@@ -585,8 +596,37 @@ public class EditServlet extends NodeTreeServlet {
     protected class GetTreeActions extends GetEditResource {
 
         @Override
-        protected String getResourcePath() {
+        protected String getResourcePath(SlingHttpServletRequest request) {
             return TREE_ACTIONS_PATH;
+        }
+
+        @Override
+        protected Resource getEditResource(@Nonnull SlingHttpServletRequest request, @Nonnull Resource contentResource,
+                                           @Nonnull String selectors, @Nullable String type) {
+            if (assetsConfiguration.getAnyFileFilter().accept(contentResource)) {
+                ResourceResolver resolver = request.getResourceResolver();
+                return ResolverUtil.getResourceType(resolver, ResourceTypeUtil.DEFAULT_FILE_ACTIONS);
+            } else {
+                return super.getEditResource(request, contentResource, selectors, type);
+            }
+        }
+    }
+
+    protected class GetContextResource extends GetEditResource {
+
+        @Override
+        protected String getSelectors(SlingHttpServletRequest request) {
+            return RequestUtil.getSelectorString(request, null, 2);
+        }
+
+        @SuppressWarnings("SwitchStatementWithTooFewBranches")
+        @Override
+        protected String getResourcePath(SlingHttpServletRequest request) {
+            switch (RequestUtil.getSelectorString(request, null, 1, 1)) {
+                case "container":
+                    return CONTEXT_CONTAINER_PATH;
+            }
+            return CONTEXT_ACTIONS_PATH;
         }
     }
 
@@ -594,6 +634,47 @@ public class EditServlet extends NodeTreeServlet {
     // Containers & Elements
     //
 
+    /**
+     * hierarchy check for the page element hierarchy (Container, Element)
+     */
+    protected class CheckIsAllowedElement implements ServletOperation {
+
+        @Override
+        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
+                         ResourceHandle resource)
+                throws IOException {
+
+            if (resource != null) {
+                String path = request.getParameter(PARAM_PATH);
+
+                if (StringUtils.isNotBlank(path)) {
+                    ResourceResolver resolver = request.getResourceResolver();
+                    String type = request.getParameter(PARAM_TYPE);
+
+                    boolean allowed = editService.isAllowedElement(resolver,
+                            resourceManager.getReference(resource, null),
+                            resourceManager.getReference(resolver, path, type));
+
+                    response.setStatus(HttpServletResponse.SC_OK);
+                    JsonWriter jsonWriter = ResponseUtil.getJsonWriter(response);
+                    jsonWriter.beginObject();
+                    jsonWriter.name("isAllowed").value(allowed);
+                    jsonWriter.endObject();
+
+                } else {
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "invalid path");
+                }
+            } else {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            }
+        }
+    }
+
+    /**
+     * get a list of allowed components (element type) for one page
+     * (depends on the current content and the hierarchical rules of the pages elements)
+     * see: com.composum.pages.stage.model.edit.page.Components
+     */
     protected class GetPageComponents implements ServletOperation {
 
         @Override
@@ -610,18 +691,41 @@ public class EditServlet extends NodeTreeServlet {
                 String selectors = RequestUtil.getSelectorString(request, null, 1);
 
                 if (LOG.isDebugEnabled()) {
-                    LOG.debug("GetPageComponents(" + resource + "," + selectors + ", " + containerRefs + ")...");
+                    LOG.debug("GetPageComponents({},{}, {})...", resource, selectors, containerRefs);
                 }
 
                 // forward request with 'GET'! for right component rendering
                 request = new RequestUtil.GetWrapper(request);
 
-                final java.util.List allowedElements =
-                        editService.getAllowedElementTypes(context.getResolver(), containerRefs, true);
+                List<String> allowedElements =
+                        editService.getAllowedElementTypes(context.getResolver(),
+                                new ComponentManager.ComponentScope(
+                                        RequestUtil.getParameter(request, PARAM_FILTER,
+                                                ""), request.getParameter(PARAM_QUERY)),
+                                containerRefs, true);
+
+                if (allowedElements.size() < 1 && isFallbackAllowed()) {
+
+                    // mark the request: 'scope not useful' for a response status '200'
+                    request.setAttribute(PAGE_COMPONENT_TYPES_SCOPE, Boolean.FALSE);
+                    allowedElements = editService.getAllowedElementTypes(context.getResolver(),
+                            new ComponentManager.ComponentScope("", request.getParameter(PARAM_QUERY)),
+                            containerRefs, true);
+                    if (allowedElements.size() < 1) {
+                        allowedElements = editService.getAllowedElementTypes(context.getResolver(),
+                                null, containerRefs, true);
+                    }
+
+                } else {
+                    // mark the request: 'scope useful' for a response status '202' (ACCEPTED)
+                    request.setAttribute(PAGE_COMPONENT_TYPES_SCOPE, Boolean.TRUE);
+                }
+
+                // store the result in the request for the rendering template...
                 request.setAttribute(PAGE_COMPONENT_TYPES, allowedElements);
 
                 final RequestDispatcherOptions options = new RequestDispatcherOptions();
-                options.setForceResourceType(PAGE_COMPONENTS_RES_TYPE);
+                options.setForceResourceType(getRenderResourceType());
                 if (StringUtils.isBlank(selectors)) {
                     selectors = getDefaultSelectors();
                 }
@@ -631,11 +735,38 @@ public class EditServlet extends NodeTreeServlet {
             }
         }
 
+        protected boolean isFallbackAllowed() {
+            return false;
+        }
+
+        protected String getRenderResourceType() {
+            return PAGE_COMPONENTS_RES_TYPE;
+        }
+
         protected String getDefaultSelectors() {
             return "content";
         }
     }
 
+    /**
+     * the derived operation for the element type select wirget
+     */
+    protected class GetElementTypes extends GetPageComponents {
+
+        @Override
+        protected boolean isFallbackAllowed() {
+            return true;
+        }
+
+        @Override
+        protected String getRenderResourceType() {
+            return PAGE_COMPONENTS_SEL_TYPE;
+        }
+    }
+
+    /**
+     * get a list of allowed containers on a page to insert a given element or component (type)
+     */
     protected class GetTargetContainers implements ServletOperation {
 
         @Override
@@ -648,14 +779,15 @@ public class EditServlet extends NodeTreeServlet {
                     resourceManager.getReferenceList(context.getResolver(), request.getParameter("targetList"));
 
             if (LOG.isDebugEnabled()) {
-                LOG.debug("GetTargetContainers(" + resource + ", " + targetList + ")...");
+                LOG.debug("GetTargetContainers({}, {})...", resource, targetList);
             }
 
-            ResourceManager.ResourceReference element = resourceManager.getReference(resource, null);
+            String type = request.getParameter(PARAM_TYPE);
+            ResourceManager.ResourceReference element = resourceManager.getReference(resource, type);
             targetList = editService.filterTargetContainers(context.getResolver(), targetList, element);
 
             if (LOG.isDebugEnabled()) {
-                LOG.debug("GetTargetContainers(" + resource + "): " + targetList);
+                LOG.debug("GetTargetContainers({}): {}", resource, targetList);
             }
 
             JsonWriter jsonWriter = ResponseUtil.getJsonWriter(response);
@@ -664,70 +796,179 @@ public class EditServlet extends NodeTreeServlet {
         }
     }
 
-    protected class InsertComponent implements ServletOperation {
+    /**
+     * filter a list of drop zones and return the list of drop zones matching to the requested resource
+     */
+    protected class FilterDropZones implements ServletOperation {
 
         @Override
         public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
                          ResourceHandle resource)
                 throws IOException {
+            final BeanContext context = new BeanContext.Servlet(
+                    getServletContext(), bundleContext, request, response, resource);
 
-            String resourceType = request.getParameter("resourceType");
-            String targetPath = request.getParameter("targetPath");
-            String targetType = request.getParameter("targetType");
-            String beforePath = request.getParameter("before");
+            try (final JsonReader reader = new JsonReader(request.getReader())) {
 
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("InsertComponent(" + resourceType + " > " + targetPath + " < " + beforePath + ")...");
-            }
+                DropZone.List dropZoneList = new DropZone.List(context, reader);
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("FilterDropZones({},{})...", resource, dropZoneList);
+                }
 
-            final BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
-            final ResourceResolver resolver = context.getResolver();
-            ResourceManager.ResourceReference target = resourceManager.getReference(resolver, targetPath, targetType);
-            Resource before = StringUtils.isNotBlank(beforePath) ? resolver.getResource(beforePath) : null;
+                dropZoneList = dropZoneList.getMatchingList(resource);
 
-            try {
-                editService.insertComponent(resolver, resourceType, target, before);
-                resolver.commit();
-                ResponseUtil.writeEmptyObject(response);
-
-            } catch (RepositoryException ex) {
-                LOG.error(ex.getMessage(), ex);
-                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ex.getMessage());
+                JsonWriter jsonWriter = ResponseUtil.getJsonWriter(response);
+                response.setStatus(HttpServletResponse.SC_OK);
+                dropZoneList.toJson(jsonWriter);
             }
         }
     }
 
-    protected class MoveComponent extends ChangeContentOperation {
+    /**
+     * collects a list of all component categories
+     */
+    protected class GetComponentCategories implements ServletOperation {
 
         @Override
         public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
                          ResourceHandle resource)
                 throws IOException {
 
+            try (final JsonReader reader = new JsonReader(request.getReader())) {
+
+                Collection<String> categories = componentManager.getComponentCategories(request.getResourceResolver());
+
+                JsonWriter jsonWriter = ResponseUtil.getJsonWriter(response);
+                response.setStatus(HttpServletResponse.SC_OK);
+                jsonWriter.beginArray();
+                for (String key : categories) {
+                    jsonWriter.value(key);
+                }
+                jsonWriter.endArray();
+            }
+        }
+    }
+
+    //
+    // element changes
+    //
+
+    protected abstract class ElementResourceOperation extends ChangeContentOperation {
+
+        @Override
+        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
+                         ResourceHandle resource)
+                throws IOException {
+            Status status = new Status(request, response);
+
             String targetPath = request.getParameter("targetPath");
             String targetType = request.getParameter("targetType");
             String beforePath = request.getParameter("before");
 
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("MoveComponent(" + resource.getPath() + " > " + targetPath + " < " + beforePath + ")...");
-            }
-
             final BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
             final ResourceResolver resolver = context.getResolver();
             ResourceManager.ResourceReference target = resourceManager.getReference(resolver, targetPath, targetType);
-            Resource before = StringUtils.isNotBlank(beforePath) ? resolver.getResource(beforePath) : null;
+            ResourceManager.ResourceReference object = getReference(request, resource, targetPath);
 
-            try {
-                Resource result = editService.moveComponent(resolver, resolver.getResource("/content"),
-                        resource, target, before);
-                resolver.commit();
-
-                sendResponse(response, result);
-
-            } catch (RepositoryException ex) {
-                LOG.error(ex.getMessage(), ex);
-                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ex.getMessage());
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("{}Element({}@{} > {} < {})...", getOperationName(), object.getType(), object.getPath(), targetPath, beforePath);
             }
+
+            if (editService.isAllowedElement(resolver, target, object)) {
+                Resource before = StringUtils.isNotBlank(beforePath) ? resolver.getResource(beforePath) : null;
+
+                try {
+                    List<Resource> updatedReferrers = new ArrayList<>();
+                    Resource result = doIt(resolver, object, target, before, updatedReferrers);
+                    resolver.commit();
+
+                    status.reference("reference", result);
+                    status.list("updated", updatedReferrers);
+
+                } catch (RepositoryException ex) {
+                    LOG.error(ex.getMessage(), ex);
+                    status.error(ex.getLocalizedMessage());
+                }
+            } else {
+                LOG.info("{} not allowed: {}@{}", getOperationName(), object.getType(), targetPath);
+                sendNotAllowedChild(request, response, target.getResource(), object.getResource());
+                return;
+            }
+            status.sendJson();
+        }
+
+        protected abstract ResourceManager.ResourceReference getReference(SlingHttpServletRequest request,
+                                                                          ResourceHandle resource, String targetPath);
+
+        protected abstract Resource doIt(ResourceResolver resolver, ResourceManager.ResourceReference source,
+                                         ResourceManager.ResourceReference target, Resource before, List<Resource> updatedReferrers)
+                throws PersistenceException, RepositoryException;
+
+        protected abstract String getOperationName();
+    }
+
+    protected class InsertElementOperation extends ElementResourceOperation {
+
+        @Override
+        protected ResourceManager.ResourceReference getReference(SlingHttpServletRequest request,
+                                                                 ResourceHandle resource, String targetPath) {
+            return resourceManager.getReference(request.getResourceResolver(),
+                    targetPath + "/_for_check_only_", request.getParameter("resourceType"));
+        }
+
+        @Override
+        public Resource doIt(ResourceResolver resolver, ResourceManager.ResourceReference source,
+                             ResourceManager.ResourceReference target, Resource before, List<Resource> updatedReferrers)
+                throws PersistenceException, RepositoryException {
+            return editService.insertElement(resolver, source.getType(), target, before);
+        }
+
+        @Override
+        protected String getOperationName() {
+            return "insert";
+        }
+    }
+
+    protected class MoveElementOperation extends ElementResourceOperation {
+
+        @Override
+        protected ResourceManager.ResourceReference getReference(SlingHttpServletRequest request,
+                                                                 ResourceHandle resource, String targetPath) {
+            return resourceManager.getReference(resource, null);
+        }
+
+        @Override
+        public Resource doIt(ResourceResolver resolver, ResourceManager.ResourceReference source,
+                             ResourceManager.ResourceReference target, Resource before, List<Resource> updatedReferrers)
+                throws PersistenceException, RepositoryException {
+            return editService.moveElement(resolver, resolver.getResource("/content"),
+                    source.getResource(), target, before, updatedReferrers);
+        }
+
+        @Override
+        protected String getOperationName() {
+            return "move";
+        }
+    }
+
+    protected class CopyElementOperation extends ElementResourceOperation {
+
+        @Override
+        protected ResourceManager.ResourceReference getReference(SlingHttpServletRequest request,
+                                                                 ResourceHandle resource, String targetPath) {
+            return resourceManager.getReference(resource, null);
+        }
+
+        @Override
+        public Resource doIt(ResourceResolver resolver, ResourceManager.ResourceReference source,
+                             ResourceManager.ResourceReference target, Resource before, List<Resource> updatedReferrers)
+                throws PersistenceException, RepositoryException {
+            return editService.copyElement(resolver, source.getResource(), target, before);
+        }
+
+        @Override
+        protected String getOperationName() {
+            return "copy";
         }
     }
 
@@ -746,8 +987,8 @@ public class EditServlet extends NodeTreeServlet {
             try {
                 Page page;
                 String name = request.getParameter("name");
-                String title = request.getParameter("title");
-                String description = request.getParameter("description");
+                String title = request.getParameter(ResourceUtil.JCR_TITLE);
+                String description = request.getParameter(ResourceUtil.JCR_DESCRIPTION);
 
                 Resource template = null;
                 String templatePath;
@@ -780,7 +1021,7 @@ public class EditServlet extends NodeTreeServlet {
                 jsonWriter.name("editUrl").value(page.getEditUrl());
                 jsonWriter.endObject();
 
-            } catch (RepositoryException | PersistenceException ex) {
+            } catch (Exception ex) {
                 LOG.error(ex.getMessage(), ex);
                 response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ex.getMessage());
             }
@@ -821,99 +1062,7 @@ public class EditServlet extends NodeTreeServlet {
         }
     }
 
-    //
-    // Content manipulation (Page, Folder, File)
-    //
-
-    /**
-     * send a failed answer with error hints on changes which are forbidden by the structure rules
-     *
-     * @param parent the designated parent resource
-     * @param child  the child resource which is not allowed as the parents child
-     */
-    protected void sendNotAllowedChild(SlingHttpServletRequest request, SlingHttpServletResponse response,
-                                       Resource parent, Resource child)
-            throws IOException {
-        response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
-        JsonWriter jsonWriter = ResponseUtil.getJsonWriter(response);
-        jsonWriter.beginObject();
-        addAllowedChildInfo(request, response, parent, child, jsonWriter, false);
-        jsonWriter.endObject();
-    }
-
-    /**
-     * add validation hints to a JSON validation answer
-     *
-     * @param parent  the designated parent resource
-     * @param child   the child resource which is not allowed as the parents child
-     * @param allowed 'true' if the child can be a child of the designated parent
-     */
-    protected void addAllowedChildInfo(SlingHttpServletRequest request, SlingHttpServletResponse response,
-                                       Resource parent, Resource child, JsonWriter jsonWriter, boolean allowed)
-            throws IOException {
-        if (!allowed) {
-            jsonWriter.name("response").beginObject();
-            jsonWriter.name("level").value("error");
-            jsonWriter.name("text").value(CpnlElFunctions.i18n(request, "Invalid Target"));
-            jsonWriter.endObject();
-            jsonWriter.name("messages").beginArray();
-            jsonWriter.beginObject();
-            jsonWriter.name("level").value("error");
-            jsonWriter.name("text").value(CpnlElFunctions.i18n(request, "Target path not allowed"));
-            jsonWriter.name("hint").value(CpnlElFunctions.i18n(request, "this change is breaking the resource hierarchy policy rules"));
-            jsonWriter.endObject();
-            jsonWriter.endArray();
-        }
-        jsonWriter.name("parent");
-        writeJsonResource(jsonWriter, new DefaultTreeNodeStrategy(pagesConfiguration.getPageNodeFilter()), parent);
-        jsonWriter.name("child");
-        writeJsonResource(jsonWriter, new DefaultTreeNodeStrategy(pagesConfiguration.getPageNodeFilter()), child);
-    }
-
-    protected abstract class ChangeContentOperation implements ServletOperation {
-
-        protected Resource getRequestedSibling(@Nonnull SlingHttpServletRequest request, @Nonnull Resource target,
-                                               @Nullable Resource skipThat) {
-            ResourceResolver resolver = request.getResourceResolver();
-            String beforePath = request.getParameter("before");
-            if (StringUtils.isNotBlank(beforePath)) {
-                return resolver.getResource(beforePath.startsWith("/")
-                        ? beforePath : target.getPath() + "/" + beforePath);
-            } else {
-                return getResourceAt(target, RequestUtil
-                        .getParameter(request, PARAM_INDEX, (Integer) null), skipThat);
-            }
-        }
-
-        protected Resource getResourceAt(@Nonnull Resource parent, @Nullable Integer index,
-                                         @Nullable Resource skipThat) {
-            if (index != null && index >= 0) {
-                String pathToSkip = skipThat != null ? skipThat.getPath() : null;
-                Iterator<Resource> children = parent.listChildren();
-                for (int i = 0; i < index && children.hasNext(); ) {
-                    if (pathToSkip == null || !children.next().getPath().equals(pathToSkip)) {
-                        i++;
-                    }
-                }
-                if (children.hasNext()) {
-                    return children.next();
-                }
-            }
-            return null;
-        }
-
-        protected void sendResponse(SlingHttpServletResponse response, Resource result)
-                throws IOException {
-            JsonWriter jsonWriter = ResponseUtil.getJsonWriter(response);
-            response.setStatus(HttpServletResponse.SC_OK);
-            jsonWriter.beginObject();
-            jsonWriter.name("name").value(result.getName());
-            jsonWriter.name("path").value(result.getPath());
-            jsonWriter.endObject();
-        }
-    }
-
-    protected class MoveContent extends ChangeContentOperation {
+    protected class MoveContentOrElement extends MoveContentOperation {
 
         @Override
         public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
@@ -928,114 +1077,11 @@ public class EditServlet extends NodeTreeServlet {
             if (target != null) {
 
                 if (Container.isContainer(resolver, target, null)) {
-
-                    moveComponentOperation.doIt(request, response, resource);
-
-                } else if (resourceManager.isAllowedChild(resolver, target, resource)) {
-
-                    Resource before = getRequestedSibling(request, target, resource);
-                    try {
-                        if (LOG.isDebugEnabled()) {
-                            LOG.debug("MoveContent(" + resource.getPath() + " > " + targetPath + " < "
-                                    + (before != null ? before.getName() : "<end>") + ")...");
-                        }
-
-                        Resource result = resourceManager.moveContentResource(resolver,
-                                resolver.getResource("/content"), resource, target, name, before);
-                        resolver.commit();
-
-                        sendResponse(response, result);
-
-                    } catch (ItemExistsException itex) {
-                        jsonAnswerItemExists(request, response);
-
-                    } catch (RepositoryException ex) {
-                        LOG.error(ex.getMessage(), ex);
-                        response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ex.getMessage());
-                    }
-
+                    moveElementOperation.doIt(request, response, resource);
                 } else {
-                    sendNotAllowedChild(request, response, target, resource);
+                    moveIt(request, response, resolver, resource, target, name);
                 }
-            } else {
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "target doesn't exist: '" + targetPath + "'");
-            }
-        }
-    }
 
-    protected class RenameContent extends ChangeContentOperation {
-
-        @Override
-        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
-                         ResourceHandle resource)
-                throws IOException {
-
-            String name = request.getParameter(PARAM_NAME);
-
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("RenameContent(" + resource.getPath() + " > " + name + ")...");
-            }
-
-            ResourceResolver resolver = request.getResourceResolver();
-
-            try {
-                Resource result = resourceManager.moveContentResource(resolver,
-                        resolver.getResource("/content"), resource, resource.getParent(), name, null);
-                resolver.commit();
-
-                sendResponse(response, result);
-
-            } catch (ItemExistsException itex) {
-                jsonAnswerItemExists(request, response);
-
-            } catch (RepositoryException ex) {
-                LOG.error(ex.getMessage(), ex);
-                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ex.getMessage());
-            }
-        }
-    }
-
-    protected class CopyContent extends ChangeContentOperation {
-
-        @Override
-        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
-                         ResourceHandle resource)
-                throws IOException {
-
-            String targetPath = request.getParameter("targetPath");
-            String name = request.getParameter(PARAM_NAME);
-
-            ResourceResolver resolver = request.getResourceResolver();
-            Resource target = resolver.getResource(targetPath);
-            if (target != null) {
-
-                if (resourceManager.isAllowedChild(resolver, target, resource)) {
-
-                    Resource before = getRequestedSibling(request, target, resource);
-
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("CopyContent(" + resource.getPath() + " > " + targetPath + " < "
-                                + (before != null ? before.getName() : "<end>") + ")...");
-                    }
-
-                    try {
-                        Resource result = resourceManager.copyContentResource(resolver, resource, target, name, before);
-                        resolver.commit();
-
-                        sendResponse(response, result);
-
-                    } catch (PersistenceException pex) {
-
-                        if (pex.getCause() instanceof ItemExistsException) {
-                            jsonAnswerItemExists(request, response);
-                        } else {
-                            throw pex;
-                        }
-                    }
-
-                } else {
-                    sendNotAllowedChild(request, response, target, resource);
-                }
             } else {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "target doesn't exist: '" + targetPath + "'");
             }
@@ -1063,8 +1109,8 @@ public class EditServlet extends NodeTreeServlet {
                 }
                 String tenant = request.getParameter("tenant");
                 String name = request.getParameter("name");
-                String title = request.getParameter("title");
-                String description = request.getParameter("description");
+                String title = request.getParameter(ResourceUtil.JCR_TITLE);
+                String description = request.getParameter(ResourceUtil.JCR_DESCRIPTION);
                 Site site = siteManager.createSite(context, tenant, name, title, description, template, true);
 
                 JsonWriter jsonWriter = ResponseUtil.getJsonWriter(response);
@@ -1130,7 +1176,7 @@ public class EditServlet extends NodeTreeServlet {
 
             String selectors = RequestUtil.getSelectorString(request, null, 1);
             if (LOG.isDebugEnabled()) {
-                LOG.debug("GetContextTools(" + resource + "," + selectors + ")...");
+                LOG.debug("GetContextTools({},{})...", resource, selectors);
             }
 
             String paramType = request.getParameter(PARAM_TYPE);
@@ -1140,124 +1186,6 @@ public class EditServlet extends NodeTreeServlet {
             options.setReplaceSelectors(selectors);
 
             forward(request, response, resource, paramType, options);
-        }
-    }
-
-    //
-    // Versions
-    //
-
-    static class VersionPutParameters {
-
-        public String path;
-        public String version;
-        public String label;
-
-        public void setPath(String path) {
-            this.path = path;
-        }
-
-        public void setVersion(String version) {
-            this.version = version;
-        }
-
-        public void setLabel(String label) {
-            this.label = label;
-        }
-    }
-
-    protected class GetVersions implements ServletOperation {
-
-        @Override
-        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
-                         ResourceHandle resource)
-                throws ServletException, IOException {
-
-            String selectors = RequestUtil.getSelectorString(request, null, 1);
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("GetVersions(" + resource + "," + selectors + ")...");
-            }
-
-            RequestDispatcherOptions options = new RequestDispatcherOptions();
-            options.setForceResourceType(VERSIONS_RESOURCE_TYPE);
-            if (StringUtils.isNotBlank(selectors)) {
-                options.setReplaceSelectors(selectors);
-            }
-
-            forward(request, response, resource, null, options);
-        }
-    }
-
-    protected class RestoreVersion implements ServletOperation {
-
-        @Override
-        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
-                         ResourceHandle resource)
-                throws IOException {
-
-            final Gson gson = new Gson();
-            final VersionPutParameters params = gson.fromJson(
-                    new InputStreamReader(request.getInputStream(), MappingRules.CHARSET.name()),
-                    VersionPutParameters.class);
-
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("RestoreVersion(" + params.path + "," + params.version + ")...");
-            }
-
-            try {
-                BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
-                versionsService.restoreVersion(context, params.path, params.version);
-                ResponseUtil.writeEmptyArray(response);
-
-            } catch (RepositoryException ex) {
-                LOG.error(ex.getMessage(), ex);
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, ex.getMessage());
-            }
-        }
-    }
-
-    protected class SetVersionLabel implements ServletOperation {
-
-        @Override
-        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
-                         ResourceHandle resource)
-                throws IOException {
-
-            final Gson gson = new Gson();
-            final VersionPutParameters params = gson.fromJson(
-                    new InputStreamReader(request.getInputStream(), MappingRules.CHARSET.name()),
-                    VersionPutParameters.class);
-
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("SetVersionLabel(" + params.path + "," + params.version + "," + params.label + ")...");
-            }
-
-            try {
-                BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
-                versionsService.setVersionLabel(context, params.path, params.version, params.label);
-                ResponseUtil.writeEmptyArray(response);
-
-            } catch (RepositoryException ex) {
-                LOG.error(ex.getMessage(), ex);
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, ex.getMessage());
-            }
-        }
-    }
-
-    //
-
-    protected void forward(SlingHttpServletRequest request, SlingHttpServletResponse response,
-                           Resource resource, String typeHint, RequestDispatcherOptions options)
-            throws ServletException, IOException {
-        RequestDispatcher dispatcher = request.getRequestDispatcher(resource, options);
-        if (dispatcher != null) {
-
-            request.setAttribute(EDIT_RESOURCE_KEY, resource);
-            request.setAttribute(EDIT_RESOURCE_TYPE_KEY,
-                    StringUtils.isNotBlank(typeHint) ? typeHint : resource.getResourceType());
-            dispatcher.forward(request, response);
-            request.removeAttribute(EDIT_RESOURCE_TYPE_KEY);
-            request.removeAttribute(EDIT_RESOURCE_KEY);
         }
     }
 }

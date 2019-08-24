@@ -1,14 +1,20 @@
 package com.composum.pages.commons.model.properties;
 
+import com.composum.pages.commons.PagesConstants;
 import com.composum.pages.commons.model.GenericModel;
 import com.composum.pages.commons.model.Model;
-import com.composum.pages.commons.util.ValueHashMap;
+import com.composum.pages.commons.model.Page;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.SlingBean;
 import com.composum.sling.core.util.ResourceUtil;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ValueMap;
+import org.apache.sling.api.wrappers.ValueMapDecorator;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.HashMap;
 
 /**
  * a simple model for a subnode of a content element which declares a simple structured type
@@ -22,6 +28,8 @@ public abstract class PropertyNode implements SlingBean {
 
     protected Model model;  // the model of the element which contains this structured property
 
+    private transient Page currentPage;
+
     public PropertyNode() {
     }
 
@@ -33,14 +41,17 @@ public abstract class PropertyNode implements SlingBean {
         return resource;
     }
 
+    @Nonnull
     public String getName() {
         return resource.getName();
     }
 
+    @Nonnull
     public String getPath() {
         return resource.getPath();
     }
 
+    @Nonnull
     public String getType() {
         return resource.getResourceType();
     }
@@ -58,8 +69,8 @@ public abstract class PropertyNode implements SlingBean {
     public void initialize(final BeanContext context, final Resource resource) {
         this.context = context;
         this.resource = resource;
-        values = ResourceUtil.isNonExistingResource(resource)
-                ? new ValueHashMap() : resource.adaptTo(ValueMap.class);
+        values = resource == null || ResourceUtil.isNonExistingResource(resource)
+                ? new ValueMapDecorator(new HashMap<>()) : resource.getValueMap();
         model = determineElementModel();
         initialize();
     }
@@ -82,5 +93,16 @@ public abstract class PropertyNode implements SlingBean {
     @Override
     public void initialize(final BeanContext context) {
         initialize(context, context.getResource());
+    }
+
+    /**
+     * the requested page referenced by the current HTTP request
+     */
+    @Nullable
+    public Page getCurrentPage() {
+        if (currentPage == null) {
+            currentPage = context.getAttribute(PagesConstants.RA_CURRENT_PAGE, Page.class);
+        }
+        return currentPage;
     }
 }

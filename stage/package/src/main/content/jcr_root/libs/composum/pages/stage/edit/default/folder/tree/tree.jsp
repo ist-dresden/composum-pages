@@ -4,7 +4,7 @@
 <cpp:editToolbar>
     <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
         <div class="btn-group btn-group-sm" role="group">
-            <cpp:treeMenu key="more" icon="navicon" label="More..." title="more page manipulation actions...">
+            <cpp:treeMenu key="more" icon="navicon" label="More..." title="more folder manipulation actions...">
                 <cpp:menuItem icon="id-badge" label="Rename" title="Rename the selected folder"
                               action="window.composum.pages.actions.folder.rename"/>
                 <cpp:menuItem icon="arrows-alt" label="Move" title="Move the selected folder"

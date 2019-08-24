@@ -1,0 +1,35 @@
+@charset "UTF-8";
+
+@import "variables";
+@import "mixins";
+
+.composum-pages-components-wrapper {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: auto;
+}
+
+.composum-pages-components-title {
+    margin: $column-title-margin;
+    padding: $column-title-padding;
+    @include title-font;
+    text-align: left;
+    background: none;
+}
+
+.composum-pages-components-subtitle {
+    margin: $column-subtitle-margin;
+    padding: $column-title-padding;
+    @include subtitle-font;
+    text-align: left;
+    background: none;
+}
+
+.composum-pages-components-copyright {
+    width: 100%;
+    margin: 0 0 $text-spacing-default;
+    @include small-font;
+    text-align: right;
+    background: none;
+}

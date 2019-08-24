@@ -1,0 +1,29 @@
+@charset "UTF-8";
+
+@import "../../../css/variables";
+@import "../../../css/mixins";
+
+.composum-pages-edit-widget_static {
+
+    .composum-pages-edit-widget {
+
+        &_text {
+
+            p {
+                margin: 0;
+            }
+        }
+    }
+
+    .hint {
+
+        &.hint-remark {
+            border: none;
+            padding: 0;
+            text-shadow: none;
+            box-shadow: none;
+            @include edit-hint-font;
+            color: $edit-hint-color;
+        }
+    }
+}

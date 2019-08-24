@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+        xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
         jcr:primaryType="nt:unstructured"
         sling:resourceType="composum/pages/stage/home"
-        jcr:description=""
-        pageHeadline="Composum Pages"
-        pageSubheadline="an Apache Sling based CMS solution"
+        sling:resourceSuperType="composum/platform/public/page"
         title="Your Sites"
-        createSiteLabel="Create a new site"
-        noSitesMessage="There is no site available for you on this platform."
-        noSitesCreateLinkLabel="Create your first site now..."/>
+        createSiteLabel="Create a new Site"
+        noSitesMessage="There are no Sites available for you."
+        noSitesCreateLinkLabel="Create your first site now!">
+    <i18n jcr:primaryType="nt:unstructured">
+        <de jcr:primaryType="nt:unstructured"
+                title="Ihre Sites"
+                createSiteLabel="Eine neue Site anlegen"
+                noSitesMessage="Derzeit gibt es keine verfügbaren Sites für Sie."
+                noSitesCreateLinkLabel="Legen Sie Ihre erste Site jetzt an!"/>
+    </i18n>
+</jcr:root>

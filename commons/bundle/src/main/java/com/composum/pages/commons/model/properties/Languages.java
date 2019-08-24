@@ -1,20 +1,22 @@
 package com.composum.pages.commons.model.properties;
 
 import com.composum.pages.commons.model.Page;
-import com.composum.pages.commons.service.PageManager;
+import com.composum.pages.commons.model.Site;
+import com.composum.pages.commons.request.PagesLocale;
+import com.composum.pages.commons.service.SiteManager;
 import com.composum.sling.core.BeanContext;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.SyntheticResource;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Locale;
 
 import static com.composum.pages.commons.PagesConstants.DEFAULT_LANGUAGES;
 import static com.composum.pages.commons.PagesConstants.LANGUAGES_ATTR;
 import static com.composum.pages.commons.PagesConstants.LANGUAGES_PATH;
-import static com.composum.pages.commons.PagesConstants.LANGUAGES_TYPE;
-import static com.composum.pages.commons.taglib.DefineObjectsTag.CURRENT_PAGE;
 
 public class Languages extends PropertyNodeSet<Language> {
 
@@ -34,20 +36,14 @@ public class Languages extends PropertyNodeSet<Language> {
     }
 
     /**
-     * search for the language definition to use (existing {page}/jcr:content/languages)
+     * search for the language definition to use (existing {site}/jcr:content/languages)
      */
     public static Resource findLanguages(final BeanContext context, final Resource resource) {
+        SiteManager siteManager = context.getService(SiteManager.class);
         Resource languagesResource = null;
-        final Page currentPage = context.getAttribute(CURRENT_PAGE, Page.class);
-        Resource pageResource;
-        if (currentPage != null) {
-            pageResource = currentPage.getResource();
-        } else {
-            final PageManager pageManager = context.getService(PageManager.class);
-            pageResource = pageManager.getContainingPageResource(resource);
-        }
-        while (pageResource != null && (languagesResource = pageResource.getChild(LANGUAGES_PATH)) == null) {
-            pageResource = pageResource.getParent();
+        Site site = siteManager.getContainingSite(context, resource);
+        if (site != null) {
+            languagesResource = site.getResource().getChild(LANGUAGES_PATH);
         }
         if (languagesResource == null) {
             languagesResource = context.getResolver().getResource(DEFAULT_LANGUAGES);
@@ -57,25 +53,35 @@ public class Languages extends PropertyNodeSet<Language> {
 
     // PropertyNodeSet implementation
 
-    protected HashMap<String, Language> languageSet;
+    protected LanguageSet languageSet;
 
+    private transient Language language;
+    private transient Locale locale;
+
+    /**
+     * for use as model in templates...
+     */
     public Languages() {
     }
 
-    public Languages(final BeanContext context, final Resource resource) {
+    protected Languages(final BeanContext context, final Resource resource) {
         super(context, resource);
     }
 
     @Override
     public void initialize(final BeanContext context, final Resource resource) {
-        super.initialize(context, resource.isResourceType(LANGUAGES_TYPE)
-                ? resource
-                : findLanguages(context, resource));
+        super.initialize(context, findLanguages(context, resource));
     }
 
     @Override
     protected void initialize() {
-        languageSet = new HashMap<>();
+        languageSet = new LanguageSet() {
+            @Override
+            @Nonnull
+            public Language getDefaultLanguage() {
+                return Languages.this.getDefaultLanguage();
+            }
+        };
         super.initialize();
     }
 
@@ -92,52 +98,75 @@ public class Languages extends PropertyNodeSet<Language> {
     }
 
     /**
-     * returns the requested language from the element model
+     * returns the requested language from the current page (fallback: the language retrieved from the request)
      */
+    @Nonnull
     public Language getLanguage() {
-        return model.getLanguage();
+        if (language == null) {
+            Page page = getCurrentPage();
+            if (page != null) {
+                language = page.getLanguage();
+            }
+            if (language == null) {
+                language = getLanguage(getLocale());
+            }
+        }
+        return language;
+    }
+
+    /**
+     * returns the language for a language key; 'null' if not declared for the key
+     */
+    @Nullable
+    public Language getLanguage(String key) {
+        return languageSet.get(key);
+    }
+
+    @Nonnull
+    public Collection<Language> getLanguages() {
+        return languageSet.values();
+    }
+
+    @Nonnull
+    public LanguageSet getLanguageSet() {
+        return languageSet;
+    }
+
+    /**
+     * returns the default language of the set, simply the first element in the set
+     */
+    @Nonnull
+    public Language getDefaultLanguage() {
+        Collection<Language> languages = getLanguages();
+        return languages.size() > 0 ? languages.iterator().next() : new SyntheticLanguage("en", "english");
+    }
+
+    protected class SyntheticLanguage extends Language {
+
+        public SyntheticLanguage(String key, String label) {
+            super(Languages.this.context, new SyntheticResource(Languages.this.context.getResolver(),
+                    Languages.this.resource.getPath() + "/" + key, ""));
+            this.name = this.key = key;
+            this.label = label;
+        }
     }
 
     /**
      * returns the language for a locale
      * or the default language if the set doesn't contain an appropriate language
      */
-    public Language getLanguage(final Locale locale) {
-        return retrieveLanguage(locale.toString());
+    @Nonnull
+    protected Language getLanguage(final Locale locale) {
+        return languageSet.retrieveLanguage(locale.toString());
     }
 
-    /**
-     * returns the language for a language key; 'null' if not declared for the key
-     */
-    public Language getLanguage(String key) {
-       return languageSet.get(key);
-    }
-
-    /**
-     * returns the language for a language key
-     * or the default language if the set doesn't contain an appropriate language
-     */
-    public Language retrieveLanguage(String key) {
-        while (StringUtils.isNotBlank(key)) {
-            Language language = getLanguage(key);
-            if (language != null) {
-                return language;
-            }
-            int delimiter = key.lastIndexOf('_');
-            key = delimiter > 0 ? key.substring(0, delimiter) : "";
+    @Nonnull
+    public Locale getLocale() {
+        if (locale == null) {
+            SlingHttpServletRequest request = context.getRequest();
+            PagesLocale pagesLocale = request.adaptTo(PagesLocale.class);
+            locale = pagesLocale != null ? pagesLocale.getLocale() : request.getLocale();
         }
-        return getDefaultLanguage();
-    }
-
-    /**
-     * returns the default language of the set, simply the first element in the set
-     */
-    public Language getDefaultLanguage() {
-        Collection<Language> languages = getLanguageList();
-        return languages.size() > 0 ? languages.iterator().next() : null;
-    }
-
-    public Collection<Language> getLanguageList() {
-        return propertySet.values();
+        return locale;
     }
 }

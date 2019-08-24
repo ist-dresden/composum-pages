@@ -1,9 +1,8 @@
-<%@page session="false" pageEncoding="UTF-8" %><%--
---%><%@taglib prefix="sling" uri="http://sling.apache.org/taglibs/sling/1.2" %><%--
---%><%@taglib prefix="cpn" uri="http://sling.composum.com/cpnl/1.0" %><%--
---%><%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %><%--
---%><%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%><%--
---%><cpp:defineFrameObjects/>
+<%@page session="false" pageEncoding="UTF-8" %>
+<%@taglib prefix="cpn" uri="http://sling.composum.com/cpnl/1.0" %>
+<%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<cpp:defineFrameObjects/>
 <div${dialog.attributes}>
     <div class="modal-dialog">
         <div class="modal-content form-panel">
@@ -17,7 +16,7 @@
                     </h4>
                     <c:if test="${dialog.hasLanguageContext}">
                         <div class="${dialogCssBase}_language">
-                            <sling:include resourceType="composum/pages/stage/edit/tools/language/label"/>
+                            <cpp:include resourceType="composum/pages/stage/edit/tools/language/label"/>
                         </div>
                     </c:if>
                 </div>
@@ -33,4 +32,4 @@
                     <input name="_charset_" type="hidden" value="UTF-8" class="${dialogCssBase}_hidden"/>
                     <input name="path" type="hidden" value="" class="${dialogCssBase}_hidden ${dialogCssBase}_path"/>
                     <div class="${dialogCssBase}_tabbed-content">
-<!-- start of dialog content -->
+                        <!-- start of dialog content -->

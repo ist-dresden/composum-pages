@@ -32,10 +32,14 @@
                     <ul class="${dialogCssBase}_tabs nav nav-tabs">
                     </ul>
                     <input name="_charset_" type="hidden" value="UTF-8" class="${dialogCssBase}_hidden"/>
+                    <c:if test="${dialog.usePrimaryType}">
+                    <input name="jcr:primaryType" type="hidden" value="${dialog.primaryType}"
+                           class="${dialogCssBase}_hidden ${dialogCssBase}_primary-type"/>
+                    </c:if>
                     <c:if test="${dialog.useResourceType}">
-                        <!-- the resource type is set according to the rendered type (for static includes) -->
-                        <input name="sling:resourceType" type="hidden" value="${dialog.resourceType}"
-                               class="${dialogCssBase}_hidden ${dialogCssBase}_resource-type"/>
+                    <!-- the resource type is set according to the rendered type (for static includes) -->
+                    <input name="sling:resourceType" type="hidden" value="${dialog.resourceType}"
+                           class="${dialogCssBase}_hidden ${dialogCssBase}_resource-type"/>
                     </c:if>
                     <div class="${dialogCssBase}_tabbed-content">
                         <!-- start of dialog content -->

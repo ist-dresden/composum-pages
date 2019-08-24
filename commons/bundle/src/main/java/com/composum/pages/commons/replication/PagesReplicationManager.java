@@ -2,7 +2,7 @@ package com.composum.pages.commons.replication;
 
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.platform.security.AccessMode;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.framework.Constants;
@@ -25,7 +25,7 @@ import java.util.List;
 @Component(
         service = {ReplicationManager.class},
         property = {
-                Constants.SERVICE_DESCRIPTION + "=Pages Replication Manager"
+                Constants.SERVICE_DESCRIPTION + "=Composum Pages Replication Manager"
         },
         immediate = true
 )
@@ -36,7 +36,7 @@ public class PagesReplicationManager implements ReplicationManager {
 
     protected PagesReplicationConfig config;
 
-    protected List<ReplicationStrategy> instances = Collections.synchronizedList(new ArrayList<ReplicationStrategy>());
+    protected List<ReplicationStrategy> instances = Collections.synchronizedList(new ArrayList<>());
 
     @Override
     public PagesReplicationConfig getConfig() {
@@ -74,7 +74,7 @@ public class PagesReplicationManager implements ReplicationManager {
         boolean replicationDone = false;
         String resourcePath = resource.getPath();
         if (!context.done.contains(resourcePath)) {
-            // perform replication only of not always done
+            // perform replication only of not already done
             for (ReplicationStrategy strategy : instances) {
                 if (strategy.canReplicate(context, resource, isReference)) {
                     if (LOG.isDebugEnabled()) {
@@ -149,4 +149,16 @@ public class PagesReplicationManager implements ReplicationManager {
             strategy.deactivate(this);
         }
     }
+
+    @Override
+    @Deprecated
+    public boolean releaseMappingAllowed(String path, String uri) {
+        return releaseMappingAllowed(path);
+    }
+
+    @Override
+    public boolean releaseMappingAllowed(String path) {
+        return path.startsWith(getConfig().contentPath());
+    }
+
 }

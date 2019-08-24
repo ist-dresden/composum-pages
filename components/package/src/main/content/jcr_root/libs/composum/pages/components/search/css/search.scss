@@ -1,0 +1,73 @@
+@charset "UTF-8";
+
+@import "../../css/variables.scss";
+@import "../../css/mixins.scss";
+
+.composum-pages-components-search-field {
+    max-width: 600px;
+    @include default-font;
+
+    &_button {
+
+        .button-text {
+            display: none;
+        }
+    }
+}
+
+.composum-pages-components-search-result {
+    @include default-font;
+
+    &_title {
+        @include inline-title;
+        font-size: $text-title-font-size;
+    }
+
+    &_list {
+        list-style: square;
+        padding-left: 30px;
+
+        .composum-pages-components-search-result {
+
+            &_hit {
+                margin: $text-spacing-default 0;
+                font-size: $text-title-font-size;
+            }
+        }
+    }
+}
+
+.composum-pages-components-page {
+
+    &_search-item {
+
+        &_link {
+
+            &, &:hover {
+                text-decoration: none;
+
+                .composum-pages-components-page {
+
+                    &_search-item {
+
+                        &_title {
+                            color: $site-default-link-color;
+                        }
+                    }
+                }
+            }
+        }
+
+        &_title {
+            @include inline-title;
+            font-size: $text-title-font-size;
+            margin-bottom: 0;
+        }
+
+        &_excerpt, &_description {
+            margin-top: $text-spacing-default;
+            @include default-font;
+            color: $site-default-text-color;
+        }
+    }
+}

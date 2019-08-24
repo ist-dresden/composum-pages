@@ -5,10 +5,13 @@ import com.composum.sling.core.BeanContext;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 
+import static com.composum.pages.commons.taglib.EditDialogGroupTag.DIALOG_GROUP_VAR;
+import static com.composum.pages.commons.taglib.EditDialogTabTag.DIALOG_TAB_VAR;
+
 /**
  * the EditWidgetTag is rendering a dialog widget as an element of the edit dialog form
  */
-public abstract class AbstractWidgetTag extends AbstractWrappingTag {
+public abstract class AbstractWidgetTag extends AbstractEditElementTag {
 
     public static final String PROPERTY_RESOURCE_ATTR = "propertyResource";
     public static final String PROPERTY_PATH_ATTR = "propertyPath";
@@ -19,8 +22,13 @@ public abstract class AbstractWidgetTag extends AbstractWrappingTag {
     protected boolean i18n = false;
     protected String modelClass;
 
+    private transient String relativePath;
+    private transient String propertyName;
+
     @Override
     protected void clear() {
+        propertyName = null;
+        relativePath = null;
         modelClass = null;
         i18n = false;
         name = null;
@@ -65,7 +73,7 @@ public abstract class AbstractWidgetTag extends AbstractWrappingTag {
         modelClass = className;
     }
 
-    public boolean isFormWidget () {
+    public boolean isFormWidget() {
         return name == null || !name.startsWith("#");
     }
 
@@ -73,11 +81,33 @@ public abstract class AbstractWidgetTag extends AbstractWrappingTag {
      * @return the name of the form input element probably with a prepended relative path and the i18n path
      */
     public String getName() {
-        return getRelativePath() + getPropertyName();
+        return getPropertyName();
     }
 
     public void setName(String key) {
         name = key;
+    }
+
+    public void setDisabled(boolean value) {
+        disabled = value;
+    }
+
+    public boolean isDisabled() {
+        Boolean result = null;
+        if (hasDisabledAttribute()) {
+            result = getDisabledValue();
+        } else {
+            EditDialogGroupTag groupTag = (EditDialogGroupTag) pageContext.findAttribute(DIALOG_GROUP_VAR);
+            if (groupTag != null && groupTag.hasDisabledAttribute()) {
+                result = groupTag.isDisabledSet();
+            } else {
+                EditDialogTabTag tabTag = (EditDialogTabTag) pageContext.findAttribute(DIALOG_TAB_VAR);
+                if (tabTag != null && tabTag.hasDisabledAttribute()) {
+                    result = tabTag.isDisabledSet();
+                }
+            }
+        }
+        return result != null ? result : getDialog().isDisabledSet();
     }
 
     /**
@@ -109,41 +139,54 @@ public abstract class AbstractWidgetTag extends AbstractWrappingTag {
         return resource;
     }
 
+    /**
+     * @return the path to the owning child of the property to edit (for embedded components and their dialogs)
+     */
     public String getRelativePath() {
-        String relativePath = context.getAttribute(PROPERTY_PATH_ATTR, String.class);
-        if (StringUtils.isBlank(relativePath)) {
-            String resourcePath = getResource().getPath();
-            String actionPath = getDialog().getResource().getPath();
-            if (!resourcePath.equals(actionPath) && resourcePath.startsWith(actionPath)) {
-                relativePath = resourcePath.substring(actionPath.length() + 1);
-            }
-        }
         if (relativePath == null) {
-            relativePath = "";
-        } else {
-            if (StringUtils.isNotBlank(relativePath) && !relativePath.endsWith("/")) {
-                relativePath += "/";
+            relativePath = context.getAttribute(PROPERTY_PATH_ATTR, String.class);
+            if (StringUtils.isBlank(relativePath)) {
+                String resourcePath = getResource().getPath();
+                String actionPath = getDialog().getResource().getPath();
+                if (!resourcePath.equals(actionPath) && resourcePath.startsWith(actionPath)) {
+                    relativePath = resourcePath.substring(actionPath.length() + 1);
+                }
+            }
+            if (relativePath == null) {
+                relativePath = "";
+            } else {
+                if (StringUtils.isNotBlank(relativePath) && !relativePath.endsWith("/")) {
+                    relativePath += "/";
+                }
             }
         }
         return relativePath;
     }
 
     /**
-     * @return the name of the property of the resource probably with a prepended i18n path
+     * @return the path of the property of the resource probably with a prepended include path segment and the i18n path
      */
     public String getPropertyName() {
-        String propertyName = name != null ? name : getProperty();
-        return isI18n() ? getI18nName(propertyName) : propertyName;
-    }
-
-    protected String getI18nName(String name) {
-        if (isI18n()) {
-            EditDialogTag dialog = getDialog();
-            if (dialog != null) {
-                return dialog.getPropertyPath(name);
+        if (propertyName == null) {
+            propertyName = name != null ? name : getProperty();
+            String relativePath = getRelativePath();
+            // prepend relative path and i18n path if 'i18n' is on
+            if (isI18n()) {
+                EditDialogTag dialog = getDialog();
+                if (dialog != null) {
+                    propertyName = dialog.getPropertyPath(relativePath, propertyName);
+                } else {
+                    propertyName = getI18nPath(relativePath, propertyName);
+                }
+            } else {
+                propertyName = relativePath + propertyName;
             }
         }
-        return name;
+        return propertyName;
+    }
+
+    public String getRequestLanguage() {
+        return request.getLocale().getLanguage();
     }
 
     public EditDialogTag getDialog() {

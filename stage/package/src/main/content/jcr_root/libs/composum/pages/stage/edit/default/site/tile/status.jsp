@@ -8,15 +8,15 @@
     <div class="${siteCssBase}">
         <cpp:include resourceType="composum/pages/stage/edit/default/site/thumbnail"/>
         <div class="${siteCssBase}_text">
-            <h3 class="${siteCssBase}_title">${cpn:text(site.title)}<c:if test="${site.templatePath}"><span
+            <h3 class="${siteCssBase}_title">${cpn:text(site.title)}<c:if test="${not empty site.templatePath}"><span
                     class="${siteCssBase}_template">*</span></c:if></h3>
             <div class="${siteCssBase}_status">
                 <a href="#"
-                   class="badge badge-pill modified"
-                   title="${cpn:i18n(slingRequest,'Modified Pages')}"><%=site.getModifiedPages().size()%>
+                   class="badge badge-pill changes"
+                   title="${cpn:i18n(slingRequest,'Release Changes')}"><%=site.getReleaseChanges().size()%>
                 </a><a href="#"
-                       class="badge badge-pill unreleased"
-                       title="${cpn:i18n(slingRequest,'Finished Pages')}"><%=site.getUnreleasedPages().size()%>
+                       class="badge badge-pill modified"
+                       title="${cpn:i18n(slingRequest,'Modified Pages')}"><%=site.getModifiedPages().size()%>
             </a>
             </div>
             <h4 class="${siteCssBase}_path">${cpn:path(site.path)}</h4>

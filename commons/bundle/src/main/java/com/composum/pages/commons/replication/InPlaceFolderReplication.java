@@ -24,11 +24,6 @@ public class InPlaceFolderReplication extends InPlaceReplicationStrategy {
         return canReplicateSite(context, resource) && Folder.isFolder(resource);
     }
 
-    @Override
-    protected ResourceResolver getReleaseResolver(ReplicationContext context, Resource resource) {
-        return context.getResolver();
-    }
-
     /**
      * traversal replication triggered for folders only;
      * copied only as parent path on demand if folder contains resources to replicate

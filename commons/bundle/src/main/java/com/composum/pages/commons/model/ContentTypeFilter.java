@@ -66,33 +66,35 @@ public class ContentTypeFilter {
 
     public boolean isAllowedChildByTemplate(@Nullable ResourceManager.Template template,
                                             @Nonnull ResourceManager.ResourceReference resourceReference) {
+        ResourceResolver resolver = resourceReference.getResolver();
         PathPatternSet allowedParents = getAllowedParentTemplates(template, resourceReference);
         PathPatternSet forbiddenParents = getForbiddenParentTemplates(template, resourceReference);
         PathPatternSet allowedChildren = getAllowedChildTemplates();
         PathPatternSet forbiddenChildren = getForbiddenChildTemplates();
         @SuppressWarnings("UnnecessaryLocalVariable")
-        boolean isAllowed = (targetTemplate != null
-                && (!allowedParents.isValid() || allowedParents.matches(targetTemplate.getPath()))
-                && (!forbiddenParents.isValid() || !forbiddenParents.matches(targetTemplate.getPath())))
+        boolean isAllowed = (targetTemplate == null
+                || ((!allowedParents.isValid() || allowedParents.matches(resolver, targetTemplate.getPath()))
+                && (!forbiddenParents.isValid() || !forbiddenParents.matches(resolver, targetTemplate.getPath())))
                 && (template != null
-                && (!allowedChildren.isValid() || allowedChildren.matches(template.getPath()))
-                && (!forbiddenChildren.isValid() || !forbiddenChildren.matches(template.getPath())));
+                && (!allowedChildren.isValid() || allowedChildren.matches(resolver, template.getPath()))
+                && (!forbiddenChildren.isValid() || !forbiddenChildren.matches(resolver, template.getPath()))));
         return isAllowed;
     }
 
     public boolean isAllowedChildByType(@Nullable ResourceManager.Template template,
                                         @Nonnull ResourceManager.ResourceReference resourceReference) {
+        ResourceResolver resolver = resourceReference.getResolver();
         PathPatternSet allowedParents = getAllowedParentTypes(template, resourceReference);
         PathPatternSet forbiddenParents = getForbiddenParentTypes(template, resourceReference);
         PathPatternSet allowedChildren = getAllowedChildTypes();
         PathPatternSet forbiddenChildren = getForbiddenChildTypes();
         @SuppressWarnings("UnnecessaryLocalVariable")
-        boolean isAllowed = (targetTemplate != null
-                && (!allowedParents.isValid() || allowedParents.matches(resourceType))
-                && (!forbiddenParents.isValid() || !forbiddenParents.matches(resourceType)))
+        boolean isAllowed = (targetTemplate == null
+                || ((!allowedParents.isValid() || allowedParents.matches(resolver, resourceType))
+                && (!forbiddenParents.isValid() || !forbiddenParents.matches(resolver, resourceType)))
                 && (template != null
-                && (!allowedChildren.isValid() || allowedChildren.matches(resourceReference.getType()))
-                && (!forbiddenChildren.isValid() || !forbiddenChildren.matches(resourceReference.getType())));
+                && (!allowedChildren.isValid() || allowedChildren.matches(resolver, resourceReference.getType()))
+                && (!forbiddenChildren.isValid() || !forbiddenChildren.matches(resolver, resourceReference.getType()))));
         return isAllowed;
     }
 

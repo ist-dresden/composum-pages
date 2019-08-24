@@ -3,6 +3,7 @@ package com.composum.pages.commons.util;
 
 import org.apache.commons.lang3.StringUtils;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -10,6 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+@SuppressWarnings("unchecked")
 public class AttributeSet implements Iterable<Map.Entry<String, Object>> {
 
     protected Map<String, Object> attributes = new HashMap<>();
@@ -60,6 +62,11 @@ public class AttributeSet implements Iterable<Map.Entry<String, Object>> {
         }
     }
 
+    public boolean isOption(String optionsKey, String key) {
+        List<String> options = getAttribute(optionsKey, List.class);
+        return options != null && options.contains(key);
+    }
+
     public void setOption(String optionsKey, String key, Object value) {
         List<String> options = getAttribute(optionsKey, List.class);
         if (options == null) {
@@ -78,6 +85,7 @@ public class AttributeSet implements Iterable<Map.Entry<String, Object>> {
         setAttribute(optionsKey, options.size() > 0 ? options : null);
     }
 
+    @Nonnull
     @Override
     public Iterator<Map.Entry<String, Object>> iterator() {
         return attributes.entrySet().iterator();

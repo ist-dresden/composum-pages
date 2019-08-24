@@ -5,13 +5,49 @@
 
 .composum-pages-tools {
 
+    &_actions {
+
+        .input-group-addon {
+            padding: 0 8px;
+            height: 28px;
+            line-height: 24px;
+            color: $tools-input-foreground;
+            background-color: $tools-input-background;
+            border-color: $tools-input-border-color;
+
+            &.composum-pages-tools {
+
+                &_search-reset {
+                    padding: 0 6px;
+
+                    &:before {
+                        opacity: 0.7;
+                    }
+                }
+            }
+        }
+
+        .composum-pages-tools {
+
+            &_search-field {
+                padding-top: 0;
+                padding-bottom: 0;
+                height: 28px;
+                line-height: 26px;
+                color: $tools-input-foreground;
+                background-color: $tools-input-background;
+                border-color: $tools-input-border-color;
+            }
+        }
+    }
+
     &_search-panel {
 
         .composum-pages-tools {
 
             &_search-form {
                 display: flex;
-                padding: 4px 0 8px;
+                padding: 0 0 8px;
             }
 
             &_search-field,
@@ -28,15 +64,18 @@
             &_search-scope {
                 margin-left: 8px;
                 width: auto;
+                min-width: 115px;
+                padding: 0 6px;
             }
 
             &_search-result {
                 position: absolute;
-                top: 44px;
+                top: 40px;
                 bottom: 0;
                 left: 0;
                 right: 0;
-                overflow: scroll;
+                overflow-x: hidden;
+                overflow-y: auto;
 
                 li {
                     margin: $tools-pane-padding 0;
@@ -68,6 +107,35 @@
 
                     .composum-pages-component-tile {
                         @include main-selection-background();
+                    }
+                }
+
+                .release-status {
+
+                    &_icon {
+                        position: absolute;
+                        top: $tools-pane-padding;
+                        left: $tools-pane-padding;
+                        background: none;
+
+                        &.release-status {
+
+                            &_initial {
+                                color: $release-status-initial;
+                            }
+
+                            &_activated {
+                                color: $release-status-activated;
+                            }
+
+                            &_modified {
+                                color: $release-status-modified;
+                            }
+
+                            &_deactivated {
+                                color: $release-status-deactivated;
+                            }
+                        }
                     }
                 }
             }

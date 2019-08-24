@@ -3,11 +3,9 @@ package com.composum.pages.commons.replication;
 import com.composum.pages.commons.model.Page;
 import com.composum.pages.commons.model.Site;
 import com.composum.pages.commons.service.SiteManager;
-import com.composum.sling.platform.staging.StagingResourceResolver;
+import com.composum.sling.platform.staging.StagingReleaseManager;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -26,7 +24,7 @@ public class InPlacePageReplication extends InPlaceReplicationStrategy {
     private static final Logger LOG = LoggerFactory.getLogger(InPlacePageReplication.class);
 
     @Reference
-    protected ResourceResolverFactory resolverFactory;
+    protected StagingReleaseManager releaseManager;
 
     @Reference
     protected SiteManager siteManager;
@@ -36,11 +34,9 @@ public class InPlacePageReplication extends InPlaceReplicationStrategy {
         boolean result = canReplicateSite(context, resource);
         if (result) {
             if (Page.isPage(resource)) {
-                // the content of a page must be available in the staging resolvers context (version available)
-                ResourceResolver releaseResolver = getReleaseResolver(context, resource);
-                Resource released = releaseResolver.getResource(resource.getPath());
-                result = released != null &&
-                        (Page.isPage(released) && released.getChild(JcrConstants.JCR_CONTENT) != null);
+                result = true;
+            } else if (Page.isPageContent(resource)) {
+                return Page.isPage(resource.getParent());
             } else {
                 result = (Site.isSite(resource));
             }
@@ -52,16 +48,10 @@ public class InPlacePageReplication extends InPlaceReplicationStrategy {
     }
 
     @Override
-    protected ResourceResolver getReleaseResolver(ReplicationContext context, Resource resource) {
-        ResourceResolver defaultResolver = context.getResolver();
-        if (Page.isPage(resource)) {
-            // for a page the version based resolver has to be used...
-            String releaseLabel = context.site.getReleaseLabel(context.accessMode.name());
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("'{}': using staging resolver of release '{}'...", resource.getPath(), releaseLabel);
-            }
-            return new StagingResourceResolver(resolverFactory, defaultResolver, releaseLabel, this);
-        }
-        return defaultResolver;
+    public void replicate(ReplicationContext context, Resource resource, boolean recursive) throws Exception {
+        if (Page.isPageContent(resource)) // the replication works on pages, not their jcr:content
+            super.replicate(context, resource.getParent(), recursive);
+        else
+            super.replicate(context, resource, recursive);
     }
 }

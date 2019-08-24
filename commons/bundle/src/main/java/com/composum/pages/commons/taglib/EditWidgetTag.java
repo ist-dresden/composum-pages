@@ -7,6 +7,8 @@ import com.composum.sling.core.SlingBean;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ValueMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.servlet.jsp.JspException;
@@ -14,10 +16,14 @@ import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.jstl.core.LoopTag;
 import javax.servlet.jsp.jstl.core.LoopTagStatus;
 import java.io.IOException;
+import java.io.Writer;
+import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static com.composum.pages.commons.taglib.EditMultiWidgetTag.MULTIWIDGET_TYPE;
 
@@ -26,36 +32,49 @@ import static com.composum.pages.commons.taglib.EditMultiWidgetTag.MULTIWIDGET_T
  */
 public class EditWidgetTag extends AbstractWidgetTag implements LoopTag {
 
+    private static final Logger LOG = LoggerFactory.getLogger(EditWidgetTag.class);
+
+    public static final String OPTION_REQUIRED = "required";
+    public static final String OPTION_BLANK = "blank";
+    public static final String OPTION_UNIQUE = "unique";
+
     public static final List<String> RULES_OPTIONS = Arrays.asList(
-            "mandatory", "blank", "unique");
+            OPTION_REQUIRED, "mandatory", OPTION_BLANK, OPTION_UNIQUE);
+
     public static final String RULES_ATTR = "rules";
     public static final String DATA_RULES_ATTR = "data-" + RULES_ATTR;
 
+    public static final String CSS_CLASS_REQUIRED = "widget-required";
+
     public static final String WIDGET_VAR = "widget";
-    public static final String WIDGET_CSS_VAR = WIDGET_VAR + "CssBase";
+    public static final String WIDGET_CSS_VAR = WIDGET_VAR + "CSS";
+    public static final String WIDGET_CSSBASE_VAR = WIDGET_VAR + "CssBase";
 
     public static final String DEFAULT_CSS_BASE = "composum-pages-edit-widget";
 
     public static final String MODEL_CLASS = "modelClass";
     public static final String DEFAULT_MODEL_CLASS = "";
 
+    public static final String NN_ATTRIBUTES = "attributes";
+
     protected String widgetType;
     protected Object value;
     protected boolean multi = false;
     protected String hint;
     protected String placeholder;
-    protected Boolean disabled;
     protected String rules;
 
     protected String status;
     private transient MultiValueStatus loopStatus;
 
+    private Set<String> usedAttributeKeys = new HashSet<>();
+
     @Override
     protected void clear() {
+        usedAttributeKeys = new HashSet<>();
         loopStatus = null;
         status = null;
         rules = null;
-        disabled = null;
         placeholder = null;
         hint = null;
         multi = false;
@@ -73,11 +92,14 @@ public class EditWidgetTag extends AbstractWidgetTag implements LoopTag {
     }
 
     public String getCssName() {
-        return getName().replaceAll("^(.*/)?i18n/.*/([^/]+)$", "$1$2")
+        String name = getName();
+        return StringUtils.isNotBlank(name)
+                ? name.replaceAll("^(.*/)?i18n/.*/([^/]+)$", "$1$2")
                 .replace('/', '-')
                 .replace(':', '_')
                 .replace("*", "STAR")
-                .replace("#", "");
+                .replace("#", "")
+                : "";
     }
 
     public Object getValue() {
@@ -116,6 +138,10 @@ public class EditWidgetTag extends AbstractWidgetTag implements LoopTag {
         return StringUtils.isNotBlank(getHint());
     }
 
+    public boolean isRequired() {
+        return dynamicAttributes.isOption(DATA_RULES_ATTR, RULES_OPTIONS.get(0));
+    }
+
     public String getPlaceholder() {
         String result = placeholder;
         if (component instanceof PropertyEditHandle) {
@@ -131,26 +157,67 @@ public class EditWidgetTag extends AbstractWidgetTag implements LoopTag {
         placeholder = val;
     }
 
-    public boolean isDisabled() {
-        return disabled != null && disabled;
+    public void setRequired(boolean value) {
+        dynamicAttributes.setOption(DATA_RULES_ATTR, OPTION_REQUIRED, value);
+        usedAttributeKeys.add(OPTION_REQUIRED);
     }
 
-    public void setDisabled(boolean val) {
-        disabled = val;
+    public void setBlank(boolean value) {
+        dynamicAttributes.setOption(DATA_RULES_ATTR, OPTION_BLANK, value);
+        usedAttributeKeys.add(OPTION_BLANK);
+    }
+
+    /**
+     * adds all pre configured attributes to the attribute set
+     */
+    protected void collectConfiguredAttributes() {
+        Resource widget = ResolverUtil.getResourceType(resourceResolver, getSnippetResourceType());
+        while (widget != null) {
+            Resource attributes = widget.getChild(NN_ATTRIBUTES);
+            if (attributes != null) {
+                ValueMap attributeValues = attributes.getValueMap();
+                for (Map.Entry<String, Object> entry : attributeValues.entrySet()) {
+                    String key = entry.getKey();
+                    if (key.indexOf(':') < 0) { // no properties with namespaces
+                        Object value = entry.getValue();
+                        if (value instanceof String) {
+                            value = eval(value, value);
+                        }
+                        try {
+                            try {
+                                // support non dynamic predefined attributes...
+                                Field field = getClass().getField(key);
+                                if (field.get(this) == null) {
+                                    field.set(this, value);
+                                }
+                            } catch (NoSuchFieldException | IllegalAccessException ex) {
+                                // ...with a 'fallback' to a dynamic attribute
+                                if (!usedAttributeKeys.contains(key)) {
+                                    setDynamicAttribute(key, value.toString());
+                                }
+                            }
+                        } catch (JspException ex) {
+                            LOG.error(ex.toString());
+                        }
+                    }
+                }
+            }
+            widget = ResolverUtil.getResourceType(resourceResolver, widget.getResourceSuperType());
+        }
     }
 
     @Override
-    protected void collectAttributes(Map<String, String> attributeSet) {
+    protected void collectAttributes(Map<String, Object> attributeSet) {
         collectDynamicAttributes(attributeSet);
     }
 
     @Override
-    protected void useDynamicAttribute(Map<String, String> attributeSet, String key, String value) {
+    protected void useDynamicAttribute(Map<String, Object> attributeSet, String key, Object value) {
         Object model = getModel();
         if (model instanceof WidgetModel) {
-            String widgetKey = ((WidgetModel) model).getWidgetAttributeKey(key);
+            String widgetKey = ((WidgetModel) model).filterWidgetAttribute(key, value);
             if (widgetKey != null) {
-                attributeSet.put(widgetKey, value);
+                attributeSet.putIfAbsent(widgetKey, value);
             }
         } else {
             super.useDynamicAttribute(attributeSet, key, value);
@@ -162,19 +229,27 @@ public class EditWidgetTag extends AbstractWidgetTag implements LoopTag {
      */
     @Override
     protected void setDynamicAttribute(String key, Object value) throws JspException {
-        String attributeKey = key.toLowerCase();
-        if (RULES_OPTIONS.contains(attributeKey)) {
-            dynamicAttributes.setOption(DATA_RULES_ATTR, attributeKey, value);
-        } else if (RULES_ATTR.equals(attributeKey) || DATA_RULES_ATTR.equals(attributeKey)) {
+        usedAttributeKeys.add(key);
+        if (RULES_OPTIONS.contains(key)) {
+            dynamicAttributes.setOption(DATA_RULES_ATTR,
+                    RULES_OPTIONS.get(1).equals(key) ? RULES_OPTIONS.get(0) : key,
+                    value);
+        } else if (RULES_ATTR.equals(key) || DATA_RULES_ATTR.equals(key)) {
             String string = (String) value;
             if (StringUtils.isNotBlank(string)) {
                 for (String option : StringUtils.split(string, ",")) {
-                    dynamicAttributes.setOption(DATA_RULES_ATTR, option, Boolean.TRUE);
+                    dynamicAttributes.setOption(DATA_RULES_ATTR,
+                            RULES_OPTIONS.get(1).equals(option) ? RULES_OPTIONS.get(0) : option,
+                            Boolean.TRUE);
                 }
             }
         } else {
             super.setDynamicAttribute(key, value);
         }
+    }
+
+    public boolean isBlankAllowed() {
+        return dynamicAttributes.isOption(DATA_RULES_ATTR, OPTION_BLANK);
     }
 
     /**
@@ -194,7 +269,7 @@ public class EditWidgetTag extends AbstractWidgetTag implements LoopTag {
         if (StringUtils.isBlank(modelClass)) {
             Resource widget = ResolverUtil.getResourceType(resourceResolver, getSnippetResourceType());
             while (StringUtils.isBlank(modelClass) && widget != null) {
-                ValueMap widgetValues = widget.adaptTo(ValueMap.class);
+                ValueMap widgetValues = widget.getValueMap();
                 modelClass = widgetValues.get(MODEL_CLASS, DEFAULT_MODEL_CLASS);
                 widget = ResolverUtil.getResourceType(resourceResolver, widget.getResourceSuperType());
             }
@@ -224,7 +299,19 @@ public class EditWidgetTag extends AbstractWidgetTag implements LoopTag {
             cssBase = DEFAULT_CSS_BASE;
         }
         super.doStartTag();
+        getAttributes(); // ensure that all attributes are processed before body rendering
         return SKIP_BODY;
+    }
+
+    @Override
+    @SuppressWarnings("Duplicates")
+    protected void getTagDebug(Writer writer) throws IOException {
+        super.getTagDebug(writer);
+        writer.append("\n    type: '").append(getType())
+                .append("'; attributes: ").append(getAttributes());
+        writer.append("\n    name: '").append(getName()).append("'; property: '").append(getProperty())
+                .append("'; propertyName: '").append(getPropertyName())
+                .append("'; relativePath: '").append(getRelativePath()).append("'");
     }
 
     protected String getSnippetResourceType() {
@@ -237,6 +324,7 @@ public class EditWidgetTag extends AbstractWidgetTag implements LoopTag {
 
     @Override
     protected void prepareTagStart() {
+        collectConfiguredAttributes();
         if (multi) {
             PropertyEditHandle editHandle = (PropertyEditHandle) component;
             loopStatus = new MultiValueStatus(editHandle);
@@ -248,6 +336,7 @@ public class EditWidgetTag extends AbstractWidgetTag implements LoopTag {
         setAttribute(WIDGET_VAR, this, PageContext.REQUEST_SCOPE);
         if (StringUtils.isNotBlank(cssBase)) {
             setAttribute(WIDGET_CSS_VAR, cssBase, PageContext.REQUEST_SCOPE);
+            setAttribute(WIDGET_CSSBASE_VAR, cssBase, PageContext.REQUEST_SCOPE);
         }
     }
 
@@ -283,7 +372,7 @@ public class EditWidgetTag extends AbstractWidgetTag implements LoopTag {
             }
         }
         if (StringUtils.isNotBlank(cssBase)) {
-            pageContext.removeAttribute(WIDGET_CSS_VAR, PageContext.REQUEST_SCOPE);
+            pageContext.removeAttribute(WIDGET_CSSBASE_VAR, PageContext.REQUEST_SCOPE);
         }
         pageContext.removeAttribute(WIDGET_VAR, PageContext.REQUEST_SCOPE);
     }

@@ -3,6 +3,5 @@
         jcr:primaryType="cpp:Component"
         jcr:description="a list of containers rendered with list markup"
         jcr:title="List"
-        componentGroup="Layout"
-        sling:resourceSuperType="composum/pages/components/container"
-        allowedElements="[composum/pages/components/element/.*]"/>
+        category="[Layout,Blueprint]"
+        sling:resourceSuperType="composum/pages/components/composed"/>

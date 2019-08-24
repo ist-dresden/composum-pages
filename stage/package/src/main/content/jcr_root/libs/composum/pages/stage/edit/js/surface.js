@@ -9,20 +9,29 @@
         surface.const = _.extend(surface.const || {}, {
             toolsPanelClass: 'composum-pages-stage-edit-tools',
             sidebarClass: 'composum-pages-stage-edit-sidebar',
+            logoClass: 'composum-pages-stage-edit-sidebar-logo',
             navigationClass: 'composum-pages-stage-edit-tools_navigation',
             contextToolsClass: 'composum-pages-stage-edit-tools_context',
             handleClass: 'composum-pages-stage-edit-sidebar_handle',
             handleIconClass: 'composum-pages-stage-edit-sidebar_handle-icon',
             modeIconClass: 'composum-pages-stage-edit-sidebar_mode-icon',
             modeOverlapClass: 'composum-pages-stage-edit-sidebar_overlap',
-            versionMainClass: 'composum-pages-stage-version-frame_main',
-            versionSecondaryClass: 'composum-pages-stage-version-frame_secondary'
+            versionPrimaryClass: 'composum-pages-stage-version-frame_primary',
+            versionSecondaryClass: 'composum-pages-stage-version-frame_secondary',
+            css: {
+                tools: {
+                    base: 'composum-pages-stage-edit-tools',
+                    _: {
+                        context: '_context'
+                    }
+                }
+            }
         });
 
         surface.Surface = Backbone.View.extend({
 
             initialize: function (options) {
-                this.$versionMain = $('.' + surface.const.versionMainClass);
+                this.$versionPrimary = $('.' + surface.const.versionPrimaryClass);
                 this.$versionSecondary = $('.' + surface.const.versionSecondaryClass);
                 window.addEventListener('resize', _.bind(function () {
                     this.bodySync();
@@ -40,12 +49,15 @@
                 if (this.$body) {
                     this.$body.css('margin-left', 0);
                     this.$body.css('width', '100%');
-                    this.$versionMain.css('left', 0);
-                    this.$versionMain.css('width', '100%');
+                    this.$versionPrimary.css('left', 0);
+                    this.$versionPrimary.css('width', '100%');
                     this.$versionSecondary.css('left', 0);
                     this.$versionSecondary.css('width', '100%');
+                    this.width = this.$body.width();
                     this.$body = undefined;
                 }
+                this.width = $('body').width();
+                $(document).trigger("body:size", [this, this.width]);
             },
 
             bodySync: function (sidebar) {
@@ -72,13 +84,18 @@
                             var contextWidth = surface.contextTools.$el.width();
                             width -= contextWidth;
                         }
+                        this.width = width;
                         this.$body.css('margin-left', margin + 'px');
                         this.$body.css('width', width + 'px');
-                        this.$versionMain.css('left', margin + 'px');
-                        this.$versionMain.css('width', width + 'px');
+                        this.$versionPrimary.css('left', margin + 'px');
+                        this.$versionPrimary.css('width', width + 'px');
                         this.$versionSecondary.css('left', margin + 'px');
                         this.$versionSecondary.css('width', width + 'px');
+
+                    } else {
+                        this.width = $('body').width();
                     }
+                    $(document).trigger("body:size", [this, this.width]);
                 } else {
                     this.bodySyncOff();
                 }
@@ -242,10 +259,15 @@
                 });
             },
 
+            adjustTop: function (top) {
+                return Math.max(Math.min(top, this.sidebar.$el.height() - this.$el.height() - 20), 20);
+            },
+
             move: function (event) {
                 var move = this.getMove(event, this.start);
-                this.sidebar.$el.css('width', (this.start.width + (move.x * this.sidebar.sizeDirection())) + 'px');
-                this.$el.css('top', (this.start.handle + move.y) + 'px');
+                var width = Math.max(this.start.width + (move.x * this.sidebar.sizeDirection()), 300);
+                this.sidebar.$el.css('width', width + 'px');
+                this.$el.css('top', this.adjustTop(this.start.handle + move.y) + 'px');
                 surface.surface.bodySync(this.sidebar);
                 this.sidebar.onResize();
             },
@@ -301,7 +323,7 @@
                     this.$sidebar.removeClass(surface.const.sidebarClass + '_closed');
                     this.$el.css('width', this.profile.open ? this.profile.width + 'px' : 0);
                     this.$sidebar.addClass(surface.const.sidebarClass + (this.profile.open ? '_open' : '_closed'));
-                    this.handle.$el.css('top', this.profile.handle + '%');
+                    this.handle.$el.css('top', this.handle.adjustTop(this.profile.handle * (this.$el.height() - this.handle.$el.height()) / 100) + 'px');
                     this.handle.showMode();
                 }
             },
@@ -329,7 +351,7 @@
             loadProfile: function () {
                 this.profile = {
                     open: pages.profile.get(this.profileAspect(), 'open', true),
-                    width: pages.profile.get(this.profileAspect(), 'width', 240),
+                    width: pages.profile.get(this.profileAspect(), 'width', 300),
                     handle: pages.profile.get(this.profileAspect(), 'handle', 30),
                     overlap: pages.profile.get(this.profileAspect(), 'overlap', true)
                 };
@@ -350,6 +372,34 @@
                     //pages.log.debug('surface.trigger.sidebarResized:' + this.profileAspect() + '(' + this + ',' + width + ')');
                     $(document).trigger("sidebarResized:" + this.profileAspect(), [this, width]);
                 }
+            }
+        });
+
+        surface.Logo = Backbone.View.extend({
+
+            initialize: function (options) {
+                this.popover = false;
+                this.$link = this.$('.' + surface.const.logoClass + '_link');
+                this.$link.click(_.bind(this.initPopover, this));
+            },
+
+            initPopover: function (event) {
+                event.preventDefault();
+                if (!this.popover) {
+                    pages.loadFrameContent('/libs/composum/pages/stage/edit/sidebar/logo/popover.html',
+                        _.bind(function (content) {
+                            this.popover = true;
+                            this.$link.popover({
+                                placement: 'bottom',
+                                animation: false,
+                                html: true,
+                                sanitize: false,
+                                content: content
+                            });
+                            this.$link.popover('show');
+                        }, this));
+                }
+                return false;
             }
         });
 
@@ -383,8 +433,9 @@
             }
         });
 
+        surface.logo = core.getView('.' + surface.const.logoClass, surface.Logo);
         surface.navigation = core.getView('.' + surface.const.navigationClass, surface.Navigation);
-        surface.contextTools = core.getView('.' + surface.const.contextToolsClass, surface.ContextTools);
+        surface.contextTools = core.getView('.' + surface.const.css.tools.base + surface.const.css.tools._.context, surface.ContextTools);
         surface.surface = core.getView('.' + surface.const.toolsPanelClass, surface.Surface);
 
     })(window.composum.pages.surface, window.composum.pages, window.core);

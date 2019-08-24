@@ -6,6 +6,7 @@ import com.composum.pages.commons.taglib.PropertyEditHandle;
 import com.composum.pages.commons.widget.WidgetModel;
 import org.apache.sling.api.resource.Resource;
 
+import javax.annotation.Nonnull;
 import java.util.Collection;
 
 /**
@@ -38,7 +39,7 @@ public class PageTemplate extends PropertyEditHandle<String> implements WidgetMo
      * transforms a tag attribute name (dynamic attribute) into the key expected by the widgets view
      */
     @Override
-    public String getWidgetAttributeKey(String attributeKey) {
+    public String filterWidgetAttribute(@Nonnull String attributeKey, Object attributeValue) {
         return attributeKey;
     }
 

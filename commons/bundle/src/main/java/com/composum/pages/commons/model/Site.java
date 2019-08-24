@@ -1,5 +1,6 @@
 package com.composum.pages.commons.model;
 
+import com.composum.pages.commons.model.properties.Language;
 import com.composum.pages.commons.request.DisplayMode;
 import com.composum.pages.commons.service.PageManager;
 import com.composum.pages.commons.service.SiteManager;
@@ -7,18 +8,22 @@ import com.composum.platform.models.annotations.DetermineResourceStategy;
 import com.composum.platform.models.annotations.PropertyDetermineResourceStrategy;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.util.ResourceUtil;
+import com.composum.sling.platform.staging.StagingReleaseManager;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ValueMap;
+import org.apache.sling.api.resource.ResourceResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
-import javax.jcr.RepositoryException;
-import java.util.ArrayList;
-import java.util.Arrays;
+import javax.annotation.Nullable;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
+import java.util.stream.Collectors;
 
 import static com.composum.pages.commons.PagesConstants.DEFAULT_HOMEPAGE_PATH;
 import static com.composum.pages.commons.PagesConstants.NODE_TYPE_SITE;
@@ -61,7 +66,9 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
     private transient Homepage homepage;
 
     private transient Collection<Page> modifiedPages;
-    private transient Collection<Page> unreleasedPages;
+    private transient Collection<PageVersion> releaseChanges;
+
+    private transient String templateType;
 
     public Site() {
     }
@@ -77,12 +84,15 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
 
     @Override
     public int compareTo(@Nonnull Site site) {
-        return getName().compareTo(site.getName());
+        CompareToBuilder builder = new CompareToBuilder();
+        builder.append(getName(), site.getName());
+        builder.append(getPath(), site.getPath());
+        return builder.toComparison();
     }
 
     // initializer extensions
 
-    /** Compatible to {@link Site#determineResource(Resource)}. */
+    /** Compatible to {@link AbstractModel#determineResource(Resource)}. */
     public static class ContainingSiteResourceStrategy implements DetermineResourceStategy {
         @Override
         public Resource determineResource(BeanContext beanContext, Resource requestResource) {
@@ -103,24 +113,56 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
     // Site properties
 
     public boolean isTemplate() {
-        return getResourceManager().isTemplate(this.getResource());
+        return getResourceManager().isTemplate(getContext(), this.getResource());
+    }
+
+    public String getTemplateType() {
+        if (templateType == null) {
+            templateType = isTemplate() ? getPath() : getTemplatePath();
+            if (StringUtils.isNotBlank(templateType)) {
+                ResourceResolver resolver = getContext().getResolver();
+                for (String root : resolver.getSearchPath()) {
+                    if (templateType.startsWith(root)) {
+                        templateType = templateType.substring(root.length());
+                        break;
+                    }
+                }
+            }
+            if (templateType == null) {
+                templateType = "";
+            }
+        }
+        return templateType;
     }
 
     @Override
+    @Nonnull
     public String getTitle() {
         String title = super.getTitle();
         return StringUtils.isNotBlank(title) ? title : getName();
     }
 
+    @Override
+    @Nonnull
+    public Language getLanguage() {
+        return getLanguages().getDefaultLanguage();
+    }
+
     // site hierarchy
 
-    public Homepage getHomepage() {
+    public Homepage getHomepage(Locale locale) {
         if (homepage == null) {
             PageManager pageManager = getPageManager();
             String homepagePath = getProperty(PROP_HOMEPAGE, null, DEFAULT_HOMEPAGE_PATH);
             Resource homepageRes = resource.getChild(homepagePath);
             if (homepageRes != null) {
-                homepage = new Homepage(pageManager, context, homepageRes);
+                LanguageRoot languageRoot = new LanguageRoot(context, homepageRes);
+                Page languageHome = languageRoot.getLanguageRoot(locale);
+                if (languageHome != null) {
+                    homepage = new Homepage(pageManager, context, languageHome.getResource());
+                } else {
+                    homepage = new Homepage(pageManager, context, homepageRes);
+                }
             } else {
                 homepage = new Homepage(pageManager, context, resource); // use itself as homepage
             }
@@ -153,43 +195,33 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
      * retrieves the release label for a release category ('public', 'preview')
      * the content of this release is delivered if a public request in the category is performed
      */
-    public String getReleaseLabel(String category) {
-        Resource releases = content.resource.getChild("releases");
-        if (releases != null) {
-            category = category.toLowerCase();
-            for (Resource release : releases.getChildren()) {
-                ValueMap values = release.adaptTo(ValueMap.class);
-                String key = values.get("key", "");
-                if (StringUtils.isNotBlank(key)) {
-                    if (key.equals(category)) {
-                        return RELEASE_LABEL_PREFIX + key;
-                    } else {
-                        List<String> categories = Arrays.asList(values.get("categories", new String[0]));
-                        if (categories.contains(category)) {
-                            return RELEASE_LABEL_PREFIX + key;
-                        }
-                    }
-                }
-            }
-        }
-        return null;
+    public String getReleaseNumber(String category) {
+        StagingReleaseManager releaseManager = context.getService(StagingReleaseManager.class);
+        StagingReleaseManager.Release release = releaseManager.findReleaseByMark(resource, StringUtils.lowerCase(category));
+        return release != null ? release.getNumber() : null;
     }
 
     /**
-     * return the list of content releases of this site
+     * @return the list of content releases of this site
      */
-    public List<Release> getReleases() {
-        List<Release> result = new ArrayList<>();
-        Resource releases = content.resource.getChild("releases");
-        if (releases != null) {
-            for (Resource releaseResource : releases.getChildren()) {
-                final Release release = new Release(context, releaseResource);
-                result.add(release);
-            }
-        }
-        return result;
+    public List<SiteRelease> getReleases() {
+        StagingReleaseManager releaseManager = context.getService(StagingReleaseManager.class);
+        List<StagingReleaseManager.Release> stagingReleases = releaseManager.getReleases(resource);
+        List<SiteRelease> releases = stagingReleases.stream()
+                .map(r -> new SiteRelease(context, r))
+                .sorted(Comparator.nullsFirst(Comparator.comparing(SiteRelease::getCreationDate).reversed()))
+                .collect(Collectors.toList());
+        return releases;
     }
 
+    public SiteRelease getCurrentRelease() {
+        final List<SiteRelease> releases = getReleases();
+        return releases.isEmpty() ? null : releases.get(0);
+    }
+
+    /**
+     * @return the list of pages changed after last activation
+     */
     public Collection<Page> getModifiedPages() {
         if (modifiedPages == null) {
             modifiedPages = getVersionsService().findModifiedPages(getContext(), getResource());
@@ -197,23 +229,18 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
         return modifiedPages;
     }
 
-    public Collection<Page> getUnreleasedPages() {
-        if (unreleasedPages == null) {
-            final List<Release> releases = getReleases();
-            final Release release = releases.isEmpty() ? null : releases.get(releases.size() - 1);
-            unreleasedPages = getUnreleasedPages(release);
+    /**
+     * @return the list of pages changed (modified and activated) for the current release
+     */
+    public Collection<PageVersion> getReleaseChanges() {
+        if (releaseChanges == null) {
+            releaseChanges = getReleaseChanges(getCurrentRelease());
         }
-        return unreleasedPages;
+        return releaseChanges;
     }
 
-    public Collection<Page> getUnreleasedPages(Release releaseToCheck) {
-        Collection<Page> result;
-        try {
-            result = getVersionsService().findUnreleasedPages(getContext(), getResource(), releaseToCheck);
-        } catch (RepositoryException ex) {
-            LOG.error(ex.getMessage(), ex);
-            result = new ArrayList<>();
-        }
-        return result;
+    @Nonnull
+    public Collection<PageVersion> getReleaseChanges(@Nullable final SiteRelease releaseToCheck) {
+        return releaseToCheck != null ? releaseToCheck.getChanges() : Collections.emptyList();
     }
 }

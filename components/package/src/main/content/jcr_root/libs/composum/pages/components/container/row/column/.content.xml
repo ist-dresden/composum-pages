@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
-        jcr:primaryType="cpp:Component"
-        jcr:description="a column of a row"
-        jcr:title="Column"
-        componentGroup="Layout"
-        sling:resourceSuperType="composum/pages/components/container"
-        allowedContainers="[composum/pages/components/container/row]"
-        allowedElements="[composum/pages/components/element/.*,
+          jcr:primaryType="cpp:Component"
+          jcr:description="a column of a row"
+          jcr:title="Column"
+          category="[Layout,Blueprint]"
+          sling:resourceSuperType="composum/pages/components/container"
+          allowedContainers="[composum/pages/components/container/row]"
+          allowedElements="[composum/pages/components/element/.*,
                           composum/pages/components/composed/.*,
                           composum/pages/components/search/(field|result),
                           composum/pages/options/.*/components/.*,
+                          composum/platform/content/components/.*,
                           .*/pages/components/demo/.*]"/>

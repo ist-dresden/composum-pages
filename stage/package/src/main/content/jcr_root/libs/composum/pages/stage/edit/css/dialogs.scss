@@ -13,6 +13,28 @@
     .composum-pages-stage-edit-dialog {
         z-index: $dialogs-layer;
 
+        @media (min-width: 840px) {
+
+            .modal-dialog {
+                width: 800px;
+            }
+
+            &.extra-wide {
+
+                .modal-dialog {
+                    width: 96%;
+                    max-width: 1200px;
+                }
+            }
+        }
+
+        @media (min-width: 768px) and (max-width: 839px) {
+
+            .modal-dialog {
+                width: 748px;
+            }
+        }
+
         &_header, &_content, &_footer {
             @include dialog-font;
         }
@@ -50,7 +72,7 @@
                     margin-top: 1px;
                     margin-left: $edit-actions-spacing-h;
                     @include monospace;
-                    color: $bootstrap-color-mute;
+                    color: $bootstrap-color-muted;
                 }
             }
         }
@@ -70,6 +92,11 @@
         }
 
         &_content {
+
+            .row {
+                display: flex;
+                align-items: flex-end; /* align on bottom */
+            }
 
             .panel.tile-panel {
 
@@ -103,6 +130,24 @@
                 &_type-hint {
                     display: block;
                     margin-top: -1px;
+                }
+            }
+        }
+
+        &_button {
+
+            &.has-icon {
+                position: relative;
+                padding-left: 25px
+            }
+
+            .composum-pages-stage-edit-dialog {
+
+                &_icon {
+                    position: absolute;
+                    top: 10px;
+                    left: 8px;
+                    opacity: 0.7;
                 }
             }
         }
@@ -141,6 +186,32 @@
             }
         }
 
+        &_tabbed-content {
+
+            .panel {
+                margin-bottom: 15px;
+
+                &:last-child {
+                    margin-bottom: 0;
+                }
+            }
+
+            .row {
+                margin-bottom: 15px;
+
+                &:last-child {
+                    margin-bottom: 0;
+                }
+            }
+
+            .form-group {
+
+                &:last-child {
+                    margin-bottom: 0;
+                }
+            }
+        }
+
         .alert {
 
             &-hidden {
@@ -166,6 +237,10 @@
 
                     &_button-prev, &_button-next {
                         min-width: 70px;
+
+                        @include mobile {
+                            min-width: 40px;
+                        }
                     }
 
                     &_button-submit {
@@ -225,6 +300,58 @@
             input {
                 @include dialog-input-font;
             }
+        }
+    }
+}
+
+.code-editor-dialog {
+
+    .modal-header {
+        padding-bottom: 12px;
+
+        .modal-title {
+            padding-top: 3px;
+            font-size: 100%
+        }
+    }
+
+    &_toolbar {
+        display: flex;
+        flex-wrap: nowrap;
+        padding-top: 4px;
+
+        .input-group {
+            margin-right: 5px;
+
+            .input-group-addon {
+                padding: 5px 8px;
+            }
+        }
+
+        .flags {
+            margin: 0 10px 0 0;
+
+            .checkbox {
+                margin: 0;
+
+                label {
+                    min-height: 0;
+                    height: 14px;
+                    font-size: 11px;
+
+                    input {
+                        top: -1px;
+                        margin-left: -18px
+                    }
+                }
+            }
+        }
+
+        button {
+            height: 30px;
+            padding: 0 8px;
+            text-align: center;
+            vertical-align: center;
         }
     }
 }

@@ -3,5 +3,5 @@
         jcr:primaryType="cpp:Component"
         jcr:description="a rich text block with an optional title"
         jcr:title="Text"
-        componentGroup="General"
+        category="[Text,General,Blueprint]"
         sling:resourceSuperType="composum/pages/components/element"/>

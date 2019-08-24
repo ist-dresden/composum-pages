@@ -1,6 +1,10 @@
 package com.composum.pages.commons.model;
 
+import com.composum.sling.core.BeanContext;
 import com.google.gson.stream.JsonWriter;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.CompareToBuilder;
+import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.request.RequestPathInfo;
 import org.apache.sling.api.resource.NonExistingResource;
 import org.apache.sling.api.resource.Resource;
@@ -22,7 +26,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import static com.composum.pages.commons.PagesConstants.META_NODE_NAME;
 import static com.composum.pages.commons.service.TrackingService.STATS_NODE_NAME;
 
 /**
@@ -60,6 +63,17 @@ public class Statistics extends AbstractModel {
     public interface DataSet {
 
         void toJSON(JsonWriter writer) throws IOException;
+
+        static void writeReferrers(JsonWriter writer, Map<String, Referer> referrers2) throws IOException {
+            writer.endArray();
+            writer.name("referrers").beginArray();
+            List<Referer> referrers = new ArrayList<>(referrers2.values());
+            Collections.sort(referrers);
+            for (Referer referer : referrers) {
+                referer.toJSON(writer);
+            }
+            writer.endArray();
+        }
     }
 
     public static final Data NO_DATA = new Data(0, 0);
@@ -99,6 +113,7 @@ public class Statistics extends AbstractModel {
             this.data = new Data(values.get("total", 0), values.get("unique", 0));
         }
 
+        @Override
         public void toJSON(JsonWriter writer) throws IOException {
             writer.beginObject();
             writer.name("url").value(url);
@@ -109,7 +124,10 @@ public class Statistics extends AbstractModel {
 
         @Override
         public int compareTo(@Nonnull Referer other) {
-            return data.unique - other.data.unique;
+            CompareToBuilder builder = new CompareToBuilder();
+            builder.append(data.unique, other.data.unique);
+            builder.append(url, other.url);
+            return builder.toComparison();
         }
     }
 
@@ -255,14 +273,7 @@ public class Statistics extends AbstractModel {
                 for (Day day : days) {
                     day.toJSON(writer, dayFormat, false);
                 }
-                writer.endArray();
-                writer.name("referrers").beginArray();
-                List<Referer> referrers = new ArrayList<>(this.referrers.values());
-                Collections.sort(referrers);
-                for (Referer referer : referrers) {
-                    referer.toJSON(writer);
-                }
-                writer.endArray();
+                DataSet.writeReferrers(writer, this.referrers);
             }
             writer.endObject();
         }
@@ -368,14 +379,7 @@ public class Statistics extends AbstractModel {
             for (Month month : months) {
                 month.toJSON(writer, false);
             }
-            writer.endArray();
-            writer.name("referrers").beginArray();
-            List<Referer> referrers = new ArrayList<>(this.referrers.values());
-            Collections.sort(referrers);
-            for (Referer referer : referrers) {
-                referer.toJSON(writer);
-            }
-            writer.endArray();
+            DataSet.writeReferrers(writer, this.referrers);
             writer.endObject();
         }
 
@@ -388,19 +392,31 @@ public class Statistics extends AbstractModel {
     private transient Resource statistics;
     private transient DataSet dataSet;
 
+    @Nonnull
     public Resource getStatistics() {
         if (statistics == null) {
-            Resource resource = getResource();
-            Resource pageResource = getPageManager().getContainingPageResource(resource);
-            if (pageResource != null) {
-                Resource metaData = pageResource.getChild(META_NODE_NAME);
+            BeanContext context = getContext();
+            SlingHttpServletRequest request = context.getRequest();
+            String suffix = request.getRequestPathInfo().getSuffix();
+            Page page = null;
+            if (StringUtils.isNotBlank(suffix)) {
+                Resource resource = context.getResolver().getResource(suffix);
+                if (resource != null) {
+                    page = getPageManager().getContainingPage(getContext(), resource);
+                }
+            }
+            if (page == null) {
+                page = getPageManager().getContainingPage(getContext(), getResource());
+            }
+            if (page != null) {
+                Resource metaData = page.getMetaData();
                 if (metaData != null) {
                     statistics = metaData.getChild(STATS_NODE_NAME);
                 }
             }
             if (statistics == null) {
                 statistics = new NonExistingResource(getContext().getResolver(),
-                        resource.getPath() + "/" + META_NODE_NAME + "/" + STATS_NODE_NAME);
+                        Page.getMetaDataPath(page != null ? page.getPath() : resource.getPath()));
             }
         }
         return statistics;
@@ -411,14 +427,14 @@ public class Statistics extends AbstractModel {
             RequestPathInfo pathInfo = getContext().getRequest().getRequestPathInfo();
             Calendar today = new GregorianCalendar();
             today.setTime(new Date());
-            Integer year = today.get(Calendar.YEAR);
+            int year = today.get(Calendar.YEAR);
             Integer month = today.get(Calendar.MONTH) + 1;
             Integer week = null;
             Integer day = null;
             String[] selectors = pathInfo.getSelectors();
             for (String selector : selectors) {
                 if (selector.startsWith("y-")) {
-                    year = Integer.valueOf(selector.substring(2));
+                    year = Integer.parseInt(selector.substring(2));
                 } else if (selector.startsWith("m-")) {
                     month = selector.length() == 4 ? Integer.valueOf(selector.substring(2)) : null;
                 } else if (selector.startsWith("w-")) {

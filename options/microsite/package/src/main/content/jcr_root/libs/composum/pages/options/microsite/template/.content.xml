@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:cpp="http://sling.composum.com/pages/1.0"
+        xmlns:jcr="http://www.jcp.org/jcr/1.0"
+        xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+        jcr:primaryType="cpp:Page">
+    <jcr:content
+            jcr:primaryType="cpp:PageContent"
+            jcr:title="Pages Options - Microsite"
+            jcr:description="A single page or closed set of pages uploaded as one single content ZIP file."
+            sling:resourceType="composum/pages/options/microsite/page"
+            allowedChildTemplates="[]"/>
+</jcr:root>

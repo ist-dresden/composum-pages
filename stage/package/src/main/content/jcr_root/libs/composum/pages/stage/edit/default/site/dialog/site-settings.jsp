@@ -7,12 +7,18 @@
         <cpp:widget label="Title" property="jcr:title" type="textfield"/>
     </div>
     <div class="col col-xs-4">
-        <cpp:widget label="Publish Policy" name="publicMode" type="select"
-                    options=",inPlace:In-Place replication,versions:Versions resolver,live:Live imediately"/>
+        <cpp:widget label="Publish Policy" name="publicMode" type="select" default="inPlace"
+                    options="inPlace:In-Place replication,versions:Versions resolver,live:Live immediately"/>
     </div>
 </div>
 <div class="row">
     <div class="col col-xs-12">
-        <cpp:widget label="Description" property="jcr:description" type="richtext" i18n="false"/>
+        <cpp:widget label="Homepage" property="homepage" type="pathfield"
+                    hint="the path to the sites homepage (if not './home')"/>
+    </div>
+</div>
+<div class="row">
+    <div class="col col-xs-12">
+        <cpp:widget label="Description" property="jcr:description" type="richtext"/>
     </div>
 </div>

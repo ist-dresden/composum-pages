@@ -4,6 +4,7 @@ import com.composum.pages.commons.model.properties.PathPatternSet;
 import com.composum.pages.commons.service.ResourceManager;
 import org.apache.sling.api.resource.ResourceResolver;
 
+import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,11 +35,16 @@ public class ElementTypeFilter {
     /**
      * returns 'true' if the element can be inserted into the specified container
      */
-    public boolean isAllowedElement(final ResourceManager.ResourceReference element, final ResourceManager.ResourceReference container) {
+    public boolean isAllowedElement(@Nonnull final ResourceManager.ResourceReference element,
+                                    @Nonnull final ResourceManager.ResourceReference container) {
         final PathPatternSet allowedEl = getAllowedTypes(allowedElements, PROP_ALLOWED_ELEMENTS, container);
-        if (allowedEl.matches(element.getType())) {
+        ResourceResolver resolver = element.getResolver();
+        if (allowedEl.matches(resolver, element.getType())) {
             final PathPatternSet allowedCont = getAllowedTypes(allowedContainers, PROP_ALLOWED_CONTAINERS, element);
-            return allowedCont.matches(container.getType());
+            return allowedCont.matches(resolver, container.getType())
+                    && (allowedEl.isValid() || allowedCont.isValid()
+                    || Container.isContainer(container.getResolver(),
+                    container.isExisting() ? container.getResource() : null, container.getType()));
         }
         return false;
     }
@@ -62,9 +68,10 @@ public class ElementTypeFilter {
      */
     public boolean isAllowedType(String type, final ResourceManager.ResourceReference container) {
         final PathPatternSet allowedEl = getAllowedTypes(allowedElements, PROP_ALLOWED_ELEMENTS, container);
-        if (allowedEl.matches(type)) {
+        ResourceResolver resolver = container.getResolver();
+        if (allowedEl.matches(resolver, type)) {
             final PathPatternSet allowedCont = getAllowedTypes(allowedContainers, PROP_ALLOWED_CONTAINERS, type);
-            return allowedCont.matches(container.getType());
+            return allowedCont.matches(resolver, container.getType());
         }
         return false;
     }

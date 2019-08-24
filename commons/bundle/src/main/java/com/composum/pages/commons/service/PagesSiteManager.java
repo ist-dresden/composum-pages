@@ -1,5 +1,6 @@
 package com.composum.pages.commons.service;
 
+import com.composum.pages.commons.PagesConfiguration;
 import com.composum.pages.commons.PagesConstants;
 import com.composum.pages.commons.filter.TemplateFilter;
 import com.composum.pages.commons.model.Model;
@@ -7,15 +8,18 @@ import com.composum.pages.commons.model.Site;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.util.ResourceUtil;
+import com.composum.sling.platform.staging.StagingReleaseManager;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.tenant.Tenant;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -23,7 +27,10 @@ import javax.jcr.RepositoryException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 import static com.composum.pages.commons.PagesConstants.NODE_TYPE_SITE;
 
@@ -36,14 +43,11 @@ public class PagesSiteManager extends PagesContentManager<Site> implements SiteM
 
     public static final String SITE_RESOURCE_TYPE = "composum/pages/stage/edit/site";
 
-    public static final Map<String, Object> SITE_ROOT_PROPERTIES;
     public static final Map<String, Object> SITE_PROPERTIES;
     public static final Map<String, Object> SITE_CONTENT_PROPERTIES;
     public static final Map<String, Object> SITE_ASSETS_PROPERTIES;
 
     static {
-        SITE_ROOT_PROPERTIES = new HashMap<>();
-        SITE_ROOT_PROPERTIES.put(JcrConstants.JCR_PRIMARYTYPE, "sling:Folder");
         SITE_PROPERTIES = new HashMap<>();
         SITE_PROPERTIES.put(JcrConstants.JCR_PRIMARYTYPE, NODE_TYPE_SITE);
         SITE_CONTENT_PROPERTIES = new HashMap<>();
@@ -54,10 +58,19 @@ public class PagesSiteManager extends PagesContentManager<Site> implements SiteM
     }
 
     @Reference
+    protected PagesConfiguration pagesConfig;
+
+    @Reference(cardinality = ReferenceCardinality.OPTIONAL)
+    protected volatile PagesTenantSupport tenantSupport;
+
+    @Reference
     protected ResourceManager resourceManager;
 
     @Reference
     protected PageManager pageManager;
+
+    @Reference
+    protected StagingReleaseManager releaseManager;
 
     @Override
     public Site createBean(BeanContext context, Resource resource) {
@@ -83,38 +96,98 @@ public class PagesSiteManager extends PagesContentManager<Site> implements SiteM
     @Override
     public Resource getContainingSiteResource(Resource resource) {
         if (resource != null) {
-            if (Site.isSite(resource)) {
-                return resource;
-            } else {
-                return getContainingSiteResource(resource.getParent());
+            Resource checkResource = resource;
+            while (checkResource != null) {
+                if (Site.isSite(checkResource)) {
+                    return checkResource;
+                }
+                checkResource = checkResource.getParent();
+            }
+        }
+        if (resource != null) {
+            try { // for resources from the release tree at com.composum.sling.platform.staging.StagingConstants.RELEASE_ROOT_PATH :
+                Resource releaseRoot = releaseManager.findReleaseRoot(resource);
+                if (Site.isSite(releaseRoot)) {
+                    return releaseRoot;
+                }
+            } catch (RuntimeException e) {
+                // give up
             }
         }
         return null;
     }
 
+    /**
+     * @return 'true' if tenants are supported on the platform
+     */
+    @Override
+    public boolean isTenantSupport() {
+        return tenantSupport != null;
+    }
+
+    /**
+     * @return the tenant support implementation if available
+     */
+    @Override
+    @Nullable
+    public PagesTenantSupport getTenantSupport() {
+        return tenantSupport;
+    }
+
+    /**
+     * @return the list of id/tenant pairs of the joined tenants in the context of the current request
+     */
     @Override
     @Nonnull
-    public Resource getSiteBase(@Nonnull BeanContext context, String tenant)
-            throws PersistenceException {
-        ResourceResolver resolver = context.getResolver();
-        Resource tenantsContent = resolver.getResource("/content");
-        Resource siteBase = StringUtils.isNotBlank(tenant)
-                ? resolver.getResource(tenantsContent, tenant)
-                : tenantsContent;
-        if (siteBase == null) {
-            siteBase = resolver.create(tenantsContent, tenant, SITE_ROOT_PROPERTIES);
-        }
-        return siteBase;
+    public Map<String, Tenant> getTenants(@Nonnull BeanContext context) {
+        return tenantSupport != null ? tenantSupport.getTenants(context) : Collections.emptyMap();
+    }
+
+    @Nonnull
+    protected Resource getContentRoot(ResourceResolver resolver) {
+        return Objects.requireNonNull(resolver.getResource("/content"));
     }
 
     @Override
-    public Collection<Site> getSites(@Nonnull BeanContext context, String tenant) {
-        try {
-            return getSites(context, getSiteBase(context, tenant), ResourceFilter.ALL);
-        } catch (PersistenceException ex) {
-            LOG.error(ex.getMessage(), ex);
-            return Collections.emptyList();
+    @Nonnull
+    public Resource getSitesRoot(@Nonnull final BeanContext context, @Nullable final String tenantId) {
+        ResourceResolver resolver = context.getResolver();
+        String sitesRootPath = null;
+        if (StringUtils.isNotBlank(tenantId) && tenantSupport != null) {
+            sitesRootPath = tenantSupport.getContentRoot(context, tenantId);
         }
+        if (StringUtils.isBlank(sitesRootPath)) {
+            sitesRootPath = pagesConfig.getConfig().defaultSitesRoot();
+        }
+        Resource sitesRoot = resolver.getResource(sitesRootPath);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getSitesRoot({},{}): {}", context.getResolver().getUserID(), tenantId,
+                    sitesRoot != null ? sitesRoot.getPath() : "NULL");
+        }
+        if (sitesRoot == null) {
+            sitesRoot = getContentRoot(resolver);
+        }
+        return sitesRoot;
+    }
+
+    @Override
+    @Nonnull
+    public Collection<Site> getSites(@Nonnull final BeanContext context) {
+        Set<Site> sites = new HashSet<>();
+        if (tenantSupport == null) {
+            sites.addAll(getSites(context, getSitesRoot(context, null), ResourceFilter.ALL));
+            if (sites.size() < 1) {
+                sites.addAll(getSites(context, getContentRoot(context.getResolver()), ResourceFilter.ALL));
+            }
+        } else {
+            for (String tenantId : tenantSupport.getTenants(context).keySet()) {
+                sites.addAll(getSites(context, getSitesRoot(context, tenantId), ResourceFilter.ALL));
+            }
+        }
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getSites({}): [{}]", context.getResolver().getUserID(), StringUtils.join(sites.toArray(), ", "));
+        }
+        return sites;
     }
 
     @Override
@@ -130,8 +203,7 @@ public class PagesSiteManager extends PagesContentManager<Site> implements SiteM
         return result;
     }
 
-    @Override
-    public Collection<Site> getSites(@Nonnull BeanContext context, @Nullable Resource searchRoot, @Nonnull ResourceFilter filter) {
+    protected Collection<Site> getSites(@Nonnull BeanContext context, @Nullable Resource searchRoot, @Nonnull ResourceFilter filter) {
         return getModels(context, NODE_TYPE_SITE, searchRoot, filter);
     }
 
@@ -139,7 +211,7 @@ public class PagesSiteManager extends PagesContentManager<Site> implements SiteM
     public Site createSite(@Nonnull BeanContext context, String tenant, @Nonnull String siteName,
                            @Nullable String homepageType, boolean commit)
             throws RepositoryException, PersistenceException {
-        return createSite(context, getSiteBase(context, tenant), siteName, homepageType, commit);
+        return createSite(context, getSitesRoot(context, tenant), siteName, homepageType, commit);
     }
 
     @Override
@@ -174,10 +246,11 @@ public class PagesSiteManager extends PagesContentManager<Site> implements SiteM
                            @Nullable String siteTitle, @Nullable String description,
                            @Nullable Resource siteTemplate, boolean commit)
             throws RepositoryException, PersistenceException {
-        return createSite(context, getSiteBase(context, tenant),
+        return createSite(context, getSitesRoot(context, tenant),
                 siteName, siteTitle, description, siteTemplate, commit);
     }
 
+    @SuppressWarnings("Duplicates")
     @Override
     public Site createSite(@Nonnull BeanContext context, @Nonnull Resource siteBase, @Nonnull String siteName,
                            @Nullable String siteTitle, @Nullable String description,
@@ -204,9 +277,11 @@ public class PagesSiteManager extends PagesContentManager<Site> implements SiteM
 
                 @Override
                 public String applyTemplatePlaceholders(@Nonnull final Resource target, @Nonnull final String value) {
-                    Resource pageResource = pageManager.getContainingPageResource(target);
                     String result = value.replaceAll("\\$\\{path}", target.getPath());
-                    result = result.replaceAll("\\$\\{page}", pageResource.getPath());
+                    Resource pageResource = pageManager.getContainingPageResource(target);
+                    if (pageResource != null) {
+                        result = result.replaceAll("\\$\\{page}", pageResource.getPath());
+                    }
                     result = result.replaceAll("\\$\\{site}", sitePath);
                     if (!value.equals(result)) {
                         result = result.replaceAll("/[^/]+/\\.\\./", "/");
@@ -220,7 +295,8 @@ public class PagesSiteManager extends PagesContentManager<Site> implements SiteM
             siteResource = site.getResource();
         }
 
-        ModifiableValueMap values = siteResource.getChild(JcrConstants.JCR_CONTENT).adaptTo(ModifiableValueMap.class);
+        Resource content = Objects.requireNonNull(siteResource.getChild(JcrConstants.JCR_CONTENT));
+        ModifiableValueMap values = Objects.requireNonNull(content.adaptTo(ModifiableValueMap.class));
         if (StringUtils.isNotBlank(siteTitle)) {
             values.put(ResourceUtil.PROP_TITLE, siteTitle);
         }

@@ -1,5 +1,7 @@
 @charset "UTF-8";
 
+@import "variables";
+
 @mixin font($family, $size) {
     font-family: $family, sans-serif;
     font-size: $size;
@@ -10,6 +12,22 @@
 
 @mixin default-font {
     @include font('robotolight', $default-font-size);
+}
+
+@mixin text-font {
+    @include font('robotolight', $text-font-size);
+}
+
+@mixin tree-font {
+    @include font('robotolight', $tree-font-size);
+}
+
+@mixin title-font {
+    @include font('roboto', $title-font-size);
+}
+
+@mixin hint-font {
+    @include font('robotolight', $hint-font-size);
 }
 
 @mixin dialog-font {
@@ -104,7 +122,6 @@
 
 @mixin edit-handle-color {
     background-color: $edit-handle-background;
-    color: $edit-handle-foreground;
     mix-blend-mode: difference;
 }
 
@@ -114,12 +131,26 @@
     mix-blend-mode: difference;
 }
 
+@mixin edit-select-active-color {
+    background-color: $edit-select-background;
+    color: $edit-select-foreground;
+    mix-blend-mode: normal;
+}
+
 @mixin clear-after {
     &:after {
         content: "";
         display: block;
         clear: both;
     }
+}
+
+@mixin full-size {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
 }
 
 @mixin aspect-ratio-wrapper($width, $height) {
@@ -135,11 +166,7 @@
 }
 
 @mixin aspect-ratio-element {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    @include full-size;
 }
 
 @mixin trapezoid-base {
@@ -251,6 +278,109 @@
     }
 }
 
+@mixin scrolloption-x($color) {
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    &::-webkit-scrollbar-thumb {
+        background: $color;
+    }
+}
+
 @mixin scrolldark {
     @include scrolloption($tools-pane-background);
+}
+
+/*
+ * media queries
+ */
+
+@mixin screen-size-xl-min {
+    @media (min-width: #{$screen-size-xl}) {
+        @content;
+    }
+}
+
+@mixin screen-size-l-xl {
+    @media (min-width: #{$screen-size-l}) and (max-width: #{$screen-size-xl - 1px}) {
+        @content;
+    }
+}
+
+@mixin screen-size-l-min {
+    @media (min-width: #{$screen-size-l}) {
+        @content;
+    }
+}
+
+@mixin screen-size-m-l {
+    @media (min-width: #{$screen-size-m}) and (max-width: #{$screen-size-l - 1px}) {
+        @content;
+    }
+}
+
+@mixin screen-size-m-min {
+    @media (min-width: #{$screen-size-m}) {
+        @content;
+    }
+}
+
+@mixin screen-size-s-m {
+    @media (min-width: #{$screen-size-s}) and (max-width: #{$screen-size-m - 1px}) {
+        @content;
+    }
+}
+
+@mixin screen-size-s-min {
+    @media (min-width: #{$screen-size-s}) {
+        @content;
+    }
+}
+
+@mixin screen-size-s-max {
+    @media (max-width: #{$screen-size-s - 1px}) {
+        @content;
+    }
+}
+
+@mixin screen-size-xs-s {
+    @media (min-width: #{$screen-size-xs}) and (max-width: #{$screen-size-s - 1px}) {
+        @content;
+    }
+}
+
+@mixin screen-size-xs-max {
+    @media (max-width: #{$screen-size-xs - 1px}) {
+        @content;
+    }
+}
+
+@mixin screen-size-xxs-xs {
+    @media (min-width: #{$screen-size-xxs}) and (max-width: #{$screen-size-xs - 1px}) {
+        @content;
+    }
+}
+
+@mixin screen-size-xxs-max {
+    @media (max-width: #{$screen-size-xxs - 1px}) {
+        @content;
+    }
+}
+
+@mixin desktop {
+    @include screen-size-m-min {
+        @content;
+    }
+}
+
+@mixin tablet {
+    @include screen-size-s-m {
+        @content;
+    }
+}
+
+@mixin mobile {
+    @include screen-size-xs-max {
+        @content;
+    }
 }

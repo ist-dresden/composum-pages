@@ -4,6 +4,8 @@
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <cpp:defineObjects/>
 <sling:call script="meta.jsp"/>
-<cpn:clientlib type="link" category="${pageModel.viewClientlibCategory}"/>
-<cpn:clientlib type="css" category="${pageModel.viewClientlibCategory}"/>
-<cpn:clientlib type="css" test="${pageModel.editMode}" category="${pageModel.editClientlibCategory}"/>
+<cpn:link test="${!currentPage.canonicalRequest}" tagName="link" rel="canonical" href="${currentPage.canonicalUrl}"/>
+<sling:call script="hreflang.jsp"/>
+<cpn:clientlib type="link" category="${currentPage.viewClientlibCategory}"/>
+<cpn:clientlib type="css" category="${currentPage.viewClientlibCategory}"/>
+<cpn:clientlib type="css" test="${currentPage.editMode}" category="${currentPage.editClientlibCategory}"/>

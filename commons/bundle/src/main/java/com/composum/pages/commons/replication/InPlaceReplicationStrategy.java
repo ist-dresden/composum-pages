@@ -3,8 +3,9 @@ package com.composum.pages.commons.replication;
 import com.composum.pages.commons.model.Site;
 import com.composum.sling.core.JcrResource;
 import com.composum.sling.core.ResourceHandle;
+import com.composum.sling.core.util.ResourceUtil;
 import com.composum.sling.platform.security.AccessMode;
-import com.composum.sling.platform.staging.service.ReleaseMapper;
+import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.resource.ModifiableValueMap;
@@ -15,9 +16,8 @@ import org.apache.sling.api.resource.ValueMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.jcr.Node;
-import javax.jcr.RepositoryException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
 /**
  * the general implementation base for an in-place replication strategy
  */
-public abstract class InPlaceReplicationStrategy implements ReplicationStrategy, ReleaseMapper {
+public abstract class InPlaceReplicationStrategy implements ReplicationStrategy {
 
     private static final Logger LOG = LoggerFactory.getLogger(InPlaceReplicationStrategy.class);
 
@@ -42,16 +42,6 @@ public abstract class InPlaceReplicationStrategy implements ReplicationStrategy,
         return replicationManager.getConfig();
     }
 
-    @Override
-    public boolean releaseMappingAllowed(String path, String uri) {
-        return releaseMappingAllowed(path);
-    }
-
-    @Override
-    public boolean releaseMappingAllowed(String path) {
-        return path.startsWith(getConfig().contentPath());
-    }
-
     protected String getTargetPath(ReplicationContext context) {
         switch (context.accessMode) {
             case PREVIEW:
@@ -62,11 +52,6 @@ public abstract class InPlaceReplicationStrategy implements ReplicationStrategy,
                 return null;
         }
     }
-
-    /**
-     * @return the resolver to use for traversing the released content (the replication source)
-     */
-    protected abstract ResourceResolver getReleaseResolver(ReplicationContext context, Resource resource);
 
     /**
      * the general 'canReplicate' check for all InPlace replication strategy implementations
@@ -93,11 +78,12 @@ public abstract class InPlaceReplicationStrategy implements ReplicationStrategy,
         Resource targetRoot;
         if (StringUtils.isNotBlank(targetPath) && (targetRoot = replicateResolver.getResource(targetPath)) != null) {
             String relativePath = resource.getPath().replaceAll("^" + config.contentPath() + "/", "");
-            // the 'releaseResolver' is probably a version controlled resolver
-            ResourceResolver releaseResolver = getReleaseResolver(context, resource);
-            Resource released = releaseResolver.getResource(resource.getPath());
+            if (relativePath.startsWith("/"))
+                throw new IllegalStateException("Not relative path - content path config broken? " + config.contentPath());
             // delegation to the extension hook...
-            replicate(context, targetRoot, released, relativePath, recursive, false);
+            replicate(context, targetRoot, resource, relativePath, recursive, !recursive);
+        } else {
+            throw new IllegalStateException("Target path not found: " + targetPath);
         }
     }
 
@@ -119,7 +105,7 @@ public abstract class InPlaceReplicationStrategy implements ReplicationStrategy,
             }
         }
         if (replicate != null) {
-            copyReleasedResource(context, targetRoot.getPath(), released, replicate, recursive, false);
+            copyReleasedResource(context, targetRoot.getPath(), released, replicate, recursive, merge);
         } else {
             LOG.error("can't create replication target for '{}', accessMode={}", released.getPath(), context.accessMode);
         }
@@ -154,6 +140,7 @@ public abstract class InPlaceReplicationStrategy implements ReplicationStrategy,
     /**
      * makes a replication copy of one resource and their 'jcr:content' child if such a child exists
      * does this also with the other children if 'recursive' is 'on'
+     * Caution: calling this with merge=false && recursive=false deletes all children except jcr:content .
      */
     protected void copyReleasedResource(ReplicationContext context, String targetRoot, Resource released, Resource replicate,
                                         boolean recursive, boolean merge)
@@ -191,7 +178,8 @@ public abstract class InPlaceReplicationStrategy implements ReplicationStrategy,
     }
 
     /**
-     * the replication of a 'jcr:content' resource is done recursive with this strategy
+     * the replication of a 'jcr:content' resource is done recursive with this strategy.
+     * Caution: calling this with merge=false && recursive=false deletes all children.
      */
     protected void copyReleasedContent(ReplicationContext context, String targetRoot, Resource released, Resource replicate,
                                        boolean recursive, boolean merge)
@@ -217,7 +205,7 @@ public abstract class InPlaceReplicationStrategy implements ReplicationStrategy,
                 if (replicateChild == null) {
                     replicateChild = createReplicate(targetResolver, releasedChild, replicate);
                 }
-                copyReleasedContent(context, targetRoot, releasedChild, replicateChild, true, merge);
+                copyReleasedContent(context, targetRoot, releasedChild, replicateChild, recursive, merge);
             }
         }
     }
@@ -238,11 +226,15 @@ public abstract class InPlaceReplicationStrategy implements ReplicationStrategy,
             String key = entry.getKey();
             if (ReplicationManager.REPLICATE_PROPERTY_FILTER.accept(key)) {
                 // copy content properties if not always present or a 'reset' is requested
-                if (replicateValues.get(key) == null ||
-                        (!merge && !ReplicationManager.REPLICATE_PROPERTY_KEEP.accept(key))) {
+                if (replicateValues.get(key) == null || !merge) {
                     Object value = entry.getValue();
                     if (value instanceof String) {
                         value = transformStringProperty(context, targetRoot, (String) value);
+                    }
+                    if (value instanceof String[]) {
+                        value = Arrays.asList((String[]) value).stream()
+                                .map((v) -> transformStringProperty(context, targetRoot, v))
+                                .toArray((len) -> new String[len]);
                     }
                     if (value != null) {
                         replicateValues.put(key, value);
@@ -259,11 +251,16 @@ public abstract class InPlaceReplicationStrategy implements ReplicationStrategy,
      */
     protected String transformStringProperty(ReplicationContext context, String targetRoot, String value) {
         Matcher contentPathMatcher = contentPathPattern.matcher(value);
-        if (contentPathMatcher.matches() && context.getResolver().getResource(value) != null) {
-            // the the value is a reference transform the value to the replication path
-            String path = contentPathMatcher.group(1);
-            context.references.add(contentPath + path);
-            value = targetRoot + path;
+        if (contentPathMatcher.matches()) {
+            Resource referencedResource = findReferencedResource(context.releaseResolver, value);
+            if (referencedResource != null && context.releaseFilter.accept(referencedResource)) {
+                // the the value is a reference transform the value to the replication path
+                String path = contentPathMatcher.group(1);
+                context.references.add(contentPath + path);
+                value = targetRoot + path;
+            } else {
+                LOG.debug("Unknown possible reference found: {}", value);
+            }
         } else {
             // if the value is not a path it can be possible that this is a rich text with embedded paths...
             value = transformTextProperty(context, targetRoot, value);
@@ -271,34 +268,35 @@ public abstract class InPlaceReplicationStrategy implements ReplicationStrategy,
         return value;
     }
 
+    protected Resource findReferencedResource(ResourceResolver releaseResolver, String path) {
+        Resource resource = releaseResolver.getResource(path);
+        while (resource == null && path.contains(".")) {
+            path = StringUtils.substringBeforeLast(path, ".");
+            resource = releaseResolver.getResource(path);
+        }
+        return resource;
+    }
+
     /**
      * transforms embedded references of a rich text from 'content' to the replication path
      */
     public String transformTextProperty(ReplicationContext context, String targetRoot, String value) {
-        ResourceResolver resolver = context.getResolver();
-        StringBuilder result = new StringBuilder();
+        StringBuffer result = new StringBuffer();
         Matcher matcher = contentLinkPattern.matcher(value);
-        int len = value.length();
-        int pos = 0;
-        while (matcher.find(pos)) {
-            result.append(value, pos, matcher.start());
-            String path = matcher.group(3);
+        while (matcher.find()) {
+            String path = matcher.group("relpath");
             // check for a resolvable resource
-            if (resolver.getResource(contentPath + path) != null) {
+            Resource referencedResource = findReferencedResource(context.releaseResolver, contentPath + path);
+            if (referencedResource != null && context.releaseFilter.accept(referencedResource)) {
                 context.references.add(contentPath + path);
-                result.append(matcher.group(1));
-                result.append(targetRoot);
-                result.append(path);
-                result.append(matcher.group(4));
+                String replacedMatch = matcher.group("beforepath") + targetRoot + path + matcher.group("quot");
+                matcher.appendReplacement(result, Matcher.quoteReplacement(replacedMatch));
             } else {
                 // skip pattern unchanged if resource can't be resolved
-                result.append(value, matcher.start(), matcher.end());
+                matcher.appendReplacement(result, Matcher.quoteReplacement(matcher.group(0)));
             }
-            pos = matcher.end();
         }
-        if (pos >= 0 && pos < len) {
-            result.append(value, pos, len);
-        }
+        matcher.appendTail(result);
         return result.toString();
     }
 
@@ -306,11 +304,22 @@ public abstract class InPlaceReplicationStrategy implements ReplicationStrategy,
 
     @Override
     public void activate(ReplicationManager manager) {
-        this.replicationManager = manager;
         config = manager.getConfig();
-        contentPath = config.contentPath();
-        contentPathPattern = Pattern.compile("^" + contentPath + "(/.*)$");
-        contentLinkPattern = Pattern.compile("<(a\\s+(.+\\s+)?href=['\"])" + contentPath + "(/[^'\"]+)(['\"])");
+        contentPath = RegExUtils.removePattern(ResourceUtil.normalize(config.contentPath()), "/*$");
+        if (StringUtils.isBlank(contentPath) || !StringUtils.startsWith(contentPath, "/")) {
+            LOG.error("Invalid content path {}, deactivating publication!");
+            this.replicationManager = null;
+            contentPathPattern = Pattern.compile("(?=a)b"); // never matches
+            contentLinkPattern = Pattern.compile("(?=a)b"); // never matches
+        } else {
+            this.replicationManager = manager;
+            contentPathPattern = Pattern.compile("^" + contentPath + "(/.*)$");
+            contentLinkPattern = Pattern.compile(
+                    "(?<beforepath>(<|&lt;)(a|img)[^>]*\\s(href|src)=(?<quot>['\"]|&quot;))" +
+                            Pattern.quote(contentPath) +
+                            "(?<relpath>/((?!\\k<quot>).)+)\\k<quot>"
+            );
+        }
     }
 
     @Override

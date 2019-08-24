@@ -8,6 +8,10 @@
     &_input {
         @include dialog-input-font;
     }
+
+    .input-group-addon &_select.fa {
+        font-size: 110%;
+    }
 }
 
 .composum-pages-edit-widget,
@@ -23,6 +27,13 @@
             margin-left: 0;
             margin-right: 20px;
         }
+
+        .required > & {
+
+            .label-text:after {
+                content: ' *';
+            }
+        }
     }
 
     &_hint {
@@ -31,6 +42,14 @@
         @include edit-hint-font;
         text-align: right;
         color: $edit-hint-color;
+
+        p {
+            margin: 0;
+        }
+
+        a, a:hover, a:active, a:focus {
+            text-decoration: none;
+        }
     }
 }
 
@@ -70,9 +89,10 @@
             }
         }
 
-        .item-select {
+
+        .item-select { // align bottom(!)
             top: auto;
-            bottom: 5px;
+            bottom: 0;
         }
 
         .row {

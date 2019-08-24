@@ -7,5 +7,5 @@
     <cpp:editAction icon="upload" label="Upload" title="Upload the microsite content"
                     action="window.composum.pages.actions.dialog.open" selectors="upload"/>
     <cpp:editAction icon="trash" label="Delete" title="Delete the entire microsite"
-                    action="window.composum.pages.actions.element.delete"/>
+                    action="window.composum.pages.actions.page.delete"/>
 </cpp:editToolbar>

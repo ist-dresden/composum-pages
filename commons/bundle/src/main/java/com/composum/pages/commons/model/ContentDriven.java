@@ -1,12 +1,15 @@
 package com.composum.pages.commons.model;
 
+import com.composum.pages.commons.util.LinkUtil;
 import com.composum.sling.core.BeanContext;
-import com.composum.sling.core.util.LinkUtil;
 import com.composum.sling.core.util.ResourceUtil;
+import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
 
+import javax.annotation.Nonnull;
 import java.util.Locale;
+import java.util.Objects;
 
 import static com.composum.pages.commons.PagesConstants.PROP_TEMPLATE;
 
@@ -26,6 +29,9 @@ public abstract class ContentDriven<ContentType extends ContentModel> extends Ab
     // initializer extensions
 
     protected void initializeWithResource(Resource resource) {
+        if (JcrConstants.JCR_CONTENT.equals(resource.getName())) {
+            resource = Objects.requireNonNull(resource.getParent());
+        }
         super.initializeWithResource(resource);
         Resource contentRes = resource.getChild(ResourceUtil.CONTENT_NODE);
         if (contentRes == null || ResourceUtil.isNonExistingResource(contentRes)) {
@@ -51,7 +57,7 @@ public abstract class ContentDriven<ContentType extends ContentModel> extends Ab
 
     public String getTemplatePath() {
         if (template == null) {
-            content.getProperty(PROP_TEMPLATE, null,"");
+            content.getProperty(PROP_TEMPLATE, null, "");
         }
         return template;
     }
@@ -78,7 +84,7 @@ public abstract class ContentDriven<ContentType extends ContentModel> extends Ab
     // get properties from model with fallback to the content child
 
     @Override
-    public <T> T getProperty(String key, Class<T> type) {
+    public <T> T getProperty(@Nonnull String key, @Nonnull Class<T> type) {
         T value = super.getProperty(key, type);
         if (value == null && content.resource != resource) {
             value = content.getProperty(key, type);
@@ -87,7 +93,7 @@ public abstract class ContentDriven<ContentType extends ContentModel> extends Ab
     }
 
     @Override
-    public <T> T getProperty(String key, Locale locale, Class<T> type) {
+    public <T> T getProperty(@Nonnull String key, Locale locale, @Nonnull Class<T> type) {
         T value = super.getProperty(key, locale, type);
         if (value == null && content.resource != resource) {
             value = content.getProperty(key, locale, type);
@@ -96,7 +102,7 @@ public abstract class ContentDriven<ContentType extends ContentModel> extends Ab
     }
 
     @Override
-    public <T> T getInherited(String key, Class<T> type) {
+    public <T> T getInherited(@Nonnull String key, @Nonnull Class<T> type) {
         T value = super.getInherited(key, type);
         if (value == null && content.resource != resource) {
             value = content.getInherited(key, type);
@@ -105,7 +111,7 @@ public abstract class ContentDriven<ContentType extends ContentModel> extends Ab
     }
 
     @Override
-    public <T> T getInherited(String key, Locale locale, Class<T> type) {
+    public <T> T getInherited(@Nonnull String key, Locale locale, @Nonnull Class<T> type) {
         T value = super.getInherited(key, locale, type);
         if (value == null && content.resource != resource) {
             value = content.getInherited(key, locale, type);

@@ -1,0 +1,109 @@
+@charset "UTF-8";
+
+@import "../../css/variables";
+@import "../../css/mixins";
+
+.composum-pages-stage-site {
+
+    &_thumbnail {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 160px;
+
+        &_wrapper {
+            @include aspect-ratio-wrapper(4, 3);
+        }
+
+        &_picture {
+            @include aspect-ratio-element();
+        }
+
+        &_image {
+            width: 100%;
+        }
+
+        .composum-pages-components-element-image {
+
+            &_picture {
+                width: 100%;
+            }
+        }
+
+        &_placeholder {
+            width: 100%;
+            height: 100%;
+            padding: 7px 14px;
+            background: rgba(255, 255, 255, 0.4);
+
+            &:before {
+                color: #ddd;
+                font-size: 72px;
+            }
+        }
+    }
+
+    &_tile {
+        position: relative;
+        display: block;
+        width: 100%;
+        margin: 0;
+        padding: 5px;
+        min-height: 120px;
+        color: #444;
+
+        &,
+        &:hover,
+        &:focus,
+        &:visited {
+            text-decoration: none;
+        }
+
+        &_text {
+            @include full-size;
+            @include font('robotolight', 17px);
+        }
+
+        &_title,
+        &_description,
+        &_status,
+        &_path {
+            position: absolute;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        &_title,
+        &_description,
+        &_path {
+            left: 170px;
+            right: 40px;
+
+            @include mobile {
+                left: 15px;
+            }
+        }
+
+        &_title {
+            top: 9px;
+            @include font('robotolight', 20px);
+        }
+
+        &_description {
+            top: 37px;
+            bottom: 24px;
+            @include font('robotolight', 14px);
+            line-height: 1.3em;
+
+            p {
+                margin: 0;
+            }
+        }
+
+        &_path {
+            bottom: 6px;
+            @include font('robotolight', 14px);
+        }
+    }
+}

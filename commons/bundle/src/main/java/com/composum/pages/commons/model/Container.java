@@ -1,6 +1,12 @@
+/*
+ * copyright (c) 2015ff IST GmbH Dresden, Germany - https://www.ist-software.com
+ *
+ * This software may be modified and distributed under the terms of the MIT license.
+ */
 package com.composum.pages.commons.model;
 
 import com.composum.pages.commons.PagesConstants;
+import com.composum.pages.commons.filter.ElementFilter;
 import com.composum.pages.commons.model.properties.PathPatternSet;
 import com.composum.pages.commons.service.EditService;
 import com.composum.pages.commons.service.ResourceManager;
@@ -13,6 +19,7 @@ import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.SyntheticResource;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import static com.composum.pages.commons.PagesConstants.NODE_TYPE_CONTAINER;
@@ -40,10 +47,10 @@ public class Container extends Element {
     public static boolean isContainer(ResourceResolver resolver, Resource resource, String type) {
         return (resource != null && (resource.isResourceType(NODE_TYPE_CONTAINER) ||
                 NODE_TYPE_CONTAINER.equals(ResolverUtil.getTypeProperty(
-                        resource, type, PagesConstants.PROP_COMPONENT_TYPE, "")))) ||
+                        resource, type, PagesConstants.PN_COMPONENT_TYPE, "")))) ||
                 (StringUtils.isNotBlank(type) &&
                         NODE_TYPE_CONTAINER.equals(ResolverUtil.getTypeProperty(
-                                resolver, type, PagesConstants.PROP_COMPONENT_TYPE, "")));
+                                resolver, type, PagesConstants.PN_COMPONENT_TYPE, "")));
     }
 
     public Container() {
@@ -69,15 +76,19 @@ public class Container extends Element {
 
     private transient List<String> elementTypes;
 
+    private transient ResourceFilter renderFilter;
     private transient List<Element> elementList;
 
     // rendering
 
     /**
-     * the filter to restrict the rendering of the embedded elements (if useful; defaults to ALL - no restriction)
+     * the filter to restrict the rendering of the embedded elements (defaults to an ElementFilter instance)
      */
     protected ResourceFilter getRenderFilter() {
-        return ResourceFilter.ALL;
+        if (renderFilter == null) {
+            renderFilter = new ElementFilter(this);
+        }
+        return renderFilter;
     }
 
     /**
@@ -85,33 +96,55 @@ public class Container extends Element {
      */
     public List<Element> getElements() {
         if (elementList == null) {
-            int max = getMaxElements();
-            elementList = new ArrayList<>();
-            ResourceFilter filter = getRenderFilter();
-            for (Resource child : resource.getChildren()) {
-                if (filter.accept(child) && (max < 1 || elementList.size() < max)) {
-                    Element element = new Element();
-                    element.initialize(context, child);
-                    elementList.add(element);
-                }
+            elementList = retrieveElements();
+            fillUpElements(elementList);
+            arrangeElements(elementList);
+        }
+        return elementList;
+    }
+
+    protected Iterator<Resource> retrieveElementResources() {
+        return resource.listChildren();
+    }
+
+    protected List<Element> retrieveElements() {
+        ArrayList<Element> elements = new ArrayList<>();
+        int max = getMaxElements();
+        ResourceFilter filter = getRenderFilter();
+        Iterator<Resource> elementIterator = retrieveElementResources();
+        while (elementIterator.hasNext()) {
+            Resource resource = elementIterator.next();
+            if (filter.accept(resource) && (max < 1 || elements.size() < max)) {
+                Element element = new Element();
+                element.initialize(context, resource);
+                elements.add(element);
             }
-            int min = getMinElements();
-            if (min > 0 && elementList.size() < min) {
-                String elementType = getElementType();
-                if (StringUtils.isNotBlank(elementType)) {
-                    ResourceResolver resolver = getContext().getResolver();
-                    for (int i = elementList.size(); i < min; i++) {
-                        Resource synthetic = createSyntheticElement(elementType, i);
-                        if (synthetic != null) {
-                            Element element = new Element();
-                            element.initialize(getContext(), synthetic);
-                            elementList.add(element);
-                        }
+        }
+        return elements;
+    }
+
+    /**
+     * extension hook to arrange the element set items (e.g. sort or ordering)
+     */
+    protected void arrangeElements(List<Element> elementList) {
+    }
+
+    protected void fillUpElements(List<Element> elementList) {
+        int min = getMinElements();
+        if (min > 0 && elementList.size() < min) {
+            String elementType = getElementType();
+            if (StringUtils.isNotBlank(elementType)) {
+                ResourceResolver resolver = getContext().getResolver();
+                for (int i = elementList.size(); i < min; i++) {
+                    Resource synthetic = createSyntheticElement(elementType, i);
+                    if (synthetic != null) {
+                        Element element = new Element();
+                        element.initialize(getContext(), synthetic);
+                        elementList.add(element);
                     }
                 }
             }
         }
-        return elementList;
     }
 
     protected Resource createSyntheticElement(String resourceType, int elementIndex) {
@@ -195,7 +228,7 @@ public class Container extends Element {
     public List<String> getElementTypes() {
         if (elementTypes == null) {
             EditService editService = context.getService(EditService.class);
-            elementTypes = editService.getAllowedElementTypes(resolver,
+            elementTypes = editService.getAllowedElementTypes(resolver, null,
                     getResourceManager().getReferenceList(getResourceManager().getReference(this)), true);
         }
         return elementTypes;
@@ -216,7 +249,7 @@ public class Container extends Element {
     }
 
     public boolean isAllowedElement(String resourceType) {
-        return getAllowedElements().matches(resourceType);
+        return getAllowedElements().matches(getContext().getResolver(), resourceType);
     }
 
     /**

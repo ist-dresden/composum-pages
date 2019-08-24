@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+        jcr:primaryType="cpp:Component"
+        jcr:title="Component Help Content"
+        sling:resourceSuperType="composum/pages/components/container"
+        allowedContainers="[]"
+        allowedElements="[composum/pages/components/container/section,
+                          composum/pages/components/element/.*,
+                          composum/pages/components/composed/.*]"/>

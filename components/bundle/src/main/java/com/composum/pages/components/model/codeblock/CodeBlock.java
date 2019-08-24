@@ -1,3 +1,8 @@
+/*
+ * copyright (c) 2015ff IST GmbH Dresden, Germany - https://www.ist-software.com
+ *
+ * This software may be modified and distributed under the terms of the MIT license.
+ */
 package com.composum.pages.components.model.codeblock;
 
 import com.composum.platform.commons.content.service.ContentRefService;
@@ -22,8 +27,6 @@ public class CodeBlock extends Element {
     public static final String PN_COLLAPSED = "collapsed";
     public static final String PN_WRAP_LINES = "wrapLines";
 
-    public static final String PN_TITLE = "title";
-    public static final String PN_JCR_TITLE = "jcr:title";
     public static final String PN_COPYRIGHT = "copyright";
 
     public static final String PN_LANGUAGE = "language";
@@ -110,19 +113,9 @@ public class CodeBlock extends Element {
         }
         if (isCollapsed()) {
             classes.add("collapsed");
-            classes.add(collapsed);
+            classes.add("collapsed-" + collapsed);
         }
         return StringUtils.join(classes, " ");
-    }
-
-    public String getTitle() {
-        if (title == null) {
-            title = getProperty(PN_TITLE, "");
-            if (StringUtils.isBlank(title)) {
-                title = getProperty(PN_JCR_TITLE, title);
-            }
-        }
-        return title;
     }
 
     public boolean isHasCopyright() {
@@ -164,9 +157,9 @@ public class CodeBlock extends Element {
             if (StringUtils.isBlank(code)) {
                 ContentRefService service = context.getService(ContentRefService.class);
                 String codeRef = getProperty(PN_CODE_REF, "");
-                String servicveUri = getServiceUri();
-                if (StringUtils.isNotBlank(servicveUri)) {
-                    codeRef = servicveUri + codeRef;
+                String serviceUri = getServiceUri();
+                if (StringUtils.isNotBlank(serviceUri)) {
+                    codeRef = serviceUri + codeRef;
                 }
                 code = service.getReferencedContent(resolver, codeRef);
                 if (StringUtils.isBlank(code)) {

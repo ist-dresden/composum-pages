@@ -13,6 +13,7 @@ public class ModelTagTEI extends ComponentTagTEI {
         super.collectVariables(data, variables);
         String var = getVar(data);
         if (var != null) {
+            variables.add(new VariableInfo(var + "CSS", "java.lang.String", true, VariableInfo.NESTED));
             variables.add(new VariableInfo(var + "CssBase", "java.lang.String", true, VariableInfo.NESTED));
         }
     }

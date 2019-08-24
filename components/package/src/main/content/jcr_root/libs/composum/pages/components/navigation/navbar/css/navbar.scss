@@ -13,22 +13,126 @@
         padding-right: 0;
     }
 
-    &_navbar-nav {
+    .composum-pages-components-navigation-breadcrumbs {
 
-        .composum-pages-components-navigation-menuitem {
+        &_dropdown {
+            margin-left: 70px;
+        }
 
-            a {
-                background-color: $bootstrap-navbar-background;
-            }
+        &_icon {
+            margin-left: 5px;
+            font-size: 12px;
+            color: #777;
         }
     }
 
     .dropdown-menu {
 
-        .composum-pages-components-navigation-menuitem {
+        .composum-pages-components-navigation-submenu {
+            list-style: none;
+        }
 
-            &_link{
-                color: $bootstrap-color-muted;
+        .composum-pages-components-navigation-menuitem {
+            white-space: nowrap;
+
+            &_link {
+
+                &.active {
+
+                    &, &:focus, &:visited {
+                        color: inherit;
+                        background-color: inherit;
+                    }
+                }
+            }
+
+            &_self {
+                border-bottom: 1px dotted #e7e7e7;
+            }
+        }
+    }
+
+    .composum-pages-components-navigation-button {
+        float: left;
+        margin: 8px 0 8px 15px;
+    }
+}
+
+@media screen and (min-width: $bootstrap-screen-md-min) and (max-width: $bootstrap-screen-md-max) {
+
+    .composum-pages-components-navigation-navbar {
+
+        &_navbar-nav {
+
+            > .composum-pages-components-navigation-breadcrumbs_dropdown,
+            > .composum-pages-components-navigation-menuitem {
+
+                a {
+                    padding-left: 10px;
+                    padding-right: 10px;
+                }
+            }
+        }
+
+        &_search {
+            padding-left: 10px;
+        }
+
+        .composum-pages-components-navigation-button {
+
+            &_language {
+                margin-left: 10px;
+            }
+        }
+    }
+}
+
+@media screen and (min-width: $bootstrap-screen-sm-min) and (max-width: $bootstrap-screen-sm-max) {
+
+    .composum-pages-components-navigation-navbar {
+
+        &_navbar-nav {
+
+            > .composum-pages-components-navigation-breadcrumbs_dropdown,
+            > .composum-pages-components-navigation-menuitem {
+
+                a {
+                    padding-left: 6px;
+                    padding-right: 6px;
+                    font-family: 'roboto_condensedlight';
+                }
+            }
+        }
+
+        .composum-pages-components-navigation-breadcrumbs {
+
+            &_icon {
+                margin-left: 2px;
+            }
+        }
+
+        &_search {
+            width: 100px;
+            padding-left: 6px;
+
+            button, input {
+                padding: 6px;
+            }
+
+            input {
+                font-family: 'roboto_condensedlight';
+            }
+        }
+
+        .composum-pages-components-navigation-button {
+
+            &_language {
+                margin-left: 6px;
+
+                button {
+                    padding: 6px;
+                    font-family: 'roboto_condensedlight';
+                }
             }
         }
     }
@@ -38,12 +142,28 @@
 
     .composum-pages-components-navigation-navbar {
 
+        .composum-pages-components-navigation-breadcrumbs {
+
+            &_dropdown {
+                margin-left: 0;
+            }
+        }
+
         &_search {
-            width: 100%;
+            width: 80%;
+            float: left;
             margin: 0;
             padding: 10px 15px;
             height: 46px;
             border: none;
+        }
+
+        .composum-pages-components-navigation-button {
+
+            &_language {
+                float: right;
+                margin: 10px 15px;
+            }
         }
     }
 }

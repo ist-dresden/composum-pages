@@ -3,100 +3,6 @@
 @import "../../css/variables";
 @import "../../css/mixins";
 
-.composum-pages-stage-site {
-
-    &_thumbnail {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 160px;
-
-        &_wrapper {
-            @include aspect-ratio-wrapper(4, 3);
-        }
-
-        &_picture {
-            @include aspect-ratio-element();
-        }
-
-        &_image {
-            width: 100%;
-        }
-
-        &_placeholder {
-            width: 100%;
-            height: 100%;
-            padding: 7px 14px;
-            background: rgba(255, 255, 255, 0.4);
-
-            &:before {
-                color: #ddd;
-                font-size: 72px;
-            }
-        }
-    }
-
-    &_tile {
-        position: relative;
-        display: block;
-        width: 100%;
-        margin: 0;
-        padding: 5px;
-        min-height: 120px;
-        color: #444;
-
-        &,
-        &:hover,
-        &:focus,
-        &:visited {
-            text-decoration: none;
-        }
-
-        &_text {
-            margin-left: 170px;
-            @include font('robotolight', 17px);
-        }
-
-        &_title,
-        &_description,
-        &_status,
-        &_path {
-            position: absolute;
-            margin: 0;
-            padding: 0;
-            overflow: scroll;
-        }
-
-        &_title,
-        &_description,
-        &_path {
-            left: 170px;
-            right: 40px;
-        }
-
-        &_title {
-            top: 9px;
-            @include font('robotolight', 20px);
-        }
-
-        &_description {
-            top: 37px;
-            bottom: 24px;
-            @include font('robotolight', 14px);
-            line-height: 1.3em;
-
-            p {
-                margin: 0;
-            }
-        }
-
-        &_path {
-            bottom: 6px;
-            @include font('robotolight', 14px);
-        }
-    }
-}
-
 .composum-pages-stage-sites {
     width: 100%;
     @include font('robotolight', 17px);
@@ -123,7 +29,8 @@
         list-style: none;
         padding: 0;
         max-height: 300px;
-        overflow: scroll;
+        overflow-x: hidden;
+        overflow-y: auto;
 
         .composum-pages-stage-site {
 
@@ -144,6 +51,21 @@
         background-color: rgba(255, 255, 255, 0.4);
     }
 
+    &_manager {
+
+        .composum-pages-stage-sites {
+
+            &_list {
+                max-height: 65%;
+            }
+
+            &_radio {
+                pointer-events: none;
+            }
+        }
+    }
+
+    &_manager,
     &_templates {
 
         .composum-pages-stage-site {
@@ -151,10 +73,6 @@
             &_tile {
                 padding-left: 30px;
                 background: #eee;
-
-                &_text {
-                    margin-left: 200px;
-                }
 
                 &_title,
                 &_description,
@@ -165,14 +83,57 @@
 
             &_thumbnail {
                 left: 30px;
+
+                &_wrapper {
+                    @include aspect-ratio-wrapper(4, 3);
+                }
+
+                &_picture {
+                    @include aspect-ratio-element();
+                }
+
+                &_image {
+                    width: 100%;
+                }
+
+                .composum-pages-components-element-image {
+
+                    &_picture {
+                        width: 100%;
+                    }
+                }
             }
         }
 
         .composum-pages-stage-sites {
 
             &_list {
-                max-height: 300px;
                 margin-bottom: 0;
+            }
+
+            .composum-pages-stage-site {
+
+                &_thumbnail {
+
+                    &_wrapper {
+                        @include aspect-ratio-wrapper(4, 3);
+                    }
+
+                    &_picture {
+                        @include aspect-ratio-element();
+                    }
+
+                    &_image {
+                        width: 100%;
+                    }
+
+                    .composum-pages-components-element-image {
+
+                        &_picture {
+                            width: 100%;
+                        }
+                    }
+                }
             }
 
             &_no-template {

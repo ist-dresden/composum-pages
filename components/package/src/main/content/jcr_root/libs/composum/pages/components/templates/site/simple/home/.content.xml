@@ -11,7 +11,6 @@
     -->
     <jcr:content
             jcr:primaryType="cpp:PageContent"
-            templateRef="/libs/composum/pages/components/templates/page/home"/>
-    <content/>
-    <about/>
+            templateRef="/libs/composum/pages/components/templates/page/home"
+            isTemplate="{Boolean}false"/>
 </jcr:root>

@@ -1,5 +1,6 @@
 package com.composum.pages.commons.service;
 
+import com.composum.pages.commons.PagesConstants.ReferenceType;
 import com.composum.pages.commons.model.Model;
 import com.composum.pages.commons.model.Page;
 import com.composum.sling.core.BeanContext;
@@ -12,6 +13,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.jcr.RepositoryException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.regex.Pattern;
@@ -60,13 +62,31 @@ public interface PageManager extends ContentManager<Page> {
         }
     }
 
-    Page createBean(BeanContext context, Resource resource);
+    /**
+     * Constructs a Page model for a path if the path points to a page or page content
+     *
+     * @param absPath a page resource or a child of a page resource
+     */
+    @Nullable
+    Page getPage(@Nonnull BeanContext context, @Nonnull String absPath);
 
+    /**
+     * Constructs a Page model from the resource - if the resource not a page, but below a page, the page is looked up.
+     *
+     * @param resource a page resource or a child of a page resource
+     */
+    @Nonnull
+    Page createBean(@Nonnull BeanContext context, @Nonnull Resource resource);
+
+    @Nullable
     Page getContainingPage(Model element);
 
-    Page getContainingPage(BeanContext context, Resource resource);
+    @Nullable
+    Page getContainingPage(@Nonnull BeanContext context, @Nullable Resource resource);
 
-    Resource getContainingPageResource(Resource resource);
+    /** Finds the next higher parent of resource (including resource itself) that is a page respource. @see {@link Page#isPage(Resource)} */
+    @Nullable
+    Resource getContainingPageResource(@Nonnull Resource resource);
 
     /**
      * Determines all usable page templates in the context of a specific tenant.
@@ -96,4 +116,38 @@ public interface PageManager extends ContentManager<Page> {
 
     boolean deletePage(@Nonnull BeanContext context, @Nullable Resource pageResource, boolean commit)
             throws PersistenceException;
+
+    /**
+     * touches (adjusts 'jcr:lastModified') the containing page of a resource (e.g. during changes);
+     * if 'time' is null the current time is used
+     */
+    void touch(@Nonnull BeanContext context, @Nonnull Resource resource, @Nullable Calendar time);
+
+    void touch(@Nonnull BeanContext context, @Nonnull Page page, @Nullable Calendar time);
+
+    /* Touches (adjusts 'jcr:lastModified') the containing pages of the given resources. */
+    void touch(@Nonnull BeanContext context, @Nonnull Collection<Resource> resources, @Nullable Calendar time);
+
+    /**
+     * retrieve the collection of referrers of a content page
+     *
+     * @param page       the page
+     * @param searchRoot the root in the repository for searching referrers
+     * @param resolved   if 'true' only active references (in the same release) are determined
+     * @return the collection of found resources
+     */
+    @Nonnull
+    Collection<Resource> getReferrers(@Nonnull Page page, @Nonnull Resource searchRoot, boolean resolved);
+
+    /**
+     * the iterator to walk through the target resources of the content elements referenced by the page
+     *
+     * @param page       the page
+     * @param type       the type of references; if 'null' all types are retrieved
+     * @param unresolved if 'true' only unresolved references (not in the same release) are determined
+     * @param transitive if 'true' we also look for references of the references
+     * @return the found resources
+     */
+    @Nonnull
+    Collection<Resource> getReferences(@Nonnull Page page, @Nullable ReferenceType type, boolean unresolved, boolean transitive);
 }

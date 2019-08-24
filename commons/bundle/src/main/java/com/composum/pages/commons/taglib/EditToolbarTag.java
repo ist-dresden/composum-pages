@@ -1,25 +1,19 @@
 package com.composum.pages.commons.taglib;
 
-import com.composum.pages.commons.servlet.EditServlet;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.sling.api.resource.Resource;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 import java.io.IOException;
-import java.util.Map;
-
-import static com.composum.pages.commons.taglib.ElementTag.PAGES_EDIT_DATA_NAME;
-import static com.composum.pages.commons.taglib.ElementTag.PAGES_EDIT_DATA_PATH;
-import static com.composum.pages.commons.taglib.ElementTag.PAGES_EDIT_DATA_TYPE;
 
 /**
  * the PageBodyTag creates the HTML body tag and the EDIT elements around the page content
  */
-public class EditToolbarTag extends AbstractWrappingTag {
+public class EditToolbarTag extends AbstractEditTag {
 
     public static final String TOOLBAR_VAR = "toolbar";
     public static final String TOOLBAR_CSS_VAR = TOOLBAR_VAR + "CssBase";
+    public static final String TOOLBAR_CSSBASE_VAR = TOOLBAR_VAR + "CssBase";
 
     public static final String DEFAULT_CSS_BASE = "composum-pages-stage-edit-toolbar";
 
@@ -48,21 +42,11 @@ public class EditToolbarTag extends AbstractWrappingTag {
     }
 
     @Override
-    protected void collectAttributes(Map<String, String> attributeSet) {
-        super.collectAttributes(attributeSet);
-        Resource resourceToEdit = (Resource) request.getAttribute(EditServlet.EDIT_RESOURCE_KEY);
-        if (resourceToEdit != null) {
-            attributeSet.put(PAGES_EDIT_DATA_NAME, resourceToEdit.getName());
-            attributeSet.put(PAGES_EDIT_DATA_PATH, resourceToEdit.getPath());
-            attributeSet.put(PAGES_EDIT_DATA_TYPE, resourceToEdit.getResourceType());
-        }
-    }
-
-    @Override
     protected void prepareTagStart() {
         pageContext.setAttribute(TOOLBAR_VAR, this, PageContext.REQUEST_SCOPE);
         if (StringUtils.isNotBlank(cssBase)) {
             pageContext.setAttribute(TOOLBAR_CSS_VAR, cssBase, PageContext.REQUEST_SCOPE);
+            pageContext.setAttribute(TOOLBAR_CSSBASE_VAR, cssBase, PageContext.REQUEST_SCOPE);
         }
     }
 
@@ -79,7 +63,7 @@ public class EditToolbarTag extends AbstractWrappingTag {
     @Override
     protected void finishTagEnd() {
         if (StringUtils.isNotBlank(cssBase)) {
-            pageContext.removeAttribute(TOOLBAR_CSS_VAR, PageContext.REQUEST_SCOPE);
+            pageContext.removeAttribute(TOOLBAR_CSSBASE_VAR, PageContext.REQUEST_SCOPE);
         }
         pageContext.removeAttribute(TOOLBAR_VAR, PageContext.REQUEST_SCOPE);
     }

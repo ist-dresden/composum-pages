@@ -32,7 +32,7 @@
     <div class="row">
         <div class="col col-xs-8">
             <cpp:widget label="Name" name=":nameHint" placeholder="the repository name" type="textfield"
-                        rules="mandatory" pattern="^[A-Za-z_][- \\w]*$"/>
+                        required="true" pattern="^[A-Za-z_][\\w -]*$"/>
         </div>
         <div class="col col-xs-4"><%-- this checkbox value is not submitted because the name starts with '#' --%>
             <cpp:widget label="arrange manually" name="#ordered" type="checkbox" hint="manual sorted folder ?"/>

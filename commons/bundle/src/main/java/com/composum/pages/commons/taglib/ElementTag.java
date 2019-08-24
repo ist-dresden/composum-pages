@@ -1,3 +1,8 @@
+/*
+ * copyright (c) 2015ff IST GmbH Dresden, Germany - https://www.ist-software.com
+ *
+ * This software may be modified and distributed under the terms of the MIT license.
+ */
 package com.composum.pages.commons.taglib;
 
 import com.composum.pages.commons.model.Container;
@@ -14,6 +19,8 @@ import org.apache.sling.api.resource.ValueMap;
 import java.io.IOException;
 import java.util.Map;
 
+import static com.composum.sling.cpnl.TagBase.TAG_NONE;
+
 /**
  * the tag to render a Pages Sling component
  * such a component is rendering an HTML tag with the components content within
@@ -21,7 +28,6 @@ import java.util.Map;
  */
 public class ElementTag extends AbstractWrappingTag {
 
-    public static final String NONE_TAG = "none";
     public static final String DEFAULT_TAG = "div";
 
     public static final String COMPONENT_EDIT_BODY_CLASSES = "composum-pages-component";
@@ -29,19 +35,20 @@ public class ElementTag extends AbstractWrappingTag {
 
     public static final String STYLE_PROPERTY = "style";
 
-    public static final String PAGES_EDIT_DATA = "data-pages-edit";
-    public static final String PAGES_EDIT_DATA_NAME = PAGES_EDIT_DATA + "-name";
-    public static final String PAGES_EDIT_DATA_PATH = PAGES_EDIT_DATA + "-path";
-    public static final String PAGES_EDIT_DATA_TYPE = PAGES_EDIT_DATA + "-type";
-
     protected String id;
     protected String tagId;
     protected String tagName;
+    protected String tagNameValue;
+    protected String tagAttributes;
+    protected String tagAttributesValue;
     protected DisplayMode.Value displayMode;
 
     @Override
     protected void clear() {
         displayMode = null;
+        tagAttributesValue = null;
+        tagAttributes = null;
+        tagNameValue = null;
         tagName = null;
         tagId = null;
         id = null;
@@ -72,8 +79,30 @@ public class ElementTag extends AbstractWrappingTag {
     /**
      * the tag name to render the wrapping tag (default: 'div')
      */
+    public String getTagName() {
+        if (tagNameValue == null) {
+            tagNameValue = eval(tagName, tagName);
+        }
+        return tagNameValue;
+    }
+
     public void setTagName(String name) {
         tagName = name;
+    }
+
+    public String getTagAttributes() {
+        if (tagAttributesValue == null) {
+            tagAttributesValue = eval(tagAttributes, tagAttributes);
+        }
+        return tagAttributesValue;
+    }
+
+    public void setTagAttributes(String attributes) {
+        tagAttributes = attributes;
+    }
+
+    public boolean isWithTag() {
+        return !TAG_NONE.equalsIgnoreCase(getTagName());
     }
 
     /**
@@ -94,7 +123,7 @@ public class ElementTag extends AbstractWrappingTag {
     /**
      * builds the list of CSS classes for the wrapping tag
      */
-    protected void collectCssClasses( TagCssClasses.CssSet collection) {
+    protected void collectCssClasses(TagCssClasses.CssSet collection) {
         ValueMap values = resource.adaptTo(ValueMap.class);
         if (values != null) {
             collection.add(values.get(STYLE_PROPERTY, ""));
@@ -109,20 +138,30 @@ public class ElementTag extends AbstractWrappingTag {
     /**
      * builds the list of tag attributes for the wrapping tag
      */
-    protected void collectAttributes(Map<String, String> attributeSet) {
+    @Override
+    protected void collectAttributes(Map<String, Object> attributeSet) {
         String value;
         if (StringUtils.isNotBlank(value = getId())) {
             attributeSet.put(TAG_ID, value);
         }
         super.collectAttributes(attributeSet);
         if (isEditMode()) {
-            attributeSet.put(PAGES_EDIT_DATA_NAME, resource.getName());
             attributeSet.put(PAGES_EDIT_DATA_PATH, resource.getPath());
-            attributeSet.put(PAGES_EDIT_DATA_TYPE, resource.getResourceType());
+            addEditAttributes(attributeSet, resource, resource.getResourceType());
             if (isDraggable()) {
                 attributeSet.put("draggable", "true");
             }
         }
+    }
+
+    @Override
+    public String getAttributes() {
+        String attributes = super.getAttributes();
+        String tagAttrs = getTagAttributes();
+        if (StringUtils.isNotBlank(tagAttrs)) {
+            attributes += tagAttrs.startsWith(" ") ? tagAttrs : " " + tagAttrs;
+        }
+        return attributes;
     }
 
     // hierarchy
@@ -155,15 +194,6 @@ public class ElementTag extends AbstractWrappingTag {
     // rendering
 
     /**
-     * if this returns 'false' nothing is rendered, no wrapping tag and no content within
-     * this is used if the option 'test' attribute is set; if the test fails this returns 'false'...
-     */
-    @Override
-    protected boolean renderTag() {
-        return getTestResult();
-    }
-
-    /**
      * setup before the rendering starts - sets the display mode if specified
      */
     @Override
@@ -172,8 +202,8 @@ public class ElementTag extends AbstractWrappingTag {
         if (displayMode != null) {
             DisplayMode.get(context).push(displayMode);
         }
-        if (StringUtils.isBlank(tagName)) {
-            tagName = DEFAULT_TAG;
+        if (StringUtils.isBlank(getTagName())) {
+            tagNameValue = DEFAULT_TAG;
         }
         Model model = (Model) getModel();
         if (model != null) {
@@ -189,8 +219,8 @@ public class ElementTag extends AbstractWrappingTag {
      */
     @Override
     protected void renderTagStart() throws IOException {
-        if (!NONE_TAG.equalsIgnoreCase(tagName)) {
-            out.append("<").append(tagName).append(" ").append(getAttributes()).append(">\n");
+        if (isWithTag()) {
+            out.append("<").append(getTagName()).append(getAttributes()).append(">\n");
         }
     }
 
@@ -199,8 +229,8 @@ public class ElementTag extends AbstractWrappingTag {
      */
     @Override
     protected void renderTagEnd() throws IOException {
-        if (!NONE_TAG.equalsIgnoreCase(tagName)) {
-            out.append("</").append(tagName).append(">\n");
+        if (isWithTag()) {
+            out.append("</").append(getTagName()).append(">\n");
         }
     }
 

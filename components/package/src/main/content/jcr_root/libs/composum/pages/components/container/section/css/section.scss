@@ -1,0 +1,28 @@
+@charset "UTF-8";
+
+@import "../../../css/variables";
+@import "../../../css/mixins";
+
+.composum-pages-components-container-section {
+    clear: both;
+    width: 100%;
+
+    &_title {
+        margin: $main-title-margin;
+        @include a-title-font($column-title-font-size);
+        color: $column-title-text-color;
+    }
+}
+
+/*
+ * bootstrap -xs-
+ */
+@include screen-size-xs-max {
+
+    .composum-pages-components-container-section {
+
+        &_title {
+            @include a-title-font($column-title-font-size-xs);
+        }
+    }
+}

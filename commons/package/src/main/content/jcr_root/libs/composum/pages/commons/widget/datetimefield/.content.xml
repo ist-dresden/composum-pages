@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+        jcr:primaryType="cpp:Widget"
+        jcr:title="Date/Time field"
+        jcr:description="&lt;p>The &apos;datetimefield&apos; is a text input field with a calendar and time popup to select a date. The format of the date/time text value is retrieved from the settings of the site in the context of the edited language variation.&lt;/p>&lt;p>e.g.&lt;br>&amp;lt;cpp:widget label=&quot;Date&quot; property=&quot;date&quot; type=&quot;datetimefield&quot; i18n=&quot;false&quot;required=&quot;true&quot;/&amp;gt;&lt;/p>"
+        sling:resourceType="composum/pages/commons/widget/datetimefield"
+        sling:resourceSuperType="composum/pages/commons/widget"
+        modelClass="com.composum.pages.commons.widget.DateTimeField"/>

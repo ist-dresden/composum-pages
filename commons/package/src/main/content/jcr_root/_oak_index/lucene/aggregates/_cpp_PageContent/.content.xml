@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:jcr="http://www.jcp.org/jcr/1.0"
+          xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+          jcr:primaryType="nt:unstructured">
+    <include0
+            jcr:primaryType="nt:unstructured"
+            path="*"/>
+    <include1
+            jcr:primaryType="nt:unstructured"
+            path="*/*"/>
+    <include2
+            jcr:primaryType="nt:unstructured"
+            path="*/*/*"/>
+    <include3
+            jcr:primaryType="nt:unstructured"
+            path="*/*/*/*"/>
+    <include4
+            jcr:primaryType="nt:unstructured"
+            path="*/*/*/*/*"/>
+    <include5
+            jcr:primaryType="nt:unstructured"
+            path="*/*/*/*/*/*"/>
+    <include6
+            jcr:primaryType="nt:unstructured"
+            path="*/*/*/*/*/*/*"/>
+    <include7
+            jcr:primaryType="nt:unstructured"
+            path="*/*/*/*/*/*/*/*"/>
+    <include8
+            jcr:primaryType="nt:unstructured"
+            path="*/*/*/*/*/*/*/*/*"/>
+    <include9
+            jcr:primaryType="nt:unstructured"
+            path="*/*/*/*/*/*/*/*/*/*"/>
+</jcr:root>

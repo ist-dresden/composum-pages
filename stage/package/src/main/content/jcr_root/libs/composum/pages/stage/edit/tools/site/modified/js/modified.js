@@ -8,6 +8,9 @@
 
         tools.const = _.extend(tools.const || {}, {
             modified: {
+                event: {
+                    id: '.tools.ModifiedPages'
+                },
                 page: {
                     base: 'composum-pages-stage-edit-site-page-modified',
                     _listentry: '_listentry',
@@ -27,8 +30,20 @@
 
             initialize: function (options) {
                 this.initContent();
-                var c = pages.const.event;
-                $(document).on(c.site.changed + '.ModifiedPages', _.bind(this.reload, this));
+                var id = tools.const.modified.event.id;
+                var e = pages.const.event;
+                $(document)
+                    .on(e.page.state + id, _.bind(this.reload, this))
+                    .on(e.site.changed + id, _.bind(this.reload, this));
+            },
+
+            beforeClose: function () {
+                this.beforeHideTab();
+                var e = pages.const.event;
+                var id = tools.const.modified.event.id;
+                $(document)
+                    .off(e.page.state + id)
+                    .off(e.site.changed + id);
             },
 
             initContent: function (options) {
@@ -53,8 +68,7 @@
                     this.$previewEntry = $listEntry;
                     $('body').addClass('context-driven-view');
                     $listEntry.addClass('selected');
-                    pages.log.debug('site.trigger.' + pages.const.event.page.view + '(' + path + ',preview)');
-                    $(document).trigger(pages.const.event.page.view, [path, {'pages.mode': 'preview'}]);
+                    pages.trigger('site.modified.view', pages.const.event.page.view, [path, {'pages.view': 'preview'}]);
                 }
             },
 
@@ -63,13 +77,8 @@
                     $('body').removeClass('context-driven-view');
                     this.$previewEntry.removeClass('selected');
                     this.$previewEntry = [];
-                    pages.log.debug('site.trigger.' + pages.const.event.page.view + '()');
-                    $(document).trigger(pages.const.event.page.view, [null, {}]);
+                    pages.trigger('site.modified.close', pages.const.event.page.view, [null, {}]);
                 }
-            },
-
-            beforeClose: function () {
-                this.beforeHideTab();
             },
 
             beforeHideTab: function () {
@@ -81,8 +90,9 @@
             },
 
             reload: function () {
+                this.closePreview();
                 var c = tools.const.modified.uri;
-                core.getHtml(c.load + this.contextTabs.data.path,
+                core.getHtml(c.load + this.contextTabs.reference.path,
                     undefined, undefined, _.bind(function (data) {
                         if (data.status === 200) {
                             this.$el.html(data.responseText);

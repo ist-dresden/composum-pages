@@ -3,6 +3,13 @@
 @import "../../css/variables";
 @import "../../css/mixins";
 
+html {
+    width: 100%;
+    height: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
 .composum-pages-components-navigation-navbar,
 .composum-pages-components-page-subsite-navbar {
     @include default-font;
@@ -68,19 +75,30 @@
 
 .composum-pages-components-page_body {
     margin: 50px 0 0;
-    padding: 0;
+    padding: 0 0 30px;
 }
 
 .composum-pages-components-page {
 
     &_content {
 
+        /* general changes to modify to the bootstrap presets... */
+
+        code {
+            color: #fff;
+            background-color: #bbb;
+        }
+
         &_top {
             min-height: $bootstrap-spacing-v*4;
+
+            .composum-pages-components-container-row {
+                margin: 0;
+            }
         }
 
         &_main {
-            padding: 0 $bootstrap-spacing-h $bootstrap-spacing-v*2;
+            padding: 0;
 
             .composum-pages-components-container-row {
                 margin: 0;
@@ -99,7 +117,7 @@
             .composum-pages-components-container-row {
                 margin: 0;
 
-                &_column-first {
+                &_cell-first {
                     padding-top: $subsite-logo-padding;
                 }
             }
