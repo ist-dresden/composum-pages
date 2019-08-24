@@ -132,7 +132,9 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
     @Reference(cardinality = ReferenceCardinality.OPTIONAL)
     protected volatile PagesTenantSupport tenantSupport;
 
-    /** the template cache is registered as a cache od the platform cache manager */
+    /**
+     * the template cache is registered as a cache od the platform cache manager
+     */
     @Reference
     protected CacheManager cacheManager;
 
@@ -165,7 +167,9 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
             this.designCache = new HashMap<>();
         }
 
-        /** for the EMPTY instance only */
+        /**
+         * for the EMPTY instance only
+         */
         protected TemplateImpl() {
             this.templatePath = null;
             this.resourceType = null;
@@ -525,21 +529,31 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
      */
     protected class ReferenceImpl implements ResourceReference {
 
-        /** JSON attribute names */
+        /**
+         * JSON attribute names
+         */
         public static final String PATH = "path";
         public static final String TYPE = "type";
 
-        /** the REFERENCE attributes */
+        /**
+         * the REFERENCE attributes
+         */
         protected String path;
         protected String type;
 
         private transient JsonObject editData;
 
-        /** the resource determined by the path - can be a NonExistingResource */
+        /**
+         * the resource determined by the path - can be a NonExistingResource
+         */
         private transient Resource resource;
-        /** the properties of the resource - an empty map if resource doesn't exist */
+        /**
+         * the properties of the resource - an empty map if resource doesn't exist
+         */
         private transient ValueMap resourceValues;
-        /** the design of the resource reference if such a design is specified */
+        /**
+         * the design of the resource reference if such a design is specified
+         */
         private transient Design design;
 
         public final ResourceResolver resolver;
@@ -550,21 +564,27 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
             this(model.getResource(), model.getType());
         }
 
-        /** a resource and a probably overlayed type (type can be 'null') */
+        /**
+         * a resource and a probably overlayed type (type can be 'null')
+         */
         protected ReferenceImpl(@Nonnull Resource resource, @Nullable String type) {
             this.resolver = resource.getResourceResolver();
             this.path = resource.getPath();
             this.type = StringUtils.isNotBlank(type) ? type : resource.getResourceType();
         }
 
-        /** a reference simply created by the values */
+        /**
+         * a reference simply created by the values
+         */
         protected ReferenceImpl(@Nonnull ResourceResolver resolver, @Nonnull String path, @Nullable String type) {
             this.resolver = resolver;
             this.path = path;
             this.type = type;
         }
 
-        /** a reference translated from a JSON object (transferred reference) */
+        /**
+         * a reference translated from a JSON object (transferred reference)
+         */
         protected ReferenceImpl(ResourceResolver resolver, JsonReader reader) throws IOException {
             this.resolver = resolver;
             fromJson(reader);
@@ -804,13 +824,17 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
     // resource reference factory methods; references are only useful in the context of the resource manager
     //
 
-    /** the reference of the (existing) resource of a model instance */
+    /**
+     * the reference of the (existing) resource of a model instance
+     */
     @Override
     public ResourceReference getReference(AbstractModel model) {
         return new ReferenceImpl(model);
     }
 
-    /** a resource and a probably overlayed type (type can be 'null') */
+    /**
+     * a resource and a probably overlayed type (type can be 'null')
+     */
     @Override
     public ResourceReference getReference(@Nonnull Resource resource, @Nullable String type) {
         return new ReferenceImpl(resource, type);
@@ -826,7 +850,9 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
         return new ReferenceImpl(resolver, path, type);
     }
 
-    /** a reference translated from a JSON object (transferred reference) */
+    /**
+     * a reference translated from a JSON object (transferred reference)
+     */
     @Override
     public ResourceReference getReference(ResourceResolver resolver, JsonReader reader) throws IOException {
         return new ReferenceImpl(resolver, reader);
@@ -911,7 +937,7 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
                                         @Nonnull Resource source, @Nonnull Resource targetParent,
                                         @Nullable String newName, @Nullable Resource before,
                                         @Nonnull List<Resource> updatedReferrers)
-            throws RepositoryException {
+            throws RepositoryException, PersistenceException {
 
         Session session = Objects.requireNonNull(resolver.adaptTo(Session.class));
 
@@ -997,7 +1023,9 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
             if (updateLastModified(child, justReordered)) {
                 updated = true;
             }
-            if (justReordered && updated) { return true; }
+            if (justReordered && updated) {
+                return true;
+            }
         }
         return updated;
     }
@@ -1021,12 +1049,14 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
     @Override
     public void changeReferences(@Nonnull ResourceFilter resourceFilter, @Nonnull StringFilter propertyFilter,
                                  @Nonnull Resource resource, @Nonnull List<Resource> foundReferrers, boolean scanOnly,
-                                 @Nonnull String oldPath, @Nonnull String newPath) {
+                                 @Nonnull String oldPath, @Nonnull String newPath)
+            throws PersistenceException {
         // check resource filter
         if (resourceFilter.accept(resource)) {
             boolean resourceChanged = false;
+            ModifiableValueMap modifications = null;
 
-            ModifiableValueMap values = Objects.requireNonNull(resource.adaptTo(ModifiableValueMap.class));
+            ValueMap values = resource.getValueMap();
             for (Map.Entry<String, Object> entry : values.entrySet()) {
 
                 String key = entry.getKey();
@@ -1039,7 +1069,8 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
                         String newValue = changeReferences((String) value, oldPath, newPath);
                         if (newValue != null) {
                             if (!scanOnly) {
-                                values.put(key, newValue);
+                                modifications = forModification(resource, modifications);
+                                modifications.put(key, newValue);
                             }
                             resourceChanged = true;
                         }
@@ -1063,7 +1094,8 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
                         if (changed) {
                             // perform a change if one value is changed
                             if (!scanOnly) {
-                                values.put(key, newList.toArray());
+                                modifications = forModification(resource, modifications);
+                                modifications.put(key, newList.toArray());
                             }
                             resourceChanged = true;
                         }
@@ -1118,7 +1150,8 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
      */
     @Override
     public void changeResourceType(@Nonnull ResourceFilter resourceFilter, @Nonnull Resource resource,
-                                   @Nonnull String oldTypePattern, @Nonnull String newTypeRule) {
+                                   @Nonnull String oldTypePattern, @Nonnull String newTypeRule)
+            throws PersistenceException {
         changeResourceType(resourceFilter, resource, Pattern.compile(oldTypePattern), newTypeRule);
     }
 
@@ -1131,29 +1164,35 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
      * @param newTypeRule    the pattern matcher rule to build the new type
      */
     public void changeResourceType(@Nonnull ResourceFilter resourceFilter, @Nonnull Resource resource,
-                                   @Nonnull Pattern oldTypePattern, @Nonnull String newTypeRule) {
+                                   @Nonnull Pattern oldTypePattern, @Nonnull String newTypeRule)
+            throws PersistenceException {
         // check resource filter
         if (resourceFilter.accept(resource)) {
 
-            ModifiableValueMap values = Objects.requireNonNull(resource.adaptTo(ModifiableValueMap.class));
-            String resourceType = values.get(ResourceUtil.PROP_RESOURCE_TYPE, "");
-            if (StringUtils.isNotBlank(resourceType)) {
-                Matcher matcher = oldTypePattern.matcher(resourceType);
-                if (matcher.matches()) {
-                    String newResourceType = matcher.replaceAll(newTypeRule);
-                    if (!resourceType.equals(newResourceType)) {
-                        if (LOG.isInfoEnabled()) {
-                            LOG.info("changeResourceType(" + resource.getPath() + "): "
-                                    + resourceType + " -> " + newResourceType);
+            ModifiableValueMap values = resource.adaptTo(ModifiableValueMap.class);
+            if (values != null) {
+                String resourceType = values.get(ResourceUtil.PROP_RESOURCE_TYPE, "");
+                if (StringUtils.isNotBlank(resourceType)) {
+                    Matcher matcher = oldTypePattern.matcher(resourceType);
+                    if (matcher.matches()) {
+                        String newResourceType = matcher.replaceAll(newTypeRule);
+                        if (!resourceType.equals(newResourceType)) {
+                            if (LOG.isInfoEnabled()) {
+                                LOG.info("changeResourceType(" + resource.getPath() + "): "
+                                        + resourceType + " -> " + newResourceType);
+                            }
+                            values.put(ResourceUtil.PROP_RESOURCE_TYPE, newResourceType);
                         }
-                        values.put(ResourceUtil.PROP_RESOURCE_TYPE, newResourceType);
                     }
                 }
-            }
 
-            // recursive traversal
-            for (Resource child : resource.getChildren()) {
-                changeResourceType(resourceFilter, child, oldTypePattern, newTypeRule);
+                // recursive traversal
+                for (Resource child : resource.getChildren()) {
+                    changeResourceType(resourceFilter, child, oldTypePattern, newTypeRule);
+                }
+
+            } else {
+                canNotModify(resource);
             }
         }
     }
@@ -1296,16 +1335,20 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
             String primaryContentType = (String) contentValues.get(JcrConstants.JCR_PRIMARYTYPE);
             Resource targetContent = resolver.create(target, JcrConstants.JCR_CONTENT, Collections.singletonMap(
                     JcrConstants.JCR_PRIMARYTYPE, primaryContentType));
-            ModifiableValueMap targetValues = Objects.requireNonNull(targetContent.adaptTo(ModifiableValueMap.class));
-            applyContent(context, templateContent, targetContent, false, true,
-                    TEMPLATE_PROPERTY_FILTER, TEMPLATE_TARGET_KEEP);
+            ModifiableValueMap targetValues = targetContent.adaptTo(ModifiableValueMap.class);
+            if (targetValues != null) {
+                applyContent(context, templateContent, targetContent, false, true,
+                        TEMPLATE_PROPERTY_FILTER, TEMPLATE_TARGET_KEEP);
 
-            // prevent from unwanted properties in raw node types...
-            if (setTemplateProperty && !primaryContentType.startsWith("nt:")) {
-                if (targetValues.get(PROP_TEMPLATE) == null) {
-                    // write template only if not always set by the template properties
-                    targetValues.put(PROP_TEMPLATE, Objects.requireNonNull(templateContent.getParent()).getPath());
+                // prevent from unwanted properties in raw node types...
+                if (setTemplateProperty && !primaryContentType.startsWith("nt:")) {
+                    if (targetValues.get(PROP_TEMPLATE) == null) {
+                        // write template only if not always set by the template properties
+                        targetValues.put(PROP_TEMPLATE, Objects.requireNonNull(templateContent.getParent()).getPath());
+                    }
                 }
+            } else {
+                canNotModify(targetContent);
             }
         } else {
             applyProperties(context, template, target, false, TEMPLATE_PROPERTY_FILTER, TEMPLATE_TARGET_KEEP);
@@ -1380,33 +1423,53 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
      */
     protected void applyProperties(@Nonnull TemplateContext context, @Nonnull Resource template,
                                    @Nonnull Resource target, boolean merge,
-                                   StringFilter propertyFilter, StringFilter keepOnTarget) {
+                                   StringFilter propertyFilter, StringFilter keepOnTarget)
+            throws PersistenceException {
         ResourceResolver resolver = context.getResolver();
-        ModifiableValueMap values = Objects.requireNonNull(target.adaptTo(ModifiableValueMap.class));
-        ValueMap templateValues = template.getValueMap();
-        if (!merge) {
-            // in case of a 'reset' remove all properties from the target resource
-            for (String key : values.keySet().toArray(new String[0])) {
-                if (!keepOnTarget.accept(key)) {
-                    values.remove(key);
-                }
-            }
-        }
-        for (Map.Entry<String, Object> entry : templateValues.entrySet()) {
-            String key = entry.getKey();
-            if (propertyFilter.accept(key)) {
-                // copy template properties if not always present or a 'reset' is requested
-                if (values.get(key) == null || (!merge && !keepOnTarget.accept(key))) {
-                    Object value = entry.getValue();
-                    if (value instanceof String) {
-                        value = context.applyTemplatePlaceholders(target, (String) value);
-                    }
-                    if (value != null) {
-                        values.put(key, value);
+        ModifiableValueMap values = target.adaptTo(ModifiableValueMap.class);
+        if (values != null) {
+            ValueMap templateValues = template.getValueMap();
+            if (!merge) {
+                // in case of a 'reset' remove all properties from the target resource
+                for (String key : values.keySet().toArray(new String[0])) {
+                    if (!keepOnTarget.accept(key)) {
+                        values.remove(key);
                     }
                 }
             }
+            for (Map.Entry<String, Object> entry : templateValues.entrySet()) {
+                String key = entry.getKey();
+                if (propertyFilter.accept(key)) {
+                    // copy template properties if not always present or a 'reset' is requested
+                    if (values.get(key) == null || (!merge && !keepOnTarget.accept(key))) {
+                        Object value = entry.getValue();
+                        if (value instanceof String) {
+                            value = context.applyTemplatePlaceholders(target, (String) value);
+                        }
+                        if (value != null) {
+                            values.put(key, value);
+                        }
+                    }
+                }
+            }
+        } else {
+            canNotModify(target);
         }
+    }
+
+    protected ModifiableValueMap forModification(Resource resource, ModifiableValueMap values) throws PersistenceException {
+        if (values == null) {
+            values = resource.adaptTo(ModifiableValueMap.class);
+            if (values == null) {
+                canNotModify(resource);
+            }
+        }
+        return values;
+    }
+
+    protected void canNotModify(Resource resource) throws PersistenceException {
+        LOG.error("can't modify '{}' ({})", resource.getPath(), resource.getResourceResolver().getUserID());
+        throw new PersistenceException("can't modify '" + resource.getPath() + "'");
     }
 
     //

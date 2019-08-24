@@ -30,6 +30,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.request.RequestPathInfo;
+import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
@@ -66,14 +67,20 @@ public abstract class AbstractModel implements SlingBean, Model {
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractModel.class);
 
-    /** the property name for placeholder values (content hints) */
+    /**
+     * the property name for placeholder values (content hints)
+     */
     public static final String PROP_PLACEHOLDER = "placeholder";
 
-    /** resource type to CSS: don't use basic types */
+    /**
+     * resource type to CSS: don't use basic types
+     */
     public static final ResourceFilter CSS_BASE_TYPE_RESTRICTION =
             new ResourceFilter.ResourceTypeFilter(new StringFilter.BlackList("^(nt|sling):.*$"));
 
-    /** the list paths to use as I18N access path if I18N should be ignored */
+    /**
+     * the list paths to use as I18N access path if I18N should be ignored
+     */
     public static final List<String> IGNORE_I18N;
 
     static {
@@ -83,33 +90,45 @@ public abstract class AbstractModel implements SlingBean, Model {
 
     // OSGi services
 
-    /** protected to allow set instance by the Page and Site model */
+    /**
+     * protected to allow set instance by the Page and Site model
+     */
     protected transient SiteManager siteManager;
     protected transient PageManager pageManager;
 
-    /** lazy referenced services */
+    /**
+     * lazy referenced services
+     */
     private transient ResourceManager resourceManager;
     private transient VersionsService versionsService;
 
     // instance attributes
 
-    /** the instance of the scripting context for the model (initialized) */
+    /**
+     * the instance of the scripting context for the model (initialized)
+     */
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @Self
     protected BeanContext context;
 
-    /** the resource an related properties represented by this model (initialized) */
+    /**
+     * the resource an related properties represented by this model (initialized)
+     */
     protected Resource resource;
     protected ResourceResolver resolver;
     protected ValueMap properties;
-    /** inherited properties are initialized lazy */
+    /**
+     * inherited properties are initialized lazy
+     */
     private transient InheritedValues inheritedValues;
 
     private transient Map<String, Object> propertiesMap;
     private transient Map<String, Object> inheritedMap;
 
-    /** current access mode (author/public) od the contexts request */
+    /**
+     * current access mode (author/public) od the contexts request
+     */
     private transient AccessMode accessMode;
 
     private transient DisplayMode.Value displayMode;
@@ -187,7 +206,9 @@ public abstract class AbstractModel implements SlingBean, Model {
         initialize(context, resource);
     }
 
-    /** Initialization called during construction by Sling Models. Do not call otherwise. */
+    /**
+     * Initialization called during construction by Sling Models. Do not call otherwise.
+     */
     @PostConstruct
     protected void initialize() {
         Validate.notNull(context);
@@ -283,13 +304,17 @@ public abstract class AbstractModel implements SlingBean, Model {
 
     //
 
-    /** public access to the context */
+    /**
+     * public access to the context
+     */
     @Override
     public BeanContext getContext() {
         return context;
     }
 
-    /** public access to the resource */
+    /**
+     * public access to the resource
+     */
     @Override
     @Nonnull
     public Resource getResource() {
@@ -373,9 +398,13 @@ public abstract class AbstractModel implements SlingBean, Model {
     public List<Resource> getReferrers() {
         if (referrers == null) {
             referrers = new ArrayList<>();
-            getResourceManager().changeReferences(ResourceFilter.ALL, StringFilter.ALL,
-                    Objects.requireNonNull(getContext().getResolver().getResource("/content")),
-                    referrers, true, getPath(), "");
+            try {
+                getResourceManager().changeReferences(ResourceFilter.ALL, StringFilter.ALL,
+                        Objects.requireNonNull(getContext().getResolver().getResource("/content")),
+                        referrers, true, getPath(), "");
+            } catch (PersistenceException ex) {
+                LOG.error(ex.getMessage(), ex);
+            }
         }
         return referrers;
     }

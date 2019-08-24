@@ -127,12 +127,16 @@ public interface ResourceManager {
 
     ResourceReference getReference(AbstractModel model);
 
-    /** a resource and a probably overlayed type (type can be 'null') */
+    /**
+     * a resource and a probably overlayed type (type can be 'null')
+     */
     ResourceReference getReference(@Nonnull Resource resource, @Nullable String type);
 
     ResourceReference getReference(@Nonnull ResourceResolver resolver, @Nonnull String path, @Nullable String type);
 
-    /** a reference translated from a JSON object (transferred reference) */
+    /**
+     * a reference translated from a JSON object (transferred reference)
+     */
     ResourceReference getReference(ResourceResolver resolver, JsonReader reader) throws IOException;
 
     ReferenceList getReferenceList();
@@ -173,12 +177,12 @@ public interface ResourceManager {
     /**
      * Moves a resource and adopts all references to the moved resource or one of its children.
      *
-     * @param resolver     the resolver (session context)
-     * @param changeRoot   the root element for reference search and change
-     * @param source       the resource to move
-     * @param targetParent the target (the parent resource) of the move
-     * @param newName      an optional new name for the resource
-     * @param before       the designated sibling in an ordered target collection
+     * @param resolver         the resolver (session context)
+     * @param changeRoot       the root element for reference search and change
+     * @param source           the resource to move
+     * @param targetParent     the target (the parent resource) of the move
+     * @param newName          an optional new name for the resource
+     * @param before           the designated sibling in an ordered target collection
      * @param updatedReferrers output parameter: the List of referers found - these were changed and might need setting a last modification date
      * @return the new resource at the target path
      */
@@ -187,7 +191,7 @@ public interface ResourceManager {
                                  @Nonnull Resource source, @Nonnull Resource targetParent,
                                  @Nullable String newName, @Nullable Resource before,
                                  @Nonnull List<Resource> updatedReferrers)
-            throws RepositoryException;
+            throws RepositoryException, PersistenceException;
 
     /**
      * Changes the 'oldPath' references in each property of a tree to the 'newPath'.
@@ -203,7 +207,8 @@ public interface ResourceManager {
      */
     void changeReferences(@Nonnull ResourceFilter resourceFilter, @Nonnull StringFilter propertyFilter,
                           @Nonnull Resource resource, @Nonnull List<Resource> foundReferrers, boolean scanOnly,
-                          @Nonnull String oldPath, @Nonnull String newPath);
+                          @Nonnull String oldPath, @Nonnull String newPath)
+            throws PersistenceException;
 
     /**
      * Changes the 'oldTypePattern' resource types in every appropriate component using the 'newTypeRule'.
@@ -214,7 +219,8 @@ public interface ResourceManager {
      * @param newTypeRule    the pattern matcher rule to build the new type
      */
     void changeResourceType(@Nonnull ResourceFilter resourceFilter, @Nonnull Resource resource,
-                            @Nonnull String oldTypePattern, @Nonnull String newTypeRule);
+                            @Nonnull String oldTypePattern, @Nonnull String newTypeRule)
+            throws PersistenceException;
 
     //
     // templates and copies

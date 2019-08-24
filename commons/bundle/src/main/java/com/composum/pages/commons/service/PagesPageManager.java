@@ -47,7 +47,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.composum.pages.commons.PagesConstants.NODE_TYPE_PAGE;
-import static com.composum.sling.core.util.SlingResourceUtil.isSameOrDescendant;
 
 @Component(
         property = {
@@ -328,8 +327,12 @@ public class PagesPageManager extends PagesContentManager<Page> implements PageM
         StringFilter propertyFilter = StringFilter.ALL;
         ResourceFilter resourceFilter = ResourceFilter.ALL;
         List<Resource> referringResources = new ArrayList<>();
-        resourceManager.changeReferences(resourceFilter, propertyFilter, searchRoot, referringResources,
-                true, page.getPath(), "");
+        try {
+            resourceManager.changeReferences(resourceFilter, propertyFilter, searchRoot, referringResources,
+                    true, page.getPath(), "");
+        } catch (PersistenceException ex) {
+            LOG.error(ex.getMessage(), ex);
+        }
 
         ResourceFilter referringPageFilter = PlatformVersionsService.ACTIVATABLE_FILTER;
         if (resolved) {
