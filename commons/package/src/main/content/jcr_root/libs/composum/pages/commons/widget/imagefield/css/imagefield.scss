@@ -10,22 +10,24 @@
                 .composum-pages-edit-widget {
 
                     &_wrapper {
-                        display: table;
-                        max-height: 240px;
+                        position: relative;
+                        min-height: 132px;
                         margin: 2px 0 10px;
-                        border: 1px solid #ccc;
-                        padding: 5px;
                     }
 
                     &_frame {
-                        display: inline-block;
+                        position: absolute;
+                        left: 0;
+                        bottom: 0;
+                        border: 1px solid #ccc;
+                        padding: 5px;
                     }
 
                     &_picture {
                         min-width: 80px;
                         min-height: 46px;
                         max-width: 100%;
-                        max-height: 240px;
+                        max-height: 120px;
                     }
 
                     &_data {
