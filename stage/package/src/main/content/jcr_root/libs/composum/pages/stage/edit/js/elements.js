@@ -644,6 +644,7 @@
                 };
                 if (container.elements.length > 0) {
                     var eRect = elements.pageBody.getViewRect(container.elements[0].$el);
+                    /*
                     if (container.elements.length > 1) {
                         var eRect2 = elements.pageBody.getViewRect(container.elements[1].$el);
                         this.insert.vertical = eRect.y2 <= eRect2.y1 || eRect2.y2 <= eRect.y1;
@@ -651,13 +652,15 @@
                         this.insert.vertical = Math.abs(this.insert.containerRect.x1 - eRect.x1)
                             <= Math.abs(this.insert.containerRect.y1 - eRect.y1);
                     }
-                    if (this.insert.vertical) {
+                    */
+                    //if (this.insert.vertical) {
                         this.insert.x = this.insert.containerRect.x1 - this.insert.handlePos.left;
                         this.insert.w = this.insert.containerRect.w;
                         this.$insert.css('left', this.insert.x);
                         this.$insert.css('width', this.insert.w);
                         this.$insert.css('height', 0);
                         this.$insert.addClass(c.base + c.insert._vertical);
+                    /*
                     } else {
                         this.insert.y = this.insert.containerRect.y1 - this.insert.handlePos.top;
                         this.insert.h = this.insert.containerRect.h;
@@ -666,6 +669,7 @@
                         this.$insert.css('width', 0);
                         this.$insert.addClass(c.base + c.insert._horizontal);
                     }
+                    */
                 } else {
                     this.insert.x = this.insert.containerRect.x1 - this.insert.handlePos.left;
                     this.insert.y = this.insert.containerRect.y1 + this.insert.containerRect.h / 2 - this.insert.handlePos.top;
@@ -683,7 +687,7 @@
                 for (var i = 0; i < this.dragTarget.elements.length; i++) {
                     var element = this.dragTarget.elements[i];
                     var eRect = elements.pageBody.getViewRect(element.$el);
-                    if (this.insert.vertical) {
+                    //if (this.insert.vertical) {
                         if (pointer.y >= eRect.y1 && pointer.y <= eRect.y2) {
                             if (pointer.y > eRect.y1 + eRect.h / 2) {
                                 this.insert.y = eRect.y2;
@@ -697,6 +701,7 @@
                             this.$insert.css('top', this.insert.y);
                             break;
                         }
+                    /*
                     } else {
                         if (pointer.x >= eRect.x1 && pointer.x <= eRect.x2) {
                             if (pointer.x > eRect.x1 + eRect.w / 2) {
@@ -712,6 +717,7 @@
                             break;
                         }
                     }
+                    */
                 }
             }
         });
