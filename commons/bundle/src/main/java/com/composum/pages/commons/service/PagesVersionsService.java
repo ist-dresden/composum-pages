@@ -89,7 +89,7 @@ public class PagesVersionsService implements VersionsService {
     @Nonnull
     public List<PageVersion> findModifiedPages(@Nonnull final BeanContext context, final SiteRelease siteRelease) throws RepositoryException {
         ExceptionThrowingFunction<StagingReleaseManager.Release, List<PlatformVersionsService.Status>, RepositoryException> getChanges =
-                platformVersionsService::findReleaseChanges;
+                platformVersionsService::findWorkspaceChanges;
         return findPageVersions(siteRelease, getChanges);
     }
 

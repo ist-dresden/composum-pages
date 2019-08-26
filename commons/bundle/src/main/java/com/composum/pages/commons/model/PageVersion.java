@@ -61,7 +61,10 @@ public class PageVersion {
         String path = null;
         if (status.getActivationInfo() != null) {
             path = status.getActivationInfo().getPath();
-        } else if (status.getPreviousVersionableInfo() != null) {
+        } else if (null != status.getCurrentVersionableInfo()) {
+            path = release.absolutePath(status.getCurrentVersionableInfo().getRelativePath());
+        }
+        if (path == null && status.getPreviousVersionableInfo() != null) {
             // weird unwanted case when a document does not appear at all in a release but in its predecessor
             path = release.absolutePath(status.getPreviousVersionableInfo().getRelativePath());
         }

@@ -24,7 +24,7 @@
         <package.company>IST GmbH Dresden</package.company>
         <bundle.category>composum,pages</bundle.category>
         <composum.nodes.version>1.11.2</composum.nodes.version>
-        <composum.platform.version>1.0.5</composum.platform.version>
+        <composum.platform.version>1.0.6-SNAPSHOT</composum.platform.version>
     </properties>
 
     <scm>
