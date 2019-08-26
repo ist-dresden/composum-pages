@@ -4,5 +4,5 @@
 <cpp:defineObjects/>
 <cpp:model var="model" type="com.composum.pages.components.model.asset.Video">
     <video class="${modelCSS}_player" src="${model.src}" ${model.editMode?'':'autoplay="autoplay"'} muted="muted"
-        ${model.loop?'loop="true"':''}></video>
+        ${model.loop?'loop="loop"':''}${model.posterAttr}></video>
 </cpp:model>
