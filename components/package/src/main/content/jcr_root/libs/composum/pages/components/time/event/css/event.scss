@@ -26,8 +26,8 @@ $event-icon-font-size: 18px;
 
             &_tile {
                 display: inline-block;
-                min-width: 76px;
-                max-width: 76px;
+                min-width: 70px;
+                max-width: 70px;
                 margin-right: 15px;
                 margin-bottom: 15px;
                 @include font($site-symbol-font-family, $site-default-font-size);
@@ -167,6 +167,13 @@ $event-icon-font-size: 18px;
                 }
             }
 
+            &_link {
+
+                &:hover {
+                    color: $site-default-link-hover;
+                }
+            }
+
             &_teaser-text {
 
                 &, & a, & a:hover, & a:focus, & a:visited {
@@ -239,7 +246,7 @@ $event-icon-font-size: 18px;
                     }
 
                     &_teaser {
-                        padding: 30px 15px;
+                        padding: 50px 15px 30px;
 
                         .composum-pages-components-time-event {
 

@@ -5,6 +5,6 @@
 <cpp:model var="menu" type="com.composum.pages.components.model.navigation.Menu">
     <cpn:link class="${menuCSS}_brand navbar-brand"
               href="${menu.currentPage.homepage.url}"><img
-            class="${menuCSS}_logo" src="${menu.currentPage.homepage.logoUrl}"
+            class="${menuCSS}_logo" src="${menu.currentPage.logoUrl}"
             alt="${cpn:i18n(slingRequest,'Site Logo')}"/></cpn:link>
 </cpp:model>

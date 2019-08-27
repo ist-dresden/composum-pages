@@ -55,6 +55,7 @@ import static com.composum.pages.commons.PagesConstants.PN_SUBTITLE;
 import static com.composum.pages.commons.PagesConstants.PROP_EDIT_CATEGORY;
 import static com.composum.pages.commons.PagesConstants.PROP_PAGE_LANGUAGES;
 import static com.composum.pages.commons.PagesConstants.PROP_SLING_TARGET;
+import static com.composum.pages.commons.PagesConstants.PROP_THEME_CATEGORY;
 import static com.composum.pages.commons.PagesConstants.PROP_VIEW_CATEGORY;
 import static com.composum.pages.commons.PagesConstants.VERSION_DATE_FORMAT;
 
@@ -62,6 +63,8 @@ import static com.composum.pages.commons.PagesConstants.VERSION_DATE_FORMAT;
 public class Page extends ContentDriven<PageContent> implements Comparable<Page> {
 
     private static final Logger LOG = LoggerFactory.getLogger(Page.class);
+
+    public static final String LOGO_PATH = "logo";
 
     public static final String DISPLAY_MODE_CSS_CLASS = PAGES_PREFIX + "display-mode";
 
@@ -204,6 +207,9 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
 
     private transient String subtitle;
 
+    private transient Image logo;
+    private transient String logoUrl;
+
     private transient Boolean canonicalRequest;
     private transient String canonicalUrl;
     private transient String targetUrl;
@@ -276,6 +282,32 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
 
     public boolean isTemplate() {
         return getResourceManager().isTemplate(getContext(), this.getResource());
+    }
+
+
+    public String getLogoUrl() {
+        if (logoUrl == null) {
+            Image logo = getLogo();
+            logoUrl = logo.getAssetUrl();
+        }
+        return logoUrl;
+    }
+
+    public Image getLogo() {
+        if (logo == null) {
+            logo = new Image(context, findInherited(LOGO_PATH));
+        }
+        return logo;
+    }
+
+    @Nullable
+    public Resource findInherited(@Nonnull final String path) {
+        Page page = this;
+        Resource resource = null;
+        while (page != null && (resource = page.getContent().getResource().getChild(path)) == null) {
+            page = page.getParentPage();
+        }
+        return resource;
     }
 
     /**
@@ -531,6 +563,11 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
     @Nonnull
     public String getViewClientlibCategory() {
         return getInherited(PROP_VIEW_CATEGORY, DEFAULT_VIEW_CATEGORY);
+    }
+
+    @Nonnull
+    public String getThemeClientlibCategory() {
+        return getInherited(PROP_THEME_CATEGORY, "");
     }
 
     @Nonnull

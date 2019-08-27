@@ -1,0 +1,162 @@
+@charset "UTF-8";
+
+@import "../../css/variables";
+@import "../../css/mixins";
+
+$dark-background: #333;
+$dark-foreground: #eee;
+$dark-link: #f1a24b;
+$dark-highlight: #fff;
+$dark-highlight-bg: #666;
+$dark-highlight-border: #aaa;
+
+body {
+    background-color: $dark-background;
+    color: $dark-foreground;
+}
+
+.composum-pages-components-navigation-navbar {
+    background-color: $dark-background;
+    border-color: $dark-highlight-bg;
+
+    &, & .navbar-nav > li {
+        > a {
+            color: $dark-foreground;
+
+            &:hover, &:focus {
+                color: $dark-highlight;
+                background-color: $dark-highlight-bg;
+            }
+        }
+
+        &.active > a {
+            &, &:hover, &:focus {
+                color: $dark-foreground;
+                background-color: $dark-highlight-bg;
+            }
+        }
+
+        .input-group {
+            input, .input-group-btn {
+                &, & .btn {
+                    color: $dark-foreground;
+                    background-color: $dark-highlight-bg;
+                    border-color: $dark-highlight-border;
+                }
+            }
+        }
+    }
+
+    .navbar-toggle {
+        &, &:hover, &:focus {
+            background-color: $dark-highlight-bg;
+            border-color: $dark-highlight-border;
+        }
+    }
+}
+
+.composum-pages-components-page {
+
+    &_content {
+
+        code, input {
+            color: $dark-foreground;
+            background-color: $dark-highlight-bg;
+        }
+
+        .composum-pages-components-container {
+
+            &-row {
+                &_header {
+                    background-color: $dark-highlight-bg;
+                }
+
+                &_title {
+                    color: $dark-foreground;
+                }
+            }
+        }
+
+        .composum-pages-components-element {
+
+            &-image {
+                border-color: $dark-highlight-bg;
+            }
+
+            &-link {
+                &_link {
+                    color: $dark-link;
+
+                    &:hover {
+                        color: $site-default-link-hover;
+                    }
+                }
+            }
+
+            &-teaser, &-text, &-textimage {
+                &_title,
+                &_subtitle,
+                &_text {
+                    color: $dark-foreground;
+
+                    a {
+                        color: $dark-link;
+
+                        &:hover {
+                            color: $site-default-link-hover;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    .composum-pages-components-element-teaser {
+        &, &_variation_default {
+
+            &_link {
+                .composum-pages-components-element-teaser {
+                    &_title,
+                    &_subtitle {
+                        color: $dark-link;
+                    }
+                }
+
+                &:hover {
+                    .composum-pages-components-element-teaser {
+                        &_title,
+                        &_subtitle {
+                            color: $site-default-link-hover;
+                        }
+                    }
+                }
+            }
+
+            .composum-pages-components-element {
+
+                &-link {
+                    &_link {
+                        &, &:visited, &:focus {
+                            color: $dark-link;
+                        }
+
+                        &:hover {
+                            color: $site-default-link-hover;
+                        }
+                    }
+                }
+            }
+
+            &, &.composum-pages-components-element-teaser {
+                &_symbol {
+                    .composum-pages-components-element-teaser {
+                        &_icon {
+                            color: $dark-foreground;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+

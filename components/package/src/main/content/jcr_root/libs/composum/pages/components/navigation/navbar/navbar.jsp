@@ -5,7 +5,7 @@
 <cpp:defineObjects/>
 <cpp:element var="menu" type="com.composum.pages.components.model.navigation.NavbarMenu" mode="none"
              cssBase="composum-pages-components-navigation-navbar" role="navigation"
-             cssAdd="navbar navbar-default navbar-fixed-top">
+             cssAdd="navbar navbar-default navbar-fixed-top navbar-width-@{menu.sizeCss}">
     <div class="${menuCSS}_container container-fluid">
         <div class="${menuCSS}_header navbar-header">
             <button type="button" class="${menuCSS}_navbar-toggle navbar-toggle" data-toggle="collapse"

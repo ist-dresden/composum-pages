@@ -11,4 +11,5 @@
         <sling:call script="navigation.jsp"/>
         <sling:call script="language.jsp"/>
     </cpp:editDialogTab>
+    <sling:call script="page-presets.jsp"/>
 </cpp:editDialog>
