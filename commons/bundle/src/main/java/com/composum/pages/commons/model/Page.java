@@ -242,6 +242,11 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
         return builder.toComparison();
     }
 
+    @Override
+    public boolean equals(Object other) {
+        return other instanceof Page && compareTo((Page) other) == 0;
+    }
+
     // initializer extensions
 
     /**
@@ -660,7 +665,7 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
         }
 
         public String getReleaseLabel() {
-            String label = releaseStatus.getRelease().getReleaseLabel();
+            String label = releaseStatus.getPreviousRelease().getReleaseLabel();
             Matcher matcher = PagesConstants.RELEASE_LABEL_PATTERN.matcher(label);
             return matcher.matches() ? matcher.group(1) : label;
         }
