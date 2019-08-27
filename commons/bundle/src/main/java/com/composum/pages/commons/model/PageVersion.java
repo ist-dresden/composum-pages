@@ -59,8 +59,8 @@ public class PageVersion {
 
     public String getPath() {
         String path = null;
-        if (status.getActivationInfo() != null) {
-            path = status.getActivationInfo().getPath();
+        if (status.getVersionReference() != null) {
+            path = status.getVersionReference().getPath();
         } else if (null != status.getCurrentVersionableInfo()) {
             path = release.absolutePath(status.getCurrentVersionableInfo().getRelativePath());
         }
@@ -77,8 +77,8 @@ public class PageVersion {
     /** Returns the URL to reference this page version. */
     public String getUrl() {
         String url = null;
-        if (status.getActivationInfo() != null && status.getActivationInfo().isActive()) {
-            String path = status.getActivationInfo().getPath();
+        if (status.getVersionReference() != null && status.getVersionReference().isActive()) {
+            String path = status.getVersionReference().getPath();
             if (StringUtils.endsWith(path, '/' + JCR_CONTENT)) {
                 path = ResourceUtil.getParent(path);
             }
@@ -89,10 +89,10 @@ public class PageVersion {
     }
 
     public String getTitle() {
-        if (null == status.getActivationInfo()) {
+        if (null == status.getVersionReference()) {
             return null;
         }
-        Resource versionResource = status.getActivationInfo().getVersionResource();
+        Resource versionResource = status.getVersionReference().getVersionResource();
         if (null == versionResource) {
             return null;
         }
@@ -100,10 +100,10 @@ public class PageVersion {
     }
 
     public String getLastModifiedString() {
-        if (status.getActivationInfo() == null) {
+        if (status.getVersionReference() == null) {
             return null;
         }
-        Calendar created = status.getActivationInfo().getVersionCreated();
+        Calendar created = status.getVersionReference().getVersionCreated();
         return null != created ? new SimpleDateFormat(VERSION_DATE_FORMAT).format(created.getTime()) : null;
     }
 

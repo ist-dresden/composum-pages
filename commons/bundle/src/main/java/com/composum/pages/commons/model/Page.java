@@ -666,7 +666,7 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
         }
 
         public Calendar getLastActivatedTime() {
-            return releaseStatus.getActivationInfo() != null ? releaseStatus.getActivationInfo().getLastActivated() : null;
+            return releaseStatus.getVersionReference() != null ? releaseStatus.getVersionReference().getLastActivated() : null;
         }
 
         public String getLastActivated() {
@@ -675,16 +675,16 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
         }
 
         public String getLastActivatedBy() {
-            return releaseStatus.getActivationInfo() != null ? releaseStatus.getActivationInfo().getLastActivatedBy() : null;
+            return releaseStatus.getVersionReference() != null ? releaseStatus.getVersionReference().getLastActivatedBy() : null;
         }
 
         public String getLastDeactivated() {
-            Calendar calendar = releaseStatus.getActivationInfo() != null ? releaseStatus.getActivationInfo().getLastDeactivated() : null;
+            Calendar calendar = releaseStatus.getVersionReference() != null ? releaseStatus.getVersionReference().getLastDeactivated() : null;
             return calendar != null ? new SimpleDateFormat(VERSION_DATE_FORMAT).format(calendar.getTime()) : "";
         }
 
         public String getLastDeactivatedBy() {
-            return releaseStatus.getActivationInfo() != null ? releaseStatus.getActivationInfo().getLastDeactivatedBy() : null;
+            return releaseStatus.getVersionReference() != null ? releaseStatus.getVersionReference().getLastDeactivatedBy() : null;
         }
     }
 
