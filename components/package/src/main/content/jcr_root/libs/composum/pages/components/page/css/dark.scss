@@ -19,6 +19,17 @@ body {
     background-color: $dark-background;
     border-color: $dark-highlight-bg;
 
+    .navbar-collapse {
+        border-color: $dark-highlight-bg;
+    }
+
+    .navbar-toggle {
+        &, &:hover, &:focus {
+            background-color: $dark-highlight-bg;
+            border-color: $dark-highlight-border;
+        }
+    }
+
     &, & .navbar-nav > li {
         > a {
             color: $dark-foreground;
@@ -46,13 +57,6 @@ body {
             }
         }
     }
-
-    .navbar-toggle {
-        &, &:hover, &:focus {
-            background-color: $dark-highlight-bg;
-            border-color: $dark-highlight-border;
-        }
-    }
 }
 
 .composum-pages-components-page {
@@ -66,13 +70,15 @@ body {
 
         .composum-pages-components-container {
 
+            &-row, &-section {
+                &_title {
+                    color: $dark-foreground;
+                }
+            }
+
             &-row {
                 &_header {
                     background-color: $dark-highlight-bg;
-                }
-
-                &_title {
-                    color: $dark-foreground;
                 }
             }
         }
