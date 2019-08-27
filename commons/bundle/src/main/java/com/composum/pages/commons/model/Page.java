@@ -619,22 +619,24 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
     }
 
     /**
+     * The activation state of the page. We have a special case here:
+     * if the versionable is modified in the workspace, we want this to take precedence over status
+     * activated to alert the user that there is a modification that is not checked in yet.
+     *
      * @return 'modified' if the page is modified after last activation in th current release
      */
     public PlatformVersionsService.ActivationState getPageActivationState() {
-        PlatformVersionsService.ActivationState status = null;
         Page.StatusModel state = getReleaseStatus();
+        PlatformVersionsService.ActivationState status = state != null ? state.getActivationState() : null;
+        if (status != null && status != ActivationState.activated) {
+            return status;
+        }
+        // the state activated can be overridden to modified if the page is modified
         Calendar lastModified = getContent().getLastModified();
         if (lastModified != null) {
             Calendar lastActivated = state.getLastActivatedTime();
             if (lastActivated != null && lastActivated.before(lastModified)) {
                 status = ActivationState.modified;
-            }
-        }
-        if (status == null) {
-            status = state.getActivationState();
-            if (status == ActivationState.modified) {
-                status = ActivationState.activated;
             }
         }
         return status;

@@ -110,20 +110,21 @@ public class PageVersion {
         return null != lastModified ? new SimpleDateFormat(VERSION_DATE_FORMAT).format(lastModified.getTime()) : null;
     }
 
-    /** The page if this is about the workspace. */
     public Page getPage() {
-        if (page == null && status.getNextRelease() == null) {
-            String path = status.getPreviousRelease().absolutePath(status.getNextVersionable().getRelativePath());
-            if (StringUtils.isNotBlank(path)) {
-                Resource resource = context.getResolver().getResource(path);
-                if (resource != null) {
-                    page = getPageManager().createBean(context, resource);
-                }
+        if (page == null) {
+            Resource resource = status.getWorkspaceResource();
+            if (resource != null) {
+                page = getPageManager().createBean(context, resource);
             }
         }
         return page;
     }
 
+    /**
+     * The activation status of the page. In the special case that a page is activated in the release, but
+     * also modified in the workspace this will return 'modified' to alert the user that there is a
+     * new version of the page to be published, even if this is used in the display of a release.
+     */
     public PlatformVersionsService.ActivationState getPageActivationState() {
         Page page = getPage();
         return page != null ? page.getPageActivationState() : PlatformVersionsService.ActivationState.modified;
