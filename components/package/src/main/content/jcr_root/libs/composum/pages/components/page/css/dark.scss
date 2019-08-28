@@ -21,6 +21,13 @@ body {
 
     .navbar-collapse {
         border-color: $dark-highlight-bg;
+
+        @media screen and (max-width: $bootstrap-screen-xs-max) {
+
+            &.navbar-left {
+                padding-top: 30px;
+            }
+        }
     }
 
     .navbar-toggle {
@@ -31,19 +38,13 @@ body {
     }
 
     &, & .navbar-nav > li {
-        > a {
+
+        > .dropdown-menu {
             color: $dark-foreground;
+            background-color: $dark-highlight-bg;
 
-            &:hover, &:focus {
-                color: $dark-highlight;
-                background-color: $dark-highlight-bg;
-            }
-        }
-
-        &.active > a {
-            &, &:hover, &:focus {
-                color: $dark-foreground;
-                background-color: $dark-highlight-bg;
+            @media screen and (max-width: $bootstrap-screen-xs-max) {
+                background-color: transparent;
             }
         }
 
@@ -54,6 +55,33 @@ body {
                     background-color: $dark-highlight-bg;
                     border-color: $dark-highlight-border;
                 }
+            }
+        }
+    }
+
+    &, & .navbar-nav > li, & .navbar-nav .open .dropdown-menu > li {
+        
+        > a {
+            &, &:focus {
+                color: $dark-foreground;
+            }
+
+            &:hover {
+                color: $dark-highlight;
+                background-color: $dark-highlight-border;
+            }
+        }
+
+        &.active > a, &.open > a {
+
+            &, &:focus {
+                color: $dark-foreground;
+                background-color: $dark-highlight-bg;
+            }
+
+            &:hover {
+                color: $dark-highlight;
+                background-color: $dark-highlight-border;
             }
         }
     }
@@ -85,7 +113,7 @@ body {
 
         .composum-pages-components-element {
 
-            &-image {
+            &-image, &-video {
                 border-color: $dark-highlight-bg;
             }
 
@@ -111,6 +139,25 @@ body {
                         &:hover {
                             color: $site-default-link-hover;
                         }
+                    }
+                }
+            }
+        }
+
+        &_top {
+
+            .composum-pages-components-element {
+
+                &-title {
+                    height: 146px;
+                    padding-top: 50px;
+                }
+
+                @media screen and (max-width: $bootstrap-screen-xs-max) {
+
+                    &-title {
+                        height: 110px;
+                        padding-top: 46px;
                     }
                 }
             }
