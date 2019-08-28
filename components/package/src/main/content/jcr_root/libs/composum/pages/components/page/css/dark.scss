@@ -60,7 +60,7 @@ body {
     }
 
     &, & .navbar-nav > li, & .navbar-nav .open .dropdown-menu > li {
-        
+
         > a {
             &, &:focus {
                 color: $dark-foreground;
