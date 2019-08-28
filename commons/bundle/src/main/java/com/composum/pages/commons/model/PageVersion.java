@@ -127,7 +127,9 @@ public class PageVersion {
      */
     public PlatformVersionsService.ActivationState getPageActivationState() {
         Page page = getPage();
-        return page != null ? page.getPageActivationState() : PlatformVersionsService.ActivationState.modified;
+        if (page != null) { return page.getPageActivationState(); }
+        if (status != null) { return status.getActivationState(); }
+        return PlatformVersionsService.ActivationState.modified; // shouldn't happen
     }
 
     @Nonnull
