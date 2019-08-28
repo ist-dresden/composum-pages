@@ -3,10 +3,12 @@
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <cpp:defineFrameObjects/>
 <cpp:editDialog title="@{dialog.selector=='create'?'Create an Annotation':'Edit Annotation'}">
-    <cpp:editDialogTab tabId="content" label="Content">
-        <sling:call script="content.jsp"/>
-    </cpp:editDialogTab>
-    <cpp:editDialogTab tabId="shape" label="Shape">
-        <sling:call script="shape.jsp"/>
-    </cpp:editDialogTab>
+    <div class="row">
+        <div class="col col-xs-8">
+            <sling:call script="content.jsp"/>
+        </div>
+        <div class="col col-xs-4">
+            <sling:call script="shape.jsp"/>
+        </div>
+    </div>
 </cpp:editDialog>
