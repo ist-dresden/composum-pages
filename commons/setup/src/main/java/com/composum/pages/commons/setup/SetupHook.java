@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 
 @SuppressWarnings({"Duplicates"})
 public class SetupHook implements InstallHook {
@@ -44,10 +45,6 @@ public class SetupHook implements InstallHook {
     public static final String PAGES_SERVICE_USER = "composum-pages-service";
     public static final String PAGES_TOKEN_SERVICE_USER = "composum-pages-token-service";
 
-    public static final String ADMINISTRATORS_GROUP = "administrators";
-    public static final String PAGES_ADMINISTRATORS = "composum-pages-administrators";
-    public static final String PAGES_AUTHORS = "composum-pages-authors";
-
     public static final Map<String, List<String>> PAGES_USERS;
     public static final Map<String, List<String>> PAGES_SYSTEM_USERS;
     public static final Map<String, List<String>> PAGES_GROUPS;
@@ -57,19 +54,9 @@ public class SetupHook implements InstallHook {
     static {
         PAGES_USERS = new LinkedHashMap<>();
         PAGES_SYSTEM_USERS = new LinkedHashMap<>();
-        PAGES_SYSTEM_USERS.put(PAGES_SYSTEM_USERS_PATH + PAGES_SERVICE_USER, asList(
-                ADMINISTRATORS_GROUP,
-                PAGES_ADMINISTRATORS
-        ));
-        PAGES_SYSTEM_USERS.put(PAGES_SYSTEM_USERS_PATH + PAGES_TOKEN_SERVICE_USER, Collections.singletonList(
-                "composum-platform-users"
-        ));
+        PAGES_SYSTEM_USERS.put(PAGES_SYSTEM_USERS_PATH + PAGES_SERVICE_USER, emptyList());
+        PAGES_SYSTEM_USERS.put(PAGES_SYSTEM_USERS_PATH + PAGES_TOKEN_SERVICE_USER, emptyList());
         PAGES_GROUPS = new LinkedHashMap<>();
-        PAGES_GROUPS.put(PAGES_USERS_PATH + PAGES_ADMINISTRATORS, asList(
-                "admin",
-                PAGES_SERVICE_USER
-        ));
-        PAGES_GROUPS.put(PAGES_USERS_PATH + PAGES_AUTHORS, new ArrayList<>());
     }
 
     @Override
