@@ -5,6 +5,7 @@ import com.composum.pages.commons.service.search.ExcerptGeneratorImpl;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.testing.mock.sling.ResourceResolverType;
 import org.apache.sling.testing.mock.sling.junit.SlingContext;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,23 +36,23 @@ public class ExcerptGeneratorImplTest {
     @Parameterized.Parameters(name = "{1}")
     public static List<Object[]> data() throws URISyntaxException {
         return asList(new Object[][]{
-                {"ignored", "description", "... a <b>description</b> ..."},
-                {"ignored", "some title", "... <b>some</b> <b>title</b> with <b>some</b>thing ..."},
-                {"ignored", "another title", "... <b>another</b> <b>title</b> ..."},
-                {"ignored", "another title another title AnOtHeR tItLe", "... <b>another</b> <b>title</b> ..."},
-                {"ignored", "AnOtHeR tItLe", "... <b>another</b> <b>title</b> ..."},
-                {"ignored", "*not*r *ItL*", "... <b>another</b> <b>title</b> ..."},
-                {LONGTEXT, "example Umlauts", "... Thüs is a long <b>example</b> text which we can use to check " +
-                        "excerpt ... several excerpts. We include also some <b>Umlauts</b> to check we can" +
+                {"ignored", "description", "... a <strong class=\"search-term\">description</strong> ..."},
+                {"ignored", "some title", "... <strong class=\"search-term\">some</strong> <strong class=\"search-term\">title</strong> with <strong class=\"search-term\">some</strong>thing ..."},
+                {"ignored", "another title", "... <strong class=\"search-term\">another</strong> <strong class=\"search-term\">title</strong> ..."},
+                {"ignored", "another title another title AnOtHeR tItLe", "... <strong class=\"search-term\">another</strong> <strong class=\"search-term\">title</strong> ..."},
+                {"ignored", "AnOtHeR tItLe", "... <strong class=\"search-term\">another</strong> <strong class=\"search-term\">title</strong> ..."},
+                {"ignored", "*not*r *ItL*", "... <strong class=\"search-term\">another</strong> <strong class=\"search-term\">title</strong> ..."},
+                {LONGTEXT, "example Umlauts", "... Thüs is a long <strong class=\"search-term\">example</strong> text which we can use to check " +
+                        "excerpt ... several excerpts. We include also some <strong class=\"search-term\">Umlauts</strong> to check we can" +
                         " search for them: für äußerst ..."},
-                {LONGTEXT, "example AND check OR query", "... Thüs is a long <b>example</b> text which we can use " +
-                        "to <b>check</b> excerpt generation when the <b>query</b> words do span more than one excerpt" +
+                {LONGTEXT, "example AND check OR query", "... Thüs is a long <strong class=\"search-term\">example</strong> text which we can use " +
+                        "to <strong class=\"search-term\">check</strong> excerpt generation when the <strong class=\"search-term\">query</strong> words do span more than one excerpt" +
                         " " +
                         "since ..."},
                 {LONGTEXT, "\"long  example\"",
-                        "... Thüs is a <b>long example</b> text which we can use to check excerpt ..."},
-                {LONGTEXT, "Thüs AND für", "... <b>Thüs</b> is a long example text which we can use ... Umlauts " +
-                        "to check we can search for them: <b>für</b> äußerst höchstens. ..."},
+                        "... Thüs is a <strong class=\"search-term\">long example</strong> text which we can use to check excerpt ..."},
+                {LONGTEXT, "Thüs AND für", "... <strong class=\"search-term\">Thüs</strong> is a long example text which we can use ... Umlauts " +
+                        "to check we can search for them: <strong class=\"search-term\">für</strong> äußerst höchstens. ..."},
         });
     }
 
