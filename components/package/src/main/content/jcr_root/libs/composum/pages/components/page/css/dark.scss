@@ -9,6 +9,8 @@ $dark-link: #f1a24b;
 $dark-highlight: #fff;
 $dark-highlight-bg: #666;
 $dark-highlight-border: #aaa;
+$dark-badge-fg: #333;
+$dark-badge-bg: #ccc;
 
 body {
     background-color: $dark-background;
@@ -31,7 +33,13 @@ body {
     }
 
     .navbar-toggle {
-        &, &:hover, &:focus {
+
+        & {
+            background-color: $dark-background;
+            border-color: $dark-highlight-bg;
+        }
+
+        &:hover, &:focus {
             background-color: $dark-highlight-bg;
             border-color: $dark-highlight-border;
         }
@@ -91,9 +99,42 @@ body {
 
     &_content {
 
-        code, input {
-            color: $dark-foreground;
+        p code, input {
             background-color: $dark-highlight-bg;
+        }
+
+        pre, code, input {
+            color: $dark-foreground;
+        }
+
+        .badge {
+            color: $dark-badge-fg;
+            background-color: $dark-badge-bg;
+        }
+
+        .btn-default {
+            color: $dark-foreground;
+            background-color: $dark-background;
+            border-color: $dark-highlight-bg;
+        }
+
+        .panel {
+            color: $dark-foreground;
+            background-color: $dark-background;
+        }
+
+        .panel-default {
+
+            &, & > .panel-heading {
+                color: $dark-foreground;
+                background-color: $dark-background;
+                border-color: $dark-highlight-bg;
+
+                .badge {
+                    color: $dark-badge-fg;
+                    background-color: $dark-badge-bg;
+                }
+            }
         }
 
         .composum-pages-components-container {
