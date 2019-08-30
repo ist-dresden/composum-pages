@@ -4,7 +4,7 @@
 @import "../../../css/mixins";
 
 .composum-pages-components-composed-carousel {
-    background: #000;
+    position: relative;
 
     &_element {
         @include aspect-ratio-wrapper(2, 1);
@@ -156,6 +156,51 @@
                             overflow: hidden;
                             padding: 2% 15%;
                         }
+                    }
+                }
+            }
+        }
+    }
+}
+
+.composum-pages-components-page {
+
+    &_content {
+
+        &_stage {
+
+            .composum-pages-components-composed-carousel {
+                background: #000;
+            }
+        }
+
+        &_main {
+
+            .composum-pages-components-composed-carousel {
+                clear: both;
+                background: transparent;
+
+                .carousel-control {
+                    mix-blend-mode: difference;
+
+                    &, &:hover {
+                        background: none;
+                    }
+                }
+
+                .carousel-indicators {
+                    opacity: 0.5;
+                    mix-blend-mode: difference;
+                }
+
+                &_element {
+
+                    &:before {
+                        content: none;
+                    }
+
+                    > div {
+                        position: static;
                     }
                 }
             }

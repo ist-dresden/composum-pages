@@ -18,6 +18,17 @@
         &_element {
             @include aspect-ratio-wrapper(5, 1);
 
+            > div {
+                display: inline-block;
+                @include aspect-ratio-element;
+                padding: 0;
+
+                .composum-pages-edit_drop-zone {
+                    height: 100%;
+                    overflow: hidden;
+                }
+            }
+
             .composum-pages-components-element-teaser {
 
                 .composum-pages-edit_drop-zone {
@@ -46,6 +57,25 @@
                 .composum-pages-components-element-teaser {
                     position: static;
                     display: block;
+                }
+            }
+        }
+    }
+
+    .composum-pages-components-page {
+
+        &_content {
+
+            &_main {
+
+                .composum-pages-components-composed-carousel {
+
+                    &_element {
+
+                        &:before {
+                            content: "";
+                        }
+                    }
                 }
             }
         }
