@@ -30,17 +30,6 @@ public class Link extends Element {
         return isHasLink();
     }
 
-    public boolean isHasLink() {
-        return StringUtils.isNotBlank(getLink());
-    }
-
-    public String getLink() {
-        if (link == null) {
-            link = getProperty(PN_LINK, "");
-        }
-        return link;
-    }
-
     @Nonnull
     @Override
     public String getTitle() {
@@ -69,6 +58,17 @@ public class Link extends Element {
             }
         }
         return tileTitle;
+    }
+
+    public boolean isHasLink() {
+        return StringUtils.isNotBlank(getLink());
+    }
+
+    public String getLink() {
+        if (link == null) {
+            link = getProperty(PN_LINK, "");
+        }
+        return link;
     }
 
     public String getLinkTitle() {

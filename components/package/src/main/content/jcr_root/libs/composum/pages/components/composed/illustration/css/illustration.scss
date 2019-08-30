@@ -54,10 +54,10 @@
             &_link {
                 position: relative;
                 display: block;
-                width: $illustration-annotation-shape-size - 2;
-                height: $illustration-annotation-shape-size - 2;
-                font-size: $illustration-annotation-shape-size - 4;
-                line-height: $illustration-annotation-shape-size - 2;
+                width: $illustration-annotation-shape-size - 1;
+                height: $illustration-annotation-shape-size - 1;
+                font-size: $illustration-annotation-shape-size - 7;
+                line-height: $illustration-annotation-shape-size - 1;
                 color: inherit;
 
                 &, &:hover, &:active {

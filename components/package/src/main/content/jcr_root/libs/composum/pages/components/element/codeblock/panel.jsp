@@ -25,8 +25,7 @@
                     </div>
                 </c:if>
                 <div class="${codeCSS}_content-block panel-body">
-                <div class="${codeCSS}_content"><code
-                        class="${code.codeLanguage}"><cpn:text>${code.code}</cpn:text></code></div>
+                    <div class="${codeCSS}_content ${code.codeType}"><code><cpn:text>${code.code}</cpn:text></code></div>
                 </div>
                 <c:if test="${code.hasCopyright}">
                     <cpn:text class="${codeCSS}_footer panel-footer" value="${code.copyright}"/>

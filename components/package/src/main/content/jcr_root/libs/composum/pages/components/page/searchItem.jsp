@@ -13,10 +13,10 @@
               href="${model.url}" class="${modelCSS}_link">
         <c:choose>
             <c:when test="${searchresult != null && not empty searchresult.excerpt}">
-                <cpn:text class="${modelCSS}_excerpt" value="${searchresult.excerpt}"/>
+                <cpn:text class="${modelCSS}_excerpt" value="${searchresult.excerpt}" type="rich"/>
             </c:when>
             <c:otherwise>
-                <cpn:text class="${modelCSS}_description" value="${model.description}"/>
+                <cpn:text class="${modelCSS}_description" value="${model.description}" type="rich"/>
             </c:otherwise>
         </c:choose>
     </cpn:link>

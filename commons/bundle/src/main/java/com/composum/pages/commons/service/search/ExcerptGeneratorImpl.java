@@ -25,10 +25,14 @@ public class ExcerptGeneratorImpl implements ExcerptGenerator {
 
     private static final Logger LOG = getLogger(ExcerptGeneratorImpl.class);
 
-    /** Number of additional characters surrounding searched words. */
+    /**
+     * Number of additional characters surrounding searched words.
+     */
     protected int contextLength = 40;
 
-    /** Ignore fields of less than this size. */
+    /**
+     * Ignore fields of less than this size.
+     */
     protected int minContextLength = 10;
 
     @Override
@@ -59,7 +63,7 @@ public class ExcerptGeneratorImpl implements ExcerptGenerator {
         }
         Set<String> excerpts = new LinkedHashSet<>();
         collectExcerptParts(excerpts, contexts, words);
-        String result = excerpts.isEmpty() ? "": "... " + StringUtils.join(excerpts, " ... ") + " ...";
+        String result = excerpts.isEmpty() ? "" : "... " + StringUtils.join(excerpts, " ... ") + " ...";
         return markWords(result, wordregex);
     }
 
@@ -108,7 +112,8 @@ public class ExcerptGeneratorImpl implements ExcerptGenerator {
         Set<String> restWords = new LinkedHashSet<>();
         String bufContent = StringUtils.join(excerpts, " ");
         for (String word : words) if (!bufContent.contains(word)) restWords.add(word);
-        if (!restWords.isEmpty() && restWords.size() != words.size()) collectExcerptParts(excerpts, contexts, restWords);
+        if (!restWords.isEmpty() && restWords.size() != words.size())
+            collectExcerptParts(excerpts, contexts, restWords);
     }
 
     private int countWords(String context, Set<String> words) {
@@ -140,12 +145,12 @@ public class ExcerptGeneratorImpl implements ExcerptGenerator {
     }
 
     protected String markWords(String excerpt, Pattern wordregex) {
-        return wordregex.matcher(excerpt).replaceAll("<b>$1</b>");
+        return wordregex.matcher(excerpt).replaceAll("<strong class=\"search-term\">$1</strong>");
     }
 
     protected Set<String> extractSearchterms(String searchExpression) throws SearchTermParseException {
         Set<String> res = new LinkedHashSet<>();
-        for(String term : new SearchtermParser(searchExpression).getPositiveSearchterms()) {
+        for (String term : new SearchtermParser(searchExpression).getPositiveSearchterms()) {
             term = term.replaceAll("[^\\p{javaAlphabetic}\\d'*?\\s]+", "").replaceAll("\\s+", " ");
             if (isNotBlank(term)) res.add(term);
         }

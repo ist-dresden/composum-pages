@@ -14,7 +14,7 @@
         </div>
         <cpp:widget label="Subtitle" property="subtitle" type="textfield" i18n="true"/>
         <cpp:widget label="Text" property="text" type="richtext" i18n="true" required="true"
-                    height="200px"/>
+                    height="150px"/>
         <cpp:include resourceType="composum/pages/components/element/link" subtype="edit/dialog"
                      replaceSelectors="embedded"/>
     </cpp:editDialogTab>

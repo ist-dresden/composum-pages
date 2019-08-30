@@ -5,18 +5,24 @@
  */
 package com.composum.pages.components.model.codeblock;
 
-import com.composum.platform.commons.content.service.ContentRefService;
 import com.composum.pages.commons.model.Element;
+import com.composum.platform.commons.content.service.ContentRefService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class CodeBlock extends Element {
 
     private static final Logger LOG = LoggerFactory.getLogger(CodeBlock.class);
+
+    public static final Map<String, String> LANGUAGE_TYPE_MAP = new HashMap<String, String>() {{
+        put("jsp", "xml");
+    }};
 
     public static final String PN_CODE = "code";
     public static final String PN_CODE_REF = "codeRef";
@@ -142,6 +148,15 @@ public class CodeBlock extends Element {
             codeLanguage = getProperty(PN_LANGUAGE, "");
         }
         return codeLanguage;
+    }
+
+    public String getCodeType() {
+        if (codeLanguage == null) {
+            codeLanguage = getProperty(PN_LANGUAGE, "");
+        }
+        String language = getCodeLanguage();
+        String mapped = LANGUAGE_TYPE_MAP.get(language);
+        return mapped != null ? mapped : language;
     }
 
     public String getServiceUri() {

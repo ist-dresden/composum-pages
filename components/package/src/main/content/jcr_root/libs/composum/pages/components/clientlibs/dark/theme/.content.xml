@@ -2,5 +2,5 @@
 <jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
         jcr:primaryType="sling:Folder"
         sling:resourceType="composum/nodes/commons/clientlib"
-        jcr:description="the Components clientlib for the general behavior and styling of the common components"
-        category="[composum.pages.components.view]"/>
+        jcr:description="the Components clientlib for the dark theme (additional) of the common components"
+        category="[composum.pages.components.dark.theme]"/>

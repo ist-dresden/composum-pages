@@ -13,11 +13,6 @@ public class Homepage extends Page {
 
     private static final Logger LOG = LoggerFactory.getLogger(Homepage.class);
 
-    public static final String LOGO_PATH = "logo";
-
-    private transient Image logo;
-    private transient String logoUrl;
-
     public Homepage() {
     }
 
@@ -28,20 +23,5 @@ public class Homepage extends Page {
     public Homepage(PageManager manager, BeanContext context, Resource resource) {
         this.pageManager = manager;
         initialize(context, resource);
-    }
-
-    public String getLogoUrl() {
-        if (logoUrl == null) {
-            Image logo = getLogo();
-            logoUrl = logo.getAssetUrl();
-        }
-        return logoUrl;
-    }
-
-    public Image getLogo() {
-        if (logo == null) {
-            logo = new Image(context, getContent().getResource().getChild(LOGO_PATH));
-        }
-        return logo;
     }
 }

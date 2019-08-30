@@ -4,6 +4,11 @@
 
 .composum-pages-components-navigation-navbar {
 
+    .navbar-form {
+        border: none;
+        box-shadow: none;
+    }
+
     &_brand {
         position: absolute;
     }
@@ -89,49 +94,52 @@
 
 @media screen and (min-width: $bootstrap-screen-sm-min) and (max-width: $bootstrap-screen-sm-max) {
 
-    .composum-pages-components-navigation-navbar {
+    .composum-pages-components-navigation-navbar.navbar-width-condensed {
 
-        &_navbar-nav {
+        .composum-pages-components-navigation-navbar {
 
-            > .composum-pages-components-navigation-breadcrumbs_dropdown,
-            > .composum-pages-components-navigation-menuitem {
+            &_navbar-nav {
 
-                a {
-                    padding-left: 6px;
-                    padding-right: 6px;
+                > .composum-pages-components-navigation-breadcrumbs_dropdown,
+                > .composum-pages-components-navigation-menuitem {
+
+                    a {
+                        padding-left: 6px;
+                        padding-right: 6px;
+                        font-family: 'roboto_condensedlight';
+                    }
+                }
+            }
+
+            .composum-pages-components-navigation-breadcrumbs {
+
+                &_icon {
+                    margin-left: 2px;
+                }
+            }
+
+            &_search {
+                width: 100px;
+                padding-left: 6px;
+
+                button, input {
+                    padding: 6px;
+                }
+
+                input {
                     font-family: 'roboto_condensedlight';
                 }
             }
-        }
 
-        .composum-pages-components-navigation-breadcrumbs {
+            .composum-pages-components-navigation-button {
 
-            &_icon {
-                margin-left: 2px;
-            }
-        }
+                &_language {
+                    margin-left: 6px;
 
-        &_search {
-            width: 100px;
-            padding-left: 6px;
-
-            button, input {
-                padding: 6px;
-            }
-
-            input {
-                font-family: 'roboto_condensedlight';
-            }
-        }
-
-        .composum-pages-components-navigation-button {
-
-            &_language {
-                margin-left: 6px;
-
-                button {
-                    padding: 6px;
-                    font-family: 'roboto_condensedlight';
+                    button {
+                        padding: 6px;
+                        font-family: 'roboto_condensedlight';
+                    }
                 }
             }
         }

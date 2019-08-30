@@ -37,6 +37,10 @@ public class NavbarMenu extends Menu {
         return getMenuItems().size();
     }
 
+    public String getSizeCss() {
+        return getSize() < 4 ? "default" : "condensed";
+    }
+
     public List<Menuitem> getMenuItems() {
         if (menuItems == null) {
             menuParent = resource;

@@ -1,0 +1,256 @@
+@charset "UTF-8";
+
+@import "../../css/variables";
+@import "../../css/mixins";
+
+$dark-background: #333;
+$dark-foreground: #eee;
+$dark-link: #f1a24b;
+$dark-highlight: #fff;
+$dark-highlight-bg: #666;
+$dark-highlight-border: #aaa;
+$dark-badge-fg: #333;
+$dark-badge-bg: #ccc;
+
+body {
+    background-color: $dark-background;
+    color: $dark-foreground;
+}
+
+.composum-pages-components-navigation-navbar {
+    background-color: $dark-background;
+    border-color: $dark-highlight-bg;
+
+    .navbar-collapse {
+        border-color: $dark-highlight-bg;
+
+        @media screen and (max-width: $bootstrap-screen-xs-max) {
+
+            &.navbar-left {
+                padding-top: 30px;
+            }
+        }
+    }
+
+    .navbar-toggle {
+
+        & {
+            background-color: $dark-background;
+            border-color: $dark-highlight-bg;
+        }
+
+        &:hover, &:focus {
+            background-color: $dark-highlight-bg;
+            border-color: $dark-highlight-border;
+        }
+    }
+
+    &, & .navbar-nav > li {
+
+        > .dropdown-menu {
+            color: $dark-foreground;
+            background-color: $dark-highlight-bg;
+
+            @media screen and (max-width: $bootstrap-screen-xs-max) {
+                background-color: transparent;
+            }
+        }
+
+        .input-group {
+            input, .input-group-btn {
+                &, & .btn {
+                    color: $dark-foreground;
+                    background-color: $dark-highlight-bg;
+                    border-color: $dark-highlight-border;
+                }
+            }
+        }
+    }
+
+    &, & .navbar-nav > li, & .navbar-nav .open .dropdown-menu > li {
+
+        > a {
+            &, &:focus {
+                color: $dark-foreground;
+            }
+
+            &:hover {
+                color: $dark-highlight;
+                background-color: $dark-highlight-border;
+            }
+        }
+
+        &.active > a, &.open > a {
+
+            &, &:focus {
+                color: $dark-foreground;
+                background-color: $dark-highlight-bg;
+            }
+
+            &:hover {
+                color: $dark-highlight;
+                background-color: $dark-highlight-border;
+            }
+        }
+    }
+}
+
+.composum-pages-components-page {
+
+    &_content {
+
+        p code, input {
+            background-color: $dark-highlight-bg;
+        }
+
+        pre, code, input {
+            color: $dark-foreground;
+        }
+
+        .badge {
+            color: $dark-badge-fg;
+            background-color: $dark-badge-bg;
+        }
+
+        .btn-default {
+            color: $dark-foreground;
+            background-color: $dark-background;
+            border-color: $dark-highlight-bg;
+        }
+
+        .panel {
+            color: $dark-foreground;
+            background-color: $dark-background;
+        }
+
+        .panel-default {
+
+            &, & > .panel-heading {
+                color: $dark-foreground;
+                background-color: $dark-background;
+                border-color: $dark-highlight-bg;
+
+                .badge {
+                    color: $dark-badge-fg;
+                    background-color: $dark-badge-bg;
+                }
+            }
+        }
+
+        .composum-pages-components-container {
+
+            &-row, &-section {
+                &_title {
+                    color: $dark-foreground;
+                }
+            }
+
+            &-row {
+                &_header {
+                    background-color: $dark-highlight-bg;
+                }
+            }
+        }
+
+        .composum-pages-components-element {
+
+            &-image, &-video {
+                border-color: $dark-highlight-bg;
+            }
+
+            &-link {
+                &_link {
+                    color: $dark-link;
+
+                    &:hover {
+                        color: $site-default-link-hover;
+                    }
+                }
+            }
+
+            &-teaser, &-text, &-textimage {
+                &_title,
+                &_subtitle,
+                &_text {
+                    color: $dark-foreground;
+
+                    a {
+                        color: $dark-link;
+
+                        &:hover {
+                            color: $site-default-link-hover;
+                        }
+                    }
+                }
+            }
+        }
+
+        &_top {
+
+            .composum-pages-components-element {
+
+                &-title {
+                    height: 146px;
+                    padding-top: 50px;
+                }
+
+                @media screen and (max-width: $bootstrap-screen-xs-max) {
+
+                    &-title {
+                        height: 110px;
+                        padding-top: 46px;
+                    }
+                }
+            }
+        }
+    }
+
+    .composum-pages-components-element-teaser {
+        &, &_variation_default {
+
+            &_link {
+                .composum-pages-components-element-teaser {
+                    &_title,
+                    &_subtitle {
+                        color: $dark-link;
+                    }
+                }
+
+                &:hover {
+                    .composum-pages-components-element-teaser {
+                        &_title,
+                        &_subtitle {
+                            color: $site-default-link-hover;
+                        }
+                    }
+                }
+            }
+
+            .composum-pages-components-element {
+
+                &-link {
+                    &_link {
+                        &, &:visited, &:focus {
+                            color: $dark-link;
+                        }
+
+                        &:hover {
+                            color: $site-default-link-hover;
+                        }
+                    }
+                }
+            }
+
+            &, &.composum-pages-components-element-teaser {
+                &_symbol {
+                    .composum-pages-components-element-teaser {
+                        &_icon {
+                            color: $dark-foreground;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+

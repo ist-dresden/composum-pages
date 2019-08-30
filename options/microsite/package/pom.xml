@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.composum.pages.options</groupId>
         <artifactId>composum-pages-options-microsite</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.1</version>
     </parent>
 
     <artifactId>composum-pages-options-microsite-package</artifactId>
@@ -93,6 +93,14 @@
                             <target>/libs/composum/pages/install</target>
                         </embedded>
                     </embeddeds>
+
+                    <dependencies>
+                        <dependency>
+                            <group>${package.group}</group>
+                            <name>composum-pages-commons-package</name>
+                            <version>${project.version}</version>
+                        </dependency>
+                    </dependencies>
 
                 </configuration>
             </plugin>
