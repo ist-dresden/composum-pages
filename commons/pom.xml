@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.composum.pages</groupId>
         <artifactId>composum-pages</artifactId>
-        <version>1.0.1-SNAPSHOT</version>
+        <version>1.0.1</version>
     </parent>
 
     <artifactId>composum-pages-commons</artifactId>
