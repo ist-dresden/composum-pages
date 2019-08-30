@@ -15,7 +15,7 @@
         components.CodeBlock = Backbone.View.extend({
 
             initialize: function (options) {
-                this.$code = this.$(components.const.codeblock.cssBase + "_content code");
+                this.$code = this.$(components.const.codeblock.cssBase + "_content");
                 this.$expand = this.$(components.const.codeblock.cssBase + "_expand");
                 this.$collapse = this.$(components.const.codeblock.cssBase + "_collapse");
                 if (this.$code.length > 0) {
@@ -34,7 +34,6 @@
                 this.$el.removeClass("expanded");
                 this.$el.addClass("collapsed");
             }
-
         });
 
         $(document).ready(function () {
