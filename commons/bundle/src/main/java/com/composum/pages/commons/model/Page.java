@@ -307,6 +307,12 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
         while (page != null && (resource = page.getContent().getResource().getChild(path)) == null) {
             page = page.getParentPage();
         }
+        if (resource == null) {
+            Site sie = getSite();
+            if (site != null) {
+                resource = site.getContent().getResource().getChild(path);
+            }
+        }
         return resource;
     }
 
