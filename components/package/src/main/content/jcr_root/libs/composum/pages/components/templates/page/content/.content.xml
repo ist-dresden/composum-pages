@@ -36,6 +36,7 @@
                         ]"
                         allowedElements="[
                             ^(/[^/]+/)?composum/pages/components/(element|composed|search)/.*$,
+                            ^(/[^/]+/)?composum/pages/components/container/(section)$,
                             ^(/[^/]+/)?composum/prototype/pages/.*$
                         ]">
                 </column>
@@ -51,7 +52,8 @@
                         ^(/[^/]+/)?composum/pages/components/container/.*$
                     ]"
                     allowedElements="[
-                        ^(/[^/]+/)?composum/pages/components/(element|composed|search)/.*$
+                        ^(/[^/]+/)?composum/pages/components/(element|composed|search)/.*$,
+                        ^(/[^/]+/)?composum/pages/components/container/(section)$
                     ]"/>
         </cpp:design>
     </jcr:content>

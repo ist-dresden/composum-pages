@@ -17,10 +17,6 @@
                 ^(.*/)?pages/options/.*/template(s(/page)?(/.+)?)?$
             ]">
         <!-- all nodes in the 'jcr:content' node without the 'cpp:design' nodes are copied on applying the template -->
-        <logo
-                jcr:primaryType="cpp:Element"
-                sling:resourceType="composum/pages/components/element/image"
-                imageRef="/content/shared/composum/pages/components/assets/logo/Composum-color.svg"/>
         <search
                 jcr:primaryType="nt:unstructured">
             <field

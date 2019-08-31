@@ -5,6 +5,7 @@
 <cpp:editDialogTab tabId="styles" label="Page Styles">
     <div class="row">
         <div class="col col-xs-5">
+            <sling:call script="logo.jsp"/>
         </div>
         <div class="col col-xs-7">
             <sling:call script="page-style.jsp"/>
