@@ -14,7 +14,4 @@
     <cpp:editDialogTab tabId="pages" label="Page Presets">
         <sling:call script="page-presets.jsp"/>
     </cpp:editDialogTab>
-    <cpp:editDialogTab tabId="thumbnail" label="Thumbnail">
-        <sling:call script="thumbnail.jsp"/>
-    </cpp:editDialogTab>
 </cpp:editDialog>
