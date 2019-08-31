@@ -252,5 +252,18 @@ body {
             }
         }
     }
-}
 
+    .composum-pages-components-navigation-siblings {
+
+        &_link {
+
+            &, & a, & a:focus {
+                color: $dark-foreground;
+            }
+
+            & a:hover {
+                color: $site-default-link-hover;
+            }
+        }
+    }
+}
