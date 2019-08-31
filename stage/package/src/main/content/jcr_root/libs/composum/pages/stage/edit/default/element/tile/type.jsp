@@ -7,7 +7,7 @@
            cssBase="composum-pages-component-tile">
     <div class="${modelCSS}">
         <sling:call script="_icon.jsp"/>
-        <div class="${modelCSS}_title">${cpn:i18n(slingRequest,model.title)}</div>
+        <sling:call script="_title.jsp"/>
         <cpn:text value="${model.name}" format="({})" class="${modelCSS}_name"/>
         <cpn:text value="${model.component.typeHint}" class="${modelCSS}_type"/>
         <cpn:text value="${model.description}" class="${modelCSS}_description"
