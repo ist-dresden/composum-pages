@@ -455,10 +455,13 @@
 
             onContentSelected: function (event, refOrPath) {
                 var path = refOrPath && refOrPath.path ? refOrPath.path : refOrPath;
+                var applicable = /^\/(content)\//.exec(path) !== null;
                 if (this.log.getLevel() <= log.levels.DEBUG) {
-                    this.log.debug(this.nodeIdPrefix + 'tree.onContentSelected(' + path + ')');
+                    this.log.debug(this.nodeIdPrefix + 'tree.onContentSelected(' + applicable + ':' + path + ')');
                 }
-                this.onPathSelected(event, path);
+                if (applicable) {
+                    this.onPathSelected(event, path);
+                }
             },
 
             onPageStateChanged: function (event, refOrPath) {
@@ -617,12 +620,15 @@
 
             onAssetSelected: function (event, refOrPath) {
                 var path = refOrPath && refOrPath.path ? refOrPath.path : refOrPath;
+                var applicable = /^\/(content)\//.exec(path) !== null;
                 if (this.log.getLevel() <= log.levels.DEBUG) {
-                    this.log.debug(this.nodeIdPrefix + 'tree.onAssetSelected(' + path + ')');
+                    this.log.debug(this.nodeIdPrefix + 'tree.onAssetSelected(' + applicable + ':' + path + ')');
                 }
-                this.onPathSelected(event, path);
-                var p = pages.const.profile.asset.tree;
-                pages.profile.set(p.aspect, p.path, path);
+                if (applicable) {
+                    this.onPathSelected(event, path);
+                    var p = pages.const.profile.asset.tree;
+                    pages.profile.set(p.aspect, p.path, path);
+                }
             }
         });
 
@@ -647,6 +653,10 @@
                 return '/bin/cpm/pages/develop.tree.json' + path;
             },
 
+            adjustRootPath: function (rootPath) {
+                return rootPath;
+            },
+
             onNodeSelected: function (path, node) {
                 if (!this.suppressEvent) {
                     pages.trigger('tree.develop.on.node', "content:select", [path, node.original.name, node.original.type]);
@@ -657,12 +667,15 @@
 
             onContentSelected: function (event, refOrPath) {
                 var path = refOrPath && refOrPath.path ? refOrPath.path : refOrPath;
+                var applicable = /^\/(apps|libs)\//.exec(path) !== null;
                 if (this.log.getLevel() <= log.levels.DEBUG) {
-                    this.log.debug(this.nodeIdPrefix + 'tree.onContentSelected(' + path + ')');
+                    this.log.debug(this.nodeIdPrefix + 'tree.onContentSelected(' + applicable + ':' + path + ')');
                 }
-                this.onPathSelected(event, path);
-                var p = pages.const.profile.component.tree;
-                pages.profile.set(p.aspect, p.path, path);
+                if (applicable) {
+                    this.onPathSelected(event, path);
+                    var p = pages.const.profile.component.tree;
+                    pages.profile.set(p.aspect, p.path, path);
+                }
             },
 
             onFolderInserted: function (event, refOrPath, relativePath) {
