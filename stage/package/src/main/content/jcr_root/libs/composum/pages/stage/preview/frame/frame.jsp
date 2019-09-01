@@ -6,6 +6,7 @@
 <cpp:model var="frame" type="com.composum.pages.stage.model.edit.FramePage" scope="request">
     <html data-context-path="${slingRequest.contextPath}">
     <head>
+        <title>Composum Pages</title>
         <cpn:clientlib type="link" category="composum.pages.preview.frame"/>
         <cpn:clientlib type="css" category="composum.pages.preview.frame"/>
     </head>

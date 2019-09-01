@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:cpp="http://sling.composum.com/pages/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+          xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+          xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+        jcr:primaryType="cpp:Page">
+    <jcr:content
+            jcr:primaryType="cpp:PageContent"
+            jcr:title="Homepage"
+            sling:resourceType="composum/pages/components/page/home"
+            template="/libs/composum/pages/components/templates/page/home"
+            isTemplate="{Boolean}false">
+        <search
+                jcr:primaryType="nt:unstructured">
+            <field
+                    jcr:primaryType="cpp:Element"
+                    sling:resourceType="composum/pages/components/search/field"
+                    buttonSymbol="search"
+                    searchResultPath="${site}/meta/search"/>
+        </search>
+        <stage
+                jcr:primaryType="cpp:Container"
+                sling:resourceType="composum/pages/components/composed/carousel"
+                autoStart="{Boolean}true"
+                interval="10000"
+                showIndicators="{Boolean}true"
+                useControls="{Boolean}true">
+            <teaser
+                    jcr:primaryType="cpp:Element"
+                    sling:resourceType="composum/pages/components/element/teaser"
+                    link="${site}/home/test"
+                    path=""
+                    subtitle="component test playground"
+                    text="Switch to the playground and place your components on that page to test the editing and the final presentation."
+                    title="A Test Page"
+                    variation="bgimage">
+                <image
+                        jcr:primaryType="nt:unstructured"
+                        imageRef="/content/shared/composum/pages/components/assets/background/synchlotron.jpg"/>
+            </teaser>
+        </stage>
+        <main
+                jcr:primaryType="cpp:Container"
+                sling:resourceType="composum/pages/components/container/parsys">
+            <row
+                    jcr:primaryType="cpp:Container"
+                    sling:resourceType="composum/pages/components/container/row"
+                    columns="-12-"
+                    path="">
+                <column-0
+                        jcr:primaryType="cpp:Container"
+                        sling:resourceType="composum/pages/components/container/row/column">
+                    <text
+                            jcr:primaryType="cpp:Element"
+                            sling:resourceType="composum/pages/components/element/text"
+                            path=""
+                            text="This homepage should contain a teaser collection to guide a visitor to its points of interest on this site."/>
+                </column-0>
+            </row>
+            <row_1160738332
+                    jcr:primaryType="cpp:Container"
+                    sling:resourceType="composum/pages/components/container/row"
+                    columns="-6--6-"
+                    path="">
+                <column-1
+                        jcr:primaryType="cpp:Container"
+                        sling:resourceType="composum/pages/components/container/row/column">
+                    <teaser
+                            jcr:primaryType="cpp:Element"
+                            sling:resourceType="composum/pages/components/element/teaser"
+                            icon="bullseye"
+                            link="${site}/home/test"
+                            path=""
+                            subtitle="component test playground"
+                            text="Switch to the playground and place your components on that page to test the editing and the final presentation."
+                            title="A Test Page"
+                            variation="symbol">
+                        <image
+                                jcr:primaryType="nt:unstructured"/>
+                    </teaser>
+                </column-1>
+            </row_1160738332>
+        </main>
+        <navigation
+                jcr:primaryType="nt:unstructured"
+                title="Home"/>
+    </jcr:content>
+    <test/>
+</jcr:root>

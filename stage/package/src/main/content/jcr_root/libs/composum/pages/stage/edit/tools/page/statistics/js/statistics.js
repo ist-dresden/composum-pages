@@ -16,14 +16,6 @@
                     base: '/libs/composum/pages/stage/edit/tools/page/statistics',
                     _content: '.content.html',
                     data: '/libs/composum/pages/stage/edit/page/statistics'
-                },
-                options: {
-                    high: {
-                        days: 5,
-                        weeks: 10,
-                        months: 20,
-                        years: 50
-                    }
                 }
             }
         });
@@ -184,7 +176,6 @@
             },
 
             displayChart: function (data) {
-                var o = tools.const.statistics.options;
                 var labels = [];
                 var series = [[], []];
                 for (var i = 0; i < data.entries.length; i++) {
@@ -196,8 +187,7 @@
                     labels: labels,
                     series: series
                 }, {
-                    fullWidth: true,
-                    high: o.high[this.rangeSelector.range.type] || 10
+                    fullWidth: true
                 });
             },
 
