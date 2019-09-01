@@ -125,7 +125,7 @@ body {
 
         .panel-default {
 
-            &, & > .panel-heading {
+            &, & > .panel-heading, & > .panel-footer {
                 color: $dark-foreground;
                 background-color: $dark-background;
                 border-color: $dark-highlight-bg;
