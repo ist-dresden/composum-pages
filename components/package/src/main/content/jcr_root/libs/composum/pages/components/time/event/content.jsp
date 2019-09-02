@@ -14,5 +14,8 @@
         <div class="composum-pages-components-page_content_main">
             <cpp:include path="main" resourceType="composum/pages/components/container/parsys"/>
         </div>
+        <div class="composum-pages-components-page_content_bottom">
+            <cpp:include path="bottom" resourceType="composum/pages/components/container/iparsys"/>
+        </div>
     </div>
 </cpp:model>

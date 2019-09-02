@@ -1,0 +1,69 @@
+@charset "UTF-8";
+
+@import "../../../css/variables";
+@import "../../../css/mixins";
+
+.composum-pages-components-navigation-siblings {
+    display: table;
+    width: 100%;
+    margin: 20px 0 0;
+    padding: 15px;
+
+    &_prev, &_center, &_next {
+        display: table-cell;
+        white-space: nowrap;
+    }
+
+    &_center {
+        width: 100%;
+    }
+
+    &_link {
+        display: inline-block;
+        min-width: 120px;
+        @include a-title-font($text-title-font-size);
+
+        &, & a, & a:focus {
+            text-decoration: none;
+            color: $column-title-text-color;
+        }
+
+        & a:hover {
+            color: #000;
+        }
+    }
+
+    &_prev {
+
+        .composum-pages-components-navigation-siblings {
+            &_link {
+                &:before {
+                    content: '\f053';
+                    display: inline-block;
+                    padding: 0 8px 0 0;
+                    font-family: 'FontAwesome', sans-serif;
+                    font-size: $text-title-font-size;
+                }
+            }
+        }
+    }
+
+    &_next {
+
+        .composum-pages-components-navigation-siblings {
+            &_link {
+                &:after {
+                    content: '\f054';
+                    display: inline-block;
+                    padding: 0 0 0 8px;
+                    font-family: 'FontAwesome', sans-serif;
+                    font-size: $text-title-font-size;
+                }
+            }
+        }
+    }
+
+    &_menu {
+        display: none;
+    }
+}

@@ -17,10 +17,6 @@
                 ^(.*/)?pages/options/.*/template(s(/page)?(/.+)?)?$
             ]">
         <!-- all nodes in the 'jcr:content' node without the 'cpp:design' nodes are copied on applying the template -->
-        <logo
-                jcr:primaryType="cpp:Element"
-                sling:resourceType="composum/pages/components/element/image"
-                imageRef="/content/shared/composum/pages/components/assets/logo/Composum-color.svg"/>
         <search
                 jcr:primaryType="nt:unstructured">
             <field
@@ -58,6 +54,15 @@
                     designRef="composum/pages/components/templates/page/content/jcr:content/main/cpp:design"/>
             <!-- the design rules are the same as of a content page - rules are referenced here -->
         </main>
+        <bottom
+                jcr:primaryType="cpp:Container"
+                sling:resourceType="composum/pages/components/container/iparsys">
+            <cpp:design
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="composum/pages/stage/edit/page/design"
+                    designRef="composum/pages/components/templates/page/content/jcr:content/bottom/cpp:design"/>
+            <!-- the design rules are the same as of a content page - rules are referenced here -->
+        </bottom>
         <cpp:design
                 jcr:primaryType="nt:unstructured"
                 sling:resourceType="composum/pages/stage/edit/page/design"

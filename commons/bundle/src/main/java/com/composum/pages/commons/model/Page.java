@@ -65,6 +65,7 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
     private static final Logger LOG = LoggerFactory.getLogger(Page.class);
 
     public static final String LOGO_PATH = "logo";
+    public static final String PN_IMAGE_REF = "imageRef";
 
     public static final String DISPLAY_MODE_CSS_CLASS = PAGES_PREFIX + "display-mode";
 
@@ -300,17 +301,32 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
 
     public Image getLogo() {
         if (logo == null) {
-            logo = new Image(context, findInherited(LOGO_PATH));
+            logo = new Image(context, findInherited(LOGO_PATH, PN_IMAGE_REF));
         }
         return logo;
     }
 
+    /**
+     * find an inherited content node; check optional for a property of that node
+     *
+     * @param path     the path relative to the 'jcr:content' content node of a page
+     * @param property optional; a property name (or path) - this property must be not empty
+     * @return the found resource of 'null'
+     */
     @Nullable
-    public Resource findInherited(@Nonnull final String path) {
+    public Resource findInherited(@Nonnull final String path, @Nullable final String property) {
         Page page = this;
         Resource resource = null;
-        while (page != null && (resource = page.getContent().getResource().getChild(path)) == null) {
+        while (page != null && (
+                (resource = page.getContent().getResource().getChild(path)) == null ||
+                        (property != null && StringUtils.isEmpty(resource.getValueMap().get(property, String.class))))) {
             page = page.getParentPage();
+        }
+        if (page == null) { // if page is 'null' the property was not found; try the site
+            Site sie = getSite();
+            if (site != null) {
+                resource = site.getContent().getResource().getChild(path);
+            }
         }
         return resource;
     }
