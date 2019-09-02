@@ -36,7 +36,7 @@ public class InPlacePageReplication extends InPlaceReplicationStrategy {
             if (Page.isPage(resource)) {
                 result = true;
             } else if (Page.isPageContent(resource)) {
-                return Page.isPage(resource.getParent());
+                result = Page.isPage(resource.getParent());
             } else {
                 result = (Site.isSite(resource));
             }
