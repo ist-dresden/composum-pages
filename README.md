@@ -1,4 +1,4 @@
-# [Composum](https://ist-software.atlassian.net/wiki/display/CMP/Composum)
+# [Composum](https://www.composum.com/home.html)
 
 yet another Apache Sling based Application Platform (asap)
 
@@ -8,22 +8,22 @@ yet another Apache Sling based Application Platform (asap)
  
 the content management feature of the Composum platform
 
-* [Composum Pages Wiki](https://ist-software.atlassian.net/wiki/display/CMP/Composum+Pages)
+* [Composum Pages Homepage](https://www.composum.com/home/pages.html)
 
 ### see also
 
 #### [Composum Assets](https://github.com/ist-dresden/composum-assets)
 
-* [Composum Assets Wiki](https://ist-software.atlassian.net/wiki/display/CMP/Composum+Assets)
+* [Composum Homepage](https://www.composum.com/home.html)
 
 #### [Composum Prototype](https://github.com/ist-dresden/composum-prototype)
 
-* [Composum Prototype Wiki](https://ist-software.atlassian.net/wiki/display/CMP/Composum+Prototype)
+* [Composum Homepage](https://www.composum.com/home.html)
 
 #### [Composum Platform](https://github.com/ist-dresden/composum-platform)
 
-* [Composum Platform Wiki](https://ist-software.atlassian.net/wiki/display/CMP/Composum+Platform)
+* [Composum Platform Homepage](https://www.composum.com/home.hrml)
 
 #### [Composum Nodes](https://github.com/ist-dresden/composum)
 
-* [Composum Nodes (Core) Wiki](https://ist-software.atlassian.net/wiki/display/CMP/Composum+Nodes)
+* [Composum Nodes Homepage](https://www.composum.com/home/nodes.html)
