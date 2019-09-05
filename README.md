@@ -4,7 +4,8 @@ yet another Apache Sling based Application Platform (asap)
 
 ## [Composum Pages](https://ist-software.atlassian.net/wiki/display/CMP/Composum+Pages)
 
- ![Build Status](https://api.travis-ci.org/ist-dresden/composum-pages.svg?branch=develop)
+![Build Status](https://api.travis-ci.org/ist-dresden/composum-pages.svg?branch=develop)
+ 
 the content management feature of the Composum platform
 
 * [Composum Pages Wiki](https://ist-software.atlassian.net/wiki/display/CMP/Composum+Pages)
