@@ -43,9 +43,17 @@
                                                                    class="${siteCSS}_page-select"
                                                                    data-path="${pageVersion.path}"></c:if>
                             </td>
-                            <td class="_page-path"><a
-                                    href="${pageVersion.url}"
-                                    target="_blank">${cpn:path(pageVersion.siteRelativePath)}</a></td>
+                            <td class="_page-path">
+                                <c:choose>
+                                    <c:when test="${not empty pageVersion.url}">
+                                        <a href="${pageVersion.url}"
+                                           target="_blank">${cpn:path(pageVersion.siteRelativePath)}</a>
+                                    </c:when>
+                                    <c:otherwise>
+                                        ${cpn:path(pageVersion.siteRelativePath)}
+                                    </c:otherwise>
+                                </c:choose>
+                            </td>
                             <td class="_page-title">${cpn:text(pageVersion.title)}</td>
                             <td class="_page-time">${cpn:text(pageVersion.lastModifiedString)}</td>
                         </tr>
