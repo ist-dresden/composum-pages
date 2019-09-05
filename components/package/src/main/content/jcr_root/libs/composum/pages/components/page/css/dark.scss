@@ -125,7 +125,7 @@ body {
 
         .panel-default {
 
-            &, & > .panel-heading {
+            &, & > .panel-heading, & > .panel-footer {
                 color: $dark-foreground;
                 background-color: $dark-background;
                 border-color: $dark-highlight-bg;
@@ -252,5 +252,18 @@ body {
             }
         }
     }
-}
 
+    .composum-pages-components-navigation-siblings {
+
+        &_link {
+
+            &, & a, & a:focus {
+                color: $dark-foreground;
+            }
+
+            & a:hover {
+                color: $site-default-link-hover;
+            }
+        }
+    }
+}
