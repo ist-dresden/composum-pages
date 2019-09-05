@@ -63,6 +63,8 @@
 
         .composum-pages-components-navigation-siblings {
             &_link {
+                text-align: right;
+
                 &:after {
                     content: '\f054';
                     display: inline-block;
