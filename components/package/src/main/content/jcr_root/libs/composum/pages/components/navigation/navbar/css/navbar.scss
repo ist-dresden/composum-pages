@@ -106,7 +106,7 @@
                     a {
                         padding-left: 6px;
                         padding-right: 6px;
-                        font-family: 'roboto_condensedlight';
+                        font-family: $site-condensed-font-family;
                     }
                 }
             }
@@ -127,7 +127,7 @@
                 }
 
                 input {
-                    font-family: 'roboto_condensedlight';
+                    font-family: $site-condensed-font-family;
                 }
             }
 
@@ -138,7 +138,7 @@
 
                     button {
                         padding: 6px;
-                        font-family: 'roboto_condensedlight';
+                        font-family: $site-condensed-font-family;
                     }
                 }
             }

@@ -203,6 +203,10 @@ body {
                 }
             }
         }
+
+        &_bottom {
+            background-color: $dark-background;
+        }
     }
 
     .composum-pages-components-element-teaser {
