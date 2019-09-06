@@ -155,6 +155,12 @@
             <artifactId>jstl</artifactId>
         </dependency>
 
+        <!-- Apache commons -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
+
     </dependencies>
     <profiles>
 

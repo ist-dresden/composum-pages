@@ -1,6 +1,6 @@
 <%@page session="false" pageEncoding="utf-8"
         import="com.composum.pages.commons.util.RequestUtil,
-                org.apache.commons.lang.StringUtils" %>
+                org.apache.commons.lang3.StringUtils" %>
 <%@taglib prefix="sling" uri="http://sling.apache.org/taglibs/sling/1.2" %>
 <sling:defineObjects/><%
     /*
