@@ -115,6 +115,7 @@ html {
             bottom: 0;
             width: 100%;
             max-height: 50px;
+            border-top: 1px solid #fff;
             background: $main-title-background-color;
 
             @media screen and (max-width: $bootstrap-screen-xs-max) {
