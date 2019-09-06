@@ -40,7 +40,7 @@
                 <cpn:link class="${eventCSS}_location" body="true"
                           href="${event.locationUrl}">${cpn:text(event.location)}</cpn:link>
             </cpn:div>
-            <cpn:text class="${eventCSS}_description" value="${event.description}"/>
+            <cpn:text class="${eventCSS}_description" value="${event.description}" type="rich"/>
         </div>
     </cpn:link>
 </cpp:element>
