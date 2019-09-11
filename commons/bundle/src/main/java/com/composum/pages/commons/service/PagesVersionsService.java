@@ -1,16 +1,13 @@
 package com.composum.pages.commons.service;
 
-import com.composum.pages.commons.model.Page;
 import com.composum.pages.commons.model.PageVersion;
 import com.composum.pages.commons.model.SiteRelease;
+import com.composum.platform.commons.util.ExceptionThrowingFunction;
 import com.composum.sling.core.BeanContext;
-import com.composum.sling.platform.staging.ReleasedVersionable;
 import com.composum.sling.platform.staging.StagingReleaseManager;
 import com.composum.sling.platform.staging.versions.PlatformVersionsService;
-import org.apache.commons.collections4.SetUtils;
 import org.apache.jackrabbit.api.JackrabbitSession;
 import org.apache.sling.api.SlingHttpServletRequest;
-import org.apache.sling.api.resource.Resource;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -26,14 +23,9 @@ import javax.jcr.version.VersionHistory;
 import javax.jcr.version.VersionIterator;
 import javax.jcr.version.VersionManager;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Component(
         property = {
@@ -54,34 +46,11 @@ public class PagesVersionsService implements VersionsService {
     protected PlatformVersionsService platformVersionsService;
 
     @Override
-    public boolean isModified(final Page page) {
-        try {
-            if (page.getContent() == null || page.getContent().getResource() == null)
-                return false;
-            PlatformVersionsService.Status status = platformVersionsService.getStatus(page.getContent().getResource(), null);
-            if (status == null)
-                return false;
-            switch (status.getActivationState()) {
-                case activated:
-                case deactivated:
-                    return false;
-                case initial:
-                case modified:
-                    return true;
-            }
-            throw new IllegalStateException("Unknown state " + status.getActivationState()); // impossible
-        } catch (RepositoryException e) {
-            LOG.error("Unexpected error", e);
-            return false;
-        }
-    }
-
-    @Override
     public void rollbackVersion(final BeanContext context, String path, String versionName)
             throws RepositoryException {
         VersionManager manager = getVersionManager(context);
         if (LOG.isInfoEnabled()) {
-            LOG.info("rollbackVersion(" + path + "," + versionName + ")");
+            LOG.info("rollbackVersion({},{})", path, versionName);
         }
         manager.restore(path, versionName, false);
         // Unfortunately, the VersionManager does not offer any way to copy out an old version, and if we just
@@ -97,7 +66,7 @@ public class PagesVersionsService implements VersionsService {
         while (allVersions.hasNext()) {
             final Version version = allVersions.nextVersion();
             if (LOG.isDebugEnabled()) {
-                LOG.debug("rollbackVersion.remove(" + path + "," + version.getName() + ")");
+                LOG.debug("rollbackVersion.remove({},{})", path, version.getName());
             }
             history.removeVersion(version.getName());
         }
@@ -107,32 +76,36 @@ public class PagesVersionsService implements VersionsService {
     /**
      * @return a collection of all versionables which are changed in a release in comparision to the release before
      */
+    @Nonnull
     @Override
     public List<PageVersion> findReleaseChanges(@Nonnull final BeanContext context,
                                                 @Nullable final SiteRelease siteRelease) throws RepositoryException {
+        ExceptionThrowingFunction<StagingReleaseManager.Release, List<PlatformVersionsService.Status>, RepositoryException> getChanges =
+                platformVersionsService::findReleaseChanges;
+        return findPageVersions(siteRelease, getChanges);
+    }
+
+    @Override
+    @Nonnull
+    public List<PageVersion> findModifiedPages(@Nonnull final BeanContext context, final SiteRelease siteRelease) throws RepositoryException {
+        ExceptionThrowingFunction<StagingReleaseManager.Release, List<PlatformVersionsService.Status>, RepositoryException> getChanges =
+                platformVersionsService::findWorkspaceChanges;
+        return findPageVersions(siteRelease, getChanges);
+    }
+
+    @Nonnull
+    protected List<PageVersion> findPageVersions(@Nullable SiteRelease siteRelease,
+                                                 @Nonnull ExceptionThrowingFunction<StagingReleaseManager.Release, List<PlatformVersionsService.Status>, RepositoryException> getChanges) throws RepositoryException {
         List<PageVersion> result = new ArrayList<>();
         if (siteRelease != null) {
             StagingReleaseManager.Release release = siteRelease.getStagingRelease();
-            List<PlatformVersionsService.Status> changes = platformVersionsService.findReleaseChanges(release);
+            List<PlatformVersionsService.Status> changes = getChanges.apply(release);
             for (PlatformVersionsService.Status status : changes) {
                 PageVersion pv = new PageVersion(siteRelease, status);
                 result.add(pv);
             }
             result.sort(Comparator.comparing(PageVersion::getPath));
         }
-        return result;
-    }
-
-    @Override
-    public Collection<Page> findModifiedPages(final BeanContext context, final Resource root) {
-        List<ReleasedVersionable> currentContents = releaseManager.listCurrentContents(root);
-        StagingReleaseManager.Release currentRelease = platformVersionsService.getDefaultRelease(root);
-        List<Page> result = currentContents.stream()
-                .map(releasedVersionable -> root.getChild(releasedVersionable.getRelativePath()))
-                .map(resource -> pageManager.getContainingPage(context, resource))
-                .filter(this::isModified)
-                .sorted(Comparator.comparing(Page::getPath))
-                .collect(Collectors.toList());
         return result;
     }
 

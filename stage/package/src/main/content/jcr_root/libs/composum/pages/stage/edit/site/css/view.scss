@@ -160,6 +160,13 @@
                             background-color: $release-status-deactivated;
                         }
                     }
+
+                    &_deleted {
+
+                        ._page-state {
+                            background-color: $release-status-deleted;
+                        }
+                    }
                 }
             }
         }
@@ -206,6 +213,17 @@
 
                         ._page-state {
                             background-color: $release-status-deactivated;
+
+                            &:after {
+                                content: '\f00d';
+                            }
+                        }
+                    }
+
+                    &_deleted {
+
+                        ._page-state {
+                            background-color: $release-status-deleted;
 
                             &:after {
                                 content: '\f00d';

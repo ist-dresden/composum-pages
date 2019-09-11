@@ -108,11 +108,10 @@ public class SetupHook implements InstallHook {
         try {
             Session session = ctx.getSession();
             NodeTypeManager nodeTypeManager = session.getWorkspace().getNodeTypeManager();
-            NodeType siteType = nodeTypeManager.getNodeType("cpp:Site");
             NodeType siteConfigType = nodeTypeManager.getNodeType("cpp:SiteConfiguration");
-            boolean updateNeeded = siteType.isNodeType("cpl:releaseRoot") || siteConfigType.isNodeType("cpl:releaseConfig");
+            boolean updateNeeded = siteConfigType.isNodeType("cpl:releaseConfig");
             if (updateNeeded) {
-                LOG.warn("cpl:releaseRoot or cpl:releaseConfig still in cpp:Site / cpp:SiteConfiguration even after package installation - updating nodetypes.");
+                LOG.warn("cpl:releaseConfig still in cpp:SiteConfiguration even after package installation - updating nodetypes.");
 
                 Archive archive = ctx.getPackage().getArchive();
                 try (InputStream stream = archive.openInputStream(archive.getEntry("/META-INF/vault/nodetypes.cnd"))) {
@@ -120,11 +119,7 @@ public class SetupHook implements InstallHook {
                     CndImporter.registerNodeTypes(cndReader, session, true);
                 }
 
-                siteType = nodeTypeManager.getNodeType("cpp:Site");
                 siteConfigType = nodeTypeManager.getNodeType("cpp:SiteConfiguration");
-                if (siteType.isNodeType("cpl:releaseRoot")) {
-                    LOG.error("cpp:Site does still contain cpl:releaseRoot even after attempted migration!");
-                }
                 if (siteConfigType.isNodeType("cpl:releaseConfig")) {
                     LOG.error("cpp:SiteConfig does still contain cpl:releaseConfig even after attempted migration!");
                 }

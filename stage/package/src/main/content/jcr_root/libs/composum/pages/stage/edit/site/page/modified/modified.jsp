@@ -43,8 +43,16 @@
                                                                    class="${siteCSS}_page-select"
                                                                    data-path="${page.path}"></c:if>
                             </td>
-                            <td class="_page-path"><a
-                                    href="${page.url}">${cpn:path(page.siteRelativePath)}</a></td>
+                            <td class="_page-path">
+                                <c:choose>
+                                    <c:when test="${not empty page.url}">
+                                        <a href="${page.url}">${cpn:path(page.siteRelativePath)}</a>
+                                    </c:when>
+                                    <c:otherwise>
+                                        ${cpn:path(page.siteRelativePath)}
+                                    </c:otherwise>
+                                </c:choose>
+                            </td>
                             <td class="_page-title">${cpn:text(page.title)}</td>
                             <td class="_page-time">${cpn:text(page.lastModifiedString)}</td>
                         </tr>

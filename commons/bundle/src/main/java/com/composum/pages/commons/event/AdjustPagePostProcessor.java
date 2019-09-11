@@ -3,11 +3,13 @@ package com.composum.pages.commons.event;
 import com.composum.pages.commons.model.Page;
 import com.composum.pages.commons.service.PageManager;
 import com.composum.sling.core.BeanContext;
+import com.composum.sling.core.util.SlingResourceUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.servlets.post.Modification;
+import org.apache.sling.servlets.post.ModificationType;
 import org.apache.sling.servlets.post.SlingPostProcessor;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -37,8 +39,10 @@ public class AdjustPagePostProcessor implements SlingPostProcessor {
         BeanContext context = new BeanContext.Service(resolver);
         Set<Page> modifiedPages = new HashSet<>();
         for (Modification modification : changes) {
-            registerPage(context, modifiedPages, modification.getSource());
-            registerPage(context, modifiedPages, modification.getDestination());
+            if (ModificationType.COPY != modification.getType()) { // the source of a copy is not changed.
+                registerPage(context, modifiedPages, modification.getSource(), modification.getType());
+            }
+            registerPage(context, modifiedPages, modification.getDestination(), modification.getType());
         }
         Calendar now = Calendar.getInstance();
         for (Page page : modifiedPages) {
@@ -46,11 +50,19 @@ public class AdjustPagePostProcessor implements SlingPostProcessor {
         }
     }
 
-    protected void registerPage(BeanContext context, Set<Page> pageSet, String path) {
+    protected void registerPage(BeanContext context, Set<Page> pageSet, String path, ModificationType modificationType) {
+        switch (modificationType) {
+            case CHECKIN:
+            case CHECKOUT:
+                return; // that shouldn't update the page modification time
+        }
         if (StringUtils.isNotBlank(path)) {
             Resource resource = context.getResolver().resolve(path); // probably deleted
             Page page = pageManager.getContainingPage(context, resource);
-            if (page != null) {
+            if (page != null && SlingResourceUtil.isSameOrDescendant(page.getContent().getPath(), path)) {
+                // changes outside the content node should set the page as modified.
+                // That can happen e.g. after deleting a page.
+                // The order of nodes is published by publishing a subpage, so this should also be ignored.
                 pageSet.add(page);
             }
         }

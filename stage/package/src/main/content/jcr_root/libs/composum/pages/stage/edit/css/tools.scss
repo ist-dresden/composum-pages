@@ -289,6 +289,10 @@
             &_deactivated {
                 color: $release-status-deactivated;
             }
+
+            &_deleted {
+                color: $release-status-deleted;
+            }
         }
     }
 
@@ -894,6 +898,10 @@
 
                         &_deactivated {
                             color: $release-status-deactivated;
+                        }
+
+                        &_deleted {
+                            color: $release-status-deleted;
                         }
                     }
                 }

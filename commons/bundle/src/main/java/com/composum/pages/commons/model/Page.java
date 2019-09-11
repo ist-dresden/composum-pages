@@ -243,6 +243,11 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
         return builder.toComparison();
     }
 
+    @Override
+    public boolean equals(Object other) {
+        return other instanceof Page && compareTo((Page) other) == 0;
+    }
+
     // initializer extensions
 
     /**
@@ -630,22 +635,24 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
     }
 
     /**
+     * The activation state of the page. We have a special case here:
+     * if the versionable is modified in the workspace, we want this to take precedence over status
+     * activated to alert the user that there is a modification that is not checked in yet.
+     *
      * @return 'modified' if the page is modified after last activation in th current release
      */
     public PlatformVersionsService.ActivationState getPageActivationState() {
-        PlatformVersionsService.ActivationState status = null;
         Page.StatusModel state = getReleaseStatus();
+        PlatformVersionsService.ActivationState status = state != null ? state.getActivationState() : null;
+        if (status != null && status != ActivationState.activated) {
+            return status;
+        }
+        // the state activated can be overridden to modified if the page is modified
         Calendar lastModified = getContent().getLastModified();
         if (lastModified != null) {
             Calendar lastActivated = state.getLastActivatedTime();
             if (lastActivated != null && lastActivated.before(lastModified)) {
                 status = ActivationState.modified;
-            }
-        }
-        if (status == null) {
-            status = state.getActivationState();
-            if (status == ActivationState.modified) {
-                status = ActivationState.activated;
             }
         }
         return status;
@@ -676,13 +683,13 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
         }
 
         public String getReleaseLabel() {
-            String label = releaseStatus.getRelease().getReleaseLabel();
+            String label = releaseStatus.getPreviousRelease().getReleaseLabel();
             Matcher matcher = PagesConstants.RELEASE_LABEL_PATTERN.matcher(label);
             return matcher.matches() ? matcher.group(1) : label;
         }
 
         public Calendar getLastActivatedTime() {
-            return releaseStatus.getActivationInfo() != null ? releaseStatus.getActivationInfo().getLastActivated() : null;
+            return releaseStatus.getVersionReference() != null ? releaseStatus.getVersionReference().getLastActivated() : null;
         }
 
         public String getLastActivated() {
@@ -691,16 +698,16 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
         }
 
         public String getLastActivatedBy() {
-            return releaseStatus.getActivationInfo() != null ? releaseStatus.getActivationInfo().getLastActivatedBy() : null;
+            return releaseStatus.getVersionReference() != null ? releaseStatus.getVersionReference().getLastActivatedBy() : null;
         }
 
         public String getLastDeactivated() {
-            Calendar calendar = releaseStatus.getActivationInfo() != null ? releaseStatus.getActivationInfo().getLastDeactivated() : null;
+            Calendar calendar = releaseStatus.getVersionReference() != null ? releaseStatus.getVersionReference().getLastDeactivated() : null;
             return calendar != null ? new SimpleDateFormat(VERSION_DATE_FORMAT).format(calendar.getTime()) : "";
         }
 
         public String getLastDeactivatedBy() {
-            return releaseStatus.getActivationInfo() != null ? releaseStatus.getActivationInfo().getLastDeactivatedBy() : null;
+            return releaseStatus.getVersionReference() != null ? releaseStatus.getVersionReference().getLastDeactivatedBy() : null;
         }
     }
 
