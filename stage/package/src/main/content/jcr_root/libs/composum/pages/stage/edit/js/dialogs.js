@@ -140,6 +140,34 @@
             initSubmit: function () {
                 var c = dialogs.const.edit.css;
                 this.$('.' + c.base + c._form).on('submit', _.bind(this.onSubmit, this));
+            },
+
+            getInitialFocus: function () {
+                var initialFocus = this.$('[autofocus]').closest('.widget');
+                if (initialFocus.length < 1) {
+                    initialFocus = this.$('input:text:visible,textarea:visible').closest('.widget');
+                }
+                var widget;
+                initialFocus.each(function () {
+                    if (this.view && (_.isFunction(this.view.grabFocus))) {
+                        return $(this);
+                    }
+                });
+                initialFocus = this.$('input:text:visible,textarea:visible');
+                return initialFocus.first();
+            },
+
+            onShown: function () {
+                core.components.FormDialog.prototype.onShown.apply(this);
+                var initialFocus = this.getInitialFocus();
+                if (initialFocus && initialFocus.length > 0) {
+                    var widget;
+                    if ((widget = initialFocus[0].view) && _.isFunction(widget.grabFocus)) {
+                        widget.grabFocus();
+                    } else {
+                        initialFocus.focus();
+                    }
+                }
             }
         });
 
@@ -691,6 +719,10 @@
                 }, this));
                 this.$undo.click(_.bind(this.source.undo, this.source));
                 this.$redo.click(_.bind(this.source.redo, this.source));
+            },
+
+            getInitialFocus: function () {
+                return undefined;
             },
 
             onShown: function () {

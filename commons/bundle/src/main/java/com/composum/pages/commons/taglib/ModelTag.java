@@ -214,7 +214,13 @@ public class ModelTag extends ComponentTag implements DynamicAttributes {
     }
 
     /**
-     * collects the set of tag attributes classes (extension hook)
+     * adds the set of initial default tag attributes
+     */
+    protected void defaultAttributes(Map<String, Object> attributeSet) {
+    }
+
+    /**
+     * collects the set of tag attributes (extension hook)
      * adds all dynamic attributes as tag attributes
      */
     protected void collectAttributes(Map<String, Object> attributeSet) {
@@ -264,6 +270,7 @@ public class ModelTag extends ComponentTag implements DynamicAttributes {
         if (attributes == null) {
             StringBuilder builder = new StringBuilder();
             Map<String, Object> attributeSet = new LinkedHashMap<>();
+            defaultAttributes(attributeSet);
             collectAttributes(attributeSet);
             for (Map.Entry<String, Object> attribute : attributeSet.entrySet()) {
                 builder.append(" ").append(attribute.getKey()).append("=\"").append(attribute.getValue()).append("\"");
