@@ -175,10 +175,7 @@ public class PagesSiteManager extends PagesContentManager<Site> implements SiteM
     public Collection<Site> getSites(@Nonnull final BeanContext context) {
         Set<Site> sites = new HashSet<>();
         if (tenantSupport == null) {
-            sites.addAll(getSites(context, getSitesRoot(context, null), ResourceFilter.ALL));
-            if (sites.size() < 1) {
-                sites.addAll(getSites(context, getContentRoot(context.getResolver()), ResourceFilter.ALL));
-            }
+            sites.addAll(getSites(context, getContentRoot(context.getResolver()), ResourceFilter.ALL));
         } else {
             for (String tenantId : tenantSupport.getTenants(context).keySet()) {
                 sites.addAll(getSites(context, getSitesRoot(context, tenantId), ResourceFilter.ALL));
