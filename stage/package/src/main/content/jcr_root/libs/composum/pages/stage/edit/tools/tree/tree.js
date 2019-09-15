@@ -803,14 +803,14 @@
                     switch (key) {
                         default:
                         case 'tree':
-                            this.$viewToggle.removeClass('active');
+                            this.$viewToggle.removeClass('fa-sitemap').addClass('fa-search');
                             this.searchPanel.$el.addClass('hidden');
                             this.$treePanel.removeClass('hidden');
                             this.$treePanelPreview.removeClass('hidden');
                             this.searchPanel.onHidden();
                             break;
                         case 'search':
-                            this.$viewToggle.addClass('active');
+                            this.$viewToggle.removeClass('fa-search').addClass('fa-sitemap');
                             this.$treePanelPreview.addClass('hidden');
                             this.$treePanel.addClass('hidden');
                             this.searchPanel.$el.removeClass('hidden');
