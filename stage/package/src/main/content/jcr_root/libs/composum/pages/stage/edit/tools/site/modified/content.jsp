@@ -28,8 +28,9 @@
     <div class="composum-pages-stage-edit-tools-site-modified_tools-panel">
         <ul class="${siteCSS}_list">
             <c:forEach items="${site.site.modifiedPages}" var="page">
-                <li class="${siteCSS}_listentry">
-                    <input type="checkbox" class="${siteCSS}_page-select" data-path="${page.path}"/>
+                <li class="${siteCSS}_listentry release-status_${page.releaseStatus.activationState}">
+                    <div class="_page-state"><input type="checkbox" class="${siteCSS}_page-select"
+                                                    data-path="${page.path}"/></div>
                     <div class="${siteCSS}_page-entry" data-path="${page.path}">
                         <div class="${siteCSS}_page-head">
                             <div class="${siteCSS}_page-title">${not empty page.title?cpn:text(page.title):'-- --'}</div>

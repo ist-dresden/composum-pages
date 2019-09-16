@@ -2,9 +2,8 @@
 <jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
         jcr:primaryType="sling:OrderedFolder"
         embed="[composum/pages/stage/edit/site/css/context.css,
+                composum/pages/stage/edit/tools/site/css/pages.css,
                 composum/pages/stage/edit/tools/site/releases/css/releases.css,
-                composum/pages/stage/edit/tools/site/activated/css/activated.css,
-                composum/pages/stage/edit/tools/site/modified/css/modified.css,
                 composum/pages/stage/edit/tools/page/versions/css/versions.css,
                 jslibs/chartist/0.11.0/chartist.css,
                 composum/pages/stage/edit/tools/page/statistics/css/statistics.css,

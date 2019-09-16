@@ -1,0 +1,133 @@
+@charset "UTF-8";
+
+@import "../../../css/variables";
+@import "../../../css/mixins";
+
+.composum-pages-stage-edit-tools-site {
+
+    &-activated, &-modified {
+
+        &_tools-panel {
+            position: absolute;
+            top: 50px;
+            left: 10px;
+            right: 10px;
+            bottom: 8px;
+            @include scrolldark;
+        }
+
+        .composum-pages-stage-edit-site-page {
+
+            &-activated, &-modified {
+
+                &_page-select-all {
+                    vertical-align: top;
+                    margin: 6px 8px 0 9px;
+                }
+
+                &_list {
+                    width: 100%;
+                    margin: 4px 0;
+                    padding: 0;
+                    list-style: none;
+                }
+
+                &_listentry {
+                    position: relative;
+                    margin-bottom: 3px;
+                    padding: 2px 4px 2px 32px;
+                    background-color: $tools-pane-tabs-background;
+
+                    &.selected {
+                        @include secondary-selection-background();
+
+                        body.context-driven-view & {
+                            @include main-selection-background();
+                        }
+                    }
+
+                    ._page-state {
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        bottom: 0;
+                        width: 26px;
+                        padding-top: 4px;
+                        text-align: center;
+                    }
+
+                    &.release-status {
+
+                        &_initial {
+
+                            ._page-state {
+                                background-color: $release-status-initial-dk;
+                            }
+                        }
+
+                        &_activated {
+
+                            ._page-state {
+                                background-color: $release-status-activated-dk;
+                            }
+                        }
+
+                        &_modified {
+
+                            ._page-state {
+                                background-color: $release-status-modified-dk;
+                            }
+                        }
+
+                        &_deactivated {
+
+                            ._page-state {
+                                background-color: $release-status-deactivated-dk;
+                            }
+                        }
+
+                        &_deleted {
+
+                            ._page-state {
+                                background-color: $release-status-deleted-dk;
+                            }
+                        }
+                    }
+                }
+
+                &_page {
+
+                    &-head {
+                        width: 100%;
+                    }
+
+                    &-title, &-time, &-path {
+                        max-width: 100%;
+                        overflow: hidden;
+                        white-space: nowrap;
+                    }
+
+                    &-title {
+                        float: left;
+                    }
+
+                    &-time {
+                        float: right;
+                        margin: 3px 2px 0 10px;
+                        text-align: right;
+                        font-size: $hint-font-size;
+                    }
+
+                    &-path {
+                        clear: both;
+                        font-size: $hint-font-size;
+                    }
+
+                    &-entry {
+                        cursor: pointer;
+                    }
+                }
+            }
+        }
+    }
+}

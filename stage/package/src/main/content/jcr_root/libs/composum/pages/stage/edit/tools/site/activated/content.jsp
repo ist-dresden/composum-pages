@@ -29,8 +29,9 @@
     <div class="composum-pages-stage-edit-tools-site-activated_tools-panel">
         <ul class="${siteCSS}_list">
             <c:forEach items="${site.site.releaseChanges}" var="pageVersion">
-                <li class="${siteCssBase}_listentry">
-                    <input type="checkbox" class="${siteCssBase}_page-select" data-path="${pageVersion.path}"/>
+                <li class="${siteCssBase}_listentry release-status_${pageVersion.pageActivationState}">
+                    <div class="_page-state"><input type="checkbox" class="${siteCssBase}_page-select"
+                                                    data-path="${pageVersion.path}"/></div>
                     <div class="${siteCssBase}_page-entry" data-path="${pageVersion.path}">
                         <div class="${siteCssBase}_page-head">
                             <div class="${siteCssBase}_page-title">${not empty pageVersion.title?cpn:text(pageVersion.title):'-- --'}</div>
