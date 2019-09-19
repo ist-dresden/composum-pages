@@ -108,7 +108,7 @@ public class PagesVersionsService implements VersionsService {
             List<PlatformVersionsService.Status> changes = getChanges.apply(release);
             for (PlatformVersionsService.Status status : changes) {
                 PageVersion pv = new PageVersion(siteRelease, status);
-                if (filter == null || filter.contains(pv.getPageActivationState())) {
+                if (filter == null || filter.size() < 1 || filter.contains(pv.getPageActivationState())) {
                     result.add(pv);
                 }
             }

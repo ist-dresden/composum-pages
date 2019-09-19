@@ -89,7 +89,7 @@ public class SiteModel extends FrameModel {
                     filter = PlatformVersionsService.ActivationState.modified;
                 }
                 modifiedPages = site.getVersionsService().findModifiedPages(getContext(),
-                        site.getCurrentRelease(), Collections.singletonList(filter));
+                        site.getCurrentRelease(), filter != null ? Collections.singletonList(filter) : null);
             } catch (RepositoryException e) {
                 LOG.error("Retrieving modified pages for " + getResource().getPath(), e);
                 modifiedPages = new ArrayList<>();
