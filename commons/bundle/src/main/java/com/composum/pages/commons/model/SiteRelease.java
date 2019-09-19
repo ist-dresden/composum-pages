@@ -7,6 +7,7 @@ import com.composum.sling.core.util.I18N;
 import com.composum.sling.platform.staging.StagingConstants;
 import com.composum.sling.platform.staging.StagingReleaseManager;
 import com.composum.sling.platform.staging.impl.StagingUtils;
+import com.composum.sling.platform.staging.versions.PlatformVersionsService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.apache.sling.api.resource.Resource;
@@ -14,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.jcr.RepositoryException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -98,7 +100,9 @@ public class SiteRelease extends AbstractModel implements Comparable<SiteRelease
         return stagingRelease.getNumber();
     }
 
-    /** The label that is set on a document version when it is in a release. */
+    /**
+     * The label that is set on a document version when it is in a release.
+     */
     public String getLabel() {
         return stagingRelease.getReleaseLabel();
     }
@@ -126,14 +130,20 @@ public class SiteRelease extends AbstractModel implements Comparable<SiteRelease
         return PagesUtil.getTimestampString(getCreationDate());
     }
 
-    /** The underlying release info from the platform. */
+    /**
+     * The underlying release info from the platform.
+     */
     public StagingReleaseManager.Release getStagingRelease() {
         return stagingRelease;
     }
 
     public List<PageVersion> getChanges() {
+        return getChanges(null);
+    }
+
+    public List<PageVersion> getChanges(@Nullable final List<PlatformVersionsService.ActivationState> filter) {
         try {
-            return getVersionsService().findReleaseChanges(getContext(), this);
+            return getVersionsService().findReleaseChanges(getContext(), this, filter);
         } catch (RepositoryException ex) {
             LOG.error(ex.getMessage(), ex);
             return new ArrayList<>();

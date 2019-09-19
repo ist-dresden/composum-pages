@@ -9,6 +9,7 @@ import com.composum.platform.models.annotations.PropertyDetermineResourceStrateg
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.util.ResourceUtil;
 import com.composum.sling.platform.staging.StagingReleaseManager;
+import com.composum.sling.platform.staging.versions.PlatformVersionsService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.apache.sling.api.resource.Resource;
@@ -94,7 +95,9 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
 
     // initializer extensions
 
-    /** Compatible to {@link AbstractModel#determineResource(Resource)}. */
+    /**
+     * Compatible to {@link AbstractModel#determineResource(Resource)}.
+     */
     public static class ContainingSiteResourceStrategy implements DetermineResourceStategy {
         @Override
         public Resource determineResource(BeanContext beanContext, Resource requestResource) {
@@ -227,7 +230,7 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
     public List<PageVersion> getModifiedPages() {
         if (modifiedPages == null) {
             try {
-                modifiedPages = getVersionsService().findModifiedPages(getContext(), getCurrentRelease());
+                modifiedPages = getVersionsService().findModifiedPages(getContext(), getCurrentRelease(), null);
             } catch (RepositoryException e) {
                 LOG.error("Retrieving modified pages for " + getResource().getPath(), e);
                 modifiedPages = new ArrayList<>();
@@ -241,13 +244,14 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
      */
     public Collection<PageVersion> getReleaseChanges() {
         if (releaseChanges == null) {
-            releaseChanges = getReleaseChanges(getCurrentRelease());
+            releaseChanges = getReleaseChanges(getCurrentRelease(), null);
         }
         return releaseChanges;
     }
 
     @Nonnull
-    public Collection<PageVersion> getReleaseChanges(@Nullable final SiteRelease releaseToCheck) {
-        return releaseToCheck != null ? releaseToCheck.getChanges() : Collections.emptyList();
+    public Collection<PageVersion> getReleaseChanges(@Nullable final SiteRelease releaseToCheck,
+                                                     @Nullable final List<PlatformVersionsService.ActivationState> filter) {
+        return releaseToCheck != null ? releaseToCheck.getChanges(filter) : Collections.emptyList();
     }
 }

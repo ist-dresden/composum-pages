@@ -79,30 +79,38 @@ public class PagesVersionsService implements VersionsService {
     @Nonnull
     @Override
     public List<PageVersion> findReleaseChanges(@Nonnull final BeanContext context,
-                                                @Nullable final SiteRelease siteRelease) throws RepositoryException {
+                                                @Nullable final SiteRelease siteRelease,
+                                                @Nullable final List<PlatformVersionsService.ActivationState> filter)
+            throws RepositoryException {
         ExceptionThrowingFunction<StagingReleaseManager.Release, List<PlatformVersionsService.Status>, RepositoryException> getChanges =
                 platformVersionsService::findReleaseChanges;
-        return findPageVersions(siteRelease, getChanges);
+        return findPageVersions(siteRelease, getChanges, filter);
     }
 
     @Override
     @Nonnull
-    public List<PageVersion> findModifiedPages(@Nonnull final BeanContext context, final SiteRelease siteRelease) throws RepositoryException {
+    public List<PageVersion> findModifiedPages(@Nonnull final BeanContext context, final SiteRelease siteRelease,
+                                               @Nullable final List<PlatformVersionsService.ActivationState> filter)
+            throws RepositoryException {
         ExceptionThrowingFunction<StagingReleaseManager.Release, List<PlatformVersionsService.Status>, RepositoryException> getChanges =
                 platformVersionsService::findWorkspaceChanges;
-        return findPageVersions(siteRelease, getChanges);
+        return findPageVersions(siteRelease, getChanges, filter);
     }
 
     @Nonnull
     protected List<PageVersion> findPageVersions(@Nullable SiteRelease siteRelease,
-                                                 @Nonnull ExceptionThrowingFunction<StagingReleaseManager.Release, List<PlatformVersionsService.Status>, RepositoryException> getChanges) throws RepositoryException {
+                                                 @Nonnull ExceptionThrowingFunction<StagingReleaseManager.Release, List<PlatformVersionsService.Status>, RepositoryException> getChanges,
+                                                 @Nullable final List<PlatformVersionsService.ActivationState> filter)
+            throws RepositoryException {
         List<PageVersion> result = new ArrayList<>();
         if (siteRelease != null) {
             StagingReleaseManager.Release release = siteRelease.getStagingRelease();
             List<PlatformVersionsService.Status> changes = getChanges.apply(release);
             for (PlatformVersionsService.Status status : changes) {
                 PageVersion pv = new PageVersion(siteRelease, status);
-                result.add(pv);
+                if (filter == null || filter.contains(pv.getPageActivationState())) {
+                    result.add(pv);
+                }
             }
             result.sort(Comparator.comparing(PageVersion::getPath));
         }
