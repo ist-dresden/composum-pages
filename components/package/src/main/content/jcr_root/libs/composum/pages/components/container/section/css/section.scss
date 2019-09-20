@@ -7,10 +7,116 @@
     clear: both;
     width: 100%;
 
+    &_icon {
+        width: $symbol-width;
+        font-size: $symbol-font-size;
+        line-height: $symbol-font-size;
+        color: $symbol-color;
+    }
+
+    &_wrapper {
+        width: 100%;
+    }
+
+    &.section-icon {
+
+        .composum-pages-components-container-section {
+
+            &_wrapper {
+                display: flex;
+                flex-wrap: nowrap;
+
+                .composum-pages-components-container-section {
+
+                    &_icon {
+                    }
+
+                    &_content {
+                        width: 100%;
+
+                        > :first-child {
+                            margin-top: 0;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     &_title {
         margin: $main-title-margin;
         @include a-title-font($column-title-font-size);
         color: $column-title-text-color;
+    }
+
+    &.section-title {
+
+        &.no-panel {
+
+            .composum-pages-components-container-section {
+
+                &_icon {
+                    margin: $main-title-margin;
+                }
+            }
+        }
+
+        &.panel {
+
+            .composum-pages-components-container-section {
+
+                &_icon, &_title {
+                    margin-top: 0.5rem;
+                }
+            }
+        }
+    }
+
+    &.panel.panel {
+
+        &-info {
+            background-color: $bootstrap-background-info;
+
+            .composum-pages-components-container-section {
+
+                &_icon, &_title {
+                    color: $bootstrap-color-info;
+                }
+            }
+        }
+
+        &-success {
+            background-color: $bootstrap-background-success;
+
+            .composum-pages-components-container-section {
+
+                &_icon, &_title {
+                    color: $bootstrap-color-success;
+                }
+            }
+        }
+
+        &-warning {
+            background-color: $bootstrap-background-warning;
+
+            .composum-pages-components-container-section {
+
+                &_icon, &_title {
+                    color: $bootstrap-color-warning;
+                }
+            }
+        }
+
+        &-danger {
+            background-color: $bootstrap-background-danger;
+
+            .composum-pages-components-container-section {
+
+                &_icon, &_title {
+                    color: $bootstrap-color-danger;
+                }
+            }
+        }
     }
 }
 
@@ -21,8 +127,20 @@
 
     .composum-pages-components-container-section {
 
-        &_title {
+        &.panel {
+
+            .panel-body {
+                padding: 12px;
+            }
+        }
+
+        &_icon, &_title {
             @include a-title-font($column-title-font-size-xs);
+        }
+
+        &_icon {
+            width: $symbol-width-xs;
+            line-height: $column-title-font-size-xs;
         }
     }
 }

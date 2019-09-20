@@ -3,5 +3,5 @@
         jcr:primaryType="cpp:Component"
         jcr:description="a container with decoration around the content"
         jcr:title="Decorator"
-        category="[Layout,Blueprint]"
+        category="[Deprecated]"
         sling:resourceSuperType="composum/pages/components/composed"/>

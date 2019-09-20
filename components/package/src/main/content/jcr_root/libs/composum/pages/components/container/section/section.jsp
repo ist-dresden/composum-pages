@@ -3,10 +3,19 @@
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <%@taglib prefix="cpn" uri="http://sling.composum.com/cpnl/1.0" %>
 <cpp:defineObjects/>
-<cpp:container var="model" type="com.composum.pages.commons.model.Container" tagName="section">
-    <cpn:anchor test="${not empty model.properties.anchor}" name="${model.properties.anchor}" title="${model.title}"/>
-    <cpn:div test="${not empty model.title && !model.properties.hideTitle}" class="${modelCSS}_header">
-        <cpn:text tagName="${model.titleTagName}" value="${model.title}" i18n="true" class="${modelCSS}_title"/>
+<cpp:container var="model" type="com.composum.pages.components.model.container.Section" tagName="section"
+               cssAdd="@{modelCSS}_level-@{model.level} @{model.panelCss} title-level-@{model.titleLevel}">
+    <cpn:div test="${model.usePanel}" body="true" class="${modelCSS}_body panel-body">
+        <cpn:anchor test="${model.setAnchor}" name="${model.anchor}" title="${model.title}"/>
+        <div class="${modelCSS}_wrapper">
+            <cpn:div test="${model.hasIcon}" class="${modelCSS}_icon"><i class="fa fa-${model.icon}"></i></cpn:div>
+            <cpn:div test="${model.hasIcon}" body="true" class="${modelCSS}_content">
+                <cpn:div test="${model.hasTitle}" class="${modelCSS}_header">
+                    <cpn:text tagName="${model.titleTagName}" value="${model.title}" i18n="true"
+                              class="${modelCSS}_title"/>
+                </cpn:div>
+                <sling:call script="elements.jsp"/>
+            </cpn:div>
+        </div>
     </cpn:div>
-    <sling:call script="elements.jsp"/>
 </cpp:container>
