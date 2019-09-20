@@ -13,8 +13,9 @@ public class Text extends Element {
 
     public static final Pattern IGNORE_IN_TITLE_LEVEL = Pattern.compile("^.*/(column)$");
 
-    private transient Boolean hideTitle;
     private transient String text;
+    private transient Boolean hideTitle;
+    private transient String tileTitle;
 
     public boolean isValid() {
         return StringUtils.isNotBlank(getTitle()) || StringUtils.isNotBlank(getText());
@@ -33,6 +34,18 @@ public class Text extends Element {
             text = getProperty(PROP_TEXT, "");
         }
         return text;
+    }
+
+    @Nonnull
+    @Override
+    public String getTileTitle() {
+        if (tileTitle == null) {
+            tileTitle = super.getTitle();
+            if (StringUtils.isBlank(tileTitle)) {
+                tileTitle = StringUtils.substring(getText().replaceAll("</?[^>]*>", ""), 0, 100);
+            }
+        }
+        return tileTitle;
     }
 
     @Nonnull

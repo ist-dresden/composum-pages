@@ -13,8 +13,9 @@ public class TextImage extends ImageRelatedElement {
     public static final String PROP_FLOATING_TEXT = "floatingText";
     public static final String PROP_ALIGNMENT = "textAlignment";
 
-    private transient Boolean hideTitle;
     private transient String text;
+    private transient Boolean hideTitle;
+    private transient String tileTitle;
 
     public boolean isTextValid() {
         return StringUtils.isNotBlank(getTitle()) || StringUtils.isNotBlank(getText());
@@ -32,6 +33,18 @@ public class TextImage extends ImageRelatedElement {
             hideTitle = getProperty("hideTitle", Boolean.FALSE);
         }
         return hideTitle;
+    }
+
+    @Nonnull
+    @Override
+    public String getTileTitle() {
+        if (tileTitle == null) {
+            tileTitle = super.getTitle();
+            if (StringUtils.isBlank(tileTitle)) {
+                tileTitle = StringUtils.substring(getText().replaceAll("</?[^>]*>", ""), 0, 100);
+            }
+        }
+        return tileTitle;
     }
 
     public boolean isFloatingText() {

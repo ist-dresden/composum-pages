@@ -296,6 +296,20 @@
         }
     }
 
+    &_name,
+    &_path,
+    &_type,
+    &_description {
+        font-size: $hint-font-size;
+    }
+
+    &_title,
+    &_path,
+    &_type,
+    &_description {
+        text-overflow: ellipsis;
+    }
+
     &_title {
         padding-left: 30px;
         max-width: 100%;
@@ -307,13 +321,6 @@
         float: right;
         margin-left: 10px;
         opacity: 0.7;
-    }
-
-    &_name,
-    &_path,
-    &_type,
-    &_description {
-        font-size: $hint-font-size;
     }
 
     &_description {
