@@ -1,13 +1,13 @@
 package com.composum.pages.commons.model;
 
 import com.composum.pages.commons.request.DisplayMode;
+import com.composum.pages.commons.service.VersionsService;
 import com.composum.pages.commons.util.PagesUtil;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.util.I18N;
 import com.composum.sling.platform.staging.StagingConstants;
 import com.composum.sling.platform.staging.StagingReleaseManager;
 import com.composum.sling.platform.staging.impl.StagingUtils;
-import com.composum.sling.platform.staging.versions.PlatformVersionsService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.apache.sling.api.resource.Resource;
@@ -141,7 +141,7 @@ public class SiteRelease extends AbstractModel implements Comparable<SiteRelease
         return getChanges(null);
     }
 
-    public List<PageVersion> getChanges(@Nullable final List<PlatformVersionsService.ActivationState> filter) {
+    public List<PageVersion> getChanges(@Nullable final VersionsService.PageVersionFilter filter) {
         try {
             return getVersionsService().findReleaseChanges(getContext(), this, filter);
         } catch (RepositoryException ex) {

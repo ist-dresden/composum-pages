@@ -5,6 +5,8 @@ import com.composum.pages.commons.model.Model;
 import com.composum.pages.commons.model.Page;
 import com.composum.pages.commons.model.PageVersion;
 import com.composum.pages.commons.model.Site;
+import com.composum.pages.commons.service.PagesVersionsService;
+import com.composum.pages.commons.service.VersionsService;
 import com.composum.pages.stage.model.edit.FrameModel;
 import com.composum.sling.platform.staging.versions.PlatformVersionsService;
 import org.apache.commons.lang3.StringUtils;
@@ -17,7 +19,6 @@ import javax.jcr.RepositoryException;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 public class SiteModel extends FrameModel {
@@ -58,21 +59,42 @@ public class SiteModel extends FrameModel {
         return site;
     }
 
+    protected class InitialActivationFilter extends VersionsService.ActivationStateFilter {
+
+        public InitialActivationFilter() {
+            super(PlatformVersionsService.ActivationState.activated,
+                    PlatformVersionsService.ActivationState.modified);
+        }
+
+        @Override
+        public boolean accept(PageVersion version) {
+            return super.accept(version) && version.getStatus().getPreviousVersionable() == null;
+        }
+    }
+
     /**
      * @return the list of pages changed (modified and activated) for the current release
      */
     public Collection<PageVersion> getReleaseChanges() {
         if (releaseChanges == null) {
             Site site = getSite();
-            PlatformVersionsService.ActivationState filter = getStatusFilter();
-            List<PlatformVersionsService.ActivationState> options = new ArrayList<>();
-            if (filter != null) {
-                options.add(filter);
-                if (filter == PlatformVersionsService.ActivationState.activated) {
-                    options.add(PlatformVersionsService.ActivationState.modified);
+            PagesVersionsService.ActivationStateFilter filter = null;
+            PlatformVersionsService.ActivationState statusFilter = getStatusFilter();
+            if (statusFilter != null) {
+                switch (statusFilter) {
+                    case initial:
+                        filter = new InitialActivationFilter();
+                        break;
+                    case activated:
+                        filter = new VersionsService.ActivationStateFilter(statusFilter,
+                                PlatformVersionsService.ActivationState.modified);
+                        break;
+                    default:
+                        filter = new VersionsService.ActivationStateFilter(statusFilter);
+                        break;
                 }
             }
-            releaseChanges = site.getReleaseChanges(site.getCurrentRelease(), options);
+            releaseChanges = site.getReleaseChanges(site.getCurrentRelease(), filter);
         }
         return releaseChanges;
     }
@@ -84,12 +106,12 @@ public class SiteModel extends FrameModel {
         if (modifiedPages == null) {
             Site site = getSite();
             try {
-                PlatformVersionsService.ActivationState filter = getStatusFilter();
-                if (filter == PlatformVersionsService.ActivationState.activated) {
-                    filter = PlatformVersionsService.ActivationState.modified;
+                PlatformVersionsService.ActivationState statusFilter = getStatusFilter();
+                if (statusFilter == PlatformVersionsService.ActivationState.activated) {
+                    statusFilter = PlatformVersionsService.ActivationState.modified;
                 }
-                modifiedPages = site.getVersionsService().findModifiedPages(getContext(),
-                        site.getCurrentRelease(), filter != null ? Collections.singletonList(filter) : null);
+                modifiedPages = site.getVersionsService().findModifiedPages(getContext(), site.getCurrentRelease(),
+                        statusFilter != null ? new VersionsService.ActivationStateFilter(statusFilter) : null);
             } catch (RepositoryException e) {
                 LOG.error("Retrieving modified pages for " + getResource().getPath(), e);
                 modifiedPages = new ArrayList<>();

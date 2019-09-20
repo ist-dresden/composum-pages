@@ -4,12 +4,12 @@ import com.composum.pages.commons.model.properties.Language;
 import com.composum.pages.commons.request.DisplayMode;
 import com.composum.pages.commons.service.PageManager;
 import com.composum.pages.commons.service.SiteManager;
+import com.composum.pages.commons.service.VersionsService;
 import com.composum.platform.models.annotations.DetermineResourceStategy;
 import com.composum.platform.models.annotations.PropertyDetermineResourceStrategy;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.util.ResourceUtil;
 import com.composum.sling.platform.staging.StagingReleaseManager;
-import com.composum.sling.platform.staging.versions.PlatformVersionsService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.apache.jackrabbit.JcrConstants;
@@ -263,7 +263,7 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
 
     @Nonnull
     public Collection<PageVersion> getReleaseChanges(@Nullable final SiteRelease releaseToCheck,
-                                                     @Nullable final List<PlatformVersionsService.ActivationState> filter) {
+                                                     @Nullable final VersionsService.PageVersionFilter filter) {
         return releaseToCheck != null ? releaseToCheck.getChanges(filter) : Collections.emptyList();
     }
 }

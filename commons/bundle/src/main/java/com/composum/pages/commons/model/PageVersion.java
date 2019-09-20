@@ -43,6 +43,10 @@ public class PageVersion {
         this.status = status;
     }
 
+    public PlatformVersionsService.Status getStatus() {
+        return status;
+    }
+
     public Page.StatusModel getReleaseStatus() {
         return new Page.StatusModel(status);
     }
@@ -97,7 +101,9 @@ public class PageVersion {
         if (null != getPage()) {
             return getPage().getTitle();
         }
-        if (status.getVersionReference() == null) { return null; }
+        if (status.getVersionReference() == null) {
+            return null;
+        }
         Resource versionResource = status.getVersionReference().getVersionResource();
         if (null == versionResource) {
             return null;
@@ -127,8 +133,12 @@ public class PageVersion {
      */
     public PlatformVersionsService.ActivationState getPageActivationState() {
         Page page = getPage();
-        if (page != null) { return page.getPageActivationState(); }
-        if (status != null) { return status.getActivationState(); }
+        if (page != null) {
+            return page.getPageActivationState();
+        }
+        if (status != null) {
+            return status.getActivationState();
+        }
         return PlatformVersionsService.ActivationState.modified; // shouldn't happen
     }
 

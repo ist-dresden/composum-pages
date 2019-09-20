@@ -8,12 +8,43 @@ import com.composum.sling.platform.staging.versions.PlatformVersionsService;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.jcr.RepositoryException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
  *
  */
 public interface VersionsService {
+
+    /**
+     * a filter interface for the version search operations
+     */
+    interface PageVersionFilter {
+        boolean accept(PageVersion version);
+    }
+
+    /**
+     * a filter implementation using a set of activation state options
+     */
+    class ActivationStateFilter implements PageVersionFilter {
+
+        private final List<PlatformVersionsService.ActivationState> options;
+
+        public ActivationStateFilter(PlatformVersionsService.ActivationState... options) {
+            this.options = new ArrayList<>();
+            addOption(options);
+        }
+
+        public void addOption(PlatformVersionsService.ActivationState... options) {
+            this.options.addAll(Arrays.asList(options));
+        }
+
+        @Override
+        public boolean accept(PageVersion version) {
+            return options.contains(version.getPageActivationState());
+        }
+    }
 
     /**
      * Resets a versionable to a version, but deletes all versions after that version.
@@ -28,7 +59,7 @@ public interface VersionsService {
     @Nonnull
     List<PageVersion> findReleaseChanges(@Nonnull BeanContext context,
                                          @Nullable SiteRelease release,
-                                         @Nullable List<PlatformVersionsService.ActivationState> filter)
+                                         @Nullable PageVersionFilter filter)
             throws RepositoryException;
 
     /**
@@ -38,7 +69,7 @@ public interface VersionsService {
      */
     @Nonnull
     List<PageVersion> findModifiedPages(@Nonnull BeanContext context, @Nullable SiteRelease siteRelease,
-                                        @Nullable List<PlatformVersionsService.ActivationState> filter)
+                                        @Nullable PageVersionFilter filter)
             throws RepositoryException;
 
 }

@@ -80,7 +80,7 @@ public class PagesVersionsService implements VersionsService {
     @Override
     public List<PageVersion> findReleaseChanges(@Nonnull final BeanContext context,
                                                 @Nullable final SiteRelease siteRelease,
-                                                @Nullable final List<PlatformVersionsService.ActivationState> filter)
+                                                @Nullable final PageVersionFilter filter)
             throws RepositoryException {
         ExceptionThrowingFunction<StagingReleaseManager.Release, List<PlatformVersionsService.Status>, RepositoryException> getChanges =
                 platformVersionsService::findReleaseChanges;
@@ -90,7 +90,7 @@ public class PagesVersionsService implements VersionsService {
     @Override
     @Nonnull
     public List<PageVersion> findModifiedPages(@Nonnull final BeanContext context, final SiteRelease siteRelease,
-                                               @Nullable final List<PlatformVersionsService.ActivationState> filter)
+                                               @Nullable final PageVersionFilter filter)
             throws RepositoryException {
         ExceptionThrowingFunction<StagingReleaseManager.Release, List<PlatformVersionsService.Status>, RepositoryException> getChanges =
                 platformVersionsService::findWorkspaceChanges;
@@ -100,7 +100,7 @@ public class PagesVersionsService implements VersionsService {
     @Nonnull
     protected List<PageVersion> findPageVersions(@Nullable SiteRelease siteRelease,
                                                  @Nonnull ExceptionThrowingFunction<StagingReleaseManager.Release, List<PlatformVersionsService.Status>, RepositoryException> getChanges,
-                                                 @Nullable final List<PlatformVersionsService.ActivationState> filter)
+                                                 @Nullable final PageVersionFilter filter)
             throws RepositoryException {
         List<PageVersion> result = new ArrayList<>();
         if (siteRelease != null) {
@@ -108,7 +108,7 @@ public class PagesVersionsService implements VersionsService {
             List<PlatformVersionsService.Status> changes = getChanges.apply(release);
             for (PlatformVersionsService.Status status : changes) {
                 PageVersion pv = new PageVersion(siteRelease, status);
-                if (filter == null || filter.size() < 1 || filter.contains(pv.getPageActivationState())) {
+                if (filter == null || filter.accept(pv)) {
                     result.add(pv);
                 }
             }
