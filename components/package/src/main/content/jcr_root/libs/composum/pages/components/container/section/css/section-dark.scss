@@ -1,0 +1,54 @@
+@charset "UTF-8";
+
+@import "../../../css/variables";
+@import "../../../css/mixins";
+
+.composum-pages-components-container-section {
+
+    &.panel.panel {
+
+        &-info {
+            background-color: $bootstrap-color-info;
+
+            .composum-pages-components-container-section {
+
+                &_icon, &_title {
+                    color: $bootstrap-background-info;
+                }
+            }
+        }
+
+        &-success {
+            background-color: $bootstrap-color-success;
+
+            .composum-pages-components-container-section {
+
+                &_icon, &_title {
+                    color: $bootstrap-background-success;
+                }
+            }
+        }
+
+        &-warning {
+            background-color: $bootstrap-color-warning;
+
+            .composum-pages-components-container-section {
+
+                &_icon, &_title {
+                    color: $bootstrap-background-warning;
+                }
+            }
+        }
+
+        &-danger {
+            background-color: $bootstrap-color-danger;
+
+            .composum-pages-components-container-section {
+
+                &_icon, &_title {
+                    color: $bootstrap-background-danger;
+                }
+            }
+        }
+    }
+}
