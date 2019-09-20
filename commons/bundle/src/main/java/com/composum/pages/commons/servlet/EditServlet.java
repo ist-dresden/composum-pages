@@ -73,7 +73,7 @@ import static com.composum.pages.commons.util.ResourceTypeUtil.TREE_ACTIONS_PATH
 
 @Component(service = Servlet.class,
         property = {
-                Constants.SERVICE_DESCRIPTION + "=Pages Edit Servlet",
+                Constants.SERVICE_DESCRIPTION + "=Composum Pages Edit Servlet",
                 ServletResolverConstants.SLING_SERVLET_PATHS + "=/bin/cpm/pages/edit",
                 ServletResolverConstants.SLING_SERVLET_METHODS + "=" + HttpConstants.METHOD_GET,
                 ServletResolverConstants.SLING_SERVLET_METHODS + "=" + HttpConstants.METHOD_POST,

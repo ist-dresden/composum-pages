@@ -46,7 +46,7 @@ import static com.composum.pages.commons.PagesConstants.RA_PAGES_LOCALE;
  */
 @Component(
         property = {
-                Constants.SERVICE_DESCRIPTION + "=the adapter factory for all request aspects - access mode, display mode, language",
+                Constants.SERVICE_DESCRIPTION + "=Composum Pages Adapter factory for all request aspects - access mode, display mode, language",
                 AdapterFactory.ADAPTER_CLASSES + "=com.composum.sling.platform.security.AccessMode",
                 AdapterFactory.ADAPTER_CLASSES + "=com.composum.pages.commons.request.DisplayMode",
                 AdapterFactory.ADAPTER_CLASSES + "=com.composum.pages.commons.request.PagesLocale",

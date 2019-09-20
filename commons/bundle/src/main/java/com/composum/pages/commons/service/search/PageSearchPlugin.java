@@ -50,7 +50,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 @Component(
         service = SearchPlugin.class,
         property = {
-                Constants.SERVICE_DESCRIPTION + "=Pages Default Page Search Plugin"
+                Constants.SERVICE_DESCRIPTION + "=Composum Pages Default Page Search Plugin"
         },
         immediate = true
 )

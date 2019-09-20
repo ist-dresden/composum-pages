@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 @Component(
         service = {ReplicationStrategy.class},
         property = {
-                Constants.SERVICE_DESCRIPTION + "=In Place Folder Replication Strategy"
+                Constants.SERVICE_DESCRIPTION + "=Composum Pages In Place Folder Replication Strategy"
         },
         immediate = true
 )

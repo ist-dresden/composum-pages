@@ -32,7 +32,7 @@ import java.util.regex.Pattern;
 @Component(
         service = {ResourceChangeListener.class},
         property = {
-                Constants.SERVICE_DESCRIPTION + "=Pages Resource Change Listener",
+                Constants.SERVICE_DESCRIPTION + "=Composum Pages Resource Change Listener",
                 ResourceChangeListener.CHANGES + "=CHANGED",
                 ResourceChangeListener.CHANGES + "=ADDED",
                 ResourceChangeListener.PATHS + "=glob:/content/**/jcr:content",

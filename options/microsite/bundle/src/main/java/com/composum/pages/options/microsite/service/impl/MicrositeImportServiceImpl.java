@@ -65,7 +65,7 @@ public class MicrositeImportServiceImpl implements MicrositeImportService, Micro
      * the microsite import service configuration 'object'
      */
     @ObjectClassDefinition(
-            name = "Microsite Import Configuration"
+            name = "Composum Pages Microsite Import Configuration"
     )
     public @interface Configuration {
 

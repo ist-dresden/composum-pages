@@ -46,7 +46,7 @@ import java.io.IOException;
 
 @Component(service = Servlet.class,
         property = {
-                Constants.SERVICE_DESCRIPTION + "=Pages Get Servlet",
+                Constants.SERVICE_DESCRIPTION + "=Composum Pages Get Servlet",
                 ServletResolverConstants.SLING_SERVLET_PATHS + "=/bin/cpm/pages/get",
                 ServletResolverConstants.SLING_SERVLET_METHODS + "=" + HttpConstants.METHOD_GET
         })

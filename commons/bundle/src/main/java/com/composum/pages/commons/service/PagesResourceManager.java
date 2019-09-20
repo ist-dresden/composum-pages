@@ -101,7 +101,7 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
      * the configuration for the template cache
      */
     @ObjectClassDefinition(
-            name = "Pages Template Service Configuration"
+            name = "Composum Pages Template Service Configuration"
     )
     public @interface Config {
 

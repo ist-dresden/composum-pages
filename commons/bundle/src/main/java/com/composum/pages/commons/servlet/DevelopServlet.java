@@ -56,7 +56,7 @@ import static com.composum.pages.commons.util.ResourceTypeUtil.DEVELOP_ACTIONS_P
  */
 @Component(service = Servlet.class,
         property = {
-                Constants.SERVICE_DESCRIPTION + "=Pages Develop Servlet",
+                Constants.SERVICE_DESCRIPTION + "=Composum Pages Develop Servlet",
                 ServletResolverConstants.SLING_SERVLET_PATHS + "=/bin/cpm/pages/develop",
                 ServletResolverConstants.SLING_SERVLET_METHODS + "=" + HttpConstants.METHOD_GET,
                 ServletResolverConstants.SLING_SERVLET_METHODS + "=" + HttpConstants.METHOD_POST,

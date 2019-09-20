@@ -32,7 +32,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 @Component(
         service = SearchService.class,
         property = {
-                Constants.SERVICE_DESCRIPTION + "=Pages Search Service"
+                Constants.SERVICE_DESCRIPTION + "=Composum Pages Search Service"
         },
         immediate = true
 )
