@@ -9,6 +9,7 @@
             jcr:title="A Simple Site"
             jcr:description="The Pages Components minimal site template with only one language and the Pages Components homepage."
             sling:resourceType="composum/pages/stage/edit/site"
+            siteComponentSettings="composum/pages/components/site/settings"
             allowedChildTemplates="[
                 (.*/)?templates/(page/)?home(page)?$
             ]">

@@ -3,6 +3,7 @@ package com.composum.pages.commons.model;
 import com.composum.pages.commons.util.LinkUtil;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.util.ResourceUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
@@ -23,7 +24,8 @@ public abstract class ContentDriven<ContentType extends ContentModel> extends Ab
     protected Boolean valid;
     protected ContentType content;
 
-    private transient String template;
+    private transient Resource template;
+    private transient String templatePath;
     private transient String editUrl;
 
     // initializer extensions
@@ -56,8 +58,18 @@ public abstract class ContentDriven<ContentType extends ContentModel> extends Ab
     }
 
     public String getTemplatePath() {
+        if (templatePath == null) {
+            templatePath = content.getProperty(PROP_TEMPLATE, null, "");
+        }
+        return templatePath;
+    }
+
+    public Resource getTemplate() {
         if (template == null) {
-            content.getProperty(PROP_TEMPLATE, null, "");
+            String templatePath = getTemplatePath();
+            if (StringUtils.isNotBlank(templatePath)) {
+                template = getContext().getResolver().getResource(templatePath);
+            }
         }
         return template;
     }

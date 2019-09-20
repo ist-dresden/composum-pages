@@ -12,6 +12,7 @@ import com.composum.sling.platform.staging.StagingReleaseManager;
 import com.composum.sling.platform.staging.versions.PlatformVersionsService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.CompareToBuilder;
+import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.slf4j.Logger;
@@ -72,6 +73,7 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
     private transient Collection<PageVersion> releaseChanges;
 
     private transient String templateType;
+    private transient String componentSettingsEditType;
 
     public Site() {
     }
@@ -138,6 +140,16 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
             }
         }
         return templateType;
+    }
+
+    public String getComponentSettingsEditType() {
+        if (componentSettingsEditType == null) {
+            Resource template = getTemplate();
+            if (template != null) {
+                componentSettingsEditType = template.getValueMap().get(JcrConstants.JCR_CONTENT + "/siteComponentSettings", "");
+            }
+        }
+        return componentSettingsEditType;
     }
 
     @Override

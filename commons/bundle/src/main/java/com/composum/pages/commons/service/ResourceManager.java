@@ -283,6 +283,7 @@ public interface ResourceManager {
             "^(allowed|forbidden)(Child|Parent)(Elements|Containers|Templates|Types)$",
             "^(allowed|forbidden)(Paths)$",
             "^isTemplate$",
+            "^siteComponentSettings",
             "^jcr:(title|description)$"
     );
 
