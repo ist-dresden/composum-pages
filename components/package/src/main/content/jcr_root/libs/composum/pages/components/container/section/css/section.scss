@@ -53,7 +53,7 @@
 
         &.no-panel {
 
-            .composum-pages-components-container-section {
+            > > .composum-pages-components-container-section {
 
                 &_icon {
                     margin: $main-title-margin;
@@ -63,7 +63,7 @@
 
         &.panel {
 
-            .composum-pages-components-container-section {
+            > > .composum-pages-components-container-section {
 
                 &_icon, &_title {
                     margin-top: 0.5rem;
