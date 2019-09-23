@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:cpp="http://sling.composum.com/pages/1.0"
+          xmlns:jcr="http://www.jcp.org/jcr/1.0"
+          xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+          jcr:primaryType="cpp:Page">
+    <jcr:content
+            jcr:primaryType="cpp:PageContent"
+            sling:resourceType="composum/pages/stage/edit/tools/component/help/page"
+            template="/libs/composum/pages/stage/edit/tools/component/help/template">
+        <main
+                jcr:primaryType="cpp:Container"
+                sling:resourceType="composum/pages/stage/edit/tools/component/help/parsys">
+            <text_01
+                    jcr:primaryType="cpp:Element"
+                    sling:resourceType="composum/pages/components/element/text"
+                    text="A table component to create an HTML table element as a collection of rows with inserted cells. The rows are edited (inserted / moved / deleted) as the elements of the table itself. The cells are the elements of the rows an must be inserted also."/>
+            <image
+                    jcr:primaryType="cpp:Element"
+                    sling:resourceType="composum/pages/components/element/image"
+                    imageRef="/libs/composum/pages/components/assets/table.png"/>
+        </main>
+    </jcr:content>
+</jcr:root>
