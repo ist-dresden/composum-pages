@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
         jcr:primaryType="cpp:Component"
-        jcr:description="a layout row which controls a set of columns defined by a column setup rule property"
+        jcr:description="a component to place rows as table elements with editable cell elements inside of the rows"
         jcr:title="Table"
         category="[Table,General,Blueprint]"
         sling:resourceSuperType="composum/pages/components/composed"
