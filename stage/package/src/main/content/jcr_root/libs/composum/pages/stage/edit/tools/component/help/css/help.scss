@@ -60,6 +60,19 @@ $help-text-title-margin: $tools-pane-padding*1.5 0 $tools-pane-padding;
 
             &-image {
                 margin: $help-text-default-margin;
+
+                .composum-pages-components-element-image {
+
+                    &_frame {
+                        display: inline-block;
+                        width: 100%;
+                    }
+
+                    &_picture {
+                        max-width: 100%;
+                        margin: 0 auto;
+                    }
+                }
             }
         }
     }
