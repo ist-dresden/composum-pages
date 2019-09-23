@@ -2,6 +2,8 @@
 
 @import "../../../css/variables";
 
+$breadcrumbs-menu-indent: 20px;
+
 .composum-pages-components-navigation-navbar {
 
     .navbar-form {
@@ -28,6 +30,41 @@
             margin-left: 5px;
             font-size: 12px;
             color: #777;
+        }
+
+        &_dropdown-menu {
+
+            .composum-pages-components-navigation-menuitem {
+
+                .level-symbol {
+                    display: inline-block;
+                    width: $breadcrumbs-menu-indent;
+                    opacity: 0.6;
+                }
+
+                &.navigation-level {
+
+                    &-1 {
+                        padding-left: $breadcrumbs-menu-indent;
+                    }
+
+                    &-2 {
+                        padding-left: $breadcrumbs-menu-indent * 2;
+                    }
+
+                    &-3 {
+                        padding-left: $breadcrumbs-menu-indent * 3;
+                    }
+
+                    &-4 {
+                        padding-left: $breadcrumbs-menu-indent * 4;
+                    }
+
+                    &-5 {
+                        padding-left: $breadcrumbs-menu-indent * 5;
+                    }
+                }
+            }
         }
     }
 

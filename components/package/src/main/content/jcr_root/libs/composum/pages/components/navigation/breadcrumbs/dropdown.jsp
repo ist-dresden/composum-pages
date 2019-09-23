@@ -13,16 +13,20 @@
                    data-toggle="dropdown">${cpn:text(model.current.title)}<i
                         class="${modelCSS}_icon fa fa-sort"></i></a>
                 <ol class="${modelCSS}_dropdown-menu menu dropdown-menu">
-                    <c:forEach var="item" items="${model.breadcrumbItems}">
+                    <c:forEach var="item" items="${model.breadcrumbItems}" varStatus="loop">
                         <cpn:div tagName="li" test="${not empty item.title}"
-                                 class="composum-pages-components-navigation-menuitem"
+                                 class="composum-pages-components-navigation-menuitem navigation-level-${loop.index}"
                                  data-path="${item.path}"><cpn:link
-                                href="${item.url}" class="composum-pages-components-navigation-menuitem_link"
-                                role="menuitem">${cpn:text(item.title)}</cpn:link></cpn:div>
+                                href="${item.url}"
+                                class="composum-pages-components-navigation-menuitem_link" role="menuitem"><span
+                                class="level-symbol fa fa-chevron-right"></span>${cpn:text(item.title)}</cpn:link></cpn:div>
                     </c:forEach>
-                    <li class="${modelCSS}_current" data-path="${model.current.path}"><cpn:link
+                    <li class="composum-pages-components-navigation-menuitem navigation-level-${model.level} navigation-level-current"
+                        data-path="${model.current.path}"><cpn:link
                             href="${model.current.url}"
-                            class="composum-pages-components-navigation-menuitem_link">${cpn:text(model.current.title)}</cpn:link></li>
+                            class="composum-pages-components-navigation-menuitem_link" role="menuitem"><span
+                            class="level-symbol fa fa-chevron-right"></span>${cpn:text(model.current.title)}</cpn:link>
+                    </li>
                 </ol>
             </c:when>
             <c:otherwise>

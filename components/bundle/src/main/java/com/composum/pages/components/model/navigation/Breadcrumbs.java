@@ -77,6 +77,10 @@ public class Breadcrumbs extends NavbarItem {
         return getBreadcrumbItems().size() > 0;
     }
 
+    public int getLevel() {
+        return getBreadcrumbItems().size(); // from '0': curent == size()
+    }
+
     @Nonnull
     public List<Menuitem> getBreadcrumbItems() {
         return ((BreadcrumbsMenu) getMenu()).getBreadcrumbItems();
