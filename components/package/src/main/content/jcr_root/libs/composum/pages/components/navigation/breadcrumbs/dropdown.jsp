@@ -18,14 +18,14 @@
                                  class="composum-pages-components-navigation-menuitem navigation-level-${loop.index}"
                                  data-path="${item.path}"><cpn:link
                                 href="${item.url}"
-                                class="composum-pages-components-navigation-menuitem_link" role="menuitem"><span
-                                class="level-symbol fa fa-chevron-right"></span>${cpn:text(item.title)}</cpn:link></cpn:div>
+                                class="composum-pages-components-navigation-menuitem_link" role="menuitem"><i
+                                class="level-symbol fa"></i>${cpn:text(item.title)}</cpn:link></cpn:div>
                     </c:forEach>
                     <li class="composum-pages-components-navigation-menuitem navigation-level-${model.level} navigation-level-current"
                         data-path="${model.current.path}"><cpn:link
                             href="${model.current.url}"
-                            class="composum-pages-components-navigation-menuitem_link" role="menuitem"><span
-                            class="level-symbol fa fa-chevron-right"></span>${cpn:text(model.current.title)}</cpn:link>
+                            class="composum-pages-components-navigation-menuitem_link" role="menuitem"><i
+                            class="level-symbol fa"></i>${cpn:text(model.current.title)}</cpn:link>
                     </li>
                 </ol>
             </c:when>
