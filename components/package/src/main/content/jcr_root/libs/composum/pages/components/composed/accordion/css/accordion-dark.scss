@@ -1,0 +1,14 @@
+@charset "UTF-8";
+
+@import "../../../css/variables";
+@import "../../../css/mixins";
+
+.composum-pages-components-composed-accordion {
+
+    &-item, &-tab {
+
+        a, a:focus, a:active, a:visited {
+            color: $dark-foreground;
+        }
+    }
+}

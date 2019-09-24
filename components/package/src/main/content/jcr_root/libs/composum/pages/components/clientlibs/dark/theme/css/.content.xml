@@ -2,5 +2,6 @@
 <jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
         jcr:primaryType="sling:OrderedFolder"
         depends="[category:code.highlight.dark]"
-        embed="[composum/pages/components/container/section/css/section-dark.css,
+        embed="[composum/pages/components/composed/accordion/css/accordion-dark.css,
+                composum/pages/components/container/section/css/section-dark.css,
                 composum/pages/components/page/css/dark.css]"/>
