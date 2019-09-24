@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:cpp="http://sling.composum.com/pages/1.0"
+          xmlns:jcr="http://www.jcp.org/jcr/1.0"
+          xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+          jcr:primaryType="cpp:Page">
+    <jcr:content
+            jcr:primaryType="cpp:PageContent"
+            sling:resourceType="composum/pages/stage/edit/tools/component/help/page"
+            template="/libs/composum/pages/stage/edit/tools/component/help/template">
+        <main
+                jcr:primaryType="cpp:Container"
+                sling:resourceType="composum/pages/stage/edit/tools/component/help/parsys">
+            <text_01
+                    jcr:primaryType="cpp:Element"
+                    sling:resourceType="composum/pages/components/element/text"
+                    text="&lt;p>A section component is a universal container to combine a set of elements. Such a section can be move, copied and referenced will all the elements within. Section cen be nested.&lt;/p>&lt;p>There are some decoration options available to improve the attention or the recognition value of a section.&lt;/p>"/>
+            <text_564896083
+                    jcr:primaryType="cpp:Element"
+                    sling:resourceType="composum/pages/components/element/text"
+                    text="examples:"/>
+            <section_01
+                    jcr:primaryType="cpp:Element"
+                    sling:resourceType="composum/pages/components/container/section"
+                    icon="graduation-cap">
+                <text
+                        jcr:primaryType="cpp:Element"
+                        sling:resourceType="composum/pages/components/element/text"
+                        text="a decorated section with a symbol to mark the section"/>
+                <text_994507412
+                        jcr:primaryType="cpp:Element"
+                        sling:resourceType="composum/pages/components/element/text"
+                        text="all elements of the section are combined"/>
+            </section_01>
+            <section_02
+                    jcr:primaryType="cpp:Element"
+                    jcr:title="A Warning Box section"
+                    sling:resourceType="composum/pages/components/container/section"
+                    icon="exclamation-triangle"
+                    level="warning">
+                <text
+                        jcr:primaryType="cpp:Element"
+                        sling:resourceType="composum/pages/components/element/text"
+                        text="a section as a bootstrap &apos;warning&apos; box with a section title"/>
+            </section_02>
+        </main>
+    </jcr:content>
+</jcr:root>

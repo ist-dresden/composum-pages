@@ -53,20 +53,28 @@
 
         &.no-panel {
 
-            > > .composum-pages-components-container-section {
+            > .composum-pages-components-container-section_wrapper,
+            > .panel-body > .composum-pages-components-container-section_wrapper {
 
-                &_icon {
-                    margin: $main-title-margin;
+                > .composum-pages-components-container-section {
+
+                    &_icon {
+                        margin: $main-title-margin;
+                    }
                 }
             }
         }
 
         &.panel {
 
-            > > .composum-pages-components-container-section {
+            > .composum-pages-components-container-section_wrapper,
+            > .panel-body > .composum-pages-components-container-section_wrapper {
 
-                &_icon, &_title {
-                    margin-top: 0.5rem;
+                > .composum-pages-components-container-section {
+
+                    &_icon, &_content > .composum-pages-components-container-section_header .composum-pages-components-container-section_title {
+                        margin-top: 0.5rem;
+                    }
                 }
             }
         }
