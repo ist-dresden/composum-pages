@@ -1,6 +1,7 @@
 package com.composum.pages.commons.model;
 
 import com.composum.pages.commons.model.properties.Language;
+import com.composum.pages.commons.replication.ReplicationManager;
 import com.composum.pages.commons.request.DisplayMode;
 import com.composum.pages.commons.service.PageManager;
 import com.composum.pages.commons.service.SiteManager;
@@ -9,6 +10,7 @@ import com.composum.platform.models.annotations.DetermineResourceStategy;
 import com.composum.platform.models.annotations.PropertyDetermineResourceStrategy;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.util.ResourceUtil;
+import com.composum.sling.platform.security.AccessMode;
 import com.composum.sling.platform.staging.StagingReleaseManager;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.CompareToBuilder;
@@ -206,6 +208,16 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
             publicMode = getProperty(PROP_PUBLIC_MODE, null, DEFAULT_PUBLIC_MODE);
         }
         return publicMode;
+    }
+
+    public String getStagePath(AccessMode accessMode) {
+        switch (getPublicMode()) {
+            case PUBLIC_MODE_IN_PLACE:
+                ReplicationManager replicationManager = getContext().getService(ReplicationManager.class);
+                return replicationManager.getReplicationPath(accessMode, getPath());
+            default:
+                return getPath();
+        }
     }
 
     /**

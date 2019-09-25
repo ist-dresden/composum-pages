@@ -44,6 +44,19 @@ public class PagesReplicationManager implements ReplicationManager {
     }
 
     @Override
+    public String getReplicationPath(@Nonnull final AccessMode accessMode, @Nonnull final String path) {
+        switch (accessMode) {
+            case PUBLIC:
+                return config.inPlacePublicPath() + "/" + path.replaceAll("^/content/", "");
+            case PREVIEW:
+                return config.inPlacePreviewPath() + "/" + path.replaceAll("^/content/", "");
+            case AUTHOR:
+            default:
+                return path;
+        }
+    }
+
+    @Override
     public void replicateResource(ReplicationContext context, Resource resource, boolean recursive)
             throws Exception {
         replicateResource(context, resource, false, recursive);
