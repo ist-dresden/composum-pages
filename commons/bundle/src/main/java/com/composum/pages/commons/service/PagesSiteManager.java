@@ -200,7 +200,10 @@ public class PagesSiteManager extends PagesContentManager<Site> implements SiteM
         return result;
     }
 
-    protected Collection<Site> getSites(@Nonnull BeanContext context, @Nullable Resource searchRoot, @Nonnull ResourceFilter filter) {
+    @Override
+    @Nonnull
+    public Collection<Site> getSites(@Nonnull final BeanContext context, @Nullable final Resource searchRoot,
+                                     @Nonnull final ResourceFilter filter) {
         return getModels(context, NODE_TYPE_SITE, searchRoot, filter);
     }
 

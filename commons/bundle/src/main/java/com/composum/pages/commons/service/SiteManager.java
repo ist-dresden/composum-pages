@@ -3,6 +3,7 @@ package com.composum.pages.commons.service;
 import com.composum.pages.commons.model.Model;
 import com.composum.pages.commons.model.Site;
 import com.composum.sling.core.BeanContext;
+import com.composum.sling.core.filter.ResourceFilter;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.tenant.Tenant;
@@ -117,6 +118,9 @@ public interface SiteManager extends ContentManager<Site> {
      */
     @Nonnull
     Collection<Site> getSites(@Nonnull BeanContext context);
+
+    @Nonnull
+    Collection<Site> getSites(@Nonnull BeanContext context, @Nullable Resource searchRoot, @Nonnull ResourceFilter filter);
 
     /**
      * Determines all usable site templates in the context of a specific tenant.
