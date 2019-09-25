@@ -133,7 +133,7 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
     protected volatile PagesTenantSupport tenantSupport;
 
     /**
-     * the template cache is registered as a cache od the platform cache manager
+     * the template cache is registered as a cache of the platform cache manager
      */
     @Reference
     protected CacheManager cacheManager;
