@@ -1445,6 +1445,13 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
                         Object value = entry.getValue();
                         if (value instanceof String) {
                             value = context.applyTemplatePlaceholders(target, (String) value);
+                        } else if (value instanceof Object[]) {
+                            Object[] array = (Object[]) value;
+                            for (int i = 0; i < array.length; i++) {
+                                if (array[i] instanceof String) {
+                                    array[i] = context.applyTemplatePlaceholders(target, (String) array[i]);
+                                }
+                            }
                         }
                         if (value != null) {
                             values.put(key, value);
