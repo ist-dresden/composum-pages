@@ -1493,7 +1493,7 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
 
         @Override
         public String name() {
-            return "Templates";
+            return "ComposumPagesTemplates";
         }
 
         @Override
