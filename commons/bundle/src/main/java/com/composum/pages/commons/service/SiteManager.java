@@ -102,6 +102,12 @@ public interface SiteManager extends ContentManager<Site> {
     Map<String, Tenant> getTenants(@Nonnull BeanContext context);
 
     /**
+     * @return a mapped preview URL built using a service user to support the preview URL even if the access is restricted
+     */
+    @Nonnull
+    String getPreviewUrl(@Nonnull Site site);
+
+    /**
      * Returns the sites root resource to place new sites for a specific tenant.
      *
      * @param context  the current request context

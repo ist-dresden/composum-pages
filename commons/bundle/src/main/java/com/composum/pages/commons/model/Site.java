@@ -198,6 +198,16 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
         return DisplayMode.isEditMode(DisplayMode.requested(context));
     }
 
+    public String getOpenUri() {
+        switch (getDisplayMode()) {
+            case EDIT:
+            case DEVELOP:
+                return "/bin/pages.html" + getPath();
+            default:
+                return getSiteManager().getPreviewUrl(this);
+        }
+    }
+
     // releases
 
     /**
@@ -236,11 +246,10 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
     public List<SiteRelease> getReleases() {
         StagingReleaseManager releaseManager = context.getService(StagingReleaseManager.class);
         List<StagingReleaseManager.Release> stagingReleases = releaseManager.getReleases(resource);
-        List<SiteRelease> releases = stagingReleases.stream()
+        return stagingReleases.stream()
                 .map(r -> new SiteRelease(context, r))
                 .sorted(Comparator.nullsFirst(Comparator.comparing(SiteRelease::getCreationDate).reversed()))
                 .collect(Collectors.toList());
-        return releases;
     }
 
     public SiteRelease getCurrentRelease() {
