@@ -165,15 +165,17 @@ public class PagesSiteManager extends PagesContentManager<Site> implements SiteM
         // use servive resolver to allow preview links even if access is restricted ('visitor')
         try (ResourceResolver serviceResolver = resolverFactory.getServiceResourceResolver(null)) {
             BeanContext serviceContext = new BeanContext.Wrapper(site.getContext(), serviceResolver);
-            Resource seviceSiteRes = Objects.requireNonNull(serviceResolver.getResource(site.getPath()));
-            Site serviceSite = createBean(serviceContext, seviceSiteRes);
-            Homepage homepage = serviceSite.getHomepage(site.getLocale());
-            return LinkUtil.getMappedUrl(serviceContext.getRequest(), serviceSite.getStagePath(AccessMode.PREVIEW)
-                    + homepage.getPath().substring(serviceSite.getPath().length()) + ".html");
+            Resource serviceSiteRes = serviceResolver.getResource(site.getPath());
+            if (serviceSiteRes != null) {
+                Site serviceSite = createBean(serviceContext, serviceSiteRes);
+                Homepage homepage = serviceSite.getHomepage(site.getLocale());
+                return LinkUtil.getMappedUrl(serviceContext.getRequest(), serviceSite.getStagePath(AccessMode.PREVIEW)
+                        + homepage.getPath().substring(serviceSite.getPath().length()) + ".html");
+            }
         } catch (LoginException ex) {
             LOG.error(ex.getMessage(), ex);
-            return site.getPath();
         }
+        return site.getPath();
     }
 
     @Override
