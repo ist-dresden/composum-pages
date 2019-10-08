@@ -6,7 +6,7 @@
     <cpp:dropZone property="src" filter="page">
         <div class="composum-pages-components-placeholder">
             <span class="fa-stack composum-pages-components-placeholder_icon"><i
-                    class="fa fa-object-group fa-stack-2x"></i></span>
+                    class="fa fa-window-maximize fa-stack-2x"></i></span>
             <span class="value">${cpn:url(slingRequest,model.src)}</span>
         </div>
     </cpp:dropZone>

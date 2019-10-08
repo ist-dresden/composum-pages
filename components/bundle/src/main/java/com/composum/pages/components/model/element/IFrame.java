@@ -11,6 +11,8 @@ import com.composum.sling.core.BeanContext;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 
+import javax.annotation.Nonnull;
+
 public class IFrame extends Element {
 
     public static final String TYPE_SIMPLE = "simple";
@@ -31,6 +33,7 @@ public class IFrame extends Element {
     private transient String height;
     private transient Boolean expandable;
     private transient String style;
+    private transient String tileTitle;
 
     public IFrame(BeanContext context, Resource resource) {
         super(context, resource);
@@ -109,5 +112,24 @@ public class IFrame extends Element {
             expandable = getProperty(PN_EXPANDABLE, Boolean.FALSE);
         }
         return expandable;
+    }
+
+    @Override
+    @Nonnull
+    public String getTileTitle() {
+        if (tileTitle == null) {
+            tileTitle = super.getTileTitle();
+            if (StringUtils.isBlank(tileTitle)) {
+                String src = getSrc();
+                tileTitle = StringUtils.right(src, 40);
+                if (tileTitle.length() < src.length()) {
+                    int slash = tileTitle.indexOf('/');
+                    if (slash >= 0) {
+                        tileTitle = "..." + tileTitle.substring(slash);
+                    }
+                }
+            }
+        }
+        return tileTitle;
     }
 }
