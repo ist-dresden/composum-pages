@@ -109,7 +109,7 @@ public class SetupHook implements InstallHook {
             Session session = ctx.getSession();
             NodeTypeManager nodeTypeManager = session.getWorkspace().getNodeTypeManager();
             NodeType siteConfigType = nodeTypeManager.getNodeType("cpp:SiteConfiguration");
-            boolean updateNeeded = !siteConfigType.isNodeType("cpl:releaseConfig");
+            boolean updateNeeded = siteConfigType.isNodeType("cpl:releaseConfig");
             if (updateNeeded) {
                 LOG.warn("cpl:releaseConfig still in cpp:SiteConfiguration even after package installation - updating nodetypes.");
 
@@ -120,8 +120,8 @@ public class SetupHook implements InstallHook {
                 }
 
                 siteConfigType = nodeTypeManager.getNodeType("cpp:SiteConfiguration");
-                if (!siteConfigType.isNodeType("cpl:releaseConfig")) {
-                    LOG.error("cpp:SiteConfig does still not contain cpl:releaseConfig even after attempted migration!");
+                if (siteConfigType.isNodeType("cpl:releaseConfig")) {
+                    LOG.error("cpp:SiteConfig does still contain cpl:releaseConfig even after attempted migration!");
                 }
             } else {
                 LOG.info("OK: no nodetype update needed");
