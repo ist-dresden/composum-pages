@@ -22,6 +22,7 @@
                 composum/pages/components/composed/table/css/table.css,
                 composum/pages/components/element/codeblock/css/codeblock.css,
                 composum/pages/components/element/map/google/css/google.css,
+                composum/pages/components/element/iframe/css/iframe.css,
                 composum/pages/components/element/image/css/image.css,
                 composum/pages/components/element/link/css/link.css,
                 composum/pages/components/element/teaser/css/teaser.css,

@@ -1,0 +1,102 @@
+@charset "UTF-8";
+
+@import "../../../css/variables";
+@import "../../../css/mixins";
+
+.composum-pages-components-element-iframe {
+    margin: $text-spacing-default 0 $text-spacing-default * 1.5;
+    @include default-font;
+
+    &_heading {
+        position: relative;
+        min-height: 40px;
+        overflow: hidden;
+    }
+
+    &_panel {
+        margin: 1rem 0;
+    }
+
+    &_content {
+        padding: 0;
+    }
+
+    &_button {
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        line-height: 17px;
+    }
+
+    &_collapse {
+        display: none;
+    }
+
+    &_frame {
+        min-width: 100%;
+        border: none;
+    }
+
+    &_footer {
+        white-space: nowrap;
+        overflow: hidden;
+    }
+
+    &.expanded {
+
+        .composum-pages-components-element-iframe {
+
+            &_frame {
+                max-height: none !important;
+            }
+
+            &_collapse {
+                display: block;
+            }
+
+            &_expand {
+                display: none;
+            }
+        }
+    }
+
+
+    .composum-pages-components-placeholder {
+
+        &_icon {
+            opacity: 1.0;
+
+            i {
+                position: static;
+                font-size: 4em;
+            }
+        }
+    }
+
+    &_bordered, &_panel {
+
+        .composum-pages-components-placeholder {
+            padding: 15px;
+        }
+    }
+
+    &_simple, &_bordered {
+
+        .composum-pages-components-element-iframe {
+
+            &_footer {
+                @include meta-text;
+            }
+        }
+    }
+
+    &_bordered {
+
+        .composum-pages-components-element-iframe {
+
+            &_wrapper {
+                border: $element-image-border;
+            }
+        }
+    }
+}

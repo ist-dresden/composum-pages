@@ -26,7 +26,7 @@
     @include font($site-default-font-family, $site-small-font-size);
 }
 
-@mixin a-title-font ($size) {
+@mixin a-title-font($size) {
     @include font($site-title-font-family, $size);
     opacity: 0.8;
 }
@@ -43,6 +43,23 @@
     margin: $column-subtitle-margin 0;
     @include a-title-font($column-subtitle-font-size);
     color: $column-title-text-color;
+}
+
+@mixin meta-font {
+    @include font('robotolight', $element-image-meta-font-size);
+}
+
+@mixin meta-text {
+    display: inline;
+    color: $element-image-meta-fg;
+    text-decoration: none;
+    @include meta-font;
+
+    p {
+        display: inline;
+        margin: 0;
+        padding: 0;
+    }
 }
 
 @mixin clear-after {

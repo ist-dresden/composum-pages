@@ -113,6 +113,17 @@ $list-title-gap: 4px;
 $list-item-indent: 32px;
 $subsite-logo-padding: 50px;
 
+/** image */
+
+$element-image-padding: 5px;
+$element-image-margin-v: 10px;
+$element-image-border: 1px solid #ccc;
+
+$element-image-meta-padding: 0 $element-image-padding 1px;
+$element-image-meta-fg: #000;
+$element-image-meta-bg: #fff;
+$element-image-meta-font-size: 11px;
+
 /** illustration */
 
 $illustration-annotation-shape-size: 26px;
