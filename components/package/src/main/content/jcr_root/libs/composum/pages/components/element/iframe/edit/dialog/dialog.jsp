@@ -5,9 +5,9 @@
     <cpp:widget label="Title" property="title" type="textfield" i18n="true"
                 hint="the optional title shown as the frames header"/>
     <cpp:widget label="Frame Source" property="src" type="pathfield"
-                hint="the 'src' of the iframe - the content URL of the path in the repository"/>
+                hint="the 'src' of the iframe - an external URL or a path in the repository"/>
     <cpp:widget label="Service URI" property="serviceUri" type="textfield"
-                hint="an optional URI of a servlet prepended to the 'src'"/>
+                hint="an optional URI of a servlet prepended to the path in 'src'"/>
     <cpp:widget label="Copyright" property="copyright" type="textfield" i18n="true"
                 hint="copyright notice if necessary or useful"/>
     <div class="row">

@@ -270,25 +270,35 @@
     @include trapezoid-bottom($color, 12px, $tabbed-widget-tab-height);
 }
 
-@mixin scrolloption($color) {
+@mixin scollbars($size, $foreground, $background) {
+    &::-webkit-scrollbar {
+        width: $size;
+        height: $size;
+    }
+    &::-webkit-scrollbar-thumb {
+        border-radius: $size;
+        background: $foreground;
+    }
+    &::-webkit-scrollbar-track {
+        border-radius: $size;
+        background: $background;
+    }
+    &::-webkit-scrollbar-corner {
+        background: $background;
+    }
+}
+
+@mixin scrolloption($foreground, $background) {
     overflow: auto;
-
-    &::-webkit-scrollbar-thumb {
-        background: $color;
-    }
+    @include scollbars($tools-pane-padding, $foreground, $background);
 }
 
-@mixin scrolloption-x($color) {
-    overflow-x: auto;
-    overflow-y: hidden;
-
-    &::-webkit-scrollbar-thumb {
-        background: $color;
-    }
+@mixin scrollframe {
+    @include scrolloption($page-frame-scrollbar-fg, $page-frame-scrollbar-bg);
 }
 
-@mixin scrolldark {
-    @include scrolloption($tools-pane-background);
+@mixin scrolltools {
+    @include scrolloption($tools-pane-scrollbar-fg, $tools-pane-scrollbar-bg);
 }
 
 /*

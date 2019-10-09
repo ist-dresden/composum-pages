@@ -23,7 +23,6 @@
             margin: 0;
             padding: 0 10px;
             white-space: nowrap;
-            @include scrolloption-x($tools-pane-tabs-background);
             background-color: $tools-pane-tabs-background;
 
             &.right {
@@ -582,7 +581,7 @@
             left: $tools-pane-padding;
             right: $tools-pane-padding;
             bottom: $tools-pane-padding;
-            @include scrolldark;
+            @include scrolltools;
         }
 
         .composum-pages-EDIT_body &,

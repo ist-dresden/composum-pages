@@ -27,15 +27,8 @@ body {
             margin: 0;
             border: none;
             padding: 0;
-            overflow: auto;
+            @include scrollframe;
         }
-
-        /* iframe not scrolling in IOS !... but this has no effect
-        &_wrapper {
-            -webkit-overflow-scrolling: touch;
-            overflow: auto;
-        }
-        */
     }
 
     .composum-pages-stage-version-frame {

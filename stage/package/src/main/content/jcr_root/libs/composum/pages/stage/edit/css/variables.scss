@@ -82,6 +82,9 @@ $edit-select-layer: $edit-handle-layer - 2;
 $edit-select-background: #3392e3;
 $edit-select-foreground: #eee;
 
+$page-frame-scrollbar-fg: rgba(160, 160, 160, 0.6);
+$page-frame-scrollbar-bg: rgba(200, 200, 200, 0.4);
+
 $tools-pane-foreground: #eee;
 $tools-pane-background: rgba(40, 40, 40, 0.9);
 $tools-tile-background: rgba(160, 160, 160, 0.3);
@@ -97,6 +100,9 @@ $tools-pane-tabs-background: rgba(160, 160, 160, 0.3);
 $tools-pane-tabs-tab-color: rgba(140, 140, 140, 0.9);
 $tools-pane-tabs-tab-active: rgba(55, 55, 55, 0.9);
 $tools-pane-tabs-tab-label: $tools-pane-foreground;
+
+$tools-pane-scrollbar-fg: rgba(160, 160, 160, 0.6);
+$tools-pane-scrollbar-bg: rgba(80, 80, 80, 0.4);
 
 $tools-pane-main-selection-color: #3392e3;
 $tools-pane-dnd-target-color: $dnd-target-over-color;
