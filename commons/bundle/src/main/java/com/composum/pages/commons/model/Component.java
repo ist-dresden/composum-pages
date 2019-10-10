@@ -16,6 +16,7 @@ import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -266,11 +267,12 @@ public class Component extends AbstractModel {
      * determine the components resource even if the initial resource is an instance of the component
      */
     @Override
-    protected Resource determineResource(Resource initialResource) {
-        Resource typeResource;
+    @Nullable
+    protected Resource determineResource(@Nullable Resource initialResource) {
+        Resource typeResource = null;
         if (Component.isComponent(initialResource)) {
             typeResource = initialResource;
-        } else {
+        } else if (initialResource != null) {
             typeResource = getTypeResource(initialResource);
         }
         return typeResource != null ? typeResource : initialResource;

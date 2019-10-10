@@ -4,6 +4,8 @@ import com.composum.pages.commons.model.Page;
 import com.composum.sling.core.BeanContext;
 import org.apache.sling.api.resource.Resource;
 
+import javax.annotation.Nonnull;
+
 import static com.composum.pages.commons.PagesConstants.PROP_HIDE_IN_NAV;
 
 public class NavigationPageFilter extends Page.DefaultPageFilter {
@@ -24,7 +26,7 @@ public class NavigationPageFilter extends Page.DefaultPageFilter {
     }
 
     @Override
-    public void toString(StringBuilder builder) {
+    public void toString(@Nonnull StringBuilder builder) {
         builder.append(getClass().getSimpleName());
     }
 

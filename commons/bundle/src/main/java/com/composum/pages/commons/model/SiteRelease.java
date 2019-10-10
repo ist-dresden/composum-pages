@@ -55,8 +55,9 @@ public class SiteRelease extends AbstractModel implements Comparable<SiteRelease
         initialize(context, resource);
     }
 
+    @Nonnull
     @Override
-    protected Resource determineResource(Resource initialResource) {
+    protected Resource determineResource(@Nullable Resource initialResource) {
         if (stagingRelease == null) {
             StagingReleaseManager releaseManager = this.context.getService(StagingReleaseManager.class);
             stagingRelease = releaseManager.findReleaseByReleaseResource(initialResource);
@@ -65,7 +66,7 @@ public class SiteRelease extends AbstractModel implements Comparable<SiteRelease
     }
 
     @Override
-    protected void initializeWithResource(Resource releaseMetadataNode) {
+    protected void initializeWithResource(@Nonnull Resource releaseMetadataNode) {
         super.initializeWithResource(releaseMetadataNode);
         creationDate = getProperty("jcr:created", Calendar.class);
     }

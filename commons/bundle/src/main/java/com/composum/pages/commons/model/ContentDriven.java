@@ -30,7 +30,7 @@ public abstract class ContentDriven<ContentType extends ContentModel> extends Ab
 
     // initializer extensions
 
-    protected void initializeWithResource(Resource resource) {
+    protected void initializeWithResource(@Nonnull Resource resource) {
         if (JcrConstants.JCR_CONTENT.equals(resource.getName())) {
             resource = Objects.requireNonNull(resource.getParent());
         }

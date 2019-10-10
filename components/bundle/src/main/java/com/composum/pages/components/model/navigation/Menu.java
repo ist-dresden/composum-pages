@@ -6,6 +6,7 @@ import com.composum.sling.core.filter.ResourceFilter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,9 +23,10 @@ public class Menu extends Element {
         super(context, resource);
     }
 
-    protected Resource determineResource(Resource resource) {
+    @Nullable
+    protected Resource determineResource(@Nullable Resource resource) {
         // ensure that the page is used to determine the navigation items
-        return getPageManager().getContainingPageResource(resource);
+        return resource != null ? getPageManager().getContainingPageResource(resource) : null;
     }
 
     public boolean isEmpty() {

@@ -24,4 +24,8 @@ public class Homepage extends Page {
         this.pageManager = manager;
         initialize(context, resource);
     }
+
+    public boolean isTheSiteItself() {
+        return getPath().equals(getSite().getPath());
+    }
 }

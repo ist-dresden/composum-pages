@@ -20,6 +20,7 @@ import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.util.ResourceUtil;
 import com.composum.sling.core.util.SlingResourceUtil;
 import com.composum.sling.platform.security.AccessMode;
+import com.composum.sling.platform.staging.StagingReleaseManager;
 import com.composum.sling.platform.staging.versions.PlatformVersionsService;
 import com.composum.sling.platform.staging.versions.PlatformVersionsService.ActivationState;
 import com.composum.sling.platform.staging.versions.PlatformVersionsService.Status;
@@ -116,7 +117,7 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
         }
 
         @Override
-        public void toString(StringBuilder builder) {
+        public void toString(@Nonnull StringBuilder builder) {
             builder.append(getClass().getSimpleName());
         }
     }
@@ -261,8 +262,9 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
     }
 
     @Override
-    protected Resource determineResource(Resource initialResource) {
-        return getPageManager().getContainingPageResource(initialResource);
+    @Nullable
+    protected Resource determineResource(@Nullable Resource initialResource) {
+        return initialResource != null ? getPageManager().getContainingPageResource(initialResource) : null;
     }
 
     @Override
@@ -649,7 +651,7 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
         }
         // the state activated can be overridden to modified if the page is modified
         Calendar lastModified = getContent().getLastModified();
-        if (lastModified != null) {
+        if (lastModified != null && state != null) {
             Calendar lastActivated = state.getLastActivatedTime();
             if (lastActivated != null && lastActivated.before(lastModified)) {
                 status = ActivationState.modified;
@@ -683,7 +685,8 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
         }
 
         public String getReleaseLabel() {
-            String label = releaseStatus.getPreviousRelease().getReleaseLabel();
+            StagingReleaseManager.Release previous = releaseStatus.getPreviousRelease();
+            String label = previous != null ? releaseStatus.getPreviousRelease().getReleaseLabel() : "";
             Matcher matcher = PagesConstants.RELEASE_LABEL_PATTERN.matcher(label);
             return matcher.matches() ? matcher.group(1) : label;
         }

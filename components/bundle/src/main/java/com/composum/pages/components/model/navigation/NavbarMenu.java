@@ -1,10 +1,12 @@
 package com.composum.pages.components.model.navigation;
 
+import com.composum.pages.commons.model.Homepage;
 import com.composum.pages.commons.model.Page;
 import com.composum.pages.commons.model.Site;
 import com.composum.sling.core.BeanContext;
 import org.apache.sling.api.resource.Resource;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 public class NavbarMenu extends Menu {
@@ -20,9 +22,10 @@ public class NavbarMenu extends Menu {
         super(context, resource);
     }
 
-    protected Resource determineResource(Resource resource) {
+    @Nullable
+    protected Resource determineResource(@Nullable Resource resource) {
         // ensure that the page is used to determine the navigation items
-        return getPageManager().getContainingPageResource(resource);
+        return resource != null ? getPageManager().getContainingPageResource(resource) : null;
     }
 
     public boolean isParentUsed() {
@@ -48,8 +51,8 @@ public class NavbarMenu extends Menu {
                 if (Site.isSite(menuParent)) {
                     Site site = getSiteManager().getContainingSite(context, menuParent);
                     if (site != null) {
-                        Page homepage = site.getHomepage(getLocale());
-                        if (homepage != null) {
+                        Homepage homepage = site.getHomepage(getLocale());
+                        if (!homepage.isTheSiteItself()) {
                             menuParent = homepage.getResource();
                             menuItems = buildMenuItems(menuParent);
                             break;

@@ -110,11 +110,13 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
     }
 
     @Override
-    protected Resource determineResource(Resource initialResource) {
+    @Nullable
+    protected Resource determineResource(@Nullable final Resource initialResource) {
         return getSiteManager().getContainingSiteResource(initialResource);
     }
 
     @Override
+    @Nonnull
     protected SiteConfiguration createContentModel(BeanContext context, Resource contentResource) {
         return new SiteConfiguration(context, contentResource);
     }
@@ -125,6 +127,7 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
         return getResourceManager().isTemplate(getContext(), this.getResource());
     }
 
+    @Nonnull // but maybe ''
     public String getTemplateType() {
         if (templateType == null) {
             templateType = isTemplate() ? getPath() : getTemplatePath();
@@ -144,6 +147,7 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
         return templateType;
     }
 
+    @Nullable
     public String getComponentSettingsEditType() {
         if (componentSettingsEditType == null) {
             Resource template = getTemplate();
@@ -169,6 +173,7 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
 
     // site hierarchy
 
+    @Nonnull
     public Homepage getHomepage(Locale locale) {
         if (homepage == null) {
             PageManager pageManager = getPageManager();
@@ -183,7 +188,7 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
                     homepage = new Homepage(pageManager, context, homepageRes);
                 }
             } else {
-                homepage = new Homepage(pageManager, context, resource); // use itself as homepage
+                homepage = new Homepage(pageManager, context, resource); // use site itself as homepage
             }
         }
         return homepage;
@@ -198,13 +203,15 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
         return DisplayMode.isEditMode(DisplayMode.requested(context));
     }
 
+    @Nonnull
     public String getOpenUri() {
-        switch (getDisplayMode()) {
-            case EDIT:
-            case DEVELOP:
-                return "/bin/pages.html" + getPath();
-            default:
-                return getSiteManager().getPreviewUrl(this);
+        String path = getPath();
+        Homepage homepage = getHomepage(getLocale());
+        if (homepage.isTheSiteItself()) {
+            // assuming insufficient permissions (no content access) if homepage is the site itself
+            return getSiteManager().getPreviewUrl(this);
+        } else {
+            return "/bin/pages.html" + getPath();
         }
     }
 
@@ -213,6 +220,7 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
     /**
      * returns the 'publicMode' property value of this site
      */
+    @Nonnull
     public String getPublicMode() {
         if (publicMode == null) {
             publicMode = getProperty(PROP_PUBLIC_MODE, null, DEFAULT_PUBLIC_MODE);
@@ -220,6 +228,7 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
         return publicMode;
     }
 
+    @Nonnull
     public String getStagePath(AccessMode accessMode) {
         switch (getPublicMode()) {
             case PUBLIC_MODE_IN_PLACE:
@@ -234,6 +243,7 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
      * retrieves the release label for a release category ('public', 'preview')
      * the content of this release is delivered if a public request in the category is performed
      */
+    @Nullable
     public String getReleaseNumber(String category) {
         StagingReleaseManager releaseManager = context.getService(StagingReleaseManager.class);
         StagingReleaseManager.Release release = releaseManager.findReleaseByMark(resource, StringUtils.lowerCase(category));
@@ -243,6 +253,7 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
     /**
      * @return the list of content releases of this site
      */
+    @Nonnull
     public List<SiteRelease> getReleases() {
         StagingReleaseManager releaseManager = context.getService(StagingReleaseManager.class);
         List<StagingReleaseManager.Release> stagingReleases = releaseManager.getReleases(resource);
@@ -252,6 +263,7 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
                 .collect(Collectors.toList());
     }
 
+    @Nullable
     public SiteRelease getCurrentRelease() {
         final List<SiteRelease> releases = getReleases();
         return releases.isEmpty() ? null : releases.get(0);
@@ -260,6 +272,7 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
     /**
      * @return the list of pages changed after last activation
      */
+    @Nonnull
     public List<PageVersion> getModifiedPages() {
         if (modifiedPages == null) {
             try {
@@ -275,6 +288,7 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
     /**
      * @return the list of pages changed (modified and activated) for the current release
      */
+    @Nonnull
     public Collection<PageVersion> getReleaseChanges() {
         if (releaseChanges == null) {
             releaseChanges = getReleaseChanges(getCurrentRelease(), null);

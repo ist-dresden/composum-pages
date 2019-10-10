@@ -73,7 +73,7 @@ public class Element extends AbstractModel {
      * The type must be available as attribute '${EditServlet.EDIT_RESOURCE_TYPE_KEY}' of the request.
      */
     @Override
-    protected void initializeWithResource(Resource resource) {
+    protected void initializeWithResource(@Nonnull Resource resource) {
         super.initializeWithResource(resource);
         if (StringUtils.isBlank(this.type) && ResourceUtil.isNonExistingResource(resource)) {
             SlingHttpServletRequest request = context.getRequest();
