@@ -123,7 +123,7 @@
 
             setActionsState: function () {
                 var c = tools.const.versions;
-                if (this.versions.primSelection || this.versions.versionsVisible) {
+                if (this.versions.primSelection || this.versions.sdrySelection || this.versions.versionsVisible) {
                     this.$viewAction.prop(c.disabled, false);
                 } else {
                     this.$viewAction.prop(c.disabled, true);
@@ -295,7 +295,7 @@
             },
 
             setComparable: function () {
-                if (this.primSelection && this.sdrySelection && this.primSelection !== this.sdrySelection) {
+                if ((this.primSelection || this.sdrySelection) && this.primSelection !== this.sdrySelection) {
                     this.$el.addClass(tools.const.versions.versionsComparable);
                     this.$slider.slider('enable');
                     pages.versionsView.primView.setOpacity(100 - this.$slider.slider('getValue'));
