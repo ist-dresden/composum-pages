@@ -276,11 +276,12 @@
         height: $size;
     }
     &::-webkit-scrollbar-thumb {
-        border-radius: $size;
+        border: 2px solid $background;
+        border-radius: $size / 2;
         background: $foreground;
     }
     &::-webkit-scrollbar-track {
-        border-radius: $size;
+        border-radius: $size / 2;
         background: $background;
     }
     &::-webkit-scrollbar-corner {
