@@ -920,14 +920,20 @@
                 // abstract: return the concrete servlet action selector
             },
 
-            doSubmit: function () {
+            doSubmit: function (ignoredOnSuccess, onError) {
                 var u = dialogs.const.edit.url.version;
                 var data = this.getActionData();
                 core.ajaxPost(u.base + this.submitActionKey(), data, {},
                     _.bind(function (result) {
                         this.triggerStateChange(data);
                         this.hide();
-                    }, this), _.bind(this.onError, this));
+                    }, this), _.bind(function (xhr) {
+                        if (_.isFunction(onError)) {
+                            onError(xhr);
+                        } else {
+                            this.onError(xhr);
+                        }
+                    }, this));
             },
 
             /**
@@ -988,7 +994,9 @@
                     dialogs.ElementDialog.prototype.show.apply(this);
                 } else {
                     // the show() is suppressed if no unresolved references found
-                    this.doSubmit();
+                    this.doSubmit(undefined, _.bind(function (xhr) {
+                        core.alert(xhr);
+                    }, this));
                     this.onClose();
                 }
             }
