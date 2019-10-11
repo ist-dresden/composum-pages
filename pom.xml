@@ -6,14 +6,14 @@
     <parent>
         <groupId>com.composum.meta.ist</groupId>
         <artifactId>parent-2-public</artifactId>
-        <version>1.1</version>
+        <version>1.2</version>
         <relativePath></relativePath>
     </parent>
 
     <groupId>com.composum.pages</groupId>
     <artifactId>composum-pages</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.3-SNAPSHOT</version>
+    <version>1.1.0</version>
 
     <name>Composum Pages</name>
     <description>Maven parent for Composum Pages packages</description>
@@ -23,8 +23,8 @@
         <package.group>com/composum/pages</package.group>
         <package.company>IST GmbH Dresden</package.company>
         <bundle.category>composum,pages</bundle.category>
-        <composum.nodes.version>1.11.2</composum.nodes.version>
-        <composum.platform.version>1.0.6-SNAPSHOT</composum.platform.version>
+        <composum.nodes.version>1.11.6</composum.nodes.version>
+        <composum.platform.version>1.1.0</composum.platform.version>
     </properties>
 
     <scm>

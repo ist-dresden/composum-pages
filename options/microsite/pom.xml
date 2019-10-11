@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.composum.pages.options</groupId>
         <artifactId>composum-pages-options</artifactId>
-        <version>1.0.3-SNAPSHOT</version>
+        <version>1.1.0</version>
     </parent>
 
     <artifactId>composum-pages-options-microsite</artifactId>
@@ -14,7 +14,7 @@
     <name>Composum Pages Options - Microsite</name>
 
     <properties>
-        <composum.pages.version>1.0.3-SNAPSHOT</composum.pages.version>
+        <composum.pages.version>1.1.0</composum.pages.version>
     </properties>
 
     <modules>
