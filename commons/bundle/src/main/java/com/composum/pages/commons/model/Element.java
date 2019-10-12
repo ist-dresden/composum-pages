@@ -33,12 +33,16 @@ public class Element extends AbstractModel {
      */
     public static boolean isElement(@Nonnull ResourceResolver resolver,
                                     @Nullable Resource resource, @Nullable String type) {
-        return (resource != null && (resource.isResourceType(NODE_TYPE_ELEMENT) ||
-                NODE_TYPE_ELEMENT.equals(ResolverUtil.getTypeProperty(
-                        resource, type, PagesConstants.PN_COMPONENT_TYPE, "")))) ||
+        return (resource != null && (
+                resource.isResourceType(NODE_TYPE_ELEMENT) ||
+                        NODE_TYPE_ELEMENT.equals(ResolverUtil.getTypeProperty(
+                                resource, type, PagesConstants.PN_COMPONENT_TYPE, ""))
+        )
+        ) ||
                 (StringUtils.isNotBlank(type) &&
                         NODE_TYPE_ELEMENT.equals(ResolverUtil.getTypeProperty(
-                                resolver, type, PagesConstants.PN_COMPONENT_TYPE, "")));
+                                resolver, type, PagesConstants.PN_COMPONENT_TYPE, ""))
+                );
     }
 
     // transient attributes
@@ -69,7 +73,7 @@ public class Element extends AbstractModel {
      * The type must be available as attribute '${EditServlet.EDIT_RESOURCE_TYPE_KEY}' of the request.
      */
     @Override
-    protected void initializeWithResource(Resource resource) {
+    protected void initializeWithResource(@Nonnull Resource resource) {
         super.initializeWithResource(resource);
         if (StringUtils.isBlank(this.type) && ResourceUtil.isNonExistingResource(resource)) {
             SlingHttpServletRequest request = context.getRequest();

@@ -9,6 +9,7 @@
             jcr:title="A Site for Testing"
             jcr:description="A Pages Components site template for testing purposes with a test page as child of the sites homepage."
             sling:resourceType="composum/pages/stage/edit/site"
+            siteComponentSettings="composum/pages/components/site/settings"
             allowedChildTemplates="[
                 (.*/)?templates/(page/)?home(page)?$
             ]">

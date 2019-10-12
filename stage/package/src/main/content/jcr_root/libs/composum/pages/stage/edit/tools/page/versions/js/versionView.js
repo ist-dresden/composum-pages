@@ -39,15 +39,16 @@
             },
 
             view: function (path, scope) {
-                if (path && scope) {
-                    if (scope.release) {
+                if (path) {
+                    if (scope && scope.release) {
                         this.$frame.attr('src', core.getContextUrl(path + ".html?cpm.release=" + scope.release));
                         this.$el.removeClass('hidden');
-                    } else if (scope.version) {
+                    } else if (scope && scope.version) {
                         this.$frame.attr('src', core.getContextUrl(path + ".html?cpm.version=" + scope.version));
                         this.$el.removeClass('hidden');
                     } else {
-                        this.reset();
+                        this.$frame.attr('src', core.getContextUrl(path + ".html"));
+                        this.$el.removeClass('hidden');
                     }
                 } else {
                     this.reset();

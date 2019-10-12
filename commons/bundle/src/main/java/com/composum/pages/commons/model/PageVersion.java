@@ -20,7 +20,10 @@ import static com.composum.sling.platform.staging.impl.ResourceResolverChangeFil
 import static org.apache.jackrabbit.JcrConstants.JCR_CONTENT;
 import static org.apache.jackrabbit.JcrConstants.JCR_FROZENNODE;
 
-/** Represents information about a historical version of a page - especially one that's contained in a release. */
+/**
+ * Can represent either information about the historical version of a page in a release in comparison to the previous release,
+ * or information about the status of a page in the workspace in comparison to a release (usually the current release).
+ */
 public class PageVersion {
 
     private final StagingReleaseManager.Release release;
@@ -40,6 +43,10 @@ public class PageVersion {
         this.status = status;
     }
 
+    public PlatformVersionsService.Status getStatus() {
+        return status;
+    }
+
     public Page.StatusModel getReleaseStatus() {
         return new Page.StatusModel(status);
     }
@@ -57,39 +64,47 @@ public class PageVersion {
         return path;
     }
 
+    /**
+     * When about workspace: the workspace path (if file was deleted, we take the path in the release);
+     * when about a release, this is the path in that release.
+     */
     public String getPath() {
         String path = null;
-        if (status.getActivationInfo() != null) {
-            path = status.getActivationInfo().getPath();
-        } else if (status.getPreviousVersionableInfo() != null) {
-            // weird unwanted case when a document does not appear at all in a release but in its predecessor
-            path = release.absolutePath(status.getPreviousVersionableInfo().getRelativePath());
+        if (status.getNextVersionable() != null) {
+            path = release.absolutePath(status.getNextVersionable().getRelativePath());
+        } else if (status.getPreviousVersionable() != null) {
+            path = release.absolutePath(status.getPreviousVersionable().getRelativePath());
         }
-        if (StringUtils.endsWith(path, '/' + JCR_CONTENT)) {
-            path = ResourceUtil.getParent(path);
-        }
+        path = StringUtils.removeEnd(path, '/' + JCR_CONTENT);
         return path;
     }
 
-    /** Returns the URL to reference this page version. */
+    /**
+     * Returns the URL to reference this page version: if this is about workspace, the page path (null if the page is deleted),
+     */
     public String getUrl() {
         String url = null;
-        if (status.getActivationInfo() != null && status.getActivationInfo().isActive()) {
-            String path = status.getActivationInfo().getPath();
-            if (StringUtils.endsWith(path, '/' + JCR_CONTENT)) {
-                path = ResourceUtil.getParent(path);
+        if (status.getNextRelease() == null) { // workspace page if not deleted
+            if (getPage() != null) {
+                url = getPage().getUrl();
             }
+        } else if (status.getNextVersionable() != null && status.getNextVersionable().isActive()) {
+            String path = status.getNextRelease().absolutePath(status.getNextVersionable().getRelativePath());
+            path = StringUtils.removeEnd(path, '/' + JCR_CONTENT);
             url = LinkUtil.getUrl(context.getRequest(), path);
-            url = url + "?" + PARAM_CPM_RELEASE + "=" + status.getRelease().getNumber();
+            url = url + "?" + PARAM_CPM_RELEASE + "=" + status.getNextRelease().getNumber();
         }
         return url;
     }
 
     public String getTitle() {
-        if (null == status.getActivationInfo()) {
+        if (null != getPage()) {
+            return getPage().getTitle();
+        }
+        if (status.getVersionReference() == null) {
             return null;
         }
-        Resource versionResource = status.getActivationInfo().getVersionResource();
+        Resource versionResource = status.getVersionReference().getVersionResource();
         if (null == versionResource) {
             return null;
         }
@@ -97,29 +112,34 @@ public class PageVersion {
     }
 
     public String getLastModifiedString() {
-        if (status.getActivationInfo() == null) {
-            return null;
-        }
-        Calendar created = status.getActivationInfo().getVersionCreated();
-        return null != created ? new SimpleDateFormat(VERSION_DATE_FORMAT).format(created.getTime()) : null;
+        Calendar lastModified = status.getLastModified();
+        return null != lastModified ? new SimpleDateFormat(VERSION_DATE_FORMAT).format(lastModified.getTime()) : null;
     }
 
     public Page getPage() {
         if (page == null) {
-            String path = getPath();
-            if (StringUtils.isNotBlank(path)) {
-                Resource resource = context.getResolver().getResource(path);
-                if (resource != null) {
-                    page = getPageManager().createBean(context, resource);
-                }
+            Resource resource = status.getWorkspaceResource();
+            if (resource != null) {
+                page = getPageManager().createBean(context, resource);
             }
         }
         return page;
     }
 
+    /**
+     * The activation status of the page. In the special case that a page is activated in the release, but
+     * also modified in the workspace this will return 'modified' to alert the user that there is a
+     * new version of the page to be published, even if this is used in the display of a release.
+     */
     public PlatformVersionsService.ActivationState getPageActivationState() {
         Page page = getPage();
-        return page != null ? page.getPageActivationState() : PlatformVersionsService.ActivationState.modified;
+        if (page != null) {
+            return page.getPageActivationState();
+        }
+        if (status != null) {
+            return status.getActivationState();
+        }
+        return PlatformVersionsService.ActivationState.modified; // shouldn't happen
     }
 
     @Nonnull

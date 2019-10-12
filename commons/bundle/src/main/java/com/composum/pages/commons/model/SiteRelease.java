@@ -1,6 +1,7 @@
 package com.composum.pages.commons.model;
 
 import com.composum.pages.commons.request.DisplayMode;
+import com.composum.pages.commons.service.VersionsService;
 import com.composum.pages.commons.util.PagesUtil;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.util.I18N;
@@ -14,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.jcr.RepositoryException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -53,8 +55,9 @@ public class SiteRelease extends AbstractModel implements Comparable<SiteRelease
         initialize(context, resource);
     }
 
+    @Nonnull
     @Override
-    protected Resource determineResource(Resource initialResource) {
+    protected Resource determineResource(@Nullable Resource initialResource) {
         if (stagingRelease == null) {
             StagingReleaseManager releaseManager = this.context.getService(StagingReleaseManager.class);
             stagingRelease = releaseManager.findReleaseByReleaseResource(initialResource);
@@ -63,7 +66,7 @@ public class SiteRelease extends AbstractModel implements Comparable<SiteRelease
     }
 
     @Override
-    protected void initializeWithResource(Resource releaseMetadataNode) {
+    protected void initializeWithResource(@Nonnull Resource releaseMetadataNode) {
         super.initializeWithResource(releaseMetadataNode);
         creationDate = getProperty("jcr:created", Calendar.class);
     }
@@ -98,7 +101,9 @@ public class SiteRelease extends AbstractModel implements Comparable<SiteRelease
         return stagingRelease.getNumber();
     }
 
-    /** The label that is set on a document version when it is in a release. */
+    /**
+     * The label that is set on a document version when it is in a release.
+     */
     public String getLabel() {
         return stagingRelease.getReleaseLabel();
     }
@@ -126,14 +131,20 @@ public class SiteRelease extends AbstractModel implements Comparable<SiteRelease
         return PagesUtil.getTimestampString(getCreationDate());
     }
 
-    /** The underlying release info from the platform. */
+    /**
+     * The underlying release info from the platform.
+     */
     public StagingReleaseManager.Release getStagingRelease() {
         return stagingRelease;
     }
 
     public List<PageVersion> getChanges() {
+        return getChanges(null);
+    }
+
+    public List<PageVersion> getChanges(@Nullable final VersionsService.PageVersionFilter filter) {
         try {
-            return getVersionsService().findReleaseChanges(getContext(), this);
+            return getVersionsService().findReleaseChanges(getContext(), this, filter);
         } catch (RepositoryException ex) {
             LOG.error(ex.getMessage(), ex);
             return new ArrayList<>();

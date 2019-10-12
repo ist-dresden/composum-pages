@@ -135,6 +135,10 @@
                             &_deactivated {
                                 color: $release-status-deactivated;
                             }
+
+                            &_deleted {
+                                color: $release-status-deleted;
+                            }
                         }
                     }
                 }

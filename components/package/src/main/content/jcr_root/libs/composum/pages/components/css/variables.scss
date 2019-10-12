@@ -61,6 +61,7 @@ $section-spacing-default: 3rem;
 
 $icon-default-font-family: 'FontAwesome';
 $site-default-font-family: 'robotolight', sans-serif;
+$site-condensed-font-family: 'roboto_condensedlight', 'robotolight', sans-serif;
 $site-bold-font-family: 'robotomedium', sans-serif;
 $site-title-font-family: 'robotolight', sans-serif;
 $site-symbol-font-family: $site-bold-font-family;
@@ -104,12 +105,24 @@ $text-title-font-size-xs: $column-subtitle-font-size-xs;
 
 $symbol-title-top: 2px;
 $symbol-width: 4.2rem;
+$symbol-width-xs: 3rem;
 $symbol-font-size: 2.5rem;
 $symbol-color: $main-title-text-color;
 
 $list-title-gap: 4px;
 $list-item-indent: 32px;
 $subsite-logo-padding: 50px;
+
+/** image */
+
+$element-image-padding: 5px;
+$element-image-margin-v: 10px;
+$element-image-border: 1px solid #ccc;
+
+$element-image-meta-padding: 0 $element-image-padding 1px;
+$element-image-meta-fg: #000;
+$element-image-meta-bg: #fff;
+$element-image-meta-font-size: 11px;
 
 /** illustration */
 
@@ -121,3 +134,14 @@ $illustration-annotation-hover-fg: #ffffff;
 
 $illustration-annotation-arrow-length: $illustration-annotation-shape-size;
 $illustration-annotation-arrow-size: $illustration-annotation-arrow-length * 1.5;
+
+/** dark theme */
+
+$dark-background: #333;
+$dark-foreground: #eee;
+$dark-link: #f1a24b;
+$dark-highlight: #fff;
+$dark-highlight-bg: #666;
+$dark-highlight-border: #aaa;
+$dark-badge-fg: #333;
+$dark-badge-bg: #ccc;

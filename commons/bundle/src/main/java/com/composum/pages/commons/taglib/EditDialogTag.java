@@ -213,6 +213,14 @@ public class EditDialogTag extends AbstractEditTag {
     }
 
     /**
+     * adds the set of initial default tag attributes
+     */
+    protected void defaultAttributes(Map<String, Object> attributeSet) {
+        attributeSet.put("data-backdrop", "static");
+        attributeSet.put("data-keyboard", Boolean.TRUE);
+    }
+
+    /**
      * filters dynamic attributes for special purposes:
      * <ul>
      * <li>initial 'alert' settings for initial hints</li>

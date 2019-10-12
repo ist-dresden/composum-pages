@@ -3,4 +3,6 @@
         jcr:primaryType="cpp:Widget"
         sling:resourceType="composum/pages/commons/widget/textarea"
         sling:resourceSuperType="composum/pages/commons/widget"
-        modelClass="com.composum.pages.commons.widget.TextArea"/>
+        modelClass="com.composum.pages.commons.widget.TextArea">
+    <attributes jcr:primaryType="nt:unstructured" maxlength="50000"/>
+</jcr:root>

@@ -26,14 +26,16 @@
                     ]"
                     allowedElements="[
                         ^(.*/)?composum/pages/components/element/(image|text|textimage|title|link(/.+)?)$,
-                        ^(.*/)?composum/pages/components/composed/(accordion|list)$
+                        ^(.*/)?composum/pages/components/composed/(accordion|list)$,
+                        ^(.*/)?composum/pages/components/container/section$
                     ]">
             </main>
             <containers
                     jcr:primaryType="nt:unstructured"
                     typePatterns="[
                         ^(.*/)?composum/pages/components/composed/accordion/item$,
-                        ^(.*/)?composum/pages/components/composed/list$
+                        ^(.*/)?composum/pages/components/composed/list$,
+                        ^(.*/)?composum/pages/components/container/section$
                     ]"
                     allowedElements="[
                         ^(.*/)?composum/pages/components/element/(image|text|textimage|link(/.+)?)$

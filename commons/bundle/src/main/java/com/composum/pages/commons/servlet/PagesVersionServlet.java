@@ -51,7 +51,7 @@ import static com.composum.pages.commons.servlet.PagesContentServlet.forward;
 
 @Component(service = Servlet.class,
         property = {
-                Constants.SERVICE_DESCRIPTION + "=Pages Version Servlet",
+                Constants.SERVICE_DESCRIPTION + "=Composum Pages Version Servlet",
                 ServletResolverConstants.SLING_SERVLET_PATHS + "=/bin/cpm/pages/version",
                 ServletResolverConstants.SLING_SERVLET_METHODS + "=" + HttpConstants.METHOD_GET,
                 ServletResolverConstants.SLING_SERVLET_METHODS + "=" + HttpConstants.METHOD_POST,

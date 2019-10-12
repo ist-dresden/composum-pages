@@ -7,6 +7,8 @@
 
     <general jcr:primaryType="sling:Folder"><!-- Stage frame -->
 
+        <all-filter jcr:primaryType="sling:MessageEntry"
+                sling:key="all" sling:message="alles"/>
         <by-someone jcr:primaryType="sling:MessageEntry"
                 sling:key="by" sling:message="von"/>
         <relative-path jcr:primaryType="sling:MessageEntry"
@@ -31,12 +33,16 @@
     </frame>
     <versions jcr:primaryType="sling:Folder"><!-- version tools -->
 
+        <initial jcr:primaryType="sling:MessageEntry"
+                sling:key="initial" sling:message="initial"/>
         <activated jcr:primaryType="sling:MessageEntry"
                 sling:key="activated" sling:message="aktiviert"/>
         <deactivated jcr:primaryType="sling:MessageEntry"
                 sling:key="deactivated" sling:message="deaktiviert"/>
         <modified jcr:primaryType="sling:MessageEntry"
                 sling:key="modified" sling:message="geändert"/>
+        <deleted jcr:primaryType="sling:MessageEntry"
+                sling:key="deleted" sling:message="gelöscht"/>
 
         <last-activated jcr:primaryType="sling:MessageEntry"
                 sling:key="last activated" sling:message="zuletzt aktiviert"/>

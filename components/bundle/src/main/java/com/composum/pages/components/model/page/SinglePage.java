@@ -5,7 +5,7 @@ import com.composum.pages.commons.model.Page;
 import com.composum.sling.core.BeanContext;
 import org.apache.sling.api.resource.Resource;
 
-import static com.composum.pages.commons.model.Homepage.LOGO_PATH;
+import javax.annotation.Nullable;
 
 public class SinglePage extends Page {
 
@@ -23,8 +23,16 @@ public class SinglePage extends Page {
     // initializer extensions
 
     @Override
-    protected Resource determineResource(Resource initialResource) {
-        return initialResource == null ? getCurrentPage().getResource() : initialResource;
+    @Nullable
+    protected Resource determineResource(@Nullable Resource initialResource) {
+        Resource resource = initialResource;
+        if (resource == null) {
+            Page currentPage = getCurrentPage();
+            if (currentPage != null) {
+                resource = currentPage.getResource();
+            }
+        }
+        return resource;
     }
 
     public String getLogoLinkUrl() {

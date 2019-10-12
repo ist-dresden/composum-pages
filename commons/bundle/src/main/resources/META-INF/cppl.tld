@@ -44,6 +44,7 @@
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>The scope in which the variable is stored: page (= default), request or session .</description>
             <name>scope</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -133,6 +134,7 @@
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>The scope in which the variable is stored: page (= default), request or session .</description>
             <name>scope</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -216,6 +218,7 @@
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>The scope in which the variable is stored: page (= default), request or session .</description>
             <name>scope</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -263,6 +266,7 @@
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>The scope in which the variable is stored: page (= default), request or session .</description>
             <name>scope</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -383,9 +387,7 @@
             <rtexprvalue>true</rtexprvalue>
         </attribute>
         <attribute>
-            <description>
-                the scope of the 'var' attribute
-            </description>
+            <description>The scope in which the variable is stored: page (= default), request or session .</description>
             <name>scope</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -585,6 +587,7 @@
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>The scope in which the variable is stored: page (= default), request or session .</description>
             <name>scope</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -937,6 +940,7 @@
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>The scope in which the variable is stored: page (= default), request or session .</description>
             <name>scope</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>

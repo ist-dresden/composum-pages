@@ -18,7 +18,7 @@ import javax.annotation.Nonnull;
 @Component(
         service = SearchPlugin.class,
         property = {
-                Constants.SERVICE_DESCRIPTION + "=Pages Default Resource Search Plugin"
+                Constants.SERVICE_DESCRIPTION + "=Composum Pages Default Resource Search Plugin"
         },
         immediate = true
 )

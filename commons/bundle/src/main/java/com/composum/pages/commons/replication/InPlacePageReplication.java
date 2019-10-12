@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 @Component(
         service = {ReplicationStrategy.class},
         property = {
-                Constants.SERVICE_DESCRIPTION + "=In Place Page Replication Strategy"
+                Constants.SERVICE_DESCRIPTION + "=Composum Pages In Place Page Replication Strategy"
         },
         immediate = true
 )
@@ -36,7 +36,7 @@ public class InPlacePageReplication extends InPlaceReplicationStrategy {
             if (Page.isPage(resource)) {
                 result = true;
             } else if (Page.isPageContent(resource)) {
-                return Page.isPage(resource.getParent());
+                result = Page.isPage(resource.getParent());
             } else {
                 result = (Site.isSite(resource));
             }

@@ -45,7 +45,7 @@ import java.util.List;
  */
 @Component(service = Servlet.class,
         property = {
-                Constants.SERVICE_DESCRIPTION + "=Microsite Servlet",
+                Constants.SERVICE_DESCRIPTION + "=Composum Pages Microsite Servlet",
                 ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES + "=composum/pages/options/microsite/page",
                 ServletResolverConstants.SLING_SERVLET_METHODS + "=" + HttpConstants.METHOD_GET,
                 ServletResolverConstants.SLING_SERVLET_METHODS + "=" + HttpConstants.METHOD_POST,

@@ -6,6 +6,8 @@ import com.composum.sling.platform.security.AccessMode;
 import com.composum.sling.platform.staging.ReleaseMapper;
 import org.apache.sling.api.resource.Resource;
 
+import javax.annotation.Nonnull;
+
 public interface ReplicationManager extends ReleaseMapper {
 
     /**
@@ -30,6 +32,8 @@ public interface ReplicationManager extends ReleaseMapper {
     );
 
     PagesReplicationConfig getConfig();
+
+    String getReplicationPath(@Nonnull AccessMode accessMode, @Nonnull String path);
 
     void replicateResource(ReplicationContext context, Resource resource, boolean recursive)
             throws Exception;

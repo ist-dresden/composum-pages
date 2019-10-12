@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:cpp="http://sling.composum.com/pages/1.0"
+          xmlns:jcr="http://www.jcp.org/jcr/1.0"
+          xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+          jcr:primaryType="cpp:Page">
+    <jcr:content
+            jcr:primaryType="cpp:PageContent"
+            sling:resourceType="composum/pages/stage/edit/tools/component/help/page"
+            template="/libs/composum/pages/stage/edit/tools/component/help/template">
+        <main
+                jcr:primaryType="cpp:Container"
+                sling:resourceType="composum/pages/stage/edit/tools/component/help/parsys">
+            <text_01
+                    jcr:primaryType="cpp:Element"
+                    sling:resourceType="composum/pages/components/element/text"
+                    text="&lt;p>A slideshow component for cycling through elements, like a carousel.&lt;/p>&lt;p>A carousel component is a container which contains a set of &apos;tiles&apos; - simpler elements, normally teasers - which are moved horizontally.&lt;/p>&lt;p>There are some options configurable:&lt;/p>&lt;p>&lt;ul>&lt;li>&apos;Use controls&apos;:&lt;br>if &apos;on&apos; controls to slide manually are show on the left and the right side&lt;/li>&lt;li>&quot;Show indicators&apos;:&lt;br>if &apos;on&apos; a set of bubbles is shown at the bottom each representing one element; the current element is marked and each element can be selected manually by clicking the corresponding indicator&lt;/li>&lt;li>&apos;Autostart&apos; and &apos;Interval&apos;:&lt;br>Start time controlled cycling automatically with the specified interval&lt;/li>&lt;li>&apos;Mouse enter doesn&apos;t stop&apos;&lt;br>normally thy cycling is stopped if the mouse is inside of the carousel; this can be switched off&lt;/li>&lt;/ul>&lt;/p>"/>
+        </main>
+    </jcr:content>
+</jcr:root>

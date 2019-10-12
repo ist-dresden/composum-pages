@@ -3,18 +3,23 @@ package com.composum.pages.commons.service;
 import com.composum.pages.commons.PagesConfiguration;
 import com.composum.pages.commons.PagesConstants;
 import com.composum.pages.commons.filter.TemplateFilter;
+import com.composum.pages.commons.model.Homepage;
 import com.composum.pages.commons.model.Model;
 import com.composum.pages.commons.model.Site;
+import com.composum.pages.commons.util.LinkUtil;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.util.ResourceUtil;
+import com.composum.sling.platform.security.AccessMode;
 import com.composum.sling.platform.staging.StagingReleaseManager;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
+import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.tenant.Tenant;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
@@ -56,6 +61,9 @@ public class PagesSiteManager extends PagesContentManager<Site> implements SiteM
         SITE_ASSETS_PROPERTIES = new HashMap<>();
         SITE_ASSETS_PROPERTIES.put(JcrConstants.JCR_PRIMARYTYPE, "sling:Folder");
     }
+
+    @Reference
+    protected ResourceResolverFactory resolverFactory;
 
     @Reference
     protected PagesConfiguration pagesConfig;
@@ -148,6 +156,28 @@ public class PagesSiteManager extends PagesContentManager<Site> implements SiteM
         return Objects.requireNonNull(resolver.getResource("/content"));
     }
 
+    /**
+     * @return a mapped preview URL built using a service user to support the preview URL even if the access is restricted
+     */
+    @Override
+    @Nonnull
+    public String getPreviewUrl(@Nonnull final Site site) {
+        // use servive resolver to allow preview links even if access is restricted ('visitor')
+        try (ResourceResolver serviceResolver = resolverFactory.getServiceResourceResolver(null)) {
+            BeanContext serviceContext = new BeanContext.Wrapper(site.getContext(), serviceResolver);
+            Resource serviceSiteRes = serviceResolver.getResource(site.getPath());
+            if (serviceSiteRes != null) {
+                Site serviceSite = createBean(serviceContext, serviceSiteRes);
+                Homepage homepage = serviceSite.getHomepage(site.getLocale());
+                return LinkUtil.getMappedUrl(serviceContext.getRequest(), serviceSite.getStagePath(AccessMode.PREVIEW)
+                        + homepage.getPath().substring(serviceSite.getPath().length()) + ".html");
+            }
+        } catch (LoginException ex) {
+            LOG.error(ex.getMessage(), ex);
+        }
+        return site.getPath();
+    }
+
     @Override
     @Nonnull
     public Resource getSitesRoot(@Nonnull final BeanContext context, @Nullable final String tenantId) {
@@ -175,10 +205,7 @@ public class PagesSiteManager extends PagesContentManager<Site> implements SiteM
     public Collection<Site> getSites(@Nonnull final BeanContext context) {
         Set<Site> sites = new HashSet<>();
         if (tenantSupport == null) {
-            sites.addAll(getSites(context, getSitesRoot(context, null), ResourceFilter.ALL));
-            if (sites.size() < 1) {
-                sites.addAll(getSites(context, getContentRoot(context.getResolver()), ResourceFilter.ALL));
-            }
+            sites.addAll(getSites(context, getContentRoot(context.getResolver()), ResourceFilter.ALL));
         } else {
             for (String tenantId : tenantSupport.getTenants(context).keySet()) {
                 sites.addAll(getSites(context, getSitesRoot(context, tenantId), ResourceFilter.ALL));
@@ -203,7 +230,10 @@ public class PagesSiteManager extends PagesContentManager<Site> implements SiteM
         return result;
     }
 
-    protected Collection<Site> getSites(@Nonnull BeanContext context, @Nullable Resource searchRoot, @Nonnull ResourceFilter filter) {
+    @Override
+    @Nonnull
+    public Collection<Site> getSites(@Nonnull final BeanContext context, @Nullable final Resource searchRoot,
+                                     @Nonnull final ResourceFilter filter) {
         return getModels(context, NODE_TYPE_SITE, searchRoot, filter);
     }
 

@@ -5,7 +5,7 @@ import com.composum.pages.commons.model.Page;
 import com.composum.sling.core.BeanContext;
 import org.apache.sling.api.resource.Resource;
 
-import static com.composum.pages.commons.model.Homepage.LOGO_PATH;
+import javax.annotation.Nullable;
 
 public class SubsiteRoot extends Page {
 
@@ -24,7 +24,8 @@ public class SubsiteRoot extends Page {
     // initializer extensions
 
     @Override
-    protected Resource determineResource(Resource initialResource) {
+    @Nullable
+    protected Resource determineResource(@Nullable Resource initialResource) {
         Page page = getCurrentPage();
         while (page != null && !page.getContent().getResource().isResourceType(SUBSITE_ROOT_RESOURCE_TYPE)) {
             page = page.getParentPage();

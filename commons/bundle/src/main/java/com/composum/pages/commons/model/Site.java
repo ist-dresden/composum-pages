@@ -1,16 +1,20 @@
 package com.composum.pages.commons.model;
 
 import com.composum.pages.commons.model.properties.Language;
+import com.composum.pages.commons.replication.ReplicationManager;
 import com.composum.pages.commons.request.DisplayMode;
 import com.composum.pages.commons.service.PageManager;
 import com.composum.pages.commons.service.SiteManager;
+import com.composum.pages.commons.service.VersionsService;
 import com.composum.platform.models.annotations.DetermineResourceStategy;
 import com.composum.platform.models.annotations.PropertyDetermineResourceStrategy;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.util.ResourceUtil;
+import com.composum.sling.platform.security.AccessMode;
 import com.composum.sling.platform.staging.StagingReleaseManager;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.CompareToBuilder;
+import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.slf4j.Logger;
@@ -18,6 +22,8 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.jcr.RepositoryException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -65,10 +71,11 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
     private transient String publicMode;
     private transient Homepage homepage;
 
-    private transient Collection<Page> modifiedPages;
+    private transient List<PageVersion> modifiedPages;
     private transient Collection<PageVersion> releaseChanges;
 
     private transient String templateType;
+    private transient String componentSettingsEditType;
 
     public Site() {
     }
@@ -92,7 +99,9 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
 
     // initializer extensions
 
-    /** Compatible to {@link AbstractModel#determineResource(Resource)}. */
+    /**
+     * Compatible to {@link AbstractModel#determineResource(Resource)}.
+     */
     public static class ContainingSiteResourceStrategy implements DetermineResourceStategy {
         @Override
         public Resource determineResource(BeanContext beanContext, Resource requestResource) {
@@ -101,11 +110,13 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
     }
 
     @Override
-    protected Resource determineResource(Resource initialResource) {
+    @Nullable
+    protected Resource determineResource(@Nullable final Resource initialResource) {
         return getSiteManager().getContainingSiteResource(initialResource);
     }
 
     @Override
+    @Nonnull
     protected SiteConfiguration createContentModel(BeanContext context, Resource contentResource) {
         return new SiteConfiguration(context, contentResource);
     }
@@ -116,6 +127,7 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
         return getResourceManager().isTemplate(getContext(), this.getResource());
     }
 
+    @Nonnull // but maybe ''
     public String getTemplateType() {
         if (templateType == null) {
             templateType = isTemplate() ? getPath() : getTemplatePath();
@@ -135,6 +147,17 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
         return templateType;
     }
 
+    @Nullable
+    public String getComponentSettingsEditType() {
+        if (componentSettingsEditType == null) {
+            Resource template = getTemplate();
+            if (template != null) {
+                componentSettingsEditType = template.getValueMap().get(JcrConstants.JCR_CONTENT + "/siteComponentSettings", "");
+            }
+        }
+        return componentSettingsEditType;
+    }
+
     @Override
     @Nonnull
     public String getTitle() {
@@ -150,6 +173,7 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
 
     // site hierarchy
 
+    @Nonnull
     public Homepage getHomepage(Locale locale) {
         if (homepage == null) {
             PageManager pageManager = getPageManager();
@@ -164,7 +188,7 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
                     homepage = new Homepage(pageManager, context, homepageRes);
                 }
             } else {
-                homepage = new Homepage(pageManager, context, resource); // use itself as homepage
+                homepage = new Homepage(pageManager, context, resource); // use site itself as homepage
             }
         }
         return homepage;
@@ -179,11 +203,24 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
         return DisplayMode.isEditMode(DisplayMode.requested(context));
     }
 
+    @Nonnull
+    public String getOpenUri() {
+        String path = getPath();
+        Homepage homepage = getHomepage(getLocale());
+        if (homepage.isTheSiteItself()) {
+            // assuming insufficient permissions (no content access) if homepage is the site itself
+            return getSiteManager().getPreviewUrl(this);
+        } else {
+            return "/bin/pages.html" + getPath();
+        }
+    }
+
     // releases
 
     /**
      * returns the 'publicMode' property value of this site
      */
+    @Nonnull
     public String getPublicMode() {
         if (publicMode == null) {
             publicMode = getProperty(PROP_PUBLIC_MODE, null, DEFAULT_PUBLIC_MODE);
@@ -191,10 +228,22 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
         return publicMode;
     }
 
+    @Nonnull
+    public String getStagePath(AccessMode accessMode) {
+        switch (getPublicMode()) {
+            case PUBLIC_MODE_IN_PLACE:
+                ReplicationManager replicationManager = getContext().getService(ReplicationManager.class);
+                return replicationManager.getReplicationPath(accessMode, getPath());
+            default:
+                return getPath();
+        }
+    }
+
     /**
      * retrieves the release label for a release category ('public', 'preview')
      * the content of this release is delivered if a public request in the category is performed
      */
+    @Nullable
     public String getReleaseNumber(String category) {
         StagingReleaseManager releaseManager = context.getService(StagingReleaseManager.class);
         StagingReleaseManager.Release release = releaseManager.findReleaseByMark(resource, StringUtils.lowerCase(category));
@@ -204,16 +253,17 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
     /**
      * @return the list of content releases of this site
      */
+    @Nonnull
     public List<SiteRelease> getReleases() {
         StagingReleaseManager releaseManager = context.getService(StagingReleaseManager.class);
         List<StagingReleaseManager.Release> stagingReleases = releaseManager.getReleases(resource);
-        List<SiteRelease> releases = stagingReleases.stream()
+        return stagingReleases.stream()
                 .map(r -> new SiteRelease(context, r))
                 .sorted(Comparator.nullsFirst(Comparator.comparing(SiteRelease::getCreationDate).reversed()))
                 .collect(Collectors.toList());
-        return releases;
     }
 
+    @Nullable
     public SiteRelease getCurrentRelease() {
         final List<SiteRelease> releases = getReleases();
         return releases.isEmpty() ? null : releases.get(0);
@@ -222,9 +272,15 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
     /**
      * @return the list of pages changed after last activation
      */
-    public Collection<Page> getModifiedPages() {
+    @Nonnull
+    public List<PageVersion> getModifiedPages() {
         if (modifiedPages == null) {
-            modifiedPages = getVersionsService().findModifiedPages(getContext(), getResource());
+            try {
+                modifiedPages = getVersionsService().findModifiedPages(getContext(), getCurrentRelease(), null);
+            } catch (RepositoryException e) {
+                LOG.error("Retrieving modified pages for " + getResource().getPath(), e);
+                modifiedPages = new ArrayList<>();
+            }
         }
         return modifiedPages;
     }
@@ -232,15 +288,17 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
     /**
      * @return the list of pages changed (modified and activated) for the current release
      */
+    @Nonnull
     public Collection<PageVersion> getReleaseChanges() {
         if (releaseChanges == null) {
-            releaseChanges = getReleaseChanges(getCurrentRelease());
+            releaseChanges = getReleaseChanges(getCurrentRelease(), null);
         }
         return releaseChanges;
     }
 
     @Nonnull
-    public Collection<PageVersion> getReleaseChanges(@Nullable final SiteRelease releaseToCheck) {
-        return releaseToCheck != null ? releaseToCheck.getChanges() : Collections.emptyList();
+    public Collection<PageVersion> getReleaseChanges(@Nullable final SiteRelease releaseToCheck,
+                                                     @Nullable final VersionsService.PageVersionFilter filter) {
+        return releaseToCheck != null ? releaseToCheck.getChanges(filter) : Collections.emptyList();
     }
 }

@@ -50,8 +50,14 @@
                 var c = tools.const.activated.page;
                 pages.releases.ReleaseChanges.prototype.initialize.apply(this);
                 this.sitePath = this.$('.' + c.base).data('path');
+                this.$filter = this.$('.composum-pages-stage-edit-site-page_filter');
+                this.$filter.find('a').click(_.bind(this.doFilter, this));
                 this.$previewEntry = [];
                 this.$('.' + c.base + c._entry).click(_.bind(this.pagePreview, this));
+            },
+
+            doFilter: function (event) {
+                this.reload(event, $(event.currentTarget).data('value'));
             },
 
             pagePreview: function (event) {
@@ -89,10 +95,11 @@
                 this.reload();
             },
 
-            reload: function () {
+            reload: function (event, filter) {
                 this.closePreview();
+                var params = filter ? '?filter=' + (filter === 'all' ? '' : filter) : '';
                 var c = tools.const.activated.uri;
-                core.getHtml(c.load + this.contextTabs.reference.path,
+                core.getHtml(c.load + this.contextTabs.reference.path + params,
                     undefined, undefined, _.bind(function (data) {
                         if (data.status === 200) {
                             this.$el.html(data.responseText);

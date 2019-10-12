@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 @Component(
         service = {PagesReleaseService.class, ReleaseChangeEventListener.class},
         property = {
-                Constants.SERVICE_DESCRIPTION + "=Pages Replication Service"
+                Constants.SERVICE_DESCRIPTION + "=Composum Pages Replication Service"
         },
         immediate = true
 )

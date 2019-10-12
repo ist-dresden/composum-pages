@@ -4,5 +4,6 @@
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <cpp:defineFrameObjects/>
 <cpp:editDialog title="@{dialog.selector=='create'?'Create an Accordion':'Accordion Properties'}">
-    <cpp:widget type="select" label="Behavior" property="behavior" options="accordion,independent" default="accordion"/>
+    <cpp:widget type="select" label="Behavior" property="behavior"
+                options="accordion,independent,tabbed" default="accordion"/>
 </cpp:editDialog>

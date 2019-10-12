@@ -6,8 +6,11 @@
 .composum-pages-components-navigation-siblings {
     display: table;
     width: 100%;
-    margin: 20px 0 0;
-    padding: 15px;
+    padding: 13px 15px;
+
+    @media screen and (max-width: $bootstrap-screen-xs-max) {
+        padding: 10px;
+    }
 
     &_prev, &_center, &_next {
         display: table-cell;
@@ -22,6 +25,10 @@
         display: inline-block;
         min-width: 120px;
         @include a-title-font($text-title-font-size);
+
+        @media screen and (max-width: $bootstrap-screen-xs-max) {
+            font-size: $text-title-font-size-xs;
+        }
 
         &, & a, & a:focus {
             text-decoration: none;
@@ -43,6 +50,10 @@
                     padding: 0 8px 0 0;
                     font-family: 'FontAwesome', sans-serif;
                     font-size: $text-title-font-size;
+
+                    @media screen and (max-width: $bootstrap-screen-xs-max) {
+                        font-size: $text-title-font-size-xs;
+                    }
                 }
             }
         }
@@ -52,12 +63,18 @@
 
         .composum-pages-components-navigation-siblings {
             &_link {
+                text-align: right;
+
                 &:after {
                     content: '\f054';
                     display: inline-block;
                     padding: 0 0 0 8px;
                     font-family: 'FontAwesome', sans-serif;
                     font-size: $text-title-font-size;
+
+                    @media screen and (max-width: $bootstrap-screen-xs-max) {
+                        font-size: $text-title-font-size-xs;
+                    }
                 }
             }
         }

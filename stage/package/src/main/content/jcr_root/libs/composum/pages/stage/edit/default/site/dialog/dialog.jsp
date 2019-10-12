@@ -2,7 +2,7 @@
 <%@taglib prefix="sling" uri="http://sling.apache.org/taglibs/sling/1.2" %>
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <cpp:defineFrameObjects/>
-<cpp:editDialog var="site" type="com.composum.pages.commons.model.Site" selector="generic" languageContext="false"
+<cpp:editDialog var="model" type="com.composum.pages.commons.model.Site" selector="generic" languageContext="false"
                 title="Site Properties" submitLabel="Save">
     <cpp:editDialogTab tabId="site" label="Site">
         <sling:call script="site-settings.jsp"/>
@@ -14,4 +14,6 @@
     <cpp:editDialogTab tabId="pages" label="Page Presets">
         <sling:call script="page-presets.jsp"/>
     </cpp:editDialogTab>
+    <cpp:include test="${not empty model.componentSettingsEditType}"
+                 resourceType="${model.componentSettingsEditType}" replaceSelectors="embedTab"/>
 </cpp:editDialog>

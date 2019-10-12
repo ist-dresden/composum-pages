@@ -3,6 +3,46 @@
 @import "../../../../css/variables";
 @import "../../../../css/mixins";
 
+// bootstrap
+
+$bootstrap-spacing-v: 10px;
+$bootstrap-spacing-h: 15px;
+
+$bootstrap-color-muted: #777;
+$bootstrap-color-default: #333;
+$bootstrap-color-info: #31708f;
+$bootstrap-color-primary: #fff;
+$bootstrap-color-success: #3c763d;
+$bootstrap-color-warning: #8a6d3b;
+$bootstrap-color-danger: #a94442;
+
+$bootstrap-background-info: #d9edf7;
+$bootstrap-background-primary: #337ab7;
+$bootstrap-background-success: #dff0d8;
+$bootstrap-background-warning: #fcf8e3;
+$bootstrap-background-danger: #f2dede;
+
+// components
+
+$column-title-text-color: #eee;
+
+$column-title-font-size: 18px;
+
+$symbol-width: 3.5rem;
+$symbol-font-size: $column-title-font-size;
+$symbol-color: $column-title-text-color;
+
+$main-title-margin: 2rem 0 1.5rem;
+
+$site-title-font-family: 'robotolight', sans-serif;
+
+@mixin a-title-font($size) {
+    @include font($site-title-font-family, $size);
+    opacity: 0.8;
+}
+
+// help page
+
 $help-text-default-margin: $tools-pane-padding 0;
 $help-text-title-margin: $tools-pane-padding*1.5 0 $tools-pane-padding;
 
@@ -41,6 +81,141 @@ $help-text-title-margin: $tools-pane-padding*1.5 0 $tools-pane-padding;
 
     .composum-pages-components {
 
+        &-container {
+
+            &-section {
+                clear: both;
+                width: 100%;
+
+                .composum-pages-components-container-section {
+
+                    &_icon {
+                        width: $symbol-width;
+                        font-size: $symbol-font-size;
+                        line-height: $symbol-font-size;
+                        color: $symbol-color;
+                    }
+
+                    &_wrapper {
+                        width: 100%;
+                    }
+                }
+
+                &.section-icon {
+
+                    .composum-pages-components-container-section {
+
+                        &_wrapper {
+                            display: flex;
+                            flex-wrap: nowrap;
+
+                            .composum-pages-components-container-section {
+
+                                &_icon {
+                                }
+
+                                &_content {
+                                    width: 100%;
+
+                                    > :first-child {
+                                        margin-top: 0;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                &_title {
+                    margin: $main-title-margin;
+                    @include a-title-font($column-title-font-size);
+                    color: $column-title-text-color;
+                }
+
+                &.section-title {
+
+                    &.no-panel {
+
+                        > .composum-pages-components-container-section_wrapper,
+                        > .panel-body > .composum-pages-components-container-section_wrapper {
+
+                            > .composum-pages-components-container-section {
+
+                                &_icon {
+                                    margin: $main-title-margin;
+                                }
+                            }
+                        }
+                    }
+
+                    &.panel {
+
+                        .panel-body {
+                            padding: $tools-pane-padding;
+                        }
+
+                        > .composum-pages-components-container-section_wrapper,
+                        > .panel-body > .composum-pages-components-container-section_wrapper {
+
+                            > .composum-pages-components-container-section {
+
+                                &_icon, &_content > .composum-pages-components-container-section_header .composum-pages-components-container-section_title {
+                                    margin-top: 0.5rem;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                &.panel.panel {
+
+                    &-info {
+                        background-color: $bootstrap-color-info;
+
+                        .composum-pages-components-container-section {
+
+                            &_icon, &_title {
+                                color: $bootstrap-background-info;
+                            }
+                        }
+                    }
+
+                    &-success {
+                        background-color: $bootstrap-color-success;
+
+                        .composum-pages-components-container-section {
+
+                            &_icon, &_title {
+                                color: $bootstrap-background-success;
+                            }
+                        }
+                    }
+
+                    &-warning {
+                        background-color: $bootstrap-color-warning;
+
+                        .composum-pages-components-container-section {
+
+                            &_icon, &_title {
+                                color: $bootstrap-background-warning;
+                            }
+                        }
+                    }
+
+                    &-danger {
+                        background-color: $bootstrap-color-danger;
+
+                        .composum-pages-components-container-section {
+
+                            &_icon, &_title {
+                                color: $bootstrap-background-danger;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         &-element {
 
             &-title {
@@ -60,6 +235,19 @@ $help-text-title-margin: $tools-pane-padding*1.5 0 $tools-pane-padding;
 
             &-image {
                 margin: $help-text-default-margin;
+
+                .composum-pages-components-element-image {
+
+                    &_frame {
+                        display: inline-block;
+                        width: 100%;
+                    }
+
+                    &_picture {
+                        max-width: 100%;
+                        margin: 0 auto;
+                    }
+                }
             }
         }
     }

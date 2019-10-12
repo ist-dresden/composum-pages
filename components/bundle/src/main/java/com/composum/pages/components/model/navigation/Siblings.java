@@ -4,6 +4,7 @@ import com.composum.pages.commons.model.Page;
 import com.composum.sling.core.BeanContext;
 import org.apache.sling.api.resource.Resource;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 public class Siblings extends Menu {
@@ -22,7 +23,8 @@ public class Siblings extends Menu {
         super(context, resource);
     }
 
-    protected Resource determineResource(Resource resource) {
+    @Nullable
+    protected Resource determineResource(@Nullable Resource resource) {
         currentPage = getPageManager().getContainingPage(context, resource);
         Resource parentRes = currentPage != null ? currentPage.getResource().getParent() : null;
         return parentRes != null ? parentRes : resource;

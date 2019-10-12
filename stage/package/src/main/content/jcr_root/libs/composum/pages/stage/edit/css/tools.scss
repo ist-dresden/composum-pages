@@ -23,7 +23,6 @@
             margin: 0;
             padding: 0 10px;
             white-space: nowrap;
-            @include scrolloption-x($tools-pane-tabs-background);
             background-color: $tools-pane-tabs-background;
 
             &.right {
@@ -289,7 +288,25 @@
             &_deactivated {
                 color: $release-status-deactivated;
             }
+
+            &_deleted {
+                color: $release-status-deleted;
+            }
         }
+    }
+
+    &_name,
+    &_path,
+    &_type,
+    &_description {
+        font-size: $hint-font-size;
+    }
+
+    &_title,
+    &_path,
+    &_type,
+    &_description {
+        text-overflow: ellipsis;
     }
 
     &_title {
@@ -303,13 +320,6 @@
         float: right;
         margin-left: 10px;
         opacity: 0.7;
-    }
-
-    &_name,
-    &_path,
-    &_type,
-    &_description {
-        font-size: $hint-font-size;
     }
 
     &_description {
@@ -571,7 +581,7 @@
             left: $tools-pane-padding;
             right: $tools-pane-padding;
             bottom: $tools-pane-padding;
-            @include scrolldark;
+            @include scrolltools;
         }
 
         .composum-pages-EDIT_body &,
@@ -894,6 +904,10 @@
 
                         &_deactivated {
                             color: $release-status-deactivated;
+                        }
+
+                        &_deleted {
+                            color: $release-status-deleted;
                         }
                     }
                 }

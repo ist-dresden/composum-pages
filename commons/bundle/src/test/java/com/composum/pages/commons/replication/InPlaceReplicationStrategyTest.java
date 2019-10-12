@@ -17,6 +17,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+import javax.annotation.Nullable;
+
 import static com.composum.pages.commons.model.Site.DEFAULT_PUBLIC_MODE;
 import static com.composum.pages.commons.model.Site.PROP_PUBLIC_MODE;
 import static com.composum.sling.core.util.CoreConstants.CONTENT_NODE;
@@ -64,7 +66,8 @@ public class InPlaceReplicationStrategyTest {
         beanContext = new BeanContext.Service(context.resourceResolver());
         site = new Site(mock(SiteManager.class), beanContext, parentBuilder.getCurrentParent()) {
             @Override
-            protected Resource determineResource(Resource initialResource) {
+            @Nullable
+            protected Resource determineResource(@Nullable Resource initialResource) {
                 return initialResource;
             }
         };

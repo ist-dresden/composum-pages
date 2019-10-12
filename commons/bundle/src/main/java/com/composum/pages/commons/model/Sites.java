@@ -48,4 +48,8 @@ public class Sites extends AbstractModel {
         }
         return templates;
     }
+
+    public boolean isEditingAllowed() {
+        return getContext().getResolver().getResource("/libs/composum/pages/stage/edit/console") != null;
+    }
 }

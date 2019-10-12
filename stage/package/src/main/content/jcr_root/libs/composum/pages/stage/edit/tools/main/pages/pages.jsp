@@ -13,7 +13,7 @@
         <div class="composum-pages-tools_right-actions">
             <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
                 <button type="button"
-                        class="fa fa-search ${treeCSS}_toggle-view composum-pages-tools_button btn btn-default"
+                        class="fa ${treeCSS}_toggle-view composum-pages-tools_button btn btn-default"
                         title="${cpn:i18n(slingRequest,'Search a page')}"><cpn:text
                         tagName="span" class="composum-pages-tools_button-label"
                         i18n="true">Search</cpn:text></button>

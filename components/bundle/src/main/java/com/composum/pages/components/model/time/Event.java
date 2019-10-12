@@ -11,6 +11,8 @@ import com.composum.pages.components.model.map.GoogleMap;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 
+import javax.annotation.Nullable;
+
 import static com.composum.pages.commons.model.Link.PN_LINK;
 import static com.composum.pages.commons.model.Link.PN_LINK_TARGET;
 import static com.composum.pages.commons.model.Link.PN_LINK_TITLE;
@@ -23,7 +25,8 @@ public class Event extends TimeRelated {
     private transient String target;
 
     @Override
-    protected Resource determineResource(Resource initialResource) {
+    @Nullable
+    protected Resource determineResource(@Nullable Resource initialResource) {
         Page containingPage = getPageManager().getContainingPage(this.context, initialResource);
         return containingPage != null ? containingPage.getResource() : initialResource;
     }

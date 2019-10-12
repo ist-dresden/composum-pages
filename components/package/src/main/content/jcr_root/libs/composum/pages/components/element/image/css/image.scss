@@ -3,19 +3,6 @@
 @import "../../../css/variables";
 @import "../../../css/mixins";
 
-$element-image-padding: 5px;
-$element-image-margin-v: 10px;
-$element-image-border: 1px solid #ccc;
-
-$element-image-meta-padding: 0 $element-image-padding 1px;
-$element-image-meta-fg: #000;
-$element-image-meta-bg: #fff;
-$element-image-meta-font-size: 11px;
-
-@mixin element-image-meta-font {
-    @include font('robotolight', $element-image-meta-font-size);
-}
-
 .composum-pages-components-element-image {
     position: relative;
     display: table;
@@ -44,16 +31,7 @@ $element-image-meta-font-size: 11px;
         }
 
         &_copyright, &_url, &_url:hover, &_url:focus, &_url:visited, &_license {
-            display: inline;
-            color: $element-image-meta-fg;
-            text-decoration: none;
-            @include element-image-meta-font;
-
-            p {
-                display: inline;
-                margin: 0;
-                padding: 0;
-            }
+            @include meta-text;
         }
     }
 

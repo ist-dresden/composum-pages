@@ -27,6 +27,18 @@ public class SiteConfiguration extends ContentModel<Site> {
     public SiteConfiguration() {
     }
 
+    public SiteConfiguration(BeanContext context, Resource resource) {
+        initialize(context, resource);
+    }
+
+    public <T> T getSettingsProperty(String key, Locale locale, Class<T> type) {
+        return getSettings().getProperty(key, locale, type);
+    }
+
+    public <T> T getSettingsProperty(String key, Locale locale, T defaultValue) {
+        return getSettings().getProperty(key, locale, defaultValue);
+    }
+
     public Settings getSettings() {
         if (settings == null) {
             Resource resource = getResource();
@@ -40,19 +52,7 @@ public class SiteConfiguration extends ContentModel<Site> {
         return settings;
     }
 
-    public SiteConfiguration(BeanContext context, Resource resource) {
-        initialize(context, resource);
-    }
-
     public boolean isThumbnailAvailable() {
         return getResource().getChild("thumbnail/image") != null;
-    }
-
-    public <T> T getSettingsProperty(String key, Locale locale, Class<T> type) {
-        return getSettings().getProperty(key, locale, type);
-    }
-
-    public <T> T getSettingsProperty(String key, Locale locale, T defaultValue) {
-        return getSettings().getProperty(key, locale, defaultValue);
     }
 }

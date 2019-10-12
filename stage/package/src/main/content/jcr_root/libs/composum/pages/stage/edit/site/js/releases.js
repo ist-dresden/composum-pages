@@ -49,12 +49,19 @@
             initialize: function () {
                 var c = releases.const.css.page;
                 this.sitePath = this.$el.data('path');
+                this.$filter = this.$('.composum-pages-stage-edit-site-page_filter');
+                this.$filter.change(_.bind(this.doFilter, this));
                 this.$buttonActivate = this.$('button.activate');
                 this.$buttonActivate.click(_.bind(this.doActivate, this));
                 this.$buttonReload = this.$('button.reload');
                 this.$buttonReload.click(_.bind(this.reload, this));
                 this.$selectAllBox = this.$('.' + c.base + c._modified + c._selectAll);
                 this.$selectAllBox.on("change", _.bind(this.selectAll, this));
+            },
+
+            doFilter: function (event) {
+                window.location.href = window.location.href
+                    .replace(/&filter=[^&]*/, '') + '&filter=' + this.$filter.val();
             },
 
             selectAll: function (event) {
@@ -105,12 +112,19 @@
             initialize: function () {
                 var c = releases.const.css.page;
                 this.sitePath = this.$el.data('path');
+                this.$filter = this.$('.composum-pages-stage-edit-site-page_filter');
+                this.$filter.change(_.bind(this.doFilter, this));
                 this.$buttonRevert = this.$('button.revert');
                 this.$buttonRevert.click(_.bind(this.doRevert, this));
                 this.$buttonReload = this.$('button.reload');
                 this.$buttonReload.click(_.bind(this.reload, this));
                 this.$selectAllBox = this.$('.' + c.base + c._activated + c._selectAll);
                 this.$selectAllBox.on("change", _.bind(this.selectAll, this));
+            },
+
+            doFilter: function (event) {
+                window.location.href = window.location.href
+                    .replace(/&filter=[^&]*/, '') + '&filter=' + this.$filter.val();
             },
 
             selectAll: function (event) {

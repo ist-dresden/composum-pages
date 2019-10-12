@@ -101,7 +101,7 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
      * the configuration for the template cache
      */
     @ObjectClassDefinition(
-            name = "Pages Template Service Configuration"
+            name = "Composum Pages Template Service Configuration"
     )
     public @interface Config {
 
@@ -133,7 +133,7 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
     protected volatile PagesTenantSupport tenantSupport;
 
     /**
-     * the template cache is registered as a cache od the platform cache manager
+     * the template cache is registered as a cache of the platform cache manager
      */
     @Reference
     protected CacheManager cacheManager;
@@ -1445,6 +1445,13 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
                         Object value = entry.getValue();
                         if (value instanceof String) {
                             value = context.applyTemplatePlaceholders(target, (String) value);
+                        } else if (value instanceof Object[]) {
+                            Object[] array = (Object[]) value;
+                            for (int i = 0; i < array.length; i++) {
+                                if (array[i] instanceof String) {
+                                    array[i] = context.applyTemplatePlaceholders(target, (String) array[i]);
+                                }
+                            }
                         }
                         if (value != null) {
                             values.put(key, value);
@@ -1486,7 +1493,7 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
 
         @Override
         public String name() {
-            return "Templates";
+            return "ComposumPagesTemplates";
         }
 
         @Override

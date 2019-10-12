@@ -12,7 +12,7 @@
                          class="${modelCSS}_path" data-path="${page.path}"><cpn:link
                         href="${page.url}">${cpn:text(page.title)}</cpn:link></cpn:div>
             </c:forEach>
-            <li class="${modelCSS}_current" data-path="${model.path}"><cpn:link
+            <li class="${modelCSS}_path ${modelCSS}_current" data-path="${model.path}"><cpn:link
                     href="${model.url}">${cpn:text(model.title)}</cpn:link></li>
         </ol>
     </div>

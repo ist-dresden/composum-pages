@@ -3,6 +3,8 @@ package com.composum.pages.commons.model;
 import com.composum.pages.commons.model.properties.PathPatternSet;
 import com.composum.pages.commons.service.ResourceManager;
 import org.apache.sling.api.resource.ResourceResolver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import java.util.HashMap;
@@ -15,6 +17,8 @@ import static com.composum.pages.commons.PagesConstants.PROP_ALLOWED_ELEMENTS;
  * a filter to determine the allowed elements for a set of containers (all containers of a page)
  */
 public class ElementTypeFilter {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ElementTypeFilter.class);
 
     /** the set of containers to use for allowed element check */
     protected final ResourceManager.ReferenceList containerList;
@@ -39,14 +43,20 @@ public class ElementTypeFilter {
                                     @Nonnull final ResourceManager.ResourceReference container) {
         final PathPatternSet allowedEl = getAllowedTypes(allowedElements, PROP_ALLOWED_ELEMENTS, container);
         ResourceResolver resolver = element.getResolver();
+        boolean result = false;
         if (allowedEl.matches(resolver, element.getType())) {
             final PathPatternSet allowedCont = getAllowedTypes(allowedContainers, PROP_ALLOWED_CONTAINERS, element);
-            return allowedCont.matches(resolver, container.getType())
-                    && (allowedEl.isValid() || allowedCont.isValid()
-                    || Container.isContainer(container.getResolver(),
-                    container.isExisting() ? container.getResource() : null, container.getType()));
+            result = allowedCont.matches(resolver, container.getType()) &&
+                    (
+                            allowedEl.isValid() || allowedCont.isValid() || // = explicitly allowed
+                                    Container.isContainer(container.getResolver(),
+                                            container.isExisting() ? container.getResource() : null, container.getType())
+                    );
+            LOG.debug("element {} by allowedContainers {} in {}", element.getPath(), container.getPath(), result);
+        } else {
+            LOG.debug("element {} forbidden by allowedEleements in {}", element.getPath(), container.getPath());
         }
-        return false;
+        return result;
     }
 
     /**
@@ -69,11 +79,12 @@ public class ElementTypeFilter {
     public boolean isAllowedType(String type, final ResourceManager.ResourceReference container) {
         final PathPatternSet allowedEl = getAllowedTypes(allowedElements, PROP_ALLOWED_ELEMENTS, container);
         ResourceResolver resolver = container.getResolver();
+        boolean result = false;
         if (allowedEl.matches(resolver, type)) {
             final PathPatternSet allowedCont = getAllowedTypes(allowedContainers, PROP_ALLOWED_CONTAINERS, type);
-            return allowedCont.matches(resolver, container.getType());
+            result = allowedCont.matches(resolver, container.getType());
         }
-        return false;
+        return result;
     }
 
     /**

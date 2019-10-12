@@ -39,6 +39,13 @@
                 margin-right: 8px;
             }
         }
+
+        select {
+            width: auto;
+            height: 28px;
+            margin-left: 10px;
+            float: right;
+        }
     }
 
     .heading-input {
@@ -89,7 +96,7 @@
         &-languages {
 
             &_content {
-                overflow-x: scroll;
+                overflow-x: auto;
 
                 &.panel-body {
                     padding: 5px 0 0;
@@ -160,6 +167,13 @@
                             background-color: $release-status-deactivated;
                         }
                     }
+
+                    &_deleted {
+
+                        ._page-state {
+                            background-color: $release-status-deleted;
+                        }
+                    }
                 }
             }
         }
@@ -206,6 +220,17 @@
 
                         ._page-state {
                             background-color: $release-status-deactivated;
+
+                            &:after {
+                                content: '\f00d';
+                            }
+                        }
+                    }
+
+                    &_deleted {
+
+                        ._page-state {
+                            background-color: $release-status-deleted;
 
                             &:after {
                                 content: '\f00d';

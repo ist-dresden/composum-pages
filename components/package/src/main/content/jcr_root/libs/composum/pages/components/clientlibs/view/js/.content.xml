@@ -4,6 +4,8 @@
         depends="[category:composum.components.view,
                   jslibs/bootstrap/(3.*:3.4.1)/js/bootstrap.js,
                   jslibs/highlight/(9.*:9.15.6)/clientlib]"
-        embed="[composum/pages/components/composed/illustration/js/illustration.js,
+        embed="[jslibs/iframeResizer/(4.*:4.0.4)/js/iframeResizer.js,
+                composum/pages/components/composed/illustration/js/illustration.js,
                 composum/pages/components/element/codeblock/js/codeblock.js,
-                composum/pages/components/element/map/google/js/google.js"/>
+                composum/pages/components/element/map/google/js/google.js,
+                composum/pages/components/element/iframe/js/iframe.js"/>

@@ -2,6 +2,8 @@
 
 @import "../../../css/variables";
 
+$breadcrumbs-menu-indent: 20px;
+
 .composum-pages-components-navigation-navbar {
 
     .navbar-form {
@@ -28,6 +30,58 @@
             margin-left: 5px;
             font-size: 12px;
             color: #777;
+        }
+
+        &_dropdown-menu {
+
+            .composum-pages-components-navigation-menuitem {
+
+                a {
+                    padding-left: $breadcrumbs-menu-indent !important;
+                    padding-right: $breadcrumbs-menu-indent;
+
+                    .level-symbol {
+                        display: inline-block;
+                        width: $breadcrumbs-menu-indent;
+                        opacity: 0.6;
+
+                        &:before {
+                            content: '\f054';
+                        }
+                    }
+                }
+
+                &.navigation-level {
+
+                    &-0 a {
+                        .level-symbol:before {
+                            margin-left: -4px;
+                            width: $breadcrumbs-menu-indent + 4px;
+                            content: '\f015';
+                        }
+                    }
+
+                    &-1 a {
+                        padding-left: $breadcrumbs-menu-indent * 2 !important;
+                    }
+
+                    &-2 a {
+                        padding-left: $breadcrumbs-menu-indent * 3 !important;
+                    }
+
+                    &-3 a {
+                        padding-left: $breadcrumbs-menu-indent * 4 !important;
+                    }
+
+                    &-4 a {
+                        padding-left: $breadcrumbs-menu-indent * 5 !important;
+                    }
+
+                    &-5 a {
+                        padding-left: $breadcrumbs-menu-indent * 6 !important;
+                    }
+                }
+            }
         }
     }
 
@@ -65,14 +119,14 @@
 
 @media screen and (min-width: $bootstrap-screen-md-min) and (max-width: $bootstrap-screen-md-max) {
 
-    .composum-pages-components-navigation-navbar {
+    .composum-pages-components-navigation-navbar.navbar-width-condensed {
 
         &_navbar-nav {
 
             > .composum-pages-components-navigation-breadcrumbs_dropdown,
             > .composum-pages-components-navigation-menuitem {
 
-                a {
+                > a {
                     padding-left: 10px;
                     padding-right: 10px;
                 }
@@ -103,10 +157,10 @@
                 > .composum-pages-components-navigation-breadcrumbs_dropdown,
                 > .composum-pages-components-navigation-menuitem {
 
-                    a {
+                    > a {
                         padding-left: 6px;
                         padding-right: 6px;
-                        font-family: 'roboto_condensedlight';
+                        font-family: $site-condensed-font-family;
                     }
                 }
             }
@@ -127,7 +181,7 @@
                 }
 
                 input {
-                    font-family: 'roboto_condensedlight';
+                    font-family: $site-condensed-font-family;
                 }
             }
 
@@ -138,7 +192,7 @@
 
                     button {
                         padding: 6px;
-                        font-family: 'roboto_condensedlight';
+                        font-family: $site-condensed-font-family;
                     }
                 }
             }

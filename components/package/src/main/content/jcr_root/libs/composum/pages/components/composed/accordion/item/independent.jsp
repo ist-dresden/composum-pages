@@ -4,7 +4,7 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <cpp:defineObjects/><%-- the 'independent' selector is used to enable multiple open items --%>
 <cpp:container var="model" type="com.composum.pages.components.model.composed.accordion.AccordionItem"
-               cssBase="composum-pages-components-accordion-item" cssAdd="panel panel-default">
+               cssAdd="panel panel-default">
     <div id="${modelId}_head" class="panel-heading" role="tab">
         <cpn:div tagName="${model.titleTagName}" class="panel-title">
             <a role="button" data-toggle="collapse" href="#${modelId}_body"

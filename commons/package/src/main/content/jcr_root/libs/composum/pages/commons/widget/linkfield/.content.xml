@@ -3,4 +3,6 @@
         jcr:primaryType="cpp:Widget"
         sling:resourceType="composum/pages/commons/widget/linkfield"
         sling:resourceSuperType="composum/pages/commons/widget"
-        modelClass="com.composum.pages.commons.widget.PathField"/>
+        modelClass="com.composum.pages.commons.widget.PathField">
+    <attributes jcr:primaryType="nt:unstructured" maxlength="4000"/>
+</jcr:root>

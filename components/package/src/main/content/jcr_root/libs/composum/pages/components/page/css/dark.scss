@@ -3,15 +3,6 @@
 @import "../../css/variables";
 @import "../../css/mixins";
 
-$dark-background: #333;
-$dark-foreground: #eee;
-$dark-link: #f1a24b;
-$dark-highlight: #fff;
-$dark-highlight-bg: #666;
-$dark-highlight-border: #aaa;
-$dark-badge-fg: #333;
-$dark-badge-bg: #ccc;
-
 body {
     background-color: $dark-background;
     color: $dark-foreground;
@@ -202,6 +193,11 @@ body {
                     }
                 }
             }
+        }
+
+        &_bottom {
+            border-top: 1px solid $dark-highlight-bg;
+            background-color: $dark-background;
         }
     }
 

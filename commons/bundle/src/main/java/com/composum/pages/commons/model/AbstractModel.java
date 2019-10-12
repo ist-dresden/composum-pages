@@ -107,7 +107,6 @@ public abstract class AbstractModel implements SlingBean, Model {
     /**
      * the instance of the scripting context for the model (initialized)
      */
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @Self
     protected BeanContext context;
@@ -178,21 +177,22 @@ public abstract class AbstractModel implements SlingBean, Model {
      * @param resource the resource to use (normally the resource addressed by the request)
      */
     @Override
-    public void initialize(BeanContext context, Resource resource) {
+    public void initialize(BeanContext context, @Nonnull final Resource resource) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("initialize (" + context + ", " + resource + ")");
         }
         this.context = context;
-        if (this.resolver == null && resource != null) {
+        if (this.resolver == null) {
             this.resolver = resource.getResourceResolver();
         }
         this.resource = determineResource(resource);
-        if (this.resource != null) {
-            if (this.resolver == null) {
-                this.resolver = this.resource.getResourceResolver();
-            }
-            initializeWithResource(this.resource);
+        if (this.resource == null) {
+            this.resource = resource;
         }
+        if (this.resolver == null) {
+            this.resolver = this.resource.getResourceResolver();
+        }
+        initializeWithResource(this.resource);
     }
 
     /**
@@ -218,7 +218,8 @@ public abstract class AbstractModel implements SlingBean, Model {
     /**
      * the extension hook to derive the models resource from the initializers resource
      */
-    protected Resource determineResource(Resource initialResource) {
+    @Nullable
+    protected Resource determineResource(@Nullable final Resource initialResource) {
         return initialResource;
     }
 
@@ -226,7 +227,7 @@ public abstract class AbstractModel implements SlingBean, Model {
      * initialize all other properties after the final resource determination
      * extension hook for property initialization
      */
-    protected void initializeWithResource(Resource resource) {
+    protected void initializeWithResource(@Nonnull final Resource resource) {
         properties = resource.adaptTo(ValueMap.class);
         if (properties == null) {
             properties = new ValueMapDecorator(new HashMap<>());
@@ -701,7 +702,7 @@ public abstract class AbstractModel implements SlingBean, Model {
         @Override
         @Nullable
         public Object getValue(@Nonnull final String key) {
-            return getProperty(key, (Class<?>) null);
+            return getProperty(key, Object.class);
         }
 
     }
@@ -711,7 +712,7 @@ public abstract class AbstractModel implements SlingBean, Model {
         @Override
         @Nullable
         public Object getValue(@Nonnull final String key) {
-            return getInherited(key, (Class<?>) null);
+            return getInherited(key, Object.class);
         }
 
     }

@@ -3,6 +3,7 @@ package com.composum.pages.commons.service;
 import com.composum.pages.commons.model.Model;
 import com.composum.pages.commons.model.Site;
 import com.composum.sling.core.BeanContext;
+import com.composum.sling.core.filter.ResourceFilter;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.tenant.Tenant;
@@ -101,6 +102,12 @@ public interface SiteManager extends ContentManager<Site> {
     Map<String, Tenant> getTenants(@Nonnull BeanContext context);
 
     /**
+     * @return a mapped preview URL built using a service user to support the preview URL even if the access is restricted
+     */
+    @Nonnull
+    String getPreviewUrl(@Nonnull Site site);
+
+    /**
      * Returns the sites root resource to place new sites for a specific tenant.
      *
      * @param context  the current request context
@@ -117,6 +124,9 @@ public interface SiteManager extends ContentManager<Site> {
      */
     @Nonnull
     Collection<Site> getSites(@Nonnull BeanContext context);
+
+    @Nonnull
+    Collection<Site> getSites(@Nonnull BeanContext context, @Nullable Resource searchRoot, @Nonnull ResourceFilter filter);
 
     /**
      * Determines all usable site templates in the context of a specific tenant.

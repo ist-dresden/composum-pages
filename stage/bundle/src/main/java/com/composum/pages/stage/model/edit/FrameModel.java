@@ -12,11 +12,14 @@ import com.composum.pages.commons.util.ResolverUtil;
 import com.composum.pages.commons.util.ResourceTypeUtil;
 import com.composum.pages.commons.util.TagCssClasses;
 import com.composum.sling.core.BeanContext;
+import com.composum.sling.core.CoreConfiguration;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
 
 import javax.annotation.Nonnull;
+
+import java.util.Dictionary;
 
 import static com.composum.pages.commons.model.AbstractModel.CSS_BASE_TYPE_RESTRICTION;
 import static com.composum.pages.commons.util.ResourceTypeUtil.EDIT_TILE_PATH;
@@ -42,6 +45,7 @@ public class FrameModel extends GenericModel {
     private transient PageManager pageManager;
     private transient ResourceManager resourceManager;
 
+    @Override
     public PagesConstants.ComponentType getComponentType() {
         if (componentType == null) {
             BeanContext context = delegate.getContext();
@@ -126,6 +130,12 @@ public class FrameModel extends GenericModel {
     public String getTypePath() {
         Resource type = getTypeResource();
         return type != null ? type.getPath() : "";
+    }
+
+    public String getLogoutUrl() {
+        // FIXME(hps,16.09.19) replace this by {@link com.composum.sling.core.CoreConfiguration#getLogoutUrl()} once it is old enough.
+        Dictionary properties = getContext().getService(CoreConfiguration.class).getProperties();
+        return StringUtils.defaultIfBlank(StringUtils.trim((String) properties.get("logouturl")), "/system/sling/logout.html?logout=true&GLO=true");
     }
 
     // view mode

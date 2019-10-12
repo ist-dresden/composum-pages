@@ -6,8 +6,8 @@
 <cpp:model var="release" type="com.composum.pages.commons.model.SiteRelease" mode="none"
            cssBase="composum-pages-stage-edit-site-releases-release">
     <li class="${releaseCSS} ${releaseCSS}_listentry">
-        <input type="radio" class="${releaseCSS}_select" name="${releaseCSS}_select"
-               value="${release.key}" data-path="${release.path}"/>
+        <div class="_release-state"><input type="radio" class="${releaseCSS}_select" name="${releaseCSS}_select"
+                                           value="${release.key}" data-path="${release.path}"/></div>
         <div class="${releaseCSS}_entry" data-path="${release.path}">
             <div class="${releaseCSS}_head">
                 <cpn:text class="${releaseCSS}_key">${release.key}</cpn:text>
