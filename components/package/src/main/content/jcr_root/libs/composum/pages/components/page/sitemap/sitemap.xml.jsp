@@ -4,7 +4,7 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <cpp:defineObjects/>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-    <cpp:model var="sitemap" type="com.composum.pages.components.model.navigation.Sitemap">
+    <cpp:model var="sitemap" type="com.composum.pages.components.model.page.Sitemap">
         <c:if test="${not empty sitemap.entries}">
             <c:forEach items="${sitemap.entries}" var="item">
                 <url>
