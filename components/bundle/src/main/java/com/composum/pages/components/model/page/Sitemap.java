@@ -10,9 +10,13 @@ import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.util.LinkUtil;
 import com.composum.sling.core.util.ResourceUtil;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ValueMap;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collections;
@@ -20,6 +24,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+
+import static com.composum.sling.core.filter.ResourceFilter.FilterSet.Rule.and;
 
 /**
  * Model for displaying the sitemap. To use it, you need to create a node sitemap with
@@ -35,13 +41,13 @@ public class Sitemap extends AbstractModel {
     public static final String PN_SITEMAP_ROOT_PATH = "sitemapRootPath";
     public static final String PN_ROBOTS_TXT = "robotsTxt";
 
-    public static final String SITEMAP_DATE_FORMAT = "YYYY-MM-DD'T'hh:mm:ssXXX";
+    public static final String SITEMAP_DATE_FORMAT = "YYYY-MM-dd'T'hh:mm:ssXXX";
 
     private transient String sitemapRootPath;
 
     private transient List<SitemapEntry> entries;
 
-    private transient ResourceFilter navigationFilter;
+    private transient ResourceFilter sitemapPageFilter;
     private transient ResourceFilter searchFilter;
 
     public Sitemap() {
@@ -90,10 +96,10 @@ public class Sitemap extends AbstractModel {
                             .map(this::toPage);
                 }
                 entries = roots
-                        .filter((page) -> getNavigationFilter().accept(page.getResource()))
+                        .filter((page) -> getSitemapPageFilter().accept(page.getResource()))
                         .flatMap(this::collectNavigableDescendants)
                         .filter((page) -> getSearchFilter().accept(page.getResource()))
-                        .map(SitemapEntry::new)
+                        .map(SitemapEntry::new).sorted()
                         .collect(Collectors.toList());
             } else {
                 entries = Collections.emptyList();
@@ -104,15 +110,37 @@ public class Sitemap extends AbstractModel {
 
     private Stream<Page> collectNavigableDescendants(Page page) {
         return Stream.concat(Stream.of(page),
-                page.getChildPages(getNavigationFilter()).stream().flatMap(this::collectNavigableDescendants)
+                page.getChildPages(getSitemapPageFilter()).stream().flatMap(this::collectNavigableDescendants)
         );
     }
 
-    protected ResourceFilter getNavigationFilter() {
-        if (navigationFilter == null) {
-            navigationFilter = new NavigationPageFilter(context);
+    protected ResourceFilter getSitemapPageFilter() {
+        if (sitemapPageFilter == null) {
+            sitemapPageFilter = new ResourceFilter.FilterSet(and, new NavigationPageFilter(context), new ResourceFilter() {
+
+                @Override
+                public boolean accept(@Nullable Resource resource) {
+                    if (Page.isPage(resource)) {
+                        Resource content = resource.getChild(JcrConstants.JCR_CONTENT);
+                        if (content != null) {
+                            ValueMap values = content.getValueMap();
+                            return StringUtils.isBlank(values.get("sling:target", ""));
+                        }
+                    }
+                    return false;
+                }
+
+                @Override
+                public boolean isRestriction() {
+                    return true;
+                }
+
+                @Override
+                public void toString(@Nonnull StringBuilder builder) {
+                }
+            });
         }
-        return navigationFilter;
+        return sitemapPageFilter;
     }
 
     protected ResourceFilter getSearchFilter() {
@@ -130,7 +158,7 @@ public class Sitemap extends AbstractModel {
      * Data for one url entry in the sitemap. We currently do not create changefreq and priority, as there is
      * nothing to create that data.
      */
-    public class SitemapEntry {
+    public class SitemapEntry implements Comparable<SitemapEntry> {
 
         protected final Page page;
         private final String lastMod;
@@ -168,6 +196,11 @@ public class Sitemap extends AbstractModel {
 
         public String getLastMod() {
             return lastMod;
+        }
+
+        @Override
+        public int compareTo(@NotNull Sitemap.SitemapEntry other) {
+            return getPath().compareTo(other.getPath());
         }
     }
 
