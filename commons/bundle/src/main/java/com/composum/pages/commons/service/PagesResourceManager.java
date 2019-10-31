@@ -675,6 +675,26 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
         }
 
         /**
+         * returns the property value using the cascade: resource - resource type - design;
+         * no 18n support for this property value retrieval
+         */
+        @Override
+        @Nullable
+        public <T extends Serializable> T getRuleProperty(@Nonnull String name, @Nonnull Class<T> type) {
+            T value = getResourceValues().get(name, type);
+            if (value == null) {
+                value = ResolverUtil.getTypeProperty(resolver, getType(), name, type);
+                if (value == null) {
+                    Design design = getDesign();
+                    if (design != null) {
+                        value = design.getProperty(resolver, name, type);
+                    }
+                }
+            }
+            return value;
+        }
+
+        /**
          * retrieves the design of this resource reference form the template of the containing or designated page
          */
         protected Design getDesign() {

@@ -19,7 +19,7 @@ public class PathPatternSet {
     protected List<Pattern> patternList = null;
 
     public PathPatternSet(@Nonnull ResourceManager.ResourceReference reference, @Nonnull String propertyName) {
-        this(reference.getProperty(propertyName, String[].class));
+        this(reference.getRuleProperty(propertyName, String[].class));
     }
 
     public PathPatternSet(@Nonnull ResourceResolver resolver, @Nonnull String resourceType, @Nonnull String propertyName) {
