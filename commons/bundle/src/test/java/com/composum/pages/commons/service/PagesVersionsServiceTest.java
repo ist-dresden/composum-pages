@@ -41,7 +41,9 @@ public class PagesVersionsServiceTest {
 
     @Test
     public void testHistoricalVersion() throws RepositoryException, PersistenceException {
-        ResourceBuilder builder = context.build().resource("/content/something/versionable/jcr:content", ResourceUtil.PROP_PRIMARY_TYPE, ResourceUtil.TYPE_UNSTRUCTURED, ResourceUtil.PROP_MIXINTYPES, new String[]{ResourceUtil.MIX_VERSIONABLE}).commit();
+        ResourceBuilder builder = context.build().resource("/content/something/versionable/jcr:content",
+                ResourceUtil.PROP_PRIMARY_TYPE, ResourceUtil.TYPE_UNSTRUCTURED,
+                ResourceUtil.PROP_MIXINTYPES, new String[]{ResourceUtil.MIX_VERSIONABLE}).commit();
         Resource versionable = builder.getCurrentParent();
         // ec.onFailure(() -> JcrTestUtils.printResourceRecursivelyAsJson(versionable));
         String inFirstVersionPath = builder.resource("in/firstversion").commit().getCurrentParent().getPath();
@@ -69,17 +71,19 @@ public class PagesVersionsServiceTest {
 
         String otherversionid;
         {
-            String otherpath = context.build().resource("/content/something/versionable/jcr:content", ResourceUtil.PROP_PRIMARY_TYPE, ResourceUtil.TYPE_UNSTRUCTURED, ResourceUtil.PROP_MIXINTYPES, new String[]{ResourceUtil.MIX_VERSIONABLE}).commit().getCurrentParent().getPath();
+            String otherpath = context.build().resource("/content/other/versionable/jcr:content",
+                    ResourceUtil.PROP_PRIMARY_TYPE, ResourceUtil.TYPE_UNSTRUCTURED,
+                    ResourceUtil.PROP_MIXINTYPES, new String[]{ResourceUtil.MIX_VERSIONABLE}).commit().getCurrentParent().getPath();
             Version version2 = versionManager.checkpoint(otherpath);
             otherversionid = version2.getIdentifier();
         }
 
-        // this takes everything from workspace
-        ec.checkThat(service.historicalVersion(resolver, versionable.getPath(), otherversionid), notNullValue());
-        ec.checkThat(service.historicalVersion(resolver, inFirstVersionPath, otherversionid), notNullValue());
+        // outside of the scope of the version: always null
+        ec.checkThat(service.historicalVersion(resolver, versionable.getPath(), otherversionid), nullValue());
+        ec.checkThat(service.historicalVersion(resolver, inFirstVersionPath, otherversionid), nullValue());
         ec.checkThat(service.historicalVersion(resolver, inFirstVersionThenRemovedPath, otherversionid), nullValue());
-        ec.checkThat(service.historicalVersion(resolver, onlyInWorkspacePath, otherversionid), notNullValue());
+        ec.checkThat(service.historicalVersion(resolver, onlyInWorkspacePath, otherversionid), nullValue());
 
-        ec.checkThat(service.historicalVersion(resolver, versionable.getParent().getPath(), otherversionid), notNullValue());
+        ec.checkThat(service.historicalVersion(resolver, versionable.getParent().getPath(), otherversionid), nullValue());
     }
 }

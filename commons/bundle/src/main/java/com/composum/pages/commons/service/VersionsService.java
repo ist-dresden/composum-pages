@@ -75,13 +75,13 @@ public interface VersionsService {
             throws RepositoryException;
 
     /**
-     * Retrieves a historical version of a versionable / a resource within that versionable. Caution: this doesn't check
-     * that {versionUuid} fits the {path} and just returns the corresponding workspace resource if it doesn't.
+     * Retrieves a historical version of a versionable / a resource within that versionable.
      *
      * @param path        path according to the workspace location of a page, may reach into the page
      * @param versionUuid the uuid of a historical version of a page
      * @return the resource ( {@link com.composum.sling.platform.staging.impl.StagingResource} ) as it was at the
      * checkin for version {versionUuid}, or null if there was no corresponding resource in the page at that time
+     * or if the path doesn't resolve into the version {versionUuid} (e.g. is outside of the versionable)
      * @see com.composum.sling.platform.staging.impl.StagingResource
      * @see com.composum.sling.platform.staging.impl.VersionSelectResourceResolver
      */
