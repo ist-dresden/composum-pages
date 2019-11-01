@@ -20,7 +20,7 @@
   orderable
   + jcr:content (cpp:PageContent) = cpp:PageContent *
 
-[cpp:SiteConfiguration] > nt:unstructured, mix:lockable, mix:lastModified
+[cpp:SiteConfiguration] > nt:unstructured, mix:lockable, mix:created, mix:lastModified, mix:versionable
   orderable
 
 [cpp:Site] > sling:OrderedFolder, cpl:releaseRoot
