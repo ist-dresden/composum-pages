@@ -15,12 +15,9 @@ import org.osgi.service.component.annotations.Component;
 )
 public class InPlaceAssetReplication extends InPlaceReplicationStrategy {
 
-    /**
-     * replicate asset references only not the complete asset collection
-     */
     @Override
     public boolean canReplicate(ReplicationContext context, Resource resource, boolean isReferenced) {
-        return isReferenced && File.isFile(resource);
+        return File.isFile(resource) || File.isFile(resource.getParent());
     }
 
 }
