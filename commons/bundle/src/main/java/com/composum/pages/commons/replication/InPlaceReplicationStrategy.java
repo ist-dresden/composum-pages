@@ -214,6 +214,11 @@ public abstract class InPlaceReplicationStrategy implements ReplicationStrategy 
                                           Resource released, Resource replicate, boolean merge) {
         ValueMap releasedValues = released.getValueMap();
         ModifiableValueMap replicateValues = replicate.adaptTo(ModifiableValueMap.class);
+        replicateValues.put(ResourceUtil.PROP_PRIMARY_TYPE, releasedValues.get(ResourceUtil.PROP_PRIMARY_TYPE, String.class));
+        String[] mixins = releasedValues.get(ResourceUtil.PROP_MIXINTYPES, String[].class);
+        if (mixins != null) { replicateValues.put(ResourceUtil.PROP_MIXINTYPES, mixins); } else {
+            replicateValues.remove(ResourceUtil.PROP_MIXINTYPES);
+        }
         if (!merge) {
             // in case of a 'reset' remove all properties from the target resource
             for (String key : replicateValues.keySet().toArray(new String[0])) {

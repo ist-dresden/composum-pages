@@ -101,9 +101,12 @@ public class PagesReplicationManager implements ReplicationManager {
             if (replicationDone) {
                 // register successful replication
                 context.done.add(resourcePath);
-            }
-            if (!replicationDone && isReference) {
-                LOG.warn("referenced resource '{}' not replicated", resource.getPath());
+            } else {
+                if (isReference) {
+                    LOG.warn("referenced resource '{}' not replicated", resource.getPath());
+                } else if (LOG.isDebugEnabled()) {
+                    LOG.debug("no strategy for replicating resource '{}'", resource.getPath());
+                }
             }
         }
     }
