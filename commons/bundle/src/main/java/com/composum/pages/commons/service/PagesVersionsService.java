@@ -103,7 +103,6 @@ public class PagesVersionsService implements VersionsService {
     @Override
     public Resource historicalVersion(@Nonnull ResourceResolver resolver, @Nonnull String path,
                                       @Nonnull String versionUuid) throws RepositoryException {
-        // TODO(hps,01.11.19) was wenn path nicht in versionUuid ist?
         ResourceResolver versionSelectResolver = new VersionSelectResourceResolver(resolver, false, versionUuid);
         return versionSelectResolver.getResource(path);
     }

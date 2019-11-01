@@ -75,7 +75,8 @@ public interface VersionsService {
             throws RepositoryException;
 
     /**
-     * Retrieves a historical version of a versionable / a resource within that versionable.
+     * Retrieves a historical version of a versionable / a resource within that versionable. Caution: this doesn't check
+     * that {versionUuid} fits the {path} and just returns the corresponding workspace resource if it doesn't.
      *
      * @param path        path according to the workspace location of a page, may reach into the page
      * @param versionUuid the uuid of a historical version of a page
