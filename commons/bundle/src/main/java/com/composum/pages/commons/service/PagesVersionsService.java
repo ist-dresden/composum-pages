@@ -5,9 +5,12 @@ import com.composum.pages.commons.model.SiteRelease;
 import com.composum.platform.commons.util.ExceptionThrowingFunction;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.platform.staging.StagingReleaseManager;
+import com.composum.sling.platform.staging.impl.VersionSelectResourceResolver;
 import com.composum.sling.platform.staging.versions.PlatformVersionsService;
 import org.apache.jackrabbit.api.JackrabbitSession;
 import org.apache.sling.api.SlingHttpServletRequest;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -95,6 +98,14 @@ public class PagesVersionsService implements VersionsService {
         ExceptionThrowingFunction<StagingReleaseManager.Release, List<PlatformVersionsService.Status>, RepositoryException> getChanges =
                 platformVersionsService::findWorkspaceChanges;
         return findPageVersions(siteRelease, getChanges, filter);
+    }
+
+    @Override
+    public Resource historicalVersion(@Nonnull ResourceResolver resolver, @Nonnull String path,
+                                      @Nonnull String versionUuid) throws RepositoryException {
+        // TODO(hps,01.11.19) was wenn path nicht in versionUuid ist?
+        ResourceResolver versionSelectResolver = new VersionSelectResourceResolver(resolver, false, versionUuid);
+        return versionSelectResolver.getResource(path);
     }
 
     @Nonnull
