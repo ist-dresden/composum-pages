@@ -4,4 +4,12 @@
         jcr:description="a rich text block with an optional title"
         jcr:title="Text"
         category="[Text,General,Blueprint]"
-        sling:resourceSuperType="composum/pages/components/element"/>
+        sling:resourceSuperType="composum/pages/components/element">
+    <jcr:content jcr:primaryType="nt:unstructured">
+        <properties jcr:primaryType="nt:unstructured">
+            <title jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="plain"/>
+            <text jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="rich"/>
+            <textAlignment jcr:primaryType="nt:unstructured"/>
+        </properties>
+    </jcr:content>
+</jcr:root>

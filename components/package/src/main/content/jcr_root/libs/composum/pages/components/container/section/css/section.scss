@@ -7,6 +7,16 @@
     clear: both;
     width: 100%;
 
+    &.panel {
+
+        &-none {
+            margin-bottom: 0;
+            border: none;
+            -webkit-box-shadow: none;
+            box-shadow: none;
+        }
+    }
+
     &_icon {
         width: $symbol-width;
         font-size: $symbol-font-size;

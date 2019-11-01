@@ -4,4 +4,15 @@
         jcr:description="a search term input field"
         jcr:title="Search Field"
         category="[Meta,Blueprint]"
-        sling:resourceSuperType="composum/pages/components/element"/>
+        sling:resourceSuperType="composum/pages/components/element">
+    <jcr:content jcr:primaryType="nt:unstructured">
+        <properties jcr:primaryType="nt:unstructured">
+            <buttonText jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="plain"/>
+            <hint jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="plain"/>
+            <placeholderText jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="plain"/>
+            <buttonSymbol jcr:primaryType="nt:unstructured"/>
+            <searchResultPath jcr:primaryType="nt:unstructured"/>
+            <searchResultAnchor jcr:primaryType="nt:unstructured"/>
+        </properties>
+    </jcr:content>
+</jcr:root>

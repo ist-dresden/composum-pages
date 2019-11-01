@@ -4,4 +4,16 @@
         jcr:description="a search result list component"
         jcr:title="Search Result"
         category="[Meta,Blueprint]"
-        sling:resourceSuperType="composum/pages/components/element"/>
+        sling:resourceSuperType="composum/pages/components/element">
+    <jcr:content jcr:primaryType="nt:unstructured">
+        <properties jcr:primaryType="nt:unstructured">
+            <title jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="plain"/>
+            <selector jcr:primaryType="nt:unstructured"/>
+            <pagesize jcr:primaryType="nt:unstructured"/>
+            <searchRoot jcr:primaryType="nt:unstructured"/>
+            <template jcr:primaryType="nt:unstructured"/>
+            <headline jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="rich"/>
+            <searchtermErrorText jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="rich"/>
+        </properties>
+    </jcr:content>
+</jcr:root>

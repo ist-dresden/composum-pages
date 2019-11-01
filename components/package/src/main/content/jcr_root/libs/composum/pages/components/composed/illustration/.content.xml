@@ -5,4 +5,21 @@
         jcr:title="Illustration"
         category="[Image,Blueprint]"
         sling:resourceSuperType="composum/pages/components/composed"
-        allowedElements="[composum/pages/components/composed/illustration/annotation]"/>
+        allowedElements="[composum/pages/components/composed/illustration/annotation]">
+    <jcr:content jcr:primaryType="nt:unstructured">
+        <properties jcr:primaryType="nt:unstructured">
+            <image jcr:primaryType="nt:unstructured">
+                <imageRef jcr:primaryType="nt:unstructured"/>
+                <title jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="plain"/>
+                <alt jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="plain"/>
+                <copyright jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="plain"/>
+                <copyrightUrl jcr:primaryType="nt:unstructured"/>
+                <license jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="plain"/>
+                <licenseUrl jcr:primaryType="nt:unstructured"/>
+            </image>
+            <shape jcr:primaryType="nt:unstructured">
+                <behavior jcr:primaryType="nt:unstructured"/>
+            </shape>
+        </properties>
+    </jcr:content>
+</jcr:root>

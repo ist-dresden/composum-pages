@@ -4,4 +4,11 @@
         jcr:description="an embedded google map"
         jcr:title="Google Map"
         category="[Image,Blueprint]"
-        sling:resourceSuperType="composum/pages/components/element"/>
+        sling:resourceSuperType="composum/pages/components/element">
+    <jcr:content jcr:primaryType="nt:unstructured">
+        <properties jcr:primaryType="nt:unstructured">
+            <location jcr:primaryType="nt:unstructured"/>
+            <parameters jcr:primaryType="nt:unstructured" multi="{Boolean}true"/>
+        </properties>
+    </jcr:content>
+</jcr:root>

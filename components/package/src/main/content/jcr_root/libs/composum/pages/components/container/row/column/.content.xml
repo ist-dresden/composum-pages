@@ -5,10 +5,9 @@
           jcr:title="Column"
           category="[Layout,Blueprint]"
           sling:resourceSuperType="composum/pages/components/container"
-          allowedContainers="[composum/pages/components/container/row]"
-          allowedElements="[composum/pages/components/element/.*,
-                          composum/pages/components/composed/.*,
-                          composum/pages/components/search/(field|result),
-                          composum/pages/options/.*/components/.*,
-                          composum/platform/content/components/.*,
-                          .*/pages/components/demo/.*]"/>
+          allowedContainers="[composum/pages/components/container/row]">
+    <jcr:content jcr:primaryType="nt:unstructured">
+        <properties jcr:primaryType="nt:unstructured">
+        </properties>
+    </jcr:content>
+</jcr:root>

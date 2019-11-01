@@ -4,4 +4,18 @@
         jcr:description="an iFrame to embed rendered content"
         jcr:title="iFrame"
         category="[General,Blueprint]"
-        sling:resourceSuperType="composum/pages/components/element"/>
+        sling:resourceSuperType="composum/pages/components/element">
+    <jcr:content jcr:primaryType="nt:unstructured">
+        <properties jcr:primaryType="nt:unstructured">
+            <src jcr:primaryType="nt:unstructured"/>
+            <title jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="plain"/>
+            <serviceUri jcr:primaryType="nt:unstructured"/>
+            <copyright jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="plain"/>
+            <style jcr:primaryType="nt:unstructured"/>
+            <mode jcr:primaryType="nt:unstructured"/>
+            <height jcr:primaryType="nt:unstructured"/>
+            <expandable jcr:primaryType="nt:unstructured" type="Boolean"/>
+        </properties>
+    </jcr:content>
+</jcr:root>
+

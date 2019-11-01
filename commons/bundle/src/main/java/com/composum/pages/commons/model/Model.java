@@ -3,11 +3,12 @@ package com.composum.pages.commons.model;
 import com.composum.pages.commons.PagesConstants;
 import com.composum.pages.commons.model.properties.Language;
 import com.composum.pages.commons.model.properties.Languages;
+import com.composum.pages.commons.util.LinkUtil;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.SlingBean;
-import com.composum.pages.commons.util.LinkUtil;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ValueMap;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -68,6 +69,9 @@ public interface Model extends SlingBean {
     Languages getLanguages();
 
     // resource properties
+
+    @Nonnull
+    ValueMap getValueMap();
 
     @Nonnull
     <T> T getProperty(@Nonnull String key, @Nonnull T defaultValue);

@@ -4,7 +4,7 @@
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <cpp:defineFrameObjects/>
 <cpp:editDialog title="@{dialog.selector=='create'?'Create an Item':'Accordion Item'}">
-    <cpp:widget type="textfield" label="Title" property="title" required="true"/>
+    <cpp:widget label="Title" property="title" type="textfield" i18n="true" required="true"/>
     <div class="col col-xs-4">
         <cpp:widget type="checkbox" label="Open" property="initialOpen"/>
     </div>

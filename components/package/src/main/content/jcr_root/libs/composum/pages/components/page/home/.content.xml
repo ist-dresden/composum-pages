@@ -2,4 +2,32 @@
 <jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
         jcr:primaryType="cpp:Component"
         jcr:title="Homepage"
-        sling:resourceSuperType="composum/pages/components/page"/>
+        sling:resourceSuperType="composum/pages/components/page">
+    <jcr:content jcr:primaryType="nt:unstructured">
+        <properties jcr:primaryType="nt:unstructured">
+            <jcr:title jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="plain"/>
+            <subtitle jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="plain"/>
+            <jcr:description jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="rich"/>
+            <logo jcr:primaryType="nt:unstructured">
+                <imageRef jcr:primaryType="nt:unstructured"/>
+            </logo>
+            <search jcr:primaryType="nt:unstructured">
+                <ignoreInSearch jcr:primaryType="nt:unstructured" type="Boolean"/>
+            </search>
+            <navigation jcr:primaryType="nt:unstructured">
+                <title jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="plain"/>
+                <hideInNav jcr:primaryType="nt:unstructured" type="Boolean"/>
+            </navigation>
+            <style jcr:primaryType="nt:unstructured">
+                <category.theme jcr:primaryType="nt:unstructured"/>
+                <category.view jcr:primaryType="nt:unstructured"/>
+                <category.edit jcr:primaryType="nt:unstructured"/>
+            </style>
+        </properties>
+        <elements jcr:primaryType="nt:unstructured">
+            <stage jcr:primaryType="nt:unstructured" type="composum/pages/components/composed/carousel"/>
+            <main jcr:primaryType="nt:unstructured" type="composum/pages/components/container/parsys"/>
+            <bottom jcr:primaryType="nt:unstructured" type="composum/pages/components/container/parsys"/>
+        </elements>
+    </jcr:content>
+</jcr:root>

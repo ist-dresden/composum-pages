@@ -578,6 +578,12 @@ public abstract class AbstractModel implements SlingBean, Model {
         return null;
     }
 
+    @Override
+    @Nonnull
+    public ValueMap getValueMap() {
+        return properties;
+    }
+
     /**
      * the generic map for direct use in templates
      */

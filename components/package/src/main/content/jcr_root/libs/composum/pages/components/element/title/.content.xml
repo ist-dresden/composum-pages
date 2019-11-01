@@ -4,4 +4,14 @@
         jcr:description="a single title element"
         jcr:title="Title"
         category="[Text,General,Blueprint]"
-        sling:resourceSuperType="composum/pages/components/element"/>
+        sling:resourceSuperType="composum/pages/components/element">
+    <jcr:content jcr:primaryType="nt:unstructured">
+        <properties jcr:primaryType="nt:unstructured">
+            <title jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="plain"/>
+            <subtitle jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="plain"/>
+            <image jcr:primaryType="nt:unstructured">
+                <imageRef jcr:primaryType="nt:unstructured"/>
+            </image>
+        </properties>
+    </jcr:content>
+</jcr:root>

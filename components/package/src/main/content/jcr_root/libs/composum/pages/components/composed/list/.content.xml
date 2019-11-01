@@ -4,4 +4,10 @@
         jcr:description="a list of containers rendered with list markup"
         jcr:title="List"
         category="[Layout,Blueprint]"
-        sling:resourceSuperType="composum/pages/components/composed"/>
+        sling:resourceSuperType="composum/pages/components/composed">
+    <jcr:content jcr:primaryType="nt:unstructured">
+        <properties jcr:primaryType="nt:unstructured">
+            <listType jcr:primaryType="nt:unstructured"/>
+        </properties>
+    </jcr:content>
+</jcr:root>

@@ -4,4 +4,19 @@
         jcr:title="Annotation"
         category="[Image,Blueprint]"
         sling:resourceSuperType="composum/pages/components/embedded"
-        allowedContainers="[composum/pages/components/composed/illustration]"/>
+        allowedContainers="[composum/pages/components/composed/illustration]">
+    <jcr:content jcr:primaryType="nt:unstructured">
+        <properties jcr:primaryType="nt:unstructured">
+            <title jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="plain"/>
+            <text jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="rich"/>
+            <shape jcr:primaryType="nt:unstructured">
+                <level jcr:primaryType="nt:unstructured"/>
+                <icon jcr:primaryType="nt:unstructured"/>
+                <type jcr:primaryType="nt:unstructured"/>
+                <position.x jcr:primaryType="nt:unstructured"/>
+                <position.y jcr:primaryType="nt:unstructured"/>
+                <placement jcr:primaryType="nt:unstructured"/>
+            </shape>
+        </properties>
+    </jcr:content>
+</jcr:root>

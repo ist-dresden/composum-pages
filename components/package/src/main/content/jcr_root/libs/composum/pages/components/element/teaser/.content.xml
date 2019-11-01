@@ -4,4 +4,38 @@
         jcr:description="a teaser to guide to another page"
         jcr:title="Teaser"
         category="[Teaser,General,Blueprint]"
-        sling:resourceSuperType="composum/pages/components/element"/>
+        sling:resourceSuperType="composum/pages/components/element">
+    <jcr:content jcr:primaryType="nt:unstructured">
+        <properties jcr:primaryType="nt:unstructured">
+            <variation jcr:primaryType="nt:unstructured"/>
+            <title jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="plain"/>
+            <subtitle jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="plain"/>
+            <text jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="rich" required="{Boolean}true"/>
+            <link jcr:primaryType="nt:unstructured"/>
+            <linkTitle jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="plain"/>
+            <linkTarget jcr:primaryType="nt:unstructured"/>
+            <icon jcr:primaryType="nt:unstructured"/>
+            <image jcr:primaryType="nt:unstructured">
+                <imageRef jcr:primaryType="nt:unstructured"/>
+                <title jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="plain"/>
+                <alt jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="plain"/>
+                <copyright jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="plain"/>
+                <copyrightUrl jcr:primaryType="nt:unstructured"/>
+                <license jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="plain"/>
+                <licenseUrl jcr:primaryType="nt:unstructured"/>
+            </image>
+            <video jcr:primaryType="nt:unstructured">
+                <videoRef jcr:primaryType="nt:unstructured"/>
+                <posterRef jcr:primaryType="nt:unstructured"/>
+                <controls jcr:primaryType="nt:unstructured" type="Boolean"/>
+                <autoplay jcr:primaryType="nt:unstructured" type="Boolean"/>
+                <muted jcr:primaryType="nt:unstructured" type="Boolean"/>
+                <loop jcr:primaryType="nt:unstructured" type="Boolean"/>
+                <copyright jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="plain"/>
+                <copyrightUrl jcr:primaryType="nt:unstructured"/>
+                <license jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="plain"/>
+                <licenseUrl jcr:primaryType="nt:unstructured"/>
+            </video>
+        </properties>
+    </jcr:content>
+</jcr:root>

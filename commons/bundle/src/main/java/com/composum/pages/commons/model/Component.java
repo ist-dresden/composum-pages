@@ -6,6 +6,7 @@ import com.composum.pages.commons.util.ResourceTypeUtil;
 import com.composum.platform.models.annotations.DetermineResourceStategy;
 import com.composum.platform.models.annotations.PropertyDetermineResourceStrategy;
 import com.composum.sling.core.BeanContext;
+import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.util.ResourceUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
@@ -18,7 +19,10 @@ import org.apache.sling.api.resource.ValueMap;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -62,6 +66,111 @@ public class Component extends AbstractModel {
     public static boolean isComponent(Resource resource) {
         return ResourceUtil.isResourceType(resource, NT_COMPONENT);
     }
+
+    // declared component properties
+
+    public class Property extends AbstractModel {
+
+        public final String propertyPath;
+
+        public Property(@Nonnull final String propertyPath, @Nonnull final Resource resource) {
+            this.propertyPath = propertyPath;
+            initialize(Component.this.getContext(), resource);
+        }
+
+        @Nonnull
+        public String getPropertyPath() {
+            return propertyPath;
+        }
+
+        @Nonnull
+        public String getPropertyType() {
+            return getProperty("type", "String");
+        }
+
+        public boolean isRequired() {
+            return getProperty("required", Boolean.FALSE);
+        }
+
+        public boolean isMulti() {
+            return getProperty("multi", Boolean.FALSE);
+        }
+
+        public boolean isI18n() {
+            return getProperty("i18n", Boolean.FALSE);
+        }
+
+        @Nullable
+        public String getTextType() {
+            return "String".equals(getPropertyType()) ? getProperty("text", "") : null;
+        }
+    }
+
+    public class Properties extends LinkedHashMap<String, Property> {
+
+        public Properties(@Nonnull final ResourceFilter filter) {
+            scanProperties("", getPropertiesDeclaration(), filter);
+        }
+
+        protected void scanProperties(@Nonnull final String path, @Nullable final Resource node,
+                                      @Nonnull final ResourceFilter filter) {
+            if (node != null) {
+                for (Resource child : node.getChildren()) {
+                    String childPath = path + child.getName();
+                    if (filter.accept(child)) {
+                        Property property = new Property(childPath, child);
+                        put(childPath, property);
+                    }
+                    scanProperties(childPath + "/", child, filter);
+                }
+            }
+        }
+    }
+
+    // declared content elements
+
+    public class Element extends AbstractModel {
+
+        public final String elementPath;
+
+        public Element(@Nonnull final String elementPath, @Nonnull final Resource resource) {
+            this.elementPath = elementPath;
+            initialize(Component.this.getContext(), resource);
+        }
+
+        @Nonnull
+        public String getElementPath() {
+            return elementPath;
+        }
+
+        @Nullable
+        public String getElementType() {
+            return getProperty("type", String.class);
+        }
+    }
+
+    public class Elements extends LinkedHashMap<String, Element> {
+
+        public Elements(@Nonnull final ResourceFilter filter) {
+            scanElements("", getElementsDeclaration(), filter);
+        }
+
+        protected void scanElements(@Nonnull final String path, @Nullable final Resource node,
+                                    @Nonnull final ResourceFilter filter) {
+            if (node != null) {
+                for (Resource child : node.getChildren()) {
+                    String childPath = path + child.getName();
+                    if (filter.accept(child)) {
+                        Element element = new Element(childPath, child);
+                        put(childPath, element);
+                    }
+                    scanElements(childPath + "/", child, filter);
+                }
+            }
+        }
+    }
+
+    // component implementation elements
 
     public static class ComponentPieces {
 
@@ -252,6 +361,11 @@ public class Component extends AbstractModel {
 
     private transient ComponentPieces componentPieces;
 
+    private transient Map<String, Properties> properties = new TreeMap<>();
+    private transient Resource propertiesDeclaration;
+    private transient Map<String, Elements> elements = new LinkedHashMap<>();
+    private transient Resource elementsDeclaration;
+
     /**
      * delegate initialization
      */
@@ -408,32 +522,19 @@ public class Component extends AbstractModel {
         return type;
     }
 
-    public Thumbnail getThumbnail() {
-        if (thumbnail == null) {
-            thumbnail = new Thumbnail();
-        }
-        return thumbnail;
-    }
-
-    public String getHelpContent() {
-        if (helpContent == null) {
-            Resource helpRes = getResource().getChild(HELP_PAGE_PATH);
-            if (ResourceUtil.isResourceType(helpRes, NODE_TYPE_PAGE)) {
-                Resource contentRes = helpRes.getChild(JcrConstants.JCR_CONTENT);
-                if (contentRes != null) {
-                    helpRes = contentRes;
-                }
+    @Nullable
+    public Component getSuperType() {
+        Component superType = null;
+        String superTypeRef = getProperty(ResourceUtil.PROP_RESOURCE_SUPER_TYPE, "");
+        if (StringUtils.isNotBlank(superTypeRef)) {
+            BeanContext context = getContext();
+            Resource typeResource = ResolverUtil.getResourceType(context.getResolver(), superTypeRef);
+            if (typeResource != null) {
+                superType = new Component();
+                superType.initialize(context, typeResource);
             }
-            helpContent = helpRes != null ? helpRes.getPath() : "";
         }
-        return helpContent;
-    }
-
-    public ComponentPieces getPieces() {
-        if (componentPieces == null) {
-            componentPieces = new ComponentPieces(getResource());
-        }
-        return componentPieces;
+        return superType;
     }
 
     @Override
@@ -449,4 +550,150 @@ public class Component extends AbstractModel {
         }
         return componentType;
     }
+
+    @Nonnull
+    public Thumbnail getThumbnail() {
+        if (thumbnail == null) {
+            thumbnail = new Thumbnail();
+        }
+        return thumbnail;
+    }
+
+    @Nonnull
+    public String getHelpContent() {
+        if (helpContent == null) {
+            Resource helpRes = getResource().getChild(HELP_PAGE_PATH);
+            if (ResourceUtil.isResourceType(helpRes, NODE_TYPE_PAGE)) {
+                Resource contentRes = helpRes.getChild(JcrConstants.JCR_CONTENT);
+                if (contentRes != null) {
+                    helpRes = contentRes;
+                }
+            }
+            helpContent = helpRes != null ? helpRes.getPath() : "";
+        }
+        return helpContent;
+    }
+
+    @Nonnull
+    public ComponentPieces getPieces() {
+        if (componentPieces == null) {
+            componentPieces = new ComponentPieces(getResource());
+        }
+        return componentPieces;
+    }
+
+    // declared properties
+
+    public static final ResourceFilter I18N_PROPERTIES = new ResourceFilter() {
+
+        @Override
+        public boolean accept(@Nullable Resource resource) {
+            return resource != null && resource.getValueMap().get("i18n", Boolean.FALSE);
+        }
+
+        @Override
+        public boolean isRestriction() {
+            return true;
+        }
+
+        @Override
+        public void toString(@Nonnull StringBuilder builder) {
+            builder.append("i18n");
+        }
+    };
+
+    @Nonnull
+    public Properties getI18nProperties() {
+        return getComponentProperties(I18N_PROPERTIES);
+    }
+
+    public static final ResourceFilter TEXT_PROPERTIES = new ResourceFilter() {
+
+        @Override
+        public boolean accept(@Nullable Resource resource) {
+            return resource != null && StringUtils.isNotBlank(resource.getValueMap().get("text", ""));
+        }
+
+        @Override
+        public boolean isRestriction() {
+            return true;
+        }
+
+        @Override
+        public void toString(@Nonnull StringBuilder builder) {
+            builder.append("text");
+        }
+    };
+
+    @Nonnull
+    public Properties getTextProperties() {
+        return getComponentProperties(TEXT_PROPERTIES);
+    }
+
+    @Nonnull
+    public Properties getComponentProperties() {
+        return getComponentProperties(ResourceFilter.ALL);
+    }
+
+    @Nonnull
+    public Properties getComponentProperties(@Nonnull final ResourceFilter filter) {
+        Properties result = properties.get(filter.toString());
+        if (result == null) {
+            result = new Properties(filter);
+            properties.put(filter.toString(), result);
+        }
+        return result;
+    }
+
+    @Nullable
+    protected Resource getPropertiesDeclaration() {
+        if (propertiesDeclaration == null) {
+            propertiesDeclaration = getDeclaration("properties");
+        }
+        return propertiesDeclaration;
+    }
+
+    // declared elements
+
+    @Nonnull
+    public Elements getComponentElements() {
+        return getComponentElements(ResourceFilter.ALL);
+    }
+
+    @Nonnull
+    public Elements getComponentElements(@Nonnull final ResourceFilter filter) {
+        Elements result = elements.get(filter.toString());
+        if (result == null) {
+            result = new Elements(filter);
+            elements.put(filter.toString(), result);
+        }
+        return result;
+    }
+
+    @Nullable
+    protected Resource getElementsDeclaration() {
+        if (elementsDeclaration == null) {
+            elementsDeclaration = getDeclaration("elements");
+        }
+        return elementsDeclaration;
+    }
+
+    // declaration helpers
+
+    @Nullable
+    protected Resource getDeclaration(String key) {
+        Resource declaration = null;
+        Resource content = getResource().getChild(JcrConstants.JCR_CONTENT);
+        if (content != null) {
+            declaration = content.getChild(key);
+        }
+        if (declaration == null) {
+            Component superType = getSuperType();
+            if (superType != null) {
+                declaration = superType.getDeclaration(key);
+            }
+        }
+        return declaration;
+    }
+
 }
