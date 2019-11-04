@@ -1,5 +1,6 @@
 package com.composum.pages.commons.service;
 
+import com.composum.pages.commons.model.Page;
 import com.composum.pages.commons.model.PageVersion;
 import com.composum.pages.commons.model.SiteRelease;
 import com.composum.platform.commons.util.ExceptionThrowingFunction;
@@ -9,6 +10,7 @@ import com.composum.sling.platform.staging.StagingReleaseManager;
 import com.composum.sling.platform.staging.impl.VersionSelectResourceResolver;
 import com.composum.sling.platform.staging.versions.PlatformVersionsService;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.api.JackrabbitSession;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
@@ -109,13 +111,19 @@ public class PagesVersionsService implements VersionsService {
         Resource resource = versionSelectResolver.getResource(path);
         if (resource != null) {
             boolean versionNotFound = true;
-            for (Resource searchResource = resource; searchResource != null && versionNotFound;
-                 searchResource = searchResource.getParent()) {
-                versionNotFound = !StringUtils.equals(versionUuid,
-                        searchResource.getValueMap().get(StagingConstants.PROP_REPLICATED_VERSION, String.class));
-            }
-            if (versionNotFound) {
-                LOG.warn("historicalVersion: versionUuid {} doesn't fit path {}", versionUuid, path);
+            Resource checkable = Page.isPage(resource) ? resource.getChild(JcrConstants.JCR_CONTENT) : resource;
+            if (checkable != null) {
+                for (Resource searchResource = checkable; searchResource != null && versionNotFound;
+                     searchResource = searchResource.getParent()) {
+                    versionNotFound = !StringUtils.equals(versionUuid,
+                            searchResource.getValueMap().get(StagingConstants.PROP_REPLICATED_VERSION, String.class));
+                }
+                if (versionNotFound) {
+                    LOG.warn("historicalVersion: versionUuid '{}' doesn't fit path '{}'", versionUuid, path);
+                    resource = null;
+                }
+            } else {
+                LOG.warn("historicalVersion: requested page '{}', version '{}' has no content", path, versionUuid);
                 resource = null;
             }
         }
@@ -154,5 +162,4 @@ public class PagesVersionsService implements VersionsService {
         }
         return versionManager;
     }
-
 }
