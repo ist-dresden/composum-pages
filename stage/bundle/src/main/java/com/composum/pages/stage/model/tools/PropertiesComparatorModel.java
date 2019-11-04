@@ -39,14 +39,16 @@ public class PropertiesComparatorModel extends AbstractServletBean {
     public PropertiesComparatorModel(@Nonnull final BeanContext context,
                                      @Nonnull final String left, @Nullable final String leftVersionUuid, @Nullable final Locale leftLocale,
                                      @Nonnull final String right, @Nullable final String rightVersionUuid, @Nullable final Locale rightLocale,
-                                     @Nullable final String property, @Nullable final ResourceFilter propertyFilter, boolean skipEqualProperties) {
+                                     @Nullable final String property, @Nullable final ResourceFilter propertyFilter,
+                                     boolean skipEqualProperties, boolean highlightDifferences) {
         initialize(context);
         this.property = property;
         this.propertyFilter = propertyFilter;
         this.skipEqualProperties = skipEqualProperties;
         this.root = new PropertiesComparatorRoot(context,
                 left, leftLocale, leftVersionUuid,
-                right, rightLocale, rightVersionUuid);
+                right, rightLocale, rightVersionUuid,
+                highlightDifferences);
         scan(this.root);
     }
 

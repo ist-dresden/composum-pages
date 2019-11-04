@@ -34,6 +34,21 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Locale;
 
+/**
+ * compare content properties - traverses the hierarchy and lists properties side by side
+ * <p>
+ * /bin/cpm/pages/compare.{properties|text|i18n}.{html|json}{/left/path}?parameters
+ * <p>
+ * parameters:
+ * <dl>
+ * <dt>left, right</dt><dd>the left and/or the right content path (both optional)</dd>
+ * <dt>leftLocale, rightLocale</dt><dd>the language key to use for comparation (both optional)</dd>
+ * <dt>leftVersion, rightVersion</dt><dd>the version UUID to use for comparation (both optional)</dd>
+ * <dt>property</dt><dd>the property to compare; use '*' for a full drilldown</dd>
+ * <dt>equal</dt><dd>true/false; show equal properties (default: true)</dd>
+ * <dt>highlight</dt><dd>true/false; highlight differences (default: false)</dd>
+ * </dl>
+ */
 @Component(service = Servlet.class,
         property = {
                 Constants.SERVICE_DESCRIPTION + "=Composum Pages Content Comparator Servlet",
@@ -109,6 +124,7 @@ public class ContentComparatorServlet extends AbstractServiceServlet {
             try {
                 BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
                 ResourceResolver resolver = context.getResolver();
+
                 String left = RequestUtil.getParameter(request, "left", RequestUtil.getParameter(request, "path", resource.getPath()));
                 String leftVersionUuid = RequestUtil.getParameter(request, "leftVersion", request.getParameter("version"));
                 String leftLocale = RequestUtil.getParameter(request, "leftLocale", request.getParameter("locale"));
@@ -116,25 +132,15 @@ public class ContentComparatorServlet extends AbstractServiceServlet {
                 String rightVersionUuid = RequestUtil.getParameter(request, "rightVersion", request.getParameter("version"));
                 String rightLocale = RequestUtil.getParameter(request, "rightLocale", request.getParameter("locale"));
                 String property = request.getParameter("property");
-                ResourceFilter propertyFilter = getDefaultFilter();
-                String filter = request.getParameter("filter");
-                if (StringUtils.isNotBlank(filter)) {
-                    switch (filter) {
-                        case "text":
-                            propertyFilter = com.composum.pages.commons.model.Component.TEXT_PROPERTIES;
-                            break;
-                        case "i18n":
-                            propertyFilter = com.composum.pages.commons.model.Component.I18N_PROPERTIES;
-                            break;
-                    }
-                }
                 boolean skipEqualProperties = !RequestUtil.getParameter(request, "equal", Boolean.TRUE);
+                boolean highlightDifferences = RequestUtil.getParameter(request, "highlight", Boolean.FALSE);
+
                 if (StringUtils.isNotBlank(left) && StringUtils.isNotBlank(right)) {
 
                     PropertiesComparatorModel model = new PropertiesComparatorModel(context,
                             left, leftVersionUuid, StringUtils.isNotBlank(leftLocale) ? new Locale(leftLocale) : null,
                             right, rightVersionUuid, StringUtils.isNotBlank(rightLocale) ? new Locale(rightLocale) : null,
-                            property, propertyFilter, skipEqualProperties);
+                            property, getPropertyFilter(), skipEqualProperties, highlightDifferences);
 
                     RequestPathInfo pathInfo = request.getRequestPathInfo();
                     String ext = pathInfo.getExtension();
@@ -172,7 +178,7 @@ public class ContentComparatorServlet extends AbstractServiceServlet {
             status.sendJson();
         }
 
-        protected ResourceFilter getDefaultFilter() {
+        protected ResourceFilter getPropertyFilter() {
             return ResourceFilter.ALL;
         }
     }
@@ -180,7 +186,7 @@ public class ContentComparatorServlet extends AbstractServiceServlet {
     protected class CompareText extends CompareProperties {
 
         @Override
-        protected ResourceFilter getDefaultFilter() {
+        protected ResourceFilter getPropertyFilter() {
             return com.composum.pages.commons.model.Component.TEXT_PROPERTIES;
         }
     }
@@ -188,7 +194,7 @@ public class ContentComparatorServlet extends AbstractServiceServlet {
     protected class CompareI18n extends CompareProperties {
 
         @Override
-        protected ResourceFilter getDefaultFilter() {
+        protected ResourceFilter getPropertyFilter() {
             return com.composum.pages.commons.model.Component.I18N_PROPERTIES;
         }
     }

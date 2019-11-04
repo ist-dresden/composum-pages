@@ -6,7 +6,7 @@
 <cpn:component var="current" type="com.composum.pages.stage.model.tools.PropertiesComparatorNode" scope="request">
     <ul class="composum-pages-tools-comparator_properties">
         <c:forEach items="${current.properties}" var="property" varStatus="loop">
-            <li class="composum-pages-tools-comparator_property ${property.equal?'equal-property':''}">
+            <li class="composum-pages-tools-comparator_property ${property.equal?'equal-property':'different-property'}">
                 <div class="composum-pages-tools-comparator_property-name">
                         ${cpn:text(property.name)}
                 </div>

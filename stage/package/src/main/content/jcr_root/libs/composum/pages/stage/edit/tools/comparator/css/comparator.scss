@@ -195,4 +195,34 @@ $value-line-heigth: 19px;
             }
         }
     }
+
+
+    > .composum-pages-tools-comparator_node {
+
+        &.highlight-differences {
+
+            .composum-pages-tools-comparator {
+
+                &_property {
+
+                    &.different-property {
+
+                        .composum-pages-tools-comparator {
+
+                            &_property {
+
+                                &-name {
+                                    background-color: #f0f0c0;
+                                }
+
+                                &-value {
+                                    background-color: #f6f6c6;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

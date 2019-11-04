@@ -4,7 +4,7 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <sling:defineObjects/>
 <cpn:component var="current" type="com.composum.pages.stage.model.tools.PropertiesComparatorRoot" scope="request">
-    <div class="composum-pages-tools-comparator_node ${current.equalPath?'same-path':''} ${current.equalLanguage?'same-language':''} ${current.equalVersion?'same-version':''}">
+    <div class="composum-pages-tools-comparator_node ${current.highlight?'highlight-differences':''} ${current.equalPath?'same-path':''} ${current.equalLanguage?'same-language':''} ${current.equalVersion?'same-version':''}">
         <div class="composum-pages-tools-comparator_node-head">
             <div class="composum-pages-tools-comparator_node-head_indent"></div>
             <div class="composum-pages-tools-comparator_node-head_left">

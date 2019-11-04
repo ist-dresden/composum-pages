@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.jcr.RepositoryException;
-import javax.jcr.version.VersionManager;
 import java.util.Locale;
 
 /**
@@ -91,7 +90,7 @@ public class PropertiesComparatorRoot extends PropertiesComparatorNode {
         return result;
     }
 
-    private transient VersionManager versionManager;
+    protected boolean highlightDifferences;
 
     public PropertiesComparatorRoot(@Nonnull final BeanContext context,
                                     @Nullable final String leftPath,
@@ -99,9 +98,15 @@ public class PropertiesComparatorRoot extends PropertiesComparatorNode {
                                     @Nullable final String leftVersionUuid,
                                     @Nullable final String rightPath,
                                     @Nullable final Locale rightLocale,
-                                    @Nullable final String rightVersionUuid) {
+                                    @Nullable final String rightVersionUuid,
+                                    boolean highlightDifferences) {
         super(rootNode(context, leftPath, leftLocale, leftVersionUuid),
                 rootNode(context, rightPath, rightLocale, rightVersionUuid));
+        this.highlightDifferences = highlightDifferences;
+    }
+
+    public boolean isHighlight() {
+        return highlightDifferences;
     }
 
     @Override
