@@ -63,7 +63,7 @@ public class PropertiesComparatorRoot extends PropertiesComparatorNode {
                                          @Nullable final String versionUuid) {
         ComparatorRef result = null;
         if (StringUtils.isNotBlank(path)) {
-            String version = "";
+            String version = "current";
             ResourceResolver resolver = context.getResolver();
             Resource resource = null;
             if (StringUtils.isNotBlank(versionUuid)) {

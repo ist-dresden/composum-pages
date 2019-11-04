@@ -15,6 +15,9 @@
                         secondary: '_secondary'
                     }
                 },
+                url: {
+                    compare: '/bin/cpm/pages/compare.{filter}.page.html'
+                },
                 event: {
                     scroll: 'scroll.versionView'
                 }
@@ -93,6 +96,31 @@
                     value = value / 100.0;
                 }
                 this.$frame.css('opacity', value);
+            },
+
+            compare: function (path, primScope, sdryScope, options) {
+                if (path) {
+                    var params;
+                    if (primScope && primScope.version) {
+                        params = '?leftVersion=' + primScope.version;
+                    }
+                    if (sdryScope && sdryScope.version) {
+                        params = (params ? (params + '&') : '?') + 'rightVersion=' + sdryScope.version;
+                    }
+                    if (params) {
+                        this.$frame.attr('src', core.getContextUrl(
+                            pages.const.versionView.url.compare.replace('{filter}', options.filter)
+                            + path + params
+                            + '&property=' + encodeURIComponent(options.property)
+                            + (options.locale ? ('&locale=' + options.locale) : '')
+                            + '&equal=' + options.equal + '&highlight=' + options.highlight));
+                        this.$el.removeClass('hidden');
+                    } else {
+                        this.reset();
+                    }
+                } else {
+                    this.reset();
+                }
             }
         });
 
@@ -128,7 +156,24 @@
             },
 
             /**
-             * switch version compare 'on'
+             * switch version properties comparision 'on'
+             * @param path the page to show
+             * @param primScope the { release: <key>, version: <id>> } of the primary view
+             * @param sdryScope the { release: <key>, version: <id>> } of the secondary view
+             */
+            showComparision: function (path, primScope, sdryScope, options) {
+                this.sdryView.reset();
+                this.primView.compare(path, primScope, sdryScope, _.extend({
+                    filter: 'properties',
+                    property: '*',
+                    equal: true,
+                    highlight: true
+                }, options || {}));
+                this.show();
+            },
+
+            /**
+             * switch version compare view 'on'
              * @param path the page to show
              * @param primScope the { release: <key>, version: <id>> } of the primary view
              * @param sdryScope the { release: <key>, version: <id>> } of the secondary view

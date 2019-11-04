@@ -139,7 +139,7 @@ $value-line-heigth: 19px;
 
         &.same-language {
 
-            .composum-pages-tools-comparator_node-head_right {
+            .composum-pages-tools-comparator_node-head_left {
 
                 .composum-pages-tools-comparator_node-language {
                     display: none;
@@ -196,6 +196,7 @@ $value-line-heigth: 19px;
         }
     }
 
+    // highlight different properties
 
     > .composum-pages-tools-comparator_node {
 
@@ -212,11 +213,11 @@ $value-line-heigth: 19px;
                             &_property {
 
                                 &-name {
-                                    background-color: #f0f0c0;
+                                    background-color: #dcdcfc;
                                 }
 
                                 &-value {
-                                    background-color: #f6f6c6;
+                                    background-color: #e8e8f8;
                                 }
                             }
                         }

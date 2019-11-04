@@ -92,6 +92,8 @@ public class PropertiesComparatorNode extends AbstractServletBean {
         public void toJson(@Nonnull final JsonWriter writer) throws IOException {
             writer.beginObject();
             writer.name("name").value(name);
+            writer.name("equal").value(isEqual());
+            writer.name("rich").value(isRichText());
             writer.name("left");
             jsonValue(writer, leftProp, left);
             writer.name("right");

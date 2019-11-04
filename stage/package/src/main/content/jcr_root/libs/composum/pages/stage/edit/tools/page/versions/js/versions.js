@@ -27,11 +27,20 @@
                 selectionSecondary: '_selection-secondary',
                 primarySelection: '_primary-selection',
                 secondarySelection: '_secondary-selection',
+                display: {
+                    controls: '_display-controls'
+                },
                 slider: {
                     cssKey: '_version-slider',
                     options: {
                         tooltip: 'hide'
                     }
+                },
+                compare: {
+                    controls: '_compare-controls',
+                    filter: '_property-filter',
+                    highlight: '_option-highlight',
+                    equal: '_option-equal'
                 },
                 actions: 'composum-pages-tools_actions',
                 actionKey: '_action_',
@@ -95,6 +104,7 @@
             initialize: function (options) {
                 var c = tools.const.versions;
                 this.$viewAction = this.$('.' + c.cssBase + c.actionKey + c.viewAction);
+                this.$compareAction = this.$('.' + c.cssBase + c.actionKey + c.compareAction);
                 this.$activateAction = this.$('.' + c.cssBase + c.actionKey + c.activateAction);
                 this.$revertAction = this.$('.' + c.cssBase + c.actionKey + c.revertAction);
                 this.$deactivateAction = this.$('.' + c.cssBase + c.actionKey + c.deactivateAction);
@@ -106,11 +116,17 @@
                 this.$rollbackAction = this.$('.' + c.cssBase + c.actionKey + c.rollbackAction);
                 this.right = [
                     this.$activateAction,
+                    this.$revertAction,
                     this.$deactivateAction,
                     this.$checkpointAction,
                     this.$moreMenu
                 ];
-                this.$viewAction.click(_.bind(this.toggleView, this));
+                this.$viewAction.click(_.bind(function (event) {
+                    this.versions.toggleVersionsView('view');
+                }, this));
+                this.$compareAction.click(_.bind(function (event) {
+                    this.versions.toggleVersionsView('compare');
+                }, this));
                 this.$activateAction.click(_.bind(this.activatePage, this));
                 this.$revertAction.click(_.bind(this.revertPage, this));
                 this.$deactivateAction.click(_.bind(this.deactivatePage, this));
@@ -125,8 +141,10 @@
                 var c = tools.const.versions;
                 if (this.versions.primSelection || this.versions.sdrySelection || this.versions.versionsVisible) {
                     this.$viewAction.prop(c.disabled, false);
+                    this.$compareAction.prop(c.disabled, false);
                 } else {
                     this.$viewAction.prop(c.disabled, true);
+                    this.$compareAction.prop(c.disabled, true);
                 }
                 if (this.versions.state.checkedOut) {
                     this.$checkpointAction.prop(c.disabled, this.versions.versionsVisible);
@@ -142,13 +160,6 @@
                 } else {
                     this.$rollbackAction.prop(c.disabled, true);
                 }
-            },
-
-            toggleView: function (event) {
-                if (event) {
-                    event.preventDefault();
-                }
-                this.versions.toggleVersionsView();
             },
 
             activatePage: function (event) {
@@ -227,14 +238,34 @@
 
             initialize: function (options) {
                 var c = tools.const.versions;
-                this.$primSelection = this.$('.' + c.cssBase + c.primarySelection);
-                this.$sdrySelection = this.$('.' + c.cssBase + c.secondarySelection);
-                this.$slider = this.$('.' + c.cssBase + c.slider.cssKey);
                 this.$versionContent = this.$('.' + c.cssBase + c.content);
                 this.actions = core.getWidget(this.el, '.' + c.actions, tools.VersionsActions);
                 this.actions.versions = this;
-                this.$slider.slider(c.slider.options);
-                this.$slider.on('slide', _.bind(this.compare, this));
+                this.$primSelection = this.$('.' + c.cssBase + c.primarySelection);
+                this.$sdrySelection = this.$('.' + c.cssBase + c.secondarySelection);
+                this.display = {
+                    $controls: this.$('.' + c.cssBase + c.display.controls),
+                    $slider: this.$('.' + c.cssBase + c.slider.cssKey)
+                };
+                this.display.$slider.slider(c.slider.options);
+                this.display.$slider.on('slide', _.bind(this.compareView, this));
+                this.compare = {
+                    $controls: this.$('.' + c.cssBase + c.compare.controls),
+                    $filter: this.$('.' + c.cssBase + c.compare.filter),
+                    $highlight: this.$('.' + c.cssBase + c.compare.highlight),
+                    $equal: this.$('.' + c.cssBase + c.compare.equal)
+                };
+                var profile = pages.profile.get('versions', 'compare', {
+                    filter: 'properties',
+                    highlight: true,
+                    equal: true
+                });
+                this.compare.$filter.val(profile.filter);
+                this.compare.$highlight.prop('checked', profile.highlight);
+                this.compare.$equal.prop('checked', profile.equal);
+                this.compare.$filter.change(_.bind(this.comparisionOptions, this));
+                this.compare.$highlight.change(_.bind(this.comparisionOptions, this));
+                this.compare.$equal.change(_.bind(this.comparisionOptions, this));
                 var id = tools.const.versions.event.id;
                 var e = pages.const.event;
                 $(document)
@@ -268,7 +299,7 @@
                     this.currentVersion = undefined;
                     this.primSelection = undefined;
                     this.sdrySelection = undefined;
-                    this.$slider.slider('disable');
+                    this.display.$slider.slider('disable');
                     core.ajaxGet(u.base + u._.list + this.contextTabs.reference.path, {},
                         undefined, undefined, _.bind(function (data) {
                             if (data.status === 200) {
@@ -290,17 +321,17 @@
                 }, this));
             },
 
-            compare: function (event) {
+            compareView: function (event) {
                 pages.versionsView.primView.setOpacity(100 - event.value);
             },
 
             setComparable: function () {
                 if ((this.primSelection || this.sdrySelection) && this.primSelection !== this.sdrySelection) {
                     this.$el.addClass(tools.const.versions.versionsComparable);
-                    this.$slider.slider('enable');
-                    pages.versionsView.primView.setOpacity(100 - this.$slider.slider('getValue'));
+                    this.display.$slider.slider('enable');
+                    pages.versionsView.primView.setOpacity(100 - this.display.$slider.slider('getValue'));
                 } else {
-                    this.$slider.slider('disable');
+                    this.display.$slider.slider('disable');
                     this.$el.removeClass(tools.const.versions.versionsComparable);
                     pages.versionsView.primView.setOpacity(100);
                 }
@@ -310,17 +341,27 @@
                 this.$versionList.removeClass(tools.const.versions.selectedPrimary);
                 if (this.primSelection === version) {
                     this.primSelection = undefined;
-                    if (this.versionsVisible) {
-                        pages.versionsView.primView.reset();
+                    switch (this.versionsVisible) {
+                        case'view':
+                            pages.versionsView.primView.reset();
+                            break;
+                        case 'compare':
+                            this.refreshVersionComparision();
+                            break;
                     }
                 } else {
                     this.primSelection = version;
                     this.primSelection.$el.addClass(tools.const.versions.selectedPrimary);
-                    if (this.versionsVisible) {
-                        pages.versionsView.primView.view(this.data.path, {
-                            release: version.release,
-                            version: version.id
-                        });
+                    switch (this.versionsVisible) {
+                        case'view':
+                            pages.versionsView.primView.view(this.data.path, {
+                                release: version.release,
+                                version: version.id
+                            });
+                            break;
+                        case 'compare':
+                            this.refreshVersionComparision();
+                            break;
                     }
                 }
                 this.showSelection();
@@ -330,17 +371,27 @@
                 this.$versionList.removeClass(tools.const.versions.selectedSecondary);
                 if (this.sdrySelection === version) {
                     this.sdrySelection = undefined;
-                    if (this.versionsVisible) {
-                        pages.versionsView.sdryView.reset();
+                    switch (this.versionsVisible) {
+                        case'view':
+                            pages.versionsView.sdryView.reset();
+                            break;
+                        case 'compare':
+                            this.refreshVersionComparision();
+                            break;
                     }
                 } else {
                     this.sdrySelection = version;
                     this.sdrySelection.$el.addClass(tools.const.versions.selectedSecondary);
-                    if (this.versionsVisible) {
-                        pages.versionsView.sdryView.view(this.data.path, {
-                            release: version.release,
-                            version: version.id
-                        });
+                    switch (this.versionsVisible) {
+                        case'view':
+                            pages.versionsView.sdryView.view(this.data.path, {
+                                release: version.release,
+                                version: version.id
+                            });
+                            break;
+                        case 'compare':
+                            this.refreshVersionComparision();
+                            break;
                     }
                 }
                 this.showSelection();
@@ -371,40 +422,96 @@
                 }
             },
 
-            toggleVersionsView: function () {
-                var c = tools.const.versions;
+            comparisionOptions: function (refresh) {
+                var options = {
+                    filter: this.compare.$filter.val(),
+                    highlight: this.compare.$highlight.prop('checked'),
+                    equal: this.compare.$equal.prop('checked')
+                };
+                pages.profile.set('versions', 'compare', options);
+                if (this.versionsVisible === 'compare' && refresh) {
+                    this.refreshVersionComparision(options);
+                }
+                return options;
+            },
+
+            refreshVersionComparision: function (options) {
                 if (this.versionsVisible) {
-                    this.versionsVisible = false;
+                    var scope = this.currentScope();
+                    pages.versionsView.showComparision(scope.path, scope.primary, scope.secondary, _.extend({
+                        locale: pages.getLocale()
+                    }, options ? options : this.comparisionOptions(false)));
+                }
+            },
+
+            toggleVersionsView: function (type) {
+                var c = tools.const.versions;
+                if (this.versionsVisible === type) {
+                    this.versionsVisible = undefined;
+                    this.compare.$controls.css('visibility', 'hidden');
+                    this.display.$controls.css('visibility', 'visible');
                     pages.versionsView.reset();
                     this.actions.$viewAction.removeClass('active');
+                    this.actions.$compareAction.removeClass('active');
                     this.contextTabs.lockTabs(false);
                     this.actions.right.forEach(function ($el) {
                         $el.prop(c.disabled, false);
                     });
                 } else {
-                    this.actions.right.forEach(function ($el) {
-                        $el.prop(c.disabled, true);
-                    });
-                    this.contextTabs.lockTabs(true);
-                    this.versionsVisible = true;
-                    var path = this.data.path;
-                    var primary = undefined;
-                    var secondary = undefined;
-                    if (this.primSelection) {
-                        primary = {
-                            release: this.primSelection.release,
-                            version: this.primSelection.id
-                        };
+                    if (!this.versionsVisible) {
+                        this.actions.right.forEach(function ($el) {
+                            $el.prop(c.disabled, true);
+                        });
+                        this.contextTabs.lockTabs(true);
+                    } else {
+                        pages.versionsView.reset();
+                        switch (this.versionsVisible) {
+                            case'view':
+                                this.actions.$viewAction.removeClass('active');
+                                break;
+                            case'compare':
+                                this.actions.$compareAction.removeClass('active');
+                                break;
+                        }
                     }
-                    if (this.sdrySelection) {
-                        secondary = {
-                            release: this.sdrySelection.release,
-                            version: this.sdrySelection.id
-                        };
+                    this.versionsVisible = type;
+                    switch (this.versionsVisible) {
+                        case'view':
+                            var scope = this.currentScope();
+                            this.compare.$controls.css('visibility', 'hidden');
+                            this.display.$controls.css('visibility', 'visible');
+                            pages.versionsView.showVersions(scope.path, scope.primary, scope.secondary);
+                            this.actions.$viewAction.addClass('active');
+                            break;
+                        case'compare':
+                            this.display.$controls.css('visibility', 'hidden');
+                            this.compare.$controls.css('visibility', 'visible');
+                            this.refreshVersionComparision();
+                            this.actions.$compareAction.addClass('active');
+                            break;
                     }
-                    pages.versionsView.showVersions(path, primary, secondary);
-                    this.actions.$viewAction.addClass('active');
                 }
+            },
+
+            currentScope: function () {
+                var result = {
+                    path: this.data.path,
+                    primary: undefined,
+                    secondary: undefined
+                };
+                if (this.primSelection) {
+                    result.primary = {
+                        release: this.primSelection.release,
+                        version: this.primSelection.id
+                    };
+                }
+                if (this.sdrySelection) {
+                    result.secondary = {
+                        release: this.sdrySelection.release,
+                        version: this.sdrySelection.id
+                    };
+                }
+                return result;
             }
         });
 

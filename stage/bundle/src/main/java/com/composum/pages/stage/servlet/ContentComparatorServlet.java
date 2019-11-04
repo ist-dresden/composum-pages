@@ -37,17 +37,25 @@ import java.util.Locale;
 /**
  * compare content properties - traverses the hierarchy and lists properties side by side
  * <p>
- * /bin/cpm/pages/compare.{properties|text|i18n}.{html|json}{/left/path}?parameters
+ * /bin/cpm/pages/compare.{properties|text|i18n}[.page].{html|json}[/left/path]?parameters
+ * </p>
  * <p>
  * parameters:
+ * </p>
  * <dl>
- * <dt>left, right</dt><dd>the left and/or the right content path (both optional)</dd>
- * <dt>leftLocale, rightLocale</dt><dd>the language key to use for comparation (both optional)</dd>
- * <dt>leftVersion, rightVersion</dt><dd>the version UUID to use for comparation (both optional)</dd>
- * <dt>property</dt><dd>the property to compare; use '*' for a full drilldown</dd>
+ * <dt>left/right</dt><dd>the left and/or the right content path (both optional; default: request suffix)</dd>
+ * <dt>leftLocale/rightLocale/locale</dt><dd>the language key to use for comparision (default: default language)</dd>
+ * <dt>leftVersion/rightVersion/version</dt><dd>the version UUID to use for comparision (default: workspace content)</dd>
+ * <dt>property</dt><dd>the property to compare; use '*' for a full drilldown! (default: all properties of the node; no drilldown)</dd>
  * <dt>equal</dt><dd>true/false; show equal properties (default: true)</dd>
  * <dt>highlight</dt><dd>true/false; highlight differences (default: false)</dd>
  * </dl>
+ * <p>
+ * An additional 'page' selector is rendering a full HTML page with the comparision result within ('html' extension).
+ * Without this selector the normal (embeddable) HTML markup of the comparision result is rendered only.
+ * </p>
+ *
+ * @see composum/pages/stage/edit/tools/comparator component
  */
 @Component(service = Servlet.class,
         property = {

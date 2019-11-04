@@ -14,9 +14,11 @@
                 <div class="composum-pages-tools-comparator_node-meta">
                     <div class="composum-pages-tools-comparator_node-path">${cpn:text(current.left.path)}</div>
                     <cpn:text class="composum-pages-tools-comparator_node-language" value="${current.left.language}"
-                              test="${not empty current.left.language}" format="language: {}"/>
+                              format="${cpn:i18n(slingRequest,'language')}: {}"
+                              test="${not empty current.left.language}"/>
                     <cpn:text class="composum-pages-tools-comparator_node-version" value="${current.left.version}"
-                              test="${not empty current.left.version}" format="version: {}"/>
+                              format="${cpn:i18n(slingRequest,'version')}: {}" i18n="true"
+                              test="${not empty current.left.version}"/>
                 </div>
             </div>
             <div class="composum-pages-tools-comparator_node-head_right">
@@ -25,10 +27,12 @@
                 <div class="composum-pages-tools-comparator_node-type">${cpn:text(current.right.typeHint)}</div>
                 <div class="composum-pages-tools-comparator_node-meta">
                     <div class="composum-pages-tools-comparator_node-path">${cpn:text(current.right.path)}</div>
-                    <cpn:text class="composum-pages-tools-comparator_node-language" value="${current.right.language}"
-                              test="${not empty current.right.language}" format="language: {}"/>
                     <cpn:text class="composum-pages-tools-comparator_node-version" value="${current.right.version}"
-                              test="${not empty current.right.version}" format="version: {}"/>
+                              format="${cpn:i18n(slingRequest,'version')}: {}" i18n="true"
+                              test="${not empty current.right.version}"/>
+                    <cpn:text class="composum-pages-tools-comparator_node-language" value="${current.right.language}"
+                              format="${cpn:i18n(slingRequest,'language')}: {}"
+                              test="${not empty current.right.language}"/>
                 </div>
             </div>
         </div>

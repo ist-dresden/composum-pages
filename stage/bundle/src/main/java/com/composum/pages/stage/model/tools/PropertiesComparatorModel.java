@@ -77,8 +77,8 @@ public class PropertiesComparatorModel extends AbstractServletBean {
     protected PropertiesComparatorNode scan(@Nonnull final PropertiesComparatorNode node) {
         Model left = getComparableModel(node.getLeft());
         Model right = getComparableModel(node.getRight());
-        Locale leftLocale = this.root.getLeft() != null ? this.root.getLeft().getLocale() : null;
-        Locale rightLocale = this.root.getRight() != null ? this.root.getRight().getLocale() : null;
+        Locale leftLocale = getLocale(this.root.getLeft());
+        Locale rightLocale = getLocale(this.root.getRight());
         if (StringUtils.isNotBlank(property) && !"*".equals(property)) {
             node.setProperty(property,
                     getValue(left, property, leftLocale),
@@ -132,6 +132,17 @@ public class PropertiesComparatorModel extends AbstractServletBean {
             return delegate;
         }
         return null;
+    }
+
+    protected Locale getLocale(@Nullable final PropertiesComparatorRoot.ComparatorRef root) {
+        Locale locale = null;
+        if (root != null) {
+            locale = root.getLocale();
+            if (locale != null && locale.equals(root.getLanguages().getDefaultLanguage().getLocale())) {
+                locale = null;
+            }
+        }
+        return locale;
     }
 
     @Nullable

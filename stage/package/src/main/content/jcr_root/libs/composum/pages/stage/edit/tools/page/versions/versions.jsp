@@ -11,8 +11,11 @@
             <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
                 <button type="button"
                         class="fa fa-desktop ${versionsCssBase}_action_view composum-pages-tools_button btn btn-default"
-                        title="Show Version"><span
-                        class="composum-pages-tools_button-label">${cpn:i18n(slingRequest,'Show Version')}</span>
+                        title="${cpn:i18n(slingRequest,'Show Version')}">
+                </button>
+                <button type="button"
+                        class="fa fa-exchange ${versionsCssBase}_action_compare composum-pages-tools_button btn btn-default"
+                        title="${cpn:i18n(slingRequest,'Compare Properties')}">
                 </button>
             </div>
         </div>
@@ -64,8 +67,31 @@
                 <div class="${versionsCssBase}_selection-name"></div>
                 <div class="${versionsCssBase}_selection-time"></div>
             </div>
-            <input class="${versionsCssBase}_version-slider widget slider-widget" type="text"
-                   data-slider-min="0" data-slider-max="100" data-slider-step="1" data-slider-value="0"/>
+            <div class="${versionsCssBase}_display-controls">
+                <input class="${versionsCssBase}_version-slider widget slider-widget" type="text"
+                       data-slider-min="0" data-slider-max="100" data-slider-step="1" data-slider-value="0"/>
+            </div>
+            <div class="${versionsCssBase}_compare-controls">
+                <div class="label" title="${cpn:i18n(slingRequest,'compare properties')}">
+                    <span>${cpn:i18n(slingRequest,'compare:')}</span>
+                    <select class="${versionsCssBase}_property-filter widget select-widget"
+                            title="${cpn:i18n(slingRequest,'compare properties')}">
+                        <option value="properties">${cpn:i18n(slingRequest,'all')}</option>
+                        <option value="text">${cpn:i18n(slingRequest,'text')}</option>
+                        <option value="i18n">${cpn:i18n(slingRequest,'i18n')}</option>
+                    </select>
+                </div>
+                <div class="label" title="${cpn:i18n(slingRequest,'highlight differences')}">
+                    <input class="${versionsCssBase}_option-highlight widget checkbox-widget" type="checkbox"
+                           title="${cpn:i18n(slingRequest,'highlight differences')}"/>
+                    <span>${cpn:i18n(slingRequest,'highlight')}</span>
+                </div>
+                <div class="label" title="${cpn:i18n(slingRequest,'show equal values')}">
+                    <input class="${versionsCssBase}_option-equal widget checkbox-widget" type="checkbox"
+                           title="${cpn:i18n(slingRequest,'show equal values')}"/>
+                    <span>${cpn:i18n(slingRequest,'show equal')}</span>
+                </div>
+            </div>
         </div>
         <div class="${versionsCssBase}_content">
                 <%-- <sling:call script="versionList.jsp"/> - load after init via Ajax --%>
