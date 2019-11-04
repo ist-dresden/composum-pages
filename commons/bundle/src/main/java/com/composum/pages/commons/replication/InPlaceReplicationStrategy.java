@@ -154,7 +154,8 @@ public abstract class InPlaceReplicationStrategy implements ReplicationStrategy 
 
     /**
      * makes a replication copy of one resource and their 'jcr:content' child if such a child exists
-     * does this also with the other children if 'recursive' is 'on'. The jcr:content is always copied recursively.
+     * does this also with the other children if 'recursive' is 'on'. The jcr:content is always copied recursively,
+     * and if a resource is a jcr:content node it is also copied recursively.
      * Caution: calling this with merge=false && recursive=false deletes all children except jcr:content .
      */
     protected void copyReleasedResource(ReplicationContext context, String targetRoot, Resource released, Resource replicate,
@@ -163,7 +164,8 @@ public abstract class InPlaceReplicationStrategy implements ReplicationStrategy 
         if (LOG.isDebugEnabled()) {
             LOG.debug("copyReleasedResource(rec {} merge {}, {})", recursive, merge, SlingResourceUtil.getPath(released));
         }
-        copyReleasedContent(context, targetRoot, released, replicate, false, merge);
+        boolean isJcrContent = released.getName().equals(JcrConstants.JCR_CONTENT);
+        copyReleasedContent(context, targetRoot, released, replicate, isJcrContent, merge);
         Resource releasedContent = released.getChild(JcrConstants.JCR_CONTENT);
         if (releasedContent != null) {
             ResourceResolver targetResolver = replicate.getResourceResolver();
@@ -237,10 +239,8 @@ public abstract class InPlaceReplicationStrategy implements ReplicationStrategy 
         ValueMap releasedValues = released.getValueMap();
         ModifiableValueMap replicateValues = replicate.adaptTo(ModifiableValueMap.class);
         replicateValues.put(ResourceUtil.PROP_PRIMARY_TYPE, releasedValues.get(ResourceUtil.PROP_PRIMARY_TYPE, String.class));
-        String[] mixins = releasedValues.get(ResourceUtil.PROP_MIXINTYPES, String[].class);
-        if (mixins != null) { replicateValues.put(ResourceUtil.PROP_MIXINTYPES, mixins); } else {
-            replicateValues.remove(ResourceUtil.PROP_MIXINTYPES);
-        }
+        String[] mixins = releasedValues.get(ResourceUtil.PROP_MIXINTYPES, new String[0]);
+        replicateValues.put(ResourceUtil.PROP_MIXINTYPES, mixins);
         if (!merge) {
             // in case of a 'reset' remove all properties from the target resource
             for (String key : replicateValues.keySet().toArray(new String[0])) {
