@@ -2,15 +2,17 @@
 
 $node-level-indent: 20px;
 $property-name-width: 150px;
-$value-padding: 2px 4px;
+$value-padding-h: 4px;
+$value-padding-v: 2px;
+$value-padding: $value-padding-v $value-padding-h;
 
 $value-font-size: 14px;
 $value-line-heigth: 19px;
 
 .composum-pages-tools-comparator {
-    margin-left: - $node-level-indent;
 
     &_nodes {
+        clear: both;
         width: 100%;
         list-style: none;
         padding: 5px 0 5px $node-level-indent;
@@ -19,7 +21,7 @@ $value-line-heigth: 19px;
 
             &_node {
 
-                &-path {
+                &-meta {
                     display: none;
                 }
             }
@@ -93,11 +95,20 @@ $value-line-heigth: 19px;
             line-height: $value-line-heigth +1px;
         }
 
-        &-path {
-            clear: both;
-            padding: 0 4px;
+        &-path, &-language, &-version {
+            padding: 0 $value-padding-h;
             font-size: 80%;
             opacity: 0.8;
+        }
+
+        &-path {
+            flex-grow: 9;
+        }
+
+        &-meta {
+            clear: both;
+            display: flex;
+            margin-bottom: 5px;
         }
 
         &-head {
@@ -115,9 +126,40 @@ $value-line-heigth: 19px;
                 margin-left: 1px;
             }
         }
+
+        &.same-path {
+
+            .composum-pages-tools-comparator_node-head_right {
+
+                .composum-pages-tools-comparator_node-path {
+                    display: none;
+                }
+            }
+        }
+
+        &.same-language {
+
+            .composum-pages-tools-comparator_node-head_right {
+
+                .composum-pages-tools-comparator_node-language {
+                    display: none;
+                }
+            }
+        }
+
+        &.same-version {
+
+            .composum-pages-tools-comparator_node-head_right {
+
+                .composum-pages-tools-comparator_node-version {
+                    display: none;
+                }
+            }
+        }
     }
 
     &_properties {
+        clear: both;
         width: 100%;
         list-style: none;
         padding: 0;

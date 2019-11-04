@@ -61,6 +61,12 @@ public class PropertiesComparatorNode extends AbstractServletBean {
                     (rightProp != null && "rich".equals(rightProp.getTextType()));
         }
 
+        public boolean isEqual() {
+            return ((leftProp == null && rightProp == null) ||
+                    (leftProp != null && leftProp.equals(rightProp))) &&
+                    ((left == null && right == null) || (left != null && left.equals(right)));
+        }
+
         @Nonnull
         public String toString(@Nullable final Component.Property property, @Nullable final Object value) {
             if (value == null) {
@@ -126,7 +132,8 @@ public class PropertiesComparatorNode extends AbstractServletBean {
         this(null, null);
     }
 
-    public PropertiesComparatorNode(@Nullable final GenericModel left, @Nullable final GenericModel right) {
+    public PropertiesComparatorNode(@Nullable final GenericModel left,
+                                    @Nullable final GenericModel right) {
         this.left = left;
         this.right = right;
     }
@@ -152,10 +159,13 @@ public class PropertiesComparatorNode extends AbstractServletBean {
     }
 
     public void setProperty(@Nonnull final String name,
-                            @Nullable final Object left, @Nullable final Object right) {
+                            @Nullable final Object left, @Nullable final Object right,
+                            boolean skipEqualProperties) {
         if (left != null || right != null) {
             Property property = new Property(name, left, right);
-            properties.putIfAbsent(property.name, property);
+            if (!skipEqualProperties || !property.isEqual()) {
+                properties.putIfAbsent(property.name, property);
+            }
         }
     }
 

@@ -128,12 +128,13 @@ public class ContentComparatorServlet extends AbstractServiceServlet {
                             break;
                     }
                 }
+                boolean skipEqualProperties = !RequestUtil.getParameter(request, "equal", Boolean.TRUE);
                 if (StringUtils.isNotBlank(left) && StringUtils.isNotBlank(right)) {
 
                     PropertiesComparatorModel model = new PropertiesComparatorModel(context,
                             left, leftVersionUuid, StringUtils.isNotBlank(leftLocale) ? new Locale(leftLocale) : null,
                             right, rightVersionUuid, StringUtils.isNotBlank(rightLocale) ? new Locale(rightLocale) : null,
-                            property, propertyFilter);
+                            property, propertyFilter, skipEqualProperties);
 
                     RequestPathInfo pathInfo = request.getRequestPathInfo();
                     String ext = pathInfo.getExtension();

@@ -3,7 +3,6 @@ package com.composum.pages.commons.model;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.SlingBean;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ValueMap;
 
 public class GenericModel extends ModelWrapper implements SlingBean {
 
@@ -25,6 +24,8 @@ public class GenericModel extends ModelWrapper implements SlingBean {
             delegate = new Site(context, resource);
         } else if (Page.isPage(resource)) {
             delegate = new Page(context, resource);
+        } else if (Page.isPageContent(resource)) {
+            delegate = new PageContent(context, resource);
         } else if (Folder.isFolder(resource)) {
             delegate = new Folder(context, resource);
         } else if (File.isFile(resource)) {

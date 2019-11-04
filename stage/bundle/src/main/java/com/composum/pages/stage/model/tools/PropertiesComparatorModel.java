@@ -6,6 +6,7 @@ import com.composum.pages.commons.model.Element;
 import com.composum.pages.commons.model.GenericModel;
 import com.composum.pages.commons.model.Model;
 import com.composum.pages.commons.model.Page;
+import com.composum.pages.commons.model.PageContent;
 import com.composum.platform.models.annotations.InternationalizationStrategy;
 import com.composum.sling.core.AbstractServletBean;
 import com.composum.sling.core.BeanContext;
@@ -23,51 +24,30 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * the model for property comparation - implements the comparator itself
  */
 public class PropertiesComparatorModel extends AbstractServletBean {
 
-    protected class ComparatorRef {
-
-        public BeanContext context;
-        public Resource resource;
-        public Locale locale;
-
-        public ComparatorRef(@Nonnull final BeanContext base, @Nonnull final String path,
-                             @Nullable final String versionUuid, @Nullable final Locale locale) {
-            this.context = base;
-            this.locale = locale;
-            if (StringUtils.isNotBlank(versionUuid)) {
-
-            }
-            if (this.resource == null) {
-                this.resource = this.context.getResolver().getResource(path);
-            }
-        }
-    }
-
-    protected PropertiesComparatorNode root;
+    protected PropertiesComparatorRoot root;
     protected String property;
     protected ResourceFilter propertyFilter;
-
-    protected ComparatorRef left;
-    protected ComparatorRef right;
+    protected boolean skipEqualProperties;
 
     public PropertiesComparatorModel(@Nonnull final BeanContext context,
                                      @Nonnull final String left, @Nullable final String leftVersionUuid, @Nullable final Locale leftLocale,
                                      @Nonnull final String right, @Nullable final String rightVersionUuid, @Nullable final Locale rightLocale,
-                                     @Nullable final String property, @Nullable final ResourceFilter propertyFilter) {
+                                     @Nullable final String property, @Nullable final ResourceFilter propertyFilter, boolean skipEqualProperties) {
         initialize(context);
-
         this.property = property;
         this.propertyFilter = propertyFilter;
-
-        this.left = new ComparatorRef(context, left, leftVersionUuid, leftLocale);
-        this.right = new ComparatorRef(context, right, rightVersionUuid, rightLocale);
-
-        this.root = scan(this.left.resource, this.right.resource);
+        this.skipEqualProperties = skipEqualProperties;
+        this.root = new PropertiesComparatorRoot(context,
+                left, leftLocale, leftVersionUuid,
+                right, rightLocale, rightVersionUuid);
+        scan(this.root);
     }
 
     @Nonnull
@@ -75,26 +55,41 @@ public class PropertiesComparatorModel extends AbstractServletBean {
         return root;
     }
 
+    public void toJson(@Nonnull final JsonWriter writer) throws IOException {
+        root.toJson(writer);
+    }
+
     @Nonnull
-    protected PropertiesComparatorNode scan(@Nullable final Resource left, @Nullable final Resource right) {
-        GenericModel leftModel = left != null ? new GenericModel(this.left.context, left) : null;
-        GenericModel rightModel = right != null ? new GenericModel(this.right.context, right) : null;
-        Component leftType = leftModel != null ? leftModel.getComponent() : null;
-        Component rightType = rightModel != null ? rightModel.getComponent() : null;
-        PropertiesComparatorNode node = new PropertiesComparatorNode(leftModel, rightModel);
+    protected PropertiesComparatorNode nextNode(@Nullable final Resource leftResource,
+                                                @Nullable final Resource rightResource) {
+        GenericModel leftModel = leftResource != null
+                ? new GenericModel(Objects.requireNonNull(this.root.getLeft()).getContext(), leftResource)
+                : null;
+        GenericModel rightModel = rightResource != null
+                ? new GenericModel(Objects.requireNonNull(this.root.getRight()).getContext(), rightResource)
+                : null;
+        return new PropertiesComparatorNode(leftModel, rightModel);
+    }
+
+    @Nullable
+    protected PropertiesComparatorNode scan(@Nonnull final PropertiesComparatorNode node) {
+        Model left = getComparableModel(node.getLeft());
+        Model right = getComparableModel(node.getRight());
+        Locale leftLocale = this.root.getLeft() != null ? this.root.getLeft().getLocale() : null;
+        Locale rightLocale = this.root.getRight() != null ? this.root.getRight().getLocale() : null;
         if (StringUtils.isNotBlank(property) && !"*".equals(property)) {
             node.setProperty(property,
-                    getValue(leftModel, property, this.left.locale),
-                    getValue(rightModel, property, this.right.locale));
+                    getValue(left, property, leftLocale),
+                    getValue(right, property, rightLocale), skipEqualProperties);
         } else {
-            Component.Properties leftProps = leftType != null ? leftType.getComponentProperties(propertyFilter) : null;
-            Component.Properties rightProps = rightType != null ? rightType.getComponentProperties(propertyFilter) : null;
+            Component.Properties leftProps = getProperties(left);
+            Component.Properties rightProps = getProperties(right);
             if (leftProps != null) {
                 for (Component.Property compProp : leftProps.values()) {
                     String propName = compProp.getName();
                     node.setProperty(propName,
-                            getValue(leftModel, propName, this.left.locale),
-                            getValue(rightModel, propName, this.right.locale));
+                            getValue(left, propName, leftLocale),
+                            getValue(right, propName, rightLocale), skipEqualProperties);
                 }
             }
             if (rightProps != null) {
@@ -102,53 +97,67 @@ public class PropertiesComparatorModel extends AbstractServletBean {
                     String propName = compProp.getName();
                     if (node.getProperty(propName) == null) {
                         node.setProperty(propName,
-                                getValue(leftModel, propName, this.left.locale),
-                                getValue(rightModel, propName, this.right.locale));
+                                getValue(left, propName, leftLocale),
+                                getValue(right, propName, rightLocale), skipEqualProperties);
                     }
                 }
             }
         }
         if ("*".equals(property)) {
-            Map<String, Model> leftElements = getElements(leftModel);
-            Map<String, Model> rightElements = getElements(rightModel);
+            Map<String, Model> leftElements = getElements(left);
+            Map<String, Model> rightElements = getElements(right);
             Iterator<Map.Entry<String, Model>> leftIt = leftElements.entrySet().iterator();
             Iterator<Map.Entry<String, Model>> rightIt = rightElements.entrySet().iterator();
             while (leftIt.hasNext() || rightIt.hasNext()) {
                 Resource leftElement = leftIt.hasNext() ? leftIt.next().getValue().getResource() : null;
                 Resource rightElement = rightIt.hasNext() ? rightIt.next().getValue().getResource() : null;
-                node.addChild(scan(leftElement, rightElement));
+                PropertiesComparatorNode child = scan(nextNode(leftElement, rightElement));
+                if (child != null) {
+                    node.addChild(child);
+                }
             }
         }
-        return node;
+        return node.getProperties().size() > 0 || node.getNodes().size() > 0 ? node : null;
     }
 
-    @Nonnull
-    protected Map<String, Model> getElements(@Nullable final GenericModel model) {
-        Map<String, Model> elements = null;
+    @Nullable
+    protected Model getComparableModel(@Nullable final GenericModel model) {
         if (model != null) {
             Model delegate = model.getDelegate();
             if (delegate instanceof Page) {
-                elements = ((Page) delegate).getContent().getElements();
-            } else if (delegate instanceof Container) {
-                elements = new LinkedHashMap<>();
-                List<Element> sequence = ((Container) delegate).getElements();
-                for (Element element : sequence) {
-                    elements.put(element.getName(), element);
-                }
+                return ((Page) delegate).getContent();
+            }
+            return delegate;
+        }
+        return null;
+    }
+
+    @Nullable
+    protected Component.Properties getProperties(@Nullable final Model model) {
+        Component type = model != null ? model.getComponent() : null;
+        return type != null ? type.getComponentProperties(propertyFilter) : null;
+    }
+
+    @Nonnull
+    protected Map<String, Model> getElements(@Nullable final Model model) {
+        Map<String, Model> elements = null;
+        if (model instanceof PageContent) {
+            elements = ((PageContent) model).getElements();
+        } else if (model instanceof Container) {
+            elements = new LinkedHashMap<>();
+            List<Element> sequence = ((Container) model).getElements();
+            for (Element element : sequence) {
+                elements.put(element.getName(), element);
             }
         }
         return elements != null ? elements : Collections.emptyMap();
     }
 
     @Nullable
-    protected Object getValue(@Nullable final GenericModel model, @Nonnull final String name,
+    protected Object getValue(@Nullable final Model model, @Nonnull final String name,
                               @Nullable final Locale locale) {
         return model != null
                 ? model.getValueMap().get(InternationalizationStrategy.I18NFOLDER.getI18nPath(locale, name))
                 : null;
-    }
-
-    public void toJson(@Nonnull final JsonWriter writer) throws IOException {
-        root.toJson(writer);
     }
 }
