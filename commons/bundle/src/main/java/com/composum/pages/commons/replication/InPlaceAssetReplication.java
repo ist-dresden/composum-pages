@@ -9,7 +9,8 @@ import org.osgi.service.component.annotations.Component;
 @Component(
         service = {ReplicationStrategy.class},
         property = {
-                Constants.SERVICE_DESCRIPTION + "=Composum Pages In Place Asset Replication Strategy"
+                Constants.SERVICE_DESCRIPTION + "=Composum Pages In Place Asset Replication Strategy",
+                Constants.SERVICE_RANKING + ":Integer=300"
         },
         immediate = true
 )

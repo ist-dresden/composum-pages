@@ -5,7 +5,10 @@ import com.composum.sling.platform.security.AccessMode;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceReference;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -21,6 +24,9 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 @Component(
         service = {ReplicationManager.class},
@@ -36,7 +42,11 @@ public class PagesReplicationManager implements ReplicationManager {
 
     protected PagesReplicationConfig config;
 
-    protected List<ReplicationStrategy> instances = Collections.synchronizedList(new ArrayList<>());
+    protected BundleContext bundleContext;
+
+    /** A sorted map of the {@link ReplicationStrategy}'s sorted by the service references - that is, by priority. */
+    protected Map<ServiceReference<ReplicationStrategy>, ReplicationStrategy> instances =
+            Collections.synchronizedMap(new TreeMap<>());
 
     @Override
     public PagesReplicationConfig getConfig() {
@@ -88,8 +98,8 @@ public class PagesReplicationManager implements ReplicationManager {
         String resourcePath = resource.getPath();
         if (!context.done.contains(resourcePath)) {
             // perform replication only of not already done
-            for (ReplicationStrategy strategy : instances) {
-                if (strategy.canReplicate(context, resource, isReference)) {
+            for (ReplicationStrategy strategy : instances.values()) {
+                if (!replicationDone && strategy.canReplicate(context, resource, isReference)) {
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("replicate" + (isReference ? " reference" : "") + " '{}' using {}",
                                 resourcePath, strategy.getClass().getSimpleName());
@@ -137,33 +147,41 @@ public class PagesReplicationManager implements ReplicationManager {
     }
 
     @Reference(service = ReplicationStrategy.class, policy = ReferencePolicy.DYNAMIC, cardinality = ReferenceCardinality.MULTIPLE)
-    protected void addReplicationStrategy(@Nonnull final ReplicationStrategy strategy) {
+    protected void addReplicationStrategy(@Nonnull final ServiceReference<ReplicationStrategy> strategyReference) {
+        ReplicationStrategy strategy = bundleContext.getService(strategyReference);
         LOG.info("addReplicationStrategy: {}", strategy.getClass().getSimpleName());
         if (config != null) {
             strategy.activate(this);
         }
-        instances.add(strategy);
+        instances.put(strategyReference, strategy);
     }
 
-    protected void removeReplicationStrategy(@Nonnull final ReplicationStrategy strategy) {
-        LOG.info("removeReplicationStrategy: {}", strategy.getClass().getSimpleName());
-        instances.remove(strategy);
+    protected void removeReplicationStrategy(@Nonnull final ServiceReference<ReplicationStrategy> strategyReference) {
+        LOG.info("removeReplicationStrategy: {}", strategyReference.getClass().getSimpleName());
+        instances.remove(strategyReference);
     }
 
     @Activate
     @Modified
-    public void activate(PagesReplicationConfig config) {
+    public void activate(BundleContext bundleContext, PagesReplicationConfig config) throws InvalidSyntaxException {
+        LOG.info("activate");
+        this.bundleContext = bundleContext;
         this.config = config;
-        for (ReplicationStrategy strategy : instances) {
-            strategy.activate(this);
+        for (ServiceReference<ReplicationStrategy> serviceReference :
+                bundleContext.getServiceReferences(ReplicationStrategy.class, null)) {
+            addReplicationStrategy(serviceReference);
         }
     }
 
     @Deactivate
     public void deactivate() {
-        for (ReplicationStrategy strategy : instances) {
+        LOG.info("deactivate");
+        for (ReplicationStrategy strategy : instances.values()) {
             strategy.deactivate(this);
         }
+        instances.clear();
+        this.config = null;
+        this.bundleContext = null;
     }
 
     @Override
