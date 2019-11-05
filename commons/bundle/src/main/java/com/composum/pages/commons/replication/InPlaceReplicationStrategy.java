@@ -4,6 +4,7 @@ import com.composum.pages.commons.model.Site;
 import com.composum.sling.core.JcrResource;
 import com.composum.sling.core.ResourceHandle;
 import com.composum.sling.core.util.ResourceUtil;
+import com.composum.sling.core.util.SlingResourceUtil;
 import com.composum.sling.platform.security.AccessMode;
 import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -73,6 +74,7 @@ public abstract class InPlaceReplicationStrategy implements ReplicationStrategy 
     @Override
     public void replicate(ReplicationContext context, Resource resource, boolean recursive)
             throws Exception {
+        if (LOG.isDebugEnabled()) { LOG.debug("replicate(rec {}, {})", SlingResourceUtil.getPath(resource)); }
         ResourceResolver replicateResolver = context.getResolver();
         String targetPath = getTargetPath(context);
         Resource targetRoot;
@@ -93,6 +95,9 @@ public abstract class InPlaceReplicationStrategy implements ReplicationStrategy 
     protected void replicate(ReplicationContext context, Resource targetRoot,
                              Resource released, String relativePath, boolean recursive, boolean merge)
             throws Exception {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("replicate(rec {}, merge {}, {})", recursive, merge, relativePath);
+        }
         Resource replicate = targetRoot.getChild(relativePath);
         if (replicate == null) {
             ResourceResolver targetResolver = context.getResolver();
@@ -101,7 +106,10 @@ public abstract class InPlaceReplicationStrategy implements ReplicationStrategy 
                     ? buildReplicationBase(context, targetResolver, targetRoot, released.getResourceResolver(), parentPath)
                     : targetRoot;
             if (replicateParent != null) {
-                replicate = createReplicate(targetResolver, released, replicateParent);
+                replicate = replicateParent.getChild(released.getName());
+                if (replicate == null) { // might already been created in buildReplicationBase if it's jcr:content
+                    replicate = createReplicate(targetResolver, released, replicateParent);
+                }
             }
         }
         if (replicate != null) {
@@ -114,11 +122,15 @@ public abstract class InPlaceReplicationStrategy implements ReplicationStrategy 
     /**
      * build the path to a resource replicate if not always existing
      * - each intermediate path is only created on demand if a resource to replicate needs this path
+     * - if there is a jcr:content, the called copyReleasedResource makes a copy of that, too.
      */
     protected Resource buildReplicationBase(ReplicationContext context,
                                             ResourceResolver targetResolver, Resource targetRoot,
                                             ResourceResolver releaseResolver, String relativePath)
             throws Exception {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug(">>>buildReplicationBase({} / {})", targetRoot, relativePath);
+        }
         Resource targetResource = targetRoot.getChild(relativePath);
         if (targetResource == null) {
             String contentPath = getConfig().contentPath();
@@ -134,18 +146,26 @@ public abstract class InPlaceReplicationStrategy implements ReplicationStrategy 
                 LOG.error("no released resource found at '{}'", contentPath + "/" + relativePath);
             }
         }
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("<<<buildReplicationBase({} / {})", targetRoot, relativePath);
+        }
         return targetResource;
     }
 
     /**
      * makes a replication copy of one resource and their 'jcr:content' child if such a child exists
-     * does this also with the other children if 'recursive' is 'on'
+     * does this also with the other children if 'recursive' is 'on'. The jcr:content is always copied recursively,
+     * and if a resource is a jcr:content node it is also copied recursively.
      * Caution: calling this with merge=false && recursive=false deletes all children except jcr:content .
      */
     protected void copyReleasedResource(ReplicationContext context, String targetRoot, Resource released, Resource replicate,
                                         boolean recursive, boolean merge)
             throws Exception {
-        copyReleasedContent(context, targetRoot, released, replicate, false, merge);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("copyReleasedResource(rec {} merge {}, {})", recursive, merge, SlingResourceUtil.getPath(released));
+        }
+        boolean isJcrContent = released.getName().equals(JcrConstants.JCR_CONTENT);
+        copyReleasedContent(context, targetRoot, released, replicate, isJcrContent, merge);
         Resource releasedContent = released.getChild(JcrConstants.JCR_CONTENT);
         if (releasedContent != null) {
             ResourceResolver targetResolver = replicate.getResourceResolver();
@@ -185,7 +205,7 @@ public abstract class InPlaceReplicationStrategy implements ReplicationStrategy 
                                        boolean recursive, boolean merge)
             throws Exception {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("copyReleasedContent({}) to '{}'", released.getPath(), replicate.getPath());
+            LOG.debug("copyReleasedContent({}, rec {}, merge {}) to '{}'", released.getPath(), recursive, merge, replicate.getPath());
         }
         ResourceResolver targetResolver = replicate.getResourceResolver();
         if (!merge) {
@@ -212,13 +232,15 @@ public abstract class InPlaceReplicationStrategy implements ReplicationStrategy 
 
     protected void copyReleasedProperties(ReplicationContext context, String targetRoot,
                                           Resource released, Resource replicate, boolean merge) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("copyReleasedProperties(merge {}, {})", merge,
+                    SlingResourceUtil.getPath(released));
+        }
         ValueMap releasedValues = released.getValueMap();
         ModifiableValueMap replicateValues = replicate.adaptTo(ModifiableValueMap.class);
         replicateValues.put(ResourceUtil.PROP_PRIMARY_TYPE, releasedValues.get(ResourceUtil.PROP_PRIMARY_TYPE, String.class));
-        String[] mixins = releasedValues.get(ResourceUtil.PROP_MIXINTYPES, String[].class);
-        if (mixins != null) { replicateValues.put(ResourceUtil.PROP_MIXINTYPES, mixins); } else {
-            replicateValues.remove(ResourceUtil.PROP_MIXINTYPES);
-        }
+        String[] mixins = releasedValues.get(ResourceUtil.PROP_MIXINTYPES, new String[0]);
+        replicateValues.put(ResourceUtil.PROP_MIXINTYPES, mixins);
         if (!merge) {
             // in case of a 'reset' remove all properties from the target resource
             for (String key : replicateValues.keySet().toArray(new String[0])) {
@@ -237,9 +259,9 @@ public abstract class InPlaceReplicationStrategy implements ReplicationStrategy 
                         value = transformStringProperty(context, targetRoot, (String) value);
                     }
                     if (value instanceof String[]) {
-                        value = Arrays.asList((String[]) value).stream()
+                        value = Arrays.stream((String[]) value)
                                 .map((v) -> transformStringProperty(context, targetRoot, v))
-                                .toArray((len) -> new String[len]);
+                                .toArray(String[]::new);
                     }
                     if (value != null) {
                         replicateValues.put(key, value);
@@ -312,7 +334,7 @@ public abstract class InPlaceReplicationStrategy implements ReplicationStrategy 
         config = manager.getConfig();
         contentPath = RegExUtils.removePattern(ResourceUtil.normalize(config.contentPath()), "/*$");
         if (StringUtils.isBlank(contentPath) || !StringUtils.startsWith(contentPath, "/")) {
-            LOG.error("Invalid content path {}, deactivating publication!");
+            LOG.error("Invalid content path {}, deactivating publication!", contentPath);
             this.replicationManager = null;
             contentPathPattern = Pattern.compile("(?=a)b"); // never matches
             contentLinkPattern = Pattern.compile("(?=a)b"); // never matches
