@@ -3,4 +3,9 @@
         jcr:primaryType="cpp:Component"
         jcr:title="Paragraph System"
         category="[General,Blueprint]"
-        sling:resourceSuperType="composum/pages/components/container"/>
+        sling:resourceSuperType="composum/pages/components/container">
+    <jcr:content jcr:primaryType="nt:unstructured">
+        <properties jcr:primaryType="nt:unstructured">
+        </properties>
+    </jcr:content>
+</jcr:root>

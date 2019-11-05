@@ -4,4 +4,9 @@
         jcr:primaryType="cpp:Component"
         jcr:title="Event Teaser "
         category="[News &amp; Events,Blueprint]"
-        sling:resourceSuperType="composum/pages/components/element"/>
+        sling:resourceSuperType="composum/pages/components/element">
+    <jcr:content jcr:primaryType="nt:unstructured">
+        <properties jcr:primaryType="nt:unstructured">
+        </properties>
+    </jcr:content>
+</jcr:root>

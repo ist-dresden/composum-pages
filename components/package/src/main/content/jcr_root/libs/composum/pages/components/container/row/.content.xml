@@ -5,4 +5,12 @@
           jcr:title="Row"
           category="[Layout,Blueprint]"
           sling:resourceSuperType="composum/pages/components/container"
-          allowedElements="[composum/pages/components/container/row/column]"/>
+          allowedElements="[composum/pages/components/container/row/column]">
+    <jcr:content jcr:primaryType="nt:unstructured">
+        <properties jcr:primaryType="nt:unstructured">
+            <title jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="plain"/>
+            <anchor jcr:primaryType="nt:unstructured"/>
+            <columns jcr:primaryType="nt:unstructured" required="{Boolean}true"/>
+        </properties>
+    </jcr:content>
+</jcr:root>

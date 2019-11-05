@@ -5,4 +5,9 @@
         jcr:title="Link Set"
         category="[General,Blueprint]"
         sling:resourceSuperType="composum/pages/components/composed/list"
-        allowedElements="[composum/pages/components/element/link]"/>
+        allowedElements="[composum/pages/components/element/link]">
+    <jcr:content jcr:primaryType="nt:unstructured">
+        <properties jcr:primaryType="nt:unstructured">
+        </properties>
+    </jcr:content>
+</jcr:root>

@@ -4,4 +4,10 @@
         jcr:description="a reference is including the content of another element (reuses content)"
         jcr:title="Reference"
         category="[Special,Blueprint]"
-        sling:resourceSuperType="composum/pages/components/element"/>
+        sling:resourceSuperType="composum/pages/components/element">
+    <jcr:content jcr:primaryType="nt:unstructured">
+        <properties jcr:primaryType="nt:unstructured">
+            <contentReference jcr:primaryType="nt:unstructured"/>
+        </properties>
+    </jcr:content>
+</jcr:root>

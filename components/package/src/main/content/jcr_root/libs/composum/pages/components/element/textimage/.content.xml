@@ -4,4 +4,24 @@
         jcr:description="a combination of a rich text block and an image (both optional)"
         jcr:title="Text &amp; Image"
         category="[Text,Image,General,Blueprint]"
-        sling:resourceSuperType="composum/pages/components/element/text"/>
+        sling:resourceSuperType="composum/pages/components/element/text">
+    <jcr:content jcr:primaryType="nt:unstructured">
+        <properties jcr:primaryType="nt:unstructured">
+            <title jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="plain"/>
+            <hideTitle jcr:primaryType="nt:unstructured" type="Boolean"/>
+            <text jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="rich"/>
+            <textAlignment jcr:primaryType="nt:unstructured"/>
+            <imagePosition jcr:primaryType="nt:unstructured"/>
+            <floatingText jcr:primaryType="nt:unstructured" type="Boolean"/>
+            <image jcr:primaryType="nt:unstructured">
+                <imageRef jcr:primaryType="nt:unstructured"/>
+                <title jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="plain"/>
+                <alt jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="plain"/>
+                <copyright jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="plain"/>
+                <copyrightUrl jcr:primaryType="nt:unstructured"/>
+                <license jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="plain"/>
+                <licenseUrl jcr:primaryType="nt:unstructured"/>
+            </image>
+        </properties>
+    </jcr:content>
+</jcr:root>

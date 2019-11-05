@@ -4,4 +4,16 @@
         jcr:description="a single image element"
         jcr:title="Image"
         category="[Image,General,Blueprint]"
-        sling:resourceSuperType="composum/pages/components/element/asset"/>
+        sling:resourceSuperType="composum/pages/components/element/asset">
+    <jcr:content jcr:primaryType="nt:unstructured">
+        <properties jcr:primaryType="nt:unstructured">
+            <imageRef jcr:primaryType="nt:unstructured"/>
+            <title jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="plain"/>
+            <alt jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="plain"/>
+            <copyright jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="plain"/>
+            <copyrightUrl jcr:primaryType="nt:unstructured"/>
+            <license jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="plain"/>
+            <licenseUrl jcr:primaryType="nt:unstructured"/>
+        </properties>
+    </jcr:content>
+</jcr:root>

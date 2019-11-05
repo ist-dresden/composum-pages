@@ -24,6 +24,8 @@ public class GenericModel extends ModelWrapper implements SlingBean {
             delegate = new Site(context, resource);
         } else if (Page.isPage(resource)) {
             delegate = new Page(context, resource);
+        } else if (Page.isPageContent(resource)) {
+            delegate = new PageContent(context, resource);
         } else if (Folder.isFolder(resource)) {
             delegate = new Folder(context, resource);
         } else if (File.isFile(resource)) {

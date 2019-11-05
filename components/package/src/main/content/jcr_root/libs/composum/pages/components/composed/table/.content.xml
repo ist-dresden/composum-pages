@@ -5,4 +5,15 @@
         jcr:title="Table"
         category="[Table,General,Blueprint]"
         sling:resourceSuperType="composum/pages/components/composed"
-        allowedElements="[composum/pages/components/composed/table/row]"/>
+        allowedElements="[composum/pages/components/composed/table/row]">
+    <jcr:content jcr:primaryType="nt:unstructured">
+        <properties jcr:primaryType="nt:unstructured">
+            <title jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="plain"/>
+            <copyright jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="plain"/>
+            <striped jcr:primaryType="nt:unstructured" type="Boolean"/>
+            <bordered jcr:primaryType="nt:unstructured" type="Boolean"/>
+            <condensed jcr:primaryType="nt:unstructured" type="Boolean"/>
+            <hover jcr:primaryType="nt:unstructured" type="Boolean"/>
+        </properties>
+    </jcr:content>
+</jcr:root>

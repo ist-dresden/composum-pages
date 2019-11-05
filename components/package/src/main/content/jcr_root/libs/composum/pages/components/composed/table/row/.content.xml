@@ -6,4 +6,11 @@
           category="[Table,General,Blueprint]"
           sling:resourceSuperType="composum/pages/components/composed"
           allowedContainers="[composum/pages/components/composed/table]"
-          allowedElements="[composum/pages/components/composed/table/cell]"/>
+          allowedElements="[composum/pages/components/composed/table/cell]">
+    <jcr:content jcr:primaryType="nt:unstructured">
+        <properties jcr:primaryType="nt:unstructured">
+            <head jcr:primaryType="nt:unstructured" type="Boolean"/>
+            <level jcr:primaryType="nt:unstructured"/>
+        </properties>
+    </jcr:content>
+</jcr:root>

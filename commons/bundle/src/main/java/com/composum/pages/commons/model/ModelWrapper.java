@@ -5,6 +5,7 @@ import com.composum.pages.commons.model.properties.Language;
 import com.composum.pages.commons.model.properties.Languages;
 import com.composum.sling.core.BeanContext;
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ValueMap;
 
 import javax.annotation.Nonnull;
 import java.util.Locale;
@@ -20,14 +21,18 @@ public class ModelWrapper implements Model {
     protected ModelWrapper() {
     }
 
-    /** @deprecated the normal instantiation mechanism is by using the constructor. */
+    /**
+     * @deprecated the normal instantiation mechanism is by using the constructor.
+     */
     @Override
     @Deprecated
     public void initialize(BeanContext context, Resource resource) {
         delegate.initialize(context, resource);
     }
 
-    /** @deprecated the normal instantiation mechanism is by using the constructor. */
+    /**
+     * @deprecated the normal instantiation mechanism is by using the constructor.
+     */
     @Override
     @Deprecated
     public void initialize(BeanContext context) {
@@ -171,6 +176,12 @@ public class ModelWrapper implements Model {
     @Override
     public <T> T getProperty(Locale locale, @Nonnull T defaultValue, String... keys) {
         return delegate.getProperty(locale, defaultValue, keys);
+    }
+
+    @Override
+    @Nonnull
+    public ValueMap getValueMap() {
+        return delegate.getValueMap();
     }
 
     // inherited properties

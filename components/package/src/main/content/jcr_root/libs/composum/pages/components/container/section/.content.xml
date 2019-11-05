@@ -4,4 +4,14 @@
           jcr:description="a countainer to build a document structure"
           jcr:title="Section"
           category="[Layout,Blueprint]"
-          sling:resourceSuperType="composum/pages/components/container"/>
+          sling:resourceSuperType="composum/pages/components/container">
+    <jcr:content jcr:primaryType="nt:unstructured">
+        <properties jcr:primaryType="nt:unstructured">
+            <jcr:title jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="plain"/>
+            <hideTitle jcr:primaryType="nt:unstructured" type="Boolean"/>
+            <anchor jcr:primaryType="nt:unstructured"/>
+            <level jcr:primaryType="nt:unstructured"/>
+            <icon jcr:primaryType="nt:unstructured"/>
+        </properties>
+    </jcr:content>
+</jcr:root>

@@ -3,4 +3,12 @@
         jcr:primaryType="cpp:Component"
         jcr:title="Inherited Paragraph System"
         category="[General,Blueprint]"
-        sling:resourceSuperType="composum/pages/components/container/parsys"/>
+        sling:resourceSuperType="composum/pages/components/container/parsys">
+    <jcr:content jcr:primaryType="nt:unstructured">
+        <properties jcr:primaryType="nt:unstructured">
+            <parentInheritanceCancelled jcr:primaryType="nt:unstructured" type="Boolean"/>
+            <childInheritanceCancelled jcr:primaryType="nt:unstructured" type="Boolean"/>
+            <parsysPolicy jcr:primaryType="nt:unstructured"/>
+        </properties>
+    </jcr:content>
+</jcr:root>

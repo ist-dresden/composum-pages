@@ -4,4 +4,19 @@
         jcr:description="a video player"
         jcr:title="Video"
         category="[Video,General,Blueprint]"
-        sling:resourceSuperType="composum/pages/components/element/asset"/>
+        sling:resourceSuperType="composum/pages/components/element/asset">
+    <jcr:content jcr:primaryType="nt:unstructured">
+        <properties jcr:primaryType="nt:unstructured">
+            <videoRef jcr:primaryType="nt:unstructured"/>
+            <posterRef jcr:primaryType="nt:unstructured"/>
+            <controls jcr:primaryType="nt:unstructured" type="Boolean"/>
+            <autoplay jcr:primaryType="nt:unstructured" type="Boolean"/>
+            <muted jcr:primaryType="nt:unstructured" type="Boolean"/>
+            <loop jcr:primaryType="nt:unstructured" type="Boolean"/>
+            <copyright jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="plain"/>
+            <copyrightUrl jcr:primaryType="nt:unstructured"/>
+            <license jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="plain"/>
+            <licenseUrl jcr:primaryType="nt:unstructured"/>
+        </properties>
+    </jcr:content>
+</jcr:root>

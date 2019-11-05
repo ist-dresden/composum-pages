@@ -450,6 +450,11 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
         return subtitle;
     }
 
+    @Override
+    public String getTypeHint() {
+        return getContent().getTypeHint();
+    }
+
     public String getLastModifiedString() {
         return getContent().getLastModifiedString();
     }

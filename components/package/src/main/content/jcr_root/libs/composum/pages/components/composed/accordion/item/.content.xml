@@ -5,4 +5,11 @@
         jcr:title="Accordion Item"
         category="[Layout,Blueprint]"
         sling:resourceSuperType="composum/pages/components/container/parsys"
-        allowedContainers="[composum/pages/components/composed/accordion]"/>
+        allowedContainers="[composum/pages/components/composed/accordion]">
+    <jcr:content jcr:primaryType="nt:unstructured">
+        <properties jcr:primaryType="nt:unstructured">
+            <title jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="plain"/>
+            <initialOpen jcr:primaryType="nt:unstructured" type="Boolean"/>
+        </properties>
+    </jcr:content>
+</jcr:root>

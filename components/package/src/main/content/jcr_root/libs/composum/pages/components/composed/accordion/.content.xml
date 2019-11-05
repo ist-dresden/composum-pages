@@ -5,4 +5,10 @@
         jcr:title="Accordion"
         category="[Layout,Blueprint]"
         sling:resourceSuperType="composum/pages/components/composed"
-        allowedElements="[composum/pages/components/composed/accordion/item]"/>
+        allowedElements="[composum/pages/components/composed/accordion/item]">
+    <jcr:content jcr:primaryType="nt:unstructured">
+        <properties jcr:primaryType="nt:unstructured">
+            <behavior jcr:primaryType="nt:unstructured"/>
+        </properties>
+    </jcr:content>
+</jcr:root>

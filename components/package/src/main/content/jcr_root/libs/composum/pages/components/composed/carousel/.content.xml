@@ -4,4 +4,14 @@
         jcr:description="a rotating set of elements"
         jcr:title="Carousel"
         category="[Teaser,Blueprint]"
-        sling:resourceSuperType="composum/pages/components/composed"/>
+        sling:resourceSuperType="composum/pages/components/composed">
+    <jcr:content jcr:primaryType="nt:unstructured">
+        <properties jcr:primaryType="nt:unstructured">
+            <useControls jcr:primaryType="nt:unstructured" type="Boolean"/>
+            <showIndicators jcr:primaryType="nt:unstructured" type="Boolean"/>
+            <autoStart jcr:primaryType="nt:unstructured" type="Boolean"/>
+            <interval jcr:primaryType="nt:unstructured"/>
+            <noPause jcr:primaryType="nt:unstructured" type="Boolean"/>
+        </properties>
+    </jcr:content>
+</jcr:root>
