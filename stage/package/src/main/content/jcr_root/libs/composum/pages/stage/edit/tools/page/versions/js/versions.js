@@ -46,6 +46,7 @@
                 actionKey: '_action_',
                 viewAction: 'view',
                 compareAction: 'compare',
+                reloadAction: 'reload',
                 activateAction: 'activate',
                 revertAction: 'revert',
                 deactivateAction: 'deactivate',
@@ -103,8 +104,25 @@
         tools.VersionsActions = Backbone.View.extend({
             initialize: function (options) {
                 var c = tools.const.versions;
+                // left
                 this.$viewAction = this.$('.' + c.cssBase + c.actionKey + c.viewAction);
                 this.$compareAction = this.$('.' + c.cssBase + c.actionKey + c.compareAction);
+                this.$reloadAction = this.$('.' + c.cssBase + c.actionKey + c.reloadAction);
+                this.left = [
+                    this.$viewAction,
+                    this.$compareAction,
+                    this.$reloadAction
+                ];
+                this.$viewAction.click(_.bind(function (event) {
+                    this.versions.toggleVersionsView('view');
+                }, this));
+                this.$compareAction.click(_.bind(function (event) {
+                    this.versions.toggleVersionsView('compare');
+                }, this));
+                this.$reloadAction.click(_.bind(function (event) {
+                    this.versions.refreshVersionsView();
+                }, this));
+                // right
                 this.$activateAction = this.$('.' + c.cssBase + c.actionKey + c.activateAction);
                 this.$revertAction = this.$('.' + c.cssBase + c.actionKey + c.revertAction);
                 this.$deactivateAction = this.$('.' + c.cssBase + c.actionKey + c.deactivateAction);
@@ -121,12 +139,6 @@
                     this.$checkpointAction,
                     this.$moreMenu
                 ];
-                this.$viewAction.click(_.bind(function (event) {
-                    this.versions.toggleVersionsView('view');
-                }, this));
-                this.$compareAction.click(_.bind(function (event) {
-                    this.versions.toggleVersionsView('compare');
-                }, this));
                 this.$activateAction.click(_.bind(this.activatePage, this));
                 this.$revertAction.click(_.bind(this.revertPage, this));
                 this.$deactivateAction.click(_.bind(this.deactivatePage, this));
@@ -140,11 +152,16 @@
             setActionsState: function () {
                 var c = tools.const.versions;
                 if (this.versions.primSelection || this.versions.sdrySelection || this.versions.versionsVisible) {
-                    this.$viewAction.prop(c.disabled, false);
-                    this.$compareAction.prop(c.disabled, false);
+                    this.left.forEach(function ($action) {
+                        $action.prop(c.disabled, false);
+                    });
+                    if (!this.versions.versionsVisible) {
+                        this.$reloadAction.prop(c.disabled, true);
+                    }
                 } else {
-                    this.$viewAction.prop(c.disabled, true);
-                    this.$compareAction.prop(c.disabled, true);
+                    this.left.forEach(function ($action) {
+                        $action.prop(c.disabled, true);
+                    });
                 }
                 if (this.versions.state.checkedOut) {
                     this.$checkpointAction.prop(c.disabled, this.versions.versionsVisible);
@@ -444,6 +461,20 @@
                 }
             },
 
+            refreshVersionsView: function () {
+                if (this.versionsVisible) {
+                    switch (this.versionsVisible) {
+                        case'view':
+                            var scope = this.currentScope();
+                            pages.versionsView.showVersions(scope.path, scope.primary, scope.secondary);
+                            break;
+                        case'compare':
+                            this.refreshVersionComparision();
+                            break;
+                    }
+                }
+            },
+
             toggleVersionsView: function (type) {
                 var c = tools.const.versions;
                 if (this.versionsVisible === type) {
@@ -453,12 +484,14 @@
                     pages.versionsView.reset();
                     this.actions.$viewAction.removeClass('active');
                     this.actions.$compareAction.removeClass('active');
+                    this.actions.$reloadAction.prop(c.disabled, true);
                     this.contextTabs.lockTabs(false);
                     this.actions.right.forEach(function ($el) {
                         $el.prop(c.disabled, false);
                     });
                 } else {
                     if (!this.versionsVisible) {
+                        this.actions.$reloadAction.prop(c.disabled, false);
                         this.actions.right.forEach(function ($el) {
                             $el.prop(c.disabled, true);
                         });

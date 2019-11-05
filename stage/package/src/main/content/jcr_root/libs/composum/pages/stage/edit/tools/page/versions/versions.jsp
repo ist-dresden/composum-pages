@@ -14,8 +14,14 @@
                         title="${cpn:i18n(slingRequest,'Show Version')}">
                 </button>
                 <button type="button"
-                        class="fa fa-exchange ${versionsCssBase}_action_compare composum-pages-tools_button btn btn-default"
+                        class="fa fa-columns ${versionsCssBase}_action_compare composum-pages-tools_button btn btn-default"
                         title="${cpn:i18n(slingRequest,'Compare Properties')}">
+                </button>
+            </div>
+            <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
+                <button type="button"
+                        class="fa fa-refresh ${versionsCssBase}_action_reload composum-pages-tools_button btn btn-default"
+                        title="${cpn:i18n(slingRequest,'Reload Comparision View')}">
                 </button>
             </div>
         </div>

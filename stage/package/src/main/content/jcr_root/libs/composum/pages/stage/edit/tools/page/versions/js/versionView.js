@@ -29,6 +29,10 @@
             initialize: function (options) {
                 pages.PageView.prototype.initialize.apply(this, [options]);
                 this.size = {width: 0, height: 0};
+            },
+
+            registerEventHandlers: function () {
+                $(document).on('body:size.VersionFrame', _.bind(this.onResize, this));
                 this.$frame.on('load.VersionFrame', _.bind(this.onLoad, this));
             },
 
@@ -75,6 +79,17 @@
                     this.size = {width: 0, height: 0};
                 }
                 pages.versionsView.onLoad();
+            },
+
+            onResize: function () {
+                if (this.$body) {
+                    var width = this.$frame.width();
+                    this.$body.css('width', width);
+                    this.size = {
+                        width: this.$body.width(),
+                        height: this.$body.height()
+                    };
+                }
             },
 
             error: function (hint, result) {
