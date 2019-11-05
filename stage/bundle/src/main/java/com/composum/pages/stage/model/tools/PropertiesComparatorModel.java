@@ -18,6 +18,7 @@ import org.apache.sling.api.resource.Resource;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -108,11 +109,30 @@ public class PropertiesComparatorModel extends AbstractServletBean {
         if ("*".equals(property)) {
             Map<String, Model> leftElements = getElements(left);
             Map<String, Model> rightElements = getElements(right);
-            Iterator<Map.Entry<String, Model>> leftIt = leftElements.entrySet().iterator();
-            Iterator<Map.Entry<String, Model>> rightIt = rightElements.entrySet().iterator();
+            List<String> leftNames = new ArrayList<>(leftElements.keySet());
+            List<String> rightNames = new ArrayList<>(rightElements.keySet());
+            for (int li = 0, ri = 0; li < leftNames.size() || ri < rightNames.size(); li++, ri++) {
+                if (!leftNames.get(li).equals(rightNames.get(ri))) {
+                    int ii = ri;
+                    while (++ii < rightNames.size() && !leftNames.get(li).equals(rightNames.get(ii))) ;
+                    if (ii == rightNames.size()) {
+                        rightNames.add(ri, null);
+                    } else {
+                        ii = li;
+                        while (++ii < leftNames.size() && !rightNames.get(ri).equals(rightNames.get(ii))) ;
+                        if (ii == leftNames.size()) {
+                            leftNames.add(li, null);
+                        }
+                    }
+                }
+            }
+            Iterator<String> leftIt = leftNames.iterator();
+            Iterator<String> rightIt = rightNames.iterator();
             while (leftIt.hasNext() || rightIt.hasNext()) {
-                Resource leftElement = leftIt.hasNext() ? leftIt.next().getValue().getResource() : null;
-                Resource rightElement = rightIt.hasNext() ? rightIt.next().getValue().getResource() : null;
+                String leftName = leftIt.hasNext() ? leftIt.next() : null;
+                String rightName = rightIt.hasNext() ? rightIt.next() : null;
+                Resource leftElement = leftName !=null ? leftElements.get(leftName).getResource() : null;
+                Resource rightElement = rightName !=null ? rightElements.get(rightName).getResource() : null;
                 PropertiesComparatorNode child = scan(nextNode(leftElement, rightElement));
                 if (child != null) {
                     node.addChild(child);

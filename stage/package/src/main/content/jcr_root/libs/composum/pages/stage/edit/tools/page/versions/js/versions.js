@@ -339,18 +339,18 @@
             },
 
             compareView: function (event) {
-                pages.versionsView.primView.setOpacity(100 - event.value);
+                pages.versionsView.primView.setOpacity((100.0 - event.value) / 100.0);
             },
 
             setComparable: function () {
                 if ((this.primSelection || this.sdrySelection) && this.primSelection !== this.sdrySelection) {
                     this.$el.addClass(tools.const.versions.versionsComparable);
                     this.display.$slider.slider('enable');
-                    pages.versionsView.primView.setOpacity(100 - this.display.$slider.slider('getValue'));
+                    pages.versionsView.primView.setOpacity((100.0 - this.display.$slider.slider('getValue')) / 100.0);
                 } else {
                     this.display.$slider.slider('disable');
                     this.$el.removeClass(tools.const.versions.versionsComparable);
-                    pages.versionsView.primView.setOpacity(100);
+                    pages.versionsView.primView.setOpacity(1.0);
                 }
             },
 
@@ -479,8 +479,6 @@
                 var c = tools.const.versions;
                 if (this.versionsVisible === type) {
                     this.versionsVisible = undefined;
-                    this.compare.$controls.css('visibility', 'hidden');
-                    this.display.$controls.css('visibility', 'visible');
                     pages.versionsView.reset();
                     this.actions.$viewAction.removeClass('active');
                     this.actions.$compareAction.removeClass('active');
@@ -520,6 +518,7 @@
                             this.display.$controls.css('visibility', 'hidden');
                             this.compare.$controls.css('visibility', 'visible');
                             this.refreshVersionComparision();
+                            pages.versionsView.primView.setOpacity(100);
                             this.actions.$compareAction.addClass('active');
                             break;
                     }
