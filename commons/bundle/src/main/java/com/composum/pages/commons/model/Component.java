@@ -155,6 +155,9 @@ public class Component extends AbstractModel {
             scanElements("", getElementsDeclaration(), filter);
         }
 
+        /**
+         * scan elements declaration
+         */
         protected void scanElements(@Nonnull final String path, @Nullable final Resource node,
                                     @Nonnull final ResourceFilter filter) {
             if (node != null) {
@@ -167,6 +170,35 @@ public class Component extends AbstractModel {
                     scanElements(childPath + "/", child, filter);
                 }
             }
+        }
+
+        /**
+         * retrieve corresponding set of elements of a component instance
+         */
+        @Nullable
+        public Map<String, Model> instanceElements(@Nonnull final Model model) {
+            return instanceElements(model.getContext(), model.getResource());
+        }
+
+        /**
+         * retrieve corresponding set of elements of a component instance
+         */
+        @Nullable
+        public Map<String, Model> instanceElements(@Nonnull final BeanContext context,
+                                                   @Nonnull final Resource resource) {
+            Map<String, Model> elements = null;
+            if (!isEmpty()) {
+                elements = new LinkedHashMap<>();
+                for (Map.Entry<String, Component.Element> entry : entrySet()) {
+                    String relativePath = entry.getValue().elementPath;
+                    Resource child = resource.getChild(relativePath);
+                    if (child != null) {
+                        GenericModel element = new GenericModel(context, child);
+                        elements.put(relativePath, element);
+                    }
+                }
+            }
+            return elements;
         }
     }
 

@@ -16,7 +16,6 @@ import javax.jcr.Workspace;
 import javax.jcr.lock.Lock;
 import javax.jcr.lock.LockManager;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -98,19 +97,7 @@ public class PageContent extends ContentModel<Page> {
         if (elements == null) {
             Component component = getComponent();
             if (component != null) {
-                Component.Elements componentElements = component.getComponentElements();
-                if (!componentElements.isEmpty()) {
-                    Resource content = getResource();
-                    elements = new LinkedHashMap<>();
-                    for (Map.Entry<String, Component.Element> entry : componentElements.entrySet()) {
-                        String relativePath = entry.getValue().elementPath;
-                        Resource resource = content.getChild(relativePath);
-                        if (resource != null) {
-                            GenericModel element = new GenericModel(context, resource);
-                            elements.put(relativePath, element);
-                        }
-                    }
-                }
+                elements = component.getComponentElements().instanceElements(this);
             }
             if (elements == null) {
                 elements = retrieveElements();

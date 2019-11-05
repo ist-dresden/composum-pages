@@ -130,7 +130,7 @@
                         &_icon {
                             min-width: $symbol-width;
                             max-width: $symbol-width;
-                            padding: $symbol-title-top 0 0;
+                            margin-top: -5px;
                             font-size: $symbol-font-size;
                             color: $symbol-color;
 

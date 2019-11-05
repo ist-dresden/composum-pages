@@ -184,6 +184,11 @@ public class PropertiesComparatorModel extends AbstractServletBean {
             for (Element element : sequence) {
                 elements.put(element.getName(), element);
             }
+        } else {
+            Component type = model != null ? model.getComponent() : null;
+            if (type != null) {
+                elements = type.getComponentElements().instanceElements(model);
+            }
         }
         return elements != null ? elements : Collections.emptyMap();
     }
