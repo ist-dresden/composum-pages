@@ -112,14 +112,16 @@ public class PropertiesComparatorModel extends AbstractServletBean {
             List<String> leftNames = new ArrayList<>(leftElements.keySet());
             List<String> rightNames = new ArrayList<>(rightElements.keySet());
             for (int li = 0, ri = 0; li < leftNames.size() || ri < rightNames.size(); li++, ri++) {
-                if (!leftNames.get(li).equals(rightNames.get(ri))) {
+                String leftName = li < leftNames.size() ? leftNames.get(li) : null;
+                String rightName = ri < rightNames.size() ? rightNames.get(ri) : null;
+                if (leftName != null && rightName != null && !leftName.equals(rightName)) {
                     int ii = ri;
-                    while (++ii < rightNames.size() && !leftNames.get(li).equals(rightNames.get(ii))) ;
+                    while (++ii < rightNames.size() && !leftName.equals(rightNames.get(ii))) ;
                     if (ii == rightNames.size()) {
                         rightNames.add(ri, null);
                     } else {
                         ii = li;
-                        while (++ii < leftNames.size() && !rightNames.get(ri).equals(rightNames.get(ii))) ;
+                        while (++ii < leftNames.size() && !rightName.equals(rightNames.get(ii))) ;
                         if (ii == leftNames.size()) {
                             leftNames.add(li, null);
                         }
@@ -131,8 +133,8 @@ public class PropertiesComparatorModel extends AbstractServletBean {
             while (leftIt.hasNext() || rightIt.hasNext()) {
                 String leftName = leftIt.hasNext() ? leftIt.next() : null;
                 String rightName = rightIt.hasNext() ? rightIt.next() : null;
-                Resource leftElement = leftName !=null ? leftElements.get(leftName).getResource() : null;
-                Resource rightElement = rightName !=null ? rightElements.get(rightName).getResource() : null;
+                Resource leftElement = leftName != null ? leftElements.get(leftName).getResource() : null;
+                Resource rightElement = rightName != null ? rightElements.get(rightName).getResource() : null;
                 PropertiesComparatorNode child = scan(nextNode(leftElement, rightElement));
                 if (child != null) {
                     node.addChild(child);
