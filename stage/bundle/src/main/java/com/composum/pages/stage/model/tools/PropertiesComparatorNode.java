@@ -72,11 +72,23 @@ public class PropertiesComparatorNode extends AbstractServletBean {
             if (value == null) {
                 return "";
             } else {
-                switch (property != null ? property.getPropertyType() : "String") {
-                    case "Date":
-                        return formatDate(value);
-                    default:
-                        return value.toString();
+                if ((property == null || property.isMulti()) && value instanceof Object[]) {
+                    StringBuilder builder = new StringBuilder("[");
+                    for (Object val : (Object[]) value) {
+                        if (builder.length() > 1) {
+                            builder.append(",");
+                        }
+                        builder.append(toString(property, val));
+                    }
+                    builder.append("]");
+                    return builder.toString();
+                } else {
+                    switch (property != null ? property.getPropertyType() : "String") {
+                        case "Date":
+                            return formatDate(value);
+                        default:
+                            return value.toString();
+                    }
                 }
             }
         }
@@ -106,19 +118,27 @@ public class PropertiesComparatorNode extends AbstractServletBean {
             if (value == null) {
                 writer.nullValue();
             } else {
-                switch (property != null ? property.getPropertyType() : "String") {
-                    case "Boolean":
-                        writer.value(value instanceof Boolean ? (Boolean) value : Boolean.parseBoolean(value.toString()));
-                        break;
-                    case "Long":
-                        writer.value(value instanceof Long ? (Long) value : Long.parseLong(value.toString()));
-                        break;
-                    case "Date":
-                        writer.value(formatDate(value));
-                        break;
-                    default:
-                        writer.value(value.toString());
-                        break;
+                if ((property == null || property.isMulti()) && value instanceof Object[]) {
+                    writer.beginArray();
+                    for (Object val : (Object[]) value) {
+                        jsonValue(writer, property, val);
+                    }
+                    writer.endArray();
+                } else {
+                    switch (property != null ? property.getPropertyType() : "String") {
+                        case "Boolean":
+                            writer.value(value instanceof Boolean ? (Boolean) value : Boolean.parseBoolean(value.toString()));
+                            break;
+                        case "Long":
+                            writer.value(value instanceof Long ? (Long) value : Long.parseLong(value.toString()));
+                            break;
+                        case "Date":
+                            writer.value(formatDate(value));
+                            break;
+                        default:
+                            writer.value(value.toString());
+                            break;
+                    }
                 }
             }
         }
