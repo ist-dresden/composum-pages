@@ -14,6 +14,7 @@ import javax.annotation.Nonnull;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Objects;
+import java.util.StringJoiner;
 
 import static com.composum.pages.commons.PagesConstants.VERSION_DATE_FORMAT;
 import static com.composum.sling.platform.staging.impl.ResourceResolverChangeFilter.PARAM_CPM_RELEASE;
@@ -56,9 +57,11 @@ public class PageVersion {
         Resource releaseRoot;
         if (Site.isSite(releaseRoot = release.getReleaseRoot())) {
             Site site = getSiteManager().createBean(context, releaseRoot);
-            String siteRoot = site.getPath() + "/";
-            if (path.startsWith(siteRoot)) {
-                path = "./" + path.substring(siteRoot.length());
+            String siteRoot = site.getPath();
+            if (path.startsWith(siteRoot + "/")) {
+                path = "./" + path.substring(siteRoot.length() + 1);
+            } else if (path.equals(siteRoot)) { // site configuration
+                path = "./";
             }
         }
         return path;
@@ -156,5 +159,12 @@ public class PageVersion {
             siteManager = Objects.requireNonNull(context.getService(SiteManager.class));
         }
         return siteManager;
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", PageVersion.class.getSimpleName() + "[", "]")
+                .add("status=" + status)
+                .toString();
     }
 }
