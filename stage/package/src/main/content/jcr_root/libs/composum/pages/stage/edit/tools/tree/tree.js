@@ -24,6 +24,7 @@
             actions: {
                 css: 'composum-pages-tools_left-actions',
                 url: '/bin/cpm/pages/edit.treeActions.html',
+                assets: '/bin/cpm/pages/assets.treeActions.html',
                 develop: '/bin/cpm/pages/develop.treeActions.html'
             },
             tile: {
@@ -916,6 +917,10 @@
             },
 
             selectDefaultNode: function () {
+            },
+
+            getNodeActionsUrl: function (path) {
+                return tree.const.actions.assets + path;
             },
 
             setFilter: function (filter) {

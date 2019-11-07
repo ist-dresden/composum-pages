@@ -1,5 +1,6 @@
 package com.composum.pages.commons.service;
 
+import com.composum.pages.commons.AssetsConfiguration;
 import com.composum.pages.commons.PagesConfiguration;
 import com.composum.pages.commons.PagesConstants;
 import com.composum.pages.commons.filter.TemplateFilter;
@@ -68,6 +69,9 @@ public class PagesSiteManager extends PagesContentManager<Site> implements SiteM
     @Reference
     protected PagesConfiguration pagesConfig;
 
+    @Reference
+    protected AssetsConfiguration assetsConfig;
+
     @Reference(cardinality = ReferenceCardinality.OPTIONAL)
     protected volatile PagesTenantSupport tenantSupport;
 
@@ -123,6 +127,14 @@ public class PagesSiteManager extends PagesContentManager<Site> implements SiteM
             }
         }
         return null;
+    }
+
+    /**
+     * @return 'true' if assets module supported on the platform
+     */
+    @Override
+    public boolean isAssetsSupport() {
+        return assetsConfig.isAssetsModuleSupport();
     }
 
     /**

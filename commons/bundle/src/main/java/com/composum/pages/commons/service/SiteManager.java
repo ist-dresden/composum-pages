@@ -85,6 +85,11 @@ public interface SiteManager extends ContentManager<Site> {
     Resource getContainingSiteResource(Resource resource);
 
     /**
+     * @return 'true' if assets module supported on the platform
+     */
+    boolean isAssetsSupport();
+
+    /**
      * @return 'true' if tenants are supported on the platform
      */
     boolean isTenantSupport();

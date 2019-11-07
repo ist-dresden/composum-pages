@@ -2,10 +2,13 @@ package com.composum.pages.commons.servlet;
 
 import com.composum.pages.commons.AssetsConfiguration;
 import com.composum.pages.commons.PagesConfiguration;
+import com.composum.pages.commons.model.Folder;
 import com.composum.pages.commons.model.Site;
 import com.composum.pages.commons.service.PageManager;
 import com.composum.pages.commons.service.ResourceManager;
 import com.composum.pages.commons.service.SiteManager;
+import com.composum.pages.commons.util.ResolverUtil;
+import com.composum.pages.commons.util.ResourceTypeUtil;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.ResourceHandle;
 import com.composum.sling.core.filter.ResourceFilter;
@@ -18,6 +21,7 @@ import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.api.servlets.HttpConstants;
 import org.apache.sling.api.servlets.ServletResolverConstants;
@@ -29,6 +33,8 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
@@ -36,6 +42,8 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Set;
+
+import static com.composum.pages.commons.util.ResourceTypeUtil.TREE_ACTIONS_PATH;
 
 @Component(service = Servlet.class,
         property = {
@@ -103,7 +111,7 @@ public class AssetServlet extends PagesContentServlet {
     }
 
     public enum Operation {
-        filterSet, assetTree, assetData, resourceInfo,
+        filterSet, assetTree, treeActions, assetData, resourceInfo,
         targetContainers, isAllowedChild,
         moveContent, renameContent, copyContent
     }
@@ -115,7 +123,9 @@ public class AssetServlet extends PagesContentServlet {
         return operations;
     }
 
-    /** setup of the servlet operation set for this servlet instance */
+    /**
+     * setup of the servlet operation set for this servlet instance
+     */
     @Override
     public void init() throws ServletException {
         super.init();
@@ -125,6 +135,8 @@ public class AssetServlet extends PagesContentServlet {
                 Operation.filterSet, new GetFilterSet());
         operations.setOperation(ServletOperationSet.Method.GET, Extension.json,
                 Operation.assetTree, new TreeOperation());
+        operations.setOperation(ServletOperationSet.Method.GET, Extension.html,
+                Operation.treeActions, new GetTreeActions());
         operations.setOperation(ServletOperationSet.Method.GET, Extension.json,
                 Operation.resourceInfo, new GetResourceInfo());
         operations.setOperation(ServletOperationSet.Method.GET, Extension.json,
@@ -179,6 +191,31 @@ public class AssetServlet extends PagesContentServlet {
     @Override
     protected ResourceFilter getNodeFilter(SlingHttpServletRequest request) {
         return assetsConfiguration.getRequestNodeFilter(request, PARAM_FILTER, DEFAULT_FILTER);
+    }
+
+    protected class GetTreeActions extends GetEditResource {
+
+        @Override
+        protected String getResourcePath(SlingHttpServletRequest request) {
+            return TREE_ACTIONS_PATH;
+        }
+
+        @Override
+        protected Resource getEditResource(@Nonnull SlingHttpServletRequest request, @Nonnull Resource contentResource,
+                                           @Nonnull String selectors, @Nullable String type) {
+            Resource result = null;
+            ResourceResolver resolver = request.getResourceResolver();
+            ResourceFilter assetFileFilter = assetsConfiguration.getAssetFileFilter();
+            if (assetFileFilter != null && assetFileFilter.accept(contentResource)) {
+                return ResolverUtil.getResourceType(resolver, ResourceTypeUtil.ASSETS_ASSET_ACTIONS);
+            } else if (Folder.isFolder(contentResource)) {
+                return ResolverUtil.getResourceType(resolver, ResourceTypeUtil.ASSETS_FOLDER_ACTIONS);
+            } else if (assetsConfiguration.getAnyFileFilter().accept(contentResource)) {
+                return ResolverUtil.getResourceType(resolver, ResourceTypeUtil.DEFAULT_FILE_ACTIONS);
+            } else {
+                return super.getEditResource(request, contentResource, selectors, type);
+            }
+        }
     }
 
     //

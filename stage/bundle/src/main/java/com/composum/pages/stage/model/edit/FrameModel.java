@@ -168,6 +168,12 @@ public class FrameModel extends GenericModel {
         return getSiteManager().isTenantSupport();
     }
 
+    // Assets
+
+    public boolean isAssetsSupport() {
+        return getSiteManager().isAssetsSupport();
+    }
+
     // User context
 
     public String getUserId() {

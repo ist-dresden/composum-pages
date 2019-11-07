@@ -14,6 +14,8 @@ import java.util.Set;
  */
 public interface AssetsConfiguration {
 
+    String ASSETS_MODULE_SUPPORT_CLASS = "com.composum.assets.commons.pages.PagesAssetsSupport";
+
     class ConfigurableFilter {
 
         protected final ResourceFilter filter;
@@ -45,6 +47,8 @@ public interface AssetsConfiguration {
             return hint;
         }
     }
+
+    boolean isAssetsModuleSupport();
 
     /**
      * @return the set of keys of the available filters for the (tree) views

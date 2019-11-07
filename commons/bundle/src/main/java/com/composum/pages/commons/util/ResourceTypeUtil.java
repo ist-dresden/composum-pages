@@ -105,6 +105,9 @@ public class ResourceTypeUtil {
     public static final String DEFAULT_FILE_ACTIONS = EDIT_DEFAULT_ROOT + "file/tree";
     public static final String DEFAULT_NONE_ACTIONS = EDIT_DEFAULT_ROOT + "none/tree";
 
+    public static final String ASSETS_ASSET_ACTIONS = EDIT_DEFAULT_ROOT + "assets/asset";
+    public static final String ASSETS_FOLDER_ACTIONS = EDIT_DEFAULT_ROOT + "assets/folder";
+
     public static final String DEVELOP_COMPONENT_ACTIONS = EDIT_DEFAULT_ROOT + "develop/component";
     public static final String DEVELOP_SOURCE_ACTIONS = EDIT_DEFAULT_ROOT + "develop/source";
     public static final String DEVELOP_PAGE_ACTIONS = EDIT_DEFAULT_ROOT + "develop/page";

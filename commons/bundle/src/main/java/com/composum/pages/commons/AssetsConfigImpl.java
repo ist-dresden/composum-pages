@@ -83,6 +83,8 @@ public class AssetsConfigImpl implements AssetsConfiguration {
     @Reference
     protected PagesConfiguration pagesConfiguration;
 
+    private Object assetsModuleConfig;
+
     private ResourceFilter assetNodeFilter;
     private ResourceFilter imageNodeFilter;
     private ResourceFilter videoNodeFilter;
@@ -99,6 +101,11 @@ public class AssetsConfigImpl implements AssetsConfiguration {
     private Map<String, ResourceFilter> fileFilters;
 
     protected Configuration config;
+
+    @Override
+    public boolean isAssetsModuleSupport() {
+        return assetsModuleConfig != null;
+    }
 
     // asset resource filters (file filters)
 
@@ -223,7 +230,7 @@ public class AssetsConfigImpl implements AssetsConfiguration {
         this.fileFilters = new LinkedHashMap<>();
         this.availableFilters = new LinkedHashMap<>();
         ResourceFilter replicationRootFilter = pagesConfiguration.getReplicationRootFilter();
-        Object assetsModuleConfig = null;
+        assetsModuleConfig = null;
         ServiceReference serviceReference = bundleContext.getServiceReference(ASSETS_MODULE_CONFIG_CLASS);
         if (serviceReference != null) {
             assetsModuleConfig = bundleContext.getService(serviceReference);

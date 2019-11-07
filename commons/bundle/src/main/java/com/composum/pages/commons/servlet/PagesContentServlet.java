@@ -1,6 +1,8 @@
 package com.composum.pages.commons.servlet;
 
 import com.composum.pages.commons.PagesConfiguration;
+import com.composum.pages.commons.model.Page;
+import com.composum.pages.commons.model.Site;
 import com.composum.pages.commons.service.ResourceManager;
 import com.composum.pages.commons.util.RequestUtil;
 import com.composum.pages.commons.util.ResourceTypeUtil;
@@ -23,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.jcr.ItemExistsException;
 import javax.jcr.RepositoryException;
 import javax.servlet.RequestDispatcher;
@@ -37,6 +40,8 @@ import java.util.Objects;
 public abstract class PagesContentServlet extends ContentServlet {
 
     private static final Logger LOG = LoggerFactory.getLogger(PagesContentServlet.class);
+
+    public static final String PARAM_ATTR = "attr";
 
     public static final String PARAM_FILTER = "filter";
 
@@ -122,6 +127,70 @@ public abstract class PagesContentServlet extends ContentServlet {
             } else {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND);
             }
+        }
+    }
+
+    //
+    // edit component resources
+    //
+
+    public static abstract class GetEditResource implements ServletOperation {
+
+        @Override
+        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
+                         ResourceHandle resource)
+                throws ServletException, IOException {
+
+            Resource contentResource = resource;
+            if (Page.isPage(contentResource) || Site.isSite(contentResource)) {
+                contentResource = contentResource.getChild("jcr:content");
+                if (contentResource == null) {
+                    contentResource = resource;
+                }
+            }
+
+            String selectors = RequestUtil.getSelectorString(request, null, 1);
+            if (StringUtils.isBlank(selectors)) {
+                selectors = getDefaultSelectors();
+            }
+            String paramType = request.getParameter(PARAM_TYPE);
+            Resource editResource = getEditResource(request, contentResource, selectors, paramType);
+
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("GetEditResource({},{})...", contentResource.getPath(), editResource != null ? editResource.getPath() : "null");
+            }
+
+            if (editResource != null) {
+                RequestDispatcherOptions options = new RequestDispatcherOptions();
+                options.setForceResourceType(editResource.getPath());
+                options.setReplaceSelectors(selectors);
+                SlingHttpServletRequest forwardRequest = prepareForward(request, options);
+                forward(forwardRequest, response, contentResource, paramType, options);
+
+            } else {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            }
+        }
+
+        protected Resource getEditResource(@Nonnull SlingHttpServletRequest request, @Nonnull Resource contentResource,
+                                           @Nonnull String selectors, @Nullable String type) {
+            ResourceResolver resolver = request.getResourceResolver();
+            return ResourceTypeUtil.getSubtype(resolver, contentResource, type, getResourcePath(request), selectors);
+        }
+
+        protected String getSelectors(SlingHttpServletRequest request) {
+            return RequestUtil.getSelectorString(request, null, 1);
+        }
+
+        protected abstract String getResourcePath(SlingHttpServletRequest request);
+
+        protected String getDefaultSelectors() {
+            return "";
+        }
+
+        protected SlingHttpServletRequest prepareForward(@Nonnull final SlingHttpServletRequest request,
+                                                         @Nonnull final RequestDispatcherOptions options) {
+            return request;
         }
     }
 
