@@ -10,13 +10,17 @@
             <cpp:menuItem icon="arrows-alt" label="Move" title="Move the selected asset"
                           action="window.composum.pages.actions.file.move"/>
         </cpp:treeMenu>
-        <cpp:treeAction icon="edit" label="Open" title="Open asset"
-                        action="window.composum.assets.actions.pages.asset.open"/>
+        <cpp:treeAction icon="upload" label="Upload" title="Open asset"
+                        action="window.composum.assets.actions.pages.asset.upload"/>
     </div>
     <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
         <cpp:treeAction icon="copy" label="Copy" title="Copy the selected file"
                         action="window.composum.pages.actions.file.copy"/>
         <cpp:treeAction icon="trash" label="Delete" title="Delete the selected file"
                         action="window.composum.pages.actions.file.delete"/>
+    </div>
+    <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
+        <cpp:treeAction icon="sliders" label="Configure" title="Configure asset"
+                        action="window.composum.assets.actions.pages.asset.config"/>
     </div>
 </cpp:editToolbar>

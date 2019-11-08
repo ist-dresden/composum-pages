@@ -117,7 +117,7 @@ public class AssetsConfigImpl implements AssetsConfiguration {
 
     @Nullable
     @Override
-    public ResourceFilter getFileFilter(@Nonnull BeanContext context, @Nonnull String key) {
+    public ResourceFilter getFileFilter(@Nonnull final BeanContext context, @Nonnull String key) {
         return fileFilters.get(key);
     }
 
