@@ -17,7 +17,7 @@
         <cpp:treeAction icon="copy" label="Copy" title="Copy the selected asset"
                         action="window.composum.pages.actions.folder.copy"/>
         <cpp:treeAction icon="trash" label="Delete" title="Delete the selected asset"
-                        action="window.composum.pages.actions.folder.delete"/>
+                        action="window.composum.assets.pages.actions.asset.delete"/>
     </div>
     <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
         <cpp:treeAction icon="sliders" label="Configure" title="Configure asset"
