@@ -54,6 +54,43 @@
                 var selectors = $action.data('selectors');
                 var dialogUrl = pages.dialogs.getEditDialogUrl('load', selectors);
                 pages.dialogs.openEditDialog(name, path, type, undefined/*context*/, dialogUrl);
+            },
+
+            triggerEvents: function (dialog, result, defaultEvents) {
+                var event = dialog.$el.data('pages-edit-success');
+                if (event) {
+                    event = event.split(';');
+                } else {
+                    event = defaultEvents;
+                    if (!event && _.isFunction(dialog.getDefaultSuccessEvents)) {
+                        event = dialog.getDefaultSuccessEvents().split(';');
+                    }
+                }
+                for (var i = 0; i < event.length; i++) {
+                    switch (event[i]) {
+                        case 'messages':
+                            if (_.isObject(result) && _.isObject(result.response)) {
+                                var response = result.response;
+                                var messages = result.messages;
+                                core.messages(response.level, response.text, messages);
+                            }
+                            break;
+                        default:
+                            var key = event[i].split('#');
+                            var args;
+                            if (key.length > 1) {
+                                var values = key[1].split(',');
+                                args = [new pages.Reference(undefined, values[0])];
+                                for (var j = 1; j < values.length; j++) {
+                                    args.push(values[j])
+                                }
+                            } else {
+                                args = [new pages.Reference(dialog.data.name, dialog.data.path, dialog.data.type)];
+                            }
+                            pages.trigger('dialog.event.final', key[0], args);
+                            break;
+                    }
+                }
             }
         };
 

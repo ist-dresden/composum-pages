@@ -276,37 +276,7 @@
             },
 
             triggerEvents: function (result, defaultEvents) {
-                var event = this.$el.data('pages-edit-success');
-                if (event) {
-                    event = event.split(';');
-                } else {
-                    event = defaultEvents || this.getDefaultSuccessEvents().split(';');
-                }
-                for (var i = 0; i < event.length; i++) {
-                    switch (event[i]) {
-                        case 'messages':
-                            if (_.isObject(result) && _.isObject(result.response)) {
-                                var response = result.response;
-                                var messages = result.messages;
-                                core.messages(response.level, response.text, messages);
-                            }
-                            break;
-                        default:
-                            var key = event[i].split('#');
-                            var args;
-                            if (key.length > 1) {
-                                var values = key[1].split(',');
-                                args = [new pages.Reference(undefined, values[0])];
-                                for (var j = 1; j < values.length; j++) {
-                                    args.push(values[j])
-                                }
-                            } else {
-                                args = [new pages.Reference(this.data.name, this.data.path, this.data.type)];
-                            }
-                            pages.trigger('dialog.event.final', key[0], args);
-                            break;
-                    }
-                }
+                pages.actions.dialog.triggerEvents(this, result, defaultEvents);
             },
 
             getDefaultSuccessEvents: function () {

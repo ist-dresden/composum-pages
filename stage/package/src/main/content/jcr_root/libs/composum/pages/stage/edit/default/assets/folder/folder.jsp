@@ -16,7 +16,7 @@
         <cpp:treeMenu key="insert" icon="plus" label="Insert" title="insert a new content element">
             <cpp:menuItem test="${model.assetsSupport}" icon="image" label="Asset"
                           title="insert a new image asset as direct child of the selected folder"
-                          action="window.composum.assets.actions.pages.asset.create"/>
+                          action="window.composum.assets.pages.actions.asset.create"/>
             <cpp:menuItem icon="folder-open" label="Folder"
                           title="insert a new folder as direct child of the selected folder"
                           action="window.composum.pages.actions.folder.insertFolder"/>
@@ -37,6 +37,6 @@
     <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
         <cpp:treeAction test="${model.assetsSupport}" icon="sliders" label="Assets Configuration"
                         title="Manage the configuration for the assets of the folder"
-                        action="window.composum.assets.actions.pages.folder.config"/>
+                        action="window.composum.assets.pages.actions.folder.config"/>
     </div>
 </cpp:editToolbar>
