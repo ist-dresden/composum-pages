@@ -3,7 +3,7 @@ package com.composum.pages.stage.model.edit.site;
 import com.composum.pages.commons.model.Element;
 import com.composum.pages.commons.model.Model;
 import com.composum.pages.commons.model.Page;
-import com.composum.pages.commons.model.PageVersion;
+import com.composum.pages.commons.model.ContentVersion;
 import com.composum.pages.commons.model.Site;
 import com.composum.pages.commons.service.PagesVersionsService;
 import com.composum.pages.commons.service.VersionsService;
@@ -32,8 +32,8 @@ public class SiteModel extends FrameModel {
     private transient Site site;
     private transient String filterValue;
     private transient List<String> activationStates;
-    private transient List<PageVersion> modifiedPages;
-    private transient Collection<PageVersion> releaseChanges;
+    private transient List<ContentVersion> modifiedContent;
+    private transient Collection<ContentVersion> releaseChanges;
 
     public Site getSite() {
         if (site == null) {
@@ -67,7 +67,7 @@ public class SiteModel extends FrameModel {
         }
 
         @Override
-        public boolean accept(PageVersion version) {
+        public boolean accept(ContentVersion version) {
             return super.accept(version) && version.getStatus().getPreviousVersionable() == null;
         }
     }
@@ -75,7 +75,7 @@ public class SiteModel extends FrameModel {
     /**
      * @return the list of pages changed (modified and activated) for the current release
      */
-    public Collection<PageVersion> getReleaseChanges() {
+    public Collection<ContentVersion> getReleaseChanges() {
         if (releaseChanges == null) {
             Site site = getSite();
             PagesVersionsService.ActivationStateFilter filter = null;
@@ -102,22 +102,22 @@ public class SiteModel extends FrameModel {
     /**
      * @return the list of pages changed after last activation
      */
-    public List<PageVersion> getModifiedPages() {
-        if (modifiedPages == null) {
+    public List<ContentVersion> getModifiedContent() {
+        if (modifiedContent == null) {
             Site site = getSite();
             try {
                 PlatformVersionsService.ActivationState statusFilter = getStatusFilter();
                 if (statusFilter == PlatformVersionsService.ActivationState.activated) {
                     statusFilter = PlatformVersionsService.ActivationState.modified;
                 }
-                modifiedPages = site.getVersionsService().findModifiedPages(getContext(), site.getCurrentRelease(),
+                modifiedContent = site.getVersionsService().findModifiedContent(getContext(), site.getCurrentRelease(),
                         statusFilter != null ? new VersionsService.ActivationStateFilter(statusFilter) : null);
             } catch (RepositoryException e) {
-                LOG.error("Retrieving modified pages for " + getResource().getPath(), e);
-                modifiedPages = new ArrayList<>();
+                LOG.error("Retrieving modified content for " + getResource().getPath(), e);
+                modifiedContent = new ArrayList<>();
             }
         }
-        return modifiedPages;
+        return modifiedContent;
     }
 
     public List<String> getActivationStates() {

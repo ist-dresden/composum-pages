@@ -28,7 +28,7 @@
     </div>
     <div class="composum-pages-stage-edit-tools-site-modified_tools-panel">
         <ul class="${modelCSS}_list">
-            <c:forEach items="${model.modifiedPages}" var="page">
+            <c:forEach items="${model.modifiedContent}" var="page">
                 <li class="${modelCSS}_listentry release-status_${page.releaseStatus.activationState}">
                     <div class="_page-state"><input type="checkbox" class="${modelCSS}_page-select"
                                                     data-path="${page.path}"/></div>

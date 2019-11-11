@@ -1,7 +1,7 @@
 package com.composum.pages.commons.service;
 
+import com.composum.pages.commons.model.ContentVersion;
 import com.composum.pages.commons.model.Page;
-import com.composum.pages.commons.model.PageVersion;
 import com.composum.pages.commons.model.SiteRelease;
 import com.composum.platform.commons.util.ExceptionThrowingFunction;
 import com.composum.sling.core.BeanContext;
@@ -25,7 +25,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.jcr.version.Version;
 import javax.jcr.version.VersionHistory;
 import javax.jcr.version.VersionIterator;
 import javax.jcr.version.VersionManager;
@@ -65,13 +64,13 @@ public class PagesVersionsService implements VersionsService {
         VersionHistory history = manager.getVersionHistory(path);
         final VersionIterator allVersions = history.getAllVersions();
         while (allVersions.hasNext()) {
-            final Version version = allVersions.nextVersion();
+            final javax.jcr.version.Version version = allVersions.nextVersion();
             if (version.getName().equals(versionName)) {
                 break;
             }
         }
         while (allVersions.hasNext()) {
-            final Version version = allVersions.nextVersion();
+            final javax.jcr.version.Version version = allVersions.nextVersion();
             if (LOG.isDebugEnabled()) {
                 LOG.debug("rollbackVersion.remove({},{})", path, version.getName());
             }
@@ -85,67 +84,71 @@ public class PagesVersionsService implements VersionsService {
      */
     @Nonnull
     @Override
-    public List<PageVersion> findReleaseChanges(@Nonnull final BeanContext context,
-                                                @Nullable final SiteRelease siteRelease,
-                                                @Nullable final PageVersionFilter filter)
+    public List<ContentVersion> findReleaseChanges(@Nonnull final BeanContext context,
+                                                   @Nullable final SiteRelease siteRelease,
+                                                   @Nullable final ContentVersionFilter filter)
             throws RepositoryException {
         ExceptionThrowingFunction<StagingReleaseManager.Release, List<PlatformVersionsService.Status>, RepositoryException> getChanges =
                 platformVersionsService::findReleaseChanges;
-        return findPageVersions(siteRelease, getChanges, filter);
+        return findContentVersions(siteRelease, getChanges, filter);
     }
 
     @Override
     @Nonnull
-    public List<PageVersion> findModifiedPages(@Nonnull final BeanContext context, final SiteRelease siteRelease,
-                                               @Nullable final PageVersionFilter filter)
+    public List<ContentVersion> findModifiedContent(@Nonnull final BeanContext context, final SiteRelease siteRelease,
+                                                    @Nullable final ContentVersionFilter filter)
             throws RepositoryException {
         ExceptionThrowingFunction<StagingReleaseManager.Release, List<PlatformVersionsService.Status>, RepositoryException> getChanges =
                 platformVersionsService::findWorkspaceChanges;
-        return findPageVersions(siteRelease, getChanges, filter);
+        return findContentVersions(siteRelease, getChanges, filter);
     }
 
     @Override
     public Resource historicalVersion(@Nonnull ResourceResolver resolver, @Nonnull String path,
                                       @Nonnull String versionUuid) throws RepositoryException {
-        ResourceResolver versionSelectResolver = new VersionSelectResourceResolver(resolver, false, versionUuid);
-        Resource resource = versionSelectResolver.getResource(path);
-        if (resource != null) {
-            boolean versionNotFound = true;
-            Resource checkable = Page.isPage(resource) ? resource.getChild(JcrConstants.JCR_CONTENT) : resource;
-            if (checkable != null) {
-                for (Resource searchResource = checkable; searchResource != null && versionNotFound;
-                     searchResource = searchResource.getParent()) {
-                    versionNotFound = !StringUtils.equals(versionUuid,
-                            searchResource.getValueMap().get(StagingConstants.PROP_REPLICATED_VERSION, String.class));
-                }
-                if (versionNotFound) {
-                    LOG.warn("historicalVersion: versionUuid '{}' doesn't fit path '{}'", versionUuid, path);
+        Resource resource = null;
+        try (ResourceResolver versionSelectResolver = new VersionSelectResourceResolver(resolver, false, versionUuid)) {
+            resource = versionSelectResolver.getResource(path);
+            if (resource != null) {
+                boolean versionNotFound = true;
+                Resource checkable = Page.isPage(resource) ? resource.getChild(JcrConstants.JCR_CONTENT) : resource;
+                if (checkable != null) {
+                    for (Resource searchResource = checkable; searchResource != null && versionNotFound;
+                         searchResource = searchResource.getParent()) {
+                        versionNotFound = !StringUtils.equals(versionUuid,
+                                searchResource.getValueMap().get(StagingConstants.PROP_REPLICATED_VERSION, String.class));
+                    }
+                    if (versionNotFound) {
+                        LOG.warn("historicalVersion: versionUuid '{}' doesn't fit path '{}'", versionUuid, path);
+                        resource = null;
+                    }
+                } else {
+                    LOG.warn("historicalVersion: requested page '{}', version '{}' has no content", path, versionUuid);
                     resource = null;
                 }
-            } else {
-                LOG.warn("historicalVersion: requested page '{}', version '{}' has no content", path, versionUuid);
-                resource = null;
             }
         }
         return resource;
     }
 
     @Nonnull
-    protected List<PageVersion> findPageVersions(@Nullable SiteRelease siteRelease,
-                                                 @Nonnull ExceptionThrowingFunction<StagingReleaseManager.Release, List<PlatformVersionsService.Status>, RepositoryException> getChanges,
-                                                 @Nullable final PageVersionFilter filter)
+    protected List<ContentVersion> findContentVersions(@Nullable SiteRelease siteRelease,
+                                                       @Nonnull ExceptionThrowingFunction<StagingReleaseManager.Release, List<PlatformVersionsService.Status>, RepositoryException> getChanges,
+                                                       @Nullable final ContentVersionFilter filter)
             throws RepositoryException {
-        List<PageVersion> result = new ArrayList<>();
+        List<ContentVersion> result = new ArrayList<>();
         if (siteRelease != null) {
             StagingReleaseManager.Release release = siteRelease.getStagingRelease();
             List<PlatformVersionsService.Status> changes = getChanges.apply(release);
             for (PlatformVersionsService.Status status : changes) {
-                PageVersion pv = new PageVersion(siteRelease, status);
+                ContentVersion pv = new ContentVersion(siteRelease, status);
+                // FIXME different content types...
+                // if (???) pv = new PageVersion(siteRelease, status);
                 if (filter == null || filter.accept(pv)) {
                     result.add(pv);
                 }
             }
-            result.sort(Comparator.comparing(PageVersion::getPath));
+            result.sort(Comparator.comparing(ContentVersion::getPath));
         }
         return result;
     }

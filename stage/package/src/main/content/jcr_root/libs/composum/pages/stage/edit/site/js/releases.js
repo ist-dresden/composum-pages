@@ -103,7 +103,7 @@
             }
         });
 
-        releases.modifiedPages = core.getView('.modifiedPages', releases.ModifiedPages);
+        releases.modifiedContent = core.getView('.modifiedContent', releases.ModifiedPages);
 
         // release creation
 

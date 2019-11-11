@@ -71,8 +71,8 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
     private transient String publicMode;
     private transient Homepage homepage;
 
-    private transient List<PageVersion> modifiedPages;
-    private transient Collection<PageVersion> releaseChanges;
+    private transient List<ContentVersion> modifiedContent;
+    private transient Collection<ContentVersion> releaseChanges;
 
     private transient String templateType;
     private transient String componentSettingsEditType;
@@ -273,23 +273,23 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
      * @return the list of pages changed after last activation
      */
     @Nonnull
-    public List<PageVersion> getModifiedPages() {
-        if (modifiedPages == null) {
+    public List<ContentVersion> getModifiedContent() {
+        if (modifiedContent == null) {
             try {
-                modifiedPages = getVersionsService().findModifiedPages(getContext(), getCurrentRelease(), null);
+                modifiedContent = getVersionsService().findModifiedContent(getContext(), getCurrentRelease(), null);
             } catch (RepositoryException e) {
                 LOG.error("Retrieving modified pages for " + getResource().getPath(), e);
-                modifiedPages = new ArrayList<>();
+                modifiedContent = new ArrayList<>();
             }
         }
-        return modifiedPages;
+        return modifiedContent;
     }
 
     /**
      * @return the list of pages changed (modified and activated) for the current release
      */
     @Nonnull
-    public Collection<PageVersion> getReleaseChanges() {
+    public Collection<ContentVersion> getReleaseChanges() {
         if (releaseChanges == null) {
             releaseChanges = getReleaseChanges(getCurrentRelease(), null);
         }
@@ -297,8 +297,8 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
     }
 
     @Nonnull
-    public Collection<PageVersion> getReleaseChanges(@Nullable final SiteRelease releaseToCheck,
-                                                     @Nullable final VersionsService.PageVersionFilter filter) {
+    public Collection<ContentVersion> getReleaseChanges(@Nullable final SiteRelease releaseToCheck,
+                                                        @Nullable final VersionsService.ContentVersionFilter filter) {
         return releaseToCheck != null ? releaseToCheck.getChanges(filter) : Collections.emptyList();
     }
 }

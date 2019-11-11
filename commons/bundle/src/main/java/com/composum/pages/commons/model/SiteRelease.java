@@ -138,11 +138,11 @@ public class SiteRelease extends AbstractModel implements Comparable<SiteRelease
         return stagingRelease;
     }
 
-    public List<PageVersion> getChanges() {
+    public List<ContentVersion> getChanges() {
         return getChanges(null);
     }
 
-    public List<PageVersion> getChanges(@Nullable final VersionsService.PageVersionFilter filter) {
+    public List<ContentVersion> getChanges(@Nullable final VersionsService.ContentVersionFilter filter) {
         try {
             return getVersionsService().findReleaseChanges(getContext(), this, filter);
         } catch (RepositoryException ex) {

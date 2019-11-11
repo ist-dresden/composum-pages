@@ -15,7 +15,7 @@
         <li role="presentation"><a href="#modified-tab" aria-controls="modified" role="tab"
                                    title="${cpn:i18n(slingRequest,'modified but last changes not activated yet')}"
                                    data-toggle="tab">${cpn:i18n(slingRequest,'Modified')}<span
-                class="badge badge-pill changes"><%=site.getModifiedPages().size()%></span></a></li>
+                class="badge badge-pill changes"><%=site.getModifiedContent().size()%></span></a></li>
         <li role="presentation"><a href="#settings-tab" aria-controls="settings" role="tab"
                                    data-toggle="tab">${cpn:i18n(slingRequest,'Settings')}</a></li>
     </ul>

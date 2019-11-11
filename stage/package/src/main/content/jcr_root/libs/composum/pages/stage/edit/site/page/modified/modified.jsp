@@ -5,13 +5,13 @@
 <cpp:defineFrameObjects/>
 <cpp:model var="model" type="com.composum.pages.stage.model.edit.site.SiteModel" mode="none"
            cssBase="composum-pages-stage-edit-site-page-modified">
-    <div class="panel panel-default modifiedPages" data-path="${model.site.path}">
-        <div class="panel-heading" role="tab" id="modifiedPagesHead">
+    <div class="panel panel-default modifiedContent" data-path="${model.site.path}">
+        <div class="panel-heading" role="tab" id="modifiedContentHead">
             <h4 class="panel-title">
                 <a class="collapsed" role="button" data-toggle="collapse"
-                   href="#modifiedPagesPanel" aria-expanded="false"
+                   href="#modifiedContentPanel" aria-expanded="false"
                    title="${cpn:i18n(slingRequest,'modified but last changes not activated yet')}"
-                   aria-controls="modifiedPagesPanel">${cpn:i18n(slingRequest,'Modified Pages')}</a>
+                   aria-controls="modifiedContentPanel">${cpn:i18n(slingRequest,'Modified Pages')}</a>
             </h4>
             <div class="btn-group" role="group">
                 <cpp:include resourceType="composum/pages/stage/edit/site/page/filter" replaceSelectors="modified"/>
@@ -21,8 +21,8 @@
                 </c:if>
             </div>
         </div>
-        <div id="modifiedPagesPanel" class="panel-collapse collapse in" role="tabpanel"
-             aria-labelledby="modifiedPagesHead">
+        <div id="modifiedContentPanel" class="panel-collapse collapse in" role="tabpanel"
+             aria-labelledby="modifiedContentHead">
             <div class="${modelCSS}_content panel-body">
                 <table class="${modelCSS}_table table table-condensed">
                     <thead class="${modelCSS}_thead">
@@ -36,7 +36,7 @@
                     </tr>
                     </thead>
                     <tbody class="${modelCSS}_tbody">
-                    <c:forEach items="${model.modifiedPages}" var="page">
+                    <c:forEach items="${model.modifiedContent}" var="page">
                         <tr class="release-status_${page.releaseStatus.activationState}">
                             <td class="_input _page-state"
                                 title="${cpn:i18n(slingRequest,page.releaseStatus.activationState)}"><c:if

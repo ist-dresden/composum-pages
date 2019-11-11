@@ -1,6 +1,6 @@
 package com.composum.pages.commons.service;
 
-import com.composum.pages.commons.model.PageVersion;
+import com.composum.pages.commons.model.ContentVersion;
 import com.composum.pages.commons.model.SiteRelease;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.platform.staging.versions.PlatformVersionsService;
@@ -22,14 +22,14 @@ public interface VersionsService {
     /**
      * a filter interface for the version search operations
      */
-    interface PageVersionFilter {
-        boolean accept(PageVersion version);
+    interface ContentVersionFilter {
+        boolean accept(ContentVersion version);
     }
 
     /**
      * a filter implementation using a set of activation state options
      */
-    class ActivationStateFilter implements PageVersionFilter {
+    class ActivationStateFilter implements ContentVersionFilter {
 
         private final List<PlatformVersionsService.ActivationState> options;
 
@@ -43,7 +43,7 @@ public interface VersionsService {
         }
 
         @Override
-        public boolean accept(PageVersion version) {
+        public boolean accept(ContentVersion version) {
             return options.contains(version.getPageActivationState());
         }
     }
@@ -59,9 +59,9 @@ public interface VersionsService {
      * ordered by path.
      */
     @Nonnull
-    List<PageVersion> findReleaseChanges(@Nonnull BeanContext context,
-                                         @Nullable SiteRelease release,
-                                         @Nullable PageVersionFilter filter)
+    List<ContentVersion> findReleaseChanges(@Nonnull BeanContext context,
+                                            @Nullable SiteRelease release,
+                                            @Nullable ContentVersionFilter filter)
             throws RepositoryException;
 
     /**
@@ -70,8 +70,8 @@ public interface VersionsService {
      * ordered by path.
      */
     @Nonnull
-    List<PageVersion> findModifiedPages(@Nonnull BeanContext context, @Nullable SiteRelease siteRelease,
-                                        @Nullable PageVersionFilter filter)
+    List<ContentVersion> findModifiedContent(@Nonnull BeanContext context, @Nullable SiteRelease siteRelease,
+                                             @Nullable ContentVersionFilter filter)
             throws RepositoryException;
 
     /**
