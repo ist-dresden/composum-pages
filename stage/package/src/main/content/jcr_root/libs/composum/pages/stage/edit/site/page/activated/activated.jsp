@@ -37,7 +37,7 @@
                     </thead>
                     <tbody class="${modelCSS}_tbody">
                     <c:forEach items="${model.releaseChanges}" var="pageVersion">
-                        <tr class="release-status_${pageVersion.pageActivationState}">
+                        <tr class="release-status_${pageVersion.contentActivationState}">
                             <td class="_input _page-state"
                                 title="${cpn:i18n(slingRequest,pageVersion.releaseStatus.activationState)}"><c:if
                                     test="${model.editMode}"><input type="checkbox"

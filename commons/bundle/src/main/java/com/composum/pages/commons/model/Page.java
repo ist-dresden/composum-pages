@@ -18,10 +18,8 @@ import com.composum.platform.models.annotations.PropertyDetermineResourceStrateg
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.util.ResourceUtil;
-import com.composum.sling.core.util.SlingResourceUtil;
 import com.composum.sling.platform.security.AccessMode;
 import com.composum.sling.platform.staging.StagingReleaseManager;
-import com.composum.sling.platform.staging.versions.PlatformVersionsService;
 import com.composum.sling.platform.staging.versions.PlatformVersionsService.ActivationState;
 import com.composum.sling.platform.staging.versions.PlatformVersionsService.Status;
 import org.apache.commons.lang3.StringUtils;
@@ -33,7 +31,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.jcr.RepositoryException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -218,9 +215,6 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
 
     private transient Language language;
     private transient PageLanguages languages;
-
-    private transient StatusModel releaseStatus;
-    private transient PlatformVersionsService versionsService;
 
     private transient Resource metaData;
 
@@ -642,30 +636,6 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
     }
 
     /**
-     * The activation state of the page. We have a special case here:
-     * if the versionable is modified in the workspace, we want this to take precedence over status
-     * activated to alert the user that there is a modification that is not checked in yet.
-     *
-     * @return 'modified' if the page is modified after last activation in th current release
-     */
-    public PlatformVersionsService.ActivationState getPageActivationState() {
-        Page.StatusModel state = getReleaseStatus();
-        PlatformVersionsService.ActivationState status = state != null ? state.getActivationState() : null;
-        if (status != null && status != ActivationState.activated) {
-            return status;
-        }
-        // the state activated can be overridden to modified if the page is modified
-        Calendar lastModified = getContent().getLastModified();
-        if (lastModified != null && state != null) {
-            Calendar lastActivated = state.getLastActivatedTime();
-            if (lastActivated != null && lastActivated.before(lastModified)) {
-                status = ActivationState.modified;
-            }
-        }
-        return status;
-    }
-
-    /**
      * Pages-Adapter around {@link Status}.
      */
     public static class StatusModel {
@@ -717,29 +687,5 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
         public String getLastDeactivatedBy() {
             return releaseStatus.getVersionReference() != null ? releaseStatus.getVersionReference().getLastDeactivatedBy() : null;
         }
-    }
-
-    public StatusModel getReleaseStatus() {
-        if (releaseStatus == null) {
-            try {
-                Status status = getPlatformVersionsService().getStatus(getResource(), null);
-                if (status == null) { // rare strange case - needs to be investigated.
-                    LOG.warn("No release status for {}", SlingResourceUtil.getPath(getResource()));
-                }
-                releaseStatus = new StatusModel(status);
-            } catch (RepositoryException ex) {
-                LOG.error("Error calculating status for " + SlingResourceUtil.getPath(getResource()), ex);
-            }
-        }
-        if (releaseStatus != null && releaseStatus.releaseStatus == null)
-            return null;
-        return releaseStatus;
-    }
-
-    protected PlatformVersionsService getPlatformVersionsService() {
-        if (versionsService == null) {
-            versionsService = context.getService(PlatformVersionsService.class);
-        }
-        return versionsService;
     }
 }

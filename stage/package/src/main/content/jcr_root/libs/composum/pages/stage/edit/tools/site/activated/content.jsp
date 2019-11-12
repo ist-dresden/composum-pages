@@ -30,7 +30,7 @@
     <div class="composum-pages-stage-edit-tools-site-activated_tools-panel">
         <ul class="${modelCSS}_list">
             <c:forEach items="${model.releaseChanges}" var="pageVersion">
-                <li class="${modelCSS}_listentry release-status_${pageVersion.pageActivationState}">
+                <li class="${modelCSS}_listentry release-status_${pageVersion.contentActivationState}">
                     <div class="_page-state"><input type="checkbox" class="${modelCSS}_page-select"
                                                     data-path="${pageVersion.path}"/></div>
                     <div class="${modelCSS}_page-entry" data-path="${pageVersion.path}">

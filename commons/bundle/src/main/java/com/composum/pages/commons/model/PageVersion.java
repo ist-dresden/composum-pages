@@ -7,7 +7,7 @@ import org.apache.sling.api.resource.Resource;
 import javax.annotation.Nonnull;
 import java.util.Objects;
 
-public class PageVersion extends ContentVersion {
+public class PageVersion extends ContentVersion<PageContent> {
 
     private transient Page page;
 
@@ -15,6 +15,15 @@ public class PageVersion extends ContentVersion {
 
     public PageVersion(SiteRelease siteRelease, PlatformVersionsService.Status status) {
         super(siteRelease, status);
+    }
+
+    @Override
+    public PageContent getContent() {
+        Page page = getPage();
+        if (page != null) {
+            return page.getContent();
+        }
+        return null;
     }
 
     public Page getPage() {
@@ -27,16 +36,19 @@ public class PageVersion extends ContentVersion {
         return page;
     }
 
+    @Override
     public String getTitle() {
-        if (null != getPage()) {
-            return getPage().getTitle();
+        Page page = getPage();
+        if (page != null) {
+            return page.getTitle();
         }
-        return super.getTitle();
+        return null;
     }
 
     /**
      * Returns the URL to reference this page version: if this is about workspace, the page path (null if the page is deleted),
      */
+    @Override
     public String getUrl() {
         String url = null;
         if (status.getNextRelease() == null) { // workspace page if not deleted
@@ -44,20 +56,7 @@ public class PageVersion extends ContentVersion {
                 return getPage().getUrl();
             }
         }
-        return super.getUrl();
-    }
-
-    /**
-     * The activation status of the page. In the special case that a page is activated in the release, but
-     * also modified in the workspace this will return 'modified' to alert the user that there is a
-     * new version of the page to be published, even if this is used in the display of a release.
-     */
-    public PlatformVersionsService.ActivationState getPageActivationState() {
-        Page page = getPage();
-        if (page != null) {
-            return page.getPageActivationState();
-        }
-        return super.getPageActivationState();
+        return null;
     }
 
     @Nonnull

@@ -44,9 +44,12 @@ public interface VersionsService {
 
         @Override
         public boolean accept(ContentVersion version) {
-            return options.contains(version.getPageActivationState());
+            return options.contains(version.getContentActivationState());
         }
     }
+
+    @Nullable
+    Resource getResource(@Nonnull BeanContext context, @Nonnull PlatformVersionsService.Status status);
 
     /**
      * Resets a versionable to a version, but deletes all versions after that version.

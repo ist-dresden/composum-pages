@@ -1,46 +1,111 @@
 package com.composum.pages.commons.model;
 
+import com.composum.pages.commons.PagesConstants;
 import com.composum.pages.commons.service.SiteManager;
-import com.composum.pages.commons.util.LinkUtil;
+import com.composum.pages.commons.service.VersionsService;
 import com.composum.sling.core.BeanContext;
-import com.composum.sling.core.util.ResourceUtil;
+import com.composum.sling.core.util.SlingResourceUtil;
 import com.composum.sling.platform.staging.StagingReleaseManager;
+import com.composum.sling.platform.staging.VersionReference;
 import com.composum.sling.platform.staging.versions.PlatformVersionsService;
+import com.composum.sling.platform.staging.versions.PlatformVersionsService.ActivationState;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ValueMap;
-import org.apache.sling.api.wrappers.ValueMapDecorator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
+import javax.jcr.RepositoryException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Objects;
 import java.util.StringJoiner;
+import java.util.regex.Matcher;
 
 import static com.composum.pages.commons.PagesConstants.VERSION_DATE_FORMAT;
-import static com.composum.sling.platform.staging.impl.ResourceResolverChangeFilter.PARAM_CPM_RELEASE;
 import static org.apache.jackrabbit.JcrConstants.JCR_CONTENT;
-import static org.apache.jackrabbit.JcrConstants.JCR_FROZENNODE;
 
 /**
  * Can represent either information about the historical version of a page in a release in comparison to the previous release,
  * or information about the status of a page in the workspace in comparison to a release (usually the current release).
  */
-public class ContentVersion {
+public abstract class ContentVersion<ContentType extends ContentModel> {
 
-    protected final StagingReleaseManager.Release release;
+    private static final Logger LOG = LoggerFactory.getLogger(ContentVersion.class);
+
+    /**
+     * Pages-Adapter around {@link PlatformVersionsService.Status}.
+     */
+    public static class StatusModel {
+
+        protected final PlatformVersionsService.Status releaseStatus;
+
+        public StatusModel(PlatformVersionsService.Status status) {
+            releaseStatus = status;
+        }
+
+        public ActivationState getActivationState() {
+            return releaseStatus.getActivationState();
+        }
+
+        public String getLastModified() {
+            Calendar lastModified = releaseStatus.getLastModified();
+            return lastModified != null ? new SimpleDateFormat(VERSION_DATE_FORMAT).format(lastModified.getTime()) : "";
+        }
+
+        public String getLastModifiedBy() {
+            return releaseStatus.getLastModifiedBy();
+        }
+
+        public String getReleaseLabel() {
+            StagingReleaseManager.Release previous = releaseStatus.getPreviousRelease();
+            String label = previous != null ? releaseStatus.getPreviousRelease().getReleaseLabel() : "";
+            Matcher matcher = PagesConstants.RELEASE_LABEL_PATTERN.matcher(label);
+            return matcher.matches() ? matcher.group(1) : label;
+        }
+
+        public Calendar getLastActivatedTime() {
+            return releaseStatus.getVersionReference() != null ? releaseStatus.getVersionReference().getLastActivated() : null;
+        }
+
+        public String getLastActivated() {
+            Calendar calendar = getLastActivatedTime();
+            return calendar != null ? new SimpleDateFormat(VERSION_DATE_FORMAT).format(calendar.getTime()) : "";
+        }
+
+        public String getLastActivatedBy() {
+            return releaseStatus.getVersionReference() != null ? releaseStatus.getVersionReference().getLastActivatedBy() : null;
+        }
+
+        public String getLastDeactivated() {
+            Calendar calendar = releaseStatus.getVersionReference() != null ? releaseStatus.getVersionReference().getLastDeactivated() : null;
+            return calendar != null ? new SimpleDateFormat(VERSION_DATE_FORMAT).format(calendar.getTime()) : "";
+        }
+
+        public String getLastDeactivatedBy() {
+            return releaseStatus.getVersionReference() != null ? releaseStatus.getVersionReference().getLastDeactivatedBy() : null;
+        }
+    }
+
     protected final BeanContext context;
-    protected PlatformVersionsService.Status status;
+    protected final StagingReleaseManager.Release release;
+    protected final PlatformVersionsService.Status status;
+
+    private transient String path;
+    private transient StatusModel releaseStatus;
+    private transient ContentModel workspaceModel;
 
     private transient Resource versionResource;
     private transient ValueMap versionProperties;
 
+    private transient VersionsService versionsService;
+    private transient PlatformVersionsService platformVersionsService;
     private transient SiteManager siteManager;
 
     public ContentVersion(SiteRelease siteRelease, PlatformVersionsService.Status status) {
-        this.release = siteRelease.stagingRelease;
         this.context = siteRelease.getContext();
+        this.release = siteRelease.stagingRelease;
         this.status = status;
     }
 
@@ -48,8 +113,47 @@ public class ContentVersion {
         return status;
     }
 
-    public Page.StatusModel getReleaseStatus() {
-        return new Page.StatusModel(status);
+    /**
+     * The activation state of the content. We have a special case here:
+     * if the versionable is modified in the workspace, we want this to take precedence over status
+     * activated to alert the user that there is a modification that is not checked in yet.
+     *
+     * @return 'modified' if the page is modified after last activation in th current release
+     */
+    public ActivationState getContentActivationState() {
+        StatusModel state = getReleaseStatus();
+        ActivationState status = state != null ? state.getActivationState() : null;
+        if (status != null && status != ActivationState.activated) {
+            return status;
+        }
+        // the state activated can be overridden to modified if the page is modified
+        Calendar lastModified = getContent().getLastModified();
+        if (lastModified != null && state != null) {
+            Calendar lastActivated = state.getLastActivatedTime();
+            if (lastActivated != null && lastActivated.before(lastModified)) {
+                status = ActivationState.modified;
+            }
+        }
+        return status;
+    }
+
+    public abstract ContentType getContent();
+
+    public StatusModel getReleaseStatus() {
+        if (releaseStatus == null) {
+            try {
+                PlatformVersionsService.Status status = getPlatformVersionsService().getStatus(getResource(), null);
+                if (status == null) { // rare strange case - needs to be investigated.
+                    LOG.warn("No release status for {}", SlingResourceUtil.getPath(getResource()));
+                }
+                releaseStatus = new StatusModel(status);
+            } catch (RepositoryException ex) {
+                LOG.error("Error calculating status for " + SlingResourceUtil.getPath(getResource()), ex);
+            }
+        }
+        if (releaseStatus != null && releaseStatus.releaseStatus == null)
+            return null;
+        return releaseStatus;
     }
 
     public String getSiteRelativePath() {
@@ -71,101 +175,46 @@ public class ContentVersion {
      * When about workspace: the workspace path (if file was deleted, we take the path in the release);
      * when about a release, this is the path in that release.
      */
+    @Nonnull
     public String getPath() {
-        String path = null;
-        if (status.getNextVersionable() != null) {
-            path = release.absolutePath(status.getNextVersionable().getRelativePath());
-        } else if (status.getPreviousVersionable() != null) {
-            path = release.absolutePath(status.getPreviousVersionable().getRelativePath());
+        if (path == null) {
+            path = status.getPath();
+            if (StringUtils.isBlank(path)) {
+                if (status.getNextVersionable() != null) {
+                    path = release.absolutePath(status.getNextVersionable().getRelativePath());
+                } else if (status.getPreviousVersionable() != null) {
+                    path = release.absolutePath(status.getPreviousVersionable().getRelativePath());
+                }
+            }
+            path = StringUtils.removeEnd(path, '/' + JCR_CONTENT);
         }
-        path = StringUtils.removeEnd(path, '/' + JCR_CONTENT);
         return path;
     }
 
     /**
      * Returns the URL to reference this page version: if this is about workspace, the page path (null if the page is deleted),
      */
-    public String getUrl() {
-        String url = getResourceUrl();
-        if (StringUtils.isNotBlank(url) && status.getNextRelease() != null) {
-            url = url + "?" + PARAM_CPM_RELEASE + "=" + status.getNextRelease().getNumber();
-        }
-        return url;
-    }
+    public abstract String getUrl();
 
-    // FIXME general refactoring: transparent (staged) reource and different 'Version' types
+    public abstract String getTitle();
 
-    public String getResourceUrl() {
-        String uri = null;
-        if (status.getNextRelease() != null && status.getNextVersionable() != null
-                && status.getNextVersionable().isActive()) {
-            String path = status.getNextRelease().absolutePath(status.getNextVersionable().getRelativePath());
-            path = StringUtils.removeEnd(path, '/' + JCR_CONTENT);
-            String name = StringUtils.substringAfterLast(path, "/");
-            switch (getType()) {
-                case "file":
-                    String ext = StringUtils.substringAfterLast(name, ".");
-                    uri = LinkUtil.getUrl(context.getRequest(), path, ext);
-                    break;
-                default:
-                    uri = LinkUtil.getUrl(context.getRequest(), path);
-                    break;
-            }
-        }
-        return uri;
-    }
-
-    public String getType() {
-        // FIXME transparent (staged) reource use (no JCR_FROZENNODE)
-        switch (getProperties().get(JCR_FROZENNODE + "/jcr:frozenPrimaryType", "")) {
-            case "cpp:PageContent":
-                return "page";
-            case "cpp:SiteConfiguration":
-                return "site";
-            default:
-                return "file";
-        }
-    }
-
-    public String getTitle() {
-        if (status.getVersionReference() == null) {
-            return null;
-        }
-        Resource versionResource = status.getVersionReference().getVersionResource();
-        if (null == versionResource) {
-            return null;
-        }
-        // FIXME transparent (staged) reource use (no JCR_FROZENNODE)
-        ValueMap values = getProperties();
-        String title = values.get(JCR_FROZENNODE + "/" + ResourceUtil.PROP_TITLE, String.class);
-        if (StringUtils.isBlank(title)) {
-            title = values.get(JCR_FROZENNODE + "/jcr:name", String.class);
-        }
-        return title;
-    }
-
+    /**
+     * @return the workspace resource of the staging resource of the referenced version
+     */
     public Resource getResource() {
-        if (versionResource == null) {
-            if (status.getVersionReference() == null) {
-                return null;
-            }
-            // FIXME transparent (staged) reource use (no JCR_FROZENNODE)
-            versionResource = status.getVersionReference().getVersionResource();
-        }
-        return versionResource;
-    }
-
-    @Nonnull
-    public ValueMap getProperties() {
-        if (versionProperties == null) {
-            Resource resource = getResource();
-            if (resource != null) {
-                versionProperties = resource.getValueMap();
-            } else {
-                versionProperties = new ValueMapDecorator(Collections.emptyMap());
+        Resource resource = status.getWorkspaceResource();
+        if (resource != null) {
+            VersionReference reference = status.getVersionReference();
+            String uuid;
+            if (reference != null && (uuid = reference.getReleasedVersionable().getVersionUuid()) != null) {
+                try {
+                    resource = getVersionsService().historicalVersion(context.getResolver(), status.getPath(), uuid);
+                } catch (RepositoryException ex) {
+                    LOG.error(ex.getMessage(), ex);
+                }
             }
         }
-        return versionProperties;
+        return resource;
     }
 
     public String getLastModifiedString() {
@@ -173,16 +222,18 @@ public class ContentVersion {
         return null != lastModified ? new SimpleDateFormat(VERSION_DATE_FORMAT).format(lastModified.getTime()) : null;
     }
 
-    /**
-     * The activation status of the page. In the special case that a page is activated in the release, but
-     * also modified in the workspace this will return 'modified' to alert the user that there is a
-     * new version of the page to be published, even if this is used in the display of a release.
-     */
-    public PlatformVersionsService.ActivationState getPageActivationState() {
-        if (status != null) {
-            return status.getActivationState();
+    protected VersionsService getVersionsService() {
+        if (versionsService == null) {
+            versionsService = context.getService(VersionsService.class);
         }
-        return PlatformVersionsService.ActivationState.modified; // shouldn't happen
+        return versionsService;
+    }
+
+    protected PlatformVersionsService getPlatformVersionsService() {
+        if (platformVersionsService == null) {
+            platformVersionsService = context.getService(PlatformVersionsService.class);
+        }
+        return platformVersionsService;
     }
 
     @Nonnull

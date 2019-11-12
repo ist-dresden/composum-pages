@@ -7,6 +7,7 @@ import com.composum.platform.commons.util.ExceptionThrowingFunction;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.platform.staging.StagingConstants;
 import com.composum.sling.platform.staging.StagingReleaseManager;
+import com.composum.sling.platform.staging.VersionReference;
 import com.composum.sling.platform.staging.impl.VersionSelectResourceResolver;
 import com.composum.sling.platform.staging.versions.PlatformVersionsService;
 import org.apache.commons.lang3.StringUtils;
@@ -18,6 +19,8 @@ import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,6 +32,7 @@ import javax.jcr.version.VersionHistory;
 import javax.jcr.version.VersionIterator;
 import javax.jcr.version.VersionManager;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -50,6 +54,45 @@ public class PagesVersionsService implements VersionsService {
 
     @Reference
     protected PlatformVersionsService platformVersionsService;
+
+    protected List<VersionFactory> versionFactories = Collections.synchronizedList(new ArrayList<>());
+
+    @Reference(
+            service = VersionFactory.class,
+            policy = ReferencePolicy.DYNAMIC,
+            cardinality = ReferenceCardinality.MULTIPLE
+    )
+    protected void addVersionFactory(@Nonnull final VersionFactory factory) {
+        LOG.info("addVersionFactory: {}", factory.getClass().getName());
+        versionFactories.add(factory);
+    }
+
+    protected void removeVersionFactory(@Nonnull final VersionFactory factory) {
+        LOG.info("removeVersionFactory: {}", factory.getClass().getName());
+        versionFactories.remove(factory);
+    }
+
+    /**
+     * @return the workspace resource of the staging resource of the referenced version
+     */
+    @Override
+    @Nullable
+    public Resource getResource(@Nonnull final BeanContext context,
+                                @Nonnull final PlatformVersionsService.Status status) {
+        Resource resource = status.getWorkspaceResource();
+        if (resource != null) {
+            VersionReference reference = status.getVersionReference();
+            String uuid;
+            if (reference != null && (uuid = reference.getReleasedVersionable().getVersionUuid()) != null) {
+                try {
+                    resource = historicalVersion(context.getResolver(), status.getPath(), uuid);
+                } catch (RepositoryException ex) {
+                    LOG.error(ex.getMessage(), ex);
+                }
+            }
+        }
+        return resource;
+    }
 
     @Override
     public void rollbackVersion(final BeanContext context, String path, String versionName)
@@ -106,26 +149,24 @@ public class PagesVersionsService implements VersionsService {
     @Override
     public Resource historicalVersion(@Nonnull ResourceResolver resolver, @Nonnull String path,
                                       @Nonnull String versionUuid) throws RepositoryException {
-        Resource resource = null;
-        try (ResourceResolver versionSelectResolver = new VersionSelectResourceResolver(resolver, false, versionUuid)) {
-            resource = versionSelectResolver.getResource(path);
-            if (resource != null) {
-                boolean versionNotFound = true;
-                Resource checkable = Page.isPage(resource) ? resource.getChild(JcrConstants.JCR_CONTENT) : resource;
-                if (checkable != null) {
-                    for (Resource searchResource = checkable; searchResource != null && versionNotFound;
-                         searchResource = searchResource.getParent()) {
-                        versionNotFound = !StringUtils.equals(versionUuid,
-                                searchResource.getValueMap().get(StagingConstants.PROP_REPLICATED_VERSION, String.class));
-                    }
-                    if (versionNotFound) {
-                        LOG.warn("historicalVersion: versionUuid '{}' doesn't fit path '{}'", versionUuid, path);
-                        resource = null;
-                    }
-                } else {
-                    LOG.warn("historicalVersion: requested page '{}', version '{}' has no content", path, versionUuid);
+        ResourceResolver versionSelectResolver = new VersionSelectResourceResolver(resolver, false, versionUuid);
+        Resource resource = versionSelectResolver.getResource(path);
+        if (resource != null) {
+            boolean versionNotFound = true;
+            Resource checkable = Page.isPage(resource) ? resource.getChild(JcrConstants.JCR_CONTENT) : resource;
+            if (checkable != null) {
+                for (Resource searchResource = checkable; searchResource != null && versionNotFound;
+                     searchResource = searchResource.getParent()) {
+                    versionNotFound = !StringUtils.equals(versionUuid,
+                            searchResource.getValueMap().get(StagingConstants.PROP_REPLICATED_VERSION, String.class));
+                }
+                if (versionNotFound) {
+                    LOG.warn("historicalVersion: versionUuid '{}' doesn't fit path '{}'", versionUuid, path);
                     resource = null;
                 }
+            } else {
+                LOG.warn("historicalVersion: requested page '{}', version '{}' has no content", path, versionUuid);
+                resource = null;
             }
         }
         return resource;
@@ -141,16 +182,26 @@ public class PagesVersionsService implements VersionsService {
             StagingReleaseManager.Release release = siteRelease.getStagingRelease();
             List<PlatformVersionsService.Status> changes = getChanges.apply(release);
             for (PlatformVersionsService.Status status : changes) {
-                ContentVersion pv = new ContentVersion(siteRelease, status);
-                // FIXME different content types...
-                // if (???) pv = new PageVersion(siteRelease, status);
-                if (filter == null || filter.accept(pv)) {
+                ContentVersion pv = getContentVersion(siteRelease, status);
+                if (pv != null && (filter == null || filter.accept(pv))) {
                     result.add(pv);
                 }
             }
             result.sort(Comparator.comparing(ContentVersion::getPath));
         }
         return result;
+    }
+
+    @Nullable
+    protected ContentVersion getContentVersion(@Nonnull final SiteRelease siteRelease,
+                                               @Nonnull final PlatformVersionsService.Status status) {
+        for (VersionFactory factory : versionFactories) {
+            ContentVersion version = factory.getContentVersion(siteRelease, status);
+            if (version != null) {
+                return version;
+            }
+        }
+        return null;
     }
 
     protected VersionManager getVersionManager(final BeanContext context)
