@@ -36,27 +36,27 @@
                     </tr>
                     </thead>
                     <tbody class="${modelCSS}_tbody">
-                    <c:forEach items="${model.releaseChanges}" var="pageVersion">
-                        <tr class="release-status_${pageVersion.contentActivationState}">
+                    <c:forEach items="${model.releaseChanges}" var="version">
+                        <tr class="release-status_${version.contentActivationState}">
                             <td class="_input _page-state"
-                                title="${cpn:i18n(slingRequest,pageVersion.releaseStatus.activationState)}"><c:if
+                                title="${cpn:i18n(slingRequest,version.contentActivationState)}"><c:if
                                     test="${model.editMode}"><input type="checkbox"
                                                                    class="${modelCSS}_page-select"
-                                                                   data-path="${pageVersion.path}"></c:if>
+                                                                   data-path="${version.path}"></c:if>
                             </td>
                             <td class="_page-path">
                                 <c:choose>
-                                    <c:when test="${not empty pageVersion.url}">
-                                        <a href="${pageVersion.url}"
-                                           target="_blank">${cpn:path(pageVersion.siteRelativePath)}</a>
+                                    <c:when test="${not empty version.url}">
+                                        <a href="${version.url}"
+                                           target="_blank">${cpn:path(version.siteRelativePath)}</a>
                                     </c:when>
                                     <c:otherwise>
-                                        ${cpn:path(pageVersion.siteRelativePath)}
+                                        ${cpn:path(version.siteRelativePath)}
                                     </c:otherwise>
                                 </c:choose>
                             </td>
-                            <td class="_page-title">${cpn:text(pageVersion.title)}</td>
-                            <td class="_page-time">${cpn:text(pageVersion.lastModifiedString)}</td>
+                            <td class="_page-title">${cpn:text(version.title)}</td>
+                            <td class="_page-time">${cpn:text(version.lastModifiedString)}</td>
                         </tr>
                     </c:forEach>
                     </tbody>

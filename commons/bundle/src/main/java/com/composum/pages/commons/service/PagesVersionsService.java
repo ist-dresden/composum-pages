@@ -16,6 +16,7 @@ import org.apache.jackrabbit.api.JackrabbitSession;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.ValueMap;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -195,10 +196,15 @@ public class PagesVersionsService implements VersionsService {
     @Nullable
     protected ContentVersion getContentVersion(@Nonnull final SiteRelease siteRelease,
                                                @Nonnull final PlatformVersionsService.Status status) {
-        for (VersionFactory factory : versionFactories) {
-            ContentVersion version = factory.getContentVersion(siteRelease, status);
-            if (version != null) {
-                return version;
+        Resource resource = getResource(siteRelease.getContext(), status);
+        if (resource != null) {
+            ValueMap values = resource.getValueMap();
+            String type = values.get(JcrConstants.JCR_PRIMARYTYPE, "");
+            for (VersionFactory factory : versionFactories) {
+                ContentVersion version = factory.getContentVersion(siteRelease, resource, type, status);
+                if (version != null) {
+                    return version;
+                }
             }
         }
         return null;

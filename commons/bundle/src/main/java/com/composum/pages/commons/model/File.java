@@ -13,7 +13,7 @@ import org.apache.sling.api.resource.Resource;
 
 public class File extends ContentDriven<FileResource> {
 
-    enum Type {asset, document, file, image, video}
+    public enum Type {asset, document, file, image, video}
 
     /**
      * check the 'nt:file' or 'asset' type for a resource

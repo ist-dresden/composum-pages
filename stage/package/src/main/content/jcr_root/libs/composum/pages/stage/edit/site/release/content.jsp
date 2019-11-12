@@ -30,15 +30,15 @@
                 </tr>
                 </thead>
                 <tbody class="${modelCSS}_tbody">
-                <c:forEach items="${model.release.changes}" var="pageVersion">
-                    <tr class="release-status_${pageVersion.releaseStatus.activationState}">
+                <c:forEach items="${model.release.changes}" var="version">
+                    <tr class="release-status_${version.releaseStatus.activationState}">
                         <td class="_page-state"
-                            title="${cpn:i18n(slingRequest,pageVersion.releaseStatus.activationState)}"></td>
-                        <td class="_page-path"><a href="${pageVersion.url}"
-                                                  target="_blank">${cpn:path(pageVersion.siteRelativePath)}</a>
+                            title="${cpn:i18n(slingRequest,version.releaseStatus.activationState)}"></td>
+                        <td class="_page-path"><a href="${version.url}"
+                                                  target="_blank">${cpn:path(version.siteRelativePath)}</a>
                         </td>
-                        <td class="_page-title">${cpn:text(pageVersion.title)}</td>
-                        <td class="_page-time">${cpn:text(pageVersion.releaseStatus.lastModified)}</td>
+                        <td class="_page-title">${cpn:text(version.title)}</td>
+                        <td class="_page-time">${cpn:text(version.releaseStatus.lastModified)}</td>
                     </tr>
                 </c:forEach>
                 </tbody>

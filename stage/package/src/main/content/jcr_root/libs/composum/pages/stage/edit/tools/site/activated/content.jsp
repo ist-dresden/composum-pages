@@ -29,16 +29,16 @@
     </div>
     <div class="composum-pages-stage-edit-tools-site-activated_tools-panel">
         <ul class="${modelCSS}_list">
-            <c:forEach items="${model.releaseChanges}" var="pageVersion">
-                <li class="${modelCSS}_listentry release-status_${pageVersion.contentActivationState}">
+            <c:forEach items="${model.releaseChanges}" var="version">
+                <li class="${modelCSS}_listentry release-status_${version.contentActivationState}">
                     <div class="_page-state"><input type="checkbox" class="${modelCSS}_page-select"
-                                                    data-path="${pageVersion.path}"/></div>
-                    <div class="${modelCSS}_page-entry" data-path="${pageVersion.path}">
+                                                    data-path="${version.path}"/></div>
+                    <div class="${modelCSS}_page-entry" data-path="${version.path}">
                         <div class="${modelCSS}_page-head">
-                            <div class="${modelCSS}_page-title">${not empty pageVersion.title?cpn:text(pageVersion.title):'-- --'}</div>
-                            <cpn:text class="${modelCSS}_page-time">${pageVersion.lastModifiedString}</cpn:text>
+                            <div class="${modelCSS}_page-title">${not empty version.title?cpn:text(version.title):'-- --'}</div>
+                            <cpn:text class="${modelCSS}_page-time">${version.lastModifiedString}</cpn:text>
                         </div>
-                        <cpn:text class="${modelCSS}_page-path" type="path">${pageVersion.path}</cpn:text>
+                        <cpn:text class="${modelCSS}_page-path" type="path">${version.path}</cpn:text>
                     </div>
                 </li>
             </c:forEach>

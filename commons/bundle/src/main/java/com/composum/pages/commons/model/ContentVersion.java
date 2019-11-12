@@ -4,7 +4,6 @@ import com.composum.pages.commons.PagesConstants;
 import com.composum.pages.commons.service.SiteManager;
 import com.composum.pages.commons.service.VersionsService;
 import com.composum.sling.core.BeanContext;
-import com.composum.sling.core.util.SlingResourceUtil;
 import com.composum.sling.platform.staging.StagingReleaseManager;
 import com.composum.sling.platform.staging.VersionReference;
 import com.composum.sling.platform.staging.versions.PlatformVersionsService;
@@ -27,8 +26,8 @@ import static com.composum.pages.commons.PagesConstants.VERSION_DATE_FORMAT;
 import static org.apache.jackrabbit.JcrConstants.JCR_CONTENT;
 
 /**
- * Can represent either information about the historical version of a page in a release in comparison to the previous release,
- * or information about the status of a page in the workspace in comparison to a release (usually the current release).
+ * Can represent either information about the historical version of a content in a release in comparison to the previous release,
+ * or information about the status of a content in the workspace in comparison to a release (usually the current release).
  */
 public abstract class ContentVersion<ContentType extends ContentModel> {
 
@@ -93,6 +92,7 @@ public abstract class ContentVersion<ContentType extends ContentModel> {
     protected final PlatformVersionsService.Status status;
 
     private transient String path;
+    private transient String siteRelativePath;
     private transient StatusModel releaseStatus;
     private transient ContentModel workspaceModel;
 
@@ -118,7 +118,7 @@ public abstract class ContentVersion<ContentType extends ContentModel> {
      * if the versionable is modified in the workspace, we want this to take precedence over status
      * activated to alert the user that there is a modification that is not checked in yet.
      *
-     * @return 'modified' if the page is modified after last activation in th current release
+     * @return 'modified' if the content is modified after last activation in the current release
      */
     public ActivationState getContentActivationState() {
         StatusModel state = getReleaseStatus();
@@ -126,7 +126,7 @@ public abstract class ContentVersion<ContentType extends ContentModel> {
         if (status != null && status != ActivationState.activated) {
             return status;
         }
-        // the state activated can be overridden to modified if the page is modified
+        // the state activated can be overridden to modified if the content is modified
         Calendar lastModified = getContent().getLastModified();
         if (lastModified != null && state != null) {
             Calendar lastActivated = state.getLastActivatedTime();
@@ -141,34 +141,26 @@ public abstract class ContentVersion<ContentType extends ContentModel> {
 
     public StatusModel getReleaseStatus() {
         if (releaseStatus == null) {
-            try {
-                PlatformVersionsService.Status status = getPlatformVersionsService().getStatus(getResource(), null);
-                if (status == null) { // rare strange case - needs to be investigated.
-                    LOG.warn("No release status for {}", SlingResourceUtil.getPath(getResource()));
-                }
-                releaseStatus = new StatusModel(status);
-            } catch (RepositoryException ex) {
-                LOG.error("Error calculating status for " + SlingResourceUtil.getPath(getResource()), ex);
-            }
+            releaseStatus = new StatusModel(status);
         }
-        if (releaseStatus != null && releaseStatus.releaseStatus == null)
-            return null;
         return releaseStatus;
     }
 
     public String getSiteRelativePath() {
-        String path = getPath();
-        Resource releaseRoot;
-        if (Site.isSite(releaseRoot = release.getReleaseRoot())) {
-            Site site = getSiteManager().createBean(context, releaseRoot);
-            String siteRoot = site.getPath();
-            if (path.startsWith(siteRoot + "/")) {
-                path = "./" + path.substring(siteRoot.length() + 1);
-            } else if (path.equals(siteRoot)) { // site configuration
-                path = "./";
+        if (siteRelativePath == null) {
+            siteRelativePath = getPath();
+            Resource releaseRoot;
+            if (Site.isSite(releaseRoot = release.getReleaseRoot())) {
+                Site site = getSiteManager().createBean(context, releaseRoot);
+                String siteRoot = site.getPath();
+                if (siteRelativePath.startsWith(siteRoot + "/")) {
+                    siteRelativePath = "./" + path.substring(siteRoot.length() + 1);
+                } else if (siteRelativePath.equals(siteRoot)) { // site configuration
+                    siteRelativePath = "./";
+                }
             }
         }
-        return path;
+        return siteRelativePath;
     }
 
     /**
@@ -192,7 +184,7 @@ public abstract class ContentVersion<ContentType extends ContentModel> {
     }
 
     /**
-     * Returns the URL to reference this page version: if this is about workspace, the page path (null if the page is deleted),
+     * Returns the URL to reference this content version: if this is about workspace, the content path (null if the content is deleted),
      */
     public abstract String getUrl();
 

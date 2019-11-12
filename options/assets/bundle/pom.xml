@@ -81,7 +81,7 @@
             <artifactId>composum-sling-core-commons</artifactId>
         </dependency>
 
-        <!-- Sling, JCR -->
+        <!-- Apache Sling -->
         <dependency>
             <groupId>org.apache.sling</groupId>
             <artifactId>org.apache.sling.api</artifactId>
@@ -90,9 +90,15 @@
             <groupId>org.apache.sling</groupId>
             <artifactId>org.apache.sling.commons.mime</artifactId>
         </dependency>
+
+        <!-- JCR API, Jackrabbit -->
         <dependency>
-            <groupId>org.apache.jackrabbit.vault</groupId>
-            <artifactId>org.apache.jackrabbit.vault</artifactId>
+            <groupId>javax.jcr</groupId>
+            <artifactId>jcr</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.jackrabbit</groupId>
+            <artifactId>jackrabbit-jcr-commons</artifactId>
         </dependency>
 
         <!-- JSON -->

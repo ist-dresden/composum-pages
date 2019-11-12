@@ -1,10 +1,16 @@
-package com.composum.pages.commons.model;
+/*
+ * copyright (c) 2015ff IST GmbH Dresden, Germany - https://www.ist-software.com
+ *
+ * This software may be modified and distributed under the terms of the MIT license.
+ */
+package com.composum.pages.options.assets.api;
 
-import com.composum.pages.commons.model.File.Type;
+import com.composum.pages.commons.model.ContentModel;
+import com.composum.pages.commons.model.FileContent;
+import com.composum.pages.commons.model.FileResource;
 import com.composum.pages.commons.util.LinkUtil;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.util.MimeTypeUtil;
-import com.composum.sling.core.util.ResourceUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.resource.Resource;
@@ -12,23 +18,9 @@ import org.apache.sling.api.resource.Resource;
 import javax.annotation.Nonnull;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
 
-public class FileResource extends ContentModel<File> implements FileContent {
+public class AssetContent extends ContentModel<Asset> implements FileContent {
 
-    public static final Map<String, Type> TYPE_MAP;
-
-    static {
-        TYPE_MAP = new HashMap<>();
-        TYPE_MAP.put("image", Type.image);
-        TYPE_MAP.put("video", Type.video);
-        TYPE_MAP.put("application/pdf", Type.document);
-        TYPE_MAP.put("cpa:Asset", Type.asset);
-    }
-
-    private transient Type fileType;
     private transient String mimeType;
     private transient Calendar date;
 
@@ -38,53 +30,31 @@ public class FileResource extends ContentModel<File> implements FileContent {
     private transient String license;
     private transient String licenseUrl;
 
-    public FileResource() {
+    public AssetContent() {
     }
 
-    public FileResource(BeanContext context, Resource resource) {
+    public AssetContent(BeanContext context, Resource resource) {
         initialize(context, resource);
     }
 
     @Nonnull
-    public Resource getFileResource() {
-        return Objects.requireNonNull(getResource().getParent());
+    public Resource getAssetResource() {
+        return getParent().getResource();
     }
 
     /**
      * @return the files content resource (normally the 'jcr:content' child - of type 'nt:resource')
      */
     public Resource getContentResource() {
-        return getResource();
+        return getParent().getImageAsset().getOriginal().getContentResource();
     }
 
     public String getFileName() {
-        return getFileResource().getName();
+        return getAssetResource().getName();
     }
 
     public String getFilePath() {
-        return getFileResource().getPath();
-    }
-
-    public Type getFileType() {
-        if (fileType == null) {
-            Resource resource = getContentResource();
-            String primaryType = ResourceUtil.getPrimaryType(resource);
-            if (StringUtils.isNotBlank(primaryType)) {
-                fileType = TYPE_MAP.get(primaryType);
-            }
-            if (fileType == null) {
-                String mimeType = getMimeType();
-                fileType = TYPE_MAP.get(getMimeType());
-                if (fileType == null) {
-                    String category = StringUtils.substringBefore(mimeType, "/");
-                    fileType = TYPE_MAP.get(category);
-                }
-            }
-            if (fileType == null) {
-                fileType = Type.file;
-            }
-        }
-        return fileType;
+        return getAssetResource().getPath();
     }
 
     public String getDateString() {
@@ -104,7 +74,7 @@ public class FileResource extends ContentModel<File> implements FileContent {
 
     public String getMimeType() {
         if (mimeType == null) {
-            mimeType = MimeTypeUtil.getMimeType(resource, "");
+            mimeType = MimeTypeUtil.getMimeType(getContentResource(), "");
         }
         return mimeType;
     }

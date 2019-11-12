@@ -5,7 +5,6 @@
  */
 package com.composum.pages.commons.model;
 
-import com.composum.pages.commons.PagesConstants;
 import com.composum.pages.commons.model.properties.Language;
 import com.composum.pages.commons.model.properties.LanguageSet;
 import com.composum.pages.commons.model.properties.Languages;
@@ -19,9 +18,6 @@ import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.util.ResourceUtil;
 import com.composum.sling.platform.security.AccessMode;
-import com.composum.sling.platform.staging.StagingReleaseManager;
-import com.composum.sling.platform.staging.versions.PlatformVersionsService.ActivationState;
-import com.composum.sling.platform.staging.versions.PlatformVersionsService.Status;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.apache.sling.api.SlingHttpServletRequest;
@@ -31,9 +27,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
@@ -55,7 +49,6 @@ import static com.composum.pages.commons.PagesConstants.PROP_PAGE_LANGUAGES;
 import static com.composum.pages.commons.PagesConstants.PROP_SLING_TARGET;
 import static com.composum.pages.commons.PagesConstants.PROP_THEME_CATEGORY;
 import static com.composum.pages.commons.PagesConstants.PROP_VIEW_CATEGORY;
-import static com.composum.pages.commons.PagesConstants.VERSION_DATE_FORMAT;
 
 @PropertyDetermineResourceStrategy(Page.ContainingPageResourceStrategy.class)
 public class Page extends ContentDriven<PageContent> implements Comparable<Page> {
@@ -633,59 +626,5 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
 
     public boolean isCheckedOut() {
         return getContent().isCheckedOut();
-    }
-
-    /**
-     * Pages-Adapter around {@link Status}.
-     */
-    public static class StatusModel {
-
-        protected final Status releaseStatus;
-
-        public StatusModel(Status status) {
-            releaseStatus = status;
-        }
-
-        public ActivationState getActivationState() {
-            return releaseStatus.getActivationState();
-        }
-
-        public String getLastModified() {
-            Calendar lastModified = releaseStatus.getLastModified();
-            return lastModified != null ? new SimpleDateFormat(VERSION_DATE_FORMAT).format(lastModified.getTime()) : "";
-        }
-
-        public String getLastModifiedBy() {
-            return releaseStatus.getLastModifiedBy();
-        }
-
-        public String getReleaseLabel() {
-            StagingReleaseManager.Release previous = releaseStatus.getPreviousRelease();
-            String label = previous != null ? releaseStatus.getPreviousRelease().getReleaseLabel() : "";
-            Matcher matcher = PagesConstants.RELEASE_LABEL_PATTERN.matcher(label);
-            return matcher.matches() ? matcher.group(1) : label;
-        }
-
-        public Calendar getLastActivatedTime() {
-            return releaseStatus.getVersionReference() != null ? releaseStatus.getVersionReference().getLastActivated() : null;
-        }
-
-        public String getLastActivated() {
-            Calendar calendar = getLastActivatedTime();
-            return calendar != null ? new SimpleDateFormat(VERSION_DATE_FORMAT).format(calendar.getTime()) : "";
-        }
-
-        public String getLastActivatedBy() {
-            return releaseStatus.getVersionReference() != null ? releaseStatus.getVersionReference().getLastActivatedBy() : null;
-        }
-
-        public String getLastDeactivated() {
-            Calendar calendar = releaseStatus.getVersionReference() != null ? releaseStatus.getVersionReference().getLastDeactivated() : null;
-            return calendar != null ? new SimpleDateFormat(VERSION_DATE_FORMAT).format(calendar.getTime()) : "";
-        }
-
-        public String getLastDeactivatedBy() {
-            return releaseStatus.getVersionReference() != null ? releaseStatus.getVersionReference().getLastDeactivatedBy() : null;
-        }
     }
 }
