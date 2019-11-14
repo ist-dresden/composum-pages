@@ -74,7 +74,8 @@
                     this.$previewEntry = $listEntry;
                     $('body').addClass('context-driven-view');
                     $listEntry.addClass('selected');
-                    pages.trigger('site.activated.view', pages.const.event.page.view, [path, {'pages.view': 'preview'}]);
+                    pages.trigger('site.activated.view', pages.const.event.page.view,
+                        [path, {'pages.view': 'preview'}, $entry.data('viewer')]);
                 }
             },
 
