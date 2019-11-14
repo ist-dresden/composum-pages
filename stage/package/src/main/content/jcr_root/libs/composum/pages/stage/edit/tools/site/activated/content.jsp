@@ -33,7 +33,7 @@
                 <li class="${modelCSS}_listentry release-status_${version.contentActivationState}">
                     <div class="_page-state"><input type="checkbox" class="${modelCSS}_page-select"
                                                     data-path="${version.path}"/></div>
-                    <div class="${modelCSS}_page-entry" data-path="${version.path}">
+                    <div class="${modelCSS}_page-entry" data-path="${version.path}" data-viewer="${version.viewerUrl}">
                         <div class="${modelCSS}_page-head">
                             <div class="${modelCSS}_page-title">${not empty version.title?cpn:text(version.title):'-- --'}</div>
                             <cpn:text class="${modelCSS}_page-time">${version.lastModifiedString}</cpn:text>

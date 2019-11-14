@@ -184,9 +184,16 @@ public abstract class ContentVersion<ContentType extends ContentModel> {
     }
 
     /**
-     * Returns the URL to reference this content version: if this is about workspace, the content path (null if the content is deleted),
+     * Returns the service URL to view this content version: empty for normal pages (path+'.html'),
      */
-    public abstract String getUrl();
+    @Nonnull
+    public abstract String getViewerUrl();
+
+    /**
+     * Returns the complete URL to show this version,
+     */
+    @Nonnull
+    public abstract String getPreviewUrl();
 
     public abstract String getTitle();
 

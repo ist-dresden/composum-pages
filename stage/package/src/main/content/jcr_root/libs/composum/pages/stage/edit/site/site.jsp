@@ -3,6 +3,7 @@
 <%@taglib prefix="cpn" uri="http://sling.composum.com/cpnl/1.0" %>
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <cpp:defineObjects/>
+<!DOCTYPE html>
 <html data-context-path="${slingRequest.contextPath}">
 <cpp:model var="model" type="com.composum.pages.stage.model.edit.site.SiteModel"
            cssBase="composum-pages-stage-edit-site">

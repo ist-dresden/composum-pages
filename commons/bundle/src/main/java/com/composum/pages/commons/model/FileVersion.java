@@ -1,7 +1,11 @@
 package com.composum.pages.commons.model;
 
 import com.composum.sling.platform.staging.versions.PlatformVersionsService;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.resource.Resource;
+
+import javax.annotation.Nonnull;
 
 public class FileVersion extends ContentVersion<FileResource> {
 
@@ -24,7 +28,8 @@ public class FileVersion extends ContentVersion<FileResource> {
         if (file == null) {
             Resource resource = status.getWorkspaceResource();
             if (resource != null) {
-                file = new File(context, resource);
+                file = new File(context, resource.isResourceType(
+                        JcrConstants.NT_RESOURCE) ? resource.getParent() : resource);
             }
         }
         return file;
@@ -34,7 +39,11 @@ public class FileVersion extends ContentVersion<FileResource> {
     public String getTitle() {
         File file = getFile();
         if (file != null) {
-            return file.getTitle();
+            String title = file.getTitle();
+            if (StringUtils.isNotBlank(title)) {
+                return title;
+            }
+            return file.getName();
         }
         return null;
     }
@@ -43,13 +52,13 @@ public class FileVersion extends ContentVersion<FileResource> {
      * Returns the URL to reference this page version: if this is about workspace, the page path (null if the page is deleted),
      */
     @Override
-    public String getUrl() {
-        String url = null;
-        if (status.getNextRelease() == null) { // workspace page if not deleted
-            if (getFile() != null) {
-                return getFile().getUrl();
-            }
-        }
-        return null;
+    @Nonnull
+    public String getViewerUrl() {
+        return "/bin/cpm/pages/stage.preview.file.html";
+    }
+
+    @Nonnull
+    public String getPreviewUrl() {
+        return getViewerUrl() + getPath();
     }
 }

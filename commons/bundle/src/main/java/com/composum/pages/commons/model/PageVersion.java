@@ -1,6 +1,7 @@
 package com.composum.pages.commons.model;
 
 import com.composum.pages.commons.service.PageManager;
+import com.composum.pages.commons.util.LinkUtil;
 import com.composum.sling.platform.staging.versions.PlatformVersionsService;
 import org.apache.sling.api.resource.Resource;
 
@@ -49,14 +50,18 @@ public class PageVersion extends ContentVersion<PageContent> {
      * Returns the URL to reference this page version: if this is about workspace, the page path (null if the page is deleted),
      */
     @Override
-    public String getUrl() {
-        String url = null;
-        if (status.getNextRelease() == null) { // workspace page if not deleted
-            if (getPage() != null) {
-                return getPage().getUrl();
-            }
+    @Nonnull
+    public String getViewerUrl() {
+        return "";
+    }
+
+    @Nonnull
+    public String getPreviewUrl() {
+        Page page = getPage();
+        if (page != null) {
+            return page.getUrl();
         }
-        return null;
+        return LinkUtil.getUrl(context.getRequest(), getPath());
     }
 
     @Nonnull

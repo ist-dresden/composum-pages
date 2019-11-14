@@ -34,7 +34,7 @@
                     <tr class="release-status_${version.releaseStatus.activationState}">
                         <td class="_page-state"
                             title="${cpn:i18n(slingRequest,version.releaseStatus.activationState)}"></td>
-                        <td class="_page-path"><a href="${version.url}"
+                        <td class="_page-path"><a href="${version.previewUrl}"
                                                   target="_blank">${cpn:path(version.siteRelativePath)}</a>
                         </td>
                         <td class="_page-title">${cpn:text(version.title)}</td>

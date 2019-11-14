@@ -28,7 +28,7 @@
                     <thead class="${modelCSS}_thead">
                     <tr>
                         <th class="_input _page-state"><c:if test="${model.editMode}"><input type="checkbox"
-                                                                                            class="${modelCSS}_page-select-all"/></c:if>
+                                                                                             class="${modelCSS}_page-select-all"/></c:if>
                         </th>
                         <th class="_page-path">${cpn:i18n(slingRequest,'Relative Path')}</th>
                         <th class="_page-title">${cpn:i18n(slingRequest,'Title')}</th>
@@ -36,26 +36,26 @@
                     </tr>
                     </thead>
                     <tbody class="${modelCSS}_tbody">
-                    <c:forEach items="${model.modifiedContent}" var="page">
-                        <tr class="release-status_${page.releaseStatus.activationState}">
+                    <c:forEach items="${model.modifiedContent}" var="version">
+                        <tr class="release-status_${version.releaseStatus.activationState}">
                             <td class="_input _page-state"
-                                title="${cpn:i18n(slingRequest,page.releaseStatus.activationState)}"><c:if
+                                title="${cpn:i18n(slingRequest,version.releaseStatus.activationState)}"><c:if
                                     test="${model.editMode}"><input type="checkbox"
-                                                                   class="${modelCSS}_page-select"
-                                                                   data-path="${page.path}"></c:if>
+                                                                    class="${modelCSS}_page-select"
+                                                                    data-path="${version.path}"></c:if>
                             </td>
                             <td class="_page-path">
                                 <c:choose>
-                                    <c:when test="${not empty page.url}">
-                                        <a href="${page.url}">${cpn:path(page.siteRelativePath)}</a>
+                                    <c:when test="${not empty version.previewUrl}">
+                                        <a href="${version.previewUrl}">${cpn:path(version.siteRelativePath)}</a>
                                     </c:when>
                                     <c:otherwise>
-                                        ${cpn:path(page.siteRelativePath)}
+                                        ${cpn:path(version.siteRelativePath)}
                                     </c:otherwise>
                                 </c:choose>
                             </td>
-                            <td class="_page-title">${cpn:text(page.title)}</td>
-                            <td class="_page-time">${cpn:text(page.lastModifiedString)}</td>
+                            <td class="_page-title">${cpn:text(version.title)}</td>
+                            <td class="_page-time">${cpn:text(version.lastModifiedString)}</td>
                         </tr>
                     </c:forEach>
                     </tbody>

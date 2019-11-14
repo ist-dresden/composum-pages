@@ -5,6 +5,8 @@ import com.composum.pages.commons.model.SiteRelease;
 import com.composum.sling.platform.staging.versions.PlatformVersionsService;
 import org.apache.sling.api.resource.Resource;
 
+import javax.annotation.Nonnull;
+
 public class AssetVersion extends ContentVersion<AssetContent> {
 
     private transient Asset asset;
@@ -45,11 +47,13 @@ public class AssetVersion extends ContentVersion<AssetContent> {
      * Returns the URL to reference this page version: if this is about workspace, the page path (null if the page is deleted),
      */
     @Override
-    public String getUrl() {
-        Asset asset = getAsset();
-        if (asset != null) {
-            return asset.getUrl();
-        }
-        return null;
+    @Nonnull
+    public String getViewerUrl() {
+        return "/bin/cpm/assets/view.preview.html";
+    }
+
+    @Nonnull
+    public String getPreviewUrl() {
+        return getViewerUrl() + getPath();
     }
 }

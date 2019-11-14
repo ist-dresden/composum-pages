@@ -49,14 +49,14 @@ public class SiteVersion extends ContentVersion<SiteConfiguration> {
      * Returns the URL to reference this site version: if this is about workspace, the site path (null if the site is deleted),
      */
     @Override
-    public String getUrl() {
-        String url = null;
-        if (status.getNextRelease() == null) { // workspace site if not deleted
-            if (getSite() != null) {
-                return getSite().getUrl();
-            }
-        }
-        return null;
+    @Nonnull
+    public String getViewerUrl() {
+        return "/bin/cpm/pages/stage.preview.site.html";
+    }
+
+    @Nonnull
+    public String getPreviewUrl() {
+        return getViewerUrl() + getPath();
     }
 
     @Nonnull

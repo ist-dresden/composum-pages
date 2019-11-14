@@ -220,8 +220,7 @@
             reloadPage: function (parameters, path, servicePath) {
                 var pagePath = path || pages.current.page;
                 if (pagePath) {
-                    var frameUrl = new core.SlingUrl(core.getContextUrl(
-                        servicePath ? servicePath + pagePath : pagePath + '.html'));
+                    var frameUrl = new core.SlingUrl(encodeURI(servicePath ? servicePath + pagePath : pagePath + '.html'));
                     if (parameters) {
                         frameUrl.parameters = parameters;
                     }

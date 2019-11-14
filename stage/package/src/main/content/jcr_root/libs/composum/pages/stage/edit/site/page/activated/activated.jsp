@@ -28,7 +28,7 @@
                     <thead class="${modelCSS}_thead">
                     <tr>
                         <th class="_input _page-state"><c:if test="${model.editMode}"><input type="checkbox"
-                                                                                            class="${modelCSS}_page-select-all"/></c:if>
+                                                                                             class="${modelCSS}_page-select-all"/></c:if>
                         </th>
                         <th class="_page-path">${cpn:i18n(slingRequest,'Relative Path')}</th>
                         <th class="_page-title">${cpn:i18n(slingRequest,'Title')}</th>
@@ -41,13 +41,13 @@
                             <td class="_input _page-state"
                                 title="${cpn:i18n(slingRequest,version.contentActivationState)}"><c:if
                                     test="${model.editMode}"><input type="checkbox"
-                                                                   class="${modelCSS}_page-select"
-                                                                   data-path="${version.path}"></c:if>
+                                                                    class="${modelCSS}_page-select"
+                                                                    data-path="${version.path}"></c:if>
                             </td>
                             <td class="_page-path">
                                 <c:choose>
-                                    <c:when test="${not empty version.url}">
-                                        <a href="${version.url}"
+                                    <c:when test="${not empty version.previewUrl}">
+                                        <a href="${version.previewUrl}"
                                            target="_blank">${cpn:path(version.siteRelativePath)}</a>
                                     </c:when>
                                     <c:otherwise>

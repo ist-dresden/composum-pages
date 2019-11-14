@@ -8,7 +8,10 @@
         "acl": [
           {
             "allow": true,
-            "privileges": "jcr:all"
+            "privileges": [
+              "jcr:read",
+              "rep:write"
+            ]
           }
         ]
       }
@@ -23,7 +26,10 @@
         "acl": [
           {
             "allow": true,
-            "privileges": "jcr:all"
+            "privileges": [
+              "jcr:read",
+              "rep:write"
+            ]
           }
         ]
       }
@@ -38,7 +44,10 @@
         "acl": [
           {
             "allow": true,
-            "privileges": "jcr:all"
+            "privileges": [
+              "jcr:read",
+              "rep:write"
+            ]
           }
         ]
       }
@@ -57,7 +66,10 @@
         "acl": [
           {
             "allow": true,
-            "privileges": "jcr:all"
+            "privileges": [
+              "jcr:read",
+              "rep:write"
+            ]
           }
         ]
       },
@@ -66,7 +78,10 @@
         "acl": [
           {
             "allow": true,
-            "privileges": "jcr:all"
+            "privileges": [
+              "jcr:read",
+              "rep:write"
+            ]
           }
         ]
       }
