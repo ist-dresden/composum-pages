@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.StringJoiner;
 
 /**
  * A value model which can encapsulate the values of a multi value property with an embedded iterator and
@@ -137,4 +138,14 @@ public class ValueSet<T> extends ArrayList<T> implements Iterator<T> {
         }
         return value;
     }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", ValueSet.class.getSimpleName() + "[", "]")
+                .add("values=" + super.toString())
+                .add("index=" + index)
+                .add("currentValue=" + currentValue)
+                .toString();
+    }
+
 }

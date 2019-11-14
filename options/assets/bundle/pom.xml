@@ -38,7 +38,7 @@
                         </Export-Package>
                         <Import-Package>
                             com.composum.sling.core.*;version="[1.11,2.1)",
-                            com.composum.sling.clientlibs.*;version="[1.11,2.1)",
+                            com.composum.sling.nodes.*;version="[1.11,2.1)",
                             com.composum.sling.cpnl.*;version="[1.11,2.1)",
                             javax.annotation.*;version="[0,4)",
                             *
@@ -62,6 +62,18 @@
     </build>
     <dependencies>
 
+        <!-- Composum Core -->
+        <dependency>
+            <groupId>com.composum.sling.core</groupId>
+            <artifactId>composum-sling-core-commons</artifactId>
+        </dependency>
+
+        <!-- Composum Platform -->
+        <dependency>
+            <groupId>com.composum.platform</groupId>
+            <artifactId>composum-platform-staging-bundle</artifactId>
+        </dependency>
+
         <!-- Composum Pages -->
         <dependency>
             <groupId>com.composum.pages</groupId>
@@ -76,12 +88,6 @@
         <dependency>
             <groupId>com.composum.assets</groupId>
             <artifactId>composum-assets-commons-bundle</artifactId>
-        </dependency>
-
-        <!-- Composum Core -->
-        <dependency>
-            <groupId>com.composum.sling.core</groupId>
-            <artifactId>composum-sling-core-commons</artifactId>
         </dependency>
 
         <!-- Apache Sling -->

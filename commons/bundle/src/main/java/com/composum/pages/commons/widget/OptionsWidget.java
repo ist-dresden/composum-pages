@@ -7,6 +7,7 @@ import com.composum.sling.core.util.I18N;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.sling.api.resource.Resource;
 
 import javax.annotation.Nonnull;
@@ -81,6 +82,15 @@ public abstract class OptionsWidget<T> extends PropertyEditHandle<T> implements 
         }
 
         public abstract boolean isSelected();
+
+        @Override
+        public String toString() {
+            ToStringBuilder builder = new ToStringBuilder(this);
+            builder.append("label", label);
+            builder.append("value", label);
+            if (data != null) { builder.append("data", data); }
+            return builder.toString();
+        }
     }
 
     public OptionsWidget(Class<T> type) {
