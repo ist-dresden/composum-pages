@@ -8,14 +8,13 @@ import javax.annotation.Nullable;
  */
 public class SingleStringOption extends OptionsWidget<String> {
 
-    private transient String current;
-
     public class SingleOption extends Option {
 
         public SingleOption(@Nonnull final String label, @Nonnull final String value, @Nullable final Object data) {
             super(label, value, data);
         }
 
+        @Override
         public boolean isSelected() {
             String current = getCurrent();
             String value = getValue();
@@ -27,6 +26,7 @@ public class SingleStringOption extends OptionsWidget<String> {
         super(String.class);
     }
 
+    @Override
     @Nonnull
     protected Option newOption(@Nonnull final String label, @Nonnull final String value, @Nullable final Object data) {
         return new SingleOption(label, value, data);
@@ -34,9 +34,6 @@ public class SingleStringOption extends OptionsWidget<String> {
 
     @Nullable
     public String getCurrent() {
-        if (current == null) {
-            current = getValue();
-        }
-        return current;
+        return getValue();
     }
 }
