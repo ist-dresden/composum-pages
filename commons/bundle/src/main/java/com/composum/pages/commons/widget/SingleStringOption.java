@@ -32,8 +32,10 @@ public class SingleStringOption extends OptionsWidget<String> {
         return new SingleOption(label, value, data);
     }
 
+    /** The current value (can change after {@link #nextValue()} is called). */
     @Nullable
     public String getCurrent() {
+        // must not be cached in a field, since that can actually change during the lifetime of this object.
         return getValue();
     }
 }
