@@ -9,7 +9,8 @@
         <div class="composum-pages-tools_left-actions">
             <label class="tools-title" title="${cpn:i18n(slingRequest,'modified but last changes not activated yet')}">
                 <input type="checkbox" class="composum-pages-stage-edit-site-page-modified_page-select-all"/>
-                <span class="title-text">${cpn:i18n(slingRequest,'Modified Pages')}</span>
+                <span class="title-text">${cpn:i18n(slingRequest,'Modified')}</span>
+                <cpp:include resourceType="composum/pages/stage/edit/site/page/type" replaceSelectors="context"/>
             </label>
         </div>
         <div class="composum-pages-tools_right-actions">

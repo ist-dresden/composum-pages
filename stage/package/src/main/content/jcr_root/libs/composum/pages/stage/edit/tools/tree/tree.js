@@ -136,6 +136,20 @@
                     .on(e.dnd.finished + '.' + this.nodeIdPrefix + 'tree', _.bind(this.onDragFinished, this));
             },
 
+            /**
+             * add the release status CSS class for the page
+             */
+            refreshNodeState: function ($node, node) {
+                node = tree.ToolsTree.prototype.refreshNodeState.apply(this, [$node, node]);
+                if (node.original.release && node.original.release.status) {
+                    ['initial', 'activated', 'modified', 'deactivated'].forEach(function (value) {
+                        $node.removeClass('release-status_' + value);
+                    });
+                    $node.addClass('release-status_' + node.original.release.status);
+                }
+                return node;
+            },
+
             onContentInserted: function (event, parentRef, /*optional*/ resultRef) {
                 var path = parentRef && parentRef.path ? parentRef.path : parentRef;
                 if (path) {
@@ -430,20 +444,6 @@
             dataUrlForPath: function (path) {
                 var params = this.filter ? '?filter=' + this.filter : '';
                 return '/bin/cpm/pages/edit.pageTree.json' + path + params;
-            },
-
-            /**
-             * add the release status CSS class for the page
-             */
-            refreshNodeState: function ($node, node) {
-                node = tree.ContentTree.prototype.refreshNodeState.apply(this, [$node, node]);
-                if (node.original.release && node.original.release.status) {
-                    ['initial', 'activated', 'modified', 'deactivated'].forEach(function (value) {
-                        $node.removeClass('release-status_' + value);
-                    });
-                    $node.addClass('release-status_' + node.original.release.status);
-                }
-                return node;
             },
 
             onNodeSelected: function (path, node) {

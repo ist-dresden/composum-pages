@@ -5,10 +5,10 @@
 <cpp:defineFrameObjects/>
 <cpp:model var="model" type="com.composum.pages.stage.model.edit.site.SiteModel"
            cssBase="composum-pages-stage-edit-site-page" data-path="@{model.site.path}">
-    <select title="Filter" class="${modelCSS}_filter form-control">
-        <option value="all">${cpn:i18n(slingRequest,'all')}</option>
-        <c:forEach items="${model.activationStates}" var="filter">
-            <option value="${filter}" ${model.filterValue==filter?'selected="selected"':''}>${cpn:i18n(slingRequest,filter)}</option>
+    <select title="Content Type" class="${modelCSS}_type composum-pages-tools_select form-control">
+        <option value="all">${cpn:i18n(slingRequest,'Content')}</option>
+        <c:forEach items="${model.contentTypes}" var="type">
+            <option value="${type.key}" ${model.contentTypeValue==type.key?'selected="selected"':''}>${cpn:i18n(slingRequest,type.value)}</option>
         </c:forEach>
     </select>
 </cpp:model>

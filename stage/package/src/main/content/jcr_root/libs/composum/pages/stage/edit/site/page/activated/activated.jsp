@@ -11,7 +11,8 @@
                 <a class="collapsed" role="button" data-toggle="collapse"
                    href="#releaseChangesPanel" aria-expanded="false"
                    title="${cpn:i18n(slingRequest,'pages activated with changes since the previous release')}"
-                   aria-controls="releaseChangesPanel">${cpn:i18n(slingRequest,'Release Changes')}</a>
+                   aria-controls="releaseChangesPanel">${cpn:i18n(slingRequest,'Activated')}</a>
+                <cpp:include resourceType="composum/pages/stage/edit/site/page/type"/>
             </h4>
             <div class="btn-group" role="group">
                 <cpp:include resourceType="composum/pages/stage/edit/site/page/filter" replaceSelectors="activated"/>

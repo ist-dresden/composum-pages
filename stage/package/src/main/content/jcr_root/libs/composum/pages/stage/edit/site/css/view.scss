@@ -25,7 +25,6 @@
 
     .btn-group, .heading-input {
         float: right;
-        margin-left: 10px;
     }
 
     .btn-group {
@@ -38,13 +37,6 @@
             .fa {
                 margin-right: 8px;
             }
-        }
-
-        select {
-            width: auto;
-            height: 28px;
-            margin-left: 10px;
-            float: right;
         }
     }
 
@@ -73,6 +65,17 @@
             .panel-title {
                 @include title-font;
                 float: left;
+
+                select {
+                    margin: -6px 10px 0;
+                }
+            }
+
+            select {
+                width: auto;
+                height: 28px;
+                margin-left: 10px;
+                float: right;
             }
         }
 

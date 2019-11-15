@@ -619,6 +619,14 @@
             }
         }
 
+        &_select {
+            @include tools-input;
+
+            &.hidden {
+                display: none;
+            }
+        }
+
         &_button {
             @include tools-button;
 

@@ -18,6 +18,10 @@
 
         .composum-pages-stage-edit-site-page {
 
+            &_type {
+                margin-left: 4px;
+            }
+
             &-activated, &-modified {
 
                 &_page-select-all {

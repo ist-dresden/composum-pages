@@ -308,13 +308,13 @@ public class AssetServlet extends PagesContentServlet {
     }};
 
     /**
-     * The 'fileUpdate' via POST (multipart form) implementation expects:
+     * The 'fileCreate' via POST (multipart form) implementation expects:
      * <ul>
      * <li>the request suffix with the path of the files parent</li>
      * <li>the 'file' part (form element / parameter) with the binary content</li>
      * <li>an optional 'name' part (form element / parameter) name of the new resource</li>
      * </ul>
-     * The 'mix:versionable' type is set if not present and the 'jcr:lastModified' is adjusted.
+     * The 'mix:versionable' type is set if not present and the 'jcr:lastModified' and 'jcr:mimeType' are adjusted.
      */
     protected class FileCreateOperation implements ServletOperation {
 
@@ -374,7 +374,7 @@ public class AssetServlet extends PagesContentServlet {
      * <li>the request suffix with the path of the file</li>
      * <li>the 'file' part (form element / parameter) with the binary content (optional)</li>
      * </ul>
-     * The 'mix:versionable' type is set if not present and the 'jcr:lastModified' is adjusted.
+     * The 'mix:versionable' type is set if not present and the 'jcr:lastModified' and 'jcr:mimeType' are adjusted.
      */
     protected class FileUpdateOperation implements ServletOperation {
 

@@ -56,8 +56,14 @@
                 this.$('.' + c.base + c._entry).click(_.bind(this.pagePreview, this));
             },
 
+            changeScope: function (event) {
+                event.preventDefault();
+                this.reload(event, this.$contentType.val());
+                return false;
+            },
+
             doFilter: function (event) {
-                this.reload(event, $(event.currentTarget).data('value'));
+                this.reload(event, this.$contentType.val(), $(event.currentTarget).data('value'));
             },
 
             pagePreview: function (event) {
@@ -96,9 +102,10 @@
                 this.reload();
             },
 
-            reload: function (event, filter) {
+            reload: function (event, type, filter) {
                 this.closePreview();
-                var params = filter ? '?filter=' + (filter === 'all' ? '' : filter) : '';
+                var params = type ? '?type=' + type : '';
+                params += filter ? ((type ? '&' : '?') + 'filter=' + filter) : '';
                 var c = tools.const.activated.uri;
                 core.getHtml(c.load + this.contextTabs.reference.path + params,
                     undefined, undefined, _.bind(function (data) {

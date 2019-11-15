@@ -49,8 +49,10 @@
             initialize: function () {
                 var c = releases.const.css.page;
                 this.sitePath = this.$el.data('path');
+                this.$contentType = this.$('.composum-pages-stage-edit-site-page_type');
+                this.$contentType.change(_.bind(this.changeScope, this));
                 this.$filter = this.$('.composum-pages-stage-edit-site-page_filter');
-                this.$filter.change(_.bind(this.doFilter, this));
+                this.$filter.change(_.bind(this.changeScope, this));
                 this.$buttonActivate = this.$('button.activate');
                 this.$buttonActivate.click(_.bind(this.doActivate, this));
                 this.$buttonReload = this.$('button.reload');
@@ -59,9 +61,15 @@
                 this.$selectAllBox.on("change", _.bind(this.selectAll, this));
             },
 
-            doFilter: function (event) {
-                window.location.href = window.location.href
-                    .replace(/&filter=[^&]*/, '') + '&filter=' + this.$filter.val();
+            changeScope: function (event) {
+                event.preventDefault();
+                var type = this.$contentType.val();
+                var filter = this.$filter.val();
+                var url = window.location.href
+                    .replace(/&type=[^&]*/, '')
+                    .replace(/&filter=[^&]*/, '');
+                window.location.href = url + (type ? ('&type=' + type) : '') + (filter ? ('&filter=' + filter) : '');
+                return false;
             },
 
             selectAll: function (event) {
@@ -112,8 +120,10 @@
             initialize: function () {
                 var c = releases.const.css.page;
                 this.sitePath = this.$el.data('path');
+                this.$contentType = this.$('.composum-pages-stage-edit-site-page_type');
+                this.$contentType.change(_.bind(this.changeScope, this));
                 this.$filter = this.$('.composum-pages-stage-edit-site-page_filter');
-                this.$filter.change(_.bind(this.doFilter, this));
+                this.$filter.change(_.bind(this.changeScope, this));
                 this.$buttonRevert = this.$('button.revert');
                 this.$buttonRevert.click(_.bind(this.doRevert, this));
                 this.$buttonReload = this.$('button.reload');
@@ -122,9 +132,15 @@
                 this.$selectAllBox.on("change", _.bind(this.selectAll, this));
             },
 
-            doFilter: function (event) {
-                window.location.href = window.location.href
-                    .replace(/&filter=[^&]*/, '') + '&filter=' + this.$filter.val();
+            changeScope: function (event) {
+                event.preventDefault();
+                var type = this.$contentType.val();
+                var filter = this.$filter.val();
+                var url = window.location.href
+                    .replace(/&type=[^&]*/, '')
+                    .replace(/&filter=[^&]*/, '');
+                window.location.href = url + (type ? ('&type=' + type) : '') + (filter ? ('&filter=' + filter) : '');
+                return false;
             },
 
             selectAll: function (event) {

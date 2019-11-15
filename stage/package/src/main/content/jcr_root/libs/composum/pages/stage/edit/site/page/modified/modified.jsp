@@ -11,13 +11,14 @@
                 <a class="collapsed" role="button" data-toggle="collapse"
                    href="#modifiedContentPanel" aria-expanded="false"
                    title="${cpn:i18n(slingRequest,'modified but last changes not activated yet')}"
-                   aria-controls="modifiedContentPanel">${cpn:i18n(slingRequest,'Modified Pages')}</a>
+                   aria-controls="modifiedContentPanel">${cpn:i18n(slingRequest,'Modified')}</a>
+                <cpp:include resourceType="composum/pages/stage/edit/site/page/type"/>
             </h4>
             <div class="btn-group" role="group">
                 <cpp:include resourceType="composum/pages/stage/edit/site/page/filter" replaceSelectors="modified"/>
                 <c:if test="${model.editMode}">
                     <button class="btn btn-default activate"><i
-                            class="fa fa-plaY"></i>${cpn:i18n(slingRequest,'Activate')}</button>
+                            class="fa fa-play"></i>${cpn:i18n(slingRequest,'Activate')}</button>
                 </c:if>
             </div>
         </div>
