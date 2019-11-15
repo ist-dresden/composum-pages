@@ -26,12 +26,13 @@ public interface VersionsService {
      */
     @FunctionalInterface
     interface ContentVersionFilter {
-        boolean accept(ContentVersion version);
+        boolean accept(@Nullable ContentVersion version);
 
-        /** Combines this and {otherFilter} conjunctively. */
-        default ContentVersionFilter and(@Nonnull ContentVersionFilter otherFilter) {
-            Objects.requireNonNull(otherFilter);
-            return (version) -> this.accept(version) && otherFilter.accept(version);
+        /** Combines this and {otherFilter} conjunctively. If {otherFilter}=null it's ignored. */
+        default ContentVersionFilter and(@Nullable ContentVersionFilter otherFilter) {
+            return otherFilter != null
+                    ? (version) -> this.accept(version) && otherFilter.accept(version)
+                    : this;
         }
     }
 
@@ -95,8 +96,11 @@ public interface VersionsService {
         }
 
         @Override
-        public boolean accept(ContentVersion version) {
-            return options.contains(version.getContentActivationState());
+        public boolean accept(@Nullable ContentVersion version) {
+            PlatformVersionsService.ActivationState contentActivationState;
+            return version != null
+                    && (contentActivationState = version.getContentActivationState()) != null
+                    && options.contains(contentActivationState);
         }
     }
 
@@ -115,11 +119,11 @@ public interface VersionsService {
 
         /** True if {@link ContentVersion#getResource()} matches our {@link ResourceFilter} */
         @Override
-        public boolean accept(ContentVersion version) {
-            if (version == null) { return false; }
-            Resource resource = version.getResource();
-            if (resource == null) { return false; }
-            return resourceFilter.accept(resource);
+        public boolean accept(@Nullable ContentVersion version) {
+            Resource resource;
+            return version != null
+                    && (resource = version.getResource()) != null
+                    && resourceFilter.accept(resource);
         }
     }
 
