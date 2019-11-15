@@ -7,7 +7,7 @@
     <cpp:widget type="hidden" name="*@TypeHint" value="nt:file"/>
     <div class="row">
         <div class="col col-xs-9">
-            <cpp:widget label="Name" name="#name" placeholder="the repository name" type="textfield"
+            <cpp:widget label="Name" name="name" placeholder="the repository name" type="textfield"
                         pattern="^[A-Za-z_][- \\w]*(\\.\\w+)?$" blank="true"
                         hint="if you want to paste source code select the type:"/>
         </div>

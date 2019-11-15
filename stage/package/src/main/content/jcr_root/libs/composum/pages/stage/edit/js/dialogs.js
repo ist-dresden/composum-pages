@@ -586,7 +586,10 @@
 
             initView: function () {
                 dialogs.EditDialog.prototype.initView.apply(this);
-                this.file = core.getWidget(this.el, '.widget-name_STAR', core.components.FileUploadWidget);
+                this.file = core.getWidget(this.el, '.widget-name_file', core.components.FileUploadWidget);
+                if (!this.file) {
+                    this.file = core.getWidget(this.el, '.widget-name_STAR', core.components.FileUploadWidget);
+                }
                 this.name = core.getWidget(this.el, '.widget-name_name', core.components.TextFieldWidget);
                 this.source = core.getWidget(this.el, '.widget-name_code', pages.widgets.CodeAreaWidget);
                 this.type = core.getWidget(this.el, '.widget-name_type', core.components.SelectWidget);
@@ -622,7 +625,7 @@
                             this.hide();
                         }, this), _.bind(this.onError, this));
                     } else {
-                        this.file.setName(name); // apply name mangling
+                        this.name.setValue(name); // apply name mangling
                         dialogs.EditDialog.prototype.doSubmit.apply(this);
                     }
                 } else {
