@@ -14,6 +14,7 @@ import javax.jcr.RepositoryException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 /**
  *
@@ -28,7 +29,8 @@ public interface VersionsService {
         boolean accept(ContentVersion version);
 
         /** Combines this and {otherFilter} conjunctively. */
-        default ContentVersionFilter and(ContentVersionFilter otherFilter) {
+        default ContentVersionFilter and(@Nonnull ContentVersionFilter otherFilter) {
+            Objects.requireNonNull(otherFilter);
             return (version) -> this.accept(version) && otherFilter.accept(version);
         }
     }
@@ -104,10 +106,11 @@ public interface VersionsService {
      */
     class ContentVersionByResourceFilter implements ContentVersionFilter {
 
+        @Nonnull
         private final ResourceFilter resourceFilter;
 
-        public ContentVersionByResourceFilter(ResourceFilter resourceFilter) {
-            this.resourceFilter = resourceFilter;
+        public ContentVersionByResourceFilter(@Nonnull ResourceFilter resourceFilter) {
+            this.resourceFilter = Objects.requireNonNull(resourceFilter);
         }
 
         /** True if {@link ContentVersion#getResource()} matches our {@link ResourceFilter} */
@@ -116,7 +119,7 @@ public interface VersionsService {
             if (version == null) { return false; }
             Resource resource = version.getResource();
             if (resource == null) { return false; }
-            return resourceFilter.accept(version.getResource());
+            return resourceFilter.accept(resource);
         }
     }
 
