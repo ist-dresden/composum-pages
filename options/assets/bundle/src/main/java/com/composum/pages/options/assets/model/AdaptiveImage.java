@@ -10,6 +10,7 @@ import com.composum.assets.commons.config.AssetConfig;
 import com.composum.assets.commons.config.RenditionConfig;
 import com.composum.assets.commons.config.VariationConfig;
 import com.composum.assets.commons.handle.ImageAsset;
+import com.composum.assets.commons.util.ImageUtil;
 import com.composum.sling.core.BeanContext;
 import org.apache.sling.api.resource.Resource;
 
@@ -48,6 +49,7 @@ public class AdaptiveImage extends AssetImage {
         return rendition;
     }
 
+    @Override
     public String getImageUri() {
         if (imageUri == null) {
             imageUri = getImageUri(getVariation(), getRendition());
@@ -56,33 +58,11 @@ public class AdaptiveImage extends AssetImage {
     }
 
     public String getImageUri(String variationKey, String renditionKey) {
-        StringBuilder builder = new StringBuilder();
+        String uri = null;
         ImageAsset asset = getAsset();
         if (asset != null) {
-            String mimeType = asset.getMimeType();
-            if (mimeType != null) {
-                AssetConfig config = asset.getConfig();
-                VariationConfig variation = config.findVariation(variationKey);
-                RenditionConfig rendition = variation.findRendition(renditionKey);
-                String path = asset.getPath();
-                String ext = mimeType.substring("image/".length());
-                if (ext.equals("jpeg")) {
-                    ext = "jpg";
-                }
-                if (path.endsWith("." + ext)) {
-                    path = path.substring(0, path.length() - (ext.length() + 1));
-                }
-                String name = path.substring(path.lastIndexOf('/') + 1);
-                builder.append(path);
-                builder.append(".adaptive");
-                builder.append('.').append(variation.getName());
-                builder.append('.').append(rendition.getName());
-                builder.append('.').append(ext);
-                builder.append('/').append(getCacheHash());
-                builder.append('/').append(name);
-                builder.append('.').append(ext);
-            }
+            uri = ImageUtil.getImageUri(asset, variationKey, renditionKey);
         }
-        return builder.toString();
+        return uri;
     }
 }
