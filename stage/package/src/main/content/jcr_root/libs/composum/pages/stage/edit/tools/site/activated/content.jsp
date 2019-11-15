@@ -18,7 +18,7 @@
             <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
                 <button type="button"
                         class="fa fa-pause revert composum-pages-tools_button btn btn-default"
-                        title="${cpn:i18n(slingRequest,'Revert selected pages')}..."></button>
+                        title="${cpn:i18n(slingRequest,'Revert selected content')}..."></button>
             </div>
             <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
                 <cpp:include resourceType="composum/pages/stage/edit/site/page/filter" replaceSelectors="dropdown"/>
@@ -39,7 +39,7 @@
                             <div class="${modelCSS}_page-title">${not empty version.title?cpn:text(version.title):'-- --'}</div>
                             <cpn:text class="${modelCSS}_page-time">${version.lastModifiedString}</cpn:text>
                         </div>
-                        <cpn:text class="${modelCSS}_page-path" type="path">${version.path}</cpn:text>
+                        <cpn:text class="${modelCSS}_page-path" type="path">${version.siteRelativePath}</cpn:text>
                     </div>
                 </li>
             </c:forEach>

@@ -3,14 +3,14 @@
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <cpp:defineFrameObjects/>
 <cpp:editDialog var="model" type="com.composum.pages.commons.model.Page" selector="generic" languageContext="false"
-                title="Revert Page" submitLabel="Revert" data-path="@{model.path}">
+                title="Revert Content" submitLabel="Revert" data-path="@{model.path}">
     <cpp:widget type="hidden" name="target" request="pages"/>
     <cpp:widget type="static" level="warning"
-                value="This page will be reset in the current release. If this release is live the page is restored by the last released version."
+                value="This element will be reset in the current release. If this release is live the element is restored by the last released version."
                 i18n="true"/>
-    <cpp:widget label="Page Referrers" type="page-referrers" name="page-referrers" scope="page" resolved="true"
-                hint="select active page referrers for revert"/>
+    <cpp:widget label="Content Referrers" type="page-referrers" name="page-referrers" scope="page" resolved="true"
+                hint="select active content referrers for revert"/>
     <cpp:widget type="static"
-                value="The elements listed above are referencing this page and are part of the designated release. All selected referrers will be reverted also together with this page."
+                value="The elements listed above are referencing this element and are part of the designated release. All selected referrers will be reverted also together with this element."
                 i18n="true"/>
 </cpp:editDialog>

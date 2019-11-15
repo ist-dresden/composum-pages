@@ -3,7 +3,7 @@
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <cpp:defineFrameObjects/>
 <cpp:editDialog var="model" type="com.composum.pages.commons.model.Page" selector="generic" languageContext="false"
-                title="Activate Page" submitLabel="Activate" data-path="@{model.path}">
+                title="Activate Content" submitLabel="Activate" data-path="@{model.path}">
     <%-- the selected pages in the requests 'pages' attribute - not rendered if no such attribute declared --%>
     <cpp:widget type="hidden" name="target" request="pages"/>
     <cpp:widget label="Page References" type="page-references" name="page-references" scope="page" unresolved="true"

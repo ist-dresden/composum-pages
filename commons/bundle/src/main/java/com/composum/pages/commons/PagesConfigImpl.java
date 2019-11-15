@@ -118,6 +118,11 @@ public class PagesConfigImpl implements PagesConfiguration {
         String replicationRootFilterRule() default "Path(-'^/(public|preview)')";
 
         @AttributeDefinition(
+                description = "the filter configuration for site resources (reference type 'site')"
+        )
+        String siteFilterRule() default "PrimaryType(+'^cpp:Site$')";
+
+        @AttributeDefinition(
                 description = "the filter configuration for page resources (reference type 'page')"
         )
         String pageFilterRule() default "PrimaryType(+'^cpp:Page$')";
@@ -219,6 +224,12 @@ public class PagesConfigImpl implements PagesConfiguration {
         return replicationRootFilter;
     }
 
+    @Nonnull
+    @Override
+    public ResourceFilter getSiteFilter() {
+        return siteFilter;
+    }
+
     @Nullable
     @Override
     public ResourceFilter getPageFilter(@Nonnull BeanContext context, @Nonnull String key) {
@@ -232,6 +243,7 @@ public class PagesConfigImpl implements PagesConfiguration {
         return filter;
     }
 
+    protected ResourceFilter siteFilter;
     protected ResourceFilter pageFilter;
     protected ResourceFilter assetFilter;
 
@@ -299,6 +311,7 @@ public class PagesConfigImpl implements PagesConfiguration {
         ResourceFilter devIntermediateFilter = ResourceFilterMapping.fromString(config.devIntermediateFilterRule());
         develomentTreeFilter = buildTreeFilter(
                 ResourceFilterMapping.fromString(config.develomentTreeFilterRule()), devIntermediateFilter);
+        siteFilter = ResourceFilterMapping.fromString(config.siteFilterRule());
         pageFilter = ResourceFilterMapping.fromString(config.pageFilterRule());
         assetFilter = ResourceFilterMapping.fromString(config.assetFilterRule());
         pageFilters = new HashMap<>();

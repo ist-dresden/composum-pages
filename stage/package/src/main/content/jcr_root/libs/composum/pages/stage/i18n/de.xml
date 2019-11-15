@@ -95,16 +95,21 @@
     </versions>
     <releases jcr:primaryType="sling:Folder"><!-- version tools -->
 
+        <Activate-Content jcr:primaryType="sling:MessageEntry"
+                sling:key="Activate Content" sling:message="Inhalt Aktivieren"/>
+        <Deactivate-Content jcr:primaryType="sling:MessageEntry"
+                sling:key="Deactivate Content" sling:message="Inhalt Deaktivieren"/>
+
         <Activated jcr:primaryType="sling:MessageEntry"
                 sling:key="Activated" sling:message="Aktiviert"/>
         <Activate jcr:primaryType="sling:MessageEntry"
                 sling:key="Activate" sling:message="Aktivieren"/>
         <Activate-hint jcr:primaryType="sling:MessageEntry"
-                sling:key="Activate selected pages" sling:message="die markierten Seiten Aktivieren"/>
+                sling:key="Activate selected content" sling:message="die markierten Inhalte Aktivieren"/>
         <Revert jcr:primaryType="sling:MessageEntry"
                 sling:key="Revert" sling:message="Zurücksetzen"/>
         <Revert-hint jcr:primaryType="sling:MessageEntry"
-                sling:key="Revert selected pages" sling:message="die markierten Seiten Zurücksetzen"/>
+                sling:key="Revert selected content" sling:message="die markierten Inhalte Zurücksetzen"/>
         <Deactivate jcr:primaryType="sling:MessageEntry"
                 sling:key="Deactivate" sling:message="Deaktivieren"/>
         <Modified jcr:primaryType="sling:MessageEntry"
@@ -120,16 +125,16 @@
                 sling:key="Current" sling:message="Aktuell"/>
         <activated-pages jcr:primaryType="sling:MessageEntry"
                 sling:key="Activated Pages" sling:message="Aktivierte Seiten"/>
-        <activated-pages-hint jcr:primaryType="sling:MessageEntry"
-                sling:key="pages activated with changes since the previous release"
-                sling:message="seit dem letzten Release aktivierte Seiten"/>
+        <activated-hint jcr:primaryType="sling:MessageEntry"
+                sling:key="content activated with changes since the previous release"
+                sling:message="seit dem letzten Release aktivierte Inhalte"/>
         <current-changes jcr:primaryType="sling:MessageEntry"
                 sling:key="Current Changes" sling:message="Aktuelle Änderungen"/>
         <release-changes jcr:primaryType="sling:MessageEntry"
                 sling:key="Release Changes" sling:message="Release-Änderungen"/>
         <modified-pages jcr:primaryType="sling:MessageEntry"
                 sling:key="Modified Pages" sling:message="Geänderte Seiten"/>
-        <modified-pages-hint jcr:primaryType="sling:MessageEntry"
+        <modified-hint jcr:primaryType="sling:MessageEntry"
                 sling:key="modified but last changes not activated yet"
                 sling:message="seit der letzten Änderung noch nicht aktiviert"/>
         <preview jcr:primaryType="sling:MessageEntry"

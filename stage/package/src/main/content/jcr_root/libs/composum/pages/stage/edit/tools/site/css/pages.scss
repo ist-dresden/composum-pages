@@ -19,14 +19,16 @@
         .composum-pages-stage-edit-site-page {
 
             &_type {
+                height: 27px;
                 margin-left: 4px;
+                font-size: 16px;
             }
 
             &-activated, &-modified {
 
                 &_page-select-all {
                     vertical-align: top;
-                    margin: 6px 8px 0 9px;
+                    margin: 11px 8px 0 9px;
                 }
 
                 &_list {

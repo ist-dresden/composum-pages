@@ -15,7 +15,7 @@
     <div class="panel panel-default releaseChanges">
         <div class="panel-heading">
             <h4 class="panel-title"
-                title="${cpn:i18n(slingRequest,'pages activated with changes since the previous release')}">
+                title="${cpn:i18n(slingRequest,'content activated with changes since the previous release')}">
                     ${cpn:i18n(slingRequest,'Release Changes')}
             </h4>
         </div>

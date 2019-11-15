@@ -196,12 +196,16 @@ public class SiteModel extends FrameModel {
         String contentType = getContentTypeValue();
         if (StringUtils.isNotBlank(contentType) && !"all".equals(contentType)) {
             BeanContext context = getContext();
+            ResourceFilter filter;
             if (PagesConstants.ReferenceType.page.name().equals(contentType)) {
-                return new ContentFilterWrapper(
-                        context.getService(PagesConfiguration.class).getReferenceFilter(PagesConstants.ReferenceType.page));
+                PagesConfiguration config = context.getService(PagesConfiguration.class);
+                filter = new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.or,
+                        config.getReferenceFilter(PagesConstants.ReferenceType.page), config.getSiteFilter());
             } else {
-                return new ContentFilterWrapper(
-                        context.getService(AssetsConfiguration.class).getFileFilter(context, contentType));
+                filter = context.getService(AssetsConfiguration.class).getFileFilter(context, contentType);
+            }
+            if (filter != null) {
+                return new ContentFilterWrapper(filter);
             }
         }
         return null;
@@ -251,7 +255,7 @@ public class SiteModel extends FrameModel {
         if (value != null) {
             HttpSession session = request.getSession(true);
             if (session != null) {
-                session.setAttribute(sessionKey, "all".equals(value) ? "" : value);
+                session.setAttribute(sessionKey, value);
             }
         } else {
             HttpSession session = request.getSession();
@@ -259,6 +263,6 @@ public class SiteModel extends FrameModel {
                 value = (String) session.getAttribute(sessionKey);
             }
         }
-        return StringUtils.isNotBlank(value) ? value : "all";
+        return value;
     }
 }

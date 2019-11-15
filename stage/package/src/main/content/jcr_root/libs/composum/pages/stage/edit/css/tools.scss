@@ -554,7 +554,7 @@
 
             label {
                 position: absolute;
-                margin-top: 8px;
+                margin-top: 0;
                 margin-left: 4px;
                 white-space: nowrap;
                 color: $tools-pane-tabs-tab-color;
@@ -691,6 +691,8 @@
 
         .tools-title {
             .title-text {
+                display: inline-block;
+                padding-top: 5px;
                 @include title-font;
             }
         }

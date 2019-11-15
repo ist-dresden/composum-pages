@@ -48,7 +48,7 @@
             sling:resourceType="composum/pages/stage/edit/tools/site/activated"
             categories="[context,edit,develop,site]"
             iconClass="check-square-o"
-            hint="pages activated with changes since the previous release"
+            hint="content activated with changes since the previous release"
             title="Changes"
             order="{Long}42"/>
     <siteModified

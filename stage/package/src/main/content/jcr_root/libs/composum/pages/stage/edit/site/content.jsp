@@ -9,7 +9,7 @@
         <li role="presentation"><a href="#releases-tab" aria-controls="releases" role="tab"
                                    data-toggle="tab">${cpn:i18n(slingRequest,'Releases')}</a></li>
         <li role="presentation"><a href="#current-tab" aria-controls="current" role="tab"
-                                   title="${cpn:i18n(slingRequest,'pages activated with changes since the previous release')}"
+                                   title="${cpn:i18n(slingRequest,'content activated with changes since the previous release')}"
                                    data-toggle="tab">${cpn:i18n(slingRequest,'Activated')}<span
                 class="badge badge-pill changes"><%=site.getReleaseChanges().size()%></span></a></li>
         <li role="presentation"><a href="#modified-tab" aria-controls="modified" role="tab"

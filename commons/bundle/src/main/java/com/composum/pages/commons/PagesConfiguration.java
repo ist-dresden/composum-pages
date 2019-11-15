@@ -49,6 +49,9 @@ public interface PagesConfiguration {
     @Nonnull
     ResourceFilter getReplicationRootFilter();
 
+    @Nonnull
+    ResourceFilter getSiteFilter();
+
     @Nullable
     ResourceFilter getPageFilter(@Nonnull BeanContext context, @Nonnull String key);
 
