@@ -16,7 +16,9 @@ import com.composum.sling.core.servlet.AbstractServiceServlet;
 import com.composum.sling.core.servlet.ServletOperation;
 import com.composum.sling.core.servlet.ServletOperationSet;
 import com.composum.sling.core.util.MimeTypeUtil;
+import com.composum.sling.core.util.ResourceUtil;
 import com.composum.sling.core.util.ResponseUtil;
+import com.composum.sling.platform.staging.versions.PlatformVersionsService;
 import com.google.gson.stream.JsonWriter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
@@ -90,6 +92,9 @@ public class AssetServlet extends PagesContentServlet {
 
     @Reference
     protected PageManager pageManager;
+
+    @Reference
+    protected PlatformVersionsService platformVersionsService;
 
     @Activate
     private void activate(final BundleContext bundleContext) {
@@ -191,6 +196,27 @@ public class AssetServlet extends PagesContentServlet {
     //
     // Tree
     //
+
+    @Override
+    public void writeNodeTreeType(JsonWriter writer, ResourceFilter filter,
+                                  ResourceHandle resource, boolean isVirtual)
+            throws IOException {
+        super.writeNodeTreeType(writer, filter, resource, isVirtual);
+        Resource content;
+        if (resource.isValid() && (content = resource.getChild(JcrConstants.JCR_CONTENT)) != null
+                && ResourceUtil.isResourceType(content, JcrConstants.MIX_VERSIONABLE)) {
+            try {
+                PlatformVersionsService.Status status = platformVersionsService.getStatus(resource, null);
+                if (null != status) {
+                    writer.name("release").beginObject();
+                    writer.name("status").value(status.getActivationState().name());
+                    writer.endObject();
+                }
+            } catch (RepositoryException ex) {
+                LOG.error(ex.getMessage(), ex);
+            }
+        }
+    }
 
     protected class GetFilterSet implements ServletOperation {
 
