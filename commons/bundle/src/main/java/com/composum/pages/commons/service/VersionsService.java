@@ -3,6 +3,7 @@ package com.composum.pages.commons.service;
 import com.composum.pages.commons.model.ContentVersion;
 import com.composum.pages.commons.model.SiteRelease;
 import com.composum.sling.core.BeanContext;
+import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.platform.staging.versions.PlatformVersionsService;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -22,29 +23,13 @@ public interface VersionsService {
     /**
      * a filter interface for the version search operations
      */
+    @FunctionalInterface
     interface ContentVersionFilter {
         boolean accept(ContentVersion version);
-    }
 
-    /**
-     * a filter implementation using a set of activation state options
-     */
-    class ActivationStateFilter implements ContentVersionFilter {
-
-        private final List<PlatformVersionsService.ActivationState> options;
-
-        public ActivationStateFilter(PlatformVersionsService.ActivationState... options) {
-            this.options = new ArrayList<>();
-            addOption(options);
-        }
-
-        public void addOption(PlatformVersionsService.ActivationState... options) {
-            this.options.addAll(Arrays.asList(options));
-        }
-
-        @Override
-        public boolean accept(ContentVersion version) {
-            return options.contains(version.getContentActivationState());
+        /** Combines this and {otherFilter} conjunctively. */
+        default ContentVersionFilter and(ContentVersionFilter otherFilter) {
+            return (version) -> this.accept(version) && otherFilter.accept(version);
         }
     }
 
@@ -90,5 +75,49 @@ public interface VersionsService {
      */
     Resource historicalVersion(@Nonnull ResourceResolver resolver, @Nonnull String path,
                                @Nonnull String versionUuid) throws RepositoryException;
+
+    /**
+     * a filter implementation using a set of activation state options
+     */
+    class ActivationStateFilter implements ContentVersionFilter {
+
+        private final List<PlatformVersionsService.ActivationState> options;
+
+        public ActivationStateFilter(PlatformVersionsService.ActivationState... options) {
+            this.options = new ArrayList<>();
+            addOption(options);
+        }
+
+        public void addOption(PlatformVersionsService.ActivationState... options) {
+            this.options.addAll(Arrays.asList(options));
+        }
+
+        @Override
+        public boolean accept(ContentVersion version) {
+            return options.contains(version.getContentActivationState());
+        }
+    }
+
+    /**
+     * A {@link ContentVersionFilter} that filters for {@link ContentVersion#getResource()} matching a
+     * {@link ResourceFilter}.
+     */
+    class ContentVersionByResourceFilter implements ContentVersionFilter {
+
+        private final ResourceFilter resourceFilter;
+
+        public ContentVersionByResourceFilter(ResourceFilter resourceFilter) {
+            this.resourceFilter = resourceFilter;
+        }
+
+        /** True if {@link ContentVersion#getResource()} matches our {@link ResourceFilter} */
+        @Override
+        public boolean accept(ContentVersion version) {
+            if (version == null) { return false; }
+            Resource resource = version.getResource();
+            if (resource == null) { return false; }
+            return resourceFilter.accept(version.getResource());
+        }
+    }
 
 }

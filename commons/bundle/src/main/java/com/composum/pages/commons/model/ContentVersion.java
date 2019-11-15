@@ -198,11 +198,12 @@ public abstract class ContentVersion<ContentType extends ContentModel> {
     public abstract String getTitle();
 
     /**
-     * @return the workspace resource of the staging resource of the referenced version
+     * Returns the workspace resource or the staging resource of the referenced version if there in no workspace
+     * resource.
      */
     public Resource getResource() {
         Resource resource = status.getWorkspaceResource();
-        if (resource != null) {
+        if (resource == null) {
             VersionReference reference = status.getVersionReference();
             String uuid;
             if (reference != null && (uuid = reference.getReleasedVersionable().getVersionUuid()) != null) {
