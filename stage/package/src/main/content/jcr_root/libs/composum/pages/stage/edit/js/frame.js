@@ -48,9 +48,9 @@
                 $(document).on(e.content.changed + id, _.bind(this.onElementChanged, this));
                 $(document).on(e.content.deleted + id, _.bind(this.onElementDeleted, this));
                 $(document).on(e.content.state + id, _.bind(this.onPageState, this));
+                $(document).on(e.content.view + id, _.bind(this.onViewPage, this));
                 $(document).on(e.page.selected + id, _.bind(this.onPageSelected, this));
                 $(document).on(e.page.select + id, _.bind(this.selectPage, this));
-                $(document).on(e.page.view + id, _.bind(this.onViewPage, this));
                 $(document).on(e.page.inserted + id, _.bind(this.onElementChanged, this));
                 $(document).on(e.page.changed + id, _.bind(this.onElementChanged, this));
                 $(document).on(e.page.deleted + id, _.bind(this.onElementDeleted, this));
@@ -212,8 +212,6 @@
                         pages.trigger('frame.page.select', pages.const.event.content.selected, ["/"]);
                         pages.trigger('frame.page.select', pages.const.event.site.selected);
                     }, this));
-                } else {
-                    pages.trigger('frame.page.select', pages.const.event.path.selected, [path]);
                 }
             },
 
