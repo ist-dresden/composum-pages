@@ -39,6 +39,10 @@ public class File extends ContentDriven<FileResource> {
         return new FileResource(context, contentResource);
     }
 
+    public boolean isVersionable() {
+        return getContent().isVersionable();
+    }
+
     public Type getFileType() {
         return getContent().getFileType();
     }

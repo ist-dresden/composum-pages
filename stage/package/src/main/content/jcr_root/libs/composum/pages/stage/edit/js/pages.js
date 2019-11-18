@@ -243,6 +243,7 @@
                 site: undefined,
                 page: undefined,
                 element: undefined,
+                file: undefined,
                 dnd: {}
             }
         }();

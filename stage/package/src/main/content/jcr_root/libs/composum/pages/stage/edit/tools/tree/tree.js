@@ -28,7 +28,8 @@
                 develop: '/bin/cpm/pages/develop.treeActions.html'
             },
             tile: {
-                url: '/bin/cpm/pages/edit.editTile.html'
+                url: '/bin/cpm/pages/edit.editTile.html',
+                asset: '/bin/cpm/pages/assets.editTile.html'
             },
             pages: {
                 css: {
@@ -629,6 +630,7 @@
                     this.onPathSelected(event, path);
                     var p = pages.const.profile.asset.tree;
                     pages.profile.set(p.aspect, p.path, path);
+                    pages.current.file = path;
                 }
             }
         });
@@ -934,11 +936,12 @@
 
             showPreview: function (node) {
                 if (node && node.original.path && node.original.type.indexOf('file') >= 0) {
-                    core.ajaxGet(tree.const.tile.url + node.original.path, {},
+                    core.ajaxGet(tree.const.tile.asset + node.original.path, {},
                         _.bind(function (data) {
                             if (data) {
                                 this.$treePanelPreview.html(data);
                                 this.$el.addClass('preview-available');
+                                core.getWidget(this.$el, '.' + pages.tools.const.fileStatus.css.base, pages.tools.FileStatus);
                                 this.$treePanelPreview.find('[draggable="true"]')
                                     .on('dragstart', _.bind(this.onPreviewDragStart, this))
                                     .on('dragend', _.bind(this.tree.onDragEnd, this.tree));

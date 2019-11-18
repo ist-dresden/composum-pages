@@ -613,18 +613,4 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
         }
         return targetUrl;
     }
-
-    // release
-
-    public boolean isLocked() {
-        return getContent().isLocked();
-    }
-
-    public String getLockOwner() {
-        return getContent().getLockOwner();
-    }
-
-    public boolean isCheckedOut() {
-        return getContent().isCheckedOut();
-    }
 }

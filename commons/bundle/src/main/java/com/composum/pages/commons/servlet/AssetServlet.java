@@ -60,6 +60,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static com.composum.pages.commons.util.ResourceTypeUtil.EDIT_TILE_PATH;
 import static com.composum.pages.commons.util.ResourceTypeUtil.TREE_ACTIONS_PATH;
 
 @Component(service = Servlet.class,
@@ -133,6 +134,7 @@ public class AssetServlet extends PagesContentServlet {
     public enum Operation {
         filterSet, assetTree, treeActions, assetData, resourceInfo,
         targetContainers, isAllowedChild,
+        editTile,
         moveContent, renameContent, copyContent,
         fileCreate, fileUpdate
     }
@@ -166,6 +168,8 @@ public class AssetServlet extends PagesContentServlet {
                 Operation.isAllowedChild, new CheckIsAllowedChild());
         operations.setOperation(ServletOperationSet.Method.GET, Extension.json,
                 Operation.targetContainers, new GetTargetContainers());
+        operations.setOperation(ServletOperationSet.Method.GET, Extension.html,
+                Operation.editTile, new GetEditTile());
 
         // POST
         operations.setOperation(ServletOperationSet.Method.POST, Extension.json,
@@ -320,7 +324,28 @@ public class AssetServlet extends PagesContentServlet {
         }
     }
 
+    protected class GetEditTile extends GetEditResource {
+
+        @Override
+        protected String getResourcePath(SlingHttpServletRequest request) {
+            return EDIT_TILE_PATH;
+        }
+
+        @Override
+        protected Resource getEditResource(@Nonnull SlingHttpServletRequest request, @Nonnull Resource contentResource,
+                                           @Nonnull String selectors, @Nullable String type) {
+            if (assetsConfiguration.getAnyFileFilter().accept(contentResource)) {
+                ResourceResolver resolver = request.getResourceResolver();
+                return ResolverUtil.getResourceType(resolver, ResourceTypeUtil.DEFAULT_FILE_TILE);
+            } else {
+                return super.getEditResource(request, contentResource, selectors, type);
+            }
+        }
+    }
+
+    //
     // Files...
+    //
 
     protected static final Map<String, Object> FILE_PROPERTIES = new HashMap<String, Object>() {{
         put(JcrConstants.JCR_PRIMARYTYPE, JcrConstants.NT_FILE);

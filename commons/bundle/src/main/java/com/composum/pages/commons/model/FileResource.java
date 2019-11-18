@@ -57,6 +57,10 @@ public class FileResource extends ContentModel<File> implements FileContent {
         return getResource();
     }
 
+    public boolean isVersionable() {
+        return ResourceUtil.isResourceType(getResource(), JcrConstants.MIX_VERSIONABLE);
+    }
+
     public String getFileName() {
         return getFileResource().getName();
     }

@@ -445,6 +445,18 @@
 
             delete: function (event, name, path, type) {
                 pages.dialogs.openDeleteContentDialog('file', name, path, type);
+            },
+
+            activate: function (event, name, path, type) {
+                core.alert(undefined, 'activate', name, path, type);
+            },
+
+            revert: function (event, name, path, type) {
+                core.alert(undefined, 'revert', name, path, type);
+            },
+
+            deactivate: function (event, name, path, type) {
+                core.alert(undefined, 'deactivate', name, path, type);
             }
         };
 

@@ -6,6 +6,7 @@ import com.composum.pages.commons.service.PageManager;
 import com.composum.pages.commons.service.ResourceManager;
 import com.composum.pages.commons.util.PagesUtil;
 import com.composum.pages.commons.util.RequestUtil;
+import com.composum.pages.commons.util.ResourceTypeUtil;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.ResourceHandle;
 import com.composum.sling.core.filter.ResourceFilter;
@@ -16,6 +17,8 @@ import com.google.gson.stream.JsonWriter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.SlingHttpServletRequest;
+import org.apache.sling.api.SlingHttpServletResponse;
+import org.apache.sling.api.request.RequestDispatcherOptions;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.framework.BundleContext;
@@ -24,6 +27,9 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
@@ -34,6 +40,9 @@ public abstract class ContentServlet extends NodeTreeServlet {
 
     private static final Logger LOG = LoggerFactory.getLogger(ContentServlet.class);
 
+    public static final String EDIT_RESOURCE_KEY = EditServlet.class.getName() + "_resource";
+    public static final String EDIT_RESOURCE_TYPE_KEY = EditServlet.class.getName() + "_resourceType";
+
     protected BundleContext bundleContext;
 
     protected abstract ResourceManager getResourceManager();
@@ -41,51 +50,67 @@ public abstract class ContentServlet extends NodeTreeServlet {
     protected abstract PageManager getPageManager();
 
     //
-    // JSON helpers
+    // edit component resources
     //
 
-    public void writeJsonPage(@Nonnull final BeanContext context, @Nonnull final JsonWriter writer,
-                              @Nonnull final ResourceFilter filter, @Nonnull final Page page)
-            throws IOException {
-        writer.beginObject();
-        if (page.isValid()) {
-            TreeNodeStrategy nodeStrategy = new DefaultTreeNodeStrategy(filter);
-            writeJsonNodeData(writer, nodeStrategy, ResourceHandle.use(page.getResource()), LabelType.name, false);
-            writer.name("reference");
-            PagesUtil.write(writer, PagesUtil.getReference(page.getResource(), null));
-            Resource contentResource = page.getContent().getResource();
-            writer.name("jcrContent");
-            writeJsonNode(writer, nodeStrategy, ResourceHandle.use(contentResource), LabelType.name, false);
-            writer.name("meta").beginObject();
-            Site site = page.getSite();
-            writer.name("site").value(site != null ? site.getPath() : null);
-            writer.name("template").value(page.getTemplatePath());
-            writer.name("isTemplate").value(getResourceManager().isTemplate(context, page.getResource()));
-            writer.name("language").value(page.getLocale().getLanguage());
-            writer.name("defaultLanguage").value(page.getPageLanguages().getDefaultLanguage().getKey());
-            writer.endObject();
-        }
-        writer.endObject();
-    }
+    public static abstract class GetEditResource implements ServletOperation {
 
-    public void writeJsonResource(@Nonnull final BeanContext context, @Nonnull final JsonWriter writer,
-                                  @Nonnull final TreeNodeStrategy nodeStrategy, Resource resource)
-            throws IOException {
-        ResourceHandle handle = ResourceHandle.use(resource);
-        writer.beginObject();
-        if (handle.isValid()) {
-            writeJsonNodeData(writer, nodeStrategy, handle, LabelType.name, false);
-            Resource contentResource = handle.getChild(JcrConstants.JCR_CONTENT);
-            if (contentResource != null) {
-                writer.name("jcrContent");
-                writeJsonNode(writer, nodeStrategy, ResourceHandle.use(contentResource), LabelType.name, false);
+        @Override
+        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
+                         ResourceHandle resource)
+                throws ServletException, IOException {
+
+            Resource contentResource = resource;
+            if (Page.isPage(contentResource) || Site.isSite(contentResource)) {
+                contentResource = contentResource.getChild("jcr:content");
+                if (contentResource == null) {
+                    contentResource = resource;
+                }
             }
-            writer.name("meta").beginObject();
-            writer.name("template").value(handle.getProperty(PROP_TEMPLATE));
-            writer.name("isTemplate").value(getResourceManager().isTemplate(context, handle));
-            writer.endObject();
+
+            String selectors = RequestUtil.getSelectorString(request, null, 1);
+            if (StringUtils.isBlank(selectors)) {
+                selectors = getDefaultSelectors();
+            }
+            String paramType = request.getParameter(PARAM_TYPE);
+            Resource editResource = getEditResource(request, contentResource, selectors, paramType);
+
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("GetEditResource({},{})...", contentResource.getPath(), editResource != null ? editResource.getPath() : "null");
+            }
+
+            if (editResource != null) {
+                RequestDispatcherOptions options = new RequestDispatcherOptions();
+                options.setForceResourceType(editResource.getPath());
+                options.setReplaceSelectors(selectors);
+                SlingHttpServletRequest forwardRequest = prepareForward(request, options);
+                forward(forwardRequest, response, contentResource, paramType, options);
+
+            } else {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            }
         }
-        writer.endObject();
+
+        protected Resource getEditResource(@Nonnull SlingHttpServletRequest request, @Nonnull Resource contentResource,
+                                           @Nonnull String selectors, @Nullable String type) {
+            ResourceResolver resolver = request.getResourceResolver();
+            return ResourceTypeUtil.getSubtype(resolver, contentResource, type, getResourcePath(request), selectors);
+        }
+
+        protected String getSelectors(SlingHttpServletRequest request) {
+            return RequestUtil.getSelectorString(request, null, 1);
+        }
+
+        protected abstract String getResourcePath(SlingHttpServletRequest request);
+
+        protected String getDefaultSelectors() {
+            return "";
+        }
+
+        protected SlingHttpServletRequest prepareForward(@Nonnull final SlingHttpServletRequest request,
+                                                         @Nonnull final RequestDispatcherOptions options) {
+            return request;
+        }
     }
 
     //
@@ -148,5 +173,80 @@ public abstract class ContentServlet extends NodeTreeServlet {
                 throws IOException {
             sendResponse(status, result, null);
         }
+    }
+
+    //
+    // general request forward to render an editing resource of a resource to edit
+    //
+
+    /**
+     * forward to the edit component
+     *
+     * @param request  the current request
+     * @param response the current response
+     * @param resource the resource to edit (maybe synthetic)
+     * @param typeHint the type of the resource to edit (maybe overlayed)
+     * @param options  sling include options (selectors, suffix, resource type) for the edit component
+     */
+    protected static void forward(SlingHttpServletRequest request, SlingHttpServletResponse response,
+                                  Resource resource, String typeHint, RequestDispatcherOptions options)
+            throws ServletException, IOException {
+        RequestDispatcher dispatcher = request.getRequestDispatcher(resource, options);
+        if (dispatcher != null) {
+            request.setAttribute(EDIT_RESOURCE_KEY, resource);
+            request.setAttribute(EDIT_RESOURCE_TYPE_KEY,
+                    StringUtils.isNotBlank(typeHint) ? typeHint : resource.getResourceType());
+            dispatcher.forward(request, response);
+            request.removeAttribute(EDIT_RESOURCE_TYPE_KEY);
+            request.removeAttribute(EDIT_RESOURCE_KEY);
+        }
+    }
+
+    //
+    // JSON helpers
+    //
+
+    public void writeJsonPage(@Nonnull final BeanContext context, @Nonnull final JsonWriter writer,
+                              @Nonnull final ResourceFilter filter, @Nonnull final Page page)
+            throws IOException {
+        writer.beginObject();
+        if (page.isValid()) {
+            TreeNodeStrategy nodeStrategy = new DefaultTreeNodeStrategy(filter);
+            writeJsonNodeData(writer, nodeStrategy, ResourceHandle.use(page.getResource()), LabelType.name, false);
+            writer.name("reference");
+            PagesUtil.write(writer, PagesUtil.getReference(page.getResource(), null));
+            Resource contentResource = page.getContent().getResource();
+            writer.name("jcrContent");
+            writeJsonNode(writer, nodeStrategy, ResourceHandle.use(contentResource), LabelType.name, false);
+            writer.name("meta").beginObject();
+            Site site = page.getSite();
+            writer.name("site").value(site != null ? site.getPath() : null);
+            writer.name("template").value(page.getTemplatePath());
+            writer.name("isTemplate").value(getResourceManager().isTemplate(context, page.getResource()));
+            writer.name("language").value(page.getLocale().getLanguage());
+            writer.name("defaultLanguage").value(page.getPageLanguages().getDefaultLanguage().getKey());
+            writer.endObject();
+        }
+        writer.endObject();
+    }
+
+    public void writeJsonResource(@Nonnull final BeanContext context, @Nonnull final JsonWriter writer,
+                                  @Nonnull final TreeNodeStrategy nodeStrategy, Resource resource)
+            throws IOException {
+        ResourceHandle handle = ResourceHandle.use(resource);
+        writer.beginObject();
+        if (handle.isValid()) {
+            writeJsonNodeData(writer, nodeStrategy, handle, LabelType.name, false);
+            Resource contentResource = handle.getChild(JcrConstants.JCR_CONTENT);
+            if (contentResource != null) {
+                writer.name("jcrContent");
+                writeJsonNode(writer, nodeStrategy, ResourceHandle.use(contentResource), LabelType.name, false);
+            }
+            writer.name("meta").beginObject();
+            writer.name("template").value(handle.getProperty(PROP_TEMPLATE));
+            writer.name("isTemplate").value(getResourceManager().isTemplate(context, handle));
+            writer.endObject();
+        }
+        writer.endObject();
     }
 }

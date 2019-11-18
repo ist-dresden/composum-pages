@@ -141,6 +141,20 @@ public abstract class ContentDriven<ContentType extends ContentModel> extends Ab
         return value;
     }
 
+    // release
+
+    public boolean isLocked() {
+        return getContent().isLocked();
+    }
+
+    public String getLockOwner() {
+        return getContent().getLockOwner();
+    }
+
+    public boolean isCheckedOut() {
+        return getContent().isCheckedOut();
+    }
+
     public ContentVersion.StatusModel getReleaseStatus() {
         if (releaseStatus == null) {
             try {

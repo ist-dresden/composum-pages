@@ -510,17 +510,6 @@ public class EditServlet extends PagesContentServlet {
         protected String getResourcePath(SlingHttpServletRequest request) {
             return EDIT_TILE_PATH;
         }
-
-        @Override
-        protected Resource getEditResource(@Nonnull SlingHttpServletRequest request, @Nonnull Resource contentResource,
-                                           @Nonnull String selectors, @Nullable String type) {
-            if (assetsConfiguration.getAnyFileFilter().accept(contentResource)) {
-                ResourceResolver resolver = request.getResourceResolver();
-                return ResolverUtil.getResourceType(resolver, ResourceTypeUtil.DEFAULT_FILE_TILE);
-            } else {
-                return super.getEditResource(request, contentResource, selectors, type);
-            }
-        }
     }
 
     protected class GetEditToolbar extends GetEditResource {
