@@ -877,7 +877,7 @@
         // Releases & Versions...
         //
 
-        dialogs.ManagePagesDialog = dialogs.ElementDialog.extend({
+        dialogs.ManageReleaseStatusDialog = dialogs.ElementDialog.extend({
 
             initialize: function () {
                 dialogs.ElementDialog.prototype.initialize.apply(this);
@@ -937,20 +937,20 @@
             triggerStateChange: function (data) {
                 var e = pages.const.event;
                 data.target.forEach(function (path) {
-                    pages.trigger('dialog.state.change', e.page.state, [new pages.Reference(undefined, path)]);
+                    pages.trigger('dialog.state.change', e.content.state, [new pages.Reference(undefined, path)]);
                 });
                 if (data.pageRef) {
                     data.pageRef.forEach(function (path) {
-                        pages.trigger('dialog.state.change', e.page.state, [new pages.Reference(undefined, path)]);
+                        pages.trigger('dialog.state.change', e.content.state, [new pages.Reference(undefined, path)]);
                     });
                 }
             }
         });
 
-        dialogs.ActivatePageDialog = dialogs.ManagePagesDialog.extend({
+        dialogs.ActivateContentDialog = dialogs.ManageReleaseStatusDialog.extend({
 
             initialize: function () {
-                dialogs.ManagePagesDialog.prototype.initialize.apply(this);
+                dialogs.ManageReleaseStatusDialog.prototype.initialize.apply(this);
                 this.refs = {
                     page: core.getWidget(this.el, '.widget-name_page-references', pages.widgets.PageReferencesWidget),
                     asset: core.getWidget(this.el, '.widget-name_asset-references', pages.widgets.PageReferencesWidget)
@@ -975,16 +975,16 @@
             }
         });
 
-        dialogs.openActivatePageDialog = function (name, path, type, setupDialog) {
+        dialogs.openActivateContentDialog = function (name, path, type, setupDialog) {
             var c = dialogs.const.edit.url;
             pages.dialogHandler.openEditDialog(c.path + c.version.activate._dialog,
-                dialogs.ActivatePageDialog, name, path, type, undefined/*context*/, setupDialog);
+                dialogs.ActivateContentDialog, name, path, type, undefined/*context*/, setupDialog);
         };
 
-        dialogs.RevertPageDialog = dialogs.ManagePagesDialog.extend({
+        dialogs.RevertContentDialog = dialogs.ManageReleaseStatusDialog.extend({
 
             initialize: function () {
-                dialogs.ManagePagesDialog.prototype.initialize.apply(this);
+                dialogs.ManageReleaseStatusDialog.prototype.initialize.apply(this);
                 this.refs = {
                     page: core.getWidget(this.el, '.widget-name_page-referrers', pages.widgets.PageReferrersWidget)
                 };
@@ -995,16 +995,16 @@
             }
         });
 
-        dialogs.openRevertPageDialog = function (name, path, type, setupDialog) {
+        dialogs.openRevertContentDialog = function (name, path, type, setupDialog) {
             var c = dialogs.const.edit.url;
             pages.dialogHandler.openEditDialog(c.path + c.version.revert._dialog,
-                dialogs.RevertPageDialog, name, path, type, undefined/*context*/, setupDialog);
+                dialogs.RevertContentDialog, name, path, type, undefined/*context*/, setupDialog);
         };
 
-        dialogs.DeactivatePageDialog = dialogs.ManagePagesDialog.extend({
+        dialogs.DeactivateContentDialog = dialogs.ManageReleaseStatusDialog.extend({
 
             initialize: function () {
-                dialogs.ManagePagesDialog.prototype.initialize.apply(this);
+                dialogs.ManageReleaseStatusDialog.prototype.initialize.apply(this);
                 this.refs = {
                     page: core.getWidget(this.el, '.widget-name_page-referrers', pages.widgets.PageReferrersWidget)
                 };
@@ -1015,10 +1015,10 @@
             }
         });
 
-        dialogs.openDeactivatePageDialog = function (name, path, type, setupDialog) {
+        dialogs.openDeactivateContentDialog = function (name, path, type, setupDialog) {
             var c = dialogs.const.edit.url;
             pages.dialogHandler.openEditDialog(c.path + c.version.deactivate._dialog,
-                dialogs.DeactivatePageDialog, name, path, type, undefined/*context*/, setupDialog);
+                dialogs.DeactivateContentDialog, name, path, type, undefined/*context*/, setupDialog);
         };
 
         //

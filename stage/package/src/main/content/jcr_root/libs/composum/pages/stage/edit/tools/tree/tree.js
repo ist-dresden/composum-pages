@@ -189,6 +189,14 @@
                 this.onPathDeleted(event, path);
             },
 
+            onContentStateChanged: function (event, refOrPath) {
+                var path = refOrPath && refOrPath.path ? refOrPath.path : refOrPath;
+                if (this.log.getLevel() <= log.levels.DEBUG) {
+                    this.log.debug(this.nodeIdPrefix + 'tree.onContentStateChanged(' + path + ')');
+                }
+                this.refreshTreeNodeState(path);
+            },
+
             setRootPath: function (rootPath, refresh) {
                 rootPath = this.adjustRootPath(rootPath);
                 if (refresh === undefined) {
@@ -415,8 +423,8 @@
                     .on(e.content.changed + '.' + id, _.bind(this.onContentChanged, this))
                     .on(e.content.deleted + '.' + id, _.bind(this.onContentDeleted, this))
                     .on(e.content.moved + '.' + id, _.bind(this.onContentMoved, this))
+                    .on(e.content.state + '.' + id, _.bind(this.onContentStateChanged, this))
                     .on(e.page.selected + '.' + id, _.bind(this.onContentSelected, this))
-                    .on(e.page.state + '.' + id, _.bind(this.onPageStateChanged, this))
                     .on(e.page.inserted + '.' + id, _.bind(this.onContentInserted, this))
                     .on(e.page.changed + '.' + id, _.bind(this.onContentChanged, this))
                     .on(e.page.deleted + '.' + id, _.bind(this.onContentDeleted, this))
@@ -464,14 +472,6 @@
                 if (applicable) {
                     this.onPathSelected(event, path);
                 }
-            },
-
-            onPageStateChanged: function (event, refOrPath) {
-                var path = refOrPath && refOrPath.path ? refOrPath.path : refOrPath;
-                if (this.log.getLevel() <= log.levels.DEBUG) {
-                    this.log.debug(this.nodeIdPrefix + 'tree.onPageStateChanged(' + path + ')');
-                }
-                this.refreshTreeNodeState(path);
             },
 
             /**
@@ -599,7 +599,8 @@
                     .on(e.content.inserted + '.' + id, _.bind(this.onContentInserted, this))
                     .on(e.content.changed + '.' + id, _.bind(this.onContentChanged, this))
                     .on(e.content.deleted + '.' + id, _.bind(this.onContentDeleted, this))
-                    .on(e.content.moved + '.' + id, _.bind(this.onContentMoved, this));
+                    .on(e.content.moved + '.' + id, _.bind(this.onContentMoved, this))
+                    .on(e.content.state + '.' + id, _.bind(this.onContentStateChanged, this));
             },
 
             initializeFilter: function () {

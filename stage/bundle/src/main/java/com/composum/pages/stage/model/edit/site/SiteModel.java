@@ -71,6 +71,8 @@ public class SiteModel extends FrameModel {
                     } else {
                         site = getSiteManager().getContainingSite(delegate);
                     }
+                } else {
+                    site = getSiteManager().getContainingSite(delegate);
                 }
             }
         }

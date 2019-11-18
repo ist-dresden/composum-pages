@@ -33,7 +33,7 @@
                 var e = pages.const.event;
                 var id = tools.const.pageStatus.event.id;
                 $(document)
-                    .on(e.page.state + id, _.bind(this.reload, this))
+                    .on(e.content.state + id, _.bind(this.reload, this))
                     .on(e.page.changed + id, _.bind(this.reload, this))
                     .on(e.element.inserted + id, _.bind(this.reload, this))
                     .on(e.element.changed + id, _.bind(this.reload, this))
@@ -46,7 +46,7 @@
                 var e = pages.const.event;
                 var id = tools.const.pageStatus.event.id;
                 $(document)
-                    .off(e.page.state + id)
+                    .off(e.content.state + id)
                     .off(e.page.changed + id)
                     .off(e.element.inserted + id)
                     .off(e.element.changed + id)

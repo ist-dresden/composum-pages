@@ -286,7 +286,7 @@
                 var id = tools.const.versions.event.id;
                 var e = pages.const.event;
                 $(document)
-                    .on(e.page.state + '.' + id, _.bind(this.reload, this))
+                    .on(e.content.state + '.' + id, _.bind(this.reload, this))
                     .on(e.page.changed + '.' + id, _.bind(this.reload, this));
             },
 
@@ -294,7 +294,7 @@
                 var e = pages.const.event;
                 var id = tools.const.versions.event.id;
                 $(document)
-                    .off(e.page.state + id)
+                    .off(e.content.state + id)
                     .off(e.page.changed + id);
             },
 

@@ -67,7 +67,6 @@
                     inserted: 'page:inserted',      // done.
                     changed: 'page:changed',        // done.
                     deleted: 'page:deleted',        // done.
-                    state: 'page:state',            // changed state of the page itself only (no structure change)
                     containerRefs: 'page:containerRefs'
                 },
                 content: {
@@ -76,7 +75,8 @@
                     inserted: 'content:inserted',   // done.
                     changed: 'content:changed',     // done.
                     deleted: 'content:deleted',     // done.
-                    moved: 'content:moved'          // done.
+                    moved: 'content:moved',         // done.
+                    state: 'content:state'          // changed state of the content itself only (no page structure change)
                 },
                 element: {
                     select: 'element:select',       // do it!...

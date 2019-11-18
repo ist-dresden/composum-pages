@@ -33,7 +33,7 @@
                 var id = tools.const.modified.event.id;
                 var e = pages.const.event;
                 $(document)
-                    .on(e.page.state + id, _.bind(this.reload, this))
+                    .on(e.content.state + id, _.bind(this.reload, this))
                     .on(e.site.changed + id, _.bind(this.reload, this));
             },
 
@@ -42,7 +42,7 @@
                 var e = pages.const.event;
                 var id = tools.const.modified.event.id;
                 $(document)
-                    .off(e.page.state + id)
+                    .off(e.content.state + id)
                     .off(e.site.changed + id);
             },
 

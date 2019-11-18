@@ -240,22 +240,22 @@
             },
 
             activate: function (event, name, path, type) {
-                pages.dialogs.openActivatePageDialog(name, path, type);
+                pages.dialogs.openActivateContentDialog(name, path, type);
             },
 
             revert: function (event, name, path, type) {
-                pages.dialogs.openRevertPageDialog(name, path, type);
+                pages.dialogs.openRevertContentDialog(name, path, type);
             },
 
             deactivate: function (event, name, path, type) {
-                pages.dialogs.openDeactivatePageDialog(name, path, type);
+                pages.dialogs.openDeactivateContentDialog(name, path, type);
             },
 
             checkpoint: function (event, name, path, type) {
                 var u = actions.const.version.uri;
                 core.ajaxPost(u.pages.base + u.pages._.checkpoint + path, {}, {},
                     _.bind(function (result) {
-                        pages.trigger('actions.page.checkpoint', pages.const.event.page.state,
+                        pages.trigger('actions.page.checkpoint', pages.const.event.content.state,
                             [new pages.Reference(name, path, type)]);
                     }, this), function (xhr) {
                         actions.error('Error on checkpoint', xhr);
@@ -266,7 +266,7 @@
                 var u = actions.const.version.uri;
                 core.ajaxPost(u.pages.base + u.pages._.checkout + path, {}, {},
                     _.bind(function (result) {
-                        pages.trigger('actions.page.checkout', pages.const.event.page.state,
+                        pages.trigger('actions.page.checkout', pages.const.event.content.state,
                             [new pages.Reference(name, path, type)]);
                     }, this), function (xhr) {
                         actions.error('Error on checkout', xhr);
@@ -277,7 +277,7 @@
                 var u = actions.const.version.uri;
                 core.ajaxPost(u.pages.base + u.pages._.checkin + path, {}, {},
                     _.bind(function (result) {
-                        pages.trigger('actions.page.checkin', pages.const.event.page.state,
+                        pages.trigger('actions.page.checkin', pages.const.event.content.state,
                             [new pages.Reference(name, path, type)]);
                     }, this), function (xhr) {
                         actions.error('Error on checkin', xhr);
@@ -288,7 +288,7 @@
                 var u = actions.const.version.uri;
                 core.ajaxPost(u.pages.base + u.pages._.toggleCheckout + path, {}, {},
                     _.bind(function (result) {
-                        pages.trigger('actions.page.toggleCheckout', pages.const.event.page.state,
+                        pages.trigger('actions.page.toggleCheckout', pages.const.event.content.state,
                             [new pages.Reference(name, path, type)]);
                     }, this), function (xhr) {
                         actions.error('Error on toggle checkout', xhr);
@@ -299,7 +299,7 @@
                 var u = actions.const.version.uri;
                 core.ajaxPost(u.pages.base + u.pages._.lock + path, {}, {},
                     _.bind(function (result) {
-                        pages.trigger('actions.page.lock', pages.const.event.page.state,
+                        pages.trigger('actions.page.lock', pages.const.event.content.state,
                             [new pages.Reference(name, path, type)]);
                     }, this), function (xhr) {
                         actions.error('Error on lock page', xhr);
@@ -310,7 +310,7 @@
                 var u = actions.const.version.uri;
                 core.ajaxPost(u.pages.base + u.pages._.unlock + path, {}, {},
                     _.bind(function (result) {
-                        pages.trigger('actions.page.unlock', pages.const.event.page.state,
+                        pages.trigger('actions.page.unlock', pages.const.event.content.state,
                             [new pages.Reference(name, path, type)]);
                     }, this), function (xhr) {
                         actions.error('Error on unlock page', xhr);
@@ -321,7 +321,7 @@
                 var u = actions.const.version.uri;
                 core.ajaxPost(u.pages.base + u.pages._.toggleLock + path, {}, {},
                     _.bind(function (result) {
-                        pages.trigger('actions.page.toggleLock', pages.const.event.page.state,
+                        pages.trigger('actions.page.toggleLock', pages.const.event.content.state,
                             [new pages.Reference(name, path, type)]);
                     }, this), function (xhr) {
                         actions.error('Error on toggle lock', xhr);
@@ -448,15 +448,15 @@
             },
 
             activate: function (event, name, path, type) {
-                core.alert(undefined, 'activate', name, path, type);
+                pages.dialogs.openActivateContentDialog(name, path, type);
             },
 
             revert: function (event, name, path, type) {
-                core.alert(undefined, 'revert', name, path, type);
+                pages.dialogs.openRevertContentDialog(name, path, type);
             },
 
             deactivate: function (event, name, path, type) {
-                core.alert(undefined, 'deactivate', name, path, type);
+                pages.dialogs.openDeactivateContentDialog(name, path, type);
             }
         };
 

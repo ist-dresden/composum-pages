@@ -102,10 +102,10 @@
                             path: this.sitePath
                         }, {
                             url: url,
-                            type: 'window.composum.pages.dialogs.ActivatePageDialog'
+                            type: 'window.composum.pages.dialogs.ActivateContentDialog'
                         }, objects);
                     } else { // context is the stage edit frame
-                        pages.dialogs.openGenericDialog(url, pages.dialogs.ActivatePageDialog, objects);
+                        pages.dialogs.openGenericDialog(url, pages.dialogs.ActivateContentDialog, objects);
                     }
                 }
             }
@@ -173,10 +173,10 @@
                             path: this.sitePath
                         }, {
                             url: url,
-                            type: 'window.composum.pages.dialogs.RevertPageDialog'
+                            type: 'window.composum.pages.dialogs.RevertContentDialog'
                         }, objects);
                     } else { // context is the stage edit frame
-                        pages.dialogs.openGenericDialog(url, pages.dialogs.RevertPageDialog, objects);
+                        pages.dialogs.openGenericDialog(url, pages.dialogs.RevertContentDialog, objects);
                     }
                 }
             }

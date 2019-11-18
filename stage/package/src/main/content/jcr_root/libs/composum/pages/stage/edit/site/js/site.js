@@ -52,7 +52,7 @@
                     var args = JSON.parse(message[2]); // argument object|array
                     switch (message[1]) { // operation
                         case e.site.changed:
-                        case e.page.state:
+                        case e.content.state:
                             window.location.reload();
                             break;
                     }

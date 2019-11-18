@@ -34,6 +34,7 @@
                 var id = tools.const.fileStatus.event.id;
                 $(document)
                     .on(e.content.changed + id, _.bind(this.reload, this))
+                    .on(e.content.state + id, _.bind(this.reload, this));
                 this.reload();
             },
 
@@ -67,7 +68,11 @@
                             animation: false,
                             html: true,
                             sanitize: false,
-                            content: content
+                            content: content,
+                            viewport: {
+                                selector: 'body .composum-pages-stage-edit-tools-main-assets',
+                                padding: 8
+                            }
                         });
                         this.$icon.popover('show');
                     }, this));

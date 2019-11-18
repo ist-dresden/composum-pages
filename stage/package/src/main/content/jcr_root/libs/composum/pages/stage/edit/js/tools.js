@@ -264,7 +264,7 @@
                 var e = pages.const.event;
                 $(document).on(e.site.selected + '.Navigation', _.bind(this.onSiteChanged, this));
                 $(document).on(e.site.changed + '.Navigation', _.bind(this.onSiteChanged, this));
-                $(document).on(e.page.state + '.Navigation', _.bind(this.onSiteChanged, this));
+                $(document).on(e.content.state + '.Navigation', _.bind(this.onSiteChanged, this));
                 $(document).on(e.scope.changed + '.Navigation', _.bind(this.onScopeChanged, this));
             },
 
