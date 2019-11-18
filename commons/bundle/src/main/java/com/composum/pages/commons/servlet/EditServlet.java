@@ -125,6 +125,11 @@ public class EditServlet extends PagesContentServlet {
     }
 
     @Override
+    protected PlatformVersionsService getPlatformVersionsService() {
+        return platformVersionsService;
+    }
+
+    @Override
     protected PagesConfiguration getPagesConfiguration() {
         return pagesConfiguration;
     }
@@ -417,25 +422,6 @@ public class EditServlet extends PagesContentServlet {
         @Override
         protected ResourceFilter getNodeFilter(SlingHttpServletRequest request) {
             return pagesConfiguration.getRequestNodeFilter(request, PARAM_FILTER, DEFAULT_FILTER);
-        }
-    }
-
-    @Override
-    public void writeNodeTreeType(JsonWriter writer, ResourceFilter filter,
-                                  ResourceHandle resource, boolean isVirtual)
-            throws IOException {
-        super.writeNodeTreeType(writer, filter, resource, isVirtual);
-        if (Page.isPage(resource)) {
-            try {
-                PlatformVersionsService.Status status = platformVersionsService.getStatus(resource, null);
-                if (null != status) {
-                    writer.name("release").beginObject();
-                    writer.name("status").value(status.getActivationState().name());
-                    writer.endObject();
-                }
-            } catch (RepositoryException ex) {
-                LOG.error(ex.getMessage(), ex);
-            }
         }
     }
 

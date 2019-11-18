@@ -631,10 +631,14 @@
                 if (applicable) {
                     this.onPathSelected(event, path);
                     var node = this.getTreeNode(path);
-                    if (node && node.original.type !== 'folder' && node.original.type !== 'site') {
-                        var p = pages.const.profile.asset.tree;
-                        pages.profile.set(p.aspect, p.path, path);
-                        pages.current.file = path;
+                    if (node && node.original.type !== 'folder') {
+                        if (node.original.type !== 'site') {
+                            var p = pages.const.profile.asset.tree;
+                            pages.profile.set(p.aspect, p.path, path);
+                            pages.current.file = path;
+                        } else {
+                            pages.trigger('tree.asset.on.node', "path:select", [path, node.original.name, node.original.type]);
+                        }
                     }
                 }
             }

@@ -31,6 +31,10 @@ $preview-content-border: 1px solid #e0e0e0;
 
         .composum-pages-stage-preview {
 
+            &_path {
+                white-space: nowrap;
+            }
+
             &_date {
                 position: absolute;
                 top: $preview-content-padding / 2;

@@ -6,13 +6,16 @@ import com.composum.pages.commons.util.RequestUtil;
 import com.composum.pages.commons.util.ResourceTypeUtil;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.ResourceHandle;
+import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.servlet.ServletOperation;
 import com.composum.sling.core.servlet.Status;
 import com.composum.sling.core.util.I18N;
 import com.composum.sling.core.util.ResourceUtil;
 import com.composum.sling.core.util.ResponseUtil;
+import com.composum.sling.platform.staging.versions.PlatformVersionsService;
 import com.google.gson.stream.JsonWriter;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.resource.PersistenceException;
@@ -39,9 +42,34 @@ public abstract class PagesContentServlet extends ContentServlet {
 
     public static final String PARAM_FILTER = "filter";
 
+    protected abstract PlatformVersionsService getPlatformVersionsService();
+
     protected abstract PagesConfiguration getPagesConfiguration();
 
-    // TreeNodeServlet...
+    //
+    // Tree
+    //
+
+    @Override
+    public void writeNodeTreeType(JsonWriter writer, ResourceFilter filter,
+                                  ResourceHandle resource, boolean isVirtual)
+            throws IOException {
+        super.writeNodeTreeType(writer, filter, resource, isVirtual);
+        Resource content;
+        if (resource.isValid() && (content = resource.getChild(JcrConstants.JCR_CONTENT)) != null
+                && ResourceUtil.isResourceType(content, JcrConstants.MIX_VERSIONABLE)) {
+            try {
+                PlatformVersionsService.Status status = getPlatformVersionsService().getStatus(resource, null);
+                if (null != status) {
+                    writer.name("release").beginObject();
+                    writer.name("status").value(status.getActivationState().name());
+                    writer.endObject();
+                }
+            } catch (RepositoryException ex) {
+                LOG.error(ex.getMessage(), ex);
+            }
+        }
+    }
 
     /**
      * sort children of nodes which are not marked 'orderable'
