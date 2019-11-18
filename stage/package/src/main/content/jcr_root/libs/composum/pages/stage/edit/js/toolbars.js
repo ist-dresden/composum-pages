@@ -155,7 +155,7 @@
                 this.initPageView();
                 var e = pages.const.event;
                 $(document)
-                    .on(e.page.view + '.PageToolbar', _.bind(this.onPageView, this))
+                    .on(e.content.view + '.PageToolbar', _.bind(this.onPageView, this))
                     .on(e.page.selected + '.PageToolbar', _.bind(this.onPageSelected, this))
                     .on(e.element.selected + '.PageToolbar', _.bind(this.onComponentSelected, this))
                     .on('body:size.PageToolbar', _.bind(this.onResize, this));

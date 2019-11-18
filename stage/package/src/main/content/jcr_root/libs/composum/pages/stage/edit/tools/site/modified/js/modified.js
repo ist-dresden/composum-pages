@@ -80,7 +80,7 @@
                     this.$previewEntry = $listEntry;
                     $('body').addClass('context-driven-view');
                     $listEntry.addClass('selected');
-                    pages.trigger('site.modified.view', pages.const.event.page.view,
+                    pages.trigger('site.modified.view', pages.const.event.content.view,
                         [path, {'pages.view': 'preview'}, $entry.data('viewer')]);
                 }
             },
@@ -90,7 +90,7 @@
                     $('body').removeClass('context-driven-view');
                     this.$previewEntry.removeClass('selected');
                     this.$previewEntry = [];
-                    pages.trigger('site.modified.close', pages.const.event.page.view, [null, {}]);
+                    pages.trigger('site.modified.close', pages.const.event.content.view, [null, {}]);
                 }
             },
 

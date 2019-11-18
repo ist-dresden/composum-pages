@@ -600,7 +600,8 @@
                     .on(e.content.changed + '.' + id, _.bind(this.onContentChanged, this))
                     .on(e.content.deleted + '.' + id, _.bind(this.onContentDeleted, this))
                     .on(e.content.moved + '.' + id, _.bind(this.onContentMoved, this))
-                    .on(e.content.state + '.' + id, _.bind(this.onContentStateChanged, this));
+                    .on(e.content.state + '.' + id, _.bind(this.onContentStateChanged, this))
+                    .on(e.content.view + '.' + id, _.bind(this.onAssetSelected, this));
             },
 
             initializeFilter: function () {
@@ -629,9 +630,12 @@
                 }
                 if (applicable) {
                     this.onPathSelected(event, path);
-                    var p = pages.const.profile.asset.tree;
-                    pages.profile.set(p.aspect, p.path, path);
-                    pages.current.file = path;
+                    var node = this.getTreeNode(path);
+                    if (node && node.original.type !== 'folder' && node.original.type !== 'site') {
+                        var p = pages.const.profile.asset.tree;
+                        pages.profile.set(p.aspect, p.path, path);
+                        pages.current.file = path;
+                    }
                 }
             }
         });
@@ -909,7 +913,7 @@
                 var p = pages.const.profile.asset.tree;
                 var path = pages.profile.get(p.aspect, p.path, '');
                 if (path) {
-                    this.selectAsset(event, path);
+                    this.tree.selectNode(path);
                 }
             },
 

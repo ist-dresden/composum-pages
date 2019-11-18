@@ -60,7 +60,6 @@
                     deleted: 'site:deleted'         // done.
                 },
                 page: {
-                    view: 'page:view',              // do it!...
                     select: 'page:select',          // do it!...
                     selected: 'page:selected',      // done.
                     inserted: 'page:inserted',      // done.
@@ -69,6 +68,7 @@
                     containerRefs: 'page:containerRefs'
                 },
                 content: {
+                    view: 'content:view',              // do it!...
                     select: 'content:select',       // do it!...
                     selected: 'content:selected',   // done.
                     inserted: 'content:inserted',   // done.
