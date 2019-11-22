@@ -52,7 +52,7 @@
 
             &_title, &_subtitle {
                 margin: 0 0 $text-spacing-default 0;
-                color: $site-bright-text-color !important;
+                color: $site-bright-title-color !important;
             }
 
             &_title {
@@ -181,7 +181,7 @@
                 background: transparent;
 
                 .carousel-control {
-                    mix-blend-mode: difference;
+                    mix-blend-mode: screen;
 
                     &, &:hover {
                         background: none;
@@ -190,7 +190,7 @@
 
                 .carousel-indicators {
                     opacity: 0.5;
-                    mix-blend-mode: difference;
+                    mix-blend-mode: screen;
                 }
 
                 &_element {

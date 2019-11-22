@@ -11,7 +11,6 @@ import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.resource.Resource;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -22,9 +21,6 @@ import javax.annotation.Nullable;
         }
 )
 public class PagesVersionFactory implements VersionFactory {
-
-    @Reference
-    VersionsService versionsService;
 
     @Override
     @Nullable

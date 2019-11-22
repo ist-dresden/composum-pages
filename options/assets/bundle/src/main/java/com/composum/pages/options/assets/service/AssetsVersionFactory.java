@@ -4,13 +4,11 @@ import com.composum.assets.commons.AssetsConstants;
 import com.composum.pages.commons.model.ContentVersion;
 import com.composum.pages.commons.model.SiteRelease;
 import com.composum.pages.commons.service.VersionFactory;
-import com.composum.pages.commons.service.VersionsService;
 import com.composum.pages.options.assets.api.AssetVersion;
 import com.composum.sling.platform.staging.versions.PlatformVersionsService;
 import org.apache.sling.api.resource.Resource;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -21,9 +19,6 @@ import javax.annotation.Nullable;
         }
 )
 public class AssetsVersionFactory implements VersionFactory {
-
-    @Reference
-    VersionsService versionsService;
 
     @Override
     @Nullable

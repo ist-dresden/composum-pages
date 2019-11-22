@@ -21,11 +21,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
-import java.util.SortedMap;
 import java.util.TreeMap;
 
 @Component(
@@ -44,7 +41,9 @@ public class PagesReplicationManager implements ReplicationManager {
 
     protected BundleContext bundleContext;
 
-    /** A sorted map of the {@link ReplicationStrategy}'s sorted by the service references - that is, by priority. */
+    /**
+     * A sorted map of the {@link ReplicationStrategy}'s sorted by the service references - that is, by priority.
+     */
     protected Map<ServiceReference<ReplicationStrategy>, ReplicationStrategy> instances =
             Collections.synchronizedMap(new TreeMap<>());
 
@@ -147,23 +146,23 @@ public class PagesReplicationManager implements ReplicationManager {
     }
 
     @Reference(service = ReplicationStrategy.class, policy = ReferencePolicy.DYNAMIC, cardinality = ReferenceCardinality.MULTIPLE)
-    protected void addReplicationStrategy(@Nonnull final ServiceReference<ReplicationStrategy> strategyReference) {
-        ReplicationStrategy strategy = bundleContext.getService(strategyReference);
-        LOG.info("addReplicationStrategy: {}", strategy.getClass().getSimpleName());
+    protected synchronized void addReplicationStrategy(@Nonnull final ServiceReference<ReplicationStrategy> strategyReference) {
         if (config != null) {
+            ReplicationStrategy strategy = bundleContext.getService(strategyReference);
+            LOG.info("addReplicationStrategy: {}", strategy.getClass().getSimpleName());
             strategy.activate(this);
+            instances.put(strategyReference, strategy);
         }
-        instances.put(strategyReference, strategy);
     }
 
-    protected void removeReplicationStrategy(@Nonnull final ServiceReference<ReplicationStrategy> strategyReference) {
+    protected synchronized void removeReplicationStrategy(@Nonnull final ServiceReference<ReplicationStrategy> strategyReference) {
         LOG.info("removeReplicationStrategy: {}", strategyReference.getClass().getSimpleName());
         instances.remove(strategyReference);
     }
 
     @Activate
     @Modified
-    public void activate(BundleContext bundleContext, PagesReplicationConfig config) throws InvalidSyntaxException {
+    public synchronized void activate(BundleContext bundleContext, PagesReplicationConfig config) throws InvalidSyntaxException {
         LOG.info("activate");
         this.bundleContext = bundleContext;
         this.config = config;
@@ -174,7 +173,7 @@ public class PagesReplicationManager implements ReplicationManager {
     }
 
     @Deactivate
-    public void deactivate() {
+    public synchronized void deactivate() {
         LOG.info("deactivate");
         for (ReplicationStrategy strategy : instances.values()) {
             strategy.deactivate(this);

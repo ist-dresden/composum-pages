@@ -181,12 +181,12 @@
 
                         &_text-block {
                             color: $site-bright-text-color;
-                            mix-blend-mode: difference;
+                            mix-blend-mode: screen;
                         }
 
                         &_title,
                         &_subtitle {
-                            color: $site-bright-text-color;
+                            color: $site-bright-title-color;
                         }
                     }
 
