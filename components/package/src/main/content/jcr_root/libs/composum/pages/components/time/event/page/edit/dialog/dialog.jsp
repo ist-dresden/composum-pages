@@ -14,4 +14,7 @@
         <sling:call script="language.jsp"/>
     </cpp:editDialogTab>
     <sling:call script="page-presets.jsp"/>
+    <cpp:editDialogTab tabId="eventpage" label="Event Page">
+        <sling:call script="event-page.jsp"/>
+    </cpp:editDialogTab>
 </cpp:editDialog>

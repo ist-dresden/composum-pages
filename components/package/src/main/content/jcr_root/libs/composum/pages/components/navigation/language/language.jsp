@@ -4,6 +4,7 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <cpp:defineObjects/>
 <cpp:element var="model" type="com.composum.pages.commons.model.LanguageRoot" mode="none"
+             cssBase="composum-pages-components-navigation-language" cssAdd="dropdown-button"
              test="@{not empty model.alternatives}">
     <button type="button" class="${modelCSS}_menu btn btn-default" data-toggle="dropdown" aria-haspopup="true"
             aria-expanded="false">${cpn:text(model.languageKeyLabel)}<span class="caret"></span></button>

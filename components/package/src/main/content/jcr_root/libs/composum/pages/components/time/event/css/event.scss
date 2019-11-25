@@ -217,6 +217,9 @@ $event-icon-font-size: 18px;
             }
         }
     }
+}
+
+.composum-pages-components-time-event-page {
 
     &_content {
 
@@ -230,6 +233,7 @@ $event-icon-font-size: 18px;
                     .composum-pages-components-page {
 
                         &_image {
+                            pointer-events: all;
                             position: absolute;
                             top: 0;
                             left: 0;
@@ -248,11 +252,13 @@ $event-icon-font-size: 18px;
                         }
 
                         &_teaser {
+                            pointer-events: none;
                             padding: 50px 15px 30px;
 
                             .composum-pages-components-time-event {
 
                                 &_teaser {
+                                    pointer-events: auto;
                                     margin: 0;
                                 }
 
@@ -282,7 +288,7 @@ $event-icon-font-size: 18px;
  */
 @media screen and (min-width: 1200px) {
 
-    .composum-pages-components-time-event {
+    .composum-pages-components-time-event-page {
 
         &_content {
 

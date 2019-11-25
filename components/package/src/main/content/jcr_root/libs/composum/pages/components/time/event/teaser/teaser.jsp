@@ -3,7 +3,7 @@
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <cpp:defineObjects/>
 <cpp:element var="event" type="com.composum.pages.components.model.time.Event"
-             cssAdd="@{eventCSS}_teaser">
+             cssBase="composum-pages-components-time-event" cssAdd="@{eventCSS}_teaser">
     <cpn:link test="${event.hasLink}" body="true" class="${eventCSS}_link"
               href="${event.linkUrl}" title="${event.linkTitle}" target="${event.linkTarget}">
         <div class="${eventCSS}_tile style-${event.tileStyle}">

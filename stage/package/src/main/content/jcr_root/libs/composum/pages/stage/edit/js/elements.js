@@ -654,12 +654,12 @@
                     }
                     */
                     //if (this.insert.vertical) {
-                        this.insert.x = this.insert.containerRect.x1 - this.insert.handlePos.left;
-                        this.insert.w = this.insert.containerRect.w;
-                        this.$insert.css('left', this.insert.x);
-                        this.$insert.css('width', this.insert.w);
-                        this.$insert.css('height', 0);
-                        this.$insert.addClass(c.base + c.insert._vertical);
+                    this.insert.x = this.insert.containerRect.x1 - this.insert.handlePos.left;
+                    this.insert.w = this.insert.containerRect.w;
+                    this.$insert.css('left', this.insert.x);
+                    this.$insert.css('width', this.insert.w);
+                    this.$insert.css('height', 0);
+                    this.$insert.addClass(c.base + c.insert._vertical);
                     /*
                     } else {
                         this.insert.y = this.insert.containerRect.y1 - this.insert.handlePos.top;
@@ -688,19 +688,19 @@
                     var element = this.dragTarget.elements[i];
                     var eRect = elements.pageBody.getViewRect(element.$el);
                     //if (this.insert.vertical) {
-                        if (pointer.y >= eRect.y1 && pointer.y <= eRect.y2) {
-                            if (pointer.y > eRect.y1 + eRect.h / 2) {
-                                this.insert.y = eRect.y2;
-                                this.insert.before = i + 1 < this.dragTarget.elements.length
-                                    ? this.dragTarget.elements[i + 1] : undefined;
-                            } else {
-                                this.insert.y = eRect.y1;
-                                this.insert.before = element;
-                            }
-                            this.insert.y -= this.insert.handlePos.top + 3;
-                            this.$insert.css('top', this.insert.y);
-                            break;
+                    if (pointer.y >= eRect.y1 && pointer.y <= eRect.y2) {
+                        if (pointer.y > eRect.y1 + eRect.h / 2) {
+                            this.insert.y = eRect.y2;
+                            this.insert.before = i + 1 < this.dragTarget.elements.length
+                                ? this.dragTarget.elements[i + 1] : undefined;
+                        } else {
+                            this.insert.y = eRect.y1;
+                            this.insert.before = element;
                         }
+                        this.insert.y -= this.insert.handlePos.top + 3;
+                        this.$insert.css('top', this.insert.y);
+                        break;
+                    }
                     /*
                     } else {
                         if (pointer.x >= eRect.x1 && pointer.x <= eRect.x2) {
@@ -1257,6 +1257,12 @@
                     var $target = $(domEl).closest(selector);
                     if ($target.length > 0 && $target[0].view) {
                         component = this.getPointerView($target[0].view, pointer, selector, condition);
+                    } else {
+                        // if no target found try to find a sibling (or a child of it) witch matching selector
+                        $target = $(domEl.parentElement).find(selector);
+                        if ($target.length > 0 && $target[0].view) {
+                            component = this.getPointerView($target[0].view, pointer, selector, condition);
+                        }
                     }
                 }
                 return component;

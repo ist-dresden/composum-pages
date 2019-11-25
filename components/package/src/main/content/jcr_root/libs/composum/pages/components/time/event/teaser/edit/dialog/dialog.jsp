@@ -9,6 +9,6 @@
      * of the page content after save
      */
     RequestUtil.forward(slingRequest, slingResponse, resource.getParent(), true,
-            "composum/pages/components/time/event/edit/dialog", null,
+            "composum/pages/components/time/event/page/edit/dialog", null,
             StringUtils.substringBeforeLast(slingRequest.getRequestPathInfo().getSuffix(), "/"));
 %>
