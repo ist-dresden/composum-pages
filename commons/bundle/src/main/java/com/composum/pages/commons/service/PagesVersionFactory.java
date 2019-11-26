@@ -18,7 +18,8 @@ import javax.annotation.Nullable;
 @Component(
         property = {
                 Constants.SERVICE_DESCRIPTION + "=Composum Pages Version Factory"
-        }
+        },
+        immediate = true
 )
 public class PagesVersionFactory implements VersionFactory {
 
