@@ -85,8 +85,17 @@ public class PagesSiteManager extends PagesContentManager<Site> implements SiteM
     protected StagingReleaseManager releaseManager;
 
     @Override
-    public Site createBean(BeanContext context, Resource resource) {
-        return new Site(this, context, resource);
+    @Nonnull
+    public <T extends Site> T createBean(@Nonnull BeanContext context, @Nonnull Resource resource, Class<T> type) {
+        try {
+            T site = type.newInstance();
+            site.setSiteManager(this);
+            site.initialize(context, resource);
+            return site;
+        } catch (InstantiationException | IllegalAccessException ex) {
+            LOG.error(ex.toString());
+            throw new IllegalArgumentException(ex);
+        }
     }
 
     @Override
@@ -179,7 +188,7 @@ public class PagesSiteManager extends PagesContentManager<Site> implements SiteM
             BeanContext serviceContext = new BeanContext.Wrapper(site.getContext(), serviceResolver);
             Resource serviceSiteRes = serviceResolver.getResource(site.getPath());
             if (serviceSiteRes != null) {
-                Site serviceSite = createBean(serviceContext, serviceSiteRes);
+                Site serviceSite = createBean(serviceContext, serviceSiteRes, Site.class);
                 Homepage homepage = serviceSite.getHomepage(site.getLocale());
                 return LinkUtil.getMappedUrl(serviceContext.getRequest(), serviceSite.getStagePath(AccessMode.PREVIEW)
                         + homepage.getPath().substring(serviceSite.getPath().length()) + ".html");
@@ -246,7 +255,7 @@ public class PagesSiteManager extends PagesContentManager<Site> implements SiteM
     @Nonnull
     public Collection<Site> getSites(@Nonnull final BeanContext context, @Nullable final Resource searchRoot,
                                      @Nonnull final ResourceFilter filter) {
-        return getModels(context, NODE_TYPE_SITE, searchRoot, filter);
+        return getModels(context, NODE_TYPE_SITE, Site.class, searchRoot, filter);
     }
 
     @Override
@@ -280,7 +289,7 @@ public class PagesSiteManager extends PagesContentManager<Site> implements SiteM
         if (commit) {
             resolver.commit();
         }
-        return instanceCreated(context, siteResource);
+        return instanceCreated(context, siteResource, Site.class);
     }
 
     @Override
@@ -349,7 +358,7 @@ public class PagesSiteManager extends PagesContentManager<Site> implements SiteM
         if (commit) {
             resolver.commit();
         }
-        return instanceCreated(context, siteResource);
+        return instanceCreated(context, siteResource, Site.class);
     }
 
     @Override

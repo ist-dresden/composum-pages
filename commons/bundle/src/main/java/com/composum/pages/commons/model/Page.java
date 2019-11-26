@@ -219,8 +219,12 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
     }
 
     public Page(PageManager manager, BeanContext context, Resource resource) {
-        this.pageManager = manager;
+        setPageManager(manager);
         initialize(context, resource);
+    }
+
+    public void setPageManager(PageManager pageManager) {
+        this.pageManager = pageManager;
     }
 
     @Override

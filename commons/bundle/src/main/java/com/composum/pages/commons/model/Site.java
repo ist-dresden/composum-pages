@@ -85,8 +85,12 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
     }
 
     public Site(SiteManager manager, BeanContext context, Resource resource) {
-        this.siteManager = manager;
+        setSiteManager(manager);
         initialize(context, resource);
+    }
+
+    public void setSiteManager(SiteManager siteManager) {
+        this.siteManager = siteManager;
     }
 
     @Override

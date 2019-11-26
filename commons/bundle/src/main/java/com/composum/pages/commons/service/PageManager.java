@@ -76,7 +76,12 @@ public interface PageManager extends ContentManager<Page> {
      * @param resource a page resource or a child of a page resource
      */
     @Nonnull
-    Page createBean(@Nonnull BeanContext context, @Nonnull Resource resource);
+    <T extends Page> T createBean(@Nonnull BeanContext context, @Nonnull Resource resource, Class<T> type);
+
+    @Nonnull
+    default Page createBean(@Nonnull BeanContext context, @Nonnull Resource resource) {
+        return createBean(context, resource, Page.class);
+    }
 
     @Nullable
     Page getContainingPage(Model element);
@@ -84,7 +89,9 @@ public interface PageManager extends ContentManager<Page> {
     @Nullable
     Page getContainingPage(@Nonnull BeanContext context, @Nullable Resource resource);
 
-    /** Finds the next higher parent of resource (including resource itself) that is a page respource. @see {@link Page#isPage(Resource)} */
+    /**
+     * Finds the next higher parent of resource (including resource itself) that is a page respource. @see {@link Page#isPage(Resource)}
+     */
     @Nullable
     Resource getContainingPageResource(@Nonnull Resource resource);
 

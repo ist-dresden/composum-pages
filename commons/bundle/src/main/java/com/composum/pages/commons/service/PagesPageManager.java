@@ -95,8 +95,16 @@ public class PagesPageManager extends PagesContentManager<Page> implements PageM
 
     @Nonnull
     @Override
-    public Page createBean(@Nonnull BeanContext context, @Nonnull Resource resource) {
-        return new Page(this, context, resource);
+    public <T extends Page> T createBean(@Nonnull BeanContext context, @Nonnull Resource resource, Class<T> type) {
+        try {
+            T page = type.newInstance();
+            page.setPageManager(this);
+            page.initialize(context, resource);
+            return page;
+        } catch (InstantiationException | IllegalAccessException ex) {
+            LOG.error(ex.toString());
+            throw new IllegalArgumentException(ex);
+        }
     }
 
     @Override
@@ -135,7 +143,7 @@ public class PagesPageManager extends PagesContentManager<Page> implements PageM
             }
             Resource searchRoot;
             if (StringUtils.isNotBlank(searchRootPath) && (searchRoot = resolver.getResource(searchRootPath)) != null) {
-                Collection<Page> templates = getModels(context, NODE_TYPE_PAGE, searchRoot, TemplateFilter.INSTANCE);
+                Collection<Page> templates = getModels(context, NODE_TYPE_PAGE, Page.class, searchRoot, TemplateFilter.INSTANCE);
                 result.addAll(templates);
             }
             if (APPS_RESOLVER_ROOT.equals(root)) {
@@ -143,7 +151,7 @@ public class PagesPageManager extends PagesContentManager<Page> implements PageM
                     if (StringUtils.isNotBlank(additionalRoot)
                             && (!additionalRoot.startsWith(APPS_RESOLVER_ROOT) || StringUtils.isNotBlank(tenantId))
                             && (searchRoot = resolver.getResource(additionalRoot)) != null) {
-                        Collection<Page> templates = getModels(context, NODE_TYPE_PAGE, searchRoot, TemplateFilter.INSTANCE);
+                        Collection<Page> templates = getModels(context, NODE_TYPE_PAGE, Page.class, searchRoot, TemplateFilter.INSTANCE);
                         result.addAll(templates);
                     }
                 }
@@ -189,7 +197,7 @@ public class PagesPageManager extends PagesContentManager<Page> implements PageM
             resolver.commit();
         }
 
-        return instanceCreated(context, pageResource);
+        return instanceCreated(context, pageResource, Page.class);
     }
 
     @Override
@@ -245,7 +253,7 @@ public class PagesPageManager extends PagesContentManager<Page> implements PageM
         if (commit) {
             resolver.commit();
         }
-        return instanceCreated(context, pageResource);
+        return instanceCreated(context, pageResource, Page.class);
     }
 
     @Override

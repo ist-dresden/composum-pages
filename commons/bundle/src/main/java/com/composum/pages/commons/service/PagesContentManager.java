@@ -25,7 +25,7 @@ public abstract class PagesContentManager<ModelType extends ContentDriven> imple
 
     protected static final Logger LOG = LoggerFactory.getLogger(PagesContentManager.class);
 
-    public abstract ModelType createBean(BeanContext context, Resource resource);
+    public abstract <T extends ModelType> T createBean(BeanContext context, Resource resource, Class<T> type);
 
     protected void checkExistence(ResourceResolver resolver, Resource parent, String name)
             throws RepositoryException {
@@ -36,17 +36,17 @@ public abstract class PagesContentManager<ModelType extends ContentDriven> imple
     }
 
     @Nonnull
-    protected ModelType instanceCreated(BeanContext context, Resource resource) {
-        ModelType bean = createBean(context, resource);
+    protected <T extends ModelType> T instanceCreated(BeanContext context, Resource resource, Class<T> type) {
+        T bean = createBean(context, resource, type);
         if (LOG.isInfoEnabled()) {
             LOG.info("new {} created: '{}'", bean.getClass().getSimpleName(), bean.getPath());
         }
         return bean;
     }
 
-    protected Set<ModelType> getModels(@Nonnull BeanContext context, @Nonnull String primaryType,
-                                       @Nullable Resource searchRoot, @Nonnull ResourceFilter filter) {
-        Set<ModelType> result = new LinkedHashSet<>();
+    protected <T extends ModelType> Set<T> getModels(@Nonnull BeanContext context, @Nonnull String primaryType, Class<T> type,
+                                                     @Nullable Resource searchRoot, @Nonnull ResourceFilter filter) {
+        Set<T> result = new LinkedHashSet<>();
         try {
             ResourceResolver resolver = context.getResolver();
             String queryRoot = searchRoot != null ? searchRoot.getPath() : "/content";
@@ -55,7 +55,7 @@ public abstract class PagesContentManager<ModelType extends ContentDriven> imple
             Iterable<Resource> found = query.execute();
             for (Resource resource : found) {
                 if (filter.accept(resource)) {
-                    result.add(createBean(context, resource));
+                    result.add(createBean(context, resource, type));
                 }
             }
         } catch (SlingException ex) {
