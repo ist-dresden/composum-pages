@@ -56,11 +56,14 @@ public class PagesReleaseServiceImpl implements ReleaseChangeEventListener, Page
             StagingReleaseManager.Release release = event.release();
             List<AccessMode> accessModes = release.getMarks().stream().map(AccessMode::accessModeValue).filter(Objects::nonNull).collect(Collectors.toList());
             if (accessModes.isEmpty()) {
-                return; // not published
+                return; // not published - nothing to do in any case
             }
 
             BeanContext beanContext = new BeanContext.Service(release.getReleaseRoot().getResourceResolver());
             Site site = siteManager.getContainingSite(beanContext, release.getReleaseRoot());
+            if (!Site.PUBLIC_MODE_IN_PLACE.equals(site.getPublicMode())) {
+                return; // this is just for inPlace replication
+            }
             ResourceFilter releaseFilter = new SitePageFilter(site.getPath(), ResourceFilter.ALL);
             ResourceResolver stagedResolver = releaseManager.getResolverForRelease(release, replicationManager, false);
 
