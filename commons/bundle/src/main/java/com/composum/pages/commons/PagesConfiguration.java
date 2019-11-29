@@ -26,6 +26,9 @@ public interface PagesConfiguration {
     PagesConfigImpl.Configuration getConfig();
 
     @Nonnull
+    String getPreferredCountry(@Nonnull final String language);
+
+    @Nonnull
     ResourceFilter getSiteNodeFilter();
 
     @Nonnull

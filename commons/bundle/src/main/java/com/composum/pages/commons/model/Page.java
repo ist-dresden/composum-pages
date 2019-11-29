@@ -186,8 +186,8 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
         }
 
         @Nullable
-        public Language getLanguage(String key) {
-            return languageSet.get(key);
+        public Language getLanguage(@Nonnull final String key) {
+            return languageSet.get(StringUtils.split(key,"_")[0]);
         }
     }
 
@@ -535,7 +535,7 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
         if (language.equals(getPageLanguages().getDefaultLanguage())) {
             parameters.remove(LOCALE_REQUEST_PARAM);
         } else {
-            parameters.add(LOCALE_REQUEST_PARAM, language.getKey());
+            parameters.set(LOCALE_REQUEST_PARAM, language.getKey());
         }
         pageUrl += parameters.toString();
         return pageUrl;

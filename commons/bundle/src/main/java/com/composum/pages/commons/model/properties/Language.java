@@ -1,7 +1,10 @@
 package com.composum.pages.commons.model.properties;
 
+import com.composum.pages.commons.PagesConfiguration;
+import com.composum.pages.commons.request.PagesLocale;
 import com.composum.sling.core.BeanContext;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
 
 import javax.annotation.Nonnull;
@@ -55,7 +58,24 @@ public class Language extends PropertyNode {
     public Locale getLocale() {
         if (locale == null) {
             String[] key = StringUtils.split(getKey(), "_", 3);
-            locale = new Locale(key[0], key.length > 1 ? key[1] : "", key.length > 2 ? key[2] : "");
+            String language = key[0];
+            String country = key.length > 1 ? key[1] : "";
+            if (StringUtils.isBlank(country)) {
+                SlingHttpServletRequest request = context.getRequest();
+                if (request != null) {
+                    PagesLocale pagesLocale = request.adaptTo(PagesLocale.class);
+                    if (pagesLocale != null) {
+                        country = pagesLocale.getLocale().getCountry();
+                    }
+                    if (StringUtils.isBlank(country)) {
+                        country = request.getLocale().getCountry();
+                    }
+                }
+                if (StringUtils.isBlank(country)) {
+                    country = context.getService(PagesConfiguration.class).getPreferredCountry(language);
+                }
+            }
+            locale = new Locale(language, country, key.length > 2 ? key[2] : "");
         }
         return locale;
     }

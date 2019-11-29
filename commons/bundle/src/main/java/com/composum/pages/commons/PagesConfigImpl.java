@@ -13,6 +13,8 @@ import com.composum.pages.commons.util.RequestUtil;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.mapping.jcr.ResourceFilterMapping;
+import org.apache.commons.lang3.LocaleUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -30,6 +32,8 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
@@ -65,6 +69,15 @@ public class PagesConfigImpl implements PagesConfiguration {
         String[] sharedTemplates() default {
                 "/apps/shared",
                 "/apps/composum"
+        };
+
+        @AttributeDefinition(
+                description = "the language / country mappings"
+        )
+        String[] preferredCountry() default {
+                "en:US",
+                "de:DE",
+                "fr:FR"
         };
 
         @AttributeDefinition(
@@ -133,6 +146,8 @@ public class PagesConfigImpl implements PagesConfiguration {
         String assetFilterRule() default "PrimaryType(+'^(cpp:Asset|nt:file)$')";
     }
 
+    private Map<String, String> preferredCountry;
+
     private ResourceFilter siteNodeFilter;
     private ResourceFilter pageNodeFilter;
     private ResourceFilter containerNodeFilter;
@@ -147,6 +162,23 @@ public class PagesConfigImpl implements PagesConfiguration {
     protected Configuration config;
     private transient BundleContext bundleContext;
     private transient SiteManager siteManager;
+
+    @Nonnull
+    @Override
+    public Configuration getConfig() {
+        return config;
+    }
+
+    @Override
+    @Nonnull
+    public String getPreferredCountry(@Nonnull final String language) {
+        String country = preferredCountry.get(language);
+        if (country == null) {
+            List<Locale> locales = LocaleUtils.countriesByLanguage(language);
+            country = locales.size() > 0 ? locales.get(0).getCountry() : "";
+        }
+        return country;
+    }
 
     @Nonnull
     @Override
@@ -168,12 +200,6 @@ public class PagesConfigImpl implements PagesConfiguration {
             default:
                 return getPageNodeFilter();
         }
-    }
-
-    @Nonnull
-    @Override
-    public Configuration getConfig() {
-        return config;
     }
 
     @Nonnull
@@ -284,6 +310,13 @@ public class PagesConfigImpl implements PagesConfiguration {
     protected void activate(BundleContext bundleContext, Configuration config) {
         this.bundleContext = bundleContext;
         this.config = config;
+        preferredCountry = new HashMap<>();
+        for (String value : config.preferredCountry()) {
+            String[] rule = StringUtils.split(value, ":", 2);
+            if (rule.length > 1) {
+                preferredCountry.put(rule[0], rule[1]);
+            }
+        }
         orderableNodesFilter = ResourceFilterMapping.fromString(config.orderableNodesFilterRule());
         replicationRootFilter = ResourceFilterMapping.fromString(config.replicationRootFilterRule());
         treeIntermediateFilter = new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.and,
