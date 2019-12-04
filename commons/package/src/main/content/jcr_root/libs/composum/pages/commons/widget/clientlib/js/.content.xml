@@ -3,6 +3,7 @@
         jcr:primaryType="sling:OrderedFolder"
         embed="[category:composum.components.widgets,
                 composum/pages/commons/js/core.js,
+                composum/pages/commons/js/pages.js,
                 composum/pages/commons/js/widgets.js,
                 composum/pages/commons/widget/checkselect/js/checkselect.js,
                 composum/pages/commons/widget/codearea/js/codearea.js,

@@ -78,6 +78,10 @@
             <groupId>com.composum.platform</groupId>
             <artifactId>composum-platform-models-bundle</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.composum.platform</groupId>
+            <artifactId>composum-platform-staging-bundle</artifactId>
+        </dependency>
 
         <!-- Composum Core -->
         <dependency>
