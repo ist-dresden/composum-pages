@@ -73,6 +73,10 @@ public class TimeRelated extends Page {
             return date;
         }
 
+        public boolean isShowTime() {
+            return value.get(Calendar.HOUR) != 0 || value.get(Calendar.MINUTE) != 0;
+        }
+
         @Nonnull
         public String getTime() {
             if (time == null) {

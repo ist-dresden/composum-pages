@@ -1,16 +1,10 @@
 @charset "UTF-8";
 
-@import "../../../css/variables";
-@import "../../../css/mixins";
+@import "../../css/defaults";
 
 $time-calendar-day-highlight: $site-default-link-color;
-$time-calendar-header-background: #eee;
 
-$time-calendar-label-margin: 0.5rem;
-$time-calendar-header-margin: $time-calendar-label-margin * 2;
-
-$time-calendar-nav-handle-width: 30px;
-$time-calendar-nav-handle-height: 22px;
+$time-calendar-label-margin: $time-navigator-header-margin / 2;
 
 $time-calendar-day-margin: 0.5rem;
 $time-calendar-day-min-width: 2rem;
@@ -24,7 +18,7 @@ $time-calendar-week-width: 1.7rem;
 }
 
 .composum-pages-components-time-calendar {
-    margin-bottom: $time-calendar-header-margin;
+    margin-bottom: $time-navigator-header-margin;
     @include default-font;
 
     .composum-pages-components-time-calendar {
@@ -35,8 +29,9 @@ $time-calendar-week-width: 1.7rem;
 
         &_row-header {
             flex-wrap: nowrap;
-            margin: $time-calendar-header-margin 0 $time-calendar-label-margin;
-            background-color: $time-calendar-header-background;
+            margin: $time-navigator-header-margin 0 $time-calendar-label-margin;
+            padding: $time-navigator-header-padding;
+            background-color: $time-navigator-header-background;
         }
 
         &_row {
@@ -52,8 +47,8 @@ $time-calendar-week-width: 1.7rem;
 
         &_move {
             cursor: pointer;
-            min-width: $time-calendar-nav-handle-width;
-            line-height: $time-calendar-nav-handle-height;
+            min-width: $time-navigator-nav-handle-width;
+            line-height: $time-navigator-nav-handle-height;
             text-align: center;
             color: $bootstrap-color-muted;
         }

@@ -12,7 +12,7 @@
                           format="d" locale="${event.locale}"/>
                 <cpn:text class="${eventCSS}_month" value="${event.date.value}"
                           format="MMM" locale="${event.locale}"/>
-                <cpn:text class="${eventCSS}_time" value="${event.date.time}"/>
+                <cpn:text test="${event.date.showTime}" class="${eventCSS}_time" value="${event.date.time}"/>
             </div>
             <cpn:div class="${eventCSS}_date-end tile-date"
                      test="${not empty event.endDate.dateTime}">
@@ -21,7 +21,7 @@
                           format="d" locale="${event.locale}"/>
                 <cpn:text class="${eventCSS}_month" value="${event.endDate.value}"
                           format="MMM" locale="${event.locale}"/>
-                <cpn:text class="${eventCSS}_time" value="${event.endDate.time}"/>
+                <cpn:text test="${event.endDate.showTime}" class="${eventCSS}_time" value="${event.endDate.time}"/>
             </cpn:div>
         </div>
         <div class="${eventCSS}_teaser-text">

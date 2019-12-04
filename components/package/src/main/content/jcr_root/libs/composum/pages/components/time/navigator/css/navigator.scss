@@ -1,27 +1,6 @@
 @charset "UTF-8";
 
-@import "../../../css/variables";
-@import "../../../css/mixins";
-
-$time-navigator-day-highlight: $site-default-link-color;
-$time-navigator-header-background: #eee;
-
-$time-navigator-label-margin: 0.5rem;
-$time-navigator-header-margin: $time-navigator-label-margin * 2;
-
-$time-navigator-nav-handle-width: 30px;
-$time-navigator-nav-handle-height: 22px;
-
-$time-navigator-day-margin: 0.5rem;
-$time-navigator-day-min-width: 2rem;
-$time-navigator-week-width: 1.7rem;
-
-@mixin time-navigator-label($size:90%) {
-    text-align: right;
-    color: $bootstrap-color-muted;
-    font-size: $size;
-    font-style: italic;
-}
+@import "../../css/defaults";
 
 .composum-pages-components-time-navigator {
     margin-bottom: $time-navigator-header-margin;
@@ -29,25 +8,12 @@ $time-navigator-week-width: 1.7rem;
 
     .composum-pages-components-time-navigator {
 
-        &_row, &_row-header {
+        &_header {
             display: flex;
-        }
-
-        &_row-header {
             flex-wrap: nowrap;
-            margin: $time-navigator-header-margin 0 $time-navigator-label-margin;
+            margin: $time-navigator-header-margin 0 $time-navigator-header-margin * 2;
+            padding: $time-navigator-header-padding;
             background-color: $time-navigator-header-background;
-        }
-
-        &_row {
-            flex-wrap: wrap;
-            justify-content: space-around;
-            margin: $time-navigator-label-margin;
-        }
-
-        &_year {
-            flex-grow: 1;
-            text-align: center;
         }
 
         &_move {
@@ -59,79 +25,8 @@ $time-navigator-week-width: 1.7rem;
         }
 
         &_label {
+            flex-grow: 1;
             text-align: center;
-        }
-
-        &_week,
-        &_weekdays {
-            display: flex;
-            flex-wrap: nowrap;
-            justify-content: space-between;
-            align-items: flex-end;
-        }
-
-        &_weekdays {
-            margin: $time-navigator-label-margin / 2 0;
-        }
-
-        &_week-col {
-            width: $time-navigator-week-width;
-            margin-right: 1.4rem;
-            @include time-navigator-label;
-        }
-
-        &_weekday {
-            min-width: $time-navigator-day-min-width;
-            margin: 0 $time-navigator-day-margin;
-            padding-right: 3px;
-            @include time-navigator-label(80%);
-        }
-
-        &_day {
-            min-width: $time-navigator-day-min-width;
-            margin: 0 $time-navigator-day-margin;
-
-            .composum-pages-components-time-navigator {
-
-                &_text {
-                    text-align: right;
-                }
-            }
-
-            &.outside {
-                color: $bootstrap-color-muted;
-
-                &.no-items {
-                    opacity: 0.5;
-                }
-            }
-
-            &.items {
-                cursor: pointer;
-                font-family: $site-bold-font-family;
-
-                &.inside {
-                    color: $time-navigator-day-highlight;
-                }
-            }
-        }
-
-        &_month {
-            margin: $time-navigator-label-margin 1.5rem;
-
-            &-header {
-                display: flex;
-                flex-wrap: nowrap;
-                margin: $time-navigator-label-margin;
-
-                .composum-pages-components-time-navigator {
-
-                    &_label {
-                        flex-grow: 7;
-                        text-align: center;
-                    }
-                }
-            }
         }
     }
 }

@@ -1,7 +1,6 @@
 @charset "UTF-8";
 
-@import "../../../css/variables";
-@import "../../../css/mixins";
+@import "../../css/defaults";
 
 $event-tile-main-bg-color: #888;
 $event-tile-secd-bg-color: #aaa;
@@ -15,19 +14,17 @@ $event-icon-font-size: 18px;
 
     &_teaser {
         display: flex;
-        width: 60%;
         flex-wrap: nowrap;
         justify-content: flex-start;
         margin: $text-spacing-default 0;
         @include default-font;
-        background-color: rgba(0, 0, 0, 0.6);
 
         .composum-pages-components-time-event {
 
             &_tile {
                 display: inline-block;
-                min-width: 70px;
-                max-width: 70px;
+                min-width: 60px;
+                max-width: 60px;
                 margin-right: 15px;
                 margin-bottom: 15px;
                 @include font($site-symbol-font-family, $site-default-font-size);
@@ -63,8 +60,8 @@ $event-icon-font-size: 18px;
 
                     &_day {
                         padding: 7px 0 0;
-                        font-size: 42px;
-                        line-height: 42px;
+                        font-size: 30px;
+                        line-height: 36px;
                     }
 
                     &_month {
@@ -169,8 +166,15 @@ $event-icon-font-size: 18px;
 
             &_link {
 
-                &:hover {
-                    color: $site-default-link-hover;
+                .composum-pages-components-time-event {
+
+                    &_title, &_subtitle {
+                        color: $site-default-link-color;
+
+                        &:hover {
+                            color: $site-default-link-hover;
+                        }
+                    }
                 }
             }
 
@@ -183,15 +187,15 @@ $event-icon-font-size: 18px;
             }
 
             &_title, &_subtitle {
-                margin: 0 0 $title-spacing-default;
+                margin: 0 0 $text-spacing-default;
             }
 
             &_title {
-                font-size: $site-title-font-size;
+                font-size: $column-title-font-size;
             }
 
             &_subtitle {
-                font-size: $site-subtitle-font-size;
+                font-size: $column-title-font-size-xs;
             }
 
             &_line {
@@ -219,66 +223,115 @@ $event-icon-font-size: 18px;
     }
 }
 
-.composum-pages-components-time-event-page {
+.composum-pages-components-time-event-page_content {
 
-    &_content {
+    .composum-pages-components-page_content {
 
-        .composum-pages-components-page {
+        &_top {
+            position: relative;
 
-            &_content {
+            .composum-pages-components-page {
 
-                &_top {
-                    position: relative;
+                &_image {
+                    pointer-events: all;
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    z-index: -1;
 
-                    .composum-pages-components-page {
+                    .composum-pages-components-element-image-background {
+                        height: 100%;
 
-                        &_image {
-                            pointer-events: all;
-                            position: absolute;
-                            top: 0;
-                            left: 0;
-                            right: 0;
-                            bottom: 0;
-                            z-index: -1;
-
-                            .composum-pages-components-element-image-background {
-                                height: 100%;
-
-                                &_picture {
-                                    background-repeat: no-repeat;
-                                    background-color: #000;
-                                }
-                            }
-                        }
-
-                        &_teaser {
-                            pointer-events: none;
-                            padding: 50px 15px 30px;
-
-                            .composum-pages-components-time-event {
-
-                                &_teaser {
-                                    pointer-events: auto;
-                                    margin: 0;
-                                }
-
-                                &_teaser-text {
-
-                                    &, & a, & a:hover, & a:focus, & a:visited {
-                                        color: $site-bright-text-color;
-                                        @include bright-font;
-                                    }
-                                }
-                            }
+                        &_picture {
+                            background-repeat: no-repeat;
+                            background-color: #000;
                         }
                     }
                 }
 
-                &_main {
-                    clear: both;
-                    padding: 0;
+                &_teaser {
+                    pointer-events: none;
+                    width: 60%;
+                    padding: 50px 15px 30px;
+
+                    .composum-pages-components-time-event {
+
+                        &_teaser {
+                            pointer-events: auto;
+                            margin: 0;
+                        }
+
+                        &_tile {
+                            min-width: 70px;
+                            max-width: 70px;
+
+                            .composum-pages-components-time-event {
+
+                                &_arrow {
+                                    @include arrow-down($event-tile-main-bg-color, $event-tile-arrow-width, $event-tile-arrow-height);
+                                }
+
+                                &_date {
+                                    padding-bottom: 7px;
+                                    background-color: $event-tile-main-bg-color;
+                                }
+
+                                &_date-end {
+                                    padding: 13px 0 8px;
+                                    background-color: $event-tile-secd-bg-color;
+                                }
+
+                                &_day {
+                                    padding: 7px 0 0;
+                                    font-size: 42px;
+                                    line-height: 42px;
+                                }
+                            }
+                        }
+
+                        &_link {
+
+                            .composum-pages-components-time-event {
+
+                                &_title, &_subtitle {
+                                    color: $site-bright-title-color;
+
+                                    &:hover {
+                                        color: $site-bright-title-color;
+                                    }
+                                }
+                            }
+                        }
+
+                        &_title, &_subtitle {
+                            margin: 0 0 $title-spacing-default;
+                        }
+
+                        &_title {
+                            font-size: $site-title-font-size;
+                        }
+
+                        &_subtitle {
+                            font-size: $site-subtitle-font-size;
+                        }
+
+                        &_teaser-text {
+
+                            &, & a, & a:hover, & a:focus, & a:visited {
+                                color: $site-bright-text-color;
+                                @include bright-font;
+                            }
+                        }
+                    }
                 }
             }
+        }
+
+        &_main {
+            clear: both;
+            padding: 0;
         }
     }
 }
@@ -319,10 +372,25 @@ $event-icon-font-size: 18px;
  */
 @media screen and (max-width: 767px) {
 
+    .composum-pages-components-time-event-page_content {
+
+        .composum-pages-components-page_content {
+
+            &_top {
+
+                .composum-pages-components-time-event {
+
+                    &_teaser {
+                        width: 100%;
+                    }
+                }
+            }
+        }
+    }
+
     .composum-pages-components-time-event {
 
         &_teaser {
-            width: 100%;
 
             .composum-pages-components-time-event {
 

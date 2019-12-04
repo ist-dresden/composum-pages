@@ -29,7 +29,7 @@ public class EventNavigator extends TimeNavigator<Event> {
         condition.and()
                 .property(PN_DATE).lt().val(range.getTo())
                 .and().startGroup().startGroup()
-                .isNotNull(PN_DATE_END).and().property(PN_DATE_END).gt().val(range.getFrom())
+                .isNotNull(PN_DATE_END).and().property(PN_DATE_END).geq().val(range.getFrom())
                 .endGroup().or()
                 .property(PN_DATE).geq().val(range.getFrom())
                 .endGroup();
