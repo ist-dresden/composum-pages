@@ -125,7 +125,7 @@ public class LanguageRoot extends GenericModel {
 
     @Nonnull
     public String getLanguageKeyLabel() {
-        return getLanguage().getKey().toUpperCase();
+        return getLanguage().getLanguageKey().toUpperCase();
     }
 
     @Nonnull

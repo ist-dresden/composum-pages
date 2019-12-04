@@ -158,7 +158,7 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
         }
 
         public boolean contains(Language language) {
-            return languageSet.containsKey(language.getKey());
+            return languageSet.get(language.getKey()) != null;
         }
 
         public String[] getLanguageKeys() {
@@ -182,12 +182,12 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
         }
 
         public Collection<Language> getLanguages() {
-            return languageSet.getLanguages();
+            return languageSet.values();
         }
 
         @Nullable
         public Language getLanguage(@Nonnull final String key) {
-            return languageSet.get(StringUtils.split(key,"_")[0]);
+            return languageSet.get(key);
         }
     }
 

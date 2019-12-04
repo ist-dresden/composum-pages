@@ -47,6 +47,10 @@ public class Language extends PropertyNode {
         return key;
     }
 
+    public String getLanguageKey() {
+        return StringUtils.split(getKey(), "_")[0];
+    }
+
     public String getLabel() {
         return label;
     }

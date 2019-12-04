@@ -157,7 +157,7 @@ public class Languages extends PropertyNodeSet<Language> {
      */
     @Nonnull
     protected Language getLanguage(final Locale locale) {
-        return languageSet.retrieveLanguage(locale.toString());
+        return languageSet.get(locale.toString());
     }
 
     @Nonnull
