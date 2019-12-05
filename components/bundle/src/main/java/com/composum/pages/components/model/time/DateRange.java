@@ -359,6 +359,10 @@ public class DateRange {
         return !date.before(getFrom()) && date.before(getTo());
     }
 
+    public boolean contains(DateRange range) {
+        return range.getTo().after(getFrom()) && range.getFrom().before(getTo());
+    }
+
     public boolean isSingleDay() {
         Calendar f = (Calendar) getFrom().clone();
         f.add(DAY_OF_MONTH, 1);

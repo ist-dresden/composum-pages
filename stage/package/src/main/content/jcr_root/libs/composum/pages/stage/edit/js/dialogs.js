@@ -168,6 +168,53 @@
                         initialFocus.focus();
                     }
                 }
+            },
+
+            /**
+             * the validation strategy with support for an asynchronous validation call
+             */
+            doValidate: function (onSuccess, onError) {
+                var valid = this.validateForm();
+                var validationUrl = this.$el.data('pages-edit-validation');
+                if (validationUrl) {
+                    if (validationUrl.indexOf('/') !== 0) { // asuming a selector as 'validation' option
+                        validationUrl = this.data.path + '.' + validationUrl + '.json';
+                    }
+                    this.form.prepare();
+                    this.form.finalize();
+                    var formData = new FormData(this.form.el);
+                    $.ajax({
+                        type: 'POST',
+                        url: core.getContextUrl(validationUrl),
+                        data: formData,
+                        cache: false,
+                        contentType: false,
+                        processData: false,
+                        complete: _.bind(function (xhr) {
+                            var result = xhr.responseJSON;
+                            if (result) {
+                                if (result.messages) {
+                                    for (var i = 0; i < result.messages.length; i++) {
+                                        this.validationHint(result.messages[i].level, result.messages[i].label, result.messages[i].text);
+                                    }
+                                }
+                                if (valid && result.success) {
+                                    onSuccess();
+                                } else {
+                                    onError();
+                                }
+                            } else {
+                                this.onError(xhr);
+                            }
+                        }, this)
+                    });
+                } else {
+                    if (valid) {
+                        onSuccess();
+                    } else {
+                        onError();
+                    }
+                }
             }
         });
 

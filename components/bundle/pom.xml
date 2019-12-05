@@ -34,13 +34,13 @@
                             {maven-resources}
                         </Include-Resource>
                         <Export-Package>
+                            !com.composum.pages.components.*.impl,
                             com.composum.pages.components.*
                         </Export-Package>
                         <Import-Package>
                             com.composum.sling.core.*;version="[1.11,2.1)",
-                            org.apache.sling.api.request.*;version="[2.4.1,3)",
-                            org.apache.sling.api.resource.*;version="[2.8.0,3)",
-                            org.apache.sling.api.*;version="[2.2.2,3)",
+                            com.composum.sling.clientlibs.*;version="[1.11,2.1)",
+                            com.composum.sling.cpnl.*;version="[1.11,2.1)",
                             javax.annotation.*;version="[0,4)",
                             *
                         </Import-Package>
@@ -149,6 +149,10 @@
         <dependency>
             <groupId>javax.servlet.jsp</groupId>
             <artifactId>jsp-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>jstl</artifactId>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>

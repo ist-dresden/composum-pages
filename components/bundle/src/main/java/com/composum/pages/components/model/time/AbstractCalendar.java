@@ -44,13 +44,14 @@ public abstract class AbstractCalendar<Type extends TimeRelated> extends TimeNav
         public class Day {
 
             protected final Calendar date;
-
-            private transient DateRange dayRange;
+            protected final DateRange dayRange;
 
             private transient List<Type> dayItems;
 
             public Day(Calendar date) {
                 this.date = (Calendar) date.clone();
+                dayRange = new DateRange(date.getTimeZone(), monthRange.getLocale(),
+                        DAY_OF_MONTH, date.get(YEAR), date.get(MONTH) + 1, date.get(DAY_OF_MONTH));
             }
 
             /**
@@ -67,7 +68,7 @@ public abstract class AbstractCalendar<Type extends TimeRelated> extends TimeNav
                 if (dayItems == null) {
                     dayItems = new ArrayList<>();
                     for (Type item : getItems()) {
-                        if (item.getDateRange().contains(date)) {
+                        if (dayRange.contains(item.getDateRange())) {
                             dayItems.add(item);
                         }
                     }
@@ -107,10 +108,6 @@ public abstract class AbstractCalendar<Type extends TimeRelated> extends TimeNav
             }
 
             public String getDayRange() {
-                if (dayRange == null) {
-                    dayRange = new DateRange(date.getTimeZone(), monthRange.getLocale(),
-                            DAY_OF_MONTH, date.get(YEAR), date.get(MONTH) + 1, date.get(DAY_OF_MONTH));
-                }
                 return dayRange.getRule();
             }
         }

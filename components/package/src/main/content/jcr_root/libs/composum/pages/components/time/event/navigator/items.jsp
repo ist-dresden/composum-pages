@@ -6,7 +6,7 @@
 <cpp:model var="model" type="com.composum.pages.components.model.time.EventNavigator" scope="request"
            cssBase="composum-pages-components-time-navigator">
     <c:forEach items="${model.items}" var="event">
-        <cpp:include resource="${event.content.resource}"
+        <cpp:include resource="${event.content.resource}" mode="none"
                      resourceType="composum/pages/components/time/event/teaser"/>
     </c:forEach>
 </cpp:model>
