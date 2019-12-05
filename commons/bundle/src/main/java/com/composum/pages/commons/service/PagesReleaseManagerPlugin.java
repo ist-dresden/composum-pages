@@ -76,25 +76,35 @@ public class PagesReleaseManagerPlugin implements StagingReleaseManagerPlugin {
             String relativePath = SlingResourceUtil.relativePath(workspaceCopyPath, resource.getPath());
             String workspacePath = release.absolutePath(relativePath);
             if (hasActiveChildren) {
-                changeValueTo(resource, JCR_FROZENPRIMARYTYPE, "", TYPE_SLING_ORDERED_FOLDER, event, workspacePath);
-                changeValueTo(resource, StagingConstants.PROP_DEACTIVATED, Boolean.FALSE, Boolean.FALSE, event,
-                        workspacePath);
+                boolean typechange = changeValueTo(resource,
+                        JCR_FROZENPRIMARYTYPE, "", TYPE_SLING_ORDERED_FOLDER, event, workspacePath);
+                boolean disabledchange = changeValueTo(resource,
+                        StagingConstants.PROP_DEACTIVATED, Boolean.FALSE, Boolean.FALSE, event, workspacePath);
+                if (disabledchange) {
+                    event.addMoveOrUpdate(null, workspacePath);
+                } else if (typechange) {
+                    event.addMoveOrUpdate(workspacePath, workspacePath);
+                }
             } else {
                 resource.setProperty(StagingConstants.PROP_DEACTIVATED, true);
-                changeValueTo(resource, StagingConstants.PROP_DEACTIVATED, Boolean.FALSE, Boolean.TRUE, event,
-                        workspacePath);
+                if (changeValueTo(resource, StagingConstants.PROP_DEACTIVATED, Boolean.FALSE, Boolean.TRUE,
+                        event, workspacePath)) {
+                    event.addMoveOrUpdate(workspacePath, null);
+                }
             }
         }
         return hasActiveChildren;
     }
 
-    /** Changes a property to wantedValue if neccesary, possibly adding change to event. */
-    protected <T> void changeValueTo(ResourceHandle handle, String propertyName, T defaultValue, T wantedValue,
-                                     ReleaseChangeEventListener.ReleaseChangeEvent event, String workspacePath) {
+    /** Changes a property to wantedValue if neccesary, possibly adding change to event, returns true if changed. */
+    protected <T> boolean changeValueTo(ResourceHandle handle, String propertyName, T defaultValue, T wantedValue,
+                                        ReleaseChangeEventListener.ReleaseChangeEvent event, String workspacePath) {
+        boolean result = false;
         if (!Objects.equals(handle.getProperty(propertyName, defaultValue), wantedValue)) {
-            event.addMoveOrUpdate(workspacePath, workspacePath);
             handle.adaptTo(ModifiableValueMap.class).put(propertyName, wantedValue);
+            result = true;
         }
+        return result;
     }
 
 }
