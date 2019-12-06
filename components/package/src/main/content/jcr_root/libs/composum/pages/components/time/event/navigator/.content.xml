@@ -3,6 +3,7 @@
         xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
         jcr:primaryType="cpp:Component"
         jcr:title="Event Navigator"
+        jcr:description="a collecting container of all event teasers of a chosen date range"
         category="[News &amp; Events,Blueprint]"
         sling:resourceSuperType="composum/pages/components/time/navigator">
 </jcr:root>

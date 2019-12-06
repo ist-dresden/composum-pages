@@ -22,6 +22,7 @@ import java.util.TimeZone;
 
 import static com.composum.pages.commons.PagesConstants.NODE_TYPE_PAGE_CONTENT;
 import static com.composum.pages.commons.PagesConstants.PN_CATEGORY;
+import static com.composum.pages.commons.PagesConstants.PN_TITLE;
 import static java.util.Calendar.MONTH;
 import static java.util.Calendar.YEAR;
 
@@ -44,6 +45,7 @@ public abstract class TimeNavigator<Type extends TimeRelated> extends Element {
     protected transient Integer year, month;
     protected transient DateRange dateRange;
 
+    private transient String label;
     private transient Boolean showNavigation;
 
     private transient List<String> category;
@@ -88,7 +90,10 @@ public abstract class TimeNavigator<Type extends TimeRelated> extends Element {
     }
 
     public String getLabel() {
-        return getDateRange().toString();
+        if (label == null) {
+            label = getProperty(PN_TITLE, getDateRange().toString());
+        }
+        return label;
     }
 
     /**
@@ -110,7 +115,7 @@ public abstract class TimeNavigator<Type extends TimeRelated> extends Element {
     protected DateRange fromRequest(boolean useDefault) {
         Locale locale = getLocale();
         TimeZone timeZone = TimeZone.getDefault();
-        String rule = RequestUtil.getParameter(getContext().getRequest(), PNM_RANGE,"");
+        String rule = RequestUtil.getParameter(getContext().getRequest(), PNM_RANGE, "");
         return useDefault || StringUtils.isNotBlank(rule) ? DateRange.valueOf(rule, timeZone, locale) : null;
     }
 
@@ -133,7 +138,7 @@ public abstract class TimeNavigator<Type extends TimeRelated> extends Element {
                 Calendar date = Calendar.getInstance();
                 date.set(YEAR, getYear());
                 date.add(Calendar.MONTH, month);
-                month = date.get(Calendar.MONTH);
+                month = date.get(Calendar.MONTH) + 1;
             }
         }
         return month;
@@ -149,7 +154,7 @@ public abstract class TimeNavigator<Type extends TimeRelated> extends Element {
             if (parameter != null) {
                 category = Arrays.asList(parameter);
             } else {
-                category = Arrays.asList(getProperty(PN_CATEGORY, new String[0]));
+                category = super.getCategory();
             }
         }
         return category;

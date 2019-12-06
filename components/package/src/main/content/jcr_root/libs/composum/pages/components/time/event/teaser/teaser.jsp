@@ -2,45 +2,45 @@
 <%@taglib prefix="cpn" uri="http://sling.composum.com/cpnl/1.0" %>
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <cpp:defineObjects/>
-<cpp:element var="event" type="com.composum.pages.components.model.time.Event"
-             cssBase="composum-pages-components-time-event" cssAdd="@{eventCSS}_teaser">
-    <cpn:link test="${event.hasLink}" body="true" class="${eventCSS}_link"
-              href="${event.linkUrl}" title="${event.linkTitle}" target="${event.linkTarget}">
-        <div class="${eventCSS}_tile style-${event.tileStyle}">
-            <div class="${eventCSS}_date tile-date">
-                <cpn:text class="${eventCSS}_day" value="${event.date.value}"
-                          format="d" locale="${event.locale}"/>
-                <cpn:text class="${eventCSS}_month" value="${event.date.value}"
-                          format="MMM" locale="${event.locale}"/>
-                <cpn:text test="${event.date.showTime}" class="${eventCSS}_time" value="${event.date.time}"/>
+<cpp:element var="model" type="com.composum.pages.components.model.time.Event"
+             cssBase="composum-pages-components-time-event" cssAdd="@{modelCSS}_teaser">
+    <cpn:link test="${model.hasLink}" body="true" class="${modelCSS}_link"
+              href="${model.linkUrl}" title="${model.linkTitle}" target="${model.linkTarget}">
+        <div class="${modelCSS}_tile style-${model.tileStyle}">
+            <div class="${modelCSS}_date tile-date">
+                <cpn:text class="${modelCSS}_day" value="${model.date.value}"
+                          format="d" locale="${model.locale}"/>
+                <cpn:text class="${modelCSS}_month" value="${model.date.value}"
+                          format="MMM" locale="${model.locale}"/>
+                <cpn:text test="${model.date.showTime}" class="${modelCSS}_time" value="${model.date.time}"/>
             </div>
-            <cpn:div class="${eventCSS}_date-end tile-date"
-                     test="${not empty event.endDate.dateTime}">
-                <div class="${eventCSS}_arrow"></div>
-                <cpn:text class="${eventCSS}_day" value="${event.endDate.value}"
-                          format="d" locale="${event.locale}"/>
-                <cpn:text class="${eventCSS}_month" value="${event.endDate.value}"
-                          format="MMM" locale="${event.locale}"/>
-                <cpn:text test="${event.endDate.showTime}" class="${eventCSS}_time" value="${event.endDate.time}"/>
+            <cpn:div class="${modelCSS}_date-end tile-date"
+                     test="${not empty model.endDate.dateTime}">
+                <div class="${modelCSS}_arrow"></div>
+                <cpn:text class="${modelCSS}_day" value="${model.endDate.value}"
+                          format="d" locale="${model.locale}"/>
+                <cpn:text class="${modelCSS}_month" value="${model.endDate.value}"
+                          format="MMM" locale="${model.locale}"/>
+                <cpn:text test="${model.endDate.showTime}" class="${modelCSS}_time" value="${model.endDate.time}"/>
             </cpn:div>
         </div>
-        <div class="${eventCSS}_teaser-text">
-            <h1 class="${eventCSS}_title">${cpn:text(event.title)}</h1>
-            <cpn:text test="${not empty event.subtitle}" class="${eventCSS}_subtitle">${event.subtitle}</cpn:text>
-            <div class="${eventCSS}_line">
-                <span class="${eventCSS}_icon fa fa-calendar"></span>
-                <cpn:text tagName="span" class="${eventCSS}_date date"
-                          value="${event.date.dateOnly ? event.date.date : event.date.dateTime}"/>
-                <cpn:text tagName="span" class="${eventCSS}_end-date date"
-                          test="${not empty event.endDate.dateTime}"
-                          value="- ${event.oneDayOnly ? event.endDate.time : (event.endDate.dateOnly ? event.endDate.date : event.endDate.dateTime)}"/>
+        <div class="${modelCSS}_teaser-text">
+            <h1 class="${modelCSS}_title">${cpn:text(model.title)}</h1>
+            <cpn:text test="${not empty model.subtitle}" class="${modelCSS}_subtitle">${model.subtitle}</cpn:text>
+            <div class="${modelCSS}_line">
+                <span class="${modelCSS}_icon fa fa-calendar"></span>
+                <cpn:text tagName="span" class="${modelCSS}_date date"
+                          value="${model.date.dateOnly ? model.date.date : model.date.dateTime}"/>
+                <cpn:text tagName="span" class="${modelCSS}_end-date date"
+                          test="${not empty model.endDate.dateTime}"
+                          value="- ${model.oneDayOnly ? model.endDate.time : (model.endDate.dateOnly ? model.endDate.date : model.endDate.dateTime)}"/>
             </div>
-            <cpn:div test="${not empty event.location}" class="${eventCSS}_line">
-                <span class="${eventCSS}_icon fa fa-map-marker"></span>
-                <cpn:link class="${eventCSS}_location" body="true"
-                          href="${event.locationUrl}">${cpn:text(event.location)}</cpn:link>
+            <cpn:div test="${not empty model.location}" class="${modelCSS}_line">
+                <span class="${modelCSS}_icon fa fa-map-marker"></span>
+                <cpn:link class="${modelCSS}_location" body="true"
+                          href="${model.locationUrl}">${cpn:text(model.location)}</cpn:link>
             </cpn:div>
-            <cpn:text class="${eventCSS}_description" value="${event.description}" type="rich"/>
+            <cpn:text class="${modelCSS}_description" value="${model.description}" type="rich"/>
         </div>
     </cpn:link>
 </cpp:element>

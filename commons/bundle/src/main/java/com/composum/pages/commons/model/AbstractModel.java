@@ -23,6 +23,7 @@ import com.composum.sling.core.SlingBean;
 import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.filter.StringFilter;
 import com.composum.sling.core.request.DomIdentifiers;
+import com.composum.sling.core.util.I18N;
 import com.composum.sling.core.util.PropertyUtil;
 import com.composum.sling.core.util.ResourceUtil;
 import com.composum.sling.platform.security.AccessMode;
@@ -44,12 +45,14 @@ import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
+import static com.composum.pages.commons.PagesConstants.PN_CATEGORY;
 import static com.composum.pages.commons.PagesConstants.PN_DESCRIPTION;
 import static com.composum.pages.commons.PagesConstants.PN_TITLE_KEYS;
 import static com.composum.pages.commons.PagesConstants.RA_CURRENT_PAGE;
@@ -148,6 +151,8 @@ public abstract class AbstractModel implements SlingBean, Model {
 
     protected transient String url;
     protected transient String title;
+    private transient List<String> category;
+    private transient String keywords;
     private transient String description;
 
     protected transient PagesConstants.ComponentType componentType;
@@ -450,6 +455,30 @@ public abstract class AbstractModel implements SlingBean, Model {
     @Override
     public String getTileTitle() {
         return getTitle();
+    }
+
+    @Nonnull
+    public List<String> getCategory() {
+        if (category == null) {
+            category = Arrays.asList(getProperty(PN_CATEGORY, new String[0]));
+        }
+        return category;
+    }
+
+    @Nonnull
+    public String getKeywords() {
+        if (keywords == null) {
+            SlingHttpServletRequest request = context.getRequest();
+            StringBuilder builder = new StringBuilder();
+            for (String keyword : getCategory()) {
+                if (builder.length() > 0) {
+                    builder.append(",");
+                }
+                builder.append(I18N.get(request, keyword));
+            }
+            keywords = builder.toString();
+        }
+        return keywords;
     }
 
     @Override

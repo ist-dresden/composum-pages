@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+        jcr:primaryType="cpp:Component"
+        jcr:description="a news page"
+        jcr:title="News"
+        category="[News &amp; Events,Blueprint]"
+        sling:resourceSuperType="composum/pages/components/page">
+    <jcr:content jcr:primaryType="nt:unstructured">
+        <properties jcr:primaryType="nt:unstructured">
+            <date jcr:primaryType="nt:unstructured" type="Date" required="{Boolean}true"/>
+            <jcr:title jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="plain"/>
+            <subtitle jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="plain"/>
+            <jcr:description jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="rich"/>
+            <search jcr:primaryType="nt:unstructured">
+                <ignoreInSearch jcr:primaryType="nt:unstructured" type="Boolean"/>
+            </search>
+            <navigation jcr:primaryType="nt:unstructured">
+                <title jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="plain"/>
+                <hideInNav jcr:primaryType="nt:unstructured" type="Boolean"/>
+            </navigation>
+            <style jcr:primaryType="nt:unstructured">
+                <category.theme jcr:primaryType="nt:unstructured"/>
+                <category.view jcr:primaryType="nt:unstructured"/>
+                <category.edit jcr:primaryType="nt:unstructured"/>
+            </style>
+        </properties>
+    </jcr:content>
+</jcr:root>

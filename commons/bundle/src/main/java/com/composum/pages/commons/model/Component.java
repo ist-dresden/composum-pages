@@ -18,7 +18,6 @@ import org.apache.sling.api.resource.ValueMap;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +27,6 @@ import java.util.regex.Pattern;
 
 import static com.composum.pages.commons.PagesConstants.NODE_TYPE_PAGE;
 import static com.composum.pages.commons.PagesConstants.NT_COMPONENT;
-import static com.composum.pages.commons.PagesConstants.PN_CATEGORY;
 import static com.composum.pages.commons.PagesConstants.PN_COMPONENT_TYPE;
 import static com.composum.pages.commons.servlet.EditServlet.EDIT_RESOURCE_TYPE_KEY;
 import static com.composum.pages.commons.util.ResourceTypeUtil.isSyntheticResource;
@@ -386,7 +384,6 @@ public class Component extends AbstractModel {
     private transient EditTile editTile;
 
     private transient String type;
-    private transient List<String> category;
 
     private transient Thumbnail thumbnail;
     private transient String helpContent;
@@ -510,13 +507,6 @@ public class Component extends AbstractModel {
             return matcher.group(1);
         }
         return resourceType;
-    }
-
-    public List<String> getCategory() {
-        if (category == null) {
-            category = Arrays.asList(getProperty(PN_CATEGORY, null, new String[0]));
-        }
-        return category;
     }
 
     public EditDialog getEditDialog() {

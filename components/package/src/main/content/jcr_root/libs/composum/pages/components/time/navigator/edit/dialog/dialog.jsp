@@ -2,7 +2,7 @@
 <%@taglib prefix="sling" uri="http://sling.apache.org/taglibs/sling/1.2" %>
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <cpp:defineFrameObjects/>
-<cpp:editDialog title="Event Settings">
+<cpp:editDialog title="Navigator Settings">
     <div class="row" style="align-items: flex-start;">
         <div class="col col-xs-9">
             <div class="row">

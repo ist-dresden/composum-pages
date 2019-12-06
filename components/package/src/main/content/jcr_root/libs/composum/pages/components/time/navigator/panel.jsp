@@ -5,15 +5,7 @@
 <cpp:defineObjects/>
 <cpp:model var="model" type="com.composum.pages.components.model.time.TimeNavigator" scope="request"
            cssBase="composum-pages-components-time-navigator">
-    <div class="${modelCSS}_header">
-        <cpn:div test="${model.showNavigation}"
-                 class="${modelCSS}_move fa fa-chevron-left"
-                 data-range="${model.backwardRange}"></cpn:div>
-        <cpn:text class="${modelCSS}_label" value="${model.label}"/>
-        <cpn:div test="${model.showNavigation}"
-                 class="${modelCSS}_move fa fa-chevron-right"
-                 data-range="${model.forwardRange}"></cpn:div>
-    </div>
+    <sling:call script="header.jsp"/>
     <div class="${modelCSS}_items">
         <sling:call script="items.jsp"/>
     </div>

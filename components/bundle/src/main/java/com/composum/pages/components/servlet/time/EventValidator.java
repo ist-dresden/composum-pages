@@ -19,7 +19,6 @@ import java.util.Calendar;
         property = {
                 Constants.SERVICE_DESCRIPTION + "=Composum Pages Components Event Validator",
                 ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES + "=composum/pages/components/time/event/page",
-                ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES + "=composum/pages/components/time/news/page",
                 ServletResolverConstants.SLING_SERVLET_SELECTORS + "=validate",
                 ServletResolverConstants.SLING_SERVLET_EXTENSIONS + "=json",
                 ServletResolverConstants.SLING_SERVLET_METHODS + "=" + HttpConstants.METHOD_GET,

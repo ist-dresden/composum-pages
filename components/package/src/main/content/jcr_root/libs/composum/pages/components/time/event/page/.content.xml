@@ -3,7 +3,7 @@
         jcr:primaryType="cpp:Component"
         jcr:description="an event page"
         jcr:title="Event"
-        category="[Time Related,Blueprint]"
+        category="[News &amp; Events,Blueprint]"
         sling:resourceSuperType="composum/pages/components/page">
     <jcr:content jcr:primaryType="nt:unstructured">
         <properties jcr:primaryType="nt:unstructured">

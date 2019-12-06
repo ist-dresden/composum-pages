@@ -42,8 +42,7 @@
             </div>
         </div>
         <div class="col col-xs-3">
-            <cpp:widget label="Category" property="category" type="textfield" multi="true"
-                        hint="for filtering by category"/>
+            <cpp:widget label="Category" property="category" type="textfield" multi="true" hint="for filtering"/>
         </div>
     </div>
     <div class="row">

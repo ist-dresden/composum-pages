@@ -34,6 +34,6 @@ public class NewsNavigator extends TimeNavigator<News> {
 
     @Override
     protected void completeQuery(@Nonnull final Query query) {
-        query.orderBy(PN_DATE).ascending();
+        query.orderBy(PN_DATE).descending();
     }
 }
