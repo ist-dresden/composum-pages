@@ -3,8 +3,7 @@
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <cpp:defineObjects/>
-<cpp:model var="calendar" type="com.composum.pages.components.model.time.AbstractCalendar" scope="request"
-           cssBase="composum-pages-components-time-calendar">
+<cpp:model var="calendar" type="com.composum.pages.components.model.time.CalendarModel" scope="request">
     <c:forEach items="${calendar.monthRows}" var="row" varStatus="r_stat">
         <cpn:div test="${row.hasLabel}" class="${calendarCSS}_row-header">
             <cpn:div test="${calendar.showNavigation && r_stat.index==0}"

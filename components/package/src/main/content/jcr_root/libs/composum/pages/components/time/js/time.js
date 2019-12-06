@@ -21,16 +21,6 @@
                     base: 'composum-pages-components-time-navigator',
                     _move: '_move'
                 }
-            },
-            event: {
-                css: {
-                    base: 'composum-pages-components-time-event'
-                }
-            },
-            news: {
-                css: {
-                    base: 'composum-pages-components-time-news'
-                }
             }
         });
 
@@ -108,31 +98,12 @@
             }
         });
 
-        components.time.EventNavigator = components.time.Navigator.extend({
-
-            initialize: function (options) {
-                components.time.Navigator.prototype.initialize.apply(this, [options]);
-                this.$calendar = $('.' + components.time.const.calendar.css.base);
-            }
-        });
-
-        components.time.NewsNavigator = components.time.Navigator.extend({
-
-            initialize: function (options) {
-                components.time.Navigator.prototype.initialize.apply(this, [options]);
-                this.$calendar = $('.' + components.time.const.calendar.css.base);
-            }
-        });
-
         $(document).ready(function () {
             $('.' + components.time.const.calendar.css.base).each(function () {
                 core.getView(this, components.time.Calendar);
             });
-            $('.' + components.time.const.event.css.base).each(function () {
-                core.getView(this, components.time.EventNavigator);
-            });
-            $('.' + components.time.const.news.css.base).each(function () {
-                core.getView(this, components.time.NewsNavigator);
+            $('.' + components.time.const.navigator.css.base).each(function () {
+                core.getView(this, components.time.Navigator);
             });
         });
 

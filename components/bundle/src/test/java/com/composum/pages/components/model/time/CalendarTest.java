@@ -21,7 +21,7 @@ public class CalendarTest {
         return time;
     }
 
-    protected class TestCalendar extends EventCalendar {
+    protected class TestCalendar extends CalendarModel {
 
         public int getColumns() {
             return 1;
@@ -35,7 +35,7 @@ public class CalendarTest {
     @Test
     public void testLocaleDe() {
         Calendar time = getTime(LOCALE_DE);
-        EventCalendar calendar = new TestCalendar();
+        CalendarModel calendar = new TestCalendar();
         calendar.setRange(new DateRange(null, LOCALE_DE,
                 Calendar.MONTH, time.get(Calendar.YEAR), time.get(Calendar.MONTH) + 1, 3));
         System.out.println(LOCALE_DE.toString());
@@ -48,7 +48,7 @@ public class CalendarTest {
     @Test
     public void testLocaleUs() {
         Calendar time = getTime(LOCALE_US);
-        EventCalendar calendar = new TestCalendar();
+        CalendarModel calendar = new TestCalendar();
         calendar.setRange(new DateRange(null, LOCALE_US,
                 Calendar.MONTH, time.get(Calendar.YEAR), time.get(Calendar.MONTH) + 1, 3));
         System.out.println(LOCALE_US.toString());
@@ -62,7 +62,7 @@ public class CalendarTest {
     public void testLocaleAe() {
         Locale locale = LocaleUtils.toLocale("ar_AE");
         Calendar time = getTime(locale);
-        EventCalendar calendar = new TestCalendar();
+        CalendarModel calendar = new TestCalendar();
         calendar.setRange(new DateRange(null, locale,
                 Calendar.MONTH, time.get(Calendar.YEAR), time.get(Calendar.MONTH) + 1, 3));
         System.out.println(locale.toString());
@@ -72,14 +72,14 @@ public class CalendarTest {
         Assert.assertTrue(result.contains("2019/12: 52   28   29   30   31  _01_ _02_ _03_"));
     }
 
-    public <Type extends TimeRelated> String printCalendar(AbstractCalendar<Type> calendar) {
+    public <Type extends TimeRelated> String printCalendar(CalendarModel calendar) {
         StringBuilder builder = new StringBuilder();
-        List<AbstractCalendar<Type>.Row> months = calendar.getMonthRows();
-        for (AbstractCalendar<Type>.Row row : months) {
-            for (AbstractCalendar<Type>.Month month : row.getMonths()) {
+        List<CalendarModel.Row> months = calendar.getMonthRows();
+        for (CalendarModel.Row row : months) {
+            for (CalendarModel.Month month : row.getMonths()) {
                 builder.append("----");
                 int index = 0;
-                for (AbstractCalendar<Type>.Month.Day day : month) {
+                for (CalendarModel.Month.Day day : month) {
                     Calendar date = day.getDate();
                     if (day.isFirstDayOfWeek()) {
                         builder.append(new SimpleDateFormat("\nyyyy/MM: ww ").format(date.getTime()));

@@ -3,7 +3,7 @@
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <cpp:defineFrameObjects/>
 <cpp:editDialog title="Navigator Settings">
-    <div class="row" style="align-items: flex-start;">
+    <div class="row">
         <div class="col col-xs-9">
             <div class="row">
                 <div class="col col-xs-4">
@@ -17,6 +17,13 @@
                                 hint="enable navigation"/>
                 </div>
             </div>
+        </div>
+        <div class="col col-xs-3">
+            <cpp:widget label="Content Type" property="itemType" type="select" options=":all,event,news"/>
+        </div>
+    </div>
+    <div class="row" style="align-items: flex-start;">
+        <div class="col col-xs-9">
             <sling:call script="range-hint.jsp"/>
             <div class="row">
                 <div class="col col-xs-8">
@@ -36,8 +43,7 @@
             </div>
         </div>
         <div class="col col-xs-3">
-            <cpp:widget label="Category" property="category" type="textfield" multi="true"
-                        hint="for filtering by category"/>
+            <cpp:widget label="Category" property="category" type="textfield" multi="true" hint="for filtering"/>
         </div>
     </div>
 </cpp:editDialog>

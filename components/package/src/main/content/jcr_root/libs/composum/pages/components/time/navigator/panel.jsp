@@ -3,7 +3,7 @@
 <%@taglib prefix="cpn" uri="http://sling.composum.com/cpnl/1.0" %>
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <cpp:defineObjects/>
-<cpp:model var="model" type="com.composum.pages.components.model.time.TimeNavigator" scope="request"
+<cpp:model var="model" type="com.composum.pages.components.model.time.NavigatorModel" scope="request"
            cssBase="composum-pages-components-time-navigator">
     <sling:call script="header.jsp"/>
     <div class="${modelCSS}_items">

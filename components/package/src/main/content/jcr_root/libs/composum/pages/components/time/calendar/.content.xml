@@ -2,7 +2,8 @@
 <jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
         xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
         jcr:primaryType="cpp:Component"
-        jcr:title="Event Calendar"
+        jcr:title="News &amp; Events Calendar"
+        jcr:description="a calendar to navigate through the time and find events and/or news content elements"
         category="[News &amp; Events,Blueprint]"
         sling:resourceSuperType="composum/pages/components/element">
 </jcr:root>

@@ -12,6 +12,10 @@ import javax.annotation.Nullable;
 
 public class News extends TimeRelated {
 
+    public static final String TYPE = "news";
+    public static final String PAGE_TYPE = "composum/pages/components/time/" + TYPE + "/page";
+    public static final String TEASER_TYPE = "composum/pages/components/time/" + TYPE + "/teaser";
+
     @Override
     @Nullable
     protected Resource determineResource(@Nullable Resource initialResource) {

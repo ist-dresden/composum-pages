@@ -20,10 +20,8 @@ import static java.util.Calendar.YEAR;
 
 /**
  * a calendar of time related content resources (renders a set of months)
- *
- * @param <Type> the model type of the calendar items
  */
-public abstract class AbstractCalendar<Type extends TimeRelated> extends TimeNavigator<Type> {
+public class CalendarModel extends NavigatorModel {
 
     public static final String PN_COLUMNS = "columns";
     public static final String PN_ROWS = "rows";
@@ -46,7 +44,7 @@ public abstract class AbstractCalendar<Type extends TimeRelated> extends TimeNav
             protected final Calendar date;
             protected final DateRange dayRange;
 
-            private transient List<Type> dayItems;
+            private transient List<Item> dayItems;
 
             public Day(Calendar date) {
                 this.date = (Calendar) date.clone();
@@ -64,11 +62,11 @@ public abstract class AbstractCalendar<Type extends TimeRelated> extends TimeNav
             /**
              * @return the list of time related content resources of this day
              */
-            public List<Type> getDayItems() {
+            public List<Item> getDayItems() {
                 if (dayItems == null) {
                     dayItems = new ArrayList<>();
-                    for (Type item : getItems()) {
-                        if (dayRange.contains(item.getDateRange())) {
+                    for (Item item : getItems()) {
+                        if (dayRange.contains(item.getModel().getDateRange())) {
                             dayItems.add(item);
                         }
                     }
