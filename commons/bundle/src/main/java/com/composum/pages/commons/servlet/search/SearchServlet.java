@@ -7,14 +7,14 @@ package com.composum.pages.commons.servlet.search;
 
 import com.composum.pages.commons.AssetsConfiguration;
 import com.composum.pages.commons.PagesConfiguration;
-import com.composum.pages.commons.service.search.SearchService;
-import com.composum.pages.commons.service.search.SearchTermParseException;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.ResourceHandle;
 import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.servlet.AbstractServiceServlet;
 import com.composum.sling.core.servlet.ServletOperation;
 import com.composum.sling.core.servlet.ServletOperationSet;
+import com.composum.sling.platform.staging.search.SearchService;
+import com.composum.sling.platform.staging.search.SearchTermParseException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;

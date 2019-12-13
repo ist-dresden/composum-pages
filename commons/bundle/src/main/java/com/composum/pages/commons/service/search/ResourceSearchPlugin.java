@@ -5,6 +5,8 @@
  */
 package com.composum.pages.commons.service.search;
 
+import com.composum.sling.platform.staging.search.AbstractSearchPlugin;
+import com.composum.sling.platform.staging.search.SearchPlugin;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
 

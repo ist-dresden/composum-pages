@@ -7,6 +7,8 @@ package com.composum.pages.commons.service.search;
 
 import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.filter.StringFilter;
+import com.composum.sling.platform.staging.search.AbstractSearchPlugin;
+import com.composum.sling.platform.staging.search.SearchPlugin;
 import org.apache.jackrabbit.JcrConstants;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;

@@ -5,41 +5,20 @@
  */
 package com.composum.pages.commons.service.search;
 
-import com.composum.pages.commons.service.search.SearchTermParseException.Kind;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.filter.StringFilter;
 import com.composum.sling.platform.staging.query.Query;
-import com.composum.sling.platform.staging.query.QueryBuilder;
-import com.composum.sling.platform.staging.query.QueryConditionDsl;
-import com.composum.sling.platform.staging.query.QueryValueMap;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.sling.api.resource.Resource;
+import com.composum.sling.platform.staging.search.AbstractSearchPlugin;
+import com.composum.sling.platform.staging.search.SearchPlugin;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.jcr.RepositoryException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import static com.composum.pages.commons.PagesConstants.NODE_TYPE_PAGE;
 import static com.composum.pages.commons.PagesConstants.NODE_TYPE_PAGE_CONTENT;
-import static com.composum.pages.commons.service.search.SearchService.SELECTOR_PAGE;
-import static com.composum.pages.commons.service.search.SearchUtil.nameAndTextCondition;
-import static com.composum.sling.platform.staging.query.Query.COLUMN_PATH;
-import static com.composum.sling.platform.staging.query.Query.COLUMN_SCORE;
-import static com.composum.sling.platform.staging.query.Query.JoinCondition.Descendant;
-import static com.composum.sling.platform.staging.query.Query.JoinType.LeftOuter;
-import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.apache.jackrabbit.JcrConstants.JCR_SCORE;
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
@@ -55,6 +34,8 @@ import static org.slf4j.LoggerFactory.getLogger;
         immediate = true
 )
 public class PageSearchPlugin extends AbstractSearchPlugin {
+
+    public static final String SELECTOR_PAGE = "page";
 
     private static final Logger LOG = getLogger(PageSearchPlugin.class);
 

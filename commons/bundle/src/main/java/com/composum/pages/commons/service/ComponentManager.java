@@ -19,8 +19,8 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import static com.composum.pages.commons.PagesConstants.PN_CATEGORY;
-import static com.composum.pages.commons.service.search.SearchUtil.andNameAndTextCondition;
-import static com.composum.pages.commons.service.search.SearchUtil.nameAndTextCondition;
+import static com.composum.sling.platform.staging.search.SearchUtil.andNameAndTextCondition;
+import static com.composum.sling.platform.staging.search.SearchUtil.nameAndTextCondition;
 
 public interface ComponentManager {
 

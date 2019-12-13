@@ -164,14 +164,15 @@ public class NavigatorModel extends Element {
 
     public int getMonth() {
         if (month == null) {
-            month = getProperty(PN_MONTH, Calendar.getInstance().get(Calendar.MONTH));
-            if (month < 1) {
+            month = getProperty(PN_MONTH, null, Integer.class);
+            if (month == null || month < 1) {
                 Calendar date = Calendar.getInstance();
                 date.set(YEAR, getYear());
-                date.add(Calendar.MONTH, month);
-                month = date.get(Calendar.MONTH);
+                if (month != null && month != 0) {
+                    date.add(Calendar.MONTH, month);
+                }
+                month = date.get(Calendar.MONTH) + 1;
             }
-            month++;
         }
         return month;
     }
