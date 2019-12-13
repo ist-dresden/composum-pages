@@ -8,10 +8,10 @@ package com.composum.pages.components.model.search;
 import com.composum.pages.commons.model.Element;
 import com.composum.pages.commons.model.Page;
 import com.composum.pages.commons.model.Site;
-import com.composum.pages.commons.service.search.SearchService;
-import com.composum.pages.commons.service.search.SearchTermParseException;
 import com.composum.platform.commons.content.service.PlaceholderService;
 import com.composum.sling.core.BeanContext;
+import com.composum.sling.platform.staging.search.SearchService;
+import com.composum.sling.platform.staging.search.SearchTermParseException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.sling.api.SlingHttpServletRequest;
@@ -26,7 +26,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static com.composum.pages.commons.service.search.SearchService.SELECTOR_PAGE;
+import static com.composum.pages.commons.service.search.PageSearchPlugin.SELECTOR_PAGE;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.slf4j.LoggerFactory.getLogger;
 

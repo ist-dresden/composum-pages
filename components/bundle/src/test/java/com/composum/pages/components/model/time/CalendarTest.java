@@ -2,6 +2,7 @@ package com.composum.pages.components.model.time;
 
 import org.apache.commons.lang3.LocaleUtils;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.text.SimpleDateFormat;
@@ -15,7 +16,7 @@ public class CalendarTest {
     public static final Locale LOCALE_DE = Locale.GERMANY;
 
     public Calendar getTime(Locale locale) {
-        Calendar time = Calendar.getInstance(LOCALE_DE);
+        Calendar time = Calendar.getInstance(locale);
         time.clear();
         time.set(2019, Calendar.OCTOBER, 1);
         return time;
@@ -23,10 +24,12 @@ public class CalendarTest {
 
     protected class TestCalendar extends CalendarModel {
 
+        @Override
         public int getColumns() {
             return 1;
         }
 
+        @Override
         public int getRows() {
             return 3;
         }
@@ -53,9 +56,9 @@ public class CalendarTest {
                 Calendar.MONTH, time.get(Calendar.YEAR), time.get(Calendar.MONTH) + 1, 3));
         System.out.println(LOCALE_US.toString());
         String result = printCalendar(calendar);
-        Assert.assertTrue(result.contains("2019/09: 40  _29_ _30_  01   02   03   04   05"));
-        Assert.assertTrue(result.contains("2019/10: 44  _27_ _28_ _29_ _30_ _31_  01   02"));
-        Assert.assertTrue(result.contains("2019/12: 49   01   02   03   04   05   06   07"));
+        Assert.assertTrue(result.contains("2019/09: 39  _29_ _30_  01   02   03   04   05"));
+        Assert.assertTrue(result.contains("2019/10: 43  _27_ _28_ _29_ _30_ _31_  01   02"));
+        Assert.assertTrue(result.contains("2019/12: 48   01   02   03   04   05   06   07"));
     }
 
     @Test
