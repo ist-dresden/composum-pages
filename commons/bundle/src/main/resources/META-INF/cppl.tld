@@ -231,6 +231,18 @@
             <type>java.lang.Boolean</type>
         </attribute>
         <attribute>
+            <name>path</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <name>resource</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>org.apache.sling.api.resource.Resource</type>
+        </attribute>
+        <attribute>
             <name>cssBase</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
