@@ -229,7 +229,7 @@ public class AssetsConfigImpl implements AssetsConfiguration {
         this.config = config;
         this.fileFilters = new LinkedHashMap<>();
         this.availableFilters = new LinkedHashMap<>();
-        ResourceFilter replicationRootFilter = pagesConfiguration.getReplicationRootFilter();
+        ResourceFilter replicationRootFilter = pagesConfiguration.getContentRootFilter();
         assetsModuleConfig = null;
         ServiceReference serviceReference = bundleContext.getServiceReference(ASSETS_MODULE_CONFIG_CLASS);
         if (serviceReference != null) {

@@ -106,31 +106,6 @@ public class PagesConfigImpl implements PagesConfiguration {
         String develomentTreeFilterRule() default "PrimaryType(+'^cpp:(Component|Page)$,^nt:(file)$')";
 
         @AttributeDefinition(
-                description = "the filter configuration to determine all intermediate nodes in the content structure"
-        )
-        String componentIntermediateFilterRule() default "PrimaryType(+'^cpp:(PageContent)$')";
-
-        @AttributeDefinition(
-                description = "the filter configuration to determine all intermediate nodes in the development scope"
-        )
-        String devIntermediateFilterRule() default "and{or{Folder(),PrimaryType(+'^nt:(unstructured)$')},Path(+'^/(apps|libs)(/.+)?')}";
-
-        @AttributeDefinition(
-                description = "the filter configuration to determine all intermediate nodes in the tree view"
-        )
-        String treeIntermediateFilterRule() default "and{Folder(),Path(-'^/(etc|conf|apps|libs|sightly|htl|var)')}";
-
-        @AttributeDefinition(
-                description = "the filter configuration to detect ordered nodes (prevent from sorting in the tree)"
-        )
-        String orderableNodesFilterRule() default "or{Type(+[node:orderable]),PrimaryType(+'^.*([Oo]rdered|[Pp]age).*$')}";
-
-        @AttributeDefinition(
-                description = "the filter configuration to hide replication paths"
-        )
-        String replicationRootFilterRule() default "Path(-'^/(public|preview)')";
-
-        @AttributeDefinition(
                 description = "the filter configuration for site resources (reference type 'site')"
         )
         String siteFilterRule() default "PrimaryType(+'^cpp:Site$')";
@@ -144,6 +119,31 @@ public class PagesConfigImpl implements PagesConfiguration {
                 description = "the filter configuration for asset resources (reference type 'asset')"
         )
         String assetFilterRule() default "PrimaryType(+'^(cpp:Asset|nt:file)$')";
+
+        @AttributeDefinition(
+                description = "the filter configuration to restrict Pages content paths"
+        )
+        String contentRootFilterRule() default "Path(+'^/(content)')";
+
+        @AttributeDefinition(
+                description = "the filter configuration to determine all intermediate nodes in the tree view"
+        )
+        String treeIntermediateFilterRule() default "Folder()";
+
+        @AttributeDefinition(
+                description = "the filter configuration to determine all intermediate nodes in the content structure"
+        )
+        String componentIntermediateFilterRule() default "PrimaryType(+'^cpp:(PageContent)$')";
+
+        @AttributeDefinition(
+                description = "the filter configuration to determine all intermediate nodes in the development scope"
+        )
+        String devIntermediateFilterRule() default "and{or{Folder(),PrimaryType(+'^nt:(unstructured)$')},Path(+'^/(apps|libs)(/.+)?')}";
+
+        @AttributeDefinition(
+                description = "the filter configuration to detect ordered nodes (prevent from sorting in the tree)"
+        )
+        String orderableNodesFilterRule() default "or{Type(+[node:orderable]),PrimaryType(+'^.*([Oo]rdered|[Pp]age).*$')}";
     }
 
     private Map<String, String> preferredCountry;
@@ -155,7 +155,7 @@ public class PagesConfigImpl implements PagesConfiguration {
     private ResourceFilter develomentTreeFilter;
     private ResourceFilter treeIntermediateFilter;
     private ResourceFilter orderableNodesFilter;
-    private ResourceFilter replicationRootFilter;
+    private ResourceFilter contentRootFilter;
 
     private Map<String, ResourceFilter> pageFilters;
 
@@ -246,8 +246,8 @@ public class PagesConfigImpl implements PagesConfiguration {
 
     @Nonnull
     @Override
-    public ResourceFilter getReplicationRootFilter() {
-        return replicationRootFilter;
+    public ResourceFilter getContentRootFilter() {
+        return contentRootFilter;
     }
 
     @Nonnull
@@ -318,27 +318,27 @@ public class PagesConfigImpl implements PagesConfiguration {
             }
         }
         orderableNodesFilter = ResourceFilterMapping.fromString(config.orderableNodesFilterRule());
-        replicationRootFilter = ResourceFilterMapping.fromString(config.replicationRootFilterRule());
+        contentRootFilter = ResourceFilterMapping.fromString(config.contentRootFilterRule());
         treeIntermediateFilter = new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.and,
-                replicationRootFilter,
+                contentRootFilter,
                 ResourceFilterMapping.fromString(config.treeIntermediateFilterRule()));
         siteNodeFilter = buildTreeFilter(new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.and,
-                        replicationRootFilter,
+                        contentRootFilter,
                         ResourceFilterMapping.fromString(config.siteNodeFilterRule())),
                 treeIntermediateFilter);
         pageNodeFilter = buildTreeFilter(new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.and,
-                        replicationRootFilter,
+                        contentRootFilter,
                         ResourceFilterMapping.fromString(config.pageNodeFilterRule())),
                 treeIntermediateFilter);
         ResourceFilter componentIntermediateFilter = new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.or,
                 ResourceFilterMapping.fromString(config.componentIntermediateFilterRule()),
                 treeIntermediateFilter);
         containerNodeFilter = buildTreeFilter(new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.and,
-                        replicationRootFilter,
+                        contentRootFilter,
                         ResourceFilterMapping.fromString(config.containerNodeFilterRule())),
                 componentIntermediateFilter);
         elementNodeFilter = buildTreeFilter(new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.and,
-                        replicationRootFilter,
+                        contentRootFilter,
                         ResourceFilterMapping.fromString(config.elementNodeFilterRule())),
                 componentIntermediateFilter);
         ResourceFilter devIntermediateFilter = ResourceFilterMapping.fromString(config.devIntermediateFilterRule());

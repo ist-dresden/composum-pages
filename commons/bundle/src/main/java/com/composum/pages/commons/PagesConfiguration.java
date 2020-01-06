@@ -50,7 +50,7 @@ public interface PagesConfiguration {
     ResourceFilter getOrderableNodesFilter();
 
     @Nonnull
-    ResourceFilter getReplicationRootFilter();
+    ResourceFilter getContentRootFilter();
 
     @Nonnull
     ResourceFilter getSiteFilter();
