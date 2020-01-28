@@ -7,6 +7,7 @@ import com.composum.sling.platform.staging.ReleaseMapper;
 import org.apache.sling.api.resource.Resource;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public interface ReplicationManager extends ReleaseMapper {
 
@@ -34,10 +35,9 @@ public interface ReplicationManager extends ReleaseMapper {
     PagesReplicationConfig getConfig();
 
     /**
-     * Gives the path where the given path would be replicated. If the accessMode isn't {@link AccessMode#PREVIEW}
-     * or {@link AccessMode#PUBLIC}, this returns path unmodified.
+     * Gives the path where the given path would be replicated.
      */
-    @Nonnull
+    @Nullable
     String getReplicationPath(@Nonnull AccessMode accessMode, @Nonnull String path);
 
     void replicateResource(ReplicationContext context, Resource resource, boolean recursive)

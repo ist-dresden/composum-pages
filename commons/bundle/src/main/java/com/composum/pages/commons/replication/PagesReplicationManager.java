@@ -61,7 +61,7 @@ public class PagesReplicationManager implements ReplicationManager {
                 return config.inPlacePreviewPath() + "/" + path.replaceAll("^/content/", "");
             case AUTHOR:
             default:
-                return path;
+                return null;
         }
     }
 

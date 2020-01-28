@@ -14,7 +14,6 @@ import com.composum.sling.platform.security.AccessMode;
 import com.composum.sling.platform.staging.ReleaseChangeEventListener;
 import com.composum.sling.platform.staging.ReleaseChangeEventPublisher;
 import com.composum.sling.platform.staging.ReleaseChangeProcess;
-import com.composum.sling.platform.staging.StagingConstants;
 import com.composum.sling.platform.staging.StagingReleaseManager;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -48,7 +47,8 @@ import static com.composum.sling.platform.staging.ReleaseChangeProcess.ReleaseCh
 import static com.composum.sling.platform.staging.ReleaseChangeProcess.ReleaseChangeProcessorState.idle;
 import static com.composum.sling.platform.staging.ReleaseChangeProcess.ReleaseChangeProcessorState.processing;
 import static com.composum.sling.platform.staging.ReleaseChangeProcess.ReleaseChangeProcessorState.success;
-import static java.util.Objects.requireNonNull;
+import static com.composum.sling.platform.staging.StagingConstants.PROP_CHANGE_NUMBER;
+import static com.composum.sling.platform.staging.StagingConstants.PROP_LAST_REPLICATION_DATE;
 
 /**
  * Augments the {@link com.composum.pages.commons.servlet.ReleaseServlet} and callback from platform about replicated pages
@@ -330,7 +330,7 @@ public class PagesReleaseServiceImpl implements ReleaseChangeEventListener, Page
             String replicatedRootPath = replicationManager.getReplicationPath(accessMode, releaseRootPath);
             Resource replicatedRoot = resolver.getResource(replicatedRootPath);
             String replicatedReleaseChangeId = replicatedRoot != null ?
-                    replicatedRoot.getValueMap().get(StagingConstants.PROP_REPLICATED_VERSION, String.class) : null;
+                    replicatedRoot.getValueMap().get(PROP_CHANGE_NUMBER, String.class) : null;
             return StringUtils.equals(newReleaseChangeId, replicatedReleaseChangeId);
         }
 
@@ -368,16 +368,19 @@ public class PagesReleaseServiceImpl implements ReleaseChangeEventListener, Page
                 }
 
                 abortIfNecessary(newReleaseChangeId);
-                messages.add(Message.debug("References to rewrite: {}", replicationContext.references));
                 replicationManager.replicateReferences(replicationContext);
                 messages.add(Message.debug("Replication done for: {}", replicationContext.done));
                 messages.add(Message.debug("References rewritten: {}", replicationContext.references));
 
-                ModifiableValueMap releaseRootVm = requireNonNull(releaseRoot.adaptTo(ModifiableValueMap.class));
-                releaseRootVm.put(StagingConstants.PROP_LAST_REPLICATION_DATE, Calendar.getInstance());
-                releaseRootVm.put(StagingConstants.PROP_CHANGE_NUMBER, newReleaseChangeId);
-
                 abortIfNecessary(newReleaseChangeId);
+
+                Resource replicatedRoot = resolver.getResource(replicationManager.getReplicationPath(accessMode, releaseRootPath));
+                ModifiableValueMap releaseRootVm = replicatedRoot.adaptTo(ModifiableValueMap.class);
+                releaseRootVm.put(PROP_LAST_REPLICATION_DATE, Calendar.getInstance());
+                if (!StringUtils.equals(newReleaseChangeId, releaseRootVm.get(PROP_CHANGE_NUMBER, String.class))) {
+                    throw new IllegalStateException("Bug - change number is different for " + getId()); // safety check
+                }
+
                 resolver.commit();
                 messages.add(Message.debug("New release change number for {} : {}", release.getPath(), newReleaseChangeId));
             }
