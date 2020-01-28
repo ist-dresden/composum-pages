@@ -6,6 +6,7 @@ import com.composum.pages.commons.service.SiteManager;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.ResourceHandle;
 import com.composum.sling.core.filter.ResourceFilter;
+import com.composum.sling.core.logging.Message;
 import com.composum.sling.core.logging.MessageContainer;
 import com.composum.sling.core.util.ResourceUtil;
 import com.composum.sling.core.util.SlingResourceUtil;
@@ -15,8 +16,11 @@ import com.composum.sling.platform.staging.ReleaseChangeEventPublisher;
 import com.composum.sling.platform.staging.ReleaseChangeProcess;
 import com.composum.sling.platform.staging.StagingReleaseManager;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -26,14 +30,21 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Objects;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.composum.sling.platform.staging.ReleaseChangeProcess.ReleaseChangeProcessorState.awaiting;
+import static com.composum.sling.platform.staging.ReleaseChangeProcess.ReleaseChangeProcessorState.error;
 import static com.composum.sling.platform.staging.ReleaseChangeProcess.ReleaseChangeProcessorState.idle;
+import static com.composum.sling.platform.staging.ReleaseChangeProcess.ReleaseChangeProcessorState.processing;
+import static com.composum.sling.platform.staging.ReleaseChangeProcess.ReleaseChangeProcessorState.success;
 
 /**
  * Augments the {@link com.composum.pages.commons.servlet.ReleaseServlet} and callback from platform about replicated pages
@@ -59,61 +70,10 @@ public class PagesReleaseServiceImpl implements ReleaseChangeEventListener, Page
     @Reference
     protected StagingReleaseManager releaseManager;
 
+    @Reference
+    protected ResourceResolverFactory resolverFactory;
 
-    @Override
-    public void receive(ReleaseChangeEvent event) throws ReplicationFailedException {
-        LOG.info("PagesReplicationManager.receive {}", event);
-        try {
-            StagingReleaseManager.Release release = event.release();
-            List<AccessMode> accessModes = release.getMarks().stream().map(AccessMode::accessModeValue).filter(Objects::nonNull).collect(Collectors.toList());
-            if (accessModes.isEmpty()) {
-                return; // not published - nothing to do in any case
-            }
-
-            BeanContext beanContext = new BeanContext.Service(release.getReleaseRoot().getResourceResolver());
-            Site site = siteManager.getContainingSite(beanContext, release.getReleaseRoot());
-            if (!Site.PUBLIC_MODE_IN_PLACE.equals(site.getPublicMode())) {
-                return; // this is just for inPlace replication
-            }
-            ResourceFilter releaseFilter = new SitePageFilter(site.getPath(), ResourceFilter.ALL);
-            ResourceResolver stagedResolver = releaseManager.getResolverForRelease(release, replicationManager, false);
-
-            List<String> pathsToReplicate = new ArrayList<>();
-            pathsToReplicate.addAll(event.newOrMovedResources());
-            pathsToReplicate.addAll(event.updatedResources());
-            for (String removedPath : event.removedOrMovedResources()) {
-                // for removed resources find next higher still existing parent and replicate that.
-                Resource resource = stagedResolver.getResource(removedPath);
-                while (resource == null && StringUtils.isNotBlank(removedPath)) {
-                    removedPath = ResourceUtil.getParent(removedPath);
-                    resource = stagedResolver.getResource(removedPath);
-                }
-                if (resource != null) { pathsToReplicate.add(removedPath); }
-            }
-            pathsToReplicate = removeRedundantPaths(pathsToReplicate);
-
-            for (AccessMode accessMode : accessModes) {
-                ReplicationContext replicationContext = new ReplicationContext(beanContext, site, accessMode, releaseFilter, stagedResolver);
-
-                for (String path : pathsToReplicate) {
-                    Resource resource = stagedResolver.getResource(path);
-                    if (resource != null) {
-                        replicationManager.replicateResource(replicationContext, resource, true);
-                    } else {
-                        LOG.warn("Could not find replicated resource {} from {}", path, event);
-                    }
-                }
-
-                replicationManager.replicateReferences(replicationContext);
-            }
-        } catch (ReplicationFailedException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new ReplicationFailedException("Could not replicate", e, event);
-        }
-    }
-
-    private List<String> removeRedundantPaths(List<String> pathsToReplicate) {
+    private List<String> removeRedundantPaths(Collection<String> pathsToReplicate) {
         List<String> res = new ArrayList<>();
         for (String path : pathsToReplicate) {
             if (res.stream().noneMatch(p -> SlingResourceUtil.isSameOrDescendant(p, path))) {
@@ -134,57 +94,45 @@ public class PagesReleaseServiceImpl implements ReleaseChangeEventListener, Page
         return result;
     }
 
+    /** Maps the {@link StagingReleaseManager.Release#getPath()} and one accessmode to the corresponding process. */
+    // FIXME(hps,27.01.20) cleanup how?
+    protected final Map<Pair<String, AccessMode>, InPlaceReleasePublishingProcess> processesCache =
+            Collections.synchronizedMap(new HashMap<>());
+
+
     @Nonnull
     @Override
     public Collection<InPlaceReleasePublishingProcess> processesFor(@Nullable Resource resource) {
+        Collection<InPlaceReleasePublishingProcess> result = new ArrayList<>();
+        Resource releaseRoot;
         try {
-            StagingReleaseManager.Release release = event.release();
-            List<AccessMode> accessModes = release.getMarks().stream().map(AccessMode::accessModeValue).filter(Objects::nonNull).collect(Collectors.toList());
-            if (accessModes.isEmpty()) {
-                return; // not published - nothing to do in any case
-            }
-
-            BeanContext beanContext = new BeanContext.Service(release.getReleaseRoot().getResourceResolver());
-            Site site = siteManager.getContainingSite(beanContext, release.getReleaseRoot());
-            if (!Site.PUBLIC_MODE_IN_PLACE.equals(site.getPublicMode())) {
-                return; // this is just for inPlace replication
-            }
-            ResourceFilter releaseFilter = new SitePageFilter(site.getPath(), ResourceFilter.ALL);
-            ResourceResolver stagedResolver = releaseManager.getResolverForRelease(release, replicationManager, false);
-
-            List<String> pathsToReplicate = new ArrayList<>();
-            pathsToReplicate.addAll(event.newOrMovedResources());
-            pathsToReplicate.addAll(event.updatedResources());
-            for (String removedPath : event.removedOrMovedResources()) {
-                // for removed resources find next higher still existing parent and replicate that.
-                Resource resource = stagedResolver.getResource(removedPath);
-                while (resource == null && StringUtils.isNotBlank(removedPath)) {
-                    removedPath = ResourceUtil.getParent(removedPath);
-                    resource = stagedResolver.getResource(removedPath);
-                }
-                if (resource != null) { pathsToReplicate.add(removedPath); }
-            }
-            pathsToReplicate = removeRedundantPaths(pathsToReplicate);
-
-            for (AccessMode accessMode : accessModes) {
-                ReplicationContext replicationContext = new ReplicationContext(beanContext, site, accessMode, releaseFilter, stagedResolver);
-
-                for (String path : pathsToReplicate) {
-                    Resource resource = stagedResolver.getResource(path);
-                    if (resource != null) {
-                        replicationManager.replicateResource(replicationContext, resource, true);
-                    } else {
-                        LOG.warn("Could not find replicated resource {} from {}", path, event);
-                    }
-                }
-
-                replicationManager.replicateReferences(replicationContext);
-            }
-        } catch (ReplicationFailedException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new ReplicationFailedException("Could not replicate", e, event);
+            releaseRoot = releaseManager.findReleaseRoot(resource);
+        } catch (StagingReleaseManager.ReleaseNotFoundException e) {
+            LOG.debug("Not within a release root: {}", SlingResourceUtil.getPath(resource));
+            return Collections.emptyList();
         }
+        BeanContext beanContext = new BeanContext.Service(resource.getResourceResolver());
+        Site site = siteManager.getContainingSite(beanContext, releaseRoot);
+        if (!Site.PUBLIC_MODE_IN_PLACE.equals(site.getPublicMode())) {
+            return Collections.emptyList(); // this is just for inPlace replication
+        }
+
+        for (AccessMode accessMode : Arrays.asList(AccessMode.PUBLIC, AccessMode.PREVIEW)) {
+            StagingReleaseManager.Release release = releaseManager.findReleaseByMark(releaseRoot, accessMode.name().toLowerCase());
+            if (release == null) { continue; }
+            InPlaceReleasePublishingProcess process =
+                    processesCache.computeIfAbsent(Pair.of(release.getPath(), accessMode), k ->
+                            new InPlaceReleasePublishingProcess().updateConfig(release, accessMode)
+                    );
+            result.add(process);
+        }
+        return result;
+    }
+
+    /** Creates the service resolver used to update the content. */
+    @Nonnull
+    protected ResourceResolver makeResolver() throws LoginException {
+        return resolverFactory.getServiceResourceResolver(null);
     }
 
     protected class InPlaceReleasePublishingProcess implements ReleaseChangeProcess {
@@ -192,26 +140,96 @@ public class PagesReleaseServiceImpl implements ReleaseChangeEventListener, Page
         protected volatile String releaseRootPath;
         @Nonnull
         protected volatile String releaseNodePath;
-        protected volatile MessageContainer messages = new MessageContainer(LOG);
+        @Nonnull
+        protected volatile AccessMode accessMode;
 
-        protected final Object changedPathsChangeLock = new Object();
+        protected volatile MessageContainer messages = new MessageContainer(LOG);
+        /** Lock object whenever changes need to be serialized, and when changing {@link #changedPaths}. */
+        protected final Object changeLock = new Object();
         @Nonnull
         protected volatile Set<String> changedPaths = new LinkedHashSet<>();
-        protected volatile String releaseUuid;
         protected volatile ReleaseChangeProcessorState state = idle;
         protected volatile Long finished;
         protected volatile Long startedAt;
+        protected volatile int completionPercentage;
+        /** Always contains the thread {@link #run()} is running in, if it is. */
         protected volatile Thread runningThread;
+        protected volatile boolean abortAtNextPossibility = false;
+        protected volatile boolean rescheduleNeeded = false;
+
+        @Override
+        public void run() {
+            synchronized (changeLock) {
+                if (changedPaths.isEmpty()) {
+                    LOG.info("Nothing to do for {}", getId());
+                    return;
+                }
+            }
+            Set<String> pathsToSynchronize = null;
+            try {
+                rescheduleNeeded = false;
+                runningThread = Thread.currentThread();
+                abortAtNextPossibility = false;
+                completionPercentage = 0;
+                startedAt = System.currentTimeMillis();
+                synchronized (changeLock) {
+                    LOG.info("Starting run for {} changed paths {}", getId(), changedPaths);
+                    pathsToSynchronize = changedPaths;
+                    changedPaths = new LinkedHashSet<>();
+                }
+                state = processing;
+
+                executeReplication(pathsToSynchronize);
+
+                pathsToSynchronize = null;
+                completionPercentage = 100;
+                state = success;
+                LOG.info("Finished run for {}", getId());
+            } catch (Exception e) {
+                LOG.error("Exception replicating {}", getId(), e);
+                state = error;
+                completionPercentage = 0;
+                // we do not automatically set rescheduleNeeded since this might lead to spamming the system.
+                // the #executeReplication can set this, however, if it's likely to succeed next time.
+            } finally {
+                runningThread = null;
+                finished = System.currentTimeMillis();
+                if (pathsToSynchronize != null && !pathsToSynchronize.isEmpty()) {
+                    // add not correctly processed paths back
+                    synchronized (changeLock) {
+                        pathsToSynchronize.addAll(changedPaths);
+                        if (!pathsToSynchronize.isEmpty()) {
+                            changedPaths = pathsToSynchronize;
+                            rescheduleNeeded = true;
+                            state = awaiting;
+                        }
+                    }
+                }
+            }
+        }
+
+        @Nonnull
+        public InPlaceReleasePublishingProcess updateConfig(StagingReleaseManager.Release release, AccessMode accessMode) {
+            releaseRootPath = release.getReleaseRoot().getPath();
+            if (!StringUtils.equals(releaseNodePath, release.getPath()) && runningThread != null) {
+                synchronized (changeLock) {
+                    rescheduleNeeded = true;
+                    abort(true); // change of release!
+                }
+            }
+            releaseNodePath = release.getPath();
+            this.accessMode = accessMode;
+            return this;
+        }
 
         @Override
         public String getId() {
-            return releaseNodePath;
+            return releaseNodePath + ":" + accessMode;
         }
 
         @Override
         public String getName() {
-            // FIXME(hps,27.01.20) use better name!
-            return getId();
+            return accessMode.name().toLowerCase() + " : " + releaseRootPath;
         }
 
         @Override
@@ -221,12 +239,24 @@ public class PagesReleaseServiceImpl implements ReleaseChangeEventListener, Page
 
         @Override
         public void triggerProcessing(@Nonnull ReleaseChangeEvent event) {
-            LOG.error("InPlaceReleasePublishingProcess.triggerProcessing");
-            if (0 == 0) {
-                throw new UnsupportedOperationException("Not implemented yet: InPlaceReleasePublishingProcess.triggerProcessing");
+            synchronized (changeLock) {
+                changedPaths.addAll(event.newOrMovedResources());
+                changedPaths.addAll(event.updatedResources());
+                if (!event.removedOrMovedResources().isEmpty()) {
+                    try (ResourceResolver stagedResolver =
+                                 releaseManager.getResolverForRelease(event.release(), replicationManager, false)) {
+                        for (String removedPath : event.removedOrMovedResources()) {
+                            // for removed resources find next higher still existing parent and replicate that.
+                            Resource resource = stagedResolver.getResource(removedPath);
+                            while (resource == null && StringUtils.isNotBlank(removedPath)) {
+                                removedPath = ResourceUtil.getParent(removedPath);
+                                resource = stagedResolver.getResource(removedPath);
+                            }
+                            if (resource != null) { changedPaths.add(removedPath); }
+                        }
+                    }
+                }
             }
-            // FIXME hps 27.01.20 implement InPlaceReleasePublishingProcess.triggerProcessing
-
         }
 
         @Nonnull
@@ -271,29 +301,74 @@ public class PagesReleaseServiceImpl implements ReleaseChangeEventListener, Page
         @Nullable
         @Override
         public Long getLastReplicationTimestamp() {
-            xxx;
+            return null; // FIXME(hps,27.01.20) implement
         }
 
         @Nullable
         @Override
         public Boolean isSynchronized(@Nonnull ResourceResolver resolver) {
-            xxx;
+            return false; // FIXME(hps,27.01.20) implement
         }
 
         @Override
         public void updateSynchronized() {
-            xxx;
+            // empty - nothing to do here since it's calculated freshly on each access.
         }
 
-        @Override
-        public void run() {
-            xxx;
+        protected void executeReplication(Set<String> pathsToSynchronize) throws Exception {
+            try (ResourceResolver resolver = makeResolver()) {
+                BeanContext beanContext = new BeanContext.Service(resolver);
+                Resource releaseRoot = resolver.getResource(this.releaseRootPath);
+                StagingReleaseManager.Release release = releaseManager.findReleaseByMark(releaseRoot, accessMode.name().toLowerCase());
+                Site site = siteManager.getContainingSite(beanContext, release.getReleaseRoot());
+                if (!Site.PUBLIC_MODE_IN_PLACE.equals(site.getPublicMode())) { return; }
+                ResourceFilter releaseFilter = new SitePageFilter(site.getPath(), ResourceFilter.ALL);
+                ResourceResolver stagedResolver = releaseManager.getResolverForRelease(release, replicationManager, false);
+
+                List<String> pathsToReplicate = removeRedundantPaths(pathsToSynchronize);
+
+                ReplicationContext replicationContext = new ReplicationContext(beanContext, site, accessMode, releaseFilter, stagedResolver);
+
+                int count = 0;
+                for (String path : pathsToReplicate) {
+                    Resource resource = stagedResolver.getResource(path);
+                    if (resource != null) {
+                        replicationManager.replicateResource(replicationContext, resource, true);
+                    } else {
+                        LOG.warn("Could not find replicated resource {} from {}", path, getId());
+                    }
+                    count += 0;
+                    completionPercentage = (int) (count * 80.0 / pathsToReplicate.size());
+                }
+
+                replicationManager.replicateReferences(replicationContext);
+                resolver.commit();
+            }
         }
 
         @Nullable
         @Override
         public ReleaseChangeEventPublisher.CompareResult compareTree(@Nonnull ResourceHandle resource, boolean returnDetails) throws ReplicationFailedException {
-            xxx;
+            throw new UnsupportedOperationException("Not implemented yet."); // FIXME hps 27.01.20 not implemented
         }
+
+        /**
+         * Sets a mark that leads to aborting the process at the next step - if an outside interruption is necessary
+         * for some reason. If {hard} is true, we also send the running thread an {@link Thread#interrupt()}.
+         */
+        protected boolean abort(boolean hard) {
+            Thread runningThreadCopy = runningThread;
+            synchronized (changeLock) {
+                if (runningThreadCopy != null) {
+                    messages.add(Message.info("Abort requested"));
+                    abortAtNextPossibility = true;
+                    if (hard) {
+                        runningThreadCopy.interrupt();
+                    }
+                }
+            }
+            return runningThreadCopy != null;
+        }
+
     }
 }
