@@ -14,10 +14,12 @@ import com.composum.sling.platform.security.AccessMode;
 import com.composum.sling.platform.staging.ReleaseChangeEventListener;
 import com.composum.sling.platform.staging.ReleaseChangeEventPublisher;
 import com.composum.sling.platform.staging.ReleaseChangeProcess;
+import com.composum.sling.platform.staging.StagingConstants;
 import com.composum.sling.platform.staging.StagingReleaseManager;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.sling.api.resource.LoginException;
+import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
@@ -31,6 +33,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -45,6 +48,7 @@ import static com.composum.sling.platform.staging.ReleaseChangeProcess.ReleaseCh
 import static com.composum.sling.platform.staging.ReleaseChangeProcess.ReleaseChangeProcessorState.idle;
 import static com.composum.sling.platform.staging.ReleaseChangeProcess.ReleaseChangeProcessorState.processing;
 import static com.composum.sling.platform.staging.ReleaseChangeProcess.ReleaseChangeProcessorState.success;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Augments the {@link com.composum.pages.commons.servlet.ReleaseServlet} and callback from platform about replicated pages
@@ -103,6 +107,7 @@ public class PagesReleaseServiceImpl implements ReleaseChangeEventListener, Page
     @Nonnull
     @Override
     public Collection<InPlaceReleasePublishingProcess> processesFor(@Nullable Resource resource) {
+        if (resource == null) { return Collections.emptyList(); }
         Collection<InPlaceReleasePublishingProcess> result = new ArrayList<>();
         Resource releaseRoot;
         try {
@@ -179,12 +184,21 @@ public class PagesReleaseServiceImpl implements ReleaseChangeEventListener, Page
                 }
                 state = processing;
 
+                messages.add(Message.info("In-place replication of paths {}", pathsToSynchronize));
                 executeReplication(pathsToSynchronize);
+                messages.add(Message.info("In-place replication complete"));
 
                 pathsToSynchronize = null;
                 completionPercentage = 100;
                 state = success;
                 LOG.info("Finished run for {}", getId());
+            } catch (AbortReplicationButRetryException e) {
+                state = awaiting;
+                rescheduleNeeded = true;
+                completionPercentage = 0;
+            } catch (AbortReplicationRequestedException e) {
+                state = error;
+                completionPercentage = 0;
             } catch (Exception e) {
                 LOG.error("Exception replicating {}", getId(), e);
                 state = error;
@@ -209,7 +223,7 @@ public class PagesReleaseServiceImpl implements ReleaseChangeEventListener, Page
         }
 
         @Nonnull
-        public InPlaceReleasePublishingProcess updateConfig(StagingReleaseManager.Release release, AccessMode accessMode) {
+        public InPlaceReleasePublishingProcess updateConfig(StagingReleaseManager.Release release, AccessMode newAccessMode) {
             releaseRootPath = release.getReleaseRoot().getPath();
             if (!StringUtils.equals(releaseNodePath, release.getPath()) && runningThread != null) {
                 synchronized (changeLock) {
@@ -218,7 +232,7 @@ public class PagesReleaseServiceImpl implements ReleaseChangeEventListener, Page
                 }
             }
             releaseNodePath = release.getPath();
-            this.accessMode = accessMode;
+            this.accessMode = newAccessMode;
             return this;
         }
 
@@ -255,6 +269,9 @@ public class PagesReleaseServiceImpl implements ReleaseChangeEventListener, Page
                             if (resource != null) { changedPaths.add(removedPath); }
                         }
                     }
+                }
+                if (!changedPaths.isEmpty() && state != processing) {
+                    state = awaiting;
                 }
             }
         }
@@ -307,7 +324,14 @@ public class PagesReleaseServiceImpl implements ReleaseChangeEventListener, Page
         @Nullable
         @Override
         public Boolean isSynchronized(@Nonnull ResourceResolver resolver) {
-            return false; // FIXME(hps,27.01.20) implement
+            Resource releaseRoot = resolver.getResource(this.releaseRootPath);
+            StagingReleaseManager.Release release = releaseManager.findReleaseByMark(releaseRoot, accessMode.name().toLowerCase());
+            String newReleaseChangeId = release.getChangeNumber();
+            String replicatedRootPath = replicationManager.getReplicationPath(accessMode, releaseRootPath);
+            Resource replicatedRoot = resolver.getResource(replicatedRootPath);
+            String replicatedReleaseChangeId = replicatedRoot != null ?
+                    replicatedRoot.getValueMap().get(StagingConstants.PROP_REPLICATED_VERSION, String.class) : null;
+            return StringUtils.equals(newReleaseChangeId, replicatedReleaseChangeId);
         }
 
         @Override
@@ -320,6 +344,7 @@ public class PagesReleaseServiceImpl implements ReleaseChangeEventListener, Page
                 BeanContext beanContext = new BeanContext.Service(resolver);
                 Resource releaseRoot = resolver.getResource(this.releaseRootPath);
                 StagingReleaseManager.Release release = releaseManager.findReleaseByMark(releaseRoot, accessMode.name().toLowerCase());
+                String newReleaseChangeId = release.getChangeNumber();
                 Site site = siteManager.getContainingSite(beanContext, release.getReleaseRoot());
                 if (!Site.PUBLIC_MODE_IN_PLACE.equals(site.getPublicMode())) { return; }
                 ResourceFilter releaseFilter = new SitePageFilter(site.getPath(), ResourceFilter.ALL);
@@ -331,6 +356,7 @@ public class PagesReleaseServiceImpl implements ReleaseChangeEventListener, Page
 
                 int count = 0;
                 for (String path : pathsToReplicate) {
+                    abortIfNecessary(newReleaseChangeId);
                     Resource resource = stagedResolver.getResource(path);
                     if (resource != null) {
                         replicationManager.replicateResource(replicationContext, resource, true);
@@ -341,15 +367,49 @@ public class PagesReleaseServiceImpl implements ReleaseChangeEventListener, Page
                     completionPercentage = (int) (count * 80.0 / pathsToReplicate.size());
                 }
 
+                abortIfNecessary(newReleaseChangeId);
+                messages.add(Message.debug("References to rewrite: {}", replicationContext.references));
                 replicationManager.replicateReferences(replicationContext);
+                messages.add(Message.debug("Replication done for: {}", replicationContext.done));
+                messages.add(Message.debug("References rewritten: {}", replicationContext.references));
+
+                ModifiableValueMap releaseRootVm = requireNonNull(releaseRoot.adaptTo(ModifiableValueMap.class));
+                releaseRootVm.put(StagingConstants.PROP_LAST_REPLICATION_DATE, Calendar.getInstance());
+                releaseRootVm.put(StagingConstants.PROP_CHANGE_NUMBER, newReleaseChangeId);
+
+                abortIfNecessary(newReleaseChangeId);
                 resolver.commit();
+                messages.add(Message.debug("New release change number for {} : {}", release.getPath(), newReleaseChangeId));
+            }
+        }
+
+        /** Aborts if there was a change of the release number. */
+        protected void abortIfNecessary(@Nonnull String newReleaseChangeId) throws AbortReplicationRequestedException, LoginException, AbortReplicationButRetryException {
+            if (abortAtNextPossibility) {
+                messages.add(Message.warn("Aborting because that was requested: {}", getId()));
+                throw new AbortReplicationRequestedException();
+            }
+            try (ResourceResolver resolver = makeResolver()) {
+                Resource releaseRoot = resolver.getResource(this.releaseRootPath);
+                StagingReleaseManager.Release release = releaseManager.findReleaseByMark(releaseRoot, accessMode.name().toLowerCase());
+                String currentReleaseChangeId = release.getChangeNumber();
+                if (!StringUtils.equals(newReleaseChangeId, currentReleaseChangeId)) {
+                    messages.add(Message.warn("Retrying replication since release changed in the meantime. {}",
+                            getId()));
+                    rescheduleNeeded = true;
+                    throw new AbortReplicationButRetryException();
+                }
             }
         }
 
         @Nullable
         @Override
         public ReleaseChangeEventPublisher.CompareResult compareTree(@Nonnull ResourceHandle resource, boolean returnDetails) throws ReplicationFailedException {
-            throw new UnsupportedOperationException("Not implemented yet."); // FIXME hps 27.01.20 not implemented
+            // FIXME(hps,28.01.20) implement this
+            ReleaseChangeEventPublisher.CompareResult result = new ReleaseChangeEventPublisher.CompareResult();
+            result.equal = isSynchronized(resource.getResourceResolver());
+            result.changedParentNodes = new String[]{"NOT IMPLEMENTED YET"};
+            return result;
         }
 
         /**
@@ -370,5 +430,15 @@ public class PagesReleaseServiceImpl implements ReleaseChangeEventListener, Page
             return runningThreadCopy != null;
         }
 
+    }
+
+    /** Internally thrown if the replication has to be aborted but should be retried. */
+    protected static class AbortReplicationButRetryException extends Exception {
+        // empty
+    }
+
+    /** Internally thrown if an abort of the replication was requested. */
+    protected static class AbortReplicationRequestedException extends Exception {
+        // empty
     }
 }

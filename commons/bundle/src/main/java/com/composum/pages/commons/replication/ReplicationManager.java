@@ -33,6 +33,11 @@ public interface ReplicationManager extends ReleaseMapper {
 
     PagesReplicationConfig getConfig();
 
+    /**
+     * Gives the path where the given path would be replicated. If the accessMode isn't {@link AccessMode#PREVIEW}
+     * or {@link AccessMode#PUBLIC}, this returns path unmodified.
+     */
+    @Nonnull
     String getReplicationPath(@Nonnull AccessMode accessMode, @Nonnull String path);
 
     void replicateResource(ReplicationContext context, Resource resource, boolean recursive)
