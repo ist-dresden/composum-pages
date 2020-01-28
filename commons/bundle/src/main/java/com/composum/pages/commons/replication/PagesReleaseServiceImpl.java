@@ -88,7 +88,7 @@ public class PagesReleaseServiceImpl implements ReleaseChangeEventListener, Page
         return res;
     }
 
-    @Nullable
+    @Nonnull
     @Override
     public Collection<InPlaceReleasePublishingProcess> processesFor(@Nonnull StagingReleaseManager.Release release) {
         Collection<InPlaceReleasePublishingProcess> result = processesFor(release.getReleaseRoot()).stream()
@@ -98,8 +98,12 @@ public class PagesReleaseServiceImpl implements ReleaseChangeEventListener, Page
         return result;
     }
 
-    /** Maps the {@link StagingReleaseManager.Release#getPath()} and one accessmode to the corresponding process. */
-    // FIXME(hps,27.01.20) cleanup how?
+    /**
+     * Maps the {@link StagingReleaseManager.Release#getReleaseRoot()}.getPath() and the accessmode to the
+     * corresponding process. There is currently no cleanup on the theory that those objects are lightweight
+     * and it is rare that a site vanishes, and for the author host there are probably daily restarts for shrinking,
+     * anyway.
+     */
     protected final Map<Pair<String, AccessMode>, InPlaceReleasePublishingProcess> processesCache =
             Collections.synchronizedMap(new HashMap<>());
 
@@ -126,7 +130,7 @@ public class PagesReleaseServiceImpl implements ReleaseChangeEventListener, Page
             StagingReleaseManager.Release release = releaseManager.findReleaseByMark(releaseRoot, accessMode.name().toLowerCase());
             if (release == null) { continue; }
             InPlaceReleasePublishingProcess process =
-                    processesCache.computeIfAbsent(Pair.of(release.getPath(), accessMode), k ->
+                    processesCache.computeIfAbsent(Pair.of(release.getReleaseRoot().getPath(), accessMode), k ->
                             new InPlaceReleasePublishingProcess().updateConfig(release, accessMode)
                     );
             result.add(process);
