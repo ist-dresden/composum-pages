@@ -4,6 +4,7 @@ import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.filter.StringFilter;
 import com.composum.sling.platform.security.AccessMode;
 import com.composum.sling.platform.staging.ReleaseMapper;
+import com.composum.sling.platform.staging.StagingConstants;
 import org.apache.sling.api.resource.Resource;
 
 import javax.annotation.Nonnull;
@@ -21,7 +22,8 @@ public interface ReplicationManager extends ReleaseMapper {
      */
     StringFilter REPLICATE_PROPERTY_FILTER = new StringFilter.BlackList(
             "^jcr:(created.*|uuid)$",
-            "^jcr:(baseVersion|predecessors|versionHistory|isCheckedOut)$"
+            "^jcr:(baseVersion|predecessors|versionHistory|isCheckedOut)$",
+            "^" + StagingConstants.PROP_LAST_REPLICATION_DATE + "$"
     );
 
     /**
