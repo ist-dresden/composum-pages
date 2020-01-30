@@ -6,6 +6,7 @@ import com.composum.pages.commons.service.SiteManager;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.ResourceHandle;
 import com.composum.sling.core.filter.ResourceFilter;
+import com.composum.sling.core.filter.StringFilter;
 import com.composum.sling.core.logging.Message;
 import com.composum.sling.core.logging.MessageContainer;
 import com.composum.sling.core.util.ResourceUtil;
@@ -35,6 +36,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -49,6 +51,7 @@ import static com.composum.sling.platform.staging.ReleaseChangeProcess.ReleaseCh
 import static com.composum.sling.platform.staging.ReleaseChangeProcess.ReleaseChangeProcessorState.success;
 import static com.composum.sling.platform.staging.StagingConstants.PROP_CHANGE_NUMBER;
 import static com.composum.sling.platform.staging.StagingConstants.PROP_LAST_REPLICATION_DATE;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Augments the {@link com.composum.pages.commons.servlet.ReleaseServlet} and callback from platform about replicated pages
@@ -322,7 +325,16 @@ public class PagesReleaseServiceImpl implements ReleaseChangeEventListener, Page
         @Nullable
         @Override
         public Long getLastReplicationTimestamp() {
-            return null; // FIXME(hps,27.01.20) implement
+            try (ResourceResolver resolver = makeResolver()) {
+                String replicatedRootPath = replicationManager.getReplicationPath(accessMode, releaseRootPath);
+                Resource replicatedRoot = resolver.getResource(replicatedRootPath);
+                Date lastReplication = replicatedRoot != null ?
+                        replicatedRoot.getValueMap().get(PROP_LAST_REPLICATION_DATE, Date.class) : null;
+                return lastReplication != null ? lastReplication.getTime() : null;
+            } catch (LoginException | RuntimeException e) {
+                LOG.error("" + e, e);
+                return null;
+            }
         }
 
         @Nullable
@@ -330,9 +342,10 @@ public class PagesReleaseServiceImpl implements ReleaseChangeEventListener, Page
         public Boolean isSynchronized(@Nonnull ResourceResolver resolver) {
             Resource releaseRoot = resolver.getResource(this.releaseRootPath);
             StagingReleaseManager.Release release = releaseManager.findReleaseByMark(releaseRoot, accessMode.name().toLowerCase());
+            if (release == null) { return null; }
             String newReleaseChangeId = release.getChangeNumber();
             String replicatedRootPath = replicationManager.getReplicationPath(accessMode, releaseRootPath);
-            Resource replicatedRoot = resolver.getResource(replicatedRootPath);
+            Resource replicatedRoot = resolver.getResource(requireNonNull(replicatedRootPath));
             String replicatedReleaseChangeId = replicatedRoot != null ?
                     replicatedRoot.getValueMap().get(PROP_CHANGE_NUMBER, String.class) : null;
             return StringUtils.equals(newReleaseChangeId, replicatedReleaseChangeId);
@@ -412,10 +425,37 @@ public class PagesReleaseServiceImpl implements ReleaseChangeEventListener, Page
         @Nullable
         @Override
         public ReleaseChangeEventPublisher.CompareResult compareTree(@Nonnull ResourceHandle resource, boolean returnDetails) throws ReplicationFailedException {
-            // FIXME(hps,28.01.20) implement this
+            ResourceResolver resolver = resource.getResourceResolver();
             ReleaseChangeEventPublisher.CompareResult result = new ReleaseChangeEventPublisher.CompareResult();
-            result.equal = isSynchronized(resource.getResourceResolver());
-            result.changedParentNodes = new String[]{"NOT IMPLEMENTED YET"};
+            result.releaseChangeNumbersEqual = isSynchronized(resolver);
+
+            Resource releaseRoot = resolver.getResource(this.releaseRootPath);
+            StagingReleaseManager.Release release = releaseManager.findReleaseByMark(releaseRoot, accessMode.name().toLowerCase());
+            String replicatedRootPath = replicationManager.getReplicationPath(accessMode, releaseRootPath);
+            Resource replicatedRoot = resolver.getResource(replicatedRootPath);
+            if (release == null || replicatedRoot == null) { return null; }
+
+            try (ResourceResolver stagedResolver =
+                         releaseManager.getResolverForRelease(release, replicationManager, false)) {
+                Resource stagedReleaseRoot = requireNonNull(stagedResolver.getResource(this.releaseRootPath),
+                        () -> String.valueOf(release));
+
+                ReleaseTreeCompareStrategy strategy = new ReleaseTreeCompareStrategy(stagedResolver, stagedReleaseRoot, resolver, replicatedRoot);
+
+                List<String> changedParentNodes = strategy.compareParentNodes();
+                result.changedParentNodeCount = changedParentNodes.size();
+                List<String> changedChildrenOrderNodes = strategy.compareChildrenOrderings();
+                result.changedChildrenOrderCount = changedChildrenOrderNodes.size();
+                List<String> differentVersionables = strategy.compareVersionables();
+                result.differentVersionablesCount = differentVersionables.size();
+
+                if (returnDetails) {
+                    result.changedParentNodes = changedParentNodes.toArray(new String[0]);
+                    result.changedChildrenOrders = changedChildrenOrderNodes.toArray(new String[0]);
+                    result.differentVersionables = differentVersionables.toArray(new String[0]);
+                }
+            }
+            result.equal = result.calculateEqual();
             return result;
         }
 
@@ -448,4 +488,5 @@ public class PagesReleaseServiceImpl implements ReleaseChangeEventListener, Page
     protected static class AbortReplicationRequestedException extends Exception {
         // empty
     }
+
 }
