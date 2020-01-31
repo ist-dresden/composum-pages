@@ -28,8 +28,8 @@
                             <div class="panel-body hidden"></div>
                         </div>
                     </div>
-                    <ul class="${dialogCssBase}_tabs nav nav-tabs">
+                    <ul class="${dialogCssBase}_tabs nav nav-tabs composum-commons-form-tab-nav">
                     </ul>
                     <input name="_charset_" type="hidden" value="UTF-8" class="${dialogCssBase}_hidden"/>
-                    <div class="${dialogCssBase}_tabbed-content">
+                    <div class="${dialogCssBase}_tabbed-content composum-commons-form-tabbed">
 <!-- start of dialog content -->

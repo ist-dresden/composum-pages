@@ -7,8 +7,6 @@ package com.composum.pages.options.assets.model;
 
 import com.composum.assets.commons.AssetsConstants;
 import com.composum.assets.commons.config.AssetConfig;
-import com.composum.assets.commons.config.RenditionConfig;
-import com.composum.assets.commons.config.VariationConfig;
 import com.composum.assets.commons.handle.ImageAsset;
 import com.composum.assets.commons.util.ImageUtil;
 import com.composum.sling.core.BeanContext;
@@ -37,14 +35,14 @@ public class AdaptiveImage extends AssetImage {
 
     public String getVariation() {
         if (variation == null) {
-            variation = getProperty(AssetsConstants.PROP_VARIATION, "");
+            variation = getProperty(AssetsConstants.VARIATION, "");
         }
         return variation;
     }
 
     public String getRendition() {
         if (rendition == null) {
-            rendition = getProperty(AssetsConstants.PROP_RENDITION, "");
+            rendition = getProperty(AssetsConstants.RENDITION, "");
         }
         return rendition;
     }

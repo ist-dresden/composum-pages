@@ -240,27 +240,20 @@
 
             initTabs: function () {
                 var c = dialogs.const.edit.css;
-                var $tabList = this.$tabList = this.$('.' + c.base + c._tabList);
-                // noinspection JSMismatchedCollectionQueryUpdate
-                var tabs = this.tabs = [];
-                this.$('.' + c.base + c._tab).each(function () {
-                    var $tab = $(this);
-                    $tabList.append('<li><a data-toggle="tab" href="#' + $tab.attr('id') + '">'
-                        + $tab.data('label') + '</a></li>');
-                    tabs.push($tab);
-                });
                 // in case of a wizard set up button and tab control
                 if (this.$el.is('.' + c.base + c._wizard)) {
                     this.$prevButton = this.$('.' + c.base + c._prevButton);
                     this.$nextButton = this.$('.' + c.base + c._nextButton);
                     this.$prevButton.click(_.bind(this.prevStep, this));
                     this.$nextButton.click(_.bind(this.nextStep, this));
-                    this.$tabList.find('a').on('shown.bs.tab', _.bind(this.tabChanged, this));
+                    if (this.form.tabbed){
+                        this.form.tabbed.$nav.find('a').on('shown.bs.tab', _.bind(this.tabChanged, this));
+                    }
                 }
-                if (this.tabs.length > 0) {
+                if (this.form.tabbed) {
                     this.$('.' + c.base + c._tabContent).addClass('tab-content');
                     this.$el.addClass(c.base + c._tabbed);
-                    $(this.$tabList.find('li a')[0]).tab('show');
+                    $(this.form.tabbed.$nav.find('li a')[0]).tab('show');
                 }
             },
 
@@ -278,8 +271,8 @@
              * adjust the wizard state on tab change
              */
             tabChanged: function () {
-                var $links = this.$tabList.find('li');
-                var index = $links.index(this.$tabList.find('li.active'));
+                var $links = this.form.tabbed.$nav.find('li');
+                var index = $links.index(this.form.tabbed.$nav.find('li.active'));
                 if (index < $links.length - 1) {
                     this.$nextButton.removeClass('btn-default').addClass('btn-primary');
                     this.$submitButton.removeClass('btn-primary').addClass('btn-default');
@@ -298,14 +291,14 @@
              * trigger the switch to the previous tab if 'prev' button is clicked
              */
             prevStep: function () {
-                this.$tabList.find('li.active').prev().find('a').tab('show');
+                this.form.tabbed.$nav.find('li.active').prev().find('a').tab('show');
             },
 
             /**
              * trigger the switch to the next tab if 'next' button is clicked
              */
             nextStep: function () {
-                this.$tabList.find('li.active').next().find('a').tab('show');
+                this.form.tabbed.$nav.find('li.active').next().find('a').tab('show');
             },
 
             /**
@@ -332,7 +325,6 @@
 
             validationReset: function () {
                 dialogs.ElementDialog.prototype.validationReset.apply(this);
-                this.$tabList.find('li').removeClass('has-error');
             },
 
             onValidationFault: function () {
