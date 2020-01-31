@@ -6,7 +6,6 @@ import com.composum.pages.commons.service.SiteManager;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.ResourceHandle;
 import com.composum.sling.core.filter.ResourceFilter;
-import com.composum.sling.core.filter.StringFilter;
 import com.composum.sling.core.logging.Message;
 import com.composum.sling.core.logging.MessageContainer;
 import com.composum.sling.core.util.ResourceUtil;
@@ -426,7 +425,7 @@ public class PagesReleaseServiceImpl implements ReleaseChangeEventListener, Page
         @Override
         public ReleaseChangeEventPublisher.CompareResult compareTree(@Nonnull ResourceHandle resource, boolean returnDetails) throws ReplicationFailedException {
             ResourceResolver resolver = resource.getResourceResolver();
-            ReleaseChangeEventPublisher.CompareResult result = new ReleaseChangeEventPublisher.CompareResult();
+            ExtendedCompareResult result = new ExtendedCompareResult();
             result.releaseChangeNumbersEqual = isSynchronized(resolver);
 
             Resource releaseRoot = resolver.getResource(this.releaseRootPath);
@@ -454,6 +453,7 @@ public class PagesReleaseServiceImpl implements ReleaseChangeEventListener, Page
                     result.changedParentNodes = changedParentNodes.toArray(new String[0]);
                     result.changedChildrenOrders = changedChildrenOrderNodes.toArray(new String[0]);
                     result.differentVersionables = differentVersionables.toArray(new String[0]);
+                    result.suspicousAttributes = strategy.suspiciousAttributes();
                 }
             }
             result.equal = result.calculateEqual();
@@ -478,6 +478,18 @@ public class PagesReleaseServiceImpl implements ReleaseChangeEventListener, Page
             return runningThreadCopy != null;
         }
 
+    }
+
+    /**
+     * Extends {@link com.composum.sling.platform.staging.ReleaseChangeEventPublisher.CompareResult} by
+     * {@link #suspicousAttributes}.
+     */
+    protected static class ExtendedCompareResult extends ReleaseChangeEventPublisher.CompareResult {
+        /**
+         * If details are requested: this searches via query for attributes that look like they haven't been
+         * properly replaced. Might be null anyway, if the query becomes too large.
+         */
+        List<String> suspicousAttributes;
     }
 
     /** Internally thrown if the replication has to be aborted but should be retried. */

@@ -4,6 +4,8 @@ import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.filter.StringFilter;
 import com.composum.sling.core.util.ResourceUtil;
 import com.composum.sling.core.util.SlingResourceUtil;
+import com.composum.sling.platform.staging.query.Query;
+import com.composum.sling.platform.staging.query.QueryBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -20,8 +22,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -218,7 +223,7 @@ class ReleaseTreeCompareStrategy {
         return result;
     }
 
-    private boolean attributeEqual(@Nonnull Object val1, @Nonnull Object val2, String name, String path) {
+    protected boolean attributeEqual(@Nonnull Object val1, @Nonnull Object val2, String name, String path) {
         boolean equal;
         if (val1 instanceof String) {
             if (val2 instanceof String) {
@@ -247,6 +252,59 @@ class ReleaseTreeCompareStrategy {
             }
         }
         return equal;
+    }
+
+
+    /**
+     * Searches via a query in {@link #root2} for paths that refer to {@link #root1} but are present in
+     * {@link #root2}, too - which looks like something that wasn't replaced propertly during replication.
+     * Just a quick check to find bugs.
+     */
+    @Nullable
+    public List<String> suspiciousAttributes() {
+        List<String> result = new ArrayList<>();
+        try {
+            Pattern pathPattern = Pattern.compile(Pattern.quote(root1.getPath()) + "(/[^:|\"'*]*)*");
+
+            Query query = resolver2.adaptTo(QueryBuilder.class).createQuery();
+            query.path(root2.getPath()).condition(
+                    query.conditionBuilder().contains(root1.getPath() + "/%")
+            );
+            for (Resource resource : query.execute()) {
+                for (Map.Entry<String, Object> entry : resource.getValueMap().entrySet()) {
+                    if (entry.getValue() instanceof String) {
+                        String pathCandidate = (String) entry.getValue();
+                        if (StringUtils.startsWith(pathCandidate, root1.getPath())) {
+                            String path2 = SlingResourceUtil.appendPaths(root2.getPath(),
+                                    SlingResourceUtil.relativePath(root1.getPath(), pathCandidate));
+                            Resource resource2candidate = path2 != null ? resolver2.getResource(path2) : null;
+                            if (resource2candidate != null) {
+                                // This is an attribute that references something in root1 which is also present in root2.
+                                // Very suspicous - should normally be replaced by the in-place replication.
+                                result.add(resource.getPath() + "/" + entry.getKey());
+                            }
+                        } else { // search something looking like a path in rich text
+                            Matcher matcher = pathPattern.matcher(pathCandidate);
+                            while (matcher.find()) {
+                                String possiblePath = matcher.group();
+                                String path2 = SlingResourceUtil.appendPaths(root2.getPath(),
+                                        SlingResourceUtil.relativePath(root1.getPath(), possiblePath));
+                                Resource resource2candidate = path2 != null ? resolver2.getResource(path2) : null;
+                                if (resource2candidate != null) {
+                                    result.add(resource.getPath() + "/" + entry.getKey());
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            // this is rather unimportant as it is just warnings, and
+            // it's quite possible that we exceed the limit of traversed nodes for the query.
+            LOG.warn("Trouble looking for suspicious attributes in {}", root2.getPath());
+            result = null;
+        }
+        return result;
     }
 
 }
