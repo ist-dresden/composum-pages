@@ -440,7 +440,8 @@ public class PagesReleaseServiceImpl implements ReleaseChangeEventListener, Page
                 Resource stagedReleaseRoot = requireNonNull(stagedResolver.getResource(this.releaseRootPath),
                         () -> String.valueOf(release));
 
-                ReleaseTreeCompareStrategy strategy = new ReleaseTreeCompareStrategy(stagedResolver, stagedReleaseRoot, resolver, replicatedRoot);
+                ReleaseTreeCompareStrategy strategy = new ReleaseTreeCompareStrategy(stagedResolver,
+                        stagedReleaseRoot, resolver, replicatedRoot, Collections.singletonList(resource.getPath()));
 
                 List<String> changedParentNodes = strategy.compareParentNodes();
                 result.changedParentNodeCount = changedParentNodes.size();

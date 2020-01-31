@@ -17,10 +17,13 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.composum.pages.commons.replication.ReplicationManager.REPLICATE_PROPERTY_FILTER;
 import static com.composum.sling.platform.staging.StagingConstants.PROP_REPLICATED_VERSION;
@@ -37,16 +40,40 @@ class ReleaseTreeCompareStrategy {
     protected final ResourceFilter VERSIONABLE_FILTER =
             new ResourceFilter.NodeTypeFilter(new StringFilter.WhiteList(ResourceUtil.MIX_VERSIONABLE));
 
+    @Nonnull
     protected final ResourceResolver resolver1;
+    @Nonnull
     protected final Resource root1;
+    @Nonnull
     protected final ResourceResolver resolver2;
+    @Nonnull
     protected final Resource root2;
+    @Nonnull
+    protected final List<String> paths1;
 
-    public ReleaseTreeCompareStrategy(ResourceResolver resolver1, Resource root1, ResourceResolver resolver2, Resource root2) {
+    /**
+     * @param checkPaths1 the paths we focus our comparison on. Must be root1 or below. If null / empty we compare the
+     *                    whole tree.
+     */
+    public ReleaseTreeCompareStrategy(@Nonnull ResourceResolver resolver1, @Nonnull Resource root1,
+                                      @Nonnull ResourceResolver resolver2, @Nonnull Resource root2,
+                                      @Nullable Collection<String> checkPaths1) {
         this.resolver1 = resolver1;
         this.root1 = root1;
         this.resolver2 = resolver2;
         this.root2 = root2;
+        paths1 = new ArrayList<>();
+        Collection<String> checkPaths = checkPaths1 != null || checkPaths1.isEmpty() ? checkPaths1 : Collections.singleton(root1.getPath());
+        for (String path : checkPaths) {
+            if (!StringUtils.startsWith(path, root1.getPath())) {
+                throw new IllegalArgumentException("Path to compare " +
+                        "doesn't start with release root: " + path + " vs. " + root1.getPath());
+            }
+            paths1.removeIf(p -> SlingResourceUtil.isSameOrDescendant(path, p));
+            if (paths1.stream().noneMatch(p -> SlingResourceUtil.isSameOrDescendant(p, path))) {
+                paths1.add(path);
+            }
+        }
     }
 
     /**
@@ -56,7 +83,9 @@ class ReleaseTreeCompareStrategy {
      */
     public List<String> compareVersionables() {
         // These versionables do not exist below root2 or have different version number:
-        List<String> differences = SlingResourceUtil.descendantsStream(root1, VERSIONABLE_FILTER::accept)
+        List<String> differences = paths1.stream()
+                .map(resolver1::getResource)
+                .flatMap(p -> SlingResourceUtil.descendantsStream(p, VERSIONABLE_FILTER::accept))
                 .filter(VERSIONABLE_FILTER::accept)
                 .filter((r1) -> {
                     Resource r2 = corresponding2Resource(r1);
@@ -66,7 +95,11 @@ class ReleaseTreeCompareStrategy {
                 .map(Resource::getPath)
                 .collect(Collectors.toList());
         // These do not exist below root1 and therefore were missed by differences
-        List<String> missingResource1 = SlingResourceUtil.descendantsStream(root2, VERSIONABLE_FILTER::accept)
+        List<String> missingResource1 = paths1.stream()
+                .map(p -> SlingResourceUtil.appendPaths(root2.getPath(),
+                        SlingResourceUtil.relativePath(root1.getPath(), p)))
+                .map(resolver2::getResource)
+                .flatMap(p -> SlingResourceUtil.descendantsStream(p, VERSIONABLE_FILTER::accept))
                 .filter(VERSIONABLE_FILTER::accept)
                 .filter((r2) -> corresponding1Resource(r2) == null)
                 .map(Resource::getPath)
@@ -121,13 +154,28 @@ class ReleaseTreeCompareStrategy {
         return result;
     }
 
+    /** The parent nodes of all versionables below any of {@link #paths1} which are below or at root1. */
+    @Nonnull
+    protected Stream<Resource> relevantParents1() {
+        Stream<Resource> belowPaths1 = paths1.stream()
+                .map(resolver1::getResource)
+                .flatMap(p -> SlingResourceUtil.descendantsStream(p, VERSIONABLE_FILTER::accept))
+                .filter((r) -> !VERSIONABLE_FILTER.accept(r));
+        Stream<Resource> paths1Parents = paths1.stream()
+                .flatMap(path ->
+                        Stream.iterate(ResourceUtil.getParent(path), p -> StringUtils.startsWith(p, root1.getPath()),
+                                ResourceUtil::getParent)
+                ).distinct()
+                .map(resolver1::getResource);
+        return Stream.concat(paths1Parents, belowPaths1);
+    }
+
     /**
      * Returns a list of paths to resources that exist on both sides, have orderable children and have a different
      * child ordering.
      */
     public List<String> compareChildrenOrderings() {
-        List<String> result = SlingResourceUtil.descendantsStream(root1, VERSIONABLE_FILTER::accept)
-                .filter((r) -> !VERSIONABLE_FILTER.accept(r))
+        List<String> result = relevantParents1()
                 .filter((r1) -> {
                     Resource r2 = corresponding2Resource(r1);
                     return r2 != null && !Objects.equals(childOrder(r1), childOrder(r2));
@@ -141,8 +189,7 @@ class ReleaseTreeCompareStrategy {
      * Returns a list of paths to parent nodes of versionables (but below the roots) which have different attributes.
      */
     public List<String> compareParentNodes() {
-        List<String> result = SlingResourceUtil.descendantsStream(root1, VERSIONABLE_FILTER::accept)
-                .filter((r) -> !VERSIONABLE_FILTER.accept(r))
+        List<String> result = relevantParents1()
                 .filter((r1) -> {
                     Resource r2 = corresponding2Resource(r1);
                     return r2 != null && !attributesEqual(r1, r2);
