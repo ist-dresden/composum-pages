@@ -48,11 +48,11 @@ class ReleaseTreeCompareStrategy {
     @Nonnull
     protected final ResourceResolver resolver1;
     @Nonnull
-    protected final Resource root1;
+    protected final String root1Path;
     @Nonnull
     protected final ResourceResolver resolver2;
     @Nonnull
-    protected final Resource root2;
+    protected final String root2Path;
     @Nonnull
     protected final List<String> paths1;
 
@@ -60,19 +60,19 @@ class ReleaseTreeCompareStrategy {
      * @param checkPaths1 the paths we focus our comparison on. Must be root1 or below. If null / empty we compare the
      *                    whole tree.
      */
-    public ReleaseTreeCompareStrategy(@Nonnull ResourceResolver resolver1, @Nonnull Resource root1,
-                                      @Nonnull ResourceResolver resolver2, @Nonnull Resource root2,
+    public ReleaseTreeCompareStrategy(@Nonnull ResourceResolver resolver1, @Nonnull String root1Path,
+                                      @Nonnull ResourceResolver resolver2, @Nonnull String root2Path,
                                       @Nullable Collection<String> checkPaths1) {
         this.resolver1 = resolver1;
-        this.root1 = root1;
+        this.root1Path = root1Path;
         this.resolver2 = resolver2;
-        this.root2 = root2;
+        this.root2Path = root2Path;
         paths1 = new ArrayList<>();
-        Collection<String> checkPaths = checkPaths1 != null || checkPaths1.isEmpty() ? checkPaths1 : Collections.singleton(root1.getPath());
+        Collection<String> checkPaths = checkPaths1 != null || checkPaths1.isEmpty() ? checkPaths1 : Collections.singleton(root1Path);
         for (String path : checkPaths) {
-            if (!StringUtils.startsWith(path, root1.getPath())) {
+            if (!StringUtils.startsWith(path, root1Path)) {
                 throw new IllegalArgumentException("Path to compare " +
-                        "doesn't start with release root: " + path + " vs. " + root1.getPath());
+                        "doesn't start with release root: " + path + " vs. " + root1Path);
             }
             paths1.removeIf(p -> SlingResourceUtil.isSameOrDescendant(path, p));
             if (paths1.stream().noneMatch(p -> SlingResourceUtil.isSameOrDescendant(p, path))) {
@@ -101,16 +101,16 @@ class ReleaseTreeCompareStrategy {
                 .collect(Collectors.toList());
         // These do not exist below root1 and therefore were missed by differences
         List<String> missingResource1 = paths1.stream()
-                .map(p -> SlingResourceUtil.appendPaths(root2.getPath(),
-                        SlingResourceUtil.relativePath(root1.getPath(), p)))
+                .map(p -> SlingResourceUtil.appendPaths(root2Path,
+                        SlingResourceUtil.relativePath(root1Path, p)))
                 .map(resolver2::getResource)
                 .flatMap(p -> SlingResourceUtil.descendantsStream(p, VERSIONABLE_FILTER::accept))
                 .filter(VERSIONABLE_FILTER::accept)
                 .filter((r2) -> corresponding1Resource(r2) == null)
                 .map(Resource::getPath)
                 .map((p2) -> SlingResourceUtil.appendPaths(
-                        root1.getPath(),
-                        SlingResourceUtil.relativePath(root2.getPath(), p2)))
+                        root1Path,
+                        SlingResourceUtil.relativePath(root2Path, p2)))
                 .collect(Collectors.toList());
         differences.addAll(missingResource1);
         return differences;
@@ -123,15 +123,15 @@ class ReleaseTreeCompareStrategy {
 
     @Nullable
     protected Resource corresponding2Resource(@Nonnull Resource resource1) {
-        String relpath = SlingResourceUtil.relativePath(root1.getPath(), resource1.getPath());
-        String path2 = SlingResourceUtil.appendPaths(root2.getPath(), relpath);
+        String relpath = SlingResourceUtil.relativePath(root1Path, resource1.getPath());
+        String path2 = SlingResourceUtil.appendPaths(root2Path, relpath);
         return resolver2.getResource(path2);
     }
 
     @Nullable
     protected Resource corresponding1Resource(@Nonnull Resource resource2) {
-        String relpath = SlingResourceUtil.relativePath(root2.getPath(), resource2.getPath());
-        String path1 = SlingResourceUtil.appendPaths(root1.getPath(), relpath);
+        String relpath = SlingResourceUtil.relativePath(root2Path, resource2.getPath());
+        String path1 = SlingResourceUtil.appendPaths(root1Path, relpath);
         return resolver1.getResource(path1);
     }
 
@@ -168,7 +168,7 @@ class ReleaseTreeCompareStrategy {
                 .filter((r) -> !VERSIONABLE_FILTER.accept(r));
         Stream<Resource> paths1Parents = paths1.stream()
                 .flatMap(path ->
-                        Stream.iterate(ResourceUtil.getParent(path), p -> StringUtils.startsWith(p, root1.getPath()),
+                        Stream.iterate(ResourceUtil.getParent(path), p -> StringUtils.startsWith(p, root1Path),
                                 ResourceUtil::getParent)
                 ).distinct()
                 .map(resolver1::getResource);
@@ -228,10 +228,10 @@ class ReleaseTreeCompareStrategy {
         if (val1 instanceof String) {
             if (val2 instanceof String) {
                 equal = Objects.equals(val1, val2);
-                if (!equal && StringUtils.startsWith((String) val1, root1.getPath())) {
+                if (!equal && StringUtils.startsWith((String) val1, root1Path)) {
                     // check whether this is a translated path
-                    String relpath = SlingResourceUtil.relativePath(root1.getPath(), (String) val1);
-                    String path2 = SlingResourceUtil.appendPaths(root2.getPath(), relpath);
+                    String relpath = SlingResourceUtil.relativePath(root1Path, (String) val1);
+                    String path2 = SlingResourceUtil.appendPaths(root2Path, relpath);
                     equal = StringUtils.equals(path2, (String) val2);
                 }
             } else {
@@ -262,21 +262,22 @@ class ReleaseTreeCompareStrategy {
      */
     @Nullable
     public List<String> suspiciousAttributes() {
+        long begin = System.currentTimeMillis();
         List<String> result = new ArrayList<>();
         try {
-            Pattern pathPattern = Pattern.compile(Pattern.quote(root1.getPath()) + "(/[^:|\"'*]*)*");
+            Pattern pathPattern = Pattern.compile(Pattern.quote(root1Path) + "(/[^:|\"'*]*)*");
 
             Query query = resolver2.adaptTo(QueryBuilder.class).createQuery();
-            query.path(root2.getPath()).condition(
-                    query.conditionBuilder().contains(root1.getPath() + "/%")
+            query.path(root2Path).condition(
+                    query.conditionBuilder().contains(root1Path + "/%")
             );
             for (Resource resource : query.execute()) {
                 for (Map.Entry<String, Object> entry : resource.getValueMap().entrySet()) {
                     if (entry.getValue() instanceof String) {
                         String pathCandidate = (String) entry.getValue();
-                        if (StringUtils.startsWith(pathCandidate, root1.getPath())) {
-                            String path2 = SlingResourceUtil.appendPaths(root2.getPath(),
-                                    SlingResourceUtil.relativePath(root1.getPath(), pathCandidate));
+                        if (StringUtils.startsWith(pathCandidate, root1Path)) {
+                            String path2 = SlingResourceUtil.appendPaths(root2Path,
+                                    SlingResourceUtil.relativePath(root1Path, pathCandidate));
                             Resource resource2candidate = path2 != null ? resolver2.getResource(path2) : null;
                             if (resource2candidate != null) {
                                 // This is an attribute that references something in root1 which is also present in root2.
@@ -287,8 +288,8 @@ class ReleaseTreeCompareStrategy {
                             Matcher matcher = pathPattern.matcher(pathCandidate);
                             while (matcher.find()) {
                                 String possiblePath = matcher.group();
-                                String path2 = SlingResourceUtil.appendPaths(root2.getPath(),
-                                        SlingResourceUtil.relativePath(root1.getPath(), possiblePath));
+                                String path2 = SlingResourceUtil.appendPaths(root2Path,
+                                        SlingResourceUtil.relativePath(root1Path, possiblePath));
                                 Resource resource2candidate = path2 != null ? resolver2.getResource(path2) : null;
                                 if (resource2candidate != null) {
                                     result.add(resource.getPath() + "/" + entry.getKey());
@@ -301,9 +302,10 @@ class ReleaseTreeCompareStrategy {
         } catch (Exception e) {
             // this is rather unimportant as it is just warnings, and
             // it's quite possible that we exceed the limit of traversed nodes for the query.
-            LOG.warn("Trouble looking for suspicious attributes in {}", root2.getPath());
+            LOG.warn("Trouble looking for suspicious attributes in {}", root2Path);
             result = null;
         }
+        LOG.debug("suspiciousAttributes time {}", System.currentTimeMillis() - begin);
         return result;
     }
 

@@ -356,6 +356,7 @@ public class PagesReleaseServiceImpl implements ReleaseChangeEventListener, Page
         }
 
         protected void executeReplication(Set<String> pathsToSynchronize) throws Exception {
+            LOG.info("Executing replication for {}", pathsToSynchronize);
             try (ResourceResolver resolver = makeResolver()) {
                 BeanContext beanContext = new BeanContext.Service(resolver);
                 Resource releaseRoot = resolver.getResource(this.releaseRootPath);
@@ -366,7 +367,16 @@ public class PagesReleaseServiceImpl implements ReleaseChangeEventListener, Page
                 ResourceFilter releaseFilter = new SitePageFilter(site.getPath(), ResourceFilter.ALL);
                 ResourceResolver stagedResolver = releaseManager.getResolverForRelease(release, replicationManager, false);
 
-                List<String> pathsToReplicate = removeRedundantPaths(pathsToSynchronize);
+                List<String> pathCandidatesToReplicate = removeRedundantPaths(pathsToSynchronize);
+
+                ReleaseTreeCompareStrategy strategy = new ReleaseTreeCompareStrategy(
+                        stagedResolver, releaseRootPath,
+                        resolver, replicationManager.getReplicationPath(accessMode, releaseRootPath),
+                        pathCandidatesToReplicate);
+                List<String> pathsToReplicate = strategy.compareVersionables().stream().map(ResourceUtil::getParent).collect(Collectors.toList());
+                LOG.info("Actually need to replicate {}", pathsToReplicate);
+                // FIXME(hps,31.01.20) what about changed parent nodes without any changed versionables below?
+                // also remove getParent() - workaround because replication does not work for jcr:content
 
                 ReplicationContext replicationContext = new ReplicationContext(beanContext, site, accessMode, releaseFilter, stagedResolver);
 
@@ -393,6 +403,8 @@ public class PagesReleaseServiceImpl implements ReleaseChangeEventListener, Page
                 Resource replicatedRoot = resolver.getResource(replicationManager.getReplicationPath(accessMode, releaseRootPath));
                 ModifiableValueMap releaseRootVm = replicatedRoot.adaptTo(ModifiableValueMap.class);
                 releaseRootVm.put(PROP_LAST_REPLICATION_DATE, Calendar.getInstance());
+                // FIXME(hps,31.01.20) BROKEN WORKAROUND - REMOVE LATER! ->
+                releaseRootVm.put(PROP_CHANGE_NUMBER, newReleaseChangeId);
                 if (!StringUtils.equals(newReleaseChangeId, releaseRootVm.get(PROP_CHANGE_NUMBER, String.class))) {
                     throw new IllegalStateException("Bug - change number is different for " + getId()); // safety check
                 }
@@ -423,7 +435,10 @@ public class PagesReleaseServiceImpl implements ReleaseChangeEventListener, Page
 
         @Nullable
         @Override
-        public ReleaseChangeEventPublisher.CompareResult compareTree(@Nonnull ResourceHandle resource, boolean returnDetails) throws ReplicationFailedException {
+        public ReleaseChangeEventPublisher.CompareResult compareTree(@Nonnull ResourceHandle resource,
+                                                                     int details)
+                throws ReplicationFailedException {
+            LOG.info("comparetree {} {}", SlingResourceUtil.getPath(resource), details);
             ResourceResolver resolver = resource.getResourceResolver();
             ExtendedCompareResult result = new ExtendedCompareResult();
             result.releaseChangeNumbersEqual = isSynchronized(resolver);
@@ -436,11 +451,9 @@ public class PagesReleaseServiceImpl implements ReleaseChangeEventListener, Page
 
             try (ResourceResolver stagedResolver =
                          releaseManager.getResolverForRelease(release, replicationManager, false)) {
-                Resource stagedReleaseRoot = requireNonNull(stagedResolver.getResource(this.releaseRootPath),
-                        () -> String.valueOf(release));
 
                 ReleaseTreeCompareStrategy strategy = new ReleaseTreeCompareStrategy(stagedResolver,
-                        stagedReleaseRoot, resolver, replicatedRoot, Collections.singletonList(resource.getPath()));
+                        releaseRootPath, resolver, replicatedRootPath, Collections.singletonList(resource.getPath()));
 
                 List<String> changedParentNodes = strategy.compareParentNodes();
                 result.changedParentNodeCount = changedParentNodes.size();
@@ -449,14 +462,17 @@ public class PagesReleaseServiceImpl implements ReleaseChangeEventListener, Page
                 List<String> differentVersionables = strategy.compareVersionables();
                 result.differentVersionablesCount = differentVersionables.size();
 
-                if (returnDetails) {
+                if (details >= 1) {
                     result.changedParentNodes = changedParentNodes.toArray(new String[0]);
                     result.changedChildrenOrders = changedChildrenOrderNodes.toArray(new String[0]);
                     result.differentVersionables = differentVersionables.toArray(new String[0]);
+                }
+                if (details >= 2) {
                     result.suspicousAttributes = strategy.suspiciousAttributes();
                 }
             }
             result.equal = result.calculateEqual();
+            LOG.info("compareTree Result: {}", result.equal);
             return result;
         }
 
