@@ -46,7 +46,7 @@
 
         releases.ModifiedPages = Backbone.View.extend({
 
-            initialize: function () {
+            initialize: function (options) {
                 var c = releases.const.css.page;
                 this.sitePath = this.$el.data('path');
                 this.$contentType = this.$('.composum-pages-stage-edit-site-page_type');
@@ -117,7 +117,7 @@
 
         releases.ReleaseChanges = Backbone.View.extend({
 
-            initialize: function () {
+            initialize: function (options) {
                 var c = releases.const.css.page;
                 this.sitePath = this.$el.data('path');
                 this.$contentType = this.$('.composum-pages-stage-edit-site-page_type');

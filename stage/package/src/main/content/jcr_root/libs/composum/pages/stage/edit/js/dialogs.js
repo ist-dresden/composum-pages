@@ -246,7 +246,7 @@
                     this.$nextButton = this.$('.' + c.base + c._nextButton);
                     this.$prevButton.click(_.bind(this.prevStep, this));
                     this.$nextButton.click(_.bind(this.nextStep, this));
-                    if (this.form.tabbed){
+                    if (this.form.tabbed) {
                         this.form.tabbed.$nav.find('a').on('shown.bs.tab', _.bind(this.tabChanged, this));
                     }
                 }
@@ -918,8 +918,8 @@
 
         dialogs.ManageReleaseStatusDialog = dialogs.ElementDialog.extend({
 
-            initialize: function () {
-                dialogs.ElementDialog.prototype.initialize.apply(this);
+            initialize: function (options) {
+                dialogs.ElementDialog.prototype.initialize.call(this, options);
                 this.refs = {};
             },
 
@@ -988,8 +988,8 @@
 
         dialogs.ActivateContentDialog = dialogs.ManageReleaseStatusDialog.extend({
 
-            initialize: function () {
-                dialogs.ManageReleaseStatusDialog.prototype.initialize.apply(this);
+            initialize: function (options) {
+                dialogs.ManageReleaseStatusDialog.prototype.initialize.call(this, options);
                 this.refs = {
                     page: core.getWidget(this.el, '.widget-name_page-references', pages.widgets.PageReferencesWidget),
                     asset: core.getWidget(this.el, '.widget-name_asset-references', pages.widgets.PageReferencesWidget)
@@ -1022,8 +1022,8 @@
 
         dialogs.RevertContentDialog = dialogs.ManageReleaseStatusDialog.extend({
 
-            initialize: function () {
-                dialogs.ManageReleaseStatusDialog.prototype.initialize.apply(this);
+            initialize: function (options) {
+                dialogs.ManageReleaseStatusDialog.prototype.initialize.call(this, options);
                 this.refs = {
                     page: core.getWidget(this.el, '.widget-name_page-referrers', pages.widgets.PageReferrersWidget)
                 };
@@ -1042,8 +1042,8 @@
 
         dialogs.DeactivateContentDialog = dialogs.ManageReleaseStatusDialog.extend({
 
-            initialize: function () {
-                dialogs.ManageReleaseStatusDialog.prototype.initialize.apply(this);
+            initialize: function (options) {
+                dialogs.ManageReleaseStatusDialog.prototype.initialize.call(this, options);
                 this.refs = {
                     page: core.getWidget(this.el, '.widget-name_page-referrers', pages.widgets.PageReferrersWidget)
                 };

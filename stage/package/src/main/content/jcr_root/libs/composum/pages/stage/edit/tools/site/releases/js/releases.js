@@ -35,7 +35,7 @@
 
         tools.SiteReleases = pages.releases.SiteReleases.extend({
 
-            initialize: function () {
+            initialize: function (options) {
                 this.initContent();
                 var e = pages.const.event;
                 var id = tools.const.releases.event.id;
