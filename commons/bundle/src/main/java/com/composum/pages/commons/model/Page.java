@@ -283,18 +283,25 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
         return getResourceManager().isTemplate(getContext(), this.getResource());
     }
 
-
+    @Nonnull
     public String getLogoUrl() {
         if (logoUrl == null) {
+            logoUrl = "";
             Image logo = getLogo();
-            logoUrl = logo.getAssetUrl();
+            if (logo != null) {
+                logoUrl = logo.getAssetUrl();
+            }
         }
         return logoUrl;
     }
 
+    @Nullable
     public Image getLogo() {
         if (logo == null) {
-            logo = new Image(context, findInherited(LOGO_PATH, PN_IMAGE_REF));
+            Resource logoRes = findInherited(LOGO_PATH, PN_IMAGE_REF);
+            if (logoRes != null) {
+                logo = new Image(context, logoRes);
+            }
         }
         return logo;
     }

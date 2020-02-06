@@ -182,22 +182,21 @@ public abstract class AbstractModel implements SlingBean, Model {
      * @param resource the resource to use (normally the resource addressed by the request)
      */
     @Override
-    public void initialize(BeanContext context, @Nonnull final Resource resource) {
+    public void initialize(BeanContext context, final Resource resource) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("initialize (" + context + ", " + resource + ")");
         }
         this.context = context;
         if (this.resolver == null) {
-            this.resolver = resource.getResourceResolver();
+            this.resolver = resource != null ? resource.getResourceResolver() : context.getResolver();
         }
         this.resource = determineResource(resource);
         if (this.resource == null) {
             this.resource = resource;
-        }
-        if (this.resolver == null) {
+        } else {
             this.resolver = this.resource.getResourceResolver();
         }
-        initializeWithResource(this.resource);
+        initializeWithResource(Objects.requireNonNull(this.resource));
     }
 
     /**

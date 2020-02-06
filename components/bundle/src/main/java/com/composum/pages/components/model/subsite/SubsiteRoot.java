@@ -35,17 +35,14 @@ public class SubsiteRoot extends Page {
 
     // properties
 
-    public String getLogoUrl() {
-        if (logoUrl == null) {
-            Image logo = getLogo();
-            logoUrl = logo.getAssetUrl();
-        }
-        return logoUrl;
-    }
-
+    @Override
+    @Nullable
     public Image getLogo() {
         if (logo == null) {
-            logo = new Image(context, getContent().getResource().getChild(LOGO_PATH));
+            Resource logoRes = getContent().getResource().getChild(LOGO_PATH);
+            if (logoRes != null) {
+                logo = new Image(context, logoRes);
+            }
         }
         return logo;
     }
