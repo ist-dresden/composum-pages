@@ -36,7 +36,7 @@
         tools.SiteReleases = pages.releases.SiteReleases.extend({
 
             initialize: function (options) {
-                this.initContent();
+                this.initContent(options);
                 var e = pages.const.event;
                 var id = tools.const.releases.event.id;
                 $(document)
@@ -53,9 +53,9 @@
                     .off(e.site.changed + id);
             },
 
-            initContent: function () {
+            initContent: function (options) {
                 var c = tools.const.releases.css;
-                pages.releases.SiteReleases.prototype.initialize.apply(this);
+                pages.releases.SiteReleases.prototype.initialize.call(this, options);
                 this.sitePath = this.$('.' + c.site.base).data('path');
                 this.$releaseView = [];
                 this.$('.' + c.release.base + c.release._entry).click(_.bind(this.releaseView, this));

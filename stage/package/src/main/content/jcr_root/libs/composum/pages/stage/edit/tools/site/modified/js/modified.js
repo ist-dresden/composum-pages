@@ -48,7 +48,7 @@
 
             initContent: function (options) {
                 var c = tools.const.modified.page;
-                pages.releases.ModifiedPages.prototype.initialize.apply(this);
+                pages.releases.ModifiedPages.prototype.initialize.call(this, options);
                 this.sitePath = this.$('.' + c.base).data('path');
                 this.$filter = this.$('.composum-pages-stage-edit-site-page_filter');
                 this.$filter.find('a').click(_.bind(this.doFilter, this));
