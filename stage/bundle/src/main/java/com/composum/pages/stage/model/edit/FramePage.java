@@ -4,6 +4,7 @@ import com.composum.pages.commons.model.Page;
 import com.composum.pages.commons.request.DisplayMode;
 import com.composum.pages.commons.util.LinkUtil;
 import com.composum.sling.core.util.ResourceUtil;
+import com.composum.sling.core.util.XSS;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 
@@ -63,7 +64,7 @@ public class FramePage extends Page {
      */
     public String getPagePath() {
         if (pagePath == null) {
-            pagePath = context.getRequest().getRequestPathInfo().getSuffix();
+            pagePath = XSS.filter(context.getRequest().getRequestPathInfo().getSuffix());
             if (StringUtils.isBlank(pagePath)) {
                 pagePath = "/";
             } else {

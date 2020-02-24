@@ -1,6 +1,7 @@
 <%@page session="false" pageEncoding="utf-8"
         import="com.composum.pages.commons.util.RequestUtil,
-                org.apache.commons.lang3.StringUtils" %>
+                org.apache.commons.lang3.StringUtils,
+                com.composum.sling.core.util.XSS" %>
 <%@taglib prefix="sling" uri="http://sling.apache.org/taglibs/sling/1.2" %>
 <sling:defineObjects/><%
     /*
@@ -10,5 +11,5 @@
      */
     RequestUtil.forward(slingRequest, slingResponse, resource.getParent(), true,
             "composum/pages/components/time/event/page/edit/dialog", null,
-            StringUtils.substringBeforeLast(slingRequest.getRequestPathInfo().getSuffix(), "/"));
+            StringUtils.substringBeforeLast(XSS.filter(slingRequest.getRequestPathInfo().getSuffix()), "/"));
 %>

@@ -1,6 +1,7 @@
 package com.composum.pages.commons.util;
 
 import com.composum.sling.core.filter.StringFilter;
+import com.composum.sling.core.util.XSS;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
@@ -70,7 +71,7 @@ public class RequestUtil extends com.composum.sling.core.util.RequestUtil {
 
         if (LOG.isInfoEnabled()) {
             RequestPathInfo pathInfo = request.getRequestPathInfo();
-            LOG.info(request.getRequestURI() + "." + pathInfo.getSelectorString() + "." + pathInfo.getExtension() + pathInfo.getSuffix() + "...");
+            LOG.info(request.getRequestURI() + "." + pathInfo.getSelectorString() + "." + pathInfo.getExtension() + XSS.filter(pathInfo.getSuffix()) + "...");
         }
         ResourceResolver resolver = request.getResourceResolver();
         Resource resource = resolver.resolve(resourcePath);
@@ -88,7 +89,7 @@ public class RequestUtil extends com.composum.sling.core.util.RequestUtil {
             throws ServletException, IOException {
         if (LOG.isInfoEnabled()) {
             RequestPathInfo pathInfo = request.getRequestPathInfo();
-            LOG.info(request.getRequestURI() + "." + pathInfo.getSelectorString() + "." + pathInfo.getExtension() + pathInfo.getSuffix() + "...");
+            LOG.info(request.getRequestURI() + "." + pathInfo.getSelectorString() + "." + pathInfo.getExtension() + XSS.filter(pathInfo.getSuffix()) + "...");
         }
         RequestDispatcherOptions options = new RequestDispatcherOptions();
         if (StringUtils.isNotBlank(resourceType)) {

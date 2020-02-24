@@ -13,12 +13,12 @@ import com.composum.pages.commons.util.ResourceTypeUtil;
 import com.composum.pages.commons.util.TagCssClasses;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.CoreConfiguration;
+import com.composum.sling.core.util.XSS;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
 
 import javax.annotation.Nonnull;
-
 import java.util.Dictionary;
 
 import static com.composum.pages.commons.model.AbstractModel.CSS_BASE_TYPE_RESTRICTION;
@@ -112,7 +112,7 @@ public class FrameModel extends GenericModel {
      */
     public String getDelegatePath(BeanContext context) {
         SlingHttpServletRequest request = context.getRequest();
-        String delegatePath = request.getRequestPathInfo().getSuffix();
+        String delegatePath = XSS.filter(request.getRequestPathInfo().getSuffix());
         if (StringUtils.isBlank(delegatePath)) {
             delegatePath = "/";
         }

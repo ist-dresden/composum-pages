@@ -7,6 +7,7 @@ import com.composum.pages.options.microsite.service.MicrositeImportStatus;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.filter.StringFilter;
 import com.composum.sling.core.util.I18N;
+import com.composum.sling.core.util.XSS;
 import com.google.gson.stream.JsonWriter;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -87,7 +88,7 @@ public class MicrositeServlet extends SlingAllMethodsServlet implements Microsit
         if (!embedded && DisplayMode.isEditMode(context)) {
             forward(request, response, DATA_FORWARD_TYPE);
         } else {
-            String suffix = pathInfo.getSuffix();
+            String suffix = XSS.filter(pathInfo.getSuffix());
             if (StringUtils.isNotBlank(suffix)) {
                 suffix = suffix.substring(1); /* skip leading '/' */
             }

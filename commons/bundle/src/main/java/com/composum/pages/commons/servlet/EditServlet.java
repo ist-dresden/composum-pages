@@ -30,6 +30,7 @@ import com.composum.sling.core.servlet.ServletOperationSet;
 import com.composum.sling.core.servlet.Status;
 import com.composum.sling.core.util.ResourceUtil;
 import com.composum.sling.core.util.ResponseUtil;
+import com.composum.sling.core.util.XSS;
 import com.composum.sling.platform.staging.versions.PlatformVersionsService;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
@@ -437,7 +438,7 @@ public class EditServlet extends PagesContentServlet {
         @Override
         protected String getResourcePath(SlingHttpServletRequest request) {
             RequestPathInfo pathInfo = request.getRequestPathInfo();
-            String suffix = pathInfo.getSuffix();
+            String suffix = XSS.filter(pathInfo.getSuffix());
             if (StringUtils.isNotBlank(suffix) && !"/".equals(suffix)) {
                 Resource resource = request.getResourceResolver().getResource(suffix);
                 if (resource != null) {

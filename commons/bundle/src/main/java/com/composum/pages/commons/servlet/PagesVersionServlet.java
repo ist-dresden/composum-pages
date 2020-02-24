@@ -10,6 +10,7 @@ import com.composum.sling.core.servlet.ServletOperation;
 import com.composum.sling.core.servlet.ServletOperationSet;
 import com.composum.sling.core.servlet.Status;
 import com.composum.sling.core.util.ResourceUtil;
+import com.composum.sling.core.util.XSS;
 import com.google.gson.Gson;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
@@ -185,7 +186,7 @@ public class PagesVersionServlet extends AbstractServiceServlet {
                         addVersionable(resolver, versionable, path);
                     }
                 } else {
-                    addVersionable(resolver, versionable, request.getRequestPathInfo().getSuffix());
+                    addVersionable(resolver, versionable, XSS.filter(request.getRequestPathInfo().getSuffix()));
                 }
                 if (versionable.size() > 0) {
                     final JackrabbitSession session = (JackrabbitSession) resolver.adaptTo(Session.class);
@@ -358,7 +359,7 @@ public class PagesVersionServlet extends AbstractServiceServlet {
                         addLockable(resolver, lockable, path);
                     }
                 } else {
-                    addLockable(resolver, lockable, request.getRequestPathInfo().getSuffix());
+                    addLockable(resolver, lockable, XSS.filter(request.getRequestPathInfo().getSuffix()));
                 }
                 if (lockable.size() > 0) {
                     final Session session = resolver.adaptTo(Session.class);

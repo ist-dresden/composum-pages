@@ -4,5 +4,5 @@
 <sling:defineObjects/>
 <div class="composum-pages-stage-preview_file">
     <iframe class="composum-pages-stage-preview_file_frame"
-            src="${slingRequest.contextPath}${resource.path}" width="100%" height="100%"></iframe>
+            src="${slingRequest.contextPath}${cpn:path(resource.path)}" width="100%" height="100%"></iframe>
 </div>
