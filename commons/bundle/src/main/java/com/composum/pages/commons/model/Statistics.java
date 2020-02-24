@@ -1,6 +1,7 @@
 package com.composum.pages.commons.model;
 
 import com.composum.sling.core.BeanContext;
+import com.composum.sling.core.util.XSS;
 import com.google.gson.stream.JsonWriter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.CompareToBuilder;
@@ -397,7 +398,7 @@ public class Statistics extends AbstractModel {
         if (statistics == null) {
             BeanContext context = getContext();
             SlingHttpServletRequest request = context.getRequest();
-            String suffix = request.getRequestPathInfo().getSuffix();
+            String suffix = XSS.filter(request.getRequestPathInfo().getSuffix());
             Page page = null;
             if (StringUtils.isNotBlank(suffix)) {
                 Resource resource = context.getResolver().getResource(suffix);

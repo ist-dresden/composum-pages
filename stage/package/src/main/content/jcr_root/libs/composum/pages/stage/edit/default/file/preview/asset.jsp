@@ -5,5 +5,5 @@
 <div class="composum-pages-stage-preview_file">
     <img class="composum-pages-stage-preview_file_asset"
          style="background-image:url(${cpn:unmappedUrl(slingRequest,'/libs/composum/nodes/commons/images/image-background.png')})"
-         src="${slingRequest.contextPath}${resource.path}" alt="${resource.path}"/>
+         src="${slingRequest.contextPath}${cpn:path(resource.path)}" alt="${cpn:text(resource.path)}"/>
 </div>

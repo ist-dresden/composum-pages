@@ -10,6 +10,7 @@ import com.composum.sling.core.servlet.ServletOperationSet;
 import com.composum.sling.core.servlet.Status;
 import com.composum.sling.core.util.ResourceUtil;
 import com.composum.sling.platform.security.AccessMode;
+import com.composum.sling.platform.staging.ReleaseChangeEventPublisher;
 import com.composum.sling.platform.staging.ReleaseNumberCreator;
 import com.composum.sling.platform.staging.StagingReleaseManager;
 import com.composum.sling.platform.staging.impl.StagingUtils;
@@ -36,6 +37,8 @@ import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import java.io.IOException;
 import java.util.Calendar;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Matcher;
 
@@ -48,9 +51,7 @@ import java.util.regex.Matcher;
                 Constants.SERVICE_DESCRIPTION + "=Composum Pages Release Servlet",
                 ServletResolverConstants.SLING_SERVLET_PATHS + "=/bin/cpm/pages/release",
                 ServletResolverConstants.SLING_SERVLET_METHODS + "=" + HttpConstants.METHOD_GET,
-                ServletResolverConstants.SLING_SERVLET_METHODS + "=" + HttpConstants.METHOD_POST,
-                ServletResolverConstants.SLING_SERVLET_METHODS + "=" + HttpConstants.METHOD_PUT,
-                ServletResolverConstants.SLING_SERVLET_METHODS + "=" + HttpConstants.METHOD_DELETE
+                ServletResolverConstants.SLING_SERVLET_METHODS + "=" + HttpConstants.METHOD_POST
         })
 public class ReleaseServlet extends AbstractServiceServlet {
 
@@ -68,11 +69,15 @@ public class ReleaseServlet extends AbstractServiceServlet {
     @Reference
     private StagingReleaseManager releaseManager;
 
+    @Reference
+    private ReleaseChangeEventPublisher releasePublisher;
+
     enum Extension {
         json
     }
 
     enum Operation {
+        state,
         finalize,
         change,
         delete,
@@ -91,6 +96,9 @@ public class ReleaseServlet extends AbstractServiceServlet {
     @Override
     public void init() throws ServletException {
         super.init();
+
+        // GET
+        operations.setOperation(ServletOperationSet.Method.GET, Extension.json, Operation.state, new GetReplicationState());
 
         // POST
         operations.setOperation(ServletOperationSet.Method.POST, Extension.json, Operation.finalize, new FinalizeRelease());
@@ -111,29 +119,89 @@ public class ReleaseServlet extends AbstractServiceServlet {
     }
 
     @Override
-    protected ServletOperationSet getOperations() {
+    protected ReleaseOperationSet getOperations() {
         return operations;
     }
+
+    //
+    // release state
+    //
+
+    protected class GetReplicationState implements ServletOperation {
+
+        @Override
+        public void doIt(@Nonnull final SlingHttpServletRequest request,
+                         @Nonnull final SlingHttpServletResponse response,
+                         @Nullable final ResourceHandle resource)
+                throws IOException {
+            Status status = new Status(request, response);
+            if (resource != null && resource.isValid()) {
+                ReleaseChangeEventPublisher.AggregatedReplicationStateInfo replState
+                        = releasePublisher.aggregatedReplicationState(resource);
+                if (replState != null) {
+                    Map<String, ReleaseChangeEventPublisher.ReplicationStateInfo> replStateSet
+                            = releasePublisher.replicationState(resource);
+                    Map<String, Object> state = status.data("state");
+                    Map<String, Object> processes = status.data("processes");
+                    state.put("processCount", replState.numberEnabledProcesses);
+                    state.put("allActive", replState.allAreActive);
+                    state.put("synchronized", replState.everythingIsSynchronized);
+                    state.put("running", replState.replicationsAreRunning);
+                    state.put("errors", replState.haveErrors);
+                    for (Map.Entry<String, ReleaseChangeEventPublisher.ReplicationStateInfo> entry : replStateSet.entrySet()) {
+                        Map<String, Object> item = new LinkedHashMap<>();
+                        ReleaseChangeEventPublisher.ReplicationStateInfo info = entry.getValue();
+                        item.put("id", info.id);
+                        item.put("name", info.name);
+                        item.put("description", info.description);
+                        item.put("enabled", info.enabled);
+                        item.put("synchronized", info.isSynchronized);
+                        item.put("active", info.active);
+                        item.put("state", info.state);
+                        item.put("startedAt", info.startedAt);
+                        item.put("finishedAt", info.finishedAt);
+                        item.put("lastReplicationTimestamp", info.lastReplicationTimestamp);
+                        item.put("completionPercentage", info.completionPercentage);
+                        item.put("messages", info.messages);
+                        processes.put(entry.getKey(), item);
+                    }
+                } else {
+                    status.warn("no replication state available for '{}'", resource.getPath());
+                }
+            } else {
+                status.error("requests resource not available");
+            }
+            status.sendJson();
+        }
+    }
+
+    //
+    // publishing
+    //
 
     abstract private class SetReleaseCategory implements ServletOperation {
 
         @Override
         public void doIt(@Nonnull final SlingHttpServletRequest request,
                          @Nonnull final SlingHttpServletResponse response,
-                         @Nonnull final ResourceHandle resource)
+                         @Nullable final ResourceHandle resource)
                 throws IOException {
             Status status = new Status(request, response);
-            try {
-                StagingReleaseManager.Release release = getRelease(request, response, resource, status);
-                if (release != null) {
-                    AccessMode accessMode = AccessMode.valueOf(getCategoryString().toUpperCase());
-                    releaseManager.setMark(accessMode.name().toLowerCase(), release);
-                    LOG.info("Release marked {}: {}", release, accessMode.name());
-                    // replication is triggered by setMark via the ReleaseChangeEventListener .
-                    request.getResourceResolver().commit();
+            if (resource != null && resource.isValid()) {
+                try {
+                    StagingReleaseManager.Release release = getRelease(request, response, resource, status);
+                    if (release != null) {
+                        AccessMode accessMode = AccessMode.valueOf(getCategoryString().toUpperCase());
+                        releaseManager.setMark(accessMode.name().toLowerCase(), release);
+                        LOG.info("Release marked {}: {}", release, accessMode.name());
+                        // replication is triggered by setMark via the ReleaseChangeEventListener .
+                        request.getResourceResolver().commit();
+                    }
+                } catch (Exception ex) {
+                    status.error("error setting release category: {}", ex);
                 }
-            } catch (Exception ex) {
-                status.withLogging(LOG).error("error setting release category: {}", ex);
+            } else {
+                status.error("requests resource not available");
             }
             status.sendJson();
         }
@@ -164,41 +232,45 @@ public class ReleaseServlet extends AbstractServiceServlet {
         @Override
         public void doIt(@Nonnull final SlingHttpServletRequest request,
                          @Nonnull final SlingHttpServletResponse response,
-                         @Nonnull final ResourceHandle resource)
+                         @Nullable final ResourceHandle resource)
                 throws IOException {
             Status status = new Status(request, response);
-            try {
+            if (resource != null && resource.isValid()) {
+                try {
 
-                Site site = getReleaseSite(request, response, resource, status);
-                if (site != null) {
+                    Site site = getReleaseSite(request, response, resource, status);
+                    if (site != null) {
 
-                    final String numberPolicy = status.getRequiredParameter(PARAM_NUMBER, null, "no release number policy");
+                        final String numberPolicy = status.getRequiredParameter(PARAM_NUMBER, null, "no release number policy");
 
-                    if (status.isValid()) {
+                        if (status.isValid()) {
 
-                        final String title = request.getParameter(ResourceUtil.JCR_TITLE);
-                        final String description = request.getParameter(ResourceUtil.JCR_DESCRIPTION);
+                            final String title = request.getParameter(ResourceUtil.JCR_TITLE);
+                            final String description = request.getParameter(ResourceUtil.JCR_DESCRIPTION);
 
-                        ReleaseNumberCreator releaseType;
-                        try {
-                            releaseType = ReleaseNumberCreator.valueOf(numberPolicy);
-                        } catch (IllegalArgumentException e) {
-                            releaseType = ReleaseNumberCreator.MAJOR;
+                            ReleaseNumberCreator releaseType;
+                            try {
+                                releaseType = ReleaseNumberCreator.valueOf(numberPolicy);
+                            } catch (IllegalArgumentException e) {
+                                releaseType = ReleaseNumberCreator.MAJOR;
+                            }
+
+                            StagingReleaseManager.Release release =
+                                    releaseManager.finalizeCurrentRelease(Objects.requireNonNull(resource), releaseType);
+                            LOG.info("Release created {}", release);
+
+                            changeReleaseMetadata(request, release);
+
+                            request.getResourceResolver().commit();
                         }
-
-                        StagingReleaseManager.Release release =
-                                releaseManager.finalizeCurrentRelease(Objects.requireNonNull(resource), releaseType);
-                        LOG.info("Release created {}", release);
-
-                        changeReleaseMetadata(request, release);
-
-                        request.getResourceResolver().commit();
+                    } else {
+                        status.error("no site found ({})", resource.getPath());
                     }
-                } else {
-                    status.withLogging(LOG).error("no site found ({})", resource.getPath());
+                } catch (Exception ex) {
+                    status.error("error creating release: {}", ex);
                 }
-            } catch (Exception ex) {
-                status.withLogging(LOG).error("error creating release: {}", ex);
+            } else {
+                status.error("requests resource not available");
             }
             status.sendJson();
         }
@@ -209,18 +281,22 @@ public class ReleaseServlet extends AbstractServiceServlet {
         @Override
         public void doIt(@Nonnull final SlingHttpServletRequest request,
                          @Nonnull final SlingHttpServletResponse response,
-                         @Nonnull final ResourceHandle resource)
+                         @Nullable final ResourceHandle resource)
                 throws IOException {
             Status status = new Status(request, response);
-            try {
-                StagingReleaseManager.Release release = getRelease(request, response, resource, status);
-                if (release != null) {
-                    changeReleaseMetadata(request, release);
-                    LOG.info("Release changed {}", release);
-                    request.getResourceResolver().commit();
+            if (resource != null && resource.isValid()) {
+                try {
+                    StagingReleaseManager.Release release = getRelease(request, response, resource, status);
+                    if (release != null) {
+                        changeReleaseMetadata(request, release);
+                        LOG.info("Release changed {}", release);
+                        request.getResourceResolver().commit();
+                    }
+                } catch (Exception ex) {
+                    status.error("error changing release: {}", ex);
                 }
-            } catch (Exception ex) {
-                status.withLogging(LOG).error("error changing release: {}", ex);
+            } else {
+                status.error("requests resource not available");
             }
             status.sendJson();
         }
@@ -231,21 +307,25 @@ public class ReleaseServlet extends AbstractServiceServlet {
         @Override
         public void doIt(@Nonnull final SlingHttpServletRequest request,
                          @Nonnull final SlingHttpServletResponse response,
-                         @Nonnull final ResourceHandle resource)
+                         @Nullable final ResourceHandle resource)
                 throws IOException {
             Status status = new Status(request, response);
-            try {
-                StagingReleaseManager.Release release = getRelease(request, response, resource, status);
-                if (release != null) {
-                    releaseManager.deleteRelease(release);
-                    LOG.info("Release deleted {}", release);
-                    request.getResourceResolver().commit();
+            if (resource != null && resource.isValid()) {
+                try {
+                    StagingReleaseManager.Release release = getRelease(request, response, resource, status);
+                    if (release != null) {
+                        releaseManager.deleteRelease(release);
+                        LOG.info("Release deleted {}", release);
+                        request.getResourceResolver().commit();
+                    }
+                } catch (StagingReleaseManager.ReleaseProtectedException e) {
+                    LOG.warn("Trying to delete a release carrying a mark: " + e);
+                    status.error("Cannot delete a release marked with preview or public.");
+                } catch (Exception ex) {
+                    status.error("error deleting release: {}", ex);
                 }
-            } catch (StagingReleaseManager.ReleaseProtectedException e) {
-                LOG.warn("Trying to delete a release carrying a mark: " + e);
-                status.error("Cannot delete a release marked with preview or public.");
-            } catch (Exception ex) {
-                status.withLogging(LOG).error("error deleting release: {}", ex);
+            } else {
+                status.error("requests resource not available");
             }
             status.sendJson();
         }
@@ -280,7 +360,7 @@ public class ReleaseServlet extends AbstractServiceServlet {
                 return releaseManager.findRelease(site.getResource(), releaseKey);
             }
         } else {
-            status.withLogging(LOG).error("no site found ({})", resource.getPath());
+            status.error("no site found ({})", resource.getPath());
         }
         return null;
     }
@@ -295,7 +375,7 @@ public class ReleaseServlet extends AbstractServiceServlet {
                 final String sitePath = pathMatcher.group(1);
                 releaseKey = pathMatcher.group(2);
             } else {
-                status.withLogging(LOG).error("no release path ({})", path);
+                status.error("no release path ({})", path);
             }
         }
         return releaseKey;

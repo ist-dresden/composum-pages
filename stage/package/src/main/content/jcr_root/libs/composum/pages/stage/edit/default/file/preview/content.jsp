@@ -8,7 +8,7 @@
         <cpn:text class="composum-pages-stage-preview_date" value="${model.file.fileDate}"/>
     </div>
     <div class="composum-pages-stage-preview_content composum-pages-stage-preview_type-${model.fileType}">
-        <sling:include path="${slingRequest.requestPathInfo.suffix}"
+        <sling:include path="${cpn:filter(slingRequest.requestPathInfo.suffix)}"
                        resourceType="composum/pages/stage/edit/default/file/preview"
                        replaceSelectors="${model.fileType}"/>
     </div>

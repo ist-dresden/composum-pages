@@ -20,6 +20,7 @@ import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.servlet.ServletOperation;
 import com.composum.sling.core.servlet.ServletOperationSet;
 import com.composum.sling.core.util.ResponseUtil;
+import com.composum.sling.core.util.XSS;
 import com.google.gson.stream.JsonWriter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
@@ -209,7 +210,7 @@ public class GetServlet extends ContentServlet {
                          final ResourceHandle resource)
                 throws ServletException, IOException {
 
-            final String path = request.getRequestPathInfo().getSuffix();
+            final String path = XSS.filter(request.getRequestPathInfo().getSuffix());
             if (StringUtils.isNotBlank(path)) {
                 final RequestDispatcherOptions options = new RequestDispatcherOptions();
 

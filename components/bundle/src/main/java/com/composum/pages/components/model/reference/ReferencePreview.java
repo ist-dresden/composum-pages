@@ -1,5 +1,6 @@
 package com.composum.pages.components.model.reference;
 
+import com.composum.sling.core.util.XSS;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
@@ -12,7 +13,7 @@ public class ReferencePreview extends Reference {
     public String retrieveContentReference() {
         SlingHttpServletRequest request = context.getRequest();
         if (request != null) {
-            String suffix = request.getRequestPathInfo().getSuffix();
+            String suffix = XSS.filter(request.getRequestPathInfo().getSuffix());
             if (StringUtils.isNotBlank(suffix)) {
                 Resource resource = context.getResolver().getResource(suffix);
                 if (resource != null) {

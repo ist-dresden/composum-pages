@@ -6,6 +6,7 @@ import com.composum.pages.commons.model.Site;
 import com.composum.pages.commons.util.NewResourceParent;
 import com.composum.pages.commons.util.ResourceTypeUtil;
 import com.composum.sling.core.BeanContext;
+import com.composum.sling.core.util.XSS;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -72,7 +73,7 @@ public abstract class AbstractEditTag extends AbstractEditElementTag {
             }
             if (editResource == null) {
                 // use the request suffix as the resource to edit
-                String suffix = request.getRequestPathInfo().getSuffix();
+                String suffix = XSS.filter(request.getRequestPathInfo().getSuffix());
                 if (StringUtils.isNotBlank(suffix) && !"/".equals(suffix)) {
                     editResource = request.getResourceResolver().getResource(suffix);
                     if (editResource != null) {

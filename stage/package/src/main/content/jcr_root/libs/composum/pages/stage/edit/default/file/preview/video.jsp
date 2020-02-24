@@ -4,5 +4,5 @@
 <sling:defineObjects/>
 <div class="composum-pages-stage-preview_file">
     <video class="composum-pages-stage-preview_file_video"
-           src="${slingRequest.contextPath}${resource.path}" controls="controls"></video>
+           src="${slingRequest.contextPath}${cpn:path(resource.path)}" controls="controls"></video>
 </div>
