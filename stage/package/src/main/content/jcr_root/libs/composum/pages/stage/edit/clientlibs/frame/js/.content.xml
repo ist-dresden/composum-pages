@@ -3,6 +3,7 @@
         jcr:primaryType="sling:OrderedFolder"
         depends="[category:composum.pages.edit.libs]">
     <widgets/>
+    <platform/>
     <edit/>
     <navigation/>
     <frame/>

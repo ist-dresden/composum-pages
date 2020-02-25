@@ -6,17 +6,24 @@
 <cpp:defineObjects/>
 <cpp:model var="site" type="com.composum.pages.commons.model.Site">
     <ul class="nav nav-tabs" role="tablist">
-        <li role="presentation"><a href="#releases-tab" aria-controls="releases" role="tab"
+        <li role="presentation"><a href="#releases-tab" aria-controls="releases-tab" role="tab"
                                    data-toggle="tab">${cpn:i18n(slingRequest,'Releases')}</a></li>
-        <li role="presentation"><a href="#current-tab" aria-controls="current" role="tab"
+        <li role="presentation"><a href="#current-tab" aria-controls="current-tab" role="tab"
                                    title="${cpn:i18n(slingRequest,'content activated with changes since the previous release')}"
                                    data-toggle="tab">${cpn:i18n(slingRequest,'Activated')}<span
                 class="badge badge-pill changes"><%=site.getReleaseChanges().size()%></span></a></li>
-        <li role="presentation"><a href="#modified-tab" aria-controls="modified" role="tab"
+        <li role="presentation"><a href="#modified-tab" aria-controls="modified-tab" role="tab"
                                    title="${cpn:i18n(slingRequest,'modified but last changes not activated yet')}"
                                    data-toggle="tab">${cpn:i18n(slingRequest,'Modified')}<span
                 class="badge badge-pill changes"><%=site.getModifiedContent().size()%></span></a></li>
-        <li role="presentation"><a href="#settings-tab" aria-controls="settings" role="tab"
+        <li role="presentation"><a href="#replication-tab" aria-controls="replication-tab" role="tab" data-toggle="tab"
+                                   class="composum-pages-stage-edit-site_tab-replication">${cpn:i18n(slingRequest,'Replication')}&nbsp;
+            <sling:include resourceType="composum/platform/services/replication/status"
+                           replaceSelectors="badge.public"/>
+            <sling:include resourceType="composum/platform/services/replication/status"
+                           replaceSelectors="badge.preview"/></a>
+        </li>
+        <li role="presentation"><a href="#settings-tab" aria-controls="settings-tab" role="tab"
                                    data-toggle="tab">${cpn:i18n(slingRequest,'Settings')}</a></li>
     </ul>
 
@@ -29,6 +36,10 @@
         </div>
         <div role="tabpanel" class="tab-pane fade in" id="modified-tab">
             <sling:include resourceType="composum/pages/stage/edit/site/page/modified"/>
+        </div>
+        <div role="tabpanel" class="tab-pane fade in" id="replication-tab">
+            <sling:include resourceType="composum/platform/services/replication/status" replaceSelectors="public"/>
+            <sling:include resourceType="composum/platform/services/replication/status" replaceSelectors="preview"/>
         </div>
         <div role="tabpanel" class="tab-pane fade in" id="settings-tab">
             <div class="panel panel-default">

@@ -317,3 +317,20 @@
         }
     }
 }
+
+.composum-pages-stage-edit-site {
+
+    &_tab {
+
+        &-replication {
+
+            .composum-platform-replication-status {
+
+                &_badge.badge.badge-pill {
+                    min-width: 18px;
+                    margin-left: 0
+                }
+            }
+        }
+    }
+}
