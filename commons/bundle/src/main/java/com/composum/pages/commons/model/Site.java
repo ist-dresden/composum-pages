@@ -77,6 +77,10 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
     private transient String templateType;
     private transient String componentSettingsEditType;
 
+    private transient SiteRelease currentRelease;
+    private transient List<SiteRelease> releases;
+    private transient String releaseNumber;
+
     public Site() {
     }
 
@@ -249,9 +253,12 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
      */
     @Nullable
     public String getReleaseNumber(String category) {
-        StagingReleaseManager releaseManager = context.getService(StagingReleaseManager.class);
-        StagingReleaseManager.Release release = releaseManager.findReleaseByMark(resource, StringUtils.lowerCase(category));
-        return release != null ? release.getNumber() : null;
+        if (releaseNumber == null) {
+            StagingReleaseManager releaseManager = context.getService(StagingReleaseManager.class);
+            StagingReleaseManager.Release release = releaseManager.findReleaseByMark(resource, StringUtils.lowerCase(category));
+            releaseNumber = release != null ? release.getNumber() : null;
+        }
+        return releaseNumber;
     }
 
     /**
@@ -259,18 +266,24 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
      */
     @Nonnull
     public List<SiteRelease> getReleases() {
-        StagingReleaseManager releaseManager = context.getService(StagingReleaseManager.class);
-        List<StagingReleaseManager.Release> stagingReleases = releaseManager.getReleases(resource);
-        return stagingReleases.stream()
-                .map(r -> new SiteRelease(context, r))
-                .sorted(Comparator.nullsFirst(Comparator.comparing(SiteRelease::getCreationDate).reversed()))
-                .collect(Collectors.toList());
+        if (releases == null) {
+            StagingReleaseManager releaseManager = context.getService(StagingReleaseManager.class);
+            List<StagingReleaseManager.Release> stagingReleases = releaseManager.getReleases(resource);
+            releases = stagingReleases.stream()
+                    .map(r -> new SiteRelease(context, r))
+                    .sorted(Comparator.nullsFirst(Comparator.comparing(SiteRelease::getCreationDate).reversed()))
+                    .collect(Collectors.toList());
+        }
+        return releases;
     }
 
     @Nullable
     public SiteRelease getCurrentRelease() {
-        final List<SiteRelease> releases = getReleases();
-        return releases.isEmpty() ? null : releases.get(0);
+        if (currentRelease == null) {
+            final List<SiteRelease> releases = getReleases();
+            currentRelease = releases.isEmpty() ? null : releases.get(0);
+        }
+        return currentRelease;
     }
 
     /**

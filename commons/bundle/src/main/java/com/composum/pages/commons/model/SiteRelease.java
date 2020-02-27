@@ -21,6 +21,7 @@ import javax.jcr.RepositoryException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import static com.composum.pages.commons.PagesConstants.KEY_CURRENT_RELEASE;
@@ -38,6 +39,7 @@ public class SiteRelease extends AbstractModel implements Comparable<SiteRelease
     private transient Calendar creationDate;
     private transient Calendar lastModified;
 
+    private transient Map<String, String> nextReleaseNumbers;
 
     public static boolean isSiteRelease(Resource resource) {
         return resource != null && StagingUtils.RELEASE_PATH_PATTERN.matcher(resource.getPath()).matches();
@@ -91,6 +93,13 @@ public class SiteRelease extends AbstractModel implements Comparable<SiteRelease
 
     public boolean isPreview() {
         return getCategories().contains(AccessMode.PREVIEW.name().toLowerCase());
+    }
+
+    public Map<String, String> getNextReleaseNumbers() {
+        if (nextReleaseNumbers == null) {
+            nextReleaseNumbers = getContext().getService(StagingReleaseManager.class).nextRealeaseNumbers(getResource());
+        }
+        return nextReleaseNumbers;
     }
 
     @Nonnull

@@ -39,6 +39,7 @@
                 dialog: {
                     edit: 'dialog:edit',
                     generic: 'dialog:generic',
+                    custom: 'dialog:custom',
                     alert: 'dialog:alert'
                 }
             },

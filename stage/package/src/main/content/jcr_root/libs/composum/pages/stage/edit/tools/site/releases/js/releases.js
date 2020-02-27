@@ -1,10 +1,8 @@
-(function (window) {
-    window.composum = window.composum || {};
-    window.composum.pages = window.composum.pages || {};
-    window.composum.pages.tools = window.composum.pages.tools || {};
+(function () {
+    'use strict';
+    CPM.namespace('pages.tools');
 
     (function (tools, pages, core) {
-        'use strict';
 
         tools.const = _.extend(tools.const || {}, {
             releases: {
@@ -32,6 +30,13 @@
                         view: '/libs/composum/pages/stage/edit/site/release.html'
                     }
                 }
+            }
+        });
+
+        tools.FinalizeDialog = core.components.FormDialog.extend({
+
+            initialize: function (options) {
+                core.components.FormDialog.prototype.initialize.call(this, options);
             }
         });
 
@@ -129,5 +134,5 @@
             return panel;
         });
 
-    })(window.composum.pages.tools, window.composum.pages, window.core);
-})(window);
+    })(CPM.pages.tools, CPM.pages, CPM.core);
+})();

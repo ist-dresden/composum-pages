@@ -240,44 +240,29 @@
                         config.currentLabel = current.label;
                     }
                     var u = releases.const.url.release;
-                    var replication = CPM.platform.services.replication;
                     var url = u.root + u._publish + '.' + stage + '.html' + selection.path;
-                    core.openLoadedDialog(url, replication.PublishDialog, config, undefined,
-                        _.bind(function () {
-                            if (pages.elements) {
-                                pages.elements.triggerEvent(pages.elements.const.event.site.changed, [this.sitePath]);
-                            } else {
-                                pages.trigger('releases.change', pages.const.event.site.changed, [this.sitePath]);
-                            }
-                        }, this));
+                    this.openCustomDialog(url, 'CPM.platform.services.replication.PublishDialog',
+                        config, undefined,
+                        {
+                            context: 'releases.change',
+                            event: (pages.elements ? pages.elements : pages).const.event.site.changed,
+                            args: [this.sitePath]
+                        })
                 }
-            },
-
-            openDialog: function (type, useSelection) {
-                var u = releases.const.url.release;
-                event.preventDefault();
-                var selection = _.isObject(useSelection) ? useSelection : (useSelection ? this.getSelection() : {
-                    key: undefined,
-                    path: this.sitePath
-                });
-                if (selection && selection.path) {
-                    if (pages.elements) { // context is a page
-                        pages.elements.openEditDialog({
-                            path: selection.path
-                        }, {
-                            url: u.root + type
-                        });
-                    } else { // context is the stage edit frame
-                        pages.dialogs.openEditDialog(selection.key, selection.path, undefined/*type*/,
-                            undefined/*context*/, u.root + type);
-                    }
-                }
-                return false;
             },
 
             doFinalize: function (event) {
                 event.preventDefault();
-                this.openDialog(releases.const.url.release._finalize, false);
+                var u = releases.const.url.release;
+                /*
+                this.openCustomDialog(u.root + u._finalize + this.sitePath, 'CPM.pages.tools.FinalizeDialog',
+                    undefined, undefined, {
+                        context: 'release.finalize',
+                        event: (pages.elements ? pages.elements : pages).const.event.site.changed,
+                        args: [this.sitePath]
+                    });
+                 */
+                this.openEditDialog(releases.const.url.release._finalize, false);
                 return false;
             },
 
@@ -296,19 +281,49 @@
 
             editRelease: function (event) {
                 event.preventDefault();
-                this.openDialog(releases.const.url.release._edit, true);
+                this.openEditDialog(releases.const.url.release._edit, true);
                 return false;
             },
 
             deleteRelease: function (event) {
                 event.preventDefault();
-                this.openDialog(releases.const.url.release._delete, true);
+                this.openEditDialog(releases.const.url.release._delete, true);
                 return false;
+            },
+
+            openEditDialog: function (type, useSelection) {
+                var u = releases.const.url.release;
+                var selection = _.isObject(useSelection) ? useSelection : (useSelection ? this.getSelection() : {
+                    key: undefined,
+                    path: this.sitePath
+                });
+                if (selection && selection.path) {
+                    if (pages.elements) { // context is a page
+                        pages.elements.openEditDialog({
+                            path: selection.path
+                        }, {
+                            url: u.root + type
+                        });
+                    } else { // context is the stage edit frame
+                        pages.dialogs.openEditDialog(selection.key, selection.path, undefined/*type*/,
+                            undefined/*context*/, u.root + type);
+                    }
+                }
+            },
+
+            openCustomDialog: function (url, type, config, init, trigger) {
+                if (pages.elements) { // context is a page
+                    pages.elements.openCustomDialog(url, type, config, init, trigger);
+                } else { // context is the stage edit frame
+                    core.openLoadedDialog(url, eval(type), config, init ? eval(init) : undefined,
+                        trigger ? function () {
+                            pages.trigger(trigger.context, trigger.event, trigger.args);
+                        } : undefined);
+                }
             }
         });
 
         releases.siteReleases = core.getView('.releasesList', releases.SiteReleases);
 
     })(CPM.pages.releases, CPM.pages, CPM.core.components, CPM.core);
-
 })();
