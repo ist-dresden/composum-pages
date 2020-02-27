@@ -6,7 +6,7 @@
 <!DOCTYPE html>
 <html data-context-path="${slingRequest.contextPath}">
 <cpp:model var="model" type="com.composum.pages.stage.model.edit.site.SiteModel"
-           cssBase="composum-pages-stage-edit-site">
+           cssBase="composum-pages-site-view">
     <head>
         <title>"${cpn:text(model.site.title)}"</title>
         <sling:call script="head.jsp"/>

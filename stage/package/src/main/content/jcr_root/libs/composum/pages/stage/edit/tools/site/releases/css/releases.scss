@@ -3,7 +3,7 @@
 @import "../../../../css/variables";
 @import "../../../../css/mixins";
 
-.composum-pages-stage-edit-tools-site-releases {
+.composum-pages-site-tools_releases {
 
     &_tools-panel {
         position: absolute;
@@ -14,13 +14,13 @@
         @include scrolltools;
     }
 
-    .composum-pages-stage-edit-site-releases {
+    .composum-pages-site-tools_releases {
 
         &_list {
             padding: 0;
         }
 
-        &-release {
+        &_release {
             width: 100%;
             position: relative;
             margin: 4px 0;
@@ -36,54 +36,54 @@
                 }
             }
 
-            &_head, &_status {
+            &-head, &-status {
                 clear: both;
                 width: 100%;
             }
 
-            &_title, &_creationDate {
+            &-title, &-creationDate {
                 float: left;
             }
 
-            &_key, &_creationDate {
+            &-key, &-creationDate {
                 font-size: $hint-font-size;
             }
 
-            &_title {
+            &-title {
                 margin: 2px 0;
             }
 
-            &_key {
+            &-key {
                 margin: 4px 0 2px;
             }
 
-            &_key, &_actions, &_categories {
+            &-key, &-actions, &-categories {
                 margin-left: $tools-pane-padding;
                 float: right;
             }
 
-            &_actions {
+            &-actions {
                 margin-top: -2px;
                 margin-bottom: 2px;
             }
 
-            &_creationDate {
+            &-creationDate {
                 margin-top: 2px;
             }
 
-            &_category {
+            &-category {
                 display: inline-block;
                 float: left;
                 margin-top: 2px;
                 margin-left: $tools-pane-padding;
             }
 
-            &_categories {
+            &-categories {
                 display: inline-block;
                 white-space: nowrap;
             }
 
-            &_entry {
+            &-entry {
                 cursor: pointer;
                 position: relative;
                 display: inline-block;
@@ -93,7 +93,7 @@
                 padding: 2px 2px 0 0;
             }
 
-            &_listentry {
+            &-listentry {
                 padding-left: 32px;
 
                 ._release-state {

@@ -12,7 +12,7 @@
                     id: '.tools.ActivatedPages'
                 },
                 page: {
-                    base: 'composum-pages-stage-edit-site-page-activated',
+                    base: 'composum-pages-site-tools-page-activated',
                     _listentry: '_listentry',
                     _entry: '_page-entry'
                 },
@@ -50,7 +50,7 @@
                 var c = tools.const.activated.page;
                 pages.releases.ReleaseChanges.prototype.initialize.call(this, options);
                 this.sitePath = this.$('.' + c.base).data('path');
-                this.$filter = this.$('.composum-pages-stage-edit-site-page_filter');
+                this.$filter = this.$('.composum-pages-site-tools-page_filter');
                 this.$filter.find('a').click(_.bind(this.doFilter, this));
                 this.$previewEntry = [];
                 this.$('.' + c.base + c._entry).click(_.bind(this.pagePreview, this));

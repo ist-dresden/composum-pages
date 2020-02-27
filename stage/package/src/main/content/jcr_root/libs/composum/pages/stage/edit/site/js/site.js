@@ -13,7 +13,7 @@
                     key: 'tab'
                 },
                 css: {
-                    base: "composum-pages-stage-edit-site"
+                    base: "composum-pages-site-view"
                 }
             },
             sites: {

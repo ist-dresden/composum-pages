@@ -4,7 +4,7 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <cpp:defineFrameObjects/>
 <cpp:model var="model" type="com.composum.pages.stage.model.edit.site.SiteModel"
-           cssBase="composum-pages-stage-edit-site-page" data-path="@{model.site.path}">
+           cssBase="composum-pages-site-view-page" data-path="@{model.site.path}">
     <select title="Content Type" class="${modelCSS}_type composum-pages-tools_select">
         <option value="all">${cpn:i18n(slingRequest,'Content')}</option>
         <c:forEach items="${model.contentTypes}" var="type">

@@ -4,8 +4,8 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <cpp:defineFrameObjects/>
 <cpp:model var="model" type="com.composum.pages.stage.model.edit.site.SiteModel"
-           cssBase="composum-pages-stage-edit-site-page" data-path="@{model.site.path}">
-    <select title="Filter" class="${modelCSS}_filter form-control">
+           cssBase="composum-pages-site-view-page" data-path="@{model.site.path}">
+    <select title="Filter" class="${modelCSS}_filter">
         <option value="all">${cpn:i18n(slingRequest,'all')}</option>
         <c:forEach items="${model.activationStates}" var="filter">
             <option value="${filter}" ${model.filterValue==filter?'selected="selected"':''}>${cpn:i18n(slingRequest,filter)}</option>

@@ -1,24 +1,22 @@
-(function (window) {
-    window.composum = window.composum || {};
-    window.composum.pages = window.composum.pages || {};
-    window.composum.pages.releases = window.composum.pages.releases || {};
+(function () {
+    'use strict';
+    CPM.namespace('pages.releases');
 
-    (function (releases, pages, core) {
-        'use strict';
+    (function (releases, pages, components, core) {
 
         releases.const = _.extend(releases.const || {}, {
             css: { // edit UI CSS selector keys
                 page: {
-                    base: 'composum-pages-stage-edit-site-page',
+                    base: 'composum-pages-site-view-page',
                     _activated: '-activated',
                     _modified: '-modified',
                     _selectAll: '_page-select-all',
                     _select: '_page-select'
                 },
                 release: {
-                    base: 'composum-pages-stage-edit-site-releases',
-                    _release: '-release',
-                    _select: '_select'
+                    base: 'composum-pages-site-view_releases',
+                    _release: '_release',
+                    _select: '-select'
                 }
             },
             url: { // servlet URLs for GET and change requests
@@ -49,9 +47,9 @@
             initialize: function (options) {
                 var c = releases.const.css.page;
                 this.sitePath = this.$el.data('path');
-                this.$contentType = this.$('.composum-pages-stage-edit-site-page_type');
+                this.$contentType = this.$('.composum-pages-site-view-page_type');
                 this.$contentType.change(_.bind(this.changeScope, this));
-                this.$filter = this.$('.composum-pages-stage-edit-site-page_filter');
+                this.$filter = this.$('.composum-pages-site-view-page_filter');
                 this.$filter.change(_.bind(this.changeScope, this));
                 this.$buttonActivate = this.$('button.activate');
                 this.$buttonActivate.click(_.bind(this.doActivate, this));
@@ -120,9 +118,9 @@
             initialize: function (options) {
                 var c = releases.const.css.page;
                 this.sitePath = this.$el.data('path');
-                this.$contentType = this.$('.composum-pages-stage-edit-site-page_type');
+                this.$contentType = this.$('.composum-pages-site-view-page_type');
                 this.$contentType.change(_.bind(this.changeScope, this));
-                this.$filter = this.$('.composum-pages-stage-edit-site-page_filter');
+                this.$filter = this.$('.composum-pages-site-view-page_filter');
                 this.$filter.change(_.bind(this.changeScope, this));
                 this.$buttonRevert = this.$('button.revert');
                 this.$buttonRevert.click(_.bind(this.doRevert, this));
@@ -190,7 +188,7 @@
         releases.SiteReleases = Backbone.View.extend({
 
             initialize: function (options) {
-                var c = releases.const.css.release;
+                var c = (options || {}).cssBase || releases.const.css.release;
                 this.releaseRadios = $('.' + c.base + c._release + c._select);
                 this.sitePath = this.$el.data('path');
                 this.$buttonEdit = this.$('button.release-edit');
@@ -210,41 +208,47 @@
             reload: function () {
             },
 
-            getSelection: function () {
+            getSelection: function (stage) {
                 var result = undefined;
                 var that = this;
                 $.each(this.releaseRadios, _.bind(function (index, value) {
-                    if (value.checked) {
+                    var $value = $(value);
+                    if ((stage && $value.is('is-' + stage)) || (!stage && value.checked)) {
                         result = {
                             key: value.value,
-                            path: $(value).data('path')
+                            path: $value.data('path'),
+                            label: $value.data('label')
                         };
                     }
                 }));
                 return result;
             },
 
-            changeRelease: function (action) {
-                var u = releases.const.url.release;
+            changeRelease: function (stage) {
                 var selection = this.getSelection();
                 if (selection) {
-                    // call server with path and key
-                    core.ajaxPost(u.servlet + action + '.html', {
-                            path: this.sitePath,
-                            releaseKey: selection.key
-                        }, {},
-                        _.bind(function (result) { // onSuccess
+                    var current = this.getSelection(stage);
+                    var config = {
+                        path: this.sitePath,
+                        stage: stage,
+                        targetKey: selection.key,
+                        targetLabel: selection.label
+                    };
+                    if (current) {
+                        config.currentKey = current.key;
+                        config.currentLabel = current.label;
+                    }
+                    var replication = CPM.platform.services.replication;
+                    var u = replication.const.url;
+                    var url = u.base + u._dialog + '.' + stage + '.html' + this.sitePath;
+                    core.openLoadedDialog(url, replication.PublishDialog, config, undefined,
+                        _.bind(function () {
                             if (pages.elements) {
                                 pages.elements.triggerEvent(pages.elements.const.event.site.changed, [this.sitePath]);
                             } else {
                                 pages.trigger('releases.change', pages.const.event.site.changed, [this.sitePath]);
                             }
-                        }, this),
-                        _.bind(function (result) { // onError
-                            var fn = pages.elements ? pages.elements.alertMessage : core.alert;
-                            fn.call(this, 'danger', 'Error', 'Error on change release state', result);
-                        }, this)
-                    );
+                        }, this));
                 }
             },
 
@@ -275,14 +279,14 @@
 
             publicRelease: function (event) {
                 event.preventDefault();
-                this.changeRelease('setpublic');
+                this.changeRelease('public');
                 return false;
             },
 
 
             previewRelease: function (event) {
                 event.preventDefault();
-                this.changeRelease('setpreview');
+                this.changeRelease('preview');
                 return false;
             },
 
@@ -301,6 +305,6 @@
 
         releases.siteReleases = core.getView('.releasesList', releases.SiteReleases);
 
+    })(CPM.pages.releases, CPM.pages, CPM.core.components, CPM.core);
 
-    })(window.composum.pages.releases, window.composum.pages, window.core);
-})(window);
+})();

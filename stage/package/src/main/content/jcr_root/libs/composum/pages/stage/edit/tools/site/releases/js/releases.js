@@ -13,12 +13,14 @@
                 },
                 css: {
                     site: {
-                        base: 'composum-pages-stage-edit-site-releases'
+                        base: 'composum-pages-site-tools_releases',
+                        _release: '_release',
+                        _select: '-select'
                     },
                     release: {
-                        base: 'composum-pages-stage-edit-site-releases-release',
-                        _listentry: '_listentry',
-                        _entry: '_entry'
+                        base: 'composum-pages-site-tools_releases_release',
+                        _listentry: '-listentry',
+                        _entry: '-entry'
                     },
                     tools: {
                         base: 'composum-pages-stage-edit-tools-site-releases'
@@ -55,7 +57,9 @@
 
             initContent: function (options) {
                 var c = tools.const.releases.css;
-                pages.releases.SiteReleases.prototype.initialize.call(this, options);
+                pages.releases.SiteReleases.prototype.initialize.call(this, _.extend(options || {}, {
+                    cssBase: tools.const.releases.css.site
+                }));
                 this.sitePath = this.$('.' + c.site.base).data('path');
                 this.$releaseView = [];
                 this.$('.' + c.release.base + c.release._entry).click(_.bind(this.releaseView, this));
@@ -108,7 +112,7 @@
                         } else {
                             this.$el.html("");
                         }
-                        this.initContent();
+                        this.initContent({});
                     }, this));
             }
         });

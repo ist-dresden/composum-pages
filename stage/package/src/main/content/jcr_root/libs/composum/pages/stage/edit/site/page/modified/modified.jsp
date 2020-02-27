@@ -4,23 +4,18 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <cpp:defineFrameObjects/>
 <cpp:model var="model" type="com.composum.pages.stage.model.edit.site.SiteModel" mode="none"
-           cssBase="composum-pages-stage-edit-site-page-modified">
-    <div class="panel panel-default modifiedContent" data-path="${model.site.path}">
-        <div class="panel-heading" role="tab" id="modifiedContentHead">
-            <h4 class="panel-title">
-                <a class="collapsed" role="button" data-toggle="collapse"
-                   href="#modifiedContentPanel" aria-expanded="false"
-                   title="${cpn:i18n(slingRequest,'modified but last changes not activated yet')}"
-                   aria-controls="modifiedContentPanel">${cpn:i18n(slingRequest,'Modified')}</a>
+           cssBase="composum-pages-site-view-page-modified">
+    <div class="${modelCssBase}_modified panel panel-default modifiedContent" data-path="${model.site.path}">
+        <div class="composum-pages-site-view_heading panel-heading" role="tab" id="modifiedContentHead">
+            <h4 title="${cpn:i18n(slingRequest,'modified but last changes not activated yet')}"
+                class="composum-pages-site-view_title panel-title">${cpn:i18n(slingRequest,'Modified')}</a>
                 <cpp:include resourceType="composum/pages/stage/edit/site/page/type"/>
             </h4>
-            <div class="btn-group" role="group">
-                <cpp:include resourceType="composum/pages/stage/edit/site/page/filter" replaceSelectors="modified"/>
                 <c:if test="${model.editMode}">
-                    <button class="btn btn-default activate"><i
+                    <button class="composum-pages-site-view_button btn btn-default activate"><i
                             class="fa fa-play"></i>${cpn:i18n(slingRequest,'Activate')}</button>
                 </c:if>
-            </div>
+            <cpp:include resourceType="composum/pages/stage/edit/site/page/filter" replaceSelectors="modified"/>
         </div>
         <div id="modifiedContentPanel" class="panel-collapse collapse in" role="tabpanel"
              aria-labelledby="modifiedContentHead">

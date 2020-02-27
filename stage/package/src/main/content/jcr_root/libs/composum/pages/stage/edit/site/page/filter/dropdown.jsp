@@ -4,7 +4,7 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <cpp:defineFrameObjects/>
 <cpp:model var="model" type="com.composum.pages.stage.model.edit.site.SiteModel"
-           cssBase="composum-pages-stage-edit-site-page" data-path="@{model.site.path}">
+           cssBase="composum-pages-site-view-page" data-path="@{model.site.path}">
     <button type="button" title="Filter" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
             class="fa fa-filter composum-pages-tools_button btn btn-default dropdown dropdown-toggle"><span
             class="composum-pages-tools_button-label">Filter</span></button>

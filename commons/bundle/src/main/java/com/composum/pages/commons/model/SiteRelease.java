@@ -5,6 +5,7 @@ import com.composum.pages.commons.service.VersionsService;
 import com.composum.pages.commons.util.PagesUtil;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.util.I18N;
+import com.composum.sling.platform.security.AccessMode;
 import com.composum.sling.platform.staging.StagingConstants;
 import com.composum.sling.platform.staging.StagingReleaseManager;
 import com.composum.sling.platform.staging.impl.StagingUtils;
@@ -82,6 +83,14 @@ public class SiteRelease extends AbstractModel implements Comparable<SiteRelease
 
     public boolean isCurrent() {
         return KEY_CURRENT_RELEASE.equals(getKey());
+    }
+
+    public boolean isPublic() {
+        return getCategories().contains(AccessMode.PUBLIC.name().toLowerCase());
+    }
+
+    public boolean isPreview() {
+        return getCategories().contains(AccessMode.PREVIEW.name().toLowerCase());
     }
 
     @Nonnull

@@ -4,7 +4,7 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <cpp:defineFrameObjects/>
 <cpp:model var="model" type="com.composum.pages.stage.model.edit.site.ReleaseModel"
-           cssBase="composum-pages-stage-edit-site-release-changes">
+           cssBase="composum-pages-site-view_release_changes">
     <div class="${modelCSS}_details panel panel-default">
         <div class="${modelCSS}_details-head panel-heading"><h4
                 class="panel-title">${cpn:i18n(slingRequest,'Release Details')}</h4></div>
