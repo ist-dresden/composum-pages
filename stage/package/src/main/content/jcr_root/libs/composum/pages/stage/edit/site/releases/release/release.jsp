@@ -8,7 +8,7 @@
              cssAdd="list-group-item@{release.editMode?' editable':''}">
     <c:if test="${release.editMode}">
         <div class="${releaseCSS}-input"><input type="radio" name="${releaseCSS}_select" value="${release.key}"
-                                                data-path="${release.path}" data-label="${release.label}"
+                                                data-path="${release.path}" data-label="${release.title}"
                                                 class="${releaseCSS}-select${release.public?' is-public':''}${release.preview?' is-preview':''}"/>
         </div>
     </c:if>

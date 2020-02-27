@@ -3,8 +3,6 @@
 @import "../../css/variables";
 @import "../../css/mixins";
 
-$pages-site-panel-padding: 10px;
-
 .composum-pages-site-view {
     min-width: 600px;
 
@@ -75,7 +73,7 @@ $pages-site-panel-padding: 10px;
             }
 
             select {
-                margin-left: $pages-site-panel-padding;
+                margin-left: $bootstrap-spacing-v;
                 height: 26px;
                 font-family: sans-serif;
                 font-size: 14px;
@@ -92,7 +90,7 @@ $pages-site-panel-padding: 10px;
                 }
 
                 &_btn-group {
-                    margin-left: $pages-site-panel-padding;
+                    margin-left: $bootstrap-spacing-v;
                 }
             }
         }
@@ -248,9 +246,6 @@ $pages-site-panel-padding: 10px;
             }
         }
     }
-}
-
-.composum-pages-site-view {
 
     .composum-pages-site-view_releases {
 
@@ -262,7 +257,7 @@ $pages-site-panel-padding: 10px;
                 padding-left: 40px;
             }
 
-            &-tile {
+            &-title, &-key, &-creationDate, &-description {
                 @include text-font;
             }
 
@@ -276,10 +271,33 @@ $pages-site-panel-padding: 10px;
                 text-align: right;
             }
 
+            &-title {
+                font-size: 16px;
+            }
+
+            &-key {
+                font-weight: bold;
+            }
+
+            &-actions {
+
+                button {
+                    padding: 4px 10px;
+
+                    .fa {
+                        margin-right: 8px;
+                    }
+                }
+            }
+
             &-categories {
                 display: inline-block;
                 margin-top: 5px;
                 white-space: nowrap;
+
+                .label {
+                    font-size: 12px;
+                }
             }
 
             &-description {
@@ -310,9 +328,6 @@ $pages-site-panel-padding: 10px;
             }
         }
     }
-}
-
-.composum-pages-site-view {
 
     &_tab {
 

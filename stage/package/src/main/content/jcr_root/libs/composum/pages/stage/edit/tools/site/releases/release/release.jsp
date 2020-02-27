@@ -7,7 +7,7 @@
            cssBase="composum-pages-site-tools_releases_release">
     <li class="${releaseCSS} ${releaseCSS}-listentry">
         <div class="_release-state"><input type="radio" name="${releaseCSS}-select" value="${release.key}"
-                                           data-path="${release.path}" data-label="${release.label}"
+                                           data-path="${release.path}" data-label="${release.title}"
                                            class="${releaseCSS}-select${release.public?' is-public':''}${release.preview?' is-preview':''}"/>
         </div>
         <div class="${releaseCSS}-entry" data-path="${release.path}">

@@ -107,3 +107,46 @@
         }
     }
 }
+
+.composum-pages-site-view {
+
+    &_releases {
+
+        &_publish-target {
+
+            .composum-pages-site-view_releases {
+
+                &_release {
+
+                    &-heading {
+                        display: flex;
+                        flex-wrap: nowrap;
+                        align-items: baseline;
+                    }
+
+                    &-title {
+                        flex-grow: 1;
+                        font-size: 18px;
+                    }
+
+                    &-key {
+                        font-size: 16px;
+                        font-weight: bold;
+                    }
+
+                    &-creationDate {
+                        margin-left: $bootstrap-spacing-h;
+                    }
+
+                    &-description {
+                        padding: 7px $bootstrap-spacing-h;
+
+                        p {
+                            margin: 5px 0;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

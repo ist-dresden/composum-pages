@@ -32,10 +32,11 @@
                 },
                 release: {
                     servlet: '/bin/cpm/pages/release.',
-                    root: '/libs/composum/pages/stage/edit/site/releases/',
-                    _edit: 'edit.html',
-                    _finalize: 'finalize.html',
-                    _delete: 'delete.html'
+                    root: '/libs/composum/pages/stage/edit/site/releases',
+                    _publish: '/publish',
+                    _edit: '/edit.html',
+                    _finalize: '/finalize.html',
+                    _delete: '/delete.html'
                 }
             }
         });
@@ -213,11 +214,11 @@
                 var that = this;
                 $.each(this.releaseRadios, _.bind(function (index, value) {
                     var $value = $(value);
-                    if ((stage && $value.is('is-' + stage)) || (!stage && value.checked)) {
+                    if ((stage && $value.hasClass('is-' + stage)) || (!stage && value.checked)) {
                         result = {
                             key: value.value,
                             path: $value.data('path'),
-                            label: $value.data('label')
+                            label: $value.data('label') || value.value
                         };
                     }
                 }));
@@ -229,7 +230,7 @@
                 if (selection) {
                     var current = this.getSelection(stage);
                     var config = {
-                        path: this.sitePath,
+                        path: selection.path,
                         stage: stage,
                         targetKey: selection.key,
                         targetLabel: selection.label
@@ -238,9 +239,9 @@
                         config.currentKey = current.key;
                         config.currentLabel = current.label;
                     }
+                    var u = releases.const.url.release;
                     var replication = CPM.platform.services.replication;
-                    var u = replication.const.url;
-                    var url = u.base + u._dialog + '.' + stage + '.html' + this.sitePath;
+                    var url = u.root + u._publish + '.' + stage + '.html' + selection.path;
                     core.openLoadedDialog(url, replication.PublishDialog, config, undefined,
                         _.bind(function () {
                             if (pages.elements) {
@@ -255,7 +256,10 @@
             openDialog: function (type, useSelection) {
                 var u = releases.const.url.release;
                 event.preventDefault();
-                var selection = useSelection ? this.getSelection() : {key: undefined, path: this.sitePath};
+                var selection = _.isObject(useSelection) ? useSelection : (useSelection ? this.getSelection() : {
+                    key: undefined,
+                    path: this.sitePath
+                });
                 if (selection && selection.path) {
                     if (pages.elements) { // context is a page
                         pages.elements.openEditDialog({
