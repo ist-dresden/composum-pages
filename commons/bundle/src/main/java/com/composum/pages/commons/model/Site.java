@@ -80,6 +80,7 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
     private transient SiteRelease currentRelease;
     private transient List<SiteRelease> releases;
     private transient String releaseNumber;
+    private transient boolean[] publishSuggestion;
 
     public Site() {
     }
@@ -259,6 +260,26 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
             releaseNumber = release != null ? release.getNumber() : null;
         }
         return releaseNumber;
+    }
+
+    /**
+     * @return [release.public, release.preview, current.public, current.preview]
+     */
+    public boolean[] getPublishSuggestion() {
+        if (publishSuggestion == null) {
+            SiteRelease current = getCurrentRelease();
+            SiteRelease previous = null;
+            if (current != null) {
+                previous = current.getPreviousRelease();
+            }
+            publishSuggestion = new boolean[]{
+                    previous != null && previous.isPublic(),
+                    previous != null && previous.isPreview(),
+                    current != null && current.isPublic(),
+                    current != null && current.isPreview()
+            };
+        }
+        return publishSuggestion;
     }
 
     /**

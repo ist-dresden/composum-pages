@@ -241,7 +241,8 @@
                     }
                     var u = releases.const.url.release;
                     var url = u.root + u._publish + '.' + stage + '.html' + selection.path;
-                    this.openCustomDialog(url, 'CPM.platform.services.replication.PublishDialog',
+                    this.openCustomDialog(url,
+                        'CPM.platform.services.replication.PublishDialog',
                         config, undefined,
                         {
                             context: 'releases.change',
@@ -254,15 +255,13 @@
             doFinalize: function (event) {
                 event.preventDefault();
                 var u = releases.const.url.release;
-                /*
-                this.openCustomDialog(u.root + u._finalize + this.sitePath, 'CPM.pages.tools.FinalizeDialog',
+                this.openCustomDialog(u.root + u._finalize + this.sitePath,
+                    'CPM.pages.tools.site.FinalizeDialog',
                     undefined, undefined, {
                         context: 'release.finalize',
                         event: (pages.elements ? pages.elements : pages).const.event.site.changed,
                         args: [this.sitePath]
                     });
-                 */
-                this.openEditDialog(releases.const.url.release._finalize, false);
                 return false;
             },
 
@@ -315,7 +314,7 @@
                 if (pages.elements) { // context is a page
                     pages.elements.openCustomDialog(url, type, config, init, trigger);
                 } else { // context is the stage edit frame
-                    core.openLoadedDialog(url, eval(type), config, init ? eval(init) : undefined,
+                    pages.dialogHandler.openLoadedDialog(url, eval(type), config, init ? eval(init) : undefined,
                         trigger ? function () {
                             pages.trigger(trigger.context, trigger.event, trigger.args);
                         } : undefined);

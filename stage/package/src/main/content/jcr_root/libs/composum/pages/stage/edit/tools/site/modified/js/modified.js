@@ -1,18 +1,16 @@
-(function (window) {
-    window.composum = window.composum || {};
-    window.composum.pages = window.composum.pages || {};
-    window.composum.pages.tools = window.composum.pages.tools || {};
+(function () {
+    'use strict';
+    CPM.namespace('pages.tools.site');
 
-    (function (tools, pages, core) {
-        'use strict';
+    (function (site, pages, core) {
 
-        tools.const = _.extend(tools.const || {}, {
+        site.const = _.extend(site.const || {}, {
             modified: {
                 event: {
                     id: '.tools.ModifiedPages'
                 },
                 page: {
-                    base: 'composum-pages-site-tools-page-modified',
+                    base: 'composum-pages-site-view-page-modified',
                     _listentry: '_listentry',
                     _entry: '_page-entry'
                 },
@@ -26,11 +24,11 @@
             }
         });
 
-        tools.ModifiedPages = pages.releases.ModifiedPages.extend({
+        site.ModifiedPages = pages.releases.ModifiedPages.extend({
 
             initialize: function (options) {
                 this.initContent();
-                var id = tools.const.modified.event.id;
+                var id = site.const.modified.event.id;
                 var e = pages.const.event;
                 $(document)
                     .on(e.content.state + id, _.bind(this.reload, this))
@@ -40,17 +38,17 @@
             beforeClose: function () {
                 this.beforeHideTab();
                 var e = pages.const.event;
-                var id = tools.const.modified.event.id;
+                var id = site.const.modified.event.id;
                 $(document)
                     .off(e.content.state + id)
                     .off(e.site.changed + id);
             },
 
             initContent: function (options) {
-                var c = tools.const.modified.page;
+                var c = site.const.modified.page;
                 pages.releases.ModifiedPages.prototype.initialize.call(this, options);
                 this.sitePath = this.$('.' + c.base).data('path');
-                this.$filter = this.$('.composum-pages-site-tools-page_filter');
+                this.$filter = this.$('.composum-pages-site-view-page_filter');
                 this.$filter.find('a').click(_.bind(this.doFilter, this));
                 this.$previewEntry = [];
                 this.$('.' + c.base + c._entry).click(_.bind(this.pagePreview, this));
@@ -67,7 +65,7 @@
             },
 
             pagePreview: function (event) {
-                var c = tools.const.modified.page;
+                var c = site.const.modified.page;
                 var $entry = $(event.currentTarget);
                 var path = $entry.data('path');
                 var $listEntry = $entry.closest('.' + c.base + c._listentry);
@@ -106,7 +104,7 @@
                 this.closePreview();
                 var params = type ? '?type=' + type : '';
                 params += filter ? ((type ? '&' : '?') + 'filter=' + filter) : '';
-                var c = tools.const.modified.uri;
+                var c = site.const.modified.uri;
                 core.getHtml(c.load + this.contextTabs.reference.path + params,
                     undefined, undefined, _.bind(function (data) {
                         if (data.status === 200) {
@@ -123,13 +121,13 @@
          * register these tools as a pages context tool for initialization after load of the context tools set
          */
         pages.contextTools.addTool(function (contextTabs) {
-            var c = tools.const.modified;
-            var panel = core.getWidget(contextTabs.el, '.' + c.tools.base, tools.ModifiedPages);
+            var c = site.const.modified;
+            var panel = core.getWidget(contextTabs.el, '.' + c.tools.base, site.ModifiedPages);
             if (panel) {
                 panel.contextTabs = contextTabs;
             }
             return panel;
         });
 
-    })(window.composum.pages.tools, window.composum.pages, window.core);
-})(window);
+    })(CPM.pages.tools.site, CPM.pages, CPM.core);
+})();

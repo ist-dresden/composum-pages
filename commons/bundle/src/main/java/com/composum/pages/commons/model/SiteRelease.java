@@ -39,6 +39,7 @@ public class SiteRelease extends AbstractModel implements Comparable<SiteRelease
     private transient Calendar creationDate;
     private transient Calendar lastModified;
 
+    private transient SiteRelease previousRelease;
     private transient Map<String, String> nextReleaseNumbers;
 
     public static boolean isSiteRelease(Resource resource) {
@@ -93,6 +94,20 @@ public class SiteRelease extends AbstractModel implements Comparable<SiteRelease
 
     public boolean isPreview() {
         return getCategories().contains(AccessMode.PREVIEW.name().toLowerCase());
+    }
+
+    public SiteRelease getPreviousRelease() {
+        if (previousRelease == null) {
+            try {
+                StagingReleaseManager.Release previous = getStagingRelease().getPreviousRelease();
+                if (previous != null) {
+                    previousRelease = new SiteRelease(getContext(), previous);
+                }
+            } catch (RepositoryException ex) {
+                LOG.error(ex.getMessage(), ex);
+            }
+        }
+        return previousRelease;
     }
 
     public Map<String, String> getNextReleaseNumbers() {

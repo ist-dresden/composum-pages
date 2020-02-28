@@ -16,7 +16,7 @@
         <div class="row">
             <div class="${modelCSS} col col-xs-12">
                 <h2 class="${modelCSS}_title">${cpn:text(model.site.title)}
-                    <span class="${modelCSS}_title-type">(Site:${cpn:path(model.site.path)})</span></h2>
+                    <span class="${modelCSS}_title-type">[${cpn:text(model.site.path)}]</span></h2>
                 <sling:call script="content.jsp"/>
             </div>
         </div>

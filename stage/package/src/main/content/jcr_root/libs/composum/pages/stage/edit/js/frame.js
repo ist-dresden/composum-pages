@@ -3,7 +3,7 @@
  */
 (function () {
     'use strict';
-    CPM.namespace('composum.pages');
+    CPM.namespace('pages');
 
     (function (pages, core) {
 
@@ -435,7 +435,7 @@
                         case t.dialog.custom:
                             // opens an custom dialog with an evaluated dialog type ('class')
                             this.log.frame.trace('frame.message.on.dialog.custom(' + message[2] + ')');
-                            core.openLoadedDialog(args.url, eval(args.type), args.config,
+                            pages.dialogHandler.openLoadedDialog(args.url, eval(args.type), args.config,
                                 args.init ? eval(args.init) : undefined,
                                 args.trigger ? function () {
                                     pages.trigger(args.trigger.context, args.trigger.event, args.trigger.args);
@@ -489,4 +489,4 @@
         pages.editFrame = core.getView('.' + pages.const.frameWrapperClass, pages.EditFrame);
 
     })(CPM.pages, CPM.core);
-})(window);
+})();

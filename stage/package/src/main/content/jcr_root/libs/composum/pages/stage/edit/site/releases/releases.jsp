@@ -18,11 +18,11 @@
                 </div>
                 <div role="group" class="${siteCSS}_btn-group btn-group">
                     <button type="button"
-                            class="${siteCSS}_releases_public btn btn-default release-public"
+                            class="${siteCSS}_releases_public btn btn-primary release-public"
                             title="${cpn:i18n(slingRequest,'Switch Public Release to the selected release (publish)')}...">
                         <i class="fa fa-globe"></i>${cpn:i18n(slingRequest,'Public')}</button>
                     <button type="button"
-                            class="${siteCSS}_releases_preview btn btn-default release-preview"
+                            class="${siteCSS}_releases_preview btn btn-primary release-preview"
                             title="${cpn:i18n(slingRequest,'Switch Preview Release to the selected release')}..."><i
                             class="fa fa-eye"></i>${cpn:i18n(slingRequest,'Preview')}</button>
                 </div>

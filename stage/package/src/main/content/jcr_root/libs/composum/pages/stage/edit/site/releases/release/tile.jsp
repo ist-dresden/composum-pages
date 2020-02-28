@@ -20,7 +20,7 @@
                       i18n="true" value="${model.release.creationDateString}"/>
             <cpn:div test="${model.release.current}" class="${modelCSS}-actions btn-group" role="group"
                      aria-label="...">
-                <button type="button" class="btn btn-default release-finalize"><i
+                <button type="button" class="btn btn-success release-finalize"><i
                         class="fa fa-flag-checkered"></i>${cpn:i18n(slingRequest,'Finalize')}</button>
             </cpn:div>
         </div>

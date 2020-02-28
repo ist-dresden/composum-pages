@@ -156,10 +156,10 @@
     .composum-pages-edit-widget {
 
         &_radio-group {
-            margin: 5px 0 15px 10px;
+            margin: 5px 0 -4px 10px;
 
             .radio {
-                margin: 0 0 5px;
+                margin: 0 0 2px;
 
                 .value {
                     display: inline-block;
@@ -173,6 +173,7 @@
                     padding: 0;
                     text-shadow: none;
                     box-shadow: none;
+                    white-space: nowrap;
                     @include hint-font;
                     color: #777;
                 }
@@ -180,7 +181,7 @@
         }
 
         &_category-set {
-            margin: 0 0 15px;
+            margin: 0;
 
             .label {
                 position: relative;

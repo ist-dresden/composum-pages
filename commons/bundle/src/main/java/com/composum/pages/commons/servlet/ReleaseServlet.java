@@ -8,11 +8,14 @@ import com.composum.sling.core.servlet.AbstractServiceServlet;
 import com.composum.sling.core.servlet.ServletOperation;
 import com.composum.sling.core.servlet.ServletOperationSet;
 import com.composum.sling.core.servlet.Status;
-import com.composum.sling.core.util.ResourceUtil;
+import com.composum.sling.core.util.RequestUtil;
+import com.composum.sling.core.util.XSS;
+import com.composum.sling.platform.security.AccessMode;
+import com.composum.sling.platform.staging.ReleaseChangeEventListener;
 import com.composum.sling.platform.staging.ReleaseChangeEventPublisher;
 import com.composum.sling.platform.staging.ReleaseNumberCreator;
 import com.composum.sling.platform.staging.StagingReleaseManager;
-import com.composum.sling.platform.staging.impl.StagingUtils;
+import com.composum.sling.platform.staging.StagingReleaseManager.Release;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.SlingHttpServletRequest;
@@ -37,7 +40,12 @@ import javax.servlet.ServletException;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Objects;
-import java.util.regex.Matcher;
+
+import static com.composum.sling.core.util.CoreConstants.JCR_DESCRIPTION;
+import static com.composum.sling.core.util.CoreConstants.JCR_TITLE;
+import static com.composum.sling.platform.staging.StagingConstants.CURRENT_RELEASE;
+import static com.composum.sling.platform.staging.impl.PlatformStagingServlet.getReleaseKey;
+import static org.apache.jackrabbit.JcrConstants.JCR_LASTMODIFIED;
 
 /**
  * @author Mirko Zeibig
@@ -54,9 +62,10 @@ public class ReleaseServlet extends AbstractServiceServlet {
 
     private static final Logger LOG = LoggerFactory.getLogger(ReleaseServlet.class);
 
-    public static final String PARAM_RELEASE_KEY = "releaseKey";
-
     public static final String PARAM_NUMBER = "number";
+
+    public static final String PARAM_PUBLISH = "publish";
+    public static final String PARAM_CURRENT = "current";
 
     protected BundleContext bundleContext;
 
@@ -134,21 +143,23 @@ public class ReleaseServlet extends AbstractServiceServlet {
 
                         if (status.isValid()) {
 
-                            final String title = request.getParameter(ResourceUtil.JCR_TITLE);
-                            final String description = request.getParameter(ResourceUtil.JCR_DESCRIPTION);
-
                             ReleaseNumberCreator releaseType;
                             try {
                                 releaseType = ReleaseNumberCreator.valueOf(numberPolicy);
                             } catch (IllegalArgumentException e) {
-                                releaseType = ReleaseNumberCreator.MAJOR;
+                                releaseType = ReleaseNumberCreator.BUGFIX;
                             }
 
-                            StagingReleaseManager.Release release =
-                                    releaseManager.finalizeCurrentRelease(Objects.requireNonNull(resource), releaseType);
+                            Release release = releaseManager
+                                    .finalizeCurrentRelease(Objects.requireNonNull(resource), releaseType);
                             LOG.info("Release created {}", release);
 
                             changeReleaseMetadata(request, release);
+
+                            releaseToStage(release,
+                                    XSS.filter(request.getParameterValues(PARAM_PUBLISH)));
+                            releaseToStage(releaseManager.findRelease(resource, CURRENT_RELEASE),
+                                    XSS.filter(request.getParameterValues(PARAM_CURRENT)));
 
                             request.getResourceResolver().commit();
                         }
@@ -165,6 +176,18 @@ public class ReleaseServlet extends AbstractServiceServlet {
         }
     }
 
+    protected void releaseToStage(@Nullable Release release, @Nullable String[] stages)
+            throws ReleaseChangeEventListener.ReplicationFailedException, RepositoryException {
+        if (release != null && stages != null && stages.length > 0) {
+            for (String stage : stages) {
+                LOG.info("Publishing release '{}' to stage '{}'.", release, stage);
+                stage = AccessMode.valueOf(stage.toUpperCase()).name().toLowerCase();
+                // replication is triggered by setMark via the ReleaseChangeEventListener .
+                releaseManager.setMark(stage, release);
+            }
+        }
+    }
+
     protected class ChangeMetadata implements ServletOperation {
 
         @Override
@@ -175,7 +198,7 @@ public class ReleaseServlet extends AbstractServiceServlet {
             Status status = new Status(request, response);
             if (resource != null && resource.isValid()) {
                 try {
-                    StagingReleaseManager.Release release = getRelease(request, response, resource, status);
+                    Release release = getRelease(request, response, resource, status);
                     if (release != null) {
                         changeReleaseMetadata(request, release);
                         LOG.info("Release changed {}", release);
@@ -201,7 +224,7 @@ public class ReleaseServlet extends AbstractServiceServlet {
             Status status = new Status(request, response);
             if (resource != null && resource.isValid()) {
                 try {
-                    StagingReleaseManager.Release release = getRelease(request, response, resource, status);
+                    Release release = getRelease(request, response, resource, status);
                     if (release != null) {
                         releaseManager.deleteRelease(release);
                         LOG.info("Release deleted {}", release);
@@ -221,27 +244,23 @@ public class ReleaseServlet extends AbstractServiceServlet {
     }
 
     protected void changeReleaseMetadata(@Nonnull final SlingHttpServletRequest request,
-                                         @Nonnull final StagingReleaseManager.Release release)
+                                         @Nonnull final Release release)
             throws RepositoryException {
 
-        final String title = request.getParameter(ResourceUtil.JCR_TITLE);
-        final String description = request.getParameter(ResourceUtil.JCR_DESCRIPTION);
+        final String title = RequestUtil.getParameter(request, JCR_TITLE, "");
+        final String description = RequestUtil.getParameter(request, JCR_DESCRIPTION, "");
 
         ResourceHandle metaData = ResourceHandle.use(release.getMetaDataNode());
-        if (StringUtils.isNotBlank(title)) {
-            metaData.setProperty(ResourceUtil.JCR_TITLE, title);
-        }
-        if (StringUtils.isNotBlank(description)) {
-            metaData.setProperty(ResourceUtil.JCR_DESCRIPTION, description);
-        }
-        metaData.setProperty(JcrConstants.JCR_LASTMODIFIED, Calendar.getInstance());
-        metaData.setProperty(JcrConstants.JCR_LASTMODIFIED + "By", request.getResourceResolver().getUserID());
+        metaData.setProperty(JCR_TITLE, StringUtils.isNotBlank(title) ? title : null);
+        metaData.setProperty(JCR_DESCRIPTION, StringUtils.isNotBlank(description) ? description : null);
+        metaData.setProperty(JCR_LASTMODIFIED, Calendar.getInstance());
+        metaData.setProperty(JCR_LASTMODIFIED + "By", request.getResourceResolver().getUserID());
     }
 
-    protected StagingReleaseManager.Release getRelease(@Nonnull final SlingHttpServletRequest request,
-                                                       @Nonnull final SlingHttpServletResponse response,
-                                                       @Nonnull final ResourceHandle resource,
-                                                       @Nonnull final Status status) {
+    protected Release getRelease(@Nonnull final SlingHttpServletRequest request,
+                                 @Nonnull final SlingHttpServletResponse response,
+                                 @Nonnull final ResourceHandle resource,
+                                 @Nonnull final Status status) {
         Site site = getReleaseSite(request, response, resource, status);
         if (site != null) {
             String releaseKey = getReleaseKey(request, resource, status);
@@ -254,26 +273,10 @@ public class ReleaseServlet extends AbstractServiceServlet {
         return null;
     }
 
-    protected String getReleaseKey(@Nonnull final SlingHttpServletRequest request,
-                                   @Nullable final Resource resource, @Nonnull final Status status) {
-        String releaseKey = request.getParameter(PARAM_RELEASE_KEY);
-        if (releaseKey == null && resource != null) {
-            final String path = resource.getPath();
-            final Matcher pathMatcher = StagingUtils.RELEASE_PATH_PATTERN.matcher(path);
-            if (pathMatcher.matches()) {
-                final String sitePath = pathMatcher.group(1);
-                releaseKey = pathMatcher.group(2);
-            } else {
-                status.error("no release path ({})", path);
-            }
-        }
-        return releaseKey;
-    }
-
     protected Site getReleaseSite(@Nonnull final SlingHttpServletRequest request,
                                   @Nonnull final SlingHttpServletResponse response,
                                   @Nonnull Resource resource, @Nonnull final Status status) {
-        String path = request.getParameter(PARAM_PATH);
+        String path = XSS.filter(request.getParameter(PARAM_PATH));
         if (path != null) {
             final ResourceResolver resourceResolver = request.getResourceResolver();
             resource = resourceResolver.getResource(path);

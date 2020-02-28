@@ -96,6 +96,11 @@
 
     <releases jcr:primaryType="sling:Folder"><!-- version tools -->
 
+        <preview jcr:primaryType="sling:MessageEntry"
+                sling:key="preview" sling:message="Vorschau"/>
+        <public jcr:primaryType="sling:MessageEntry"
+                sling:key="public" sling:message="publiziert"/>
+
         <Activate-Content jcr:primaryType="sling:MessageEntry"
                 sling:key="Activate Content" sling:message="Inhalt Aktivieren"/>
         <Deactivate-Content jcr:primaryType="sling:MessageEntry"
@@ -116,6 +121,14 @@
         <Modified jcr:primaryType="sling:MessageEntry"
                 sling:key="Modified" sling:message="Geändert"/>
 
+        <Number jcr:primaryType="sling:MessageEntry"
+                sling:key="Number" sling:message="Nummer"/>
+
+        <Finalize jcr:primaryType="sling:MessageEntry"
+                sling:key="Finalize" sling:message="Vollenden"/>
+        <Finalize_Release jcr:primaryType="sling:MessageEntry"
+                sling:key="Finalize Release" sling:message="'Release' Vollenden"/>
+
         <release jcr:primaryType="sling:MessageEntry"
                 sling:key="release" sling:message="Release"/>
         <release-list jcr:primaryType="sling:MessageEntry"
@@ -124,6 +137,8 @@
                 sling:key="current" sling:message="aktuell"/>
         <Current jcr:primaryType="sling:MessageEntry"
                 sling:key="Current" sling:message="Aktuell"/>
+        <current_Release jcr:primaryType="sling:MessageEntry"
+                sling:key="'current' Release" sling:message="'current'-Release"/>
         <activated-pages jcr:primaryType="sling:MessageEntry"
                 sling:key="Activated Pages" sling:message="Aktivierte Seiten"/>
         <activated-hint jcr:primaryType="sling:MessageEntry"
@@ -138,10 +153,6 @@
         <modified-hint jcr:primaryType="sling:MessageEntry"
                 sling:key="modified but last changes not activated yet"
                 sling:message="seit der letzten Änderung noch nicht aktiviert"/>
-        <preview jcr:primaryType="sling:MessageEntry"
-                sling:key="preview" sling:message="Vorschau"/>
-        <public jcr:primaryType="sling:MessageEntry"
-                sling:key="public" sling:message="publiziert"/>
 
         <release-edit jcr:primaryType="sling:MessageEntry"
                 sling:key="Edit Release properties" sling:message="Die Release-Eigenschaften bearbeiten"/>
@@ -160,6 +171,23 @@
         <release-delete-marked-error jcr:primaryType="sling:MessageEntry"
                 sling:key="Cannot delete a release marked with preview or public."
                 sling:message="Ein Release, dass als public oder preview gekennzeichnet ist, kann nicht gelöscht werden."/>
+
+        <finalize-number-major jcr:primaryType="sling:MessageEntry"
+                sling:key="major / essential" sling:message="essentielle Änderungen"/>
+        <finalize-number-minor jcr:primaryType="sling:MessageEntry"
+                sling:key="minor / modification" sling:message="normale Modifikation"/>
+        <finalize-number-bugfix jcr:primaryType="sling:MessageEntry"
+                sling:key="bugfix / correction" sling:message="Fehler- / Korrektur"/>
+        <finalize-number-hint jcr:primaryType="sling:MessageEntry"
+                sling:key="The release number is built by incrementing the number of the last release at the segment you've chosen."
+                sling:message="Die Release-Nummer wird durch Hochzählen der Zahl des gewählten Segments gebildet."/>
+        <finalize-release-publish jcr:primaryType="sling:MessageEntry"
+                sling:key="If the finalized release should be published imediately select the designated stages..."
+                sling:message="Wenn das fertige Release sofort publiziert werden soll, wählen Sie die vorgesehene 'Stage'..."/>
+        <finalize-current-publish jcr:primaryType="sling:MessageEntry"
+                sling:key="If the next open release should be published imediately select its designated stages also..."
+                sling:message="Wenn das nächste, offene Release zugleich publiziert sein soll, wählen Sie dessen 'Stage' ebenfalls..."/>
+
     </releases>
 
     <site jcr:primaryType="sling:Folder"><!-- Site actions -->
