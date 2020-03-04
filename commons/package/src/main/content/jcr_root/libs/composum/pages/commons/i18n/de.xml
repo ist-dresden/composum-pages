@@ -94,6 +94,15 @@
         <current-title jcr:primaryType="sling:MessageEntry"
                 sling:key="the open next release" sling:message="das offene, nächste Release"/>
 
+        <Replication_Configuration jcr:primaryType="sling:MessageEntry"
+                sling:key="Replication Configuration" sling:message="Replikationskonfiguration"/>
+        <In-Place_replication jcr:primaryType="sling:MessageEntry"
+                sling:key="In-Place replication" sling:message="In-Place-Replikation"/>
+        <Versions_resolver jcr:primaryType="sling:MessageEntry"
+                sling:key="Versions resolver" sling:message="Inhaltsversionen"/>
+        <Live_immediately jcr:primaryType="sling:MessageEntry"
+                sling:key="Live immediately" sling:message="unmittelbar Live"/>
+
     </release>
 
     <components jcr:primaryType="sling:Folder"><!-- component editing -->

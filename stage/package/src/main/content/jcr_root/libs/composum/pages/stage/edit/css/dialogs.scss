@@ -159,7 +159,8 @@
 
         &_tabs {
             display: none;
-            margin-bottom: $bootstrap-spacing-v;
+            margin: 0 (-$bootstrap-spacing-h) $bootstrap-spacing-v;
+            padding: 0 $bootstrap-spacing-h;
             @include clear-after;
 
             .has-error {

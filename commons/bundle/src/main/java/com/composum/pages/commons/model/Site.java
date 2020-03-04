@@ -1,5 +1,6 @@
 package com.composum.pages.commons.model;
 
+import com.composum.pages.commons.PagesConfiguration;
 import com.composum.pages.commons.model.properties.Language;
 import com.composum.pages.commons.replication.ReplicationManager;
 import com.composum.pages.commons.request.DisplayMode;
@@ -29,6 +30,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.composum.pages.commons.PagesConstants.DEFAULT_HOMEPAGE_PATH;
@@ -69,6 +71,7 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
     // site attributes
 
     private transient String publicMode;
+    private transient Map<String, String> publicModeOptions;
     private transient Homepage homepage;
 
     private transient List<ContentVersion> modifiedContent;
@@ -235,6 +238,14 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
             publicMode = getProperty(PROP_PUBLIC_MODE, null, DEFAULT_PUBLIC_MODE);
         }
         return publicMode;
+    }
+
+    @Nonnull
+    public Map<String, String> getPublicModeOptions() {
+        if (publicModeOptions == null) {
+            publicModeOptions = context.getService(PagesConfiguration.class).getPublicModeOptions(context.getRequest());
+        }
+        return publicModeOptions;
     }
 
     @Nonnull
