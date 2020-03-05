@@ -17,11 +17,7 @@ import com.composum.sling.platform.staging.ReleaseChangeProcess;
 import com.composum.sling.platform.staging.StagingReleaseManager;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.sling.api.resource.LoginException;
-import org.apache.sling.api.resource.ModifiableValueMap;
-import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.resource.ResourceResolverFactory;
+import org.apache.sling.api.resource.*;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -30,24 +26,10 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.composum.sling.platform.staging.ReleaseChangeProcess.ReleaseChangeProcessorState.awaiting;
-import static com.composum.sling.platform.staging.ReleaseChangeProcess.ReleaseChangeProcessorState.error;
-import static com.composum.sling.platform.staging.ReleaseChangeProcess.ReleaseChangeProcessorState.idle;
-import static com.composum.sling.platform.staging.ReleaseChangeProcess.ReleaseChangeProcessorState.processing;
-import static com.composum.sling.platform.staging.ReleaseChangeProcess.ReleaseChangeProcessorState.success;
+import static com.composum.sling.platform.staging.ReleaseChangeProcess.ReleaseChangeProcessorState.*;
 import static com.composum.sling.platform.staging.StagingConstants.PROP_CHANGE_NUMBER;
 import static com.composum.sling.platform.staging.StagingConstants.PROP_LAST_REPLICATION_DATE;
 import static java.util.Objects.requireNonNull;
@@ -280,6 +262,13 @@ public class PagesReleaseServiceImpl implements ReleaseChangeEventListener, Page
         @Override
         public String getType() {
             return TYPE_INPLACE;
+        }
+
+        @Override
+        public void abort() {
+            if (isEnabled() && isActive()) {
+                abortAtNextPossibility = true;
+            }
         }
 
         @Override

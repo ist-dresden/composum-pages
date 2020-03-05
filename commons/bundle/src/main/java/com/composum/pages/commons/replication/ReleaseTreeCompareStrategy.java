@@ -37,11 +37,13 @@ import static com.composum.sling.platform.staging.StagingConstants.PROP_REPLICAT
  * Some algorithms to compare two release trees. This is a separate class mostly to avoid passing around many
  * parameters.
  */
-class ReleaseTreeCompareStrategy {
+public class ReleaseTreeCompareStrategy {
 
     private static final Logger LOG = LoggerFactory.getLogger(ReleaseTreeCompareStrategy.class);
 
-    /** {@link ResourceFilter} that returns true for versionables. */
+    /**
+     * {@link ResourceFilter} that returns true for versionables.
+     */
     protected final ResourceFilter VERSIONABLE_FILTER =
             new ResourceFilter.NodeTypeFilter(new StringFilter.WhiteList(ResourceUtil.MIX_VERSIONABLE));
 
