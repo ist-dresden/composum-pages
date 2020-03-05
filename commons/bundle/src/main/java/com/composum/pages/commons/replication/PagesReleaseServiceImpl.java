@@ -67,6 +67,11 @@ public class PagesReleaseServiceImpl implements ReleaseChangeEventListener, Page
 
     private static final Logger LOG = LoggerFactory.getLogger(PagesReleaseServiceImpl.class);
 
+    /**
+     * {@link ReleaseChangeProcess#getType()} for this kind of replication.
+     */
+    public static final String TYPE_INPLACE = "In-Place";
+
     @Reference
     protected ReplicationManager replicationManager;
 
@@ -270,6 +275,11 @@ public class PagesReleaseServiceImpl implements ReleaseChangeEventListener, Page
         @Override
         public String getDescription() {
             return "In-place replication";
+        }
+
+        @Override
+        public String getType() {
+            return TYPE_INPLACE;
         }
 
         @Override
