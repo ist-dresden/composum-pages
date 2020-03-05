@@ -108,6 +108,9 @@
                             <root>/libs/composum/pages/commons</root>
                         </filter>
                         <filter>
+                            <root>/libs/composum/pages/stage/none</root>
+                        </filter>
+                        <filter>
                             <root>/oak:index/lucene/aggregates/cpp:PageContent</root>
                         </filter>
                         <filter>
