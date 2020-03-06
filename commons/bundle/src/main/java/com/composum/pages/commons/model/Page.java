@@ -49,6 +49,7 @@ import static com.composum.pages.commons.PagesConstants.PROP_PAGE_LANGUAGES;
 import static com.composum.pages.commons.PagesConstants.PROP_SLING_TARGET;
 import static com.composum.pages.commons.PagesConstants.PROP_THEME_CATEGORY;
 import static com.composum.pages.commons.PagesConstants.PROP_VIEW_CATEGORY;
+import static java.lang.Boolean.FALSE;
 
 @PropertyDetermineResourceStrategy(Page.ContainingPageResourceStrategy.class)
 public class Page extends ContentDriven<PageContent> implements Comparable<Page> {
@@ -129,7 +130,7 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
             languages = Page.this.getLanguages();
             languageKeys = Page.this.getProperty(PROP_PAGE_LANGUAGES, null, new String[0]);
             isLanguageRoot = (languageKeys.length > 0);
-            isLanguageSplit = Boolean.FALSE;
+            isLanguageSplit = FALSE;
             if (!isLanguageRoot) {
                 languageKeys = getInherited(PROP_PAGE_LANGUAGES, null, new String[0]);
             }
@@ -153,7 +154,7 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
             }
             if (languageSet == null) {
                 languageSet = languages.getLanguageSet();
-                isLanguageRoot = Page.this.getPath().equals(getSite().getConfiguredHome());
+                isLanguageRoot = Boolean.FALSE;
             }
         }
 

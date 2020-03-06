@@ -307,7 +307,7 @@
             if (!locale) {
                 locale = pages.getLocale();
             }
-            var url = core.getContextUrl((path || pages.current.page) + '.html');
+            var url = core.getContextUrl(core.encodePath(path || pages.current.page) + '.html');
             if (locale !== pages.current.localeDefault) {
                 url += '?pages.locale=' + locale;
             }
