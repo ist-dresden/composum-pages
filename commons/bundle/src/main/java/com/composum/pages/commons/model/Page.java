@@ -153,12 +153,12 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
             }
             if (languageSet == null) {
                 languageSet = languages.getLanguageSet();
-                isLanguageRoot = Boolean.FALSE;
+                isLanguageRoot = Page.this.getPath().equals(getSite().getConfiguredHome());
             }
         }
 
         public boolean contains(Language language) {
-            return languageSet.get(language.getKey()) != null;
+            return languageSet.find(language.getKey()) != null;
         }
 
         public String[] getLanguageKeys() {

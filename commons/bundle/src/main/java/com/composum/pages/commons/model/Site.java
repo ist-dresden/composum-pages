@@ -189,7 +189,7 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
     public Homepage getHomepage(Locale locale) {
         if (homepage == null) {
             PageManager pageManager = getPageManager();
-            String homepagePath = getProperty(PROP_HOMEPAGE, null, DEFAULT_HOMEPAGE_PATH);
+            String homepagePath = getConfiguredHome();
             Resource homepageRes = resource.getChild(homepagePath);
             if (homepageRes != null) {
                 LanguageRoot languageRoot = new LanguageRoot(context, homepageRes);
@@ -204,6 +204,10 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
             }
         }
         return homepage;
+    }
+
+    public String getConfiguredHome() {
+        return getProperty(PROP_HOMEPAGE, null, DEFAULT_HOMEPAGE_PATH);
     }
 
     /**

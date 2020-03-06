@@ -187,7 +187,7 @@ public class LanguageRoot extends GenericModel {
         for (Resource child : getLanguageSiblingsParent().getChildren()) {
             if (Page.isPage(child)) {
                 Page page = getPageManager().createBean(getContext(), child);
-                if (page.getPageLanguages().contains(language)) {
+                if (page.isLanguageRoot() && page.getPageLanguages().contains(language)) {
                     return page;
                 }
             }
