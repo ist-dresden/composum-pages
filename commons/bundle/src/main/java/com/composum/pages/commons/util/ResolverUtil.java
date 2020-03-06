@@ -29,6 +29,10 @@ public class ResolverUtil {
                 String path = matcher.group(4);
                 Resource res = resolver.resolve(path);
                 if (ResourceUtil.isNonExistingResource(res)) {
+                    path = LinkUtil.decodePath(path);
+                    res = resolver.resolve(path);
+                }
+                if (ResourceUtil.isNonExistingResource(res)) {
                     int namePos = path.lastIndexOf('/') + 1;
                     int extPos = path.lastIndexOf('.', namePos);
                     if (extPos > namePos) {
