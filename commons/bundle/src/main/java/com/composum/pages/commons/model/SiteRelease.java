@@ -11,6 +11,7 @@ import com.composum.sling.platform.staging.StagingReleaseManager;
 import com.composum.sling.platform.staging.impl.StagingUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.CompareToBuilder;
+import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.resource.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,7 +73,7 @@ public class SiteRelease extends AbstractModel implements Comparable<SiteRelease
     @Override
     protected void initializeWithResource(@Nonnull Resource releaseMetadataNode) {
         super.initializeWithResource(releaseMetadataNode);
-        creationDate = getProperty("jcr:created", Calendar.class);
+        creationDate = getProperty(JcrConstants.JCR_CREATED, Calendar.class);
     }
 
     /**

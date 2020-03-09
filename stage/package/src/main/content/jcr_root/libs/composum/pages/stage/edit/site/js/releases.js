@@ -241,21 +241,21 @@
                     }
                     var u = releases.const.url.release;
                     var url = u.root + u._publish + '.' + stage + '.html' + selection.path;
-                    this.openCustomDialog(url,
+                    pages.hybrid.openCustomDialog(url,
                         'CPM.platform.services.replication.PublishDialog',
                         config, undefined,
                         {
                             context: 'releases.change',
                             event: (pages.elements ? pages.elements : pages).const.event.site.changed,
                             args: [this.sitePath]
-                        })
+                        });
                 }
             },
 
             doFinalize: function (event) {
                 event.preventDefault();
                 var u = releases.const.url.release;
-                this.openCustomDialog(u.root + u._finalize + this.sitePath,
+                pages.hybrid.openCustomDialog(u.root + u._finalize + this.sitePath,
                     'CPM.pages.tools.site.FinalizeDialog',
                     undefined, undefined, {
                         context: 'release.finalize',
@@ -297,32 +297,33 @@
                     path: this.sitePath
                 });
                 if (selection && selection.path) {
-                    if (pages.elements) { // context is a page
-                        pages.elements.openEditDialog({
-                            path: selection.path
-                        }, {
-                            url: u.root + type
-                        });
-                    } else { // context is the stage edit frame
-                        pages.dialogs.openEditDialog(selection.key, selection.path, undefined/*type*/,
-                            undefined/*context*/, u.root + type);
-                    }
-                }
-            },
-
-            openCustomDialog: function (url, type, config, init, trigger) {
-                if (pages.elements) { // context is a page
-                    pages.elements.openCustomDialog(url, type, config, init, trigger);
-                } else { // context is the stage edit frame
-                    pages.dialogHandler.openLoadedDialog(url, eval(type), config, init ? eval(init) : undefined,
-                        trigger ? function () {
-                            pages.trigger(trigger.context, trigger.event, trigger.args);
-                        } : undefined);
+                    pages.hybrid.openEditDialog(u.root + type, selection.path);
                 }
             }
         });
 
         releases.siteReleases = core.getView('.releasesList', releases.SiteReleases);
+
+        releases.ReplicationStatus = CPM.platform.services.replication.Status.extend({
+
+            /**
+             * @override CPM.platform.services.replication.Status to support opening dialog always in the edit frame
+             */
+            openPublishDialog: function (releasePath, callback) {
+                var u = CPM.platform.services.replication.const.url;
+                var url = u.base + u._dialog + '.html' + releasePath;
+                pages.hybrid.openCustomDialog(url,
+                    'CPM.platform.services.replication.PublishDialog',
+                    undefined, undefined, {
+                        context: 'release.replication',
+                        event: (pages.elements ? pages.elements : pages).const.event.site.changed,
+                        args: [this.data.path]
+                    });
+            }
+        });
+
+        releases.publicStatus = core.getView('.composum-platform-replication-status_stage-public', releases.ReplicationStatus);
+        releases.previewStatus = core.getView('.composum-platform-replication-status_stage-preview', releases.ReplicationStatus);
 
     })(CPM.pages.releases, CPM.pages, CPM.core.components, CPM.core);
 })();
