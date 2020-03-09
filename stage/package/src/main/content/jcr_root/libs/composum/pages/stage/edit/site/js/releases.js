@@ -311,10 +311,14 @@
              */
             openPublishDialog: function (releasePath, callback) {
                 var u = CPM.platform.services.replication.const.url;
-                var url = u.base + u._dialog + '.html' + releasePath;
+                var url = u.base + u._dialog + '.' + this.data.stage + '.html' + releasePath;
                 pages.hybrid.openCustomDialog(url,
-                    'CPM.platform.services.replication.PublishDialog',
-                    undefined, undefined, {
+                    'CPM.platform.services.replication.PublishDialog', {
+                        currentKey: this.data.releaseKey,
+                        currentLabel: this.data.releaseLabel,
+                        targetKey: this.data.releaseKey,
+                        tagretLabel: this.data.releaseLabel
+                    }, undefined, {
                         context: 'release.replication',
                         event: (pages.elements ? pages.elements : pages).const.event.site.changed,
                         args: [this.data.path]
