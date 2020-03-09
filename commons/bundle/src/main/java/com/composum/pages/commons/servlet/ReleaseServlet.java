@@ -10,7 +10,6 @@ import com.composum.sling.core.servlet.ServletOperationSet;
 import com.composum.sling.core.servlet.Status;
 import com.composum.sling.core.util.ResourceUtil;
 import com.composum.sling.platform.security.AccessMode;
-import com.composum.sling.platform.staging.ReleaseChangeEventPublisher;
 import com.composum.sling.platform.staging.ReleaseNumberCreator;
 import com.composum.sling.platform.staging.StagingReleaseManager;
 import com.composum.sling.platform.staging.impl.StagingUtils;
@@ -37,8 +36,6 @@ import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import java.io.IOException;
 import java.util.Calendar;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Matcher;
 
@@ -69,15 +66,11 @@ public class ReleaseServlet extends AbstractServiceServlet {
     @Reference
     private StagingReleaseManager releaseManager;
 
-    @Reference
-    private ReleaseChangeEventPublisher releasePublisher;
-
     enum Extension {
         json
     }
 
     enum Operation {
-        state,
         finalize,
         change,
         delete,
@@ -96,9 +89,6 @@ public class ReleaseServlet extends AbstractServiceServlet {
     @Override
     public void init() throws ServletException {
         super.init();
-
-        // GET
-        operations.setOperation(ServletOperationSet.Method.GET, Extension.json, Operation.state, new GetReplicationState());
 
         // POST
         operations.setOperation(ServletOperationSet.Method.POST, Extension.json, Operation.finalize, new FinalizeRelease());
@@ -122,62 +112,6 @@ public class ReleaseServlet extends AbstractServiceServlet {
     protected ReleaseOperationSet getOperations() {
         return operations;
     }
-
-    //
-    // release state
-    //
-
-    protected class GetReplicationState implements ServletOperation {
-
-        @Override
-        public void doIt(@Nonnull final SlingHttpServletRequest request,
-                         @Nonnull final SlingHttpServletResponse response,
-                         @Nullable final ResourceHandle resource)
-                throws IOException {
-            Status status = new Status(request, response);
-            if (resource != null && resource.isValid()) {
-                ReleaseChangeEventPublisher.AggregatedReplicationStateInfo replState
-                        = releasePublisher.aggregatedReplicationState(resource);
-                if (replState != null) {
-                    Map<String, ReleaseChangeEventPublisher.ReplicationStateInfo> replStateSet
-                            = releasePublisher.replicationState(resource);
-                    Map<String, Object> state = status.data("state");
-                    Map<String, Object> processes = status.data("processes");
-                    state.put("processCount", replState.numberEnabledProcesses);
-                    state.put("allActive", replState.allAreActive);
-                    state.put("synchronized", replState.everythingIsSynchronized);
-                    state.put("running", replState.replicationsAreRunning);
-                    state.put("errors", replState.haveErrors);
-                    for (Map.Entry<String, ReleaseChangeEventPublisher.ReplicationStateInfo> entry : replStateSet.entrySet()) {
-                        Map<String, Object> item = new LinkedHashMap<>();
-                        ReleaseChangeEventPublisher.ReplicationStateInfo info = entry.getValue();
-                        item.put("id", info.id);
-                        item.put("name", info.name);
-                        item.put("description", info.description);
-                        item.put("enabled", info.enabled);
-                        item.put("synchronized", info.isSynchronized);
-                        item.put("active", info.active);
-                        item.put("state", info.state);
-                        item.put("startedAt", info.startedAt);
-                        item.put("finishedAt", info.finishedAt);
-                        item.put("lastReplicationTimestamp", info.lastReplicationTimestamp);
-                        item.put("completionPercentage", info.completionPercentage);
-                        item.put("messages", info.messages);
-                        processes.put(entry.getKey(), item);
-                    }
-                } else {
-                    status.warn("no replication state available for '{}'", resource.getPath());
-                }
-            } else {
-                status.error("requests resource not available");
-            }
-            status.sendJson();
-        }
-    }
-
-    //
-    // publishing
-    //
 
     abstract private class SetReleaseCategory implements ServletOperation {
 
