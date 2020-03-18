@@ -166,7 +166,7 @@ public class PagesReleaseServiceImpl implements ReleaseChangeEventListener, Page
         protected volatile boolean rescheduleNeeded = false;
 
         @Override
-        public void run() {
+        public void runReplication() {
             synchronized (changeLock) {
                 if (changedPaths.isEmpty()) {
                     LOG.info("Nothing to do for {}", getId());
