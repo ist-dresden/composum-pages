@@ -15,6 +15,7 @@ import com.composum.sling.platform.staging.ReleaseChangeEventListener;
 import com.composum.sling.platform.staging.ReleaseChangeEventPublisher;
 import com.composum.sling.platform.staging.ReleaseChangeProcess;
 import com.composum.sling.platform.staging.StagingReleaseManager;
+import com.composum.sling.platform.staging.replication.ReplicationConfig;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.sling.api.resource.*;
@@ -262,6 +263,19 @@ public class PagesReleaseServiceImpl implements ReleaseChangeEventListener, Page
         @Override
         public String getType() {
             return TYPE_INPLACE;
+        }
+
+        @Nonnull
+        @Override
+        public String getReleaseRootPath() {
+            return releaseRootPath;
+        }
+
+        @Nullable
+        @Override
+        public ReplicationConfig getReplicationConfig() {
+            // this class is deprecated, anyway.
+            return null;
         }
 
         @Override
