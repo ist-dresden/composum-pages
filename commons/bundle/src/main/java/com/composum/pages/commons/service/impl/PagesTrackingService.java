@@ -2,23 +2,16 @@ package com.composum.pages.commons.service.impl;
 
 import com.composum.pages.commons.PagesConfiguration;
 import com.composum.pages.commons.model.Page;
-import com.composum.pages.commons.replication.ReplicationManager;
 import com.composum.pages.commons.service.PageManager;
 import com.composum.pages.commons.service.TrackingService;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.util.CoreConstants;
 import com.composum.sling.core.util.ResourceUtil;
-import com.composum.sling.platform.security.AccessMode;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.SlingHttpServletRequest;
-import org.apache.sling.api.resource.LoginException;
-import org.apache.sling.api.resource.ModifiableValueMap;
-import org.apache.sling.api.resource.PersistenceException;
-import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.resource.ResourceResolverFactory;
+import org.apache.sling.api.resource.*;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -37,13 +30,7 @@ import javax.jcr.RepositoryException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpSession;
 import java.io.Serializable;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Formatter;
-import java.util.GregorianCalendar;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import static com.composum.pages.commons.PagesConstants.META_NODE_NAME;
 import static com.composum.pages.commons.PagesConstants.META_NODE_TYPE;
@@ -103,6 +90,7 @@ public class PagesTrackingService implements TrackingService {
             hour = timestamp.get(Calendar.HOUR_OF_DAY);
         }
 
+        @Override
         public String toString() {
             return resource.getPath();
         }
@@ -147,9 +135,6 @@ public class PagesTrackingService implements TrackingService {
     @Reference
     protected PagesConfiguration pagesConfig;
 
-    @Reference
-    protected ReplicationManager replicationManager;
-
     protected Config config;
 
     @Override
@@ -167,11 +152,7 @@ public class PagesTrackingService implements TrackingService {
             Resource resource = resolver.getResource(path);
             if (resource != null) {
 
-                Resource origin = replicationManager.getOrigin(context, resource, AccessMode.PUBLIC);
-                if (origin != null) {
-                    // use origin instead of replicate to track - collect statistics on the author resource
-                    resource = origin;
-                }
+                // FIXME(hps,27.03.20) use origin for tracking if possible
 
                 if (Page.isPage(resource)) {
                     trackPage(new TokenRequest(context, resource, referer));

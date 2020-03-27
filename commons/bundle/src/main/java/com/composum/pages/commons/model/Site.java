@@ -2,7 +2,6 @@ package com.composum.pages.commons.model;
 
 import com.composum.pages.commons.PagesConfiguration;
 import com.composum.pages.commons.model.properties.Language;
-import com.composum.pages.commons.replication.ReplicationManager;
 import com.composum.pages.commons.request.DisplayMode;
 import com.composum.pages.commons.service.PageManager;
 import com.composum.pages.commons.service.SiteManager;
@@ -12,6 +11,7 @@ import com.composum.platform.models.annotations.PropertyDetermineResourceStrateg
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.util.ResourceUtil;
 import com.composum.sling.platform.security.AccessMode;
+import com.composum.sling.platform.staging.ReleaseChangeEventPublisher;
 import com.composum.sling.platform.staging.StagingReleaseManager;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.CompareToBuilder;
@@ -24,19 +24,10 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.jcr.RepositoryException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.composum.pages.commons.PagesConstants.DEFAULT_HOMEPAGE_PATH;
-import static com.composum.pages.commons.PagesConstants.NODE_TYPE_SITE;
-import static com.composum.pages.commons.PagesConstants.NODE_TYPE_SITE_CONFIGURATION;
-import static com.composum.pages.commons.PagesConstants.PROP_HOMEPAGE;
+import static com.composum.pages.commons.PagesConstants.*;
 
 @PropertyDetermineResourceStrategy(Site.ContainingSiteResourceStrategy.class)
 public class Site extends ContentDriven<SiteConfiguration> implements Comparable<Site> {
@@ -256,8 +247,9 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
     public String getStagePath(AccessMode accessMode) {
         switch (getPublicMode()) {
             case PUBLIC_MODE_IN_PLACE:
-                ReplicationManager replicationManager = getContext().getService(ReplicationManager.class);
-                return replicationManager.getReplicationPath(accessMode, getPath());
+                ReleaseChangeEventPublisher releaseChangeEventPublisher = getContext().getService(ReleaseChangeEventPublisher.class);
+                String stagePath = releaseChangeEventPublisher.getStagePath(getResource(), accessMode != null ? accessMode.name().toLowerCase() : null);
+                return StringUtils.defaultIfBlank(stagePath, getPath());
             default:
                 return getPath();
         }
