@@ -11,12 +11,6 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 public @interface PagesReplicationConfig {
 
     @AttributeDefinition(
-            name = "InPlace enabled",
-            description = "the on/off switch for the 'InPlace' replication strategy"
-    )
-    boolean inPlaceEnabled() default true;
-
-    @AttributeDefinition(
             name = "InPlace Preview path",
             description = "the repository root of the 'preview' replication content; default '/preview'"
     )

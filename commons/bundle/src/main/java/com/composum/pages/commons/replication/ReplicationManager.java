@@ -43,11 +43,5 @@ public interface ReplicationManager extends ReleaseMapper {
     @Nullable
     String getReplicationPath(@Nonnull AccessMode accessMode, @Nonnull String path);
 
-    void replicateResource(ReplicationContext context, Resource resource, boolean recursive)
-            throws Exception;
-
-    void replicateReferences(ReplicationContext context)
-            throws Exception;
-
     Resource getOrigin(BeanContext context, Resource replicate, AccessMode accessMode);
 }
