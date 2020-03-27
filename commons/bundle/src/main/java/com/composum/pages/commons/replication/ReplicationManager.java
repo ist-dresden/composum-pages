@@ -10,6 +10,7 @@ import org.apache.sling.api.resource.Resource;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+@Deprecated
 public interface ReplicationManager extends ReleaseMapper {
 
     /**

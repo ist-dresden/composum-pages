@@ -2,6 +2,7 @@ package com.composum.pages.commons.replication;
 
 import org.apache.sling.api.resource.Resource;
 
+@Deprecated
 public interface ReplicationStrategy {
 
     boolean canReplicate(ReplicationContext context, Resource resource, boolean isReferenced);

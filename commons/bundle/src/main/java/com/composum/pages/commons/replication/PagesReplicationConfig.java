@@ -7,6 +7,7 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
         name = "Composum Pages Replication Configuration",
         description = "Enables InPlace replication and configures the paths it uses."
 )
+@Deprecated
 public @interface PagesReplicationConfig {
 
     @AttributeDefinition(

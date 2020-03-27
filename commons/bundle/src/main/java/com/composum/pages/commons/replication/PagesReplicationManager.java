@@ -32,6 +32,7 @@ import java.util.TreeMap;
         },
         immediate = true
 )
+@Deprecated
 @Designate(ocd = PagesReplicationConfig.class)
 public class PagesReplicationManager implements ReplicationManager {
 

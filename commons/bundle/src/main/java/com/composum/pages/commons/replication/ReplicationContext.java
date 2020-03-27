@@ -9,6 +9,7 @@ import org.apache.sling.api.resource.ResourceResolver;
 import java.util.HashSet;
 import java.util.Set;
 
+@Deprecated
 public class ReplicationContext extends BeanContext.Wrapper {
 
     public final Site site;
