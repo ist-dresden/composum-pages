@@ -85,6 +85,9 @@
                             <root>/libs/composum/pages/components</root>
                         </filter>
                         <filter>
+                            <root>/libs/jslibs/bootstrap/4.3.1</root>
+                        </filter>
+                        <filter>
                             <root>/libs/composum/pages/install</root>
                             <includes>
                                 <include>.*/composum-pages-components-bundle.*\.jar</include>
