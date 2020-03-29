@@ -9,6 +9,4 @@
 <sling:call script="hreflang.jsp"/>
 <cpn:clientlib type="link" category="${currentPage.viewClientlibCategory}"/>
 <cpn:clientlib type="css" category="${currentPage.viewClientlibCategory}"/>
-<cpn:clientlib type="css" test="${not empty currentPage.themeClientlibCategory}"
-               category="${currentPage.themeClientlibCategory}"/>
 <cpn:clientlib type="css" test="${currentPage.editMode}" category="${currentPage.editClientlibCategory}"/>

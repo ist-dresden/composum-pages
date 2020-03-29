@@ -147,12 +147,15 @@ public class ResourceTypeUtil {
      */
     public interface SubtypeStrategy {
 
-        String getDefaultResourcePath(ResourceResolver resolver, Resource resource, String type);
+        String getDefaultResourcePath(@Nonnull ResourceResolver resolver,
+                                      @Nullable Resource resource,
+                                      @Nullable String type);
     }
 
     public static class ComponentTileStrategy implements SubtypeStrategy {
 
-        public String getDefaultResourcePath(ResourceResolver resolver, Resource resource, String type) {
+        public String getDefaultResourcePath(@Nonnull final ResourceResolver resolver,
+                                             @Nullable final Resource resource, @Nullable final String type) {
             return Site.isSite(resource) || Site.isSiteConfiguration(resource) ? DEFAULT_SITE_TILE
                     : Page.isPage(resource) || Page.isPageContent(resource) ? DEFAULT_PAGE_TILE
                     : Container.isContainer(resolver, resource, type) ? DEFAULT_CONTAINER_TILE
@@ -162,7 +165,8 @@ public class ResourceTypeUtil {
 
     public static class ComponentHelpStrategy implements SubtypeStrategy {
 
-        public String getDefaultResourcePath(ResourceResolver resolver, Resource resource, String type) {
+        public String getDefaultResourcePath(@Nonnull final ResourceResolver resolver,
+                                             @Nullable final Resource resource, @Nullable final String type) {
             return Site.isSite(resource) || Site.isSiteConfiguration(resource) ? DEFAULT_SITE_HELP
                     : Page.isPage(resource) || Page.isPageContent(resource) ? DEFAULT_PAGE_HELP
                     : Container.isContainer(resolver, resource, type) ? DEFAULT_CONTAINER_HELP
@@ -172,7 +176,8 @@ public class ResourceTypeUtil {
 
     public static class ComponentThumbnailStrategy implements SubtypeStrategy {
 
-        public String getDefaultResourcePath(ResourceResolver resolver, Resource resource, String type) {
+        public String getDefaultResourcePath(@Nonnull final ResourceResolver resolver,
+                                             @Nullable final Resource resource, @Nullable final String type) {
             return Site.isSite(resource) || Site.isSiteConfiguration(resource) ? DEFAULT_SITE_THUMBNAIL
                     : Page.isPage(resource) || Page.isPageContent(resource) ? DEFAULT_PAGE_THUMBNAIL
                     : Container.isContainer(resolver, resource, type) ? DEFAULT_CONTAINER_THUMBNAIL
@@ -182,7 +187,8 @@ public class ResourceTypeUtil {
 
     public static class EditDialogStrategy implements SubtypeStrategy {
 
-        public String getDefaultResourcePath(ResourceResolver resolver, Resource resource, String type) {
+        public String getDefaultResourcePath(@Nonnull final ResourceResolver resolver,
+                                             @Nullable final Resource resource, @Nullable final String type) {
             return Page.isPage(resource) || Page.isPageContent(resource) ? DEFAULT_PAGE_DIALOG
                     : Site.isSite(resource) || Site.isSiteConfiguration(resource) ? DEFAULT_SITE_DIALOG
                     : null;
@@ -191,14 +197,16 @@ public class ResourceTypeUtil {
 
     public static class NewDialogStrategy extends EditDialogStrategy {
 
-        public String getDefaultResourcePath(ResourceResolver resolver, Resource resource, String type) {
+        public String getDefaultResourcePath(@Nonnull final ResourceResolver resolver,
+                                             @Nullable final Resource resource, @Nullable final String type) {
             return DEFAULT_NEW_DIALOG;
         }
     }
 
     public static class CreateDialogStrategy extends EditDialogStrategy {
 
-        public String getDefaultResourcePath(ResourceResolver resolver, Resource resource, String type) {
+        public String getDefaultResourcePath(@Nonnull final ResourceResolver resolver,
+                                             @Nullable final Resource resource, @Nullable final String type) {
             PagesConstants.ComponentType componentType = PagesConstants.ComponentType.typeOf(type);
             return componentType == PagesConstants.ComponentType.page
                     || Page.isPage(resource) || Page.isPageContent(resource) ? DEFAULT_PAGE_CREATE_DIALOG
@@ -210,7 +218,8 @@ public class ResourceTypeUtil {
 
     public static class DeleteDialogStrategy extends EditDialogStrategy {
 
-        public String getDefaultResourcePath(ResourceResolver resolver, Resource resource, String type) {
+        public String getDefaultResourcePath(@Nonnull final ResourceResolver resolver,
+                                             @Nullable final Resource resource, @Nullable final String type) {
             return Page.isPage(resource) || Page.isPageContent(resource) ? DEFAULT_PAGE_DELETE_DIALOG
                     : Site.isSite(resource) || Site.isSiteConfiguration(resource) ? DEFAULT_SITE_DELETE_DIALOG
                     : DEFAULT_DELETE_DIALOG;
@@ -219,14 +228,16 @@ public class ResourceTypeUtil {
 
     public static class ManageDialogStrategy extends EditDialogStrategy {
 
-        public String getDefaultResourcePath(ResourceResolver resolver, Resource resource, String type) {
+        public String getDefaultResourcePath(@Nonnull final ResourceResolver resolver,
+                                             @Nullable final Resource resource, @Nullable final String type) {
             return DEFAULT_SITE_MANAGE_DIALOG;
         }
     }
 
     public static class EditToolbarStrategy implements SubtypeStrategy {
 
-        public String getDefaultResourcePath(ResourceResolver resolver, Resource resource, String type) {
+        public String getDefaultResourcePath(@Nonnull final ResourceResolver resolver,
+                                             @Nullable final Resource resource, @Nullable final String type) {
             return Site.isSite(resource) || Site.isSiteConfiguration(resource) ? DEFAULT_SITE_TOOLBAR
                     : Page.isPage(resource) || Page.isPageContent(resource) ? DEFAULT_PAGE_TOOLBAR
                     : Container.isContainer(resolver, resource, type) ? DEFAULT_CONTAINER_TOOLBAR
@@ -236,7 +247,8 @@ public class ResourceTypeUtil {
 
     public static class TreeActionsStrategy implements SubtypeStrategy {
 
-        public String getDefaultResourcePath(ResourceResolver resolver, Resource resource, String type) {
+        public String getDefaultResourcePath(@Nonnull final ResourceResolver resolver,
+                                             @Nullable final Resource resource, @Nullable final String type) {
             return Site.isSite(resource) || Site.isSiteConfiguration(resource) ? DEFAULT_SITE_ACTIONS
                     : Page.isPage(resource) || Page.isPageContent(resource) ? DEFAULT_PAGE_ACTIONS
                     : Container.isContainer(resolver, resource, type) ? DEFAULT_CONTAINER_ACTIONS
@@ -248,7 +260,8 @@ public class ResourceTypeUtil {
 
     public static class ContextActionsStrategy implements SubtypeStrategy {
 
-        public String getDefaultResourcePath(ResourceResolver resolver, Resource resource, String type) {
+        public String getDefaultResourcePath(@Nonnull final ResourceResolver resolver,
+                                             @Nullable final Resource resource, @Nullable final String type) {
             return Container.isContainer(resolver, resource, type) ? DEFAULT_CONTAINER_CONTEXT
                     : Element.isElement(resolver, resource, type) ? DEFAULT_CONTEXT_ACTIONS
                     : DEFAULT_NONE_ACTIONS;
@@ -257,7 +270,8 @@ public class ResourceTypeUtil {
 
     public static class ContextContainerStrategy implements SubtypeStrategy {
 
-        public String getDefaultResourcePath(ResourceResolver resolver, Resource resource, String type) {
+        public String getDefaultResourcePath(@Nonnull final ResourceResolver resolver,
+                                             @Nullable final Resource resource, @Nullable final String type) {
             return Container.isContainer(resolver, resource, type)
                     ? DEFAULT_CONTEXT_CONTAINER : DEFAULT_ELEMENT_CONTAINER;
         }
@@ -349,7 +363,8 @@ public class ResourceTypeUtil {
      * @return the resource path which can be used to render the requested subtype of a component;
      * maybe <code>null</code> if no such resource can be found (should not happens)
      */
-    public static String getSubtypePath(ResourceResolver resolver, Resource resource,
+    public static String getSubtypePath(@Nonnull final ResourceResolver resolver,
+                                        @Nonnull final Resource resource,
                                         String type, String subtype, String selectors) {
         Resource typeResource = getSubtype(resolver, resource, type, subtype, selectors);
         return typeResource != null ? typeResource.getPath() : null;
@@ -366,8 +381,10 @@ public class ResourceTypeUtil {
      * @return the existing resource which can be used to render the requested subtype of a component;
      * maybe <code>null</code> if no such resource can be found (should not happens)
      */
-    public static Resource getSubtype(ResourceResolver resolver, Resource resource,
-                                      String type, String subtype, String selectors) {
+    public static Resource getSubtype(@Nonnull final ResourceResolver resolver,
+                                      @Nullable final Resource resource,
+                                      @Nullable final String type, @Nullable final String subtype,
+                                      @Nullable final String selectors) {
         Resource typeResource = null;
         if (StringUtils.isNotBlank(selectors)) {
             // try to find sector driven subtype of the subtype
@@ -397,8 +414,9 @@ public class ResourceTypeUtil {
      * @param subtype  the mandatory subtype of the component type
      * @return the path to the default subtype component
      */
-    public static String getDefaultSubtypePath(ResourceResolver resolver,
-                                               Resource resource, String type, String subtype) {
+    public static String getDefaultSubtypePath(@Nonnull final ResourceResolver resolver,
+                                               @Nullable final Resource resource,
+                                               @Nullable final String type, @Nullable final String subtype) {
         SubtypeStrategy strategy = SUBTYPES.get(subtype);
         return strategy != null ? strategy.getDefaultResourcePath(resolver, resource, type) : null;
     }
@@ -406,8 +424,10 @@ public class ResourceTypeUtil {
     /**
      * @return the 'normalized' resource type - relative to the resolver root paths
      */
-    public static String relativeResourceType(ResourceResolver resolver, String resourceType) {
+    public static String relativeResourceType(@Nonnull final ResourceResolver resolver,
+                                              @Nonnull final String resourceType) {
         String rootPattern = "^(" + StringUtils.join(resolver.getSearchPath(), "|") + ")";
         return resourceType.replaceFirst(rootPattern, "");
     }
+
 }

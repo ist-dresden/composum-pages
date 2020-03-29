@@ -19,6 +19,7 @@ import com.composum.platform.cache.service.CacheConfiguration;
 import com.composum.platform.cache.service.CacheManager;
 import com.composum.platform.cache.service.impl.CacheServiceImpl;
 import com.composum.sling.core.BeanContext;
+import com.composum.sling.core.InheritedValues;
 import com.composum.sling.core.ResourceHandle;
 import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.filter.StringFilter;
@@ -77,6 +78,7 @@ import static com.composum.pages.commons.PagesConstants.NODE_NAME_DESIGN;
 import static com.composum.pages.commons.PagesConstants.PROP_DESIGN_REF;
 import static com.composum.pages.commons.PagesConstants.PROP_TEMPLATE;
 import static com.composum.pages.commons.PagesConstants.PROP_TEMPLATE_REF;
+import static com.composum.pages.commons.PagesConstants.PROP_THEME;
 import static com.composum.pages.commons.PagesConstants.PROP_TYPE_PATTERNS;
 import static com.composum.pages.commons.model.Page.isPage;
 
@@ -137,6 +139,9 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
      */
     @Reference
     protected CacheManager cacheManager;
+
+    @Reference
+    protected ThemeManager themeManager;
 
     protected Config config;
 
@@ -502,7 +507,20 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
         } else {
             String templatePath = resource.getValueMap().get(PagesConstants.PROP_TEMPLATE, "");
             if (StringUtils.isNotBlank(templatePath)) {
-                Resource templateResource = resource.getResourceResolver().getResource(templatePath);
+                ResourceResolver resolver = resource.getResourceResolver();
+                if (Page.isPageContent(resource)) {
+                    InheritedValues inherited = new InheritedValues(resource);
+                    String themeName = inherited.get(PROP_THEME, "");
+                    if (StringUtils.isNotBlank(themeName)) {
+                        Theme theme = themeManager.getTheme(resolver, themeName);
+                        if (theme != null) {
+                            templatePath = theme.getPageTemplate(
+                                    Objects.requireNonNull(resource.getParent()),
+                                    Objects.requireNonNull(ResolverUtil.toPageTemplate(resolver, templatePath)));
+                        }
+                    }
+                }
+                Resource templateResource = ResolverUtil.getTemplate(resource.getResourceResolver(), templatePath);
                 if (templateResource != null && !ResourceUtil.isNonExistingResource(templateResource)) {
                     template = toTemplate(templateResource);
                 }
@@ -1303,7 +1321,7 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
         }
 
         @Override
-        public void toString(StringBuilder builder) {
+        public void toString(@Nonnull final StringBuilder builder) {
             builder.append(getClass().getSimpleName());
         }
     }
@@ -1342,7 +1360,7 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
             if (StringUtils.isNotBlank(templateRef)) {
                 // if the templates 'jcr:content' resource has a property 'template'
                 // use the template referenced by this property instead if this template exists
-                referencedTemplate = resolver.getResource(templateRef);
+                referencedTemplate = ResolverUtil.getTemplate(resolver, templateRef);
                 if (referencedTemplate != null) {
                     Resource referencedContent = referencedTemplate.getChild(JcrConstants.JCR_CONTENT);
                     if (referencedContent != null) {
@@ -1364,7 +1382,8 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
                 if (setTemplateProperty && !primaryContentType.startsWith("nt:")) {
                     if (targetValues.get(PROP_TEMPLATE) == null) {
                         // write template only if not always set by the template properties
-                        targetValues.put(PROP_TEMPLATE, Objects.requireNonNull(templateContent.getParent()).getPath());
+                        targetValues.put(PROP_TEMPLATE, ResolverUtil.toPageTemplate(resolver,
+                                Objects.requireNonNull(templateContent.getParent()).getPath()));
                     }
                 }
             } else {

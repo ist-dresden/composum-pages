@@ -1,10 +1,11 @@
 package com.composum.pages.commons.taglib;
 
 import com.composum.pages.commons.request.DisplayMode;
+import com.composum.pages.commons.service.Theme;
+import com.composum.pages.commons.util.LinkUtil;
 import com.composum.pages.commons.util.ResourceTypeUtil;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.util.ExpressionUtil;
-import com.composum.pages.commons.util.LinkUtil;
 import com.composum.sling.core.util.ResourceUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
@@ -18,10 +19,14 @@ import org.slf4j.LoggerFactory;
 import javax.servlet.jsp.JspException;
 import java.io.IOException;
 
+import static com.composum.pages.commons.PagesConstants.RA_CURRENT_THEME;
+
 @SuppressWarnings("serial")
 public class IncludeTag extends IncludeTagHandler {
 
-    /** Takes the {@link #setMode(String)} from the request. */
+    /**
+     * Takes the {@link #setMode(String)} from the request.
+     */
     public static final String MODE_REQUEST = "REQUEST";
 
     private static final Logger LOG = LoggerFactory.getLogger(IncludeTag.class);
@@ -109,9 +114,28 @@ public class IncludeTag extends IncludeTagHandler {
     // Initialization
 
     protected void configure() {
-        /*
-        TODO PagesConfiguration to overlay resource types on include
-        */
+        Theme theme = (Theme) pageContext.getRequest().getAttribute(RA_CURRENT_THEME);
+        if (theme != null) {
+            // resource type overlay driven by a theme...
+            final SlingHttpServletRequest request = TagUtil.getRequest(pageContext);
+            final ResourceResolver resolver = request.getResourceResolver();
+            Resource includeResource = resource != null ? resource : resolver.getResource(path);
+            if (includeResource != null) {
+                String type = resourceType;
+                if (StringUtils.isBlank(type)) {
+                    type = includeResource.getResourceType();
+                }
+                if (StringUtils.isNotBlank(type)) {
+                    String overlay = theme.getResourceType(includeResource, type);
+                    if (!overlay.equals(type)) {
+                        if (LOG.isDebugEnabled()) {
+                            LOG.debug("resource type '{}' overlayed by '{}' (theme '{}')", type, overlay, theme.getName());
+                        }
+                        resourceType = overlay;
+                    }
+                }
+            }
+        }
         if (StringUtils.isNotBlank(subtype)) {
             final SlingHttpServletRequest request = TagUtil.getRequest(pageContext);
             final ResourceResolver resolver = request.getResourceResolver();
@@ -171,7 +195,9 @@ public class IncludeTag extends IncludeTagHandler {
         }
     }
 
-    /** Returns or creates the expressionUtil. Not null. */
+    /**
+     * Returns or creates the expressionUtil. Not null.
+     */
     protected com.composum.sling.core.util.ExpressionUtil getExpressionUtil() {
         if (expressionUtil == null) {
             expressionUtil = new ExpressionUtil(pageContext);

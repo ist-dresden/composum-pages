@@ -4,8 +4,10 @@ import com.composum.pages.commons.model.Page;
 import com.composum.pages.commons.model.Site;
 import com.composum.pages.commons.service.PageManager;
 import com.composum.pages.commons.service.ResourceManager;
+import com.composum.pages.commons.service.Theme;
 import com.composum.pages.commons.util.PagesUtil;
 import com.composum.pages.commons.util.RequestUtil;
+import com.composum.pages.commons.util.ResolverUtil;
 import com.composum.pages.commons.util.ResourceTypeUtil;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.ResourceHandle;
@@ -49,11 +51,15 @@ public abstract class ContentServlet extends NodeTreeServlet {
 
     protected abstract PageManager getPageManager();
 
+    protected abstract BeanContext newBeanContext(@Nonnull SlingHttpServletRequest request,
+                                                  @Nonnull SlingHttpServletResponse response,
+                                                  @Nullable Resource resource);
+
     //
     // edit component resources
     //
 
-    public static abstract class GetEditResource implements ServletOperation {
+    public abstract class GetEditResource implements ServletOperation {
 
         @Override
         public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
@@ -73,7 +79,7 @@ public abstract class ContentServlet extends NodeTreeServlet {
                 selectors = getDefaultSelectors();
             }
             String paramType = request.getParameter(PARAM_TYPE);
-            Resource editResource = getEditResource(request, contentResource, selectors, paramType);
+            Resource editResource = getEditResource(request, response, contentResource, selectors, paramType);
 
             if (LOG.isDebugEnabled()) {
                 LOG.debug("GetEditResource({},{})...", contentResource.getPath(), editResource != null ? editResource.getPath() : "null");
@@ -91,11 +97,39 @@ public abstract class ContentServlet extends NodeTreeServlet {
             }
         }
 
-        protected Resource getEditResource(@Nonnull SlingHttpServletRequest request, @Nonnull Resource contentResource,
+        protected Resource getEditResource(@Nonnull SlingHttpServletRequest request,
+                                           @Nonnull SlingHttpServletResponse response,
+                                           @Nonnull Resource contentResource,
                                            @Nonnull String selectors, @Nullable String type) {
             ResourceResolver resolver = request.getResourceResolver();
             return ResourceTypeUtil.getSubtype(resolver, contentResource, type, getResourcePath(request), selectors);
         }
+
+        protected Resource adjustToTheme(@Nonnull final BeanContext context,
+                                         @Nonnull final Resource contentResource,
+                                         @Nullable final Resource editResource) {
+            if (editResource != null) {
+                Page containigPage = getPageManager().getContainingPage(context, contentResource);
+                if (containigPage != null) {
+                    Theme theme = containigPage.getTheme();
+                    if (theme != null) {
+                        ResourceResolver resolver = editResource.getResourceResolver();
+                        String resourceType = ResolverUtil.toResourceType(resolver, editResource.getPath());
+                        if (StringUtils.isNotBlank(resourceType)) {
+                            String overlay = theme.getResourceType(editResource, resourceType);
+                            if (!resourceType.equals(overlay)) {
+                                Resource overlayResource = ResolverUtil.getResourceType(resolver, overlay);
+                                if (overlayResource != null) {
+                                    return overlayResource;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return editResource;
+        }
+
 
         protected String getSelectors(SlingHttpServletRequest request) {
             return RequestUtil.getSelectorString(request, null, 1);

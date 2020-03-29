@@ -2,11 +2,15 @@ package com.composum.pages.commons.servlet;
 
 import com.composum.pages.commons.PagesConstants;
 import com.composum.pages.commons.model.Page;
+import com.composum.pages.commons.model.PageContent;
 import com.composum.pages.commons.request.DisplayMode;
 import com.composum.pages.commons.service.PageManager;
+import com.composum.pages.commons.service.Theme;
 import com.composum.sling.core.BeanContext;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
+import org.apache.sling.api.request.RequestDispatcherOptions;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.servlets.HttpConstants;
 import org.apache.sling.api.servlets.ServletResolverConstants;
@@ -65,6 +69,10 @@ public class PageNodeServlet extends SlingSafeMethodsServlet {
         if (page.isValid()) {
             // ensure that the current page is declared before any property access
             request.setAttribute(PagesConstants.RA_CURRENT_PAGE, page);
+            Theme theme = page.getTheme();
+            if (theme != null) {
+                request.setAttribute(PagesConstants.RA_CURRENT_THEME, theme);
+            }
 
             // if not in edit mode check for a HTTP redirect triggered by one of the dispatchers
             DisplayMode.Value displayMode = DisplayMode.current(context);
@@ -80,9 +88,20 @@ public class PageNodeServlet extends SlingSafeMethodsServlet {
             for (PageDispatcher dispatcher : pageDispatchers) {
                 page = dispatcher.getForwardPage(page);
             }
-            Resource forwardContent = page.getContent().getResource();
+            PageContent pageContent = page.getContent();
+            Resource forwardContent = pageContent.getResource();
 
-            RequestDispatcher dispatcher = request.getRequestDispatcher(forwardContent);
+            RequestDispatcherOptions options = new RequestDispatcherOptions();
+            if (theme != null) {
+                String resourceType = forwardContent.getResourceType();
+                if (StringUtils.isNotBlank(resourceType)) {
+                    String overlay = theme.getResourceType(forwardContent, resourceType);
+                    if (!resourceType.equals(overlay)) {
+                        options.setForceResourceType(overlay);
+                    }
+                }
+            }
+            RequestDispatcher dispatcher = request.getRequestDispatcher(forwardContent, options);
             if (dispatcher != null) {
                 dispatcher.forward(request, response);
             }

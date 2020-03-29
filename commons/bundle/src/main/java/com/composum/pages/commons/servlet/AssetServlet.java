@@ -200,6 +200,12 @@ public class AssetServlet extends PagesContentServlet {
         }
     }
 
+    protected BeanContext newBeanContext(@Nonnull SlingHttpServletRequest request,
+                                         @Nonnull SlingHttpServletResponse response,
+                                         @Nullable Resource resource) {
+        return new BeanContext.Servlet(getServletContext(), bundleContext, request, response, resource);
+    }
+
     //
     // Tree
     //
@@ -233,8 +239,10 @@ public class AssetServlet extends PagesContentServlet {
         }
 
         @Override
-        protected Resource getEditResource(@Nonnull SlingHttpServletRequest request, @Nonnull Resource contentResource,
-                                           @Nonnull String selectors, @Nullable String type) {
+        protected Resource getEditResource(@Nonnull final SlingHttpServletRequest request,
+                                           @Nonnull final SlingHttpServletResponse response,
+                                           @Nonnull final Resource contentResource,
+                                           @Nonnull final String selectors, @Nullable final String type) {
             Resource result = null;
             ResourceResolver resolver = request.getResourceResolver();
             ResourceFilter assetFileFilter = assetsConfiguration.getAssetFileFilter();
@@ -245,7 +253,7 @@ public class AssetServlet extends PagesContentServlet {
             } else if (assetsConfiguration.getAnyFileFilter().accept(contentResource)) {
                 return ResolverUtil.getResourceType(resolver, ResourceTypeUtil.DEFAULT_FILE_ACTIONS);
             } else {
-                return super.getEditResource(request, contentResource, selectors, type);
+                return super.getEditResource(request, response, contentResource, selectors, type);
             }
         }
     }
@@ -314,13 +322,15 @@ public class AssetServlet extends PagesContentServlet {
         }
 
         @Override
-        protected Resource getEditResource(@Nonnull SlingHttpServletRequest request, @Nonnull Resource contentResource,
-                                           @Nonnull String selectors, @Nullable String type) {
+        protected Resource getEditResource(@Nonnull final SlingHttpServletRequest request,
+                                           @Nonnull final SlingHttpServletResponse response,
+                                           @Nonnull final Resource contentResource,
+                                           @Nonnull final String selectors, @Nullable final String type) {
             if (assetsConfiguration.getAnyFileFilter().accept(contentResource)) {
                 ResourceResolver resolver = request.getResourceResolver();
                 return ResolverUtil.getResourceType(resolver, ResourceTypeUtil.DEFAULT_FILE_TILE);
             } else {
-                return super.getEditResource(request, contentResource, selectors, type);
+                return super.getEditResource(request, response, contentResource, selectors, type);
             }
         }
     }

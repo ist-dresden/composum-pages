@@ -35,6 +35,7 @@ public interface PagesConstants {
     String RA_CONTEXT_PATH = "contextPath";
     String RA_RESOURCE_REF = "resourceRef";
     String RA_CURRENT_PAGE = "currentPage";
+    String RA_CURRENT_THEME = "currentTheme";
 
     /** I18N */
 
@@ -102,8 +103,8 @@ public interface PagesConstants {
     String PROP_SLING_TARGET = "sling:target";
 
     String SUBNODE_STYLE = "style/";
+    String PROP_THEME = SUBNODE_STYLE + "theme";
     String PROP_VIEW_CATEGORY = SUBNODE_STYLE + "category.view";
-    String PROP_THEME_CATEGORY = SUBNODE_STYLE + "category.theme";
     String PROP_EDIT_CATEGORY = SUBNODE_STYLE + "category.edit";
     String DEFAULT_VIEW_CATEGORY = "composum.pages.components.view";
     String DEFAULT_EDIT_CATEGORY = "composum.pages.components.edit";

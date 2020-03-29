@@ -39,6 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
@@ -144,6 +145,12 @@ public class GetServlet extends ContentServlet {
         public PagesEditOperationSet() {
             super(Extension.html);
         }
+    }
+
+    protected BeanContext newBeanContext(@Nonnull SlingHttpServletRequest request,
+                                         @Nonnull SlingHttpServletResponse response,
+                                         @Nullable Resource resource) {
+        return new BeanContext.Servlet(getServletContext(), bundleContext, request, response, resource);
     }
 
     //

@@ -10,12 +10,15 @@ import com.composum.pages.commons.model.properties.LanguageSet;
 import com.composum.pages.commons.model.properties.Languages;
 import com.composum.pages.commons.request.DisplayMode;
 import com.composum.pages.commons.service.PageManager;
+import com.composum.pages.commons.service.Theme;
+import com.composum.pages.commons.service.ThemeManager;
 import com.composum.pages.commons.util.LinkUtil;
 import com.composum.pages.commons.util.LinkUtil.Parameters;
 import com.composum.platform.models.annotations.DetermineResourceStategy;
 import com.composum.platform.models.annotations.PropertyDetermineResourceStrategy;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.filter.ResourceFilter;
+import com.composum.sling.core.util.I18N;
 import com.composum.sling.core.util.ResourceUtil;
 import com.composum.sling.platform.security.AccessMode;
 import org.apache.commons.lang3.StringUtils;
@@ -29,8 +32,10 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.regex.Matcher;
 
 import static com.composum.pages.commons.PagesConstants.DEFAULT_EDIT_CATEGORY;
@@ -47,7 +52,7 @@ import static com.composum.pages.commons.PagesConstants.PN_SUBTITLE;
 import static com.composum.pages.commons.PagesConstants.PROP_EDIT_CATEGORY;
 import static com.composum.pages.commons.PagesConstants.PROP_PAGE_LANGUAGES;
 import static com.composum.pages.commons.PagesConstants.PROP_SLING_TARGET;
-import static com.composum.pages.commons.PagesConstants.PROP_THEME_CATEGORY;
+import static com.composum.pages.commons.PagesConstants.PROP_THEME;
 import static com.composum.pages.commons.PagesConstants.PROP_VIEW_CATEGORY;
 import static java.lang.Boolean.FALSE;
 
@@ -209,6 +214,9 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
 
     private transient Language language;
     private transient PageLanguages languages;
+
+    private transient Theme theme;
+    private transient String themeName;
 
     private transient Resource metaData;
 
@@ -587,19 +595,60 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
         return classes;
     }
 
-    @Nonnull
-    public String getViewClientlibCategory() {
-        return getInherited(PROP_VIEW_CATEGORY, DEFAULT_VIEW_CATEGORY);
+    // theme and clientlibs
+
+    @Nullable
+    public Theme getTheme() {
+        if (theme == null && themeName == null) {
+            themeName = getInherited(PROP_THEME, "");
+            if (StringUtils.isNotBlank(themeName)) {
+                theme = context.getService(ThemeManager.class).getTheme(context.getResolver(), themeName);
+            }
+        }
+        return theme;
     }
 
     @Nonnull
-    public String getThemeClientlibCategory() {
-        return getInherited(PROP_THEME_CATEGORY, "");
+    public Map<String, String> getThemes() {
+        Collection<Theme> themes = context.getService(ThemeManager.class).getThemes(context.getResolver());
+        Map<String, String> result = new LinkedHashMap<>();
+        result.put("", I18N.get(context.getRequest(), "no theme"));
+        for (Theme theme : themes) {
+            result.put(theme.getName(), theme.getTitle());
+        }
+        return result;
+    }
+
+    @Override
+    public String determineTemplatePath() {
+        String templatePath = super.determineTemplatePath();
+        if (StringUtils.isNotBlank(templatePath)) {
+            Theme theme = getTheme();
+            if (theme != null) {
+                templatePath = theme.getPageTemplate(getResource(), templatePath);
+            }
+        }
+        return templatePath;
+    }
+
+    @Nonnull
+    public String getViewClientlibCategory() {
+        String category = getInherited(PROP_VIEW_CATEGORY, DEFAULT_VIEW_CATEGORY);
+        Theme theme = getTheme();
+        if (theme != null) {
+            category = theme.getClientlibCategory(getResource(), category);
+        }
+        return category;
     }
 
     @Nonnull
     public String getEditClientlibCategory() {
-        return getInherited(PROP_EDIT_CATEGORY, DEFAULT_EDIT_CATEGORY);
+        String category = getInherited(PROP_EDIT_CATEGORY, DEFAULT_EDIT_CATEGORY);
+        Theme theme = getTheme();
+        if (theme != null) {
+            category = theme.getClientlibCategory(getResource(), category);
+        }
+        return category;
     }
 
     // forward / redirect
