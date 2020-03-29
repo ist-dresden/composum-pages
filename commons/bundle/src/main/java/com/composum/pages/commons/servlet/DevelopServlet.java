@@ -12,14 +12,16 @@ import com.composum.pages.commons.model.Component.ComponentPieces;
 import com.composum.pages.commons.model.Page;
 import com.composum.pages.commons.service.ComponentManager;
 import com.composum.pages.commons.service.EditService;
+import com.composum.pages.commons.service.PageManager;
+import com.composum.pages.commons.service.ResourceManager;
 import com.composum.pages.commons.service.VersionsService;
 import com.composum.pages.commons.util.RequestUtil;
 import com.composum.pages.commons.util.ResolverUtil;
 import com.composum.pages.commons.util.ResourceTypeUtil;
+import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.ResourceHandle;
 import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.filter.StringFilter;
-import com.composum.sling.core.servlet.NodeTreeServlet;
 import com.composum.sling.core.servlet.ServletOperation;
 import com.composum.sling.core.servlet.ServletOperationSet;
 import com.composum.sling.core.servlet.Status;
@@ -62,7 +64,7 @@ import static com.composum.pages.commons.util.ResourceTypeUtil.DEVELOP_ACTIONS_P
                 ServletResolverConstants.SLING_SERVLET_METHODS + "=" + HttpConstants.METHOD_POST,
                 ServletResolverConstants.SLING_SERVLET_METHODS + "=" + HttpConstants.METHOD_PUT
         })
-public class DevelopServlet extends NodeTreeServlet {
+public class DevelopServlet extends ContentServlet {
 
     private static final Logger LOG = LoggerFactory.getLogger(DevelopServlet.class);
 
@@ -85,6 +87,12 @@ public class DevelopServlet extends NodeTreeServlet {
     protected ComponentManager componentManager;
 
     @Reference
+    protected ResourceManager resourceManager;
+
+    @Reference
+    protected PageManager pageManager;
+
+    @Reference
     protected EditService editService;
 
     @Reference
@@ -100,6 +108,23 @@ public class DevelopServlet extends NodeTreeServlet {
     @Override
     protected boolean isEnabled() {
         return true;
+    }
+
+    @Override
+    protected ResourceManager getResourceManager() {
+        return resourceManager;
+    }
+
+    @Override
+    protected PageManager getPageManager() {
+        return pageManager;
+    }
+
+    @Override
+    protected BeanContext newBeanContext(@Nonnull final SlingHttpServletRequest request,
+                                         @Nonnull final SlingHttpServletResponse response,
+                                         @Nullable final Resource resource) {
+        return new BeanContext.Servlet(getServletContext(), bundleContext, request, response, resource);
     }
 
     //
@@ -203,8 +228,10 @@ public class DevelopServlet extends NodeTreeServlet {
         }
 
         @Override
-        protected Resource getEditResource(@Nonnull SlingHttpServletRequest request, @Nonnull Resource contentResource,
-                                           @Nonnull String selectors, @Nullable String type) {
+        protected Resource getEditResource(@Nonnull final SlingHttpServletRequest request,
+                                           @Nonnull final SlingHttpServletResponse response,
+                                           @Nonnull final Resource contentResource,
+                                           @Nonnull final String selectors, @Nullable final String type) {
             ResourceResolver resolver = request.getResourceResolver();
             Resource editResource;
             if (isComponent(contentResource)) {

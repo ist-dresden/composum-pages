@@ -6,6 +6,7 @@ import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -136,8 +137,8 @@ public class ResolverUtil {
     public static Resource getResourceType(ResourceResolver resolver, String resourceType) {
         Resource typeResource = null;
         if (StringUtils.isNotBlank(resourceType)) {
-            for (String base : resolver.getSearchPath()) {
-                Resource baseResource = resolver.getResource(base);
+            for (String root : resolver.getSearchPath()) {
+                Resource baseResource = resolver.getResource(root);
                 typeResource = resolver.getResource(baseResource, resourceType);
                 if (typeResource != null) {
                     if (ResourceUtil.isSyntheticResource(typeResource)) {
@@ -152,5 +153,61 @@ public class ResolverUtil {
             }
         }
         return typeResource;
+    }
+
+    /**
+     * @return the resource type of a components path (without the resolvers search root)
+     */
+    public static String toResourceType(ResourceResolver resolver, String componentPath) {
+        for (String root : resolver.getSearchPath()) {
+            if (componentPath.startsWith(root)) {
+                return componentPath.substring(root.length());
+            }
+        }
+        return componentPath;
+    }
+
+    // page templates
+
+    /**
+     * Retrieves the resource of a template using the declared search path of the resolver.
+     *
+     * @return the templates resource or 'null' if not found
+     */
+    @Nullable
+    public static Resource getTemplate(@Nonnull final ResourceResolver resolver,
+                                       @Nullable final String pageTemplate) {
+        Resource template = null;
+        if (StringUtils.isNotBlank(pageTemplate)) {
+            if (!pageTemplate.startsWith("/")) {
+                for (String root : resolver.getSearchPath()) {
+                    Resource baseResource = resolver.getResource(root);
+                    template = resolver.getResource(root + pageTemplate);
+                    if (template != null) {
+                        break;
+                    }
+                }
+            }
+            if (template == null) {
+                template = resolver.getResource(pageTemplate);
+            }
+        }
+        return template;
+    }
+
+    /**
+     * @return the template path (the reference value) of a template resource (without a resolvers search root)
+     */
+    @Nullable
+    public static String toPageTemplate(@Nonnull final ResourceResolver resolver,
+                                        @Nullable final String templatePath) {
+        if (StringUtils.isNotBlank(templatePath)) {
+            for (String root : resolver.getSearchPath()) {
+                if (templatePath.startsWith(root)) {
+                    return templatePath.substring(root.length());
+                }
+            }
+        }
+        return templatePath;
     }
 }

@@ -1,5 +1,6 @@
 package com.composum.pages.commons.filter;
 
+import com.composum.pages.commons.util.ResolverUtil;
 import com.composum.sling.core.filter.ResourceFilter;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.resource.Resource;
@@ -34,7 +35,7 @@ public class TemplateFilter extends ResourceFilter.AbstractResourceFilter {
                 String templatePath = values.get(PROP_TEMPLATE, String.class);
                 if (templatePath != null) {
                     ResourceResolver resolver = resource.getResourceResolver();
-                    resource = resolver.getResource(templatePath);
+                    resource = ResolverUtil.getTemplate(resolver, templatePath);
                     continue;
                 }
                 templatePath = values.get(PROP_TEMPLATE_REF, String.class);

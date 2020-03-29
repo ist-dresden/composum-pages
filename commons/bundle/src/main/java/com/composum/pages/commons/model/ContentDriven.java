@@ -1,6 +1,7 @@
 package com.composum.pages.commons.model;
 
 import com.composum.pages.commons.util.LinkUtil;
+import com.composum.pages.commons.util.ResolverUtil;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.util.ResourceUtil;
 import com.composum.sling.core.util.SlingResourceUtil;
@@ -69,16 +70,20 @@ public abstract class ContentDriven<ContentType extends ContentModel> extends Ab
 
     public String getTemplatePath() {
         if (templatePath == null) {
-            templatePath = content.getProperty(PROP_TEMPLATE, null, "");
+            templatePath = determineTemplatePath();
         }
         return templatePath;
+    }
+
+    public String determineTemplatePath() {
+        return content.getProperty(PROP_TEMPLATE, null, "");
     }
 
     public Resource getTemplate() {
         if (template == null) {
             String templatePath = getTemplatePath();
             if (StringUtils.isNotBlank(templatePath)) {
-                template = getContext().getResolver().getResource(templatePath);
+                template = ResolverUtil.getTemplate(getContext().getResolver(), templatePath);
             }
         }
         return template;

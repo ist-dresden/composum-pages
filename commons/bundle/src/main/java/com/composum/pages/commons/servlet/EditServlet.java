@@ -266,6 +266,12 @@ public class EditServlet extends PagesContentServlet {
         }
     }
 
+    protected BeanContext newBeanContext(@Nonnull SlingHttpServletRequest request,
+                                         @Nonnull SlingHttpServletResponse response,
+                                         @Nullable Resource resource) {
+        return new BeanContext.Servlet(getServletContext(), bundleContext, request, response, resource);
+    }
+
     //
     // Page
     //
@@ -481,6 +487,15 @@ public class EditServlet extends PagesContentServlet {
         protected String getResourcePath(SlingHttpServletRequest request) {
             return EDIT_DIALOG_PATH;
         }
+
+        @Override
+        protected Resource getEditResource(@Nonnull final SlingHttpServletRequest request,
+                                           @Nonnull final SlingHttpServletResponse response,
+                                           @Nonnull final Resource contentResource,
+                                           @Nonnull final String selectors, @Nullable final String type) {
+            return adjustToTheme(newBeanContext(request, response, contentResource), contentResource,
+                    super.getEditResource(request, response, contentResource, selectors, type));
+        }
     }
 
     protected class GetNewDialog extends GetEditDialog {
@@ -505,6 +520,15 @@ public class EditServlet extends PagesContentServlet {
         protected String getResourcePath(SlingHttpServletRequest request) {
             return EDIT_TOOLBAR_PATH;
         }
+
+        @Override
+        protected Resource getEditResource(@Nonnull final SlingHttpServletRequest request,
+                                           @Nonnull final SlingHttpServletResponse response,
+                                           @Nonnull final Resource contentResource,
+                                           @Nonnull final String selectors, @Nullable final String type) {
+            return adjustToTheme(newBeanContext(request, response, contentResource), contentResource,
+                    super.getEditResource(request, response, contentResource, selectors, type));
+        }
     }
 
     protected class GetTreeActions extends GetEditResource {
@@ -515,13 +539,15 @@ public class EditServlet extends PagesContentServlet {
         }
 
         @Override
-        protected Resource getEditResource(@Nonnull SlingHttpServletRequest request, @Nonnull Resource contentResource,
-                                           @Nonnull String selectors, @Nullable String type) {
+        protected Resource getEditResource(@Nonnull final SlingHttpServletRequest request,
+                                           @Nonnull final SlingHttpServletResponse response,
+                                           @Nonnull final Resource contentResource,
+                                           @Nonnull final String selectors, @Nullable final String type) {
             if (assetsConfiguration.getAnyFileFilter().accept(contentResource)) {
                 ResourceResolver resolver = request.getResourceResolver();
                 return ResolverUtil.getResourceType(resolver, ResourceTypeUtil.DEFAULT_FILE_ACTIONS);
             } else {
-                return super.getEditResource(request, contentResource, selectors, type);
+                return super.getEditResource(request, response, contentResource, selectors, type);
             }
         }
     }
@@ -908,7 +934,7 @@ public class EditServlet extends PagesContentServlet {
                 String templatePath;
                 if (StringUtils.isNotBlank(templatePath = request.getParameter("template"))) {
                     ResourceResolver resolver = context.getResolver();
-                    template = resolver.getResource(templatePath);
+                    template = ResolverUtil.getTemplate(resolver, templatePath);
                 }
 
                 if (template != null) {
