@@ -747,8 +747,8 @@
                 window.addEventListener("message", _.bind(this.onMessage, this), false);
                 var id = elements.const.dnd.id;
                 this.$el
-                //.on('mouseover' + id, _.bind(this.onMouseOver, this))
-                //.on('mouseout' + id, _.bind(this.onMouseOver, this))
+                    //.on('mouseover' + id, _.bind(this.onMouseOver, this))
+                    //.on('mouseout' + id, _.bind(this.onMouseOver, this))
                     .on('dragenter' + id, _.bind(this.onDragEnter, this))
                     .on('dragover' + id, _.bind(this.onDragOver, this))
                     .on('drop' + id, _.bind(this.onDrop, this));
@@ -848,7 +848,11 @@
                 if (selection) {
                     selection = selection.reference;
                 }
-                var index = this.getElementIndex(reference.path);
+                var path = reference.path;
+                var index = this.getElementIndex(path);
+                while (index.length < 1 && path.lastIndexOf('/') > 0) {
+                    index = this.getElementIndex(path = core.getParentPath(path));
+                }
                 var toRefresh = []; // collect the views of the element on the current page...
                 var i;
                 for (i = 0; i < index.length; i++) {
@@ -875,7 +879,7 @@
              * @param callback some things to do after reload of the HTML code (optional)
              */
             redrawComponent: function (component, callback) {
-                core.ajaxGet(component.reference.path + '.html', {
+                core.ajaxGet('/bin/cpm/pages/edit.refreshElement.html' + component.reference.path, {
                     data: _.extend(this.params, {
                         type: component.reference.type
                     })
