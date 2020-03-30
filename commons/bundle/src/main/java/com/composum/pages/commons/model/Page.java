@@ -608,6 +608,27 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
         return theme;
     }
 
+    /**
+     * @return the topmost paqe with the same theme configured, maybe the homepage
+     */
+    @Nonnull
+    public Page getThemeRoot() {
+        Theme theme = getTheme();
+        if (theme != null) {
+            Page parent, themeRoot = this;
+            while (!themeRoot.isHome() && (parent = themeRoot.getParentPage()) != null) {
+                Theme parentTheme = parent.getTheme();
+                if (parentTheme == null || !parentTheme.getName().equals(theme.getName())) {
+                    break;
+                }
+                themeRoot = parent;
+            }
+            return themeRoot;
+        } else {
+            return getHomepage();
+        }
+    }
+
     @Nonnull
     public Map<String, String> getThemes() {
         Collection<Theme> themes = context.getService(ThemeManager.class).getThemes(context.getResolver());

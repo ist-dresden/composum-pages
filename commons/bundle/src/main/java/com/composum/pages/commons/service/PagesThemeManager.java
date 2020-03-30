@@ -1,5 +1,6 @@
 package com.composum.pages.commons.service;
 
+import com.composum.pages.commons.PagesConfiguration;
 import com.composum.pages.commons.PagesConstants;
 import com.composum.pages.commons.util.ResolverUtil;
 import com.composum.sling.core.util.ResourceUtil;
@@ -46,12 +47,15 @@ public class PagesThemeManager implements ThemeManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(PagesThemeManager.class);
 
-    public static final long COLLECT_CACHE_TIME = /*2L * 60L */ 60L * 1000L;   // 2 hours
-
     public static final String PN_OVERLAYS = "overlays";
+
+    public static final long MINUTE = 60L * 1000L;
 
     @Reference
     protected ResourceResolverFactory resolverFactory;
+
+    @Reference
+    protected PagesConfiguration pagesConfig;
 
     /**
      * the theme declared by a repository resource
@@ -267,7 +271,7 @@ public class PagesThemeManager implements ThemeManager {
 
     protected Map<String, Theme> getThemesMap() {
         synchronized (this) {
-            if (lastCollection < System.currentTimeMillis() - COLLECT_CACHE_TIME) {
+            if (lastCollection < System.currentTimeMillis() - pagesConfig.getConfig().themeCacheTimeout() * MINUTE) {
                 collectThemes();
             }
         }

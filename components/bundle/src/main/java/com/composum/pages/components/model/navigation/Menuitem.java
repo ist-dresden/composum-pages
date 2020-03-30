@@ -75,6 +75,16 @@ public class Menuitem extends Page {
         return false;
     }
 
+    public boolean isCurrent() {
+        Page currentPage = getCurrentPage();
+        if (currentPage != null) {
+            String currentPagePath = currentPage.getPath();
+            String menuitemPath = resource.getPath();
+            return menuitemPath.equals(currentPagePath);
+        }
+        return false;
+    }
+
     public boolean isMenuOnly() {
         if (menuOnly == null) {
             String targetUrl = getSlingTargetUrl();

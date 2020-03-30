@@ -6,8 +6,8 @@ import com.composum.pages.commons.model.PageContent;
 import com.composum.pages.commons.request.DisplayMode;
 import com.composum.pages.commons.service.PageManager;
 import com.composum.pages.commons.service.Theme;
+import com.composum.pages.commons.util.ThemeUtil;
 import com.composum.sling.core.BeanContext;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.request.RequestDispatcherOptions;
@@ -92,15 +92,7 @@ public class PageNodeServlet extends SlingSafeMethodsServlet {
             Resource forwardContent = pageContent.getResource();
 
             RequestDispatcherOptions options = new RequestDispatcherOptions();
-            if (theme != null) {
-                String resourceType = forwardContent.getResourceType();
-                if (StringUtils.isNotBlank(resourceType)) {
-                    String overlay = theme.getResourceType(forwardContent, resourceType);
-                    if (!resourceType.equals(overlay)) {
-                        options.setForceResourceType(overlay);
-                    }
-                }
-            }
+            ThemeUtil.applyTheme(theme, forwardContent, options);
             RequestDispatcher dispatcher = request.getRequestDispatcher(forwardContent, options);
             if (dispatcher != null) {
                 dispatcher.forward(request, response);

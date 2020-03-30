@@ -146,6 +146,11 @@ public class PagesConfigImpl implements PagesConfiguration {
                 description = "the filter configuration to detect ordered nodes (prevent from sorting in the tree)"
         )
         String orderableNodesFilterRule() default "or{Type(+[node:orderable]),PrimaryType(+'^.*([Oo]rdered|[Pp]age).*$')}";
+
+        @AttributeDefinition(
+                description = "the cache timeout for the themes cache entries in minutes (default: 2h)"
+        )
+        int themeCacheTimeout() default 120;
     }
 
     private Map<String, String> preferredCountry;

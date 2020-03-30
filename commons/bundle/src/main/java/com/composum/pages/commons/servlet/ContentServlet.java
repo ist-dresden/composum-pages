@@ -4,11 +4,10 @@ import com.composum.pages.commons.model.Page;
 import com.composum.pages.commons.model.Site;
 import com.composum.pages.commons.service.PageManager;
 import com.composum.pages.commons.service.ResourceManager;
-import com.composum.pages.commons.service.Theme;
 import com.composum.pages.commons.util.PagesUtil;
 import com.composum.pages.commons.util.RequestUtil;
-import com.composum.pages.commons.util.ResolverUtil;
 import com.composum.pages.commons.util.ResourceTypeUtil;
+import com.composum.pages.commons.util.ThemeUtil;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.ResourceHandle;
 import com.composum.sling.core.filter.ResourceFilter;
@@ -110,22 +109,7 @@ public abstract class ContentServlet extends NodeTreeServlet {
                                          @Nullable final Resource editResource) {
             if (editResource != null) {
                 Page containigPage = getPageManager().getContainingPage(context, contentResource);
-                if (containigPage != null) {
-                    Theme theme = containigPage.getTheme();
-                    if (theme != null) {
-                        ResourceResolver resolver = editResource.getResourceResolver();
-                        String resourceType = ResolverUtil.toResourceType(resolver, editResource.getPath());
-                        if (StringUtils.isNotBlank(resourceType)) {
-                            String overlay = theme.getResourceType(editResource, resourceType);
-                            if (!resourceType.equals(overlay)) {
-                                Resource overlayResource = ResolverUtil.getResourceType(resolver, overlay);
-                                if (overlayResource != null) {
-                                    return overlayResource;
-                                }
-                            }
-                        }
-                    }
-                }
+                return ThemeUtil.getTypeResource(containigPage, editResource);
             }
             return editResource;
         }
