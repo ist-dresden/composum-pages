@@ -75,7 +75,7 @@ public class Menuitem extends Page {
         return false;
     }
 
-    public boolean isCurrent() {
+    public boolean getIsCurrent() {
         Page currentPage = getCurrentPage();
         if (currentPage != null) {
             String currentPagePath = currentPage.getPath();

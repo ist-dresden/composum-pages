@@ -8,8 +8,8 @@
         <cpp:widget label="Logo Image" property="logo/imageRef" type="imagefield"/>
     </div>
     <div class="col col-xs-7">
-        <cpp:widget label="Theme" property="style/category.theme" type="textfield"
-                    hint="the additional clientlib category of the pages theme (optional)"/>
+        <cpp:widget label="Theme" property="style/theme" type="select" options="${currentPage.themes}"
+                    hint="the optional theme of the sites pages"/>
         <cpp:widget label="Page View Styles" property="style/category.view" type="textfield"
                     hint="the clientlib category for the normal and public page rendering"/>
         <cpp:widget label="Edit Styles" property="style/category.edit" type="textfield"
