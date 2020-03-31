@@ -19,7 +19,6 @@ import com.composum.platform.cache.service.CacheConfiguration;
 import com.composum.platform.cache.service.CacheManager;
 import com.composum.platform.cache.service.impl.CacheServiceImpl;
 import com.composum.sling.core.BeanContext;
-import com.composum.sling.core.InheritedValues;
 import com.composum.sling.core.ResourceHandle;
 import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.filter.StringFilter;
@@ -78,7 +77,6 @@ import static com.composum.pages.commons.PagesConstants.NODE_NAME_DESIGN;
 import static com.composum.pages.commons.PagesConstants.PROP_DESIGN_REF;
 import static com.composum.pages.commons.PagesConstants.PROP_TEMPLATE;
 import static com.composum.pages.commons.PagesConstants.PROP_TEMPLATE_REF;
-import static com.composum.pages.commons.PagesConstants.PROP_THEME;
 import static com.composum.pages.commons.PagesConstants.PROP_TYPE_PATTERNS;
 import static com.composum.pages.commons.model.Page.isPage;
 
@@ -484,11 +482,15 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
     public Template getTemplateOf(@Nullable Resource resource) {
         Template template = null;
         if (resource != null) {
-            String path = resource.getPath();
-            template = get(path);
+            Theme theme = themeManager.getTheme(resource);
+            String cacheKey = resource.getPath();
+            if (theme != null) { // the template can vary if a theme is referenced
+                cacheKey += '@' + theme.getName();
+            }
+            template = get(cacheKey);
             if (template == null) {
                 template = findTemplateOf(resource);
-                put(path, template != null ? template : NO_TEMPLATE);
+                put(cacheKey, template != null ? template : NO_TEMPLATE);
             }
         }
         return template != NO_TEMPLATE ? template : null;
@@ -507,19 +509,7 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
         } else {
             String templatePath = resource.getValueMap().get(PagesConstants.PROP_TEMPLATE, "");
             if (StringUtils.isNotBlank(templatePath)) {
-                ResourceResolver resolver = resource.getResourceResolver();
-                if (Page.isPageContent(resource)) {
-                    InheritedValues inherited = new InheritedValues(resource);
-                    String themeName = inherited.get(PROP_THEME, "");
-                    if (StringUtils.isNotBlank(themeName)) {
-                        Theme theme = themeManager.getTheme(resolver, themeName);
-                        if (theme != null) {
-                            templatePath = theme.getPageTemplate(
-                                    Objects.requireNonNull(resource.getParent()),
-                                    Objects.requireNonNull(ResolverUtil.toPageTemplate(resolver, templatePath)));
-                        }
-                    }
-                }
+                templatePath = getThemeTemplate(resource, templatePath);
                 Resource templateResource = ResolverUtil.getTemplate(resource.getResourceResolver(), templatePath);
                 if (templateResource != null && !ResourceUtil.isNonExistingResource(templateResource)) {
                     template = toTemplate(templateResource);
@@ -537,6 +527,17 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
             }
         }
         return template;
+    }
+
+    protected String getThemeTemplate(@Nonnull final Resource pageContent, @Nonnull String templateType) {
+        Theme theme = themeManager.getTheme(pageContent);
+        if (theme != null) {
+            ResourceResolver resolver = pageContent.getResourceResolver();
+            templateType = theme.getPageTemplate(
+                    Objects.requireNonNull(pageContent.getParent()),
+                    Objects.requireNonNull(ResolverUtil.toPageTemplate(resolver, templateType)));
+        }
+        return templateType;
     }
 
     /**

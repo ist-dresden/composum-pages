@@ -633,10 +633,11 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
     public Map<String, String> getThemes() {
         Collection<Theme> themes = context.getService(ThemeManager.class).getThemes(context.getResolver());
         Map<String, String> result = new LinkedHashMap<>();
-        result.put("", I18N.get(context.getRequest(), "no theme"));
+        result.put("", I18N.get(context.getRequest(), "default"));
         for (Theme theme : themes) {
             result.put(theme.getName(), theme.getTitle());
         }
+        result.put("none", I18N.get(context.getRequest(), "no theme"));
         return result;
     }
 

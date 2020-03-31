@@ -1,5 +1,6 @@
 package com.composum.pages.commons.service;
 
+import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 
 import javax.annotation.Nonnull;
@@ -16,4 +17,7 @@ public interface ThemeManager {
 
     @Nullable
     Theme getTheme(@Nonnull ResourceResolver resolver, @Nonnull String name);
+
+    @Nullable
+    Theme getTheme(@Nullable Resource pageResource);
 }

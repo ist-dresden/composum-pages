@@ -2,7 +2,9 @@ package com.composum.pages.commons.service;
 
 import com.composum.pages.commons.PagesConfiguration;
 import com.composum.pages.commons.PagesConstants;
+import com.composum.pages.commons.model.Page;
 import com.composum.pages.commons.util.ResolverUtil;
+import com.composum.sling.core.InheritedValues;
 import com.composum.sling.core.util.ResourceUtil;
 import com.composum.sling.platform.staging.query.Query;
 import com.composum.sling.platform.staging.query.QueryBuilder;
@@ -35,6 +37,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
+import static com.composum.pages.commons.PagesConstants.PROP_THEME;
 import static com.composum.sling.clientlibs.handle.Clientlib.PROP_CATEGORY;
 import static com.composum.sling.clientlibs.handle.Clientlib.RESOURCE_TYPE;
 
@@ -241,6 +244,28 @@ public class PagesThemeManager implements ThemeManager {
     protected void removeTheme(@Nonnull final Theme theme) {
         LOG.info("removeTheme: {}", theme.getName());
         themes.remove(theme.getName());
+    }
+
+    @Nullable
+    @Override
+    public Theme getTheme(@Nullable Resource pageResource) {
+        Theme theme = null;
+        if (pageResource != null) {
+            if (Page.isPage(pageResource)) {
+                pageResource = pageResource.getChild(JcrConstants.JCR_CONTENT);
+            }
+            if (pageResource != null) {
+                if (Page.isPageContent(pageResource)) {
+                    InheritedValues inherited = new InheritedValues(pageResource);
+                    String themeName = inherited.get(PROP_THEME, "");
+                    if (StringUtils.isNotBlank(themeName)) {
+                        ResourceResolver resolver = pageResource.getResourceResolver();
+                        theme = getTheme(resolver, themeName);
+                    }
+                }
+            }
+        }
+        return theme;
     }
 
     @Nonnull
