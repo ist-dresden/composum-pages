@@ -616,7 +616,7 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
         Theme theme = getTheme();
         if (theme != null) {
             Page parent, themeRoot = this;
-            while (!themeRoot.isHome() && (parent = themeRoot.getParentPage()) != null) {
+            while ((parent = themeRoot.getParentPage()) != null) {
                 Theme parentTheme = parent.getTheme();
                 if (parentTheme == null || !parentTheme.getName().equals(theme.getName())) {
                     break;

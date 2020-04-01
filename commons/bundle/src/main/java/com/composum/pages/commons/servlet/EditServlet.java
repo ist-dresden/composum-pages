@@ -7,6 +7,7 @@ package com.composum.pages.commons.servlet;
 
 import com.composum.pages.commons.AssetsConfiguration;
 import com.composum.pages.commons.PagesConfiguration;
+import com.composum.pages.commons.PagesConstants;
 import com.composum.pages.commons.model.Container;
 import com.composum.pages.commons.model.GenericModel;
 import com.composum.pages.commons.model.Model;
@@ -18,6 +19,7 @@ import com.composum.pages.commons.service.EditService;
 import com.composum.pages.commons.service.PageManager;
 import com.composum.pages.commons.service.ResourceManager;
 import com.composum.pages.commons.service.SiteManager;
+import com.composum.pages.commons.service.Theme;
 import com.composum.pages.commons.util.RequestUtil;
 import com.composum.pages.commons.util.ResolverUtil;
 import com.composum.pages.commons.util.ResourceTypeUtil;
@@ -335,7 +337,15 @@ public class EditServlet extends PagesContentServlet {
             try {
                 BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
                 RequestDispatcherOptions options = new RequestDispatcherOptions();
-                ThemeUtil.applyTheme(getPageManager().getContainingPage(context, resource), resource, options);
+                Page page = pageManager.getContainingPage(context, resource);
+                if (page != null) {
+                    request.setAttribute(PagesConstants.RA_CURRENT_PAGE, page);
+                    Theme theme = page.getTheme();
+                    if (theme != null) {
+                        request.setAttribute(PagesConstants.RA_CURRENT_THEME, theme);
+                        ThemeUtil.applyTheme(theme, resource, options);
+                    }
+                }
                 RequestDispatcher dispatcher = request.getRequestDispatcher(resource, options);
                 if (dispatcher != null) {
                     dispatcher.forward(request, response);

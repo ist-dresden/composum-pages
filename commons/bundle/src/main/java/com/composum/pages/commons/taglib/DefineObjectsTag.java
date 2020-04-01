@@ -1,10 +1,12 @@
 package com.composum.pages.commons.taglib;
 
+import com.composum.pages.commons.PagesConstants;
 import com.composum.pages.commons.model.Page;
 import com.composum.pages.commons.model.properties.Languages;
 import com.composum.pages.commons.request.DisplayMode;
 import com.composum.pages.commons.request.PagesLocale;
 import com.composum.pages.commons.service.PageManager;
+import com.composum.pages.commons.service.Theme;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.platform.security.AccessMode;
 import org.apache.sling.api.SlingHttpServletRequest;
@@ -83,6 +85,10 @@ public class DefineObjectsTag extends org.apache.sling.scripting.jsp.taglib.Defi
             if (pageResource != null) {
                 Page page = pageManager.createBean(context, pageResource);
                 request.setAttribute(RA_CURRENT_PAGE, page);
+                Theme theme = page.getTheme();
+                if (theme != null) {
+                    request.setAttribute(PagesConstants.RA_CURRENT_THEME, theme);
+                }
             }
         }
     }

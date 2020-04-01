@@ -105,7 +105,7 @@ public class PagesConfigImpl implements PagesConfiguration {
         @AttributeDefinition(
                 description = "the filter configuration to set the scope to component development"
         )
-        String develomentTreeFilterRule() default "PrimaryType(+'^cpp:(Component|Page)$,^nt:(file)$')";
+        String develomentTreeFilterRule() default "PrimaryType(+'^cpp:(Component|Page|Theme)$,^nt:(file)$')";
 
         @AttributeDefinition(
                 description = "the filter configuration for site resources (reference type 'site')"
