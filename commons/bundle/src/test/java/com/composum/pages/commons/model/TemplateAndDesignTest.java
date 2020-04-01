@@ -1,6 +1,7 @@
 package com.composum.pages.commons.model;
 
 import com.composum.pages.commons.service.PagesResourceManager;
+import com.composum.pages.commons.service.PagesThemeManager;
 import com.composum.pages.commons.service.ResourceManager;
 import com.composum.sling.core.BeanContext;
 import org.apache.jackrabbit.JcrConstants;
@@ -31,9 +32,17 @@ public class TemplateAndDesignTest {
     protected BeanContext bc = new BeanContext.Servlet(servletContext, context.bundleContext(), context.request(),
             context.response());
 
+
+    protected class TestThemeManager extends PagesThemeManager {
+    }
+
     protected class TestResourceManager extends PagesResourceManager {
 
         protected Map<Serializable, Template> cache = new HashMap<>();
+
+        public TestResourceManager() {
+            themeManager = new TestThemeManager();
+        }
 
         @Override
         @Nullable
