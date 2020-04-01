@@ -8,7 +8,7 @@
             jcr:primaryType="cpp:PageContent"
             jcr:title="Component Test"
             sling:resourceType="composum/pages/components/page"
-            template="/libs/composum/pages/components/templates/page/test">
+            template="composum/pages/components/templates/page/test">
         <main
                 jcr:primaryType="cpp:Container"
                 sling:resourceType="composum/pages/components/container/parsys">
