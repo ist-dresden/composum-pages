@@ -14,6 +14,7 @@ import com.composum.pages.commons.model.Folder;
 import com.composum.pages.commons.model.Page;
 import com.composum.pages.commons.model.Site;
 import com.composum.pages.commons.model.properties.PathPatternSet;
+import com.composum.pages.commons.request.DisplayMode;
 import com.composum.pages.commons.util.ResolverUtil;
 import com.composum.platform.cache.service.CacheConfiguration;
 import com.composum.platform.cache.service.CacheManager;
@@ -24,12 +25,14 @@ import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.filter.StringFilter;
 import com.composum.sling.core.util.PropertyUtil;
 import com.composum.sling.core.util.ResourceUtil;
+import com.composum.sling.platform.security.PlatformAccessService;
 import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
+import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
@@ -140,6 +143,9 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
 
     @Reference
     protected ThemeManager themeManager;
+
+    @Reference(cardinality = ReferenceCardinality.OPTIONAL)
+    protected PlatformAccessService accessService;
 
     protected Config config;
 
@@ -487,13 +493,27 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
             if (theme != null) { // the template can vary if a theme is referenced
                 cacheKey += '@' + theme.getName();
             }
-            template = get(cacheKey);
-            if (template == null) {
+            if (ignoreTemplateCache() || (template = get(cacheKey)) == null) {
                 template = findTemplateOf(resource);
                 put(cacheKey, template != null ? template : NO_TEMPLATE);
             }
         }
         return template != NO_TEMPLATE ? template : null;
+    }
+
+    /**
+     * @return 'true' if the requested display mode is 'develop'
+     */
+    protected boolean ignoreTemplateCache() {
+        if (accessService != null) {
+            PlatformAccessService.AccessContext accessContext = accessService.getAccessContext();
+            if (accessContext != null) {
+                SlingHttpServletRequest request = accessContext.getRequest();
+                DisplayMode displayMode = request.adaptTo(DisplayMode.class);
+                return displayMode != null && DisplayMode.isDevelopMode(displayMode.firstElement());
+            }
+        }
+        return false;
     }
 
     /**

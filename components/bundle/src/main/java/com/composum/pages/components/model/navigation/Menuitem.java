@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nonnull;
 
 import static com.composum.pages.commons.PagesConstants.PN_TITLE;
+import static com.composum.pages.commons.PagesConstants.PN_TITLE_KEYS;
 import static com.composum.pages.commons.PagesConstants.PROP_NAV_TITLE;
 
 public class Menuitem extends Page {
@@ -24,6 +25,8 @@ public class Menuitem extends Page {
     private transient Boolean redirect;
     private transient Boolean menuOnly;
     private transient Menu submenu;
+
+    private transient String pageTitle;
 
     public Menuitem() {
     }
@@ -42,6 +45,14 @@ public class Menuitem extends Page {
     public String getTitle() {
         String title = super.getTitle();
         return StringUtils.isNotBlank(title) ? title : getName();
+    }
+
+    @Nonnull
+    public String getPageTitle() {
+        if (pageTitle == null) {
+            pageTitle = getProperty(getLocale(), "", PN_TITLE_KEYS);
+        }
+        return StringUtils.isNotBlank(pageTitle) ? pageTitle : getTitle();
     }
 
     @Override
