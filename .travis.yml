@@ -1,6 +1,6 @@
 #
 language: java
-jdk: oraclejdk8
+jdk: oraclejdk11
 dist: trusty
 branches:
   only:
