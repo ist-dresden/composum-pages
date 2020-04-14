@@ -1,12 +1,11 @@
 /**
  * the Pages edit frame UI component with the embedded content page
  */
-(function (window) {
-    window.composum = window.composum || {};
-    window.composum.pages = window.composum.pages || {};
+(function () {
+    'use strict';
+    CPM.namespace('pages');
 
     (function (pages, core) {
-        'use strict';
 
         pages.PageView = Backbone.View.extend({
 
@@ -433,6 +432,15 @@
                                     args.target.name, args.target.path, args.target.type);
                             }
                             break;
+                        case t.dialog.custom:
+                            // opens an custom dialog with an evaluated dialog type ('class')
+                            this.log.frame.trace('frame.message.on.dialog.custom(' + message[2] + ')');
+                            pages.dialogHandler.openLoadedDialog(args.url, eval(args.type), args.config,
+                                args.init ? eval(args.init) : undefined,
+                                args.trigger ? function () {
+                                    pages.trigger(args.trigger.context, args.trigger.event, args.trigger.args);
+                                } : undefined);
+                            break;
                         case t.dialog.alert:
                             // displays an alert message by opening an alert dialog
                             this.log.frame.trace('frame.message.on.dialog.alert(' + message[2] + ')');
@@ -480,5 +488,5 @@
 
         pages.editFrame = core.getView('.' + pages.const.frameWrapperClass, pages.EditFrame);
 
-    })(window.composum.pages, window.core);
-})(window);
+    })(CPM.pages, CPM.core);
+})();

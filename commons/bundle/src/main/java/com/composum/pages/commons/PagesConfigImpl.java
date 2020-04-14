@@ -13,6 +13,7 @@ import com.composum.pages.commons.util.RequestUtil;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.mapping.jcr.ResourceFilterMapping;
+import com.composum.sling.core.util.I18N;
 import org.apache.commons.lang3.LocaleUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
@@ -32,6 +33,7 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -103,7 +105,7 @@ public class PagesConfigImpl implements PagesConfiguration {
         @AttributeDefinition(
                 description = "the filter configuration to set the scope to component development"
         )
-        String develomentTreeFilterRule() default "PrimaryType(+'^cpp:(Component|Page)$,^nt:(file)$')";
+        String develomentTreeFilterRule() default "PrimaryType(+'^cpp:(Component|Page|Theme)$,^nt:(file)$')";
 
         @AttributeDefinition(
                 description = "the filter configuration for site resources (reference type 'site')"
@@ -144,6 +146,11 @@ public class PagesConfigImpl implements PagesConfiguration {
                 description = "the filter configuration to detect ordered nodes (prevent from sorting in the tree)"
         )
         String orderableNodesFilterRule() default "or{Type(+[node:orderable]),PrimaryType(+'^.*([Oo]rdered|[Pp]age).*$')}";
+
+        @AttributeDefinition(
+                description = "the cache timeout for the themes cache entries in minutes (default: 2h)"
+        )
+        int themeCacheTimeout() default 120;
     }
 
     private Map<String, String> preferredCountry;
@@ -283,6 +290,25 @@ public class PagesConfigImpl implements PagesConfiguration {
             default:
                 return pageFilter;
         }
+    }
+
+    @Nonnull
+    @Override
+    public Map<String, String> getPublicModeOptions(SlingHttpServletRequest request) {
+        Map<String, String> publicModeOptions = new LinkedHashMap<>();
+        if (isReplicationOptionAvailable()) {
+            publicModeOptions.put("configured", I18N.get(request, "Replication Configuration"));
+        }
+        publicModeOptions.put("inPlace", I18N.get(request, "In-Place replication"));
+        publicModeOptions.put("versions", I18N.get(request, "Versions resolver"));
+        publicModeOptions.put("live", I18N.get(request, "Live immediately"));
+        return publicModeOptions;
+    }
+
+    @Override
+    public boolean isReplicationOptionAvailable() {
+        return (bundleContext.getServiceReference(
+                "com.composum.platform.replication.remote.RemotePublisherService") != null);
     }
 
     protected SiteManager getSiteManager() {

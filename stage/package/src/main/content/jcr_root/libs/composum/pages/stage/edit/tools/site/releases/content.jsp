@@ -5,7 +5,7 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <cpp:defineFrameObjects/>
 <cpp:element var="site" type="com.composum.pages.stage.model.edit.site.SiteModel" mode="none"
-             cssBase="composum-pages-stage-edit-site-releases" data-path="@{site.site.path}">
+             cssBase="composum-pages-site-tools_releases" data-path="@{site.site.path}">
     <div class="composum-pages-tools_actions btn-toolbar">
         <div class="composum-pages-tools_left-actions">
             <label class="tools-title"><cpn:text tagName="span" class="title-text" value="Site Releases"
@@ -37,7 +37,7 @@
             </div>
         </div>
     </div>
-    <div class="composum-pages-stage-edit-tools-site-releases_tools-panel">
+    <div class="${siteCSS}_tools-panel">
         <ul class="${siteCSS}_list">
             <c:forEach items="${site.site.releases}" var="release">
                 <sling:include resource="${release.resource}"

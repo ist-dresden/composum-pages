@@ -3,3 +3,8 @@
 <%@taglib prefix="cpn" uri="http://sling.composum.com/cpnl/1.0" %>
 <cpp:defineObjects/>
 <cpn:clientlib type="js" category="composum.pages.edit.site"/>
+<script>
+    $(document).ready(function () {
+        CPM.widgets.setUp();
+    });
+</script>

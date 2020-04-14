@@ -7,7 +7,7 @@
             jcr:primaryType="cpp:PageContent"
             jcr:title="Homepage"
             sling:resourceType="composum/pages/components/page/home"
-            template="/libs/composum/pages/components/templates/page/home"
+            template="composum/pages/components/templates/page/home"
             isTemplate="{Boolean}false">
         <search
                 jcr:primaryType="nt:unstructured">

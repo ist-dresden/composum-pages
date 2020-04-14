@@ -2,12 +2,11 @@
  * the 'pages' namespace and core Pages edit frame functions
  * strong dependency to: 'commons.js' (libs: 'backbone.js', 'underscore.js', 'loglevel.js', 'jquery.js')
  */
-(function (window) {
-    window.composum = window.composum || {};
-    window.composum.pages = window.composum.pages || {};
+(function () {
+    'use strict';
+    CPM.namespace('pages');
 
     (function (pages, core) {
-        'use strict';
 
         pages.const = _.extend(pages.const || {}, {
             modes: {
@@ -39,6 +38,7 @@
                 dialog: {
                     edit: 'dialog:edit',
                     generic: 'dialog:generic',
+                    custom: 'dialog:custom',
                     alert: 'dialog:alert'
                 }
             },
@@ -307,7 +307,7 @@
             if (!locale) {
                 locale = pages.getLocale();
             }
-            var url = core.getContextUrl((path || pages.current.page) + '.html');
+            var url = core.getContextUrl(core.encodePath(path || pages.current.page) + '.html');
             if (locale !== pages.current.localeDefault) {
                 url += '?pages.locale=' + locale;
             }
@@ -413,6 +413,26 @@
                     }
                     dialog.show();
                 }
+            },
+
+            /**
+             * the dialog load analogous to the core.openLoadedDialog
+             * @param url       the complete URL to load the dialog (including selectors, extension, suffix, patameters)
+             * @param viewType  the dialogs behaviour implewmentation class
+             * @param config    the 'options' parameter object for the dialogs initialzer
+             * @param initView  an option function for further initializaion on shown
+             * @param callback  the final callback function on the dialogs successful finishing
+             */
+            openLoadedDialog: function (url, viewType, config, initView, callback) {
+                core.getHtml(url, _.bind(function (content) {
+                    this.$el.append(content);
+                    var $dialog = this.$el.children(':last-child');
+                    var dialog = core.getWidget(this.el, $dialog[0], viewType,
+                        config ? _.extend({loaded: true}, config) : {loaded: true});
+                    if (dialog) {
+                        dialog.show(initView, callback);
+                    }
+                }, this));
             },
 
             openDialog: function (id, url, viewType, initView, callback) {
@@ -527,5 +547,5 @@
             }, this));
         };
 
-    })(window.composum.pages, window.core);
-})(window);
+    })(CPM.pages, CPM.core);
+})();

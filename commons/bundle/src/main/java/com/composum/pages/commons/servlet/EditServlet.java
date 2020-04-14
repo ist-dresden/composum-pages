@@ -7,6 +7,7 @@ package com.composum.pages.commons.servlet;
 
 import com.composum.pages.commons.AssetsConfiguration;
 import com.composum.pages.commons.PagesConfiguration;
+import com.composum.pages.commons.PagesConstants;
 import com.composum.pages.commons.model.Container;
 import com.composum.pages.commons.model.GenericModel;
 import com.composum.pages.commons.model.Model;
@@ -18,9 +19,11 @@ import com.composum.pages.commons.service.EditService;
 import com.composum.pages.commons.service.PageManager;
 import com.composum.pages.commons.service.ResourceManager;
 import com.composum.pages.commons.service.SiteManager;
+import com.composum.pages.commons.service.Theme;
 import com.composum.pages.commons.util.RequestUtil;
 import com.composum.pages.commons.util.ResolverUtil;
 import com.composum.pages.commons.util.ResourceTypeUtil;
+import com.composum.pages.commons.util.ThemeUtil;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.ResourceHandle;
 import com.composum.sling.core.filter.ResourceFilter;
@@ -56,6 +59,7 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.jcr.RepositoryException;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
@@ -164,7 +168,7 @@ public class EditServlet extends PagesContentServlet {
         resourceInfo, editDialog, newDialog,
         editTile, editToolbar, treeActions, editResource,
         pageComponents, elementTypes, targetContainers, isAllowedElement, filterDropZones, componentCategories,
-        insertElement, moveElement, copyElement,
+        refreshElement, insertElement, moveElement, copyElement,
         createPage, deletePage, moveContent, renameContent, copyContent,
         createSite, deleteSite,
         contextTools, context
@@ -214,6 +218,8 @@ public class EditServlet extends PagesContentServlet {
                 Operation.context, new GetContextResource());
         operations.setOperation(ServletOperationSet.Method.GET, Extension.html,
                 Operation.contextTools, new GetContextTools());
+        operations.setOperation(ServletOperationSet.Method.GET, Extension.html,
+                Operation.refreshElement, new RefreshElementOperation());
         operations.setOperation(ServletOperationSet.Method.GET, Extension.json,
                 Operation.isAllowedElement, new CheckIsAllowedElement());
         operations.setOperation(ServletOperationSet.Method.GET, Extension.json,
@@ -318,6 +324,39 @@ public class EditServlet extends PagesContentServlet {
             } else {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND);
             }
+        }
+    }
+
+    protected class RefreshElementOperation implements ServletOperation {
+
+        @Override
+        public void doIt(@Nonnull final SlingHttpServletRequest request,
+                         @Nonnull final SlingHttpServletResponse response,
+                         @Nonnull ResourceHandle resource)
+                throws IOException {
+            try {
+                BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
+                RequestDispatcherOptions options = new RequestDispatcherOptions();
+                Page page = pageManager.getContainingPage(context, resource);
+                if (page != null) {
+                    request.setAttribute(PagesConstants.RA_CURRENT_PAGE, page);
+                    Theme theme = page.getTheme();
+                    if (theme != null) {
+                        request.setAttribute(PagesConstants.RA_CURRENT_THEME, theme);
+                        ThemeUtil.applyTheme(theme, resource, options);
+                    }
+                }
+                RequestDispatcher dispatcher = request.getRequestDispatcher(resource, options);
+                if (dispatcher != null) {
+                    dispatcher.forward(request, response);
+                    return;
+                } else {
+                    LOG.error("can't get dispatcher for '{}'", resource.getPath());
+                }
+            } catch (ServletException ex) {
+                LOG.error(ex.getMessage(), ex);
+            }
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
         }
     }
 

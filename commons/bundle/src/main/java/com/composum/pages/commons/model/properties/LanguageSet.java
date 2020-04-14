@@ -3,6 +3,7 @@ package com.composum.pages.commons.model.properties;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 
@@ -23,6 +24,12 @@ public abstract class LanguageSet {
      */
     @Nonnull
     public Language get(@Nonnull String key) {
+        Language language = find(key);
+        return language != null ? language : getDefaultLanguage();
+    }
+
+    @Nullable
+    public Language find(@Nonnull String key) {
         while (StringUtils.isNotBlank(key)) {
             Language language = set.get(key);
             if (language == null) {
@@ -34,7 +41,7 @@ public abstract class LanguageSet {
             int delimiter = key.lastIndexOf('_');
             key = delimiter > 0 ? key.substring(0, delimiter) : "";
         }
-        return getDefaultLanguage();
+        return null;
     }
 
     public void put(@Nonnull String key, @Nonnull final Language language) {

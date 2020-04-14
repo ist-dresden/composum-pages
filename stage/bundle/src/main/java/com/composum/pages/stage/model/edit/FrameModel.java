@@ -133,9 +133,8 @@ public class FrameModel extends GenericModel {
     }
 
     public String getLogoutUrl() {
-        // FIXME(hps,16.09.19) replace this by {@link com.composum.sling.core.CoreConfiguration#getLogoutUrl()} once it is old enough.
-        Dictionary properties = getContext().getService(CoreConfiguration.class).getProperties();
-        return StringUtils.defaultIfBlank(StringUtils.trim((String) properties.get("logouturl")), "/system/sling/logout.html?logout=true&GLO=true");
+        String logoutUrl = getContext().getService(CoreConfiguration.class).getLogoutUrl();
+        return StringUtils.defaultIfBlank(logoutUrl, "/system/sling/logout.html?logout=true&GLO=true");
     }
 
     // view mode

@@ -7,13 +7,11 @@
  * @param path the path of the content element
  * @param type the resource type of the content element
  */
-(function (window) {
-    window.composum = window.composum || {};
-    window.composum.pages = window.composum.pages || {};
-    window.composum.pages.actions = window.composum.pages.actions || {};
+(function () {
+    'use strict';
+    CPM.namespace('pages.actions');
 
     (function (actions, pages, core) {
-        'use strict';
 
         actions.const = _.extend(actions.const || {}, {
             version: {
@@ -649,5 +647,5 @@
             }
         };
 
-    })(window.composum.pages.actions, window.composum.pages, window.core);
-})(window);
+    })(CPM.pages.actions, CPM.pages, CPM.core);
+})();

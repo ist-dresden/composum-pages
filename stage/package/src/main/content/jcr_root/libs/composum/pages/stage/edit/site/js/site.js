@@ -1,10 +1,8 @@
-(function (window) {
-    window.composum = window.composum || {};
-    window.composum.pages = window.composum.pages || {};
-    window.composum.pages.site = window.composum.pages.site || {};
+(function () {
+    'use strict';
+    CPM.namespace('pages.site');
 
     (function (site, pages, core) {
-        'use strict';
 
         site.const = _.extend(site.const || {}, {
             tabs: {
@@ -13,7 +11,7 @@
                     key: 'tab'
                 },
                 css: {
-                    base: "composum-pages-stage-edit-site"
+                    base: "composum-pages-site-view"
                 }
             },
             sites: {
@@ -82,5 +80,5 @@
 
         site.sites = core.getView('.' + site.const.sites.css.base, site.Sites);
 
-    })(window.composum.pages.site, window.composum.pages, window.core);
-})(window);
+    })(CPM.pages.site, CPM.pages, CPM.core);
+})();

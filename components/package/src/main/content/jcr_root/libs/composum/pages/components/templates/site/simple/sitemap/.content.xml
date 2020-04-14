@@ -6,7 +6,7 @@
     <jcr:content
             jcr:primaryType="cpp:PageContent"
             sling:resourceType="composum/pages/components/page/sitemap"
-            template="/libs/composum/pages/components/templates/page/meta/sitemap"
+            template="composum/pages/components/templates/page/meta/sitemap"
             isTemplate="{Boolean}false">
     </jcr:content>
 </jcr:root>

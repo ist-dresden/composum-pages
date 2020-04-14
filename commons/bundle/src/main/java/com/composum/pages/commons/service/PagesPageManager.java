@@ -4,12 +4,7 @@ import com.composum.pages.commons.PagesConfiguration;
 import com.composum.pages.commons.PagesConstants;
 import com.composum.pages.commons.PagesConstants.ReferenceType;
 import com.composum.pages.commons.filter.TemplateFilter;
-import com.composum.pages.commons.model.ContentTypeFilter;
-import com.composum.pages.commons.model.Model;
-import com.composum.pages.commons.model.Page;
-import com.composum.pages.commons.model.PageContent;
-import com.composum.pages.commons.model.Site;
-import com.composum.pages.commons.replication.ReplicationManager;
+import com.composum.pages.commons.model.*;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.filter.StringFilter;
@@ -18,11 +13,7 @@ import com.composum.sling.core.util.ResourceUtil;
 import com.composum.sling.platform.staging.versions.PlatformVersionsService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
-import org.apache.sling.api.resource.ModifiableValueMap;
-import org.apache.sling.api.resource.PersistenceException;
-import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.resource.ValueMap;
+import org.apache.sling.api.resource.*;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -32,17 +23,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -79,9 +60,6 @@ public class PagesPageManager extends PagesContentManager<Page> implements PageM
 
     @Reference
     protected ResourceManager resourceManager;
-
-    @Reference
-    protected ReplicationManager replicationManager;
 
     @Reference
     protected PlatformVersionsService versionsService;
@@ -346,7 +324,7 @@ public class PagesPageManager extends PagesContentManager<Page> implements PageM
         if (resolved) {
             ResourceFilter.ContentNodeFilter contentNodeFilter = new ResourceFilter.ContentNodeFilter(true, pagesConfig.getReferenceFilter(ReferenceType.page), ResourceFilter.ALL);
             referringPageFilter =
-                    ResourceFilter.FilterSet.Rule.and.of(referringPageFilter, versionsService.releaseAsResourceFilter(searchRoot, null, replicationManager, contentNodeFilter));
+                    ResourceFilter.FilterSet.Rule.and.of(referringPageFilter, versionsService.releaseAsResourceFilter(searchRoot, null, null, contentNodeFilter));
         }
         for (Resource resource : referringResources) {
             Resource referringPage = getContainingPageResource(resource);
@@ -380,7 +358,7 @@ public class PagesPageManager extends PagesContentManager<Page> implements PageM
         if (unresolved) {
             // this filtering does not work when pages are renamed wrt. to the release. But there is currently no good way to handle this - you'll run into path problems,
             // anyway. :-(
-            releaseAsResourceFilter = versionsService.releaseAsResourceFilter(page.getResource(), null, replicationManager, contentNodeFilter);
+            releaseAsResourceFilter = versionsService.releaseAsResourceFilter(page.getResource(), null, null, contentNodeFilter);
         }
         ResourceFilter unresolvedFilter = ResourceFilter.FilterSet.Rule.none.of(releaseAsResourceFilter);
         ResourceFilter resourceFilter = type != null

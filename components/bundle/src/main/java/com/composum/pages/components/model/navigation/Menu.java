@@ -29,6 +29,13 @@ public class Menu extends Element {
         return resource != null ? getPageManager().getContainingPageResource(resource) : null;
     }
 
+    /**
+     * for JSP ${menu.isEmpty} to avoid use of 'empty' keyword
+     */
+    public boolean getIsEmpty() {
+        return isEmpty();
+    }
+
     public boolean isEmpty() {
         return getSize() == 0;
     }

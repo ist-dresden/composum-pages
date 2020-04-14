@@ -10,13 +10,13 @@
         &_tools-panel {
             position: absolute;
             top: 50px;
-            left: 10px;
-            right: 10px;
-            bottom: 8px;
+            left: $tools-pane-padding;
+            right: $tools-pane-padding;
+            bottom: $tools-pane-padding;
             @include scrolltools;
         }
 
-        .composum-pages-stage-edit-site-page {
+        .composum-pages-site-view-page {
 
             &_type {
                 height: 27px;
@@ -28,7 +28,7 @@
 
                 &_page-select-all {
                     vertical-align: top;
-                    margin: 11px 8px 0 9px;
+                    margin: 11px 8px 0 7px;
                 }
 
                 &_list {

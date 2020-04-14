@@ -131,7 +131,7 @@ public class IncludeTag extends IncludeTagHandler {
                         if (LOG.isDebugEnabled()) {
                             LOG.debug("resource type '{}' overlayed by '{}' (theme '{}')", type, overlay, theme.getName());
                         }
-                        resourceType = overlay;
+                        setResourceType(resourceType = overlay);
                     }
                 }
             }

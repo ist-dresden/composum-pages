@@ -364,8 +364,9 @@ public class ResourceTypeUtil {
      * maybe <code>null</code> if no such resource can be found (should not happens)
      */
     public static String getSubtypePath(@Nonnull final ResourceResolver resolver,
-                                        @Nonnull final Resource resource,
-                                        String type, String subtype, String selectors) {
+                                        @Nullable final Resource resource,
+                                        @Nullable final String type, @Nullable final String subtype,
+                                        @Nullable final String selectors) {
         Resource typeResource = getSubtype(resolver, resource, type, subtype, selectors);
         return typeResource != null ? typeResource.getPath() : null;
     }

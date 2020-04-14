@@ -452,7 +452,7 @@
                     if (selection) {
                         this.doSubmit(undefined, selection);
                         // dispose the dialog to avoid reuse of a dialog which is not initialized during shown
-                        this.onClose();
+                        this.destroy();
                         return;
                     }
                 }
@@ -1009,7 +1009,7 @@
                     this.doSubmit(undefined, _.bind(function (xhr) {
                         core.alert(xhr);
                     }, this));
-                    this.onClose();
+                    this.destroy();
                 }
             }
         });

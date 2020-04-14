@@ -3,8 +3,8 @@
 @import "../../css/variables";
 @import "../../css/mixins";
 
-.composum-pages-stage-edit-site {
-    min-width: 600px;
+.composum-pages-site-view {
+    min-width: 800px;
 
     &_title, &-release_title {
         margin: 15px 0;
@@ -16,6 +16,10 @@
     }
 
     .nav-tabs {
+        margin-left: -15px;
+        margin-right: -15px;
+        padding-left: 15px;
+        padding-right: 15px;
 
         .badge-pill {
             min-width: 26px;
@@ -25,19 +29,6 @@
 
     .btn-group, .heading-input {
         float: right;
-    }
-
-    .btn-group {
-        margin-top: -6px;
-
-        .btn {
-            padding-top: 3px;
-            padding-bottom: 3px;
-
-            .fa {
-                margin-right: 8px;
-            }
-        }
     }
 
     .heading-input {
@@ -59,26 +50,6 @@
 
     .panel {
 
-        .panel-heading {
-            height: 37px;
-
-            .panel-title {
-                @include title-font;
-                float: left;
-
-                select {
-                    margin: -6px 10px 0;
-                }
-            }
-
-            select {
-                width: auto;
-                height: 28px;
-                margin-left: 10px;
-                float: right;
-            }
-        }
-
         .panel-body {
             padding: 10px;
 
@@ -91,17 +62,53 @@
         }
     }
 
-    .composum-pages-stage-edit-site {
+    .composum-pages-site-view {
+
+        &_heading {
+            display: flex;
+            align-items: center;
+
+            button {
+                padding: 4px 10px;
+
+                .fa {
+                    margin-right: 8px;
+                }
+            }
+
+            select {
+                margin-left: $bootstrap-spacing-v;
+                height: 26px;
+                font-family: sans-serif;
+                font-size: 14px;
+                font-weight: normal;
+            }
+
+            .composum-pages-site-view {
+
+                &_title {
+                    flex-grow: 1;
+                    margin: 0;
+                    vertical-align: center;
+                    text-decoration: none;
+                }
+
+                &_btn-group {
+                    margin-left: $bootstrap-spacing-v;
+                }
+            }
+        }
 
         &-page-modified,
         &-page-activated,
-        &-release-changes,
+        &_release_changes,
         &-languages {
 
             &_content {
                 overflow-x: auto;
 
                 &.panel-body {
+                    min-height: 100px;
                     padding: 5px 0 0;
                 }
             }
@@ -181,7 +188,7 @@
             }
         }
 
-        &-release-changes {
+        &_release_changes {
 
             &_thead, &_tbody {
 
@@ -244,75 +251,99 @@
             }
         }
     }
-}
 
-.composum-pages-stage-edit-site,
-.composum-pages-stage-edit-site-release {
+    .composum-pages-site-view_releases {
 
-    .composum-pages-stage-edit-site-releases {
+        &_release {
+            position: relative;
+            padding: 8px 15px;
 
-        &-release {
-            padding-bottom: 5px;
-
-            &:first-child {
-
-                .composum-pages-stage-edit-site-releases-release {
-
-                    &_input, &_content {
-                        border-top: none;
-                    }
-                }
+            &.editable {
+                padding-left: 45px;
             }
 
-            &:last-child {
-                padding-bottom: 0;
-            }
-
-            &_tile {
+            &-title, &-key, &-creationDate, &-description {
                 @include text-font;
             }
 
-            &_title, &_categories {
+            &-title, &-categories {
                 flex-grow: 9;
                 margin-right: 20px;
             }
 
-            &_key, &_creationDate, &_actions {
+            &-key, &-creationDate, &-actions {
                 margin: 0;
                 text-align: right;
             }
 
-            &_categories {
+            &-title {
+                font-size: 16px;
+            }
+
+            &-key {
+                font-weight: bold;
+            }
+
+            &-actions {
+
+                button {
+                    padding: 4px 10px;
+
+                    .fa {
+                        margin-right: 8px;
+                    }
+                }
+            }
+
+            &-categories {
                 display: inline-block;
                 margin-top: 5px;
                 white-space: nowrap;
+
+                .label {
+                    font-size: 12px;
+                }
             }
 
-            &_description {
+            &-description {
 
                 &, & p, & ul {
                     margin: 5px 0 0;
                 }
             }
 
-            &_description, &_row {
+            &-description, &-row {
                 display: inline-block;
                 width: 100%;
                 clear: both;
             }
 
-            &_row {
+            &-row {
                 display: flex;
             }
 
-            &_input {
-                width: 30px;
-                min-width: 30px;
-                max-width: 30px;
+            &-input {
+                position: absolute;
+                top: 9px;
+                left: 15px;
             }
 
             &_content {
                 width: 100%;
+            }
+        }
+    }
+
+    &_tab {
+
+        &-replication {
+
+            .composum-platform-replication-status {
+
+                &_badge.badge.badge-pill {
+                    min-width: 18px;
+                    margin-left: 0
+                }
             }
         }
     }

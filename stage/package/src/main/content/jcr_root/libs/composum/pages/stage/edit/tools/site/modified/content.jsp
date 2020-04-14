@@ -4,11 +4,11 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <cpp:defineFrameObjects/>
 <cpp:element var="model" type="com.composum.pages.stage.model.edit.site.SiteModel" mode="none"
-             cssBase="composum-pages-stage-edit-site-page-modified" data-path="@{model.site.path}">
+             cssBase="composum-pages-site-view-page-modified" data-path="@{model.site.path}"><%-- -view- ! --%>
     <div class="composum-pages-tools_actions btn-toolbar">
         <div class="composum-pages-tools_left-actions">
             <label class="tools-title" title="${cpn:i18n(slingRequest,'modified but last changes not activated yet')}">
-                <input type="checkbox" class="composum-pages-stage-edit-site-page-modified_page-select-all"/>
+                <input type="checkbox" class="composum-pages-site-view-page-modified_page-select-all"/>
                 <span class="title-text">${cpn:i18n(slingRequest,'Modified')}</span>
                 <cpp:include resourceType="composum/pages/stage/edit/site/page/type" replaceSelectors="context"/>
             </label>
