@@ -78,10 +78,11 @@ public class MicrositeImportServiceImpl implements MicrositeImportService, Micro
                 description = "the list of path and filename patterns for all allowed files (whitelist)"
         )
         String[] whitelist() default {
-                "^(.*/)?[^/]+\\.(html|css|js|map)$",
+                "^(.*/)?[^/]+\\.(html|jsp|s?css|less|js|map)$",
                 "^(.*/)?[^/]+\\.(png|jpg|jpeg|svg|gif|ico)$",
                 "^(.*/)?[^/]+\\.(eot|otf|ttf|woff|woff2)$",
-                "^(.*/)?[^/]+\\.(pdf)$"
+                "^(.*/)?[^/]+\\.(mp4|m4v|mp3|ogg|acc|wav)$",
+                "^(.*/)?[^/]+\\.(pdf|txt)$"
         };
 
         @AttributeDefinition(
@@ -256,9 +257,11 @@ public class MicrositeImportServiceImpl implements MicrositeImportService, Micro
             String extension = StringUtils.substringAfterLast(name, ".");
             switch (extension.toLowerCase()) {
                 case "html":
+                case "jsp":
                     importHtmlFile(importRequest, parentResource, name);
                     break;
                 case "css":
+                case "scss":
                     importCssFile(importRequest, parentResource, name);
                     break;
                 default:
