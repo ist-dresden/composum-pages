@@ -170,19 +170,8 @@ public class PagesReleaseFilter implements Filter {
                         String mode = site.getPublicMode();
                         switch (mode) {
                             case Site.PUBLIC_MODE_IN_PLACE:
-                                String replicationRoot = this.releaseChangeEventPublisher.getStagePath(site.getResource(), accessMode.name().toLowerCase());
-                                if (replicationRoot != null) {
-                                    String path = resource.getPath();
-                                    if (!path.startsWith(replicationRoot + "/")) {
-                                        sendReject(response, "not a released resource", uri, resource);
-                                        return;
-                                    }
-                                    if (LOG.isDebugEnabled()) {
-                                        LOG.debug("replication: '{}' ('{}')", accessMode + "@" + site.getPath(), resource);
-                                    }
-                                } else {
-                                    sendReject(response, "no replication configured", uri, resource);
-                                    return;
+                                if (LOG.isDebugEnabled()) {
+                                    LOG.debug("replication: '{}' ('{}')", accessMode + "@" + site.getPath(), resource);
                                 }
                                 break;
                             case Site.PUBLIC_MODE_VERSIONS:
