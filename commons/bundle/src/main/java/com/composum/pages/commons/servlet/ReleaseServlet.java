@@ -183,7 +183,7 @@ public class ReleaseServlet extends AbstractServiceServlet {
                 LOG.info("Publishing release '{}' to stage '{}'.", release, stage);
                 stage = AccessMode.valueOf(stage.toUpperCase()).name().toLowerCase();
                 // replication is triggered by setMark via the ReleaseChangeEventListener .
-                releaseManager.setMark(stage, release);
+                releaseManager.setMark(stage, release, false);
             }
         }
     }
