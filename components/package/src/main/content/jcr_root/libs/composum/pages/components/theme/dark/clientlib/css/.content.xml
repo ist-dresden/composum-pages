@@ -4,5 +4,10 @@
         depends="[category:composum.pages.components.view,
                   category:code.highlight.dark]"
         embed="[composum/pages/components/composed/accordion/css/accordion-dark.css,
+                composum/pages/components/container/row/css/row-dark.css,
                 composum/pages/components/container/section/css/section-dark.css,
+                composum/pages/components/element/link/css/link-dark.css,
+                composum/pages/components/element/text/css/text-dark.css,
+                composum/pages/components/element/title/css/title-dark.css,
+                composum/pages/components/search/css/search-dark.css,
                 composum/pages/components/page/css/dark.css]"/>

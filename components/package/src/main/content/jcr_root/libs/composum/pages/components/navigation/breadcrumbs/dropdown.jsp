@@ -5,7 +5,7 @@
 <cpp:defineObjects/>
 <cpp:model var="model" type="com.composum.pages.components.model.navigation.Breadcrumbs"
            cssBase="composum-pages-components-navigation-breadcrumbs">
-    <li class="${modelCSS}_dropdown">
+    <li class="${modelCSS}_dropdown ${not empty model.currentPage.logoUrl?'has-logo':'no-logo'}">
         <c:choose>
             <c:when test="${model.submenu}">
                 <a href="${'#'}" role="menuitem" aria-label="${cpn:text(model.current.title)}"

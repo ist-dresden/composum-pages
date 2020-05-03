@@ -1,0 +1,17 @@
+@charset "UTF-8";
+
+@import "../../../css/variables";
+@import "../../../css/mixins";
+
+.composum-pages-components-element-text {
+    color: $dark-foreground;
+
+    a,
+    a:visited {
+        color: $dark-link;
+    }
+
+    &_title {
+        color: $dark-highlight;
+    }
+}

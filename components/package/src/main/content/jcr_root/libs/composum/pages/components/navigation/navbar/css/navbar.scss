@@ -24,6 +24,10 @@ $breadcrumbs-menu-indent: 20px;
 
         &_dropdown {
             margin-left: 70px;
+
+            &.no-logo {
+                margin-left: 0;
+            }
         }
 
         &_icon {

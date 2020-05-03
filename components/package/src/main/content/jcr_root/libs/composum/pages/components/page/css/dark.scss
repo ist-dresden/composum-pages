@@ -118,6 +118,13 @@ body {
             border-color: $dark-highlight-bg;
         }
 
+        .input-group-btn .btn-default,
+        .pagination > li > a, .pagination > li > span {
+            color: $dark-foreground;
+            background-color: $dark-highlight-bg;
+            border-color: $dark-highlight-border;
+        }
+
         .panel {
             color: $dark-foreground;
             background-color: $dark-background;
@@ -137,35 +144,10 @@ body {
             }
         }
 
-        .composum-pages-components-container {
-
-            &-row, &-section {
-                &_title {
-                    color: $dark-foreground;
-                }
-            }
-
-            &-row {
-                &_header {
-                    background-color: $dark-highlight-bg;
-                }
-            }
-        }
-
         .composum-pages-components-element {
 
             &-image, &-video {
                 border-color: $dark-highlight-bg;
-            }
-
-            &-link {
-                &_link {
-                    color: $dark-link;
-
-                    &:hover {
-                        color: $site-default-link-hover;
-                    }
-                }
             }
 
             &-teaser, &-text, &-textimage {
@@ -176,10 +158,6 @@ body {
 
                     a {
                         color: $dark-link;
-
-                        &:hover {
-                            color: $site-default-link-hover;
-                        }
                     }
                 }
             }
