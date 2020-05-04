@@ -15,6 +15,7 @@ import com.composum.sling.platform.staging.ReleaseChangeEventPublisher;
 import com.composum.sling.platform.staging.ReleaseNumberCreator;
 import com.composum.sling.platform.staging.StagingConstants;
 import com.composum.sling.platform.staging.StagingReleaseManager;
+import com.composum.sling.platform.staging.replication.ReplicationConstants;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.apache.jackrabbit.JcrConstants;
@@ -36,11 +37,11 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
 
     private static final Logger LOG = LoggerFactory.getLogger(Site.class);
 
-    public static final String PUBLIC_MODE_IN_PLACE = "inPlace"; // FIXME(hps,26.03.20) rename to "replicated"
+    public static final String PUBLIC_MODE_IN_PLACE = ReplicationConstants.PUBLIC_MODE_IN_PLACE;
     public static final String PUBLIC_MODE_VERSIONS = "versions";
     public static final String PUBLIC_MODE_LIVE = "live";
 
-    public static final String PROP_PUBLIC_MODE = "publicMode";
+    public static final String PROP_PUBLIC_MODE = ReplicationConstants.PROP_PUBLIC_MODE;
     public static final String DEFAULT_PUBLIC_MODE = PUBLIC_MODE_IN_PLACE;
 
     public static final String RELEASE_LABEL_PREFIX = "composum-release-";
