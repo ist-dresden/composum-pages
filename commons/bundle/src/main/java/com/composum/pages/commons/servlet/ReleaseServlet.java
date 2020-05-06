@@ -11,10 +11,7 @@ import com.composum.sling.core.servlet.Status;
 import com.composum.sling.core.util.RequestUtil;
 import com.composum.sling.core.util.XSS;
 import com.composum.sling.platform.security.AccessMode;
-import com.composum.sling.platform.staging.ReleaseChangeEventListener;
-import com.composum.sling.platform.staging.ReleaseChangeEventPublisher;
-import com.composum.sling.platform.staging.ReleaseNumberCreator;
-import com.composum.sling.platform.staging.StagingReleaseManager;
+import com.composum.sling.platform.staging.*;
 import com.composum.sling.platform.staging.StagingReleaseManager.Release;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
@@ -177,7 +174,7 @@ public class ReleaseServlet extends AbstractServiceServlet {
     }
 
     protected void releaseToStage(@Nullable Release release, @Nullable String[] stages)
-            throws ReleaseChangeEventListener.ReplicationFailedException, RepositoryException {
+            throws ReleaseChangeFailedException, RepositoryException {
         if (release != null && stages != null && stages.length > 0) {
             for (String stage : stages) {
                 LOG.info("Publishing release '{}' to stage '{}'.", release, stage);
