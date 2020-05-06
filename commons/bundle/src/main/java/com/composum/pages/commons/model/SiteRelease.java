@@ -6,6 +6,7 @@ import com.composum.pages.commons.util.PagesUtil;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.util.I18N;
 import com.composum.sling.platform.security.AccessMode;
+import com.composum.sling.platform.staging.Release;
 import com.composum.sling.platform.staging.StagingConstants;
 import com.composum.sling.platform.staging.StagingReleaseManager;
 import com.composum.sling.platform.staging.impl.StagingUtils;
@@ -36,7 +37,7 @@ public class SiteRelease extends AbstractModel implements Comparable<SiteRelease
 
     private static final Logger LOG = LoggerFactory.getLogger(SiteRelease.class);
 
-    protected StagingReleaseManager.Release stagingRelease;
+    protected Release stagingRelease;
     private transient Calendar creationDate;
     private transient Calendar lastModified;
 
@@ -51,7 +52,7 @@ public class SiteRelease extends AbstractModel implements Comparable<SiteRelease
         // empty default constructor
     }
 
-    public SiteRelease(BeanContext context, StagingReleaseManager.Release release) {
+    public SiteRelease(BeanContext context, Release release) {
         this.stagingRelease = release;
         initialize(context, release.getMetaDataNode());
     }
@@ -100,7 +101,7 @@ public class SiteRelease extends AbstractModel implements Comparable<SiteRelease
     public SiteRelease getPreviousRelease() {
         if (previousRelease == null) {
             try {
-                StagingReleaseManager.Release previous = getStagingRelease().getPreviousRelease();
+                Release previous = getStagingRelease().getPreviousRelease();
                 if (previous != null) {
                     previousRelease = new SiteRelease(getContext(), previous);
                 }
@@ -168,7 +169,7 @@ public class SiteRelease extends AbstractModel implements Comparable<SiteRelease
     /**
      * The underlying release info from the platform.
      */
-    public StagingReleaseManager.Release getStagingRelease() {
+    public Release getStagingRelease() {
         return stagingRelease;
     }
 

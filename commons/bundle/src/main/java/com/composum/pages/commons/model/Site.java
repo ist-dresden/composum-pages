@@ -11,10 +11,7 @@ import com.composum.platform.models.annotations.PropertyDetermineResourceStrateg
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.util.ResourceUtil;
 import com.composum.sling.platform.security.AccessMode;
-import com.composum.sling.platform.staging.ReleaseChangeEventPublisher;
-import com.composum.sling.platform.staging.ReleaseNumberCreator;
-import com.composum.sling.platform.staging.StagingConstants;
-import com.composum.sling.platform.staging.StagingReleaseManager;
+import com.composum.sling.platform.staging.*;
 import com.composum.sling.platform.staging.replication.ReplicationConstants;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.CompareToBuilder;
@@ -266,7 +263,7 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
     public String getReleaseNumber(String category) {
         if (releaseNumber == null) {
             StagingReleaseManager releaseManager = context.getService(StagingReleaseManager.class);
-            StagingReleaseManager.Release release = releaseManager.findReleaseByMark(resource, StringUtils.lowerCase(category));
+            Release release = releaseManager.findReleaseByMark(resource, StringUtils.lowerCase(category));
             releaseNumber = release != null ? release.getNumber() : null;
         }
         return releaseNumber;
@@ -299,7 +296,7 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
     public List<SiteRelease> getReleases() {
         if (releases == null) {
             StagingReleaseManager releaseManager = context.getService(StagingReleaseManager.class);
-            List<StagingReleaseManager.Release> stagingReleases = releaseManager.getReleases(resource);
+            List<Release> stagingReleases = releaseManager.getReleases(resource);
             releases = stagingReleases.stream()
                     .map(r -> new SiteRelease(context, r))
                     .sorted(Comparator.comparing(SiteRelease::getKey, ReleaseNumberCreator.COMPARATOR_RELEASES.reversed()))

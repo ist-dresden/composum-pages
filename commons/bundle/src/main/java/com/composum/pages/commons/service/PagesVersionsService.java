@@ -5,6 +5,7 @@ import com.composum.pages.commons.model.Page;
 import com.composum.pages.commons.model.SiteRelease;
 import com.composum.platform.commons.util.ExceptionThrowingFunction;
 import com.composum.sling.core.BeanContext;
+import com.composum.sling.platform.staging.Release;
 import com.composum.sling.platform.staging.StagingConstants;
 import com.composum.sling.platform.staging.StagingReleaseManager;
 import com.composum.sling.platform.staging.VersionReference;
@@ -132,7 +133,7 @@ public class PagesVersionsService implements VersionsService {
                                                    @Nullable final SiteRelease siteRelease,
                                                    @Nullable final ContentVersionFilter filter)
             throws RepositoryException {
-        ExceptionThrowingFunction<StagingReleaseManager.Release, List<PlatformVersionsService.Status>, RepositoryException> getChanges =
+        ExceptionThrowingFunction<Release, List<PlatformVersionsService.Status>, RepositoryException> getChanges =
                 platformVersionsService::findReleaseChanges;
         return findContentVersions(siteRelease, getChanges, filter);
     }
@@ -142,7 +143,7 @@ public class PagesVersionsService implements VersionsService {
     public List<ContentVersion> findModifiedContent(@Nonnull final BeanContext context, final SiteRelease siteRelease,
                                                     @Nullable final ContentVersionFilter filter)
             throws RepositoryException {
-        ExceptionThrowingFunction<StagingReleaseManager.Release, List<PlatformVersionsService.Status>, RepositoryException> getChanges =
+        ExceptionThrowingFunction<Release, List<PlatformVersionsService.Status>, RepositoryException> getChanges =
                 platformVersionsService::findWorkspaceChanges;
         return findContentVersions(siteRelease, getChanges, filter);
     }
@@ -175,12 +176,12 @@ public class PagesVersionsService implements VersionsService {
 
     @Nonnull
     protected List<ContentVersion> findContentVersions(@Nullable SiteRelease siteRelease,
-                                                       @Nonnull ExceptionThrowingFunction<StagingReleaseManager.Release, List<PlatformVersionsService.Status>, RepositoryException> getChanges,
+                                                       @Nonnull ExceptionThrowingFunction<Release, List<PlatformVersionsService.Status>, RepositoryException> getChanges,
                                                        @Nullable final ContentVersionFilter filter)
             throws RepositoryException {
         List<ContentVersion> result = new ArrayList<>();
         if (siteRelease != null) {
-            StagingReleaseManager.Release release = siteRelease.getStagingRelease();
+            Release release = siteRelease.getStagingRelease();
             List<PlatformVersionsService.Status> changes = getChanges.apply(release);
             for (PlatformVersionsService.Status status : changes) {
                 ContentVersion pv = getContentVersion(siteRelease, status);

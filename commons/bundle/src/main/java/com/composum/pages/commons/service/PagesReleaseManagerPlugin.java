@@ -4,10 +4,7 @@ import com.composum.pages.commons.PagesConstants;
 import com.composum.sling.core.ResourceHandle;
 import com.composum.sling.core.util.ResourceUtil;
 import com.composum.sling.core.util.SlingResourceUtil;
-import com.composum.sling.platform.staging.ReleaseChangeEventListener;
-import com.composum.sling.platform.staging.StagingConstants;
-import com.composum.sling.platform.staging.StagingReleaseManager;
-import com.composum.sling.platform.staging.StagingReleaseManagerPlugin;
+import com.composum.sling.platform.staging.*;
 import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.Resource;
 import org.osgi.framework.Constants;
@@ -44,7 +41,7 @@ public class PagesReleaseManagerPlugin implements StagingReleaseManagerPlugin {
      * change the resource type to {@link com.composum.sling.core.util.ResourceUtil#TYPE_SLING_ORDERED_FOLDER}.
      */
     @Override
-    public void fixupReleaseForChanges(@Nonnull StagingReleaseManager.Release release, Resource workspaceCopyNode, @Nonnull Set<String> changedPaths, ReleaseChangeEventListener.ReleaseChangeEvent event) throws RepositoryException {
+    public void fixupReleaseForChanges(@Nonnull Release release, Resource workspaceCopyNode, @Nonnull Set<String> changedPaths, ReleaseChangeEvent event) throws RepositoryException {
         fixup(release, workspaceCopyNode.getPath(), workspaceCopyNode, event);
     }
 
@@ -56,7 +53,7 @@ public class PagesReleaseManagerPlugin implements StagingReleaseManagerPlugin {
      *
      * @return true if the resource is an activated versionable or has active subnodes, and thus needs to be kept in the release.
      */
-    private boolean fixup(StagingReleaseManager.Release release, String workspaceCopyPath, Resource rawResource, ReleaseChangeEventListener.ReleaseChangeEvent event) throws RepositoryException {
+    private boolean fixup(Release release, String workspaceCopyPath, Resource rawResource, ReleaseChangeEvent event) throws RepositoryException {
         ResourceHandle resource = ResourceHandle.use(rawResource);
         if (resource.isOfType(StagingConstants.TYPE_VERSIONREFERENCE)) {
             Boolean disabled = resource.getProperty(StagingConstants.PROP_DEACTIVATED, false);
@@ -96,9 +93,11 @@ public class PagesReleaseManagerPlugin implements StagingReleaseManagerPlugin {
         return hasActiveChildren;
     }
 
-    /** Changes a property to wantedValue if neccesary, possibly adding change to event, returns true if changed. */
+    /**
+     * Changes a property to wantedValue if neccesary, possibly adding change to event, returns true if changed.
+     */
     protected <T> boolean changeValueTo(ResourceHandle handle, String propertyName, T defaultValue, T wantedValue,
-                                        ReleaseChangeEventListener.ReleaseChangeEvent event, String workspacePath) {
+                                        ReleaseChangeEvent event, String workspacePath) {
         boolean result = false;
         if (!Objects.equals(handle.getProperty(propertyName, defaultValue), wantedValue)) {
             handle.adaptTo(ModifiableValueMap.class).put(propertyName, wantedValue);

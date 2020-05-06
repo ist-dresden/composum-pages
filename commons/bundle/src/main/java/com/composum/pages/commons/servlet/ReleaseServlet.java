@@ -12,7 +12,7 @@ import com.composum.sling.core.util.RequestUtil;
 import com.composum.sling.core.util.XSS;
 import com.composum.sling.platform.security.AccessMode;
 import com.composum.sling.platform.staging.*;
-import com.composum.sling.platform.staging.StagingReleaseManager.Release;
+import com.composum.sling.platform.staging.Release;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.SlingHttpServletRequest;

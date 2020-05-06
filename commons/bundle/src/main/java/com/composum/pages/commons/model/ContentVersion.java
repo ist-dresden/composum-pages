@@ -4,7 +4,7 @@ import com.composum.pages.commons.PagesConstants;
 import com.composum.pages.commons.service.SiteManager;
 import com.composum.pages.commons.service.VersionsService;
 import com.composum.sling.core.BeanContext;
-import com.composum.sling.platform.staging.StagingReleaseManager;
+import com.composum.sling.platform.staging.Release;
 import com.composum.sling.platform.staging.VersionReference;
 import com.composum.sling.platform.staging.versions.PlatformVersionsService;
 import com.composum.sling.platform.staging.versions.PlatformVersionsService.ActivationState;
@@ -58,7 +58,7 @@ public abstract class ContentVersion<ContentType extends ContentModel> {
         }
 
         public String getReleaseLabel() {
-            StagingReleaseManager.Release previous = releaseStatus.getPreviousRelease();
+            Release previous = releaseStatus.getPreviousRelease();
             String label = previous != null ? releaseStatus.getPreviousRelease().getReleaseLabel() : "";
             Matcher matcher = PagesConstants.RELEASE_LABEL_PATTERN.matcher(label);
             return matcher.matches() ? matcher.group(1) : label;
@@ -88,7 +88,7 @@ public abstract class ContentVersion<ContentType extends ContentModel> {
     }
 
     protected final BeanContext context;
-    protected final StagingReleaseManager.Release release;
+    protected final Release release;
     protected final PlatformVersionsService.Status status;
 
     private transient String path;
