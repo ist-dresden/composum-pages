@@ -27,7 +27,7 @@
             <id>archiva</id>
             <name>archiva</name>
             <mirrorOf>*</mirrorOf>
-            <url>https://build.ist-software.com/archiva/repository/mirror</url>
+            <url>https://build.ist-software.com/nexus/repository/maven-public</url>
         </mirror>
         <!-- -->
     </mirrors>
