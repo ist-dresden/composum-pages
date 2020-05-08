@@ -68,7 +68,7 @@
                 <repository>
                     <id>archiva-internal</id>
                     <name>archiva</name>
-                    <url>https://build.ist-software.com/archiva/repository/internal</url>
+                    <url>https://build.ist-software.com/nexus/repository/maven-releases</url>
                     <snapshots>
                         <enabled>false</enabled>
                     </snapshots>
@@ -76,7 +76,7 @@
                 <repository>
                     <id>archiva-snapshots</id>
                     <name>archiva</name>
-                    <url>https://build.ist-software.com/archiva/repository/snapshots</url>
+                    <url>https://build.ist-software.com/nexus/repository/maven-snapshots</url>
                     <snapshots>
                         <enabled>true</enabled>
                     </snapshots>
@@ -86,7 +86,7 @@
                 <pluginRepository>
                     <id>archiva-internal</id>
                     <name>archiva</name>
-                    <url>https://build.ist-software.com/archiva/repository/internal</url>
+                    <url>https://build.ist-software.com/nexus/repository/maven-releases</url>
                     <snapshots>
                         <enabled>false</enabled>
                     </snapshots>
@@ -94,7 +94,7 @@
                 <pluginRepository>
                     <id>archiva-snapshots</id>
                     <name>archiva</name>
-                    <url>https://build.ist-software.com/archiva/repository/snapshots</url>
+                    <url>https://build.ist-software.com/nexus/repository/maven-snapshots</url>
                     <snapshots>
                         <enabled>true</enabled>
                     </snapshots>
