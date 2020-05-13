@@ -25,6 +25,7 @@ import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.filter.StringFilter;
 import com.composum.sling.core.util.PropertyUtil;
 import com.composum.sling.core.util.ResourceUtil;
+import com.composum.sling.core.util.SlingResourceUtil;
 import com.composum.sling.platform.security.PlatformAccessService;
 import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonReader;
@@ -82,6 +83,7 @@ import static com.composum.pages.commons.PagesConstants.PROP_TEMPLATE;
 import static com.composum.pages.commons.PagesConstants.PROP_TEMPLATE_REF;
 import static com.composum.pages.commons.PagesConstants.PROP_TYPE_PATTERNS;
 import static com.composum.pages.commons.model.Page.isPage;
+import static com.composum.sling.core.util.SlingResourceUtil.getPath;
 
 /**
  * the ResourceManager implementation of Pages handles templates and design rules of content resources and
@@ -999,6 +1001,16 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
             throws RepositoryException, PersistenceException {
 
         Session session = Objects.requireNonNull(resolver.adaptTo(Session.class));
+
+        if (!SlingResourceUtil.isSameOrDescendant(changeRoot, source)) {
+            LOG.error("Move requested with changeRoot {} but source {}", getPath(changeRoot), getPath(source));
+            throw new IllegalArgumentException("Source not descendant of changeroot");
+        }
+
+        if (!SlingResourceUtil.isSameOrDescendant(changeRoot, targetParent)) {
+            LOG.error("Move requested with changeRoot {} but target {}", getPath(changeRoot), getPath(targetParent));
+            throw new IllegalArgumentException("Target not descendant of changeroot");
+        }
 
         String oldPath = source.getPath();
         int lastSlash = oldPath.lastIndexOf('/');

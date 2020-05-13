@@ -250,7 +250,7 @@ public abstract class PagesContentServlet extends ContentServlet {
                 } catch (ItemExistsException itex) {
                     jsonAnswerItemExists(request, response);
 
-                } catch (RepositoryException ex) {
+                } catch (RepositoryException | RuntimeException ex) {
                     LOG.error(ex.getMessage(), ex);
                     response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ex.getMessage());
                 }
@@ -292,7 +292,7 @@ public abstract class PagesContentServlet extends ContentServlet {
             } catch (ItemExistsException itex) {
                 jsonAnswerItemExists(request, response);
 
-            } catch (RepositoryException ex) {
+            } catch (RepositoryException | RuntimeException ex) {
                 LOG.error(ex.getMessage(), ex);
                 response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ex.getMessage());
             }
