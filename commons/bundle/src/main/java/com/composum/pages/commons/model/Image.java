@@ -50,7 +50,7 @@ public class Image extends AssetRelated {
         if (src == null) {
             src = getAssetUrl();
             if (StringUtils.isBlank(src)) {
-                src = LinkUtil.getUrl(context.getRequest(), getPlaceholder());
+                src = LinkUtil.getUrl(context.getRequest(), getPlaceholder(), "");
             }
         }
         return src;

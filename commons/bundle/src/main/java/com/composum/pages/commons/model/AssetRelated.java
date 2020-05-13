@@ -81,7 +81,7 @@ public class AssetRelated extends Element {
         if (assetUrl == null) {
             assetUrl = getAssetRef();
             if (StringUtils.isNotBlank(assetUrl)) {
-                assetUrl = LinkUtil.getUrl(context.getRequest(), assetUrl);
+                assetUrl = LinkUtil.getUrl(context.getRequest(), assetUrl, "");
             }
         }
         return assetUrl;
