@@ -38,15 +38,15 @@
                                 title="${cpn:i18n(slingRequest,version.releaseStatus.activationState)}"><c:if
                                     test="${model.editMode}"><input type="checkbox"
                                                                     class="${modelCSS}_page-select"
-                                                                    data-path="${version.path}"></c:if>
+                                                                    data-path="${cpn:filter(version.path)}"></c:if>
                             </td>
                             <td class="_page-path">
                                 <c:choose>
                                     <c:when test="${not empty version.previewUrl}">
-                                        <a href="${version.previewUrl}">${cpn:path(version.siteRelativePath)}</a>
+                                        <a href="${version.previewUrl}">${cpn:text(version.siteRelativePath)}</a>
                                     </c:when>
                                     <c:otherwise>
-                                        ${cpn:path(version.siteRelativePath)}
+                                        ${cpn:text(version.siteRelativePath)}
                                     </c:otherwise>
                                 </c:choose>
                             </td>
