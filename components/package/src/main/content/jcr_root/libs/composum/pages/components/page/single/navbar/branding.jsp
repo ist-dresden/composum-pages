@@ -5,7 +5,7 @@
 <cpp:element var="navbar" type="com.composum.pages.components.model.page.SinglePageMenu" mode="none"
              tagName="none">
     <cpn:link class="${navbarCSS}_brand navbar-brand"
-              href="${navbar.singlePage.logoLinkUrl}"><cpn:image
+              href="${navbar.singlePage.logoLinkUrl}"><img
             class="${navbarCSS}_logo" src="${navbar.singlePage.logoImageUrl}"/><span
             class="${navbarCSS}_title">${cpn:text(navbar.singlePage.title)}</span></cpn:link>
 </cpp:element>

@@ -77,6 +77,9 @@ public class AssetRelated extends Element {
         return assetRef;
     }
 
+    /**
+     * @return the final Link (probably encoded! - don't use in in an cpn:image tag)
+     */
     public String getAssetUrl() {
         if (assetUrl == null) {
             assetUrl = getAssetRef();
