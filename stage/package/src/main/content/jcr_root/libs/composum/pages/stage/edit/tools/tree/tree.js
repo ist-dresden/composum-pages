@@ -219,13 +219,14 @@
                 var oldPath = core.buildContentPath(parentPath, oldName);
                 core.ajaxPost('/bin/cpm/pages/edit.renameContent.json' + core.encodePath(oldPath), {
                     name: newName
-                }, {}, _.bind(function (data) {
+                }, {}, _.bind(function (result) {
+                    var reference = result.reference || result.data.reference;
                     if (this.isElementType(node)) {
                         pages.trigger('tree.content.rename', pages.const.event.element.moved,
-                            [oldPath, data.reference.path]);
+                            [oldPath, reference.path]);
                     } else {
                         pages.trigger('tree.content.rename', pages.const.event.content.moved,
-                            [oldPath, data.reference.path]);
+                            [oldPath, reference.path]);
                     }
                 }, this), _.bind(function (result) {
                     this.refreshNodeById(node.id);
