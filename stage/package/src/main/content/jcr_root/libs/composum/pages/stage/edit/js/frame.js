@@ -91,7 +91,7 @@
                         frameUrl = this.$frame.attr('src');
                     }
                     if (frameUrl) {
-                        var url = new core.SlingUrl(frameUrl);
+                        var url = new core.SlingUrl(decodeURI(frameUrl));
                         data = {
                             'url': frameUrl
                         };
@@ -101,7 +101,10 @@
                     }
                 }
                 if (suffix || data) {
-                    core.ajaxGet(pages.const.url.get.pageData + suffix, {data: data}, callback, failure);
+                    core.ajaxGet(pages.const.url.get.pageData + (suffix ? suffix : ''),
+                        {
+                            data: data
+                        }, callback, failure);
                 } else {
                     if (_.isFunction(failure)) {
                         failure();
