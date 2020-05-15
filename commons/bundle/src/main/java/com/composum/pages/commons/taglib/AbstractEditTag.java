@@ -79,10 +79,9 @@ public abstract class AbstractEditTag extends AbstractEditElementTag {
                     if (editResource != null) {
                         request.setAttribute(EDIT_RESOURCE_KEY, editResource);
                     }
+                } else {
+                    editResource = super.getModelResource(context);
                 }
-            }
-            if (editResource == null) {
-                editResource = super.getModelResource(context);
             }
             if (isStarResource) {
                 // keep parent resource and support access to it
@@ -116,6 +115,7 @@ public abstract class AbstractEditTag extends AbstractEditElementTag {
 
     // create: 'sling:resourceType'
 
+    @Override
     public void setResource(Resource resource) {
         editResource = resource;
     }
@@ -127,6 +127,7 @@ public abstract class AbstractEditTag extends AbstractEditElementTag {
     /**
      * the resource type of a new element created by a dialog (hidden 'sling:resourceType' property value)
      */
+    @Override
     public String getResourceType() {
         return ResourceTypeUtil.relativeResourceType(resourceResolver,
                 StringUtils.isNotBlank(resourceType) ? resourceType : getDefaultResourceType());
