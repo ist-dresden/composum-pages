@@ -297,7 +297,7 @@
             onSiteChanged: function (event, pathOrRef) {
                 var path = pathOrRef && pathOrRef.path ? pathOrRef.path : pathOrRef;
                 var u = tools.const.navigation.context.url;
-                var url = u.base + (path ? u._site + path : u._general);
+                var url = u.base + (path ? u._site + core.encodePath(path) : u._general);
                 core.getHtml(url, undefined, undefined, _.bind(function (data) {
                     if (data.status === 200) {
                         this.sitePath = path;
@@ -428,13 +428,15 @@
                     reference = new pages.Reference(undefined, path);
                 }
                 if (path) {
-                    var params = {'pages.locale': pages.getLocale()};
+                    var params = {
+                        'pages.view': pages.current.mode,
+                        'pages.locale': pages.getLocale()
+                    };
                     if (reference && reference.type) {
                         params.type = reference.type;
                     }
-                    core.ajaxGet(tools.const.contextLoadUrl + path + '?pages.view=' + pages.current.mode, {
-                            data: params
-                        },
+                    var url = tools.const.contextLoadUrl + core.encodePath(path);
+                    core.ajaxGet(url, {data: params},
                         _.bind(function (data) {
                             this.closeCurrent();
                             this.$el.html(data);

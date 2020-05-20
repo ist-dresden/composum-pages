@@ -157,7 +157,7 @@
             reload: function () {
                 this.closeReleaseView();
                 var c = site.const.releases.uri;
-                core.getHtml(c.load + this.contextTabs.reference.path,
+                core.getHtml(c.load + core.encodePath(this.contextTabs.reference.path),
                     undefined, undefined, _.bind(function (data) {
                         if (data.status === 200) {
                             this.$el.html(data.responseText);

@@ -46,12 +46,13 @@
                 }
                 if (pages.current.file) {
                     var u = tools.const.fileStatus.uri;
-                    core.getHtml(u.base + u._.release + pages.current.file, _.bind(function (content) {
-                        this.$el.html(content);
-                        var c = tools.const.fileStatus.css;
-                        this.$icon = this.$('.' + c.base + c._.icon);
-                        this.$icon.click(_.bind(this.initPopover, this));
-                    }, this));
+                    core.getHtml(u.base + u._.release + core.encodePath(pages.current.file),
+                        _.bind(function (content) {
+                            this.$el.html(content);
+                            var c = tools.const.fileStatus.css;
+                            this.$icon = this.$('.' + c.base + c._.icon);
+                            this.$icon.click(_.bind(this.initPopover, this));
+                        }, this));
                 } else {
                     this.$el.html('');
                 }
@@ -61,21 +62,22 @@
                 event.preventDefault();
                 if (!this.popover) {
                     var u = tools.const.fileStatus.uri;
-                    core.getHtml(u.base + u._.popover + pages.current.file, _.bind(function (content) {
-                        this.popover = true;
-                        this.$icon.popover({
-                            placement: 'left',
-                            animation: false,
-                            html: true,
-                            sanitize: false,
-                            content: content,
-                            viewport: {
-                                selector: 'body .composum-pages-stage-edit-tools-main-assets',
-                                padding: 8
-                            }
-                        });
-                        this.$icon.popover('show');
-                    }, this));
+                    core.getHtml(u.base + u._.popover + core.encodePath(pages.current.file),
+                        _.bind(function (content) {
+                            this.popover = true;
+                            this.$icon.popover({
+                                placement: 'left',
+                                animation: false,
+                                html: true,
+                                sanitize: false,
+                                content: content,
+                                viewport: {
+                                    selector: 'body .composum-pages-stage-edit-tools-main-assets',
+                                    padding: 8
+                                }
+                            });
+                            this.$icon.popover('show');
+                        }, this));
                 }
                 return false;
             }

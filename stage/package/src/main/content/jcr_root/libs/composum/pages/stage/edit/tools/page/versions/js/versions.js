@@ -206,7 +206,7 @@
                 }
                 var u = tools.const.versions.uri.version;
                 var ref = this.versions.data.reference;
-                core.ajaxPost(u.platform + u._.purge + ref.path, {}, {},
+                core.ajaxPost(u.platform + u._.purge + core.encodePath(ref.path), {}, {},
                     _.bind(function (result) {
                         this.versions.reload();
                     }, this), _.bind(function (result) {
@@ -317,7 +317,7 @@
                     this.primSelection = undefined;
                     this.sdrySelection = undefined;
                     this.display.$slider.slider('disable');
-                    core.ajaxGet(u.base + u._.list + this.contextTabs.reference.path, {},
+                    core.ajaxGet(u.base + u._.list + core.encodePath(this.contextTabs.reference.path), {},
                         undefined, undefined, _.bind(function (data) {
                             if (data.status === 200) {
                                 this.$versionContent.html(data.responseText);

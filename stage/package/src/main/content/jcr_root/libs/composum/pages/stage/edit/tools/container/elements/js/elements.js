@@ -306,7 +306,7 @@
                     this.log.tools.debug(tools.const.elements.log.prefix + 'reload(' + JSON.stringify(this.reference) + ')');
                 }
                 var u = tools.const.elements.uri.edit.context;
-                core.ajaxGet(u._ + u._container + this.reference.path, {
+                core.ajaxGet(u._ + u._container + core.encodePath(this.reference.path), {
                         data: {
                             type: this.reference.type,  // the type to support synthetic resources
                             'pages.locale': pages.getLocale()
@@ -394,7 +394,7 @@
                 if (this.$actions.length > 0 && reference && reference.path) {
                     // load edit actions for the selected element...
                     var u = tools.const.elements.uri.edit.context;
-                    core.ajaxGet(u._ + u._actions + reference.path, {
+                    core.ajaxGet(u._ + u._actions + core.encodePath(reference.path), {
                             data: {
                                 type: reference.type // the type to support synthetic resources
                             }
@@ -551,7 +551,7 @@
                             if (object) {
                                 var u = tools.const.elements.uri;
                                 // check the hierarchy rules to make the DnD object an element of the target
-                                core.ajaxGet(u.allowed + target.container.reference.path, {
+                                core.ajaxGet(u.allowed + core.encodePath(target.container.reference.path), {
                                         dataType: 'json',
                                         data: {
                                             path: object.reference.path,

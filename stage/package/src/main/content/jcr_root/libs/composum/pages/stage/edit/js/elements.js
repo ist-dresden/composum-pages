@@ -181,7 +181,7 @@
                 if (this.toolbar) {
                     callback(this, this.toolbar);
                 } else {
-                    core.ajaxGet(elements.const.edit.url.toolbar + this.reference.path, {
+                    core.ajaxGet(elements.const.edit.url.toolbar + core.encodePath(this.reference.path), {
                             data: {
                                 type: this.reference.type
                             }
@@ -472,7 +472,8 @@
                     candidate.$el.addClass(c.base + c._disabled);
                 });
                 var path = reference.path;
-                core.ajaxPut(elements.const.edit.url.dropzones + path, JSON.stringify(candidates), {},
+                core.ajaxPut(elements.const.edit.url.dropzones + core.encodePath(path),
+                    JSON.stringify(candidates), {},
                     _.bind(function (result) {
                         this.dropZones = [];
                         result.forEach(function (dropZone) {
@@ -567,7 +568,7 @@
                     });
                 });
                 var path = reference.path;
-                core.ajaxPost(elements.const.edit.url.targets + path, {
+                core.ajaxPost(elements.const.edit.url.targets + core.encodePath(path), {
                     type: reference.type,
                     targetList: JSON.stringify(candidates)
                 }, {}, _.bind(function (result) {
@@ -879,7 +880,7 @@
              * @param callback some things to do after reload of the HTML code (optional)
              */
             redrawComponent: function (component, callback) {
-                core.ajaxGet('/bin/cpm/pages/edit.refreshElement.html' + component.reference.path, {
+                core.ajaxGet('/bin/cpm/pages/edit.refreshElement.html' + core.encodePath(component.reference.path), {
                     data: _.extend(this.params, {
                         type: component.reference.type
                     })

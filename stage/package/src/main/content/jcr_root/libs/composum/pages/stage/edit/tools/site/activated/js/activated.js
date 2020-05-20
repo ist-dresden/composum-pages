@@ -105,7 +105,7 @@
                 var params = type ? '?type=' + type : '';
                 params += filter ? ((type ? '&' : '?') + 'filter=' + filter) : '';
                 var c = site.const.activated.uri;
-                core.getHtml(c.load + this.contextTabs.reference.path + params,
+                core.getHtml(c.load + core.encodePath(this.contextTabs.reference.path) + params,
                     undefined, undefined, _.bind(function (data) {
                         if (data.status === 200) {
                             this.$el.html(data.responseText);

@@ -90,7 +90,7 @@
                             type: this.type
                         };
                     }
-                    core.ajaxGet(u.edit + u._resourceInfo + this.path, options, _.bind(function (data) {
+                    core.ajaxGet(u.edit + u._resourceInfo + core.encodePath(this.path), options, _.bind(function (data) {
                         // '' as fallback to prevent from infinite recursion..
                         if (!this.name) {
                             this.name = data.name ? data.name : '';

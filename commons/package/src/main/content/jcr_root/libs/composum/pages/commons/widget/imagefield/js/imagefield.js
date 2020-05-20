@@ -51,7 +51,7 @@
                 this.$data.html('');
                 if (path) {
                     var u = widgets.const.imagefield.url;
-                    core.ajaxGet(u.base + u._data + path, {}, _.bind(function (data) {
+                    core.ajaxGet(u.base + u._data + core.encodePath(path), {}, _.bind(function (data) {
                         var mimeType = data.asset.mimeType;
                         if (mimeType) {
                             this.$preview.addClass(mimeType.replace(/[/+]/g, ' '));

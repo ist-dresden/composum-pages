@@ -111,7 +111,7 @@
 
             open: function (path, onSuccess, onError, onComplete) {
                 if (path) {
-                    core.ajaxGet(path, {
+                    core.ajaxGet(core.encodePath(path), {
                         contentType: 'text/plain;charset=UTF-8',
                         dataType: 'text'
                     }, _.bind(function (content) {
@@ -134,7 +134,7 @@
             saveAs: function (path, onSuccess, onError, onComplete) {
                 if (path) {
                     this.$el.data('path', path);
-                    core.ajaxPut('/bin/cpm/pages/develop.updateFile.json' + path,
+                    core.ajaxPut('/bin/cpm/pages/develop.updateFile.json' + core.encodePath(path),
                         this.getValue(), {
                             contentType: 'text/plain;charset=UTF-8',
                             dataType: 'text'

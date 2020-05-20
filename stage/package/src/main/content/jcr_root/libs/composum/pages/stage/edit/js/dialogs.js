@@ -550,11 +550,11 @@
                 };
                 this.hide(); // this is resetting the dialog
                 if (template) {
-                    core.ajaxGet(c.base + c._isTemplate + template, {}, _.bind(function (result) {
+                    core.ajaxGet(c.base + c._isTemplate + core.encodePath(template), {}, _.bind(function (result) {
                         if (result.isTemplate) {
                             postData.template = template;
                             // create page as a copy of the template
-                            core.ajaxPost(c.base + c._create.page + this.data.path, postData, {},
+                            core.ajaxPost(c.base + c._create.page + core.encodePath(this.data.path), postData, {},
                                 _.bind(function (result) {
                                     pages.trigger('dialog.page.new', pages.const.event.content.inserted, [
                                         new pages.Reference(this.data.name, this.data.path, this.data.type),
@@ -566,7 +566,7 @@
                                 // if no create dialog exists (not found) create a new instance directly
                                 _.bind(function (name, path, type) {
                                     postData.resourceType = type;
-                                    core.ajaxPost(c.base + c._create.page + path, postData, {},
+                                    core.ajaxPost(c.base + c._create.page + core.encodePath(path), postData, {},
                                         _.bind(function (result) {
                                             pages.trigger('dialog.page.new', pages.const.event.content.inserted, [
                                                 new pages.Reference(name, path, type),

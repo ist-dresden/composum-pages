@@ -377,7 +377,7 @@
         pages.DialogHandler = Backbone.View.extend({
 
             openEditDialog: function (url, viewType, name, path, type, context, setupDialog, onNotFound) {
-                core.ajaxGet(url + (path ? path : ''), {
+                core.ajaxGet(url + (path ? core.encodePath(path) : ''), {
                         data: {
                             name: name ? name : '',
                             type: type ? type : '',

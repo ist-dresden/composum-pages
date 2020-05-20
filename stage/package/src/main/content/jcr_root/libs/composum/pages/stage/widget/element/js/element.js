@@ -114,7 +114,7 @@
                     params.push('query=' + encodeURIComponent(this.searchTerm));
                     this.probablyFiltered = true;
                 }
-                var url = u.get.components + pages.current.page;
+                var url = u.get.components + core.encodePath(pages.current.page);
                 if (params.length > 0) {
                     url += '?' + params.join('&');
                 }

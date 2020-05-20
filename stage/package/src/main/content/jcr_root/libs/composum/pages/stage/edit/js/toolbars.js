@@ -235,7 +235,7 @@
                 if (path) {
                     if (this.currentPage !== path) {
                         pages.log.debug('toolbars.PageToolbar.onPageSelected(' + path + ')');
-                        core.ajaxGet(toolbars.const.pageViewActionsUri + path, {},
+                        core.ajaxGet(toolbars.const.pageViewActionsUri + core.encodePath(path), {},
                             _.bind(function (data) {
                                 this.$view.html(data);
                                 this.initPageView(path);
@@ -271,7 +271,7 @@
 
             loadComponentToolbar: function (path, type) {
                 if (path) {
-                    core.ajaxGet(toolbars.const.editToolbarLoadUri + path, {
+                    core.ajaxGet(toolbars.const.editToolbarLoadUri + core.encodePath(path), {
                             data: {
                                 type: type
                             }

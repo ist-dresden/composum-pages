@@ -148,7 +148,7 @@
 
             reload: function () {
                 var c = tools.const.statistics;
-                core.ajaxGet(c.uri.base + c.uri._content + this.contextTabs.reference.path, {},
+                core.ajaxGet(c.uri.base + c.uri._content + core.encodePath(this.contextTabs.reference.path), {},
                     _.bind(function (content) {
                         this.$statisticsContent.html(content);
                         this.rangeSelector.initRangeAndTarget(this);
@@ -166,7 +166,7 @@
                 if (this.$canvas.length === 1 && this.$refTable.length === 1) {
                     this.$canvas.html('');
                     this.$refTable.html('');
-                    var uri = c.uri.data + '.' + requestSelector + '.json' + this.contextTabs.reference.path;
+                    var uri = c.uri.data + '.' + requestSelector + '.json' + core.encodePath(this.contextTabs.reference.path);
                     core.ajaxGet(uri, {},
                         _.bind(function (data) {
                             this.displayChart(data);

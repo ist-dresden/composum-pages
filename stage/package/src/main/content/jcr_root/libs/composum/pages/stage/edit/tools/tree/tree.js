@@ -567,7 +567,7 @@
                 var before = this.getNodeOfIndex(targetNode, index);
                 if (this.isElementType(targetNode) && this.isElementType(draggedNode)) {
                     // move elements on a page or between pages via tree...
-                    core.ajaxPost(pages.const.url.edit.move + oldPath, {
+                    core.ajaxPost(pages.const.url.edit.move + core.encodePath(oldPath), {
                         targetPath: targetPath,
                         targetType: targetNode.type,
                         before: before ? before.original.path : undefined
@@ -732,7 +732,7 @@
             },
 
             getNodeActionsUrl: function (path) {
-                return tree.const.actions.url + path;
+                return tree.const.actions.url + core.encodePath(path);
             },
 
             setNodeActions: function () {
@@ -946,7 +946,7 @@
 
             showPreview: function (node) {
                 if (node && node.original.path && node.original.type.indexOf('file') >= 0) {
-                    core.ajaxGet(tree.const.tile.asset + node.original.path, {},
+                    core.ajaxGet(tree.const.tile.asset + core.encodePath(node.original.path), {},
                         _.bind(function (data) {
                             if (data) {
                                 this.$treePanelPreview.html(data);
