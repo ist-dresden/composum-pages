@@ -47,9 +47,9 @@ public class AssetRelated extends Element {
         if (tileTitle == null) {
             tileTitle = super.getTileTitle();
             if (StringUtils.isBlank(tileTitle)) {
-                String url = getAssetUrl();
-                if (StringUtils.isNotBlank(url)) {
-                    Matcher matcher = TILE_TITLE_URL.matcher(url);
+                String ref = getAssetRef();
+                if (StringUtils.isNotBlank(ref)) {
+                    Matcher matcher = TILE_TITLE_URL.matcher(ref);
                     if (matcher.matches()) {
                         tileTitle = matcher.group(2);
                     }
