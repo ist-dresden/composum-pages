@@ -11,7 +11,7 @@
                             value="This page is part of a language split which is separating the content of the selected languages."/>
                 <cpp:model var="languageRoot" type="com.composum.pages.commons.model.LanguageRoot">
                     <div class="form-group">${cpn:i18n(slingRequest,'the language root is:')}
-                        <cpn:link href="/bin/pages.html${languageRoot.path}">${cpn:path(languageRoot.path)}</cpn:link>
+                        <cpn:link href="/bin/pages.html${cpn:path(languageRoot.path)}">${cpn:text(languageRoot.path)}</cpn:link>
                     </div>
                 </cpp:model>
             </c:when>

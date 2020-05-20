@@ -218,6 +218,7 @@
                 var parentPath = core.getParentPath(nodePath);
                 var oldPath = core.buildContentPath(parentPath, oldName);
                 core.ajaxPost('/bin/cpm/pages/edit.renameContent.json' + core.encodePath(oldPath), {
+                    _charset_: 'UTF-8',
                     name: newName
                 }, {}, _.bind(function (result) {
                     var reference = result.reference || result.data.reference;
@@ -256,6 +257,7 @@
                 if (oldParentPath === targetPath) {
                     // reordering in the same parent resource - keep that simple...
                     core.ajaxPost('/bin/cpm/pages/edit.moveContent.json' + core.encodePath(oldPath), {
+                        _charset_: 'UTF-8',
                         targetPath: targetPath,
                         before: before ? before.original.path : undefined
                     }, {}, _.bind(function (result) {
@@ -568,6 +570,7 @@
                 if (this.isElementType(targetNode) && this.isElementType(draggedNode)) {
                     // move elements on a page or between pages via tree...
                     core.ajaxPost(pages.const.url.edit.move + core.encodePath(oldPath), {
+                        _charset_: 'UTF-8',
                         targetPath: targetPath,
                         targetType: targetNode.type,
                         before: before ? before.original.path : undefined

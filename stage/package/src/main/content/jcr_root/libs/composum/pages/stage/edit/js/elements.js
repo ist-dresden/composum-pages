@@ -569,6 +569,7 @@
                 });
                 var path = reference.path;
                 core.ajaxPost(elements.const.edit.url.targets + core.encodePath(path), {
+                    _charset_: 'UTF-8',
                     type: reference.type,
                     targetList: JSON.stringify(candidates)
                 }, {}, _.bind(function (result) {

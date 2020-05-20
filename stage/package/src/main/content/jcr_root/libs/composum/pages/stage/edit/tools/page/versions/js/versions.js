@@ -206,7 +206,9 @@
                 }
                 var u = tools.const.versions.uri.version;
                 var ref = this.versions.data.reference;
-                core.ajaxPost(u.platform + u._.purge + core.encodePath(ref.path), {}, {},
+                core.ajaxPost(u.platform + u._.purge + core.encodePath(ref.path), {
+                        _charset_: 'UTF-8'
+                    }, {},
                     _.bind(function (result) {
                         this.versions.reload();
                     }, this), _.bind(function (result) {

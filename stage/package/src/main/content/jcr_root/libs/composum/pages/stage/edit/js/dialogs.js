@@ -815,21 +815,19 @@
             doValidate: function (onSuccess, onError) {
                 if (this.validateForm()) {
                     var config = this.getConfig();
-                    core.ajaxGet(config.check + core.encodePath(this.$path.val()), {
-                        data: {
-                            path: this.newPath.getValue()
-                        }
-                    }, _.bind(function (data) {
-                        if (data.isAllowed) {
-                            onSuccess();
-                        } else {
-                            this.validationHint('danger', this.toLabel, data.messages[0].text, data.messages[0].hint);
+                    core.getJson(config.check + core.encodePath(this.$path.val())
+                        + '?_charset_=UTF-8&path=' + core.encodePath(this.newPath.getValue()),
+                        _.bind(function (data) {
+                            if (data.isAllowed) {
+                                onSuccess();
+                            } else {
+                                this.validationHint('danger', this.toLabel, data.messages[0].text, data.messages[0].hint);
+                                onError();
+                            }
+                        }, this), _.bind(function (result) {
+                            this.validationHint('danger', this.toLabel, 'Error on validation', result.responseText);
                             onError();
-                        }
-                    }, this), _.bind(function (result) {
-                        this.validationHint('danger', this.toLabel, 'Error on validation', result.responseText);
-                        onError();
-                    }, this));
+                        }, this));
                 } else {
                     onError();
                 }
@@ -956,7 +954,10 @@
              * named 'target' embedded in the dialog form, one for each selected target
              */
             getActionData: function () {
-                var data = {target: []};
+                var data = {
+                    _charset_: 'UTF-8',
+                    target: []
+                };
                 this.$('input[name="target"]').each(function () { // multi mode
                     var target = $(this).val();
                     if (target && !_.contains(data.target, target)) {

@@ -1,5 +1,6 @@
 package com.composum.pages.commons.taglib;
 
+import com.composum.pages.commons.util.LinkUtil;
 import com.composum.pages.commons.util.ResourceTypeUtil;
 import com.composum.pages.commons.util.TagCssClasses;
 import org.apache.commons.lang3.StringUtils;
@@ -425,7 +426,7 @@ public class EditDialogTag extends AbstractEditTag {
         }
 
         public String getUrl() {
-            String url = request.getContextPath() + getResource().getPath();
+            String url = request.getContextPath() + LinkUtil.encodePath(getResource().getPath());
             String nameParam = request.getParameter("name");
             if ("*".equals(nameParam)) {
                 // append a '/*' on element creation

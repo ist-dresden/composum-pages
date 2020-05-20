@@ -122,6 +122,7 @@ public abstract class PagesContentServlet extends ContentServlet {
         public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
                          ResourceHandle resource)
                 throws IOException {
+            Status status = new Status(request, response);
 
             if (resource != null) {
                 BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
@@ -139,13 +140,17 @@ public abstract class PagesContentServlet extends ContentServlet {
                     jsonWriter.name("isAllowed").value(allowed);
                     addAllowedChildInfo(context, parent, resource, jsonWriter, allowed);
                     jsonWriter.endObject();
+                    return; // TODO send result via status
 
                 } else {
-                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "invalid parent");
+                    status.error("invalid parent '{}'", parentPath);
                 }
             } else {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND);
+                return;
             }
+
+            status.sendJson();
         }
     }
 

@@ -136,6 +136,7 @@
                     var sourceName = core.getNameFromPath(clipboard.path);
                     // copy to the target with the same name
                     core.ajaxPost("/bin/cpm/pages/edit.copyElement.json" + core.encodePath(clipboard.path), {
+                        _charset_: 'UTF-8',
                         targetPath: path,
                         targetType: type,
                         name: sourceName
@@ -169,6 +170,7 @@
                     var name = core.getNameFromPath(clipboard.path);
                     // copy to the target with the same name
                     core.ajaxPost("/bin/cpm/pages/edit.copyContent.json" + core.encodePath(clipboard.path), {
+                        _charset_: 'UTF-8',
                         targetPath: path,
                         name: name
                     }, {}, _.bind(function (result) {
@@ -251,7 +253,9 @@
 
             checkpoint: function (event, name, path, type) {
                 var u = actions.const.version.uri;
-                core.ajaxPost(u.pages.base + u.pages._.checkpoint + core.encodePath(path), {}, {},
+                core.ajaxPost(u.pages.base + u.pages._.checkpoint + core.encodePath(path), {
+                        _charset_: 'UTF-8'
+                    }, {},
                     _.bind(function (result) {
                         pages.trigger('actions.page.checkpoint', pages.const.event.content.state,
                             [new pages.Reference(name, path, type)]);
@@ -262,7 +266,9 @@
 
             checkout: function (event, name, path, type) {
                 var u = actions.const.version.uri;
-                core.ajaxPost(u.pages.base + u.pages._.checkout + core.encodePath(path), {}, {},
+                core.ajaxPost(u.pages.base + u.pages._.checkout + core.encodePath(path), {
+                        _charset_: 'UTF-8'
+                    }, {},
                     _.bind(function (result) {
                         pages.trigger('actions.page.checkout', pages.const.event.content.state,
                             [new pages.Reference(name, path, type)]);
@@ -273,7 +279,9 @@
 
             checkin: function (event, name, path, type) {
                 var u = actions.const.version.uri;
-                core.ajaxPost(u.pages.base + u.pages._.checkin + core.encodePath(path), {}, {},
+                core.ajaxPost(u.pages.base + u.pages._.checkin + core.encodePath(path), {
+                        _charset_: 'UTF-8'
+                    }, {},
                     _.bind(function (result) {
                         pages.trigger('actions.page.checkin', pages.const.event.content.state,
                             [new pages.Reference(name, path, type)]);
@@ -284,7 +292,9 @@
 
             toggleCheckout: function (event, name, path, type) {
                 var u = actions.const.version.uri;
-                core.ajaxPost(u.pages.base + u.pages._.toggleCheckout + core.encodePath(path), {}, {},
+                core.ajaxPost(u.pages.base + u.pages._.toggleCheckout + core.encodePath(path), {
+                        _charset_: 'UTF-8'
+                    }, {},
                     _.bind(function (result) {
                         pages.trigger('actions.page.toggleCheckout', pages.const.event.content.state,
                             [new pages.Reference(name, path, type)]);
@@ -295,7 +305,9 @@
 
             lock: function (event, name, path, type) {
                 var u = actions.const.version.uri;
-                core.ajaxPost(u.pages.base + u.pages._.lock + core.encodePath(path), {}, {},
+                core.ajaxPost(u.pages.base + u.pages._.lock + core.encodePath(path), {
+                        _charset_: 'UTF-8'
+                    }, {},
                     _.bind(function (result) {
                         pages.trigger('actions.page.lock', pages.const.event.content.state,
                             [new pages.Reference(name, path, type)]);
@@ -306,7 +318,9 @@
 
             unlock: function (event, name, path, type) {
                 var u = actions.const.version.uri;
-                core.ajaxPost(u.pages.base + u.pages._.unlock + core.encodePath(path), {}, {},
+                core.ajaxPost(u.pages.base + u.pages._.unlock + core.encodePath(path), {
+                        _charset_: 'UTF-8'
+                    }, {},
                     _.bind(function (result) {
                         pages.trigger('actions.page.unlock', pages.const.event.content.state,
                             [new pages.Reference(name, path, type)]);
@@ -317,7 +331,9 @@
 
             toggleLock: function (event, name, path, type) {
                 var u = actions.const.version.uri;
-                core.ajaxPost(u.pages.base + u.pages._.toggleLock + core.encodePath(path), {}, {},
+                core.ajaxPost(u.pages.base + u.pages._.toggleLock + core.encodePath(path), {
+                        _charset_: 'UTF-8'
+                    }, {},
                     _.bind(function (result) {
                         pages.trigger('actions.page.toggleLock', pages.const.event.content.state,
                             [new pages.Reference(name, path, type)]);
@@ -600,6 +616,7 @@
             doDropMove: function (target, object) {
                 if (target && target.container.reference.path && object && object.type === 'element') {
                     core.ajaxPost(pages.const.url.edit.move + core.encodePath(object.reference.path), {
+                        _charset_: 'UTF-8',
                         targetPath: target.container.reference.path,
                         targetType: target.container.reference.type,
                         before: target.before && target.before.reference.path ? target.before.reference.path : ''
