@@ -9,11 +9,11 @@
         <ol class="${modelCSS}_list">
             <c:forEach var="page" items="${model.pagesPath}">
                 <cpn:div tagName="li" test="${not empty page.title}"
-                         class="${modelCSS}_path" data-path="${page.path}"><cpn:link
-                        href="${page.url}">${cpn:text(page.title)}</cpn:link></cpn:div>
+                         class="${modelCSS}_path" data-path="${page.path}"><a
+                        href="${page.url}">${cpn:text(page.title)}</a></cpn:div>
             </c:forEach>
-            <li class="${modelCSS}_path ${modelCSS}_current" data-path="${model.path}"><cpn:link
-                    href="${model.url}">${cpn:text(model.title)}</cpn:link></li>
+            <li class="${modelCSS}_path ${modelCSS}_current" data-path="${model.path}"><a
+                    href="${model.url}">${cpn:text(model.title)}</a></li>
         </ol>
     </div>
 </cpp:model>
