@@ -91,7 +91,7 @@
                         frameUrl = this.$frame.attr('src');
                     }
                     if (frameUrl) {
-                        var url = new core.SlingUrl(decodeURI(frameUrl));
+                        var url = new core.SlingUrl(core.decodeUri(frameUrl));
                         data = {
                             'url': frameUrl
                         };
@@ -101,7 +101,7 @@
                     }
                 }
                 if (suffix || data) {
-                    core.ajaxGet(pages.const.url.get.pageData + (suffix ? suffix : ''),
+                    core.ajaxGet(pages.const.url.get.pageData + (suffix ? core.encodePath(suffix) : ''),
                         {
                             data: data
                         }, callback, failure);
@@ -127,7 +127,7 @@
                         }
                     }, this));
                     if (history.replaceState) {
-                        history.replaceState(path, 'pages', core.getContextUrl('/bin/pages.html' + path));
+                        history.replaceState(path, 'pages', core.getContextUrl('/bin/pages.html' + core.encodePath(path)));
                         //history.replaceState(path, 'pages', this.$frame.attr('src'));
                     }
                 }
@@ -220,7 +220,8 @@
             reloadPage: function (parameters, path, servicePath) {
                 var pagePath = path || pages.current.page;
                 if (pagePath) {
-                    var frameUrl = new core.SlingUrl(encodeURI(servicePath ? servicePath + pagePath : pagePath + '.html'));
+                    var pageUri = core.encodePath(pagePath);
+                    var frameUrl = new core.SlingUrl(servicePath ? servicePath + pageUri : pageUri + '.html');
                     if (parameters) {
                         frameUrl.parameters = parameters;
                     }

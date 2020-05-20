@@ -67,7 +67,7 @@
                 this.$createSite.click(_.bind(this.createSite, this));
                 $(document).on('site:created.Home', _.bind(function (event, pathOrRef) {
                     var path = pathOrRef.path ? pathOrRef.path : pathOrRef;
-                    window.location.href = core.getContextUrl('/bin/pages.html' + path);
+                    window.location.href = core.getContextUrl('/bin/pages.html' + core.encodePath(path));
                 }, this));
             },
 
