@@ -58,7 +58,7 @@
                 this.$parent = this.$el.parent().closest('.' + elements.const.class.component);
                 // drop zone property data
                 var encoded = this.$el.data(d.encoded);
-                this.data = JSON.parse(atob(encoded));
+                this.data = JSON.parse(Base64.decode(encoded));
             }
         });
 

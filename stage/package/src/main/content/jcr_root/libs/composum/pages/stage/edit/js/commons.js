@@ -43,7 +43,7 @@
                 var reference = undefined;
                 var encoded = nameOrData.data(d.encoded);
                 if (encoded) {
-                    reference = JSON.parse(atob(encoded));
+                    reference = JSON.parse(Base64.decode(encoded));
                 } else {
                     reference = nameOrData.data(d.reference);
 
