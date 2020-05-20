@@ -13,7 +13,8 @@
     <cpp:widget label="To" name="newPath" type="pathfield" value="${model.resource.parent.path}" required="true"/>
     <div class="row">
         <div class="col col-xs-6">
-            <cpp:widget label="Name" name="name" value="${model.name}" type="textfield" required="true"/>
+            <cpp:widget label="Name" name="name" value="${model.name}" type="textfield"
+                        required="true" pattern="^[\\w][\\w -]*$"/>
         </div>
         <div class="col col-xs-4">
             <cpp:widget label="Order Before" name="before" hint="or ..." type="textfield"/>

@@ -9,5 +9,6 @@
         </div>
     </div>
     <cpp:widget name="path" value="${model.path}" type="hidden"/>
-    <cpp:widget label="New Name" name="name" value="${model.name}" type="textfield"/>
+    <cpp:widget label="New Name" name="name" value="${model.name}" type="textfield"
+                required="true" pattern="^[\\w][\\w -]*$"/>
 </cpp:editDialog>
