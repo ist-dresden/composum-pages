@@ -846,9 +846,10 @@
                     before: this.before.getValue(),
 
                     index: this.index.getValue()
-                }, {}, _.bind(function (data) {
+                }, {}, _.bind(function (result) {
+                    var reference = result.reference || result.data.reference;
                     pages.trigger('dialog.content.move', pages.const.event.content.moved,
-                        [oldPath, data.reference.path]);
+                        [oldPath, reference.path]);
                     this.hide();
                 }, this));
             }
@@ -882,9 +883,10 @@
                 core.ajaxPost(c._rename.action + core.encodePath(oldPath), {
                     _charset_: 'UTF-8',
                     name: this.name.getValue()
-                }, {}, _.bind(function (data) {
+                }, {}, _.bind(function (result) {
+                    var reference = result.reference || result.data.reference;
                     pages.trigger('dialog.content.rename', pages.const.event.content.moved,
-                        [oldPath, data.reference.path]);
+                        [oldPath, reference.path]);
                     this.hide();
                 }, this));
             }
