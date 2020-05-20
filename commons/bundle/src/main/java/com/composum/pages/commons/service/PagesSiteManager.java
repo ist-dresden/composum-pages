@@ -328,12 +328,12 @@ public class PagesSiteManager extends PagesContentManager<Site> implements SiteM
 
                 @Override
                 public String applyTemplatePlaceholders(@Nonnull final Resource target, @Nonnull final String value) {
-                    String result = value.replaceAll("\\$\\{path}", target.getPath());
+                    String result = StringUtils.replace(value,"${path}", target.getPath());
                     Resource pageResource = pageManager.getContainingPageResource(target);
                     if (pageResource != null) {
-                        result = result.replaceAll("\\$\\{page}", pageResource.getPath());
+                        result = StringUtils.replace(result,"${page}", pageResource.getPath());
                     }
-                    result = result.replaceAll("\\$\\{site}", sitePath);
+                    result = StringUtils.replace(result,"${site}", sitePath);
                     if (!value.equals(result)) {
                         result = result.replaceAll("/[^/]+/\\.\\./", "/");
                     }

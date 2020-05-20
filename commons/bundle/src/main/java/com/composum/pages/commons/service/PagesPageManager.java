@@ -4,7 +4,11 @@ import com.composum.pages.commons.PagesConfiguration;
 import com.composum.pages.commons.PagesConstants;
 import com.composum.pages.commons.PagesConstants.ReferenceType;
 import com.composum.pages.commons.filter.TemplateFilter;
-import com.composum.pages.commons.model.*;
+import com.composum.pages.commons.model.ContentTypeFilter;
+import com.composum.pages.commons.model.Model;
+import com.composum.pages.commons.model.Page;
+import com.composum.pages.commons.model.PageContent;
+import com.composum.pages.commons.model.Site;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.filter.StringFilter;
@@ -13,7 +17,11 @@ import com.composum.sling.core.util.ResourceUtil;
 import com.composum.sling.platform.staging.versions.PlatformVersionsService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
-import org.apache.sling.api.resource.*;
+import org.apache.sling.api.resource.ModifiableValueMap;
+import org.apache.sling.api.resource.PersistenceException;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.ValueMap;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -23,7 +31,17 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -203,10 +221,10 @@ public class PagesPageManager extends PagesContentManager<Page> implements PageM
                 Resource siteResource = siteManager.getContainingSiteResource(target);
                 Resource pageResource = getContainingPageResource(target);
                 if (pageResource != null) {
-                    String result = value.replaceAll("\\$\\{path}", target.getPath());
-                    result = result.replaceAll("\\$\\{page}", pageResource.getPath());
+                    String result = StringUtils.replace(value, "${path}", target.getPath());
+                    result = StringUtils.replace(result, "${page}", pageResource.getPath());
                     if (siteResource != null) {
-                        result = result.replaceAll("\\$\\{site}", siteResource.getPath());
+                        result = StringUtils.replace(result, "${site}", siteResource.getPath());
                     }
                     if (!value.equals(result)) {
                         result = result.replaceAll("/[^/]+/\\.\\./", "/");
