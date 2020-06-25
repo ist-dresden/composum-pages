@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.jcr.RepositoryException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -148,7 +149,7 @@ public class PagesComponentManager implements ComponentManager {
                                 @Nullable final String description,
                                 @Nullable final String[] category,
                                 @Nonnull final ComponentPieces requested)
-            throws PersistenceException {
+            throws PersistenceException, RepositoryException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("createComponent({},{})", parent.getPath(), name);
         }
@@ -180,7 +181,7 @@ public class PagesComponentManager implements ComponentManager {
                                 @Nullable Resource template,
                                 @Nonnull final Resource component,
                                 @Nonnull final ComponentPieces requested)
-            throws PersistenceException {
+            throws PersistenceException, RepositoryException {
         if (template == null) {
             template = getDefaultTemplate(resolver);
         }
@@ -257,7 +258,7 @@ public class PagesComponentManager implements ComponentManager {
                                                @Nonnull final Resource template,
                                                @Nonnull final Resource component,
                                                @Nonnull final String piecePath)
-            throws PersistenceException {
+            throws PersistenceException, RepositoryException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("applyComponentPieceTemplate({}->{},{})", template.getPath(), component.getPath(), piecePath);
         }
@@ -292,7 +293,7 @@ public class PagesComponentManager implements ComponentManager {
                                              @Nonnull final String piecePath,
                                              @Nonnull final Resource templateNode,
                                              @Nonnull final Resource componentNode)
-            throws PersistenceException {
+            throws PersistenceException, RepositoryException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("applyTemplateResource({}->{},{})", templateNode.getPath(), componentNode.getPath(), piecePath);
         }
@@ -315,7 +316,7 @@ public class PagesComponentManager implements ComponentManager {
     protected void copyFiles(@Nonnull final ResourceResolver resolver,
                              @Nonnull final Resource templateNode,
                              @Nonnull final Resource componentNode)
-            throws PersistenceException {
+            throws PersistenceException, RepositoryException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("copyFiles({}->{})", templateNode.getPath(), componentNode.getPath());
         }

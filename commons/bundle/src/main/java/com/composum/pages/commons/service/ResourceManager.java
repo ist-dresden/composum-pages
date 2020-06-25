@@ -336,5 +336,5 @@ public interface ResourceManager {
      */
     Resource createFromTemplate(@Nonnull TemplateContext context, @Nonnull Resource parent, @Nonnull String name,
                                 @Nonnull Resource template, boolean setTemplateProperty)
-            throws PersistenceException;
+            throws PersistenceException, RepositoryException;
 }

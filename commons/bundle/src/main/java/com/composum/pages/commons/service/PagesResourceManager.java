@@ -1377,11 +1377,12 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
     @Override
     public Resource createFromTemplate(@Nonnull TemplateContext context, @Nonnull Resource parent, @Nonnull String name,
                                        @Nonnull Resource template, boolean setTemplateProperty)
-            throws PersistenceException {
+            throws RepositoryException, PersistenceException {
         ResourceResolver resolver = context.getResolver();
         ValueMap templateValues = template.getValueMap();
-        Resource target = resolver.create(parent, name, Collections.singletonMap(
-                JcrConstants.JCR_PRIMARYTYPE, templateValues.get(JcrConstants.JCR_PRIMARYTYPE)));
+        Resource target = ResourceUtil.getOrCreateResource(resolver,
+                SlingResourceUtil.appendPaths(parent.getPath(), name),
+                ResourceUtil.TYPE_SLING_FOLDER + "/" + templateValues.get(JcrConstants.JCR_PRIMARYTYPE, String.class));
         Resource templateContent = template.getChild(JcrConstants.JCR_CONTENT);
         Resource referencedTemplate = null;
 
