@@ -1380,8 +1380,11 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
             throws RepositoryException, PersistenceException {
         ResourceResolver resolver = context.getResolver();
         ValueMap templateValues = template.getValueMap();
-        Resource target = ResourceUtil.getOrCreateResource(resolver,
-                SlingResourceUtil.appendPaths(parent.getPath(), name),
+        String createdPath = SlingResourceUtil.appendPaths(parent.getPath(), name);
+        if (resolver.getResource(createdPath) != null) { // can't happen, but rather do a safety check.
+            throw new IllegalArgumentException("Can't create, already exists: {}" + createdPath);
+        }
+        Resource target = ResourceUtil.getOrCreateResource(resolver, createdPath,
                 ResourceUtil.TYPE_SLING_FOLDER + "/" + templateValues.get(JcrConstants.JCR_PRIMARYTYPE, String.class));
         Resource templateContent = template.getChild(JcrConstants.JCR_CONTENT);
         Resource referencedTemplate = null;

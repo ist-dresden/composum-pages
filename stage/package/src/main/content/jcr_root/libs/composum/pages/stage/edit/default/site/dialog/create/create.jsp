@@ -16,7 +16,7 @@
             </cpn:div>
             <div class="col col-xs-${sites.tenantSupport?'7':'12'}">
                 <cpp:widget label="Name" name="name" placeholder="the repository name" type="textfield"
-                            required="true" pattern="^[\\w][\\w -]*(/[\\w][\\w -]*)*$"/>
+                            required="true" pattern="^[\\w][\\w -]*(/[\\w][\\w -]*)?$"/>
             </div>
         </div>
         <cpp:widget label="Title" name="jcr:title" placeholder="the more readable title" type="textfield"/>
