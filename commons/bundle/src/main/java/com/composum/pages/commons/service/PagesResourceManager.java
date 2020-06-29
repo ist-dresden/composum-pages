@@ -1197,15 +1197,15 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
      * @return the changed value if changed otherwise 'null'
      */
     protected String changeReferences(String value, String oldPath, String newPath) {
-        if (value.matches("^" + oldPath + "(/.*)?$")) {
+        if (value.matches("^" + Pattern.quote(oldPath) + "(/.*)?$")) {
             // simple path value...
             return newPath + value.substring(oldPath.length());
         } else {
             // check for HTML patterns and change all references if found
-            Pattern htmlPattern = Pattern.compile("(href|src)=\"" + oldPath + "(/[^\"]*)?\"");
+            Pattern htmlPattern = Pattern.compile("(href|src)=\"" + Pattern.quote(oldPath) + "(/[^\"]*)?\"");
             Matcher matcher = htmlPattern.matcher(value);
             if (matcher.matches()) {
-                return matcher.replaceAll("$1=\"" + newPath + "$2\"");
+                return matcher.replaceAll("$1=\"" + Matcher.quoteReplacement(newPath) + "$2\"");
             }
         }
         return null;
