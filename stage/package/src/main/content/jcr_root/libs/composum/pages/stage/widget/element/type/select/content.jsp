@@ -24,14 +24,24 @@
                    data-toggle="collapse"><i
                         class="fa fa-angle-down"></i><span>${cpn:i18n(slingRequest,category)}</span></a>
                 <ul class="${componentsCssBase}_list collapse in" id="${componentsCssBase}_category_${category}">
-                    <c:forEach items="${components.components[category]}" var="componentType">
-                        <li class="${componentsCssBase}_element-type">
-                            <input type="radio" name="${components.widgetName}" value="${componentType.path}"
-                                   class="${componentsCssBase}_radio"/>
-                            <cpp:include path="${componentType.path}" resourceType="${componentType.path}"
-                                         subtype="edit/tile" replaceSelectors="select"/>
-                        </li>
-                    </c:forEach>
+                    <c:catch var="theException">
+                        <c:forEach items="${components.components[category]}" var="componentType">
+                            <li class="${componentsCssBase}_element-type">
+                                <input type="radio" name="${components.widgetName}" value="${componentType.path}"
+                                       class="${componentsCssBase}_radio"/>
+                                <cpp:include path="${componentType.path}" resourceType="${componentType.path}"
+                                             subtype="edit/tile" replaceSelectors="select"/>
+                            </li>
+                        </c:forEach>
+                    </c:catch>
+                    <c:if test="${exception != null}">
+                        <%
+                            if (log != null) {
+                                log.error(String.valueOf(request.getAttribute("componentType")),
+                                        (Throwable) request.getAttribute("theException"));
+                            }
+                        %>
+                    </c:if>
                 </ul>
             </div>
         </c:forEach>
