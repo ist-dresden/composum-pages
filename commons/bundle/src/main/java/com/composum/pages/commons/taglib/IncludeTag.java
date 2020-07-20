@@ -17,7 +17,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.tagext.Tag;
 import java.io.IOException;
+import java.time.Instant;
 
 import static com.composum.pages.commons.PagesConstants.RA_CURRENT_THEME;
 
@@ -43,6 +45,7 @@ public class IncludeTag extends IncludeTagHandler {
     private transient BeanContext context;
     private transient ExpressionUtil expressionUtil;
 
+    @Override
     public void setResource(final Resource resource) {
         if (ResourceUtil.isSyntheticResource(resource)) {
             if (StringUtils.isBlank(path)) {
@@ -56,10 +59,12 @@ public class IncludeTag extends IncludeTagHandler {
         }
     }
 
+    @Override
     public void setPath(String path) {
         super.setPath(this.path = path);
     }
 
+    @Override
     public void setResourceType(String type) {
         super.setResourceType(this.resourceType = type);
     }
@@ -176,13 +181,18 @@ public class IncludeTag extends IncludeTagHandler {
     }
 
     @Override
-    public int doEndTag() throws JspException {
+    public int doEndTag() {
         if (getTestResult()) {
             int returnValue;
             if (dynamic) {
                 returnValue = includeVirtual();
             } else {
-                returnValue = super.doEndTag();
+                try {
+                    returnValue = super.doEndTag();
+                } catch (JspException | RuntimeException e) {
+                    returnValue = Tag.SKIP_BODY;
+                    logIncludeError(e);
+                }
             }
             if (StringUtils.isNotBlank(mode)) {
                 DisplayMode.get(getContext()).pop();
@@ -192,6 +202,37 @@ public class IncludeTag extends IncludeTagHandler {
         } else {
             clear();
             return EVAL_PAGE;
+        }
+    }
+
+    /**
+     * Logs information about the error and writes some rudimentary information about it into the page such that an user could
+     * at least give the timestamp to allow a developer to find the problem in the log.
+     */
+    // FIXME(hps,20.07.20) should we really never throw up? Perhaps only when response.isCommitted or an attribute is set?
+    // In some cases it's better not breaking the page (e.g. component selection dialog) and in some cases better
+    // the exception should be thrown to show an error page.
+    protected void logIncludeError(Exception exception) {
+        StringBuilder msg = new StringBuilder("Error during include");
+        msg.append(" in ").append(pageContext.getPage());
+        if (resourceType != null) {
+            msg.append(" resourceType=").append(resourceType);
+        }
+        if (path != null && !path.equals(resourceType)) {
+            msg.append(" path=").append(path);
+        }
+        if (resource != null && !resource.getPath().equals(resourceType) && !resource.getPath().equals(path)) {
+            msg.append(" resource=").append(resource.getPath());
+        }
+        if (subtype != null) {
+            msg.append(" subtype=").append(subtype);
+        }
+        LOG.error(msg.toString(), exception);
+        try {
+            String logType = resourceType != null ? resourceType : resource != null ? resource.getResourceType() : "(unknown)";
+            pageContext.getOut().print(" ERROR: include failed at " + Instant.now() + " for resource type " + logType + " ");
+        } catch (IOException ioex) {
+            LOG.warn("Could not include error message into page - might be OK", ioex);
         }
     }
 
