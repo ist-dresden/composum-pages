@@ -1,19 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+<jcr:root xmlns:cpp="http://sling.composum.com/pages/1.0"
+        xmlns:jcr="http://www.jcp.org/jcr/1.0"
+        xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+        xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
         jcr:primaryType="cpp:Component"
+        sling:resourceSuperType="composum/pages/components/composed"
         jcr:description="a component to place rows as table elements with editable cell elements inside of the rows"
         jcr:title="Table"
-        category="[Table,General,Blueprint]"
-        sling:resourceSuperType="composum/pages/components/composed"
-        allowedElements="[composum/pages/components/composed/table/row]">
-    <jcr:content jcr:primaryType="nt:unstructured">
-        <properties jcr:primaryType="nt:unstructured">
-            <title jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="plain"/>
-            <copyright jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="plain"/>
-            <striped jcr:primaryType="nt:unstructured" type="Boolean"/>
-            <bordered jcr:primaryType="nt:unstructured" type="Boolean"/>
-            <condensed jcr:primaryType="nt:unstructured" type="Boolean"/>
-            <hover jcr:primaryType="nt:unstructured" type="Boolean"/>
+        allowedElements="[composum/pages/components/composed/table/row]"
+        category="[Table,General,Blueprint]">
+    <jcr:content
+            jcr:primaryType="nt:unstructured">
+        <properties
+                jcr:primaryType="nt:unstructured">
+            <title
+                    jcr:primaryType="nt:unstructured"
+                    i18n="{Boolean}true"
+                    text="plain"/>
+            <copyright
+                    jcr:primaryType="nt:unstructured"
+                    i18n="{Boolean}true"
+                    text="plain"/>
+            <striped
+                    jcr:primaryType="nt:unstructured"
+                    type="Boolean"/>
+            <bordered
+                    jcr:primaryType="nt:unstructured"
+                    type="Boolean"/>
+            <condensed
+                    jcr:primaryType="nt:unstructured"
+                    type="Boolean"/>
+            <hover
+                    jcr:primaryType="nt:unstructured"
+                    type="Boolean"/>
         </properties>
     </jcr:content>
 </jcr:root>

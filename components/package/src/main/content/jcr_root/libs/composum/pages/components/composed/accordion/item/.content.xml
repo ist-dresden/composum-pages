@@ -1,15 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+<jcr:root xmlns:cpp="http://sling.composum.com/pages/1.0"
+        xmlns:jcr="http://www.jcp.org/jcr/1.0"
+        xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+        xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
         jcr:primaryType="cpp:Component"
+        sling:resourceSuperType="composum/pages/components/container/parsys"
         jcr:description="a collapsible container inside of an accordion"
         jcr:title="Accordion Item"
-        category="[Layout,Blueprint]"
-        sling:resourceSuperType="composum/pages/components/container/parsys"
-        allowedContainers="[composum/pages/components/composed/accordion]">
-    <jcr:content jcr:primaryType="nt:unstructured">
-        <properties jcr:primaryType="nt:unstructured">
-            <title jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="plain"/>
-            <initialOpen jcr:primaryType="nt:unstructured" type="Boolean"/>
+        allowedContainers="[composum/pages/components/composed/accordion]"
+        category="[Layout,Blueprint]">
+    <jcr:content
+            jcr:primaryType="nt:unstructured">
+        <properties
+                jcr:primaryType="nt:unstructured">
+            <title
+                    jcr:primaryType="nt:unstructured"
+                    i18n="{Boolean}true"
+                    text="plain"/>
+            <initialOpen
+                    jcr:primaryType="nt:unstructured"
+                    type="Boolean"/>
         </properties>
     </jcr:content>
 </jcr:root>

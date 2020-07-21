@@ -1,24 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+<jcr:root xmlns:cpp="http://sling.composum.com/pages/1.0"
+        xmlns:jcr="http://www.jcp.org/jcr/1.0"
+        xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+        xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
         jcr:primaryType="cpp:Component"
+        sling:resourceSuperType="composum/pages/components/composed"
         jcr:description="an image with collapsible hotspots and short annotations"
         jcr:title="Illustration"
-        category="[Image,Blueprint]"
-        sling:resourceSuperType="composum/pages/components/composed"
-        allowedElements="[composum/pages/components/composed/illustration/annotation]">
-    <jcr:content jcr:primaryType="nt:unstructured">
-        <properties jcr:primaryType="nt:unstructured">
-            <image jcr:primaryType="nt:unstructured">
-                <imageRef jcr:primaryType="nt:unstructured"/>
-                <title jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="plain"/>
-                <alt jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="plain"/>
-                <copyright jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="plain"/>
-                <copyrightUrl jcr:primaryType="nt:unstructured"/>
-                <license jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="plain"/>
-                <licenseUrl jcr:primaryType="nt:unstructured"/>
+        allowedElements="[composum/pages/components/composed/illustration/annotation]"
+        category="[Image,Blueprint]">
+    <jcr:content
+            jcr:primaryType="nt:unstructured">
+        <properties
+                jcr:primaryType="nt:unstructured">
+            <image
+                    jcr:primaryType="nt:unstructured">
+                <imageRef
+                        jcr:primaryType="nt:unstructured"/>
+                <title
+                        jcr:primaryType="nt:unstructured"
+                        i18n="{Boolean}true"
+                        text="plain"/>
+                <alt
+                        jcr:primaryType="nt:unstructured"
+                        i18n="{Boolean}true"
+                        text="plain"/>
+                <copyright
+                        jcr:primaryType="nt:unstructured"
+                        i18n="{Boolean}true"
+                        text="plain"/>
+                <copyrightUrl
+                        jcr:primaryType="nt:unstructured"/>
+                <license
+                        jcr:primaryType="nt:unstructured"
+                        i18n="{Boolean}true"
+                        text="plain"/>
+                <licenseUrl
+                        jcr:primaryType="nt:unstructured"/>
             </image>
-            <shape jcr:primaryType="nt:unstructured">
-                <behavior jcr:primaryType="nt:unstructured"/>
+            <shape
+                    jcr:primaryType="nt:unstructured">
+                <behavior
+                        jcr:primaryType="nt:unstructured"/>
             </shape>
         </properties>
     </jcr:content>

@@ -1,16 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
-          jcr:primaryType="cpp:Component"
-          jcr:description="a row, a container of entries which are table columns"
-          jcr:title="Table Row"
-          category="[Table,General,Blueprint]"
-          sling:resourceSuperType="composum/pages/components/composed"
-          allowedContainers="[composum/pages/components/composed/table]"
-          allowedElements="[composum/pages/components/composed/table/cell]">
-    <jcr:content jcr:primaryType="nt:unstructured">
-        <properties jcr:primaryType="nt:unstructured">
-            <head jcr:primaryType="nt:unstructured" type="Boolean"/>
-            <level jcr:primaryType="nt:unstructured"/>
+<jcr:root xmlns:cpp="http://sling.composum.com/pages/1.0"
+        xmlns:jcr="http://www.jcp.org/jcr/1.0"
+        xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+        xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+        jcr:primaryType="cpp:Component"
+        sling:resourceSuperType="composum/pages/components/composed"
+        jcr:description="a row, a container of entries which are table columns"
+        jcr:title="Table Row"
+        allowedContainers="[composum/pages/components/composed/table]"
+        allowedElements="[composum/pages/components/composed/table/cell]"
+        category="[Table,General,Blueprint]">
+    <jcr:content
+            jcr:primaryType="nt:unstructured">
+        <properties
+                jcr:primaryType="nt:unstructured">
+            <head
+                    jcr:primaryType="nt:unstructured"
+                    type="Boolean"/>
+            <level
+                    jcr:primaryType="nt:unstructured"/>
         </properties>
     </jcr:content>
 </jcr:root>

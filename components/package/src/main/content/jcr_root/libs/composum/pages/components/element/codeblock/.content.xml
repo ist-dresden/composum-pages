@@ -1,23 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+<jcr:root xmlns:cpp="http://sling.composum.com/pages/1.0"
+        xmlns:jcr="http://www.jcp.org/jcr/1.0"
+        xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+        xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
         jcr:primaryType="cpp:Component"
+        sling:resourceSuperType="composum/pages/components/element"
         jcr:description="a code snippet with syntax highlighting"
         jcr:title="Code Block"
-        category="[Documentation,Blueprint]"
-        sling:resourceSuperType="composum/pages/components/element">
-    <jcr:content jcr:primaryType="nt:unstructured">
-        <properties jcr:primaryType="nt:unstructured">
-            <code jcr:primaryType="nt:unstructured" text="code"/>
-            <codeRef jcr:primaryType="nt:unstructured"/>
-            <title jcr:primaryType="nt:unstructured" i18n="{Boolean}true"/>
-            <serviceUri jcr:primaryType="nt:unstructured"/>
-            <copyright jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="plain"/>
-            <language jcr:primaryType="nt:unstructured"/>
-            <showLanguage jcr:primaryType="nt:unstructured" type="Boolean"/>
-            <showLanguage jcr:primaryType="nt:unstructured" type="Boolean"/>
-            <collapsed jcr:primaryType="nt:unstructured"/>
-            <collapsible jcr:primaryType="nt:unstructured" type="Boolean"/>
-            <bordered jcr:primaryType="nt:unstructured" type="Boolean"/>
+        category="[Documentation,Blueprint]">
+    <jcr:content
+            jcr:primaryType="nt:unstructured">
+        <properties
+                jcr:primaryType="nt:unstructured">
+            <code
+                    jcr:primaryType="nt:unstructured"
+                    text="code"/>
+            <codeRef
+                    jcr:primaryType="nt:unstructured"/>
+            <title
+                    jcr:primaryType="nt:unstructured"
+                    i18n="{Boolean}true"/>
+            <serviceUri
+                    jcr:primaryType="nt:unstructured"/>
+            <copyright
+                    jcr:primaryType="nt:unstructured"
+                    i18n="{Boolean}true"
+                    text="plain"/>
+            <language
+                    jcr:primaryType="nt:unstructured"/>
+            <showLanguage
+                    jcr:primaryType="nt:unstructured"
+                    type="Boolean"/>
+            <collapsed
+                    jcr:primaryType="nt:unstructured"/>
+            <collapsible
+                    jcr:primaryType="nt:unstructured"
+                    type="Boolean"/>
+            <bordered
+                    jcr:primaryType="nt:unstructured"
+                    type="Boolean"/>
         </properties>
     </jcr:content>
 </jcr:root>

@@ -1,25 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+<jcr:root xmlns:cpp="http://sling.composum.com/pages/1.0"
+        xmlns:jcr="http://www.jcp.org/jcr/1.0"
+        xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+        xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
         jcr:primaryType="cpp:Component"
+        sling:resourceSuperType="composum/pages/components/element"
         jcr:description="a teaser to guide to another page"
         jcr:title="Teaser"
-        category="[Teaser,General,Blueprint]"
-        sling:resourceSuperType="composum/pages/components/element">
-    <jcr:content jcr:primaryType="nt:unstructured">
-        <properties jcr:primaryType="nt:unstructured">
-            <variation jcr:primaryType="nt:unstructured"/>
-            <title jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="plain"/>
-            <subtitle jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="plain"/>
-            <text jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="rich" required="{Boolean}true"/>
-            <link jcr:primaryType="nt:unstructured"/>
-            <linkTitle jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="plain"/>
-            <linkTarget jcr:primaryType="nt:unstructured"/>
-            <icon jcr:primaryType="nt:unstructured"/>
+        category="[Teaser,General,Blueprint]">
+    <jcr:content
+            jcr:primaryType="nt:unstructured">
+        <properties
+                jcr:primaryType="nt:unstructured">
+            <variation
+                    jcr:primaryType="nt:unstructured"/>
+            <title
+                    jcr:primaryType="nt:unstructured"
+                    i18n="{Boolean}true"
+                    text="plain"/>
+            <subtitle
+                    jcr:primaryType="nt:unstructured"
+                    i18n="{Boolean}true"
+                    text="plain"/>
+            <text
+                    jcr:primaryType="nt:unstructured"
+                    i18n="{Boolean}true"
+                    required="{Boolean}true"
+                    text="rich"/>
+            <link
+                    jcr:primaryType="nt:unstructured"/>
+            <linkTitle
+                    jcr:primaryType="nt:unstructured"
+                    i18n="{Boolean}true"
+                    text="plain"/>
+            <linkTarget
+                    jcr:primaryType="nt:unstructured"/>
+            <icon
+                    jcr:primaryType="nt:unstructured"/>
         </properties>
-        <elements jcr:primaryType="nt:unstructured">
-            <image jcr:primaryType="nt:unstructured" type="composum/pages/components/element/image"/>
-            <video jcr:primaryType="nt:unstructured" type="composum/pages/components/element/video"/>
-            <links jcr:primaryType="nt:unstructured" type="composum/pages/components/element/link/set"/>
+        <elements
+                jcr:primaryType="nt:unstructured">
+            <image
+                    jcr:primaryType="nt:unstructured"
+                    type="composum/pages/components/element/image"/>
+            <video
+                    jcr:primaryType="nt:unstructured"
+                    type="composum/pages/components/element/video"/>
+            <links
+                    jcr:primaryType="nt:unstructured"
+                    type="composum/pages/components/element/link/set"/>
         </elements>
     </jcr:content>
 </jcr:root>

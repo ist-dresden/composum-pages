@@ -1,18 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+<jcr:root xmlns:cpp="http://sling.composum.com/pages/1.0"
+        xmlns:jcr="http://www.jcp.org/jcr/1.0"
+        xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+        xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
         jcr:primaryType="cpp:Component"
+        sling:resourceSuperType="composum/pages/components/element"
         jcr:description="a search term input field"
         jcr:title="Search Field"
-        category="[Meta,Blueprint]"
-        sling:resourceSuperType="composum/pages/components/element">
-    <jcr:content jcr:primaryType="nt:unstructured">
-        <properties jcr:primaryType="nt:unstructured">
-            <buttonText jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="plain"/>
-            <hint jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="plain"/>
-            <placeholderText jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="plain"/>
-            <buttonSymbol jcr:primaryType="nt:unstructured"/>
-            <searchResultPath jcr:primaryType="nt:unstructured"/>
-            <searchResultAnchor jcr:primaryType="nt:unstructured"/>
+        category="[Meta,Blueprint]">
+    <jcr:content
+            jcr:primaryType="nt:unstructured">
+        <properties
+                jcr:primaryType="nt:unstructured">
+            <buttonText
+                    jcr:primaryType="nt:unstructured"
+                    i18n="{Boolean}true"
+                    text="plain"/>
+            <hint
+                    jcr:primaryType="nt:unstructured"
+                    i18n="{Boolean}true"
+                    text="plain"/>
+            <placeholderText
+                    jcr:primaryType="nt:unstructured"
+                    i18n="{Boolean}true"
+                    text="plain"/>
+            <buttonSymbol
+                    jcr:primaryType="nt:unstructured"/>
+            <searchResultPath
+                    jcr:primaryType="nt:unstructured"/>
+            <searchResultAnchor
+                    jcr:primaryType="nt:unstructured"/>
         </properties>
     </jcr:content>
 </jcr:root>

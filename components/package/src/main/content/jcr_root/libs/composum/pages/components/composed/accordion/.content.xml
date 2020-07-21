@@ -1,14 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+<jcr:root xmlns:cpp="http://sling.composum.com/pages/1.0"
+        xmlns:jcr="http://www.jcp.org/jcr/1.0"
+        xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+        xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
         jcr:primaryType="cpp:Component"
+        sling:resourceSuperType="composum/pages/components/composed"
         jcr:description="a container of collapsible elements"
         jcr:title="Accordion"
-        category="[Layout,Blueprint]"
-        sling:resourceSuperType="composum/pages/components/composed"
-        allowedElements="[composum/pages/components/composed/accordion/item]">
-    <jcr:content jcr:primaryType="nt:unstructured">
-        <properties jcr:primaryType="nt:unstructured">
-            <behavior jcr:primaryType="nt:unstructured"/>
+        allowedElements="[composum/pages/components/composed/accordion/item]"
+        category="[Layout,Blueprint]">
+    <jcr:content
+            jcr:primaryType="nt:unstructured">
+        <properties
+                jcr:primaryType="nt:unstructured">
+            <behavior
+                    jcr:primaryType="nt:unstructured"/>
         </properties>
     </jcr:content>
 </jcr:root>

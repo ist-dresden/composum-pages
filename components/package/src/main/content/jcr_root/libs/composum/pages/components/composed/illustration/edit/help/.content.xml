@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jcr:root xmlns:cpp="http://sling.composum.com/pages/1.0"
-          xmlns:jcr="http://www.jcp.org/jcr/1.0"
-          xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
-          jcr:primaryType="cpp:Page">
+        xmlns:jcr="http://www.jcp.org/jcr/1.0"
+        xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+        jcr:primaryType="cpp:Page">
     <jcr:content
             jcr:primaryType="cpp:PageContent"
             sling:resourceType="composum/pages/stage/edit/tools/component/help/page"
@@ -13,7 +13,7 @@
             <text_01
                     jcr:primaryType="cpp:Element"
                     sling:resourceType="composum/pages/components/element/text"
-                    text="An illustration component combines an image with a set of &apos;hotspots&apos; which are placed inside of the image and opening a popup window on click with a text message for the marked image detail."/>
+                    text="An illustration component combines an image with a set of 'hotspots' which are placed inside of the image and opening a popup window on click with a text message for the marked image detail."/>
             <image
                     jcr:primaryType="cpp:Element"
                     sling:resourceType="composum/pages/components/element/image"
@@ -21,7 +21,7 @@
             <text_2
                     jcr:primaryType="cpp:Element"
                     sling:resourceType="composum/pages/components/element/text"
-                    text="The annotations - the &apos;items&apos; of an illustration - can be added as separate elements inside of the illustration component. An item is placed using a percentage position property. The items can be numbered or illustrated by a symbol."/>
+                    text="The annotations - the 'items' of an illustration - can be added as separate elements inside of the illustration component. An item is placed using a percentage position property. The items can be numbered or illustrated by a symbol."/>
             <image_1646964069
                     jcr:primaryType="cpp:Element"
                     sling:resourceType="composum/pages/components/element/image"

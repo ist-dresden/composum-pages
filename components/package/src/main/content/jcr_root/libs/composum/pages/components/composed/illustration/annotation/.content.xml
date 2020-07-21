@@ -1,21 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+<jcr:root xmlns:cpp="http://sling.composum.com/pages/1.0"
+        xmlns:jcr="http://www.jcp.org/jcr/1.0"
+        xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+        xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
         jcr:primaryType="cpp:Component"
-        jcr:title="Annotation"
-        category="[Image,Blueprint]"
         sling:resourceSuperType="composum/pages/components/embedded"
-        allowedContainers="[composum/pages/components/composed/illustration]">
-    <jcr:content jcr:primaryType="nt:unstructured">
-        <properties jcr:primaryType="nt:unstructured">
-            <title jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="plain"/>
-            <text jcr:primaryType="nt:unstructured" i18n="{Boolean}true" text="rich"/>
-            <shape jcr:primaryType="nt:unstructured">
-                <level jcr:primaryType="nt:unstructured"/>
-                <icon jcr:primaryType="nt:unstructured"/>
-                <type jcr:primaryType="nt:unstructured"/>
-                <position.x jcr:primaryType="nt:unstructured"/>
-                <position.y jcr:primaryType="nt:unstructured"/>
-                <placement jcr:primaryType="nt:unstructured"/>
+        jcr:title="Annotation"
+        allowedContainers="[composum/pages/components/composed/illustration]"
+        category="[Image,Blueprint]">
+    <jcr:content
+            jcr:primaryType="nt:unstructured">
+        <properties
+                jcr:primaryType="nt:unstructured">
+            <title
+                    jcr:primaryType="nt:unstructured"
+                    i18n="{Boolean}true"
+                    text="plain"/>
+            <text
+                    jcr:primaryType="nt:unstructured"
+                    i18n="{Boolean}true"
+                    text="rich"/>
+            <shape
+                    jcr:primaryType="nt:unstructured">
+                <level
+                        jcr:primaryType="nt:unstructured"/>
+                <icon
+                        jcr:primaryType="nt:unstructured"/>
+                <type
+                        jcr:primaryType="nt:unstructured"/>
+                <position.x
+                        jcr:primaryType="nt:unstructured"/>
+                <position.y
+                        jcr:primaryType="nt:unstructured"/>
+                <placement
+                        jcr:primaryType="nt:unstructured"/>
             </shape>
         </properties>
     </jcr:content>
