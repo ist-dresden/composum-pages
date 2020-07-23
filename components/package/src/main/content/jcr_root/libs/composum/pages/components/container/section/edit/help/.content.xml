@@ -63,7 +63,7 @@
             <section_02
                     jcr:primaryType="cpp:Element"
                     sling:resourceType="composum/pages/components/container/section"
-                    jcr:title="A Warning Box section"
+                    jcr:title="A &quot;Warning Box&quot; section"
                     icon="exclamation-triangle"
                     level="warning">
                 <text

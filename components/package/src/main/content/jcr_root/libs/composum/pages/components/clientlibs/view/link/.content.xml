@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jcr:root xmlns:jcr="http://www.jcp.org/jcr/1.0"
-        jcr:primaryType="nt:unstructured">
+        jcr:primaryType="sling:Folder">
     <cpp-64 jcr:primaryType="nt:unstructured"
             rel="shortcut icon"
             embed="composum/pages/commons/images/cpp-64.png"/>
