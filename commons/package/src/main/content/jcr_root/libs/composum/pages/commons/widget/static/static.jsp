@@ -7,6 +7,6 @@
 <cpp:defineFrameObjects/>
 <div class="${widgetCSS}_${widget.widgetType} form-group" ${widget.attributes}>
     <cpn:div test="${not empty widget.model.level}" class="hint hint-${widget.model.level}" body="true">
-        <cpn:text class="${widgetCSS}_text" value="${widget.model.text}" i18n="${widget.i18n}" type="rich"/>
+        <cpn:text class="${widgetCSS}_text" value="${cpn:text(widget.model.text)}" i18n="${widget.i18n}" type="rich"/>
     </cpn:div>
 </div>

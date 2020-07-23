@@ -4,4 +4,4 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <cpp:defineFrameObjects/>
 <c:if test="${widget.hasHint}"><cpn:text tagName="span" class="${widgetCSS}_hint widget-hint"
-                                         i18n="true" value="${widget.hint}" type="rich"/></c:if>
+                                         i18n="true" value="${cpn:text(widget.hint)}" type="rich"/></c:if>

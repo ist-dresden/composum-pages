@@ -13,6 +13,6 @@
     <textarea name="${widget.name}" data-label="${widget.label}" data-i18n="${widget.i18n}" ${widget.attributes}
               class="${widgetCSS}_input ${widgetCSS}_text-area widget text-area-widget form-control widget-name_${widget.cssName}"
               rows="${widget.model.rows}" placeholder="${widget.placeholder}"
-              <c:if test="${widget.disabled}">disabled</c:if>>${widget.model.text}</textarea>
+              <c:if test="${widget.disabled}">disabled</c:if>>${cpn:text(widget.model.text)}</textarea>
 </div>
 

@@ -15,7 +15,7 @@
         <input
                 <c:if test="${widget.formWidget}">name="${widget.name}"</c:if> data-label="${widget.label}"
                 class="${widgetCSS}_input form-control" data-i18n="${widget.i18n}" type="text"
-                value="${widget.model.text}" placeholder="${widget.placeholder}"
+                value="${cpn:text(widget.model.text)}" placeholder="${widget.placeholder}"
                 <c:if test="${widget.disabled}">disabled</c:if> />
         <div class="input-group-btn">
             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
@@ -23,7 +23,7 @@
             <ul class="dropdown-menu dropdown-menu-right">
                 <c:forEach var="option" items="${widget.model.options}">
                     <li class="${option.selected?'active':''}"
-                        data-value="${option.value}"><a href="#">${cpn:text(option.label)}</a></li>
+                        data-value="${cpn:text(option.value)}"><a href="#">${cpn:text(option.label)}</a></li>
                 </c:forEach>
             </ul>
         </div>
