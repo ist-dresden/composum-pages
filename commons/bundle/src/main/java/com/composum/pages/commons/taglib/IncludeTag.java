@@ -229,7 +229,16 @@ public class IncludeTag extends IncludeTagHandler {
         }
         LOG.error(msg.toString(), exception);
         try {
-            String logType = resourceType != null ? resourceType : resource != null ? resource.getResourceType() : "(unknown)";
+            String logType;
+            if (resourceType != null ){
+                logType = resourceType;
+            } else if (resource != null) {
+                logType = resource.getResourceType();
+            } else if (path != null && context.getResolver() != null && context.getResolver().getResource(path) != null) {
+                logType = context.getResolver().getResource(path).getResourceType();
+            } else {
+                logType = "(unknown)";
+            }
             pageContext.getOut().print(" ERROR: include failed at " + Instant.now() + " for resource type " + logType + " ");
         } catch (IOException ioex) {
             LOG.warn("Could not include error message into page - might be OK", ioex);

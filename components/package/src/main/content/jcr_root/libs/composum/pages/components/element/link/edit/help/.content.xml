@@ -14,12 +14,12 @@
             <text_01
                     jcr:primaryType="cpp:Element"
                     sling:resourceType="composum/pages/components/element/text"
-                    text="a single link which can be embedded as an element into other containers. It allows defining a link text, the link to a page or external URL, a title/hint visible on mouseover, and the link target (_blank, _parent, _top, _self or other).">
+                    text="&lt;p>a single link which can be embedded as an element into other containers. It allows defining a link text, the link to a page or external URL, a title/hint visible on mouseover, and the link target (_blank, _parent, _top, _self or other).&amp;nbsp;&lt;/p>&lt;p>If not in edit mode, the link is only visible if it's target is valid - that is, if it contains an external URL or there is a resource at the given path that is readable for the current user.&lt;/p>">
                 <i18n
                         jcr:primaryType="nt:unstructured">
                     <de
                             jcr:primaryType="nt:unstructured"
-                            text="ein einzelner Link, der in andere Container eingebettet werden kann. Es erlaubt einen Link-Text, das Ziel des Links (eine Zielseite oder externe URL), einen optionalen Link-Titel, der sichtbar wird wenn die Maus über dem Link schwebt, und das target (_blank, _parent, _top, _self oder anderes)."/>
+                            text="&lt;p>ein einzelner Link, der in andere Container eingebettet werden kann. Es erlaubt einen Link-Text, das Ziel des Links (eine Zielseite oder externe URL), einen optionalen Link-Titel, der sichtbar wird wenn die Maus über dem Link schwebt, und das target (_blank, _parent, _top, _self oder anderes).&lt;/p>&lt;p>Falls man sich nicht im Edit-Modus befindet, ist ein Link nur dann sichtbar wenn das Ziel gültig ist: d.h. eine externe URL oder ein Pfad einer Resource, die für den Nutzer sichtbar ist.&lt;br>&lt;/p>"/>
                 </i18n>
             </text_01>
         </main>
