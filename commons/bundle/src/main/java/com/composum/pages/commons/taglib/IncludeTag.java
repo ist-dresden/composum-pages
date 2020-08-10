@@ -16,6 +16,7 @@ import org.apache.sling.scripting.jsp.util.TagUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.servlet.http.HttpSession;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.Tag;
 import java.io.IOException;
@@ -33,6 +34,19 @@ public class IncludeTag extends IncludeTagHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger(IncludeTag.class);
 
+    /**
+     * Parameter which switches a session to put HTML comments what was included into the page, but only if logger {@value #PARAM_DEBUG_LOG_IN_PAGE} is at debug.
+     * Look for &lt;!-- cpp:include begin and &lt;!-- cpp:include end .
+     *
+     * @see #debugComment(boolean)
+     */
+    protected static final String PARAM_DEBUG_LOG_IN_PAGE = "com.composum.pages.commons.taglib.IncludeTag-inpage";
+
+    /**
+     * Logger {@value #PARAM_DEBUG_LOG_IN_PAGE} that acts as switch that {@link #debugComment(boolean)} inserts HTML-comments into the output that shows what exactly was included.
+     */
+    protected static final Logger LOGINPAGE = LoggerFactory.getLogger(PARAM_DEBUG_LOG_IN_PAGE);
+
     protected Resource resource;
     protected String path;
     protected String resourceType;
@@ -40,6 +54,9 @@ public class IncludeTag extends IncludeTagHandler {
     protected String mode;
     protected boolean dynamic;
     protected Object test;
+    protected String replaceSelectors;
+    protected String addSelectors;
+    protected String replaceSuffix;
 
     private transient Boolean testResult;
     private transient BeanContext context;
@@ -61,12 +78,35 @@ public class IncludeTag extends IncludeTagHandler {
 
     @Override
     public void setPath(String path) {
+        // duplicated since this is annoyingly private in the super class. 8-{
         super.setPath(this.path = path);
     }
 
     @Override
     public void setResourceType(String type) {
+        // duplicated since this is annoyingly private in the super class. 8-{
         super.setResourceType(this.resourceType = type);
+    }
+
+    @Override
+    public void setReplaceSelectors(String replaceSelectors) {
+        // duplicated since this is annoyingly private in the super class. 8-{
+        this.replaceSelectors = replaceSelectors;
+        super.setReplaceSelectors(replaceSelectors);
+    }
+
+    @Override
+    public void setAddSelectors(String addSelectors) {
+        // duplicated since this is annoyingly private in the super class. 8-{
+        this.addSelectors = addSelectors;
+        super.setAddSelectors(addSelectors);
+    }
+
+    @Override
+    public void setReplaceSuffix(String replaceSuffix) {
+        // duplicated since this is annoyingly private in the super class. 8-{
+        this.replaceSuffix = replaceSuffix;
+        super.setReplaceSuffix(replaceSuffix);
     }
 
     public void setSubtype(String type) {
@@ -174,6 +214,7 @@ public class IncludeTag extends IncludeTagHandler {
                 else modeValue = DisplayMode.Value.valueOf(mode);
                 DisplayMode.get(getContext()).push(modeValue);
             }
+            debugComment(true);
             return result;
         } else {
             return SKIP_BODY;
@@ -194,6 +235,7 @@ public class IncludeTag extends IncludeTagHandler {
                     logIncludeError(e);
                 }
             }
+            debugComment(false);
             if (StringUtils.isNotBlank(mode)) {
                 DisplayMode.get(getContext()).pop();
             }
@@ -215,22 +257,12 @@ public class IncludeTag extends IncludeTagHandler {
     protected void logIncludeError(Exception exception) {
         StringBuilder msg = new StringBuilder("Error during include");
         msg.append(" in ").append(pageContext.getPage());
-        if (resourceType != null) {
-            msg.append(" resourceType=").append(resourceType);
-        }
-        if (path != null && !path.equals(resourceType)) {
-            msg.append(" path=").append(path);
-        }
-        if (resource != null && !resource.getPath().equals(resourceType) && !resource.getPath().equals(path)) {
-            msg.append(" resource=").append(resource.getPath());
-        }
-        if (subtype != null) {
-            msg.append(" subtype=").append(subtype);
-        }
+        describeInclude(msg);
+        // FIXME(hps,10.08.20) log IOExceptions as warning only - that can happen anytime
         LOG.error(msg.toString(), exception);
         try {
             String logType;
-            if (resourceType != null ){
+            if (resourceType != null) {
                 logType = resourceType;
             } else if (resource != null) {
                 logType = resource.getResourceType();
@@ -240,8 +272,34 @@ public class IncludeTag extends IncludeTagHandler {
                 logType = "(unknown)";
             }
             pageContext.getOut().print(" ERROR: include failed at " + Instant.now() + " for resource type " + logType + " ");
-        } catch (IOException ioex) {
+        } catch (IOException | RuntimeException ioex) {
             LOG.warn("Could not include error message into page - might be OK", ioex);
+        }
+    }
+
+    protected void describeInclude(StringBuilder msg) {
+        if (path != null && !path.equals(resourceType)) {
+            msg.append(" path=").append(path);
+        }
+        if (resource != null && !resource.getPath().equals(resourceType) && !resource.getPath().equals(path)) {
+            msg.append(" resource=").append(resource.getPath());
+        }
+        if (resourceType != null) {
+            msg.append(" resourceType=").append(resourceType);
+        } else if (resource != null) {
+            msg.append(" resource.getResourceType()=").append(resource.getResourceType());
+        }
+        if (StringUtils.isNotBlank(replaceSelectors)) {
+            msg.append(" replaceSelectors=").append(replaceSelectors);
+        }
+        if (StringUtils.isNotBlank(addSelectors)) {
+            msg.append(" addSelectors=").append(addSelectors);
+        }
+        if (StringUtils.isNotBlank(replaceSuffix)) {
+            msg.append(" replaceSuffix=").append(replaceSuffix);
+        }
+        if (subtype != null) {
+            msg.append(" subtype=").append(subtype);
         }
     }
 
@@ -279,9 +337,46 @@ public class IncludeTag extends IncludeTagHandler {
             pageContext.getOut().print(
                     "<!--#include virtual=\"" + url + "\" -->\n");
         } catch (IOException ioex) {
-            LOG.error(ioex.getMessage(), ioex);
+            logIncludeError(ioex);
         }
         return EVAL_PAGE;
     }
 
+    /**
+     * Logs an HTML comment with information about the included resource into the page.
+     */
+    protected void debugComment(boolean start) {
+        if (LOGINPAGE.isDebugEnabled() && pageContext.getRequest() != null) {
+            SlingHttpServletRequest request = (SlingHttpServletRequest) pageContext.getRequest();
+            Boolean dolog = (Boolean) request.getAttribute(PARAM_DEBUG_LOG_IN_PAGE);
+            if (dolog == null) {
+                String logparam = request.getParameter(PARAM_DEBUG_LOG_IN_PAGE);
+                if ("true".equalsIgnoreCase(logparam)) {
+                    dolog = true;
+                } else if ("false".equalsIgnoreCase(logparam)) {
+                    dolog = false;
+                }
+                HttpSession session = request.getSession(false);
+                if (session != null) {
+                    if (dolog != null) {
+                        session.setAttribute(PARAM_DEBUG_LOG_IN_PAGE, dolog);
+                    } else {
+                        dolog = Boolean.TRUE.equals(session.getAttribute(PARAM_DEBUG_LOG_IN_PAGE));
+                    }
+                }
+                request.setAttribute(PARAM_DEBUG_LOG_IN_PAGE, dolog);
+            }
+            if (Boolean.TRUE.equals(dolog)) {
+                StringBuilder buf = new StringBuilder(" <!-- cpp:include ");
+                buf.append(start ? "begin " : "end ");
+                describeInclude(buf);
+                buf.append(" --> ");
+                try {
+                    pageContext.getOut().print(buf.toString());
+                } catch (IOException e) {
+                    LOG.debug("Probably connection closed - can't write debug comment", e);
+                }
+            }
+        }
+    }
 }
