@@ -14,7 +14,7 @@
         <input name="${widget.name}"
                class="${widgetCSS}_input slider-widget_input form-control widget-name_${widget.cssName}" type="text"
                data-slider-min="${widget.model.options.min}" data-slider-max="${widget.model.options.max}"
-               data-slider-step="${widget.model.options.step}" value="${cpn:text(widget.model.value)}"
+               data-slider-step="${widget.model.options.step}" value="${cpn:value(widget.model.value)}"
                <c:if test="${widget.disabled}">disabled</c:if> />
     </div>
 </div>
