@@ -9,7 +9,7 @@
     <div class="form-inline">
         <input name="${widget.name}.width" data-i18n="${widget.i18n}" size="7"
                class="${widgetCSS}_input ${widgetCSS}_text-field widget text-field-widget form-control"
-               type="text" value="${cpn:text(widget.model.width)}" placeholder="${widget.model.defaultWidth}"
+               type="text" value="${cpn:value(widget.model.width)}" placeholder="${widget.model.defaultWidth}"
                <c:if test="${widget.disabled}">disabled</c:if> />&nbsp;,&nbsp;<input
             name="${widget.name}.height" data-i18n="${widget.i18n}" size="7"
             class="${widgetCSS}_input ${widgetCSS}_text-field widget text-field-widget form-control"

@@ -15,7 +15,7 @@
          data-label="${cpn:i18n(slingRequest,'Link or select(ed) path')}">
         <input name="${widget.name}" class="${widgetCSS}_input form-control" type="text"
                data-label="${widget.label}" data-i18n="${widget.i18n}"
-               value="${cpn:text(widget.model.path)}" placeholder="${widget.placeholder}"/>
+               value="${cpn:value(widget.model.path)}" placeholder="${widget.placeholder}"/>
         <span class="${widgetCSS}_popup-button input-group-btn">
               <button class="${widgetCSS}_select select btn btn-default" type="button"
                       title="${cpn:i18n(slingRequest,'Select the repository path')}...">...</button></span>

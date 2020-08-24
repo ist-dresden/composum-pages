@@ -15,7 +15,7 @@
         <input
                 <c:if test="${widget.formWidget}">name="${widget.name}"</c:if> data-label="${widget.label}"
                 class="${widgetCSS}_input form-control" data-i18n="${widget.i18n}" type="text"
-                value="${cpn:text(widget.model.text)}" placeholder="${widget.placeholder}"
+                value="${cpn:value(widget.model.text)}" placeholder="${widget.placeholder}"
                 <c:if test="${widget.disabled}">disabled</c:if> />
         <div class="input-group-btn">
             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
