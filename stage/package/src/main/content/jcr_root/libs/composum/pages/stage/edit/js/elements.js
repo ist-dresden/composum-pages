@@ -737,7 +737,7 @@
                 var c = elements.const.handle.css;
                 var d = elements.const.dnd.css;
                 var e = elements.const.event;
-                this.params = core.url.getParameters(window.location.search);
+                this.location = new core.SlingUrl(window.location);
                 // determine the editing UI components of the page
                 this.$handles = this.$('.' + c.root);
                 this.pointer = core.getWidget(this.el, '.' + c.base + c._pointer + ' .' + c.base, elements.Pointer);
@@ -882,7 +882,7 @@
              */
             redrawComponent: function (component, callback) {
                 core.ajaxGet('/bin/cpm/pages/edit.refreshElement.html' + core.encodePath(component.reference.path), {
-                    data: _.extend(this.params, {
+                    data: _.extend({}, this.location.parameters, {
                         type: component.reference.type
                     })
                 }, _.bind(function (content) {
