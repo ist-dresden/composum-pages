@@ -50,6 +50,7 @@
                 $(document).on(e.content.view + id, _.bind(this.onViewPage, this));
                 $(document).on(e.page.selected + id, _.bind(this.onPageSelected, this));
                 $(document).on(e.page.select + id, _.bind(this.selectPage, this));
+                $(document).on(e.page.reload + id, _.bind(this.onPageReload, this));
                 $(document).on(e.page.inserted + id, _.bind(this.onElementChanged, this));
                 $(document).on(e.page.changed + id, _.bind(this.onElementChanged, this));
                 $(document).on(e.page.deleted + id, _.bind(this.onElementDeleted, this));
@@ -215,6 +216,11 @@
                         pages.trigger('frame.page.select', pages.const.event.site.selected);
                     }, this));
                 }
+            },
+
+            onPageReload: function (event, pathOrRef) {
+                var path = pathOrRef && pathOrRef.path ? pathOrRef.path : pathOrRef;
+                this.reloadPage(undefined, path);
             },
 
             reloadPage: function (parameters, path, servicePath) {

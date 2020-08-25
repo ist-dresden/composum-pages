@@ -61,6 +61,7 @@
                 },
                 page: {
                     select: 'page:select',          // do it!...
+                    reload: 'page:reload',          // do it!...
                     selected: 'page:selected',      // done.
                     inserted: 'page:inserted',      // done.
                     changed: 'page:changed',        // done.
