@@ -3,6 +3,8 @@
 @import "../../../css/variables";
 @import "../../../css/mixins";
 
+$accordion-item-toggle-icon-size: 22px;
+
 .composum-pages-components-composed-accordion {
 
     &-item, &-tab {
@@ -15,6 +17,31 @@
 
         a:hover {
             color: $site-default-link-hover;
+        }
+    }
+
+    &-item {
+
+        &_toggle {
+            position: relative;
+            padding-left: $accordion-item-toggle-icon-size;
+
+            &:before {
+                position: absolute;
+                top: 0;
+                left: 0;
+                content: '\f107';
+                font: $accordion-item-toggle-icon-size FontAwesome;
+                line-height: $accordion-item-toggle-icon-size;
+            }
+
+            &.collapsed {
+
+                &:before {
+                    top: -1px;
+                    content: '\f105';
+                }
+            }
         }
     }
 }
