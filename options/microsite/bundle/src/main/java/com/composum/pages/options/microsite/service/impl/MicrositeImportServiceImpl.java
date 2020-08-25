@@ -2,9 +2,11 @@ package com.composum.pages.options.microsite.service.impl;
 
 import com.composum.pages.options.microsite.MicrositeConstants;
 import com.composum.pages.options.microsite.service.MicrositeImportService;
-import com.composum.pages.options.microsite.service.MicrositeImportStatus;
+import com.composum.pages.options.microsite.service.impl.MicrositeImportRequest.ContentType;
 import com.composum.pages.options.microsite.strategy.MicrositeSourceTransformer;
 import com.composum.sling.core.BeanContext;
+import com.composum.sling.core.logging.Message;
+import com.composum.sling.core.servlet.Status;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.ReaderInputStream;
 import org.apache.commons.lang3.StringUtils;
@@ -42,6 +44,8 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import static com.composum.pages.options.microsite.strategy.MicrositeSourceTransformer.PTN_PATH_VAR;
+
 /**
  * The service implementation to import a 'full' site as ZIP content into the content resource of a page.
  */
@@ -78,7 +82,7 @@ public class MicrositeImportServiceImpl implements MicrositeImportService, Micro
                 description = "the list of path and filename patterns for all allowed files (whitelist)"
         )
         String[] whitelist() default {
-                "^(.*/)?[^/]+\\.(html|jsp|s?css|less|js|map)$",
+                "^(.*/)?[^/]+\\.(html|jsp|s?css|less|js|json|map)$",
                 "^(.*/)?[^/]+\\.(png|jpg|jpeg|svg|gif|ico)$",
                 "^(.*/)?[^/]+\\.(eot|otf|ttf|woff|woff2)$",
                 "^(.*/)?[^/]+\\.(mp4|m4v|mp3|ogg|acc|wav)$",
@@ -139,8 +143,8 @@ public class MicrositeImportServiceImpl implements MicrositeImportService, Micro
             allowed = !ignored.get(i).matcher(pathAndName).matches();
         }
         if (!allowed) {
-            importRequest.addMessage(new MicrositeImportStatus.Message(MicrositeImportStatus.MessageLevel.warn,
-                    "File \"{0}\" has been ignored.", pathAndName));
+            importRequest.addMessage(new Message(Message.Level.warn,
+                    "File \"{}\" has been ignored.", pathAndName));
         } else {
             allowed = false;
             for (int i = 0; !allowed && i < whitelist.size(); i++) {
@@ -151,12 +155,12 @@ public class MicrositeImportServiceImpl implements MicrositeImportService, Micro
                     allowed = !blacklist.get(i).matcher(pathAndName).matches();
                 }
                 if (!allowed) {
-                    importRequest.addMessage(new MicrositeImportStatus.Message(MicrositeImportStatus.MessageLevel.error,
-                            "File \"{0}\" is forbidden - blacklisted.", pathAndName));
+                    importRequest.addMessage(new Message(Message.Level.error,
+                            "File \"{}\" is forbidden - blacklisted.", pathAndName));
                 }
             } else {
-                importRequest.addMessage(new MicrositeImportStatus.Message(MicrositeImportStatus.MessageLevel.error,
-                        "File \"{0}\" is forbidden - not whitelisted.", pathAndName));
+                importRequest.addMessage(new Message(Message.Level.error,
+                        "File \"{}\" is forbidden - not whitelisted.", pathAndName));
             }
         }
         return allowed;
@@ -174,8 +178,9 @@ public class MicrositeImportServiceImpl implements MicrositeImportService, Micro
      * THE import method - imports the input stream as ZIP stream (must be such one) into a pages content; no commit is made.
      */
     @Override
-    public MicrositeImportRequest importSiteContent(BeanContext context, Resource pageContent, RequestParameter importFile) {
-        MicrositeImportRequest importRequest = new MicrositeImportRequest(context, pageContent, importFile);
+    public void importSiteContent(@Nonnull BeanContext context, @Nonnull Status status,
+                                  @Nonnull Resource pageContent, @Nonnull RequestParameter importFile) {
+        MicrositeImportRequest importRequest = new MicrositeImportRequest(context, status, pageContent, importFile);
         if (config.enabled()) {
             try (ZipInputStream zipStream = new ZipInputStream(Objects.requireNonNull(importFile.getInputStream()))) {
                 if (LOG.isInfoEnabled()) {
@@ -190,8 +195,7 @@ public class MicrositeImportServiceImpl implements MicrositeImportService, Micro
                 while ((zipEntry = zipStream.getNextEntry()) != null) {
                     importZipEntry(importRequest, zipEntry);
                 }
-                Calendar timestamp = new GregorianCalendar();
-                timestamp.setTime(new Date());
+                Calendar timestamp = GregorianCalendar.getInstance();
                 String user = importProvider.getCurrentUser(pageContent);
                 ModifiableValueMap valueMap = pageContent.adaptTo(ModifiableValueMap.class);
                 String indexPath = null;
@@ -206,22 +210,21 @@ public class MicrositeImportServiceImpl implements MicrositeImportService, Micro
                     valueMap.put(JcrConstants.JCR_LAST_MODIFIED_BY, user);
                 } else {
                     importRequest
-                            .addMessage(new MicrositeImportStatus.Message(MicrositeImportStatus.MessageLevel.error,
+                            .addMessage(new Message(Message.Level.error,
                                     "No entry point (" + INDEX_FILE + ") found in site content!"));
                 }
                 if (LOG.isInfoEnabled()) {
                     LOG.info("importSiteContent({}): completed: {}", pageContent,
-                            importRequest.isSuccessful() ? "success" : "failed");
+                            status.isSuccess() ? "success" : "failed");
                 }
             } catch (Exception ex) {
                 LOG.error(ex.getMessage(), ex);
                 importRequest.addMessage(
-                        new MicrositeImportStatus.Message(MicrositeImportStatus.MessageLevel.error,
-                                "Error on ZIP import: \"{0}\" ({1}).",
+                        new Message(Message.Level.error,
+                                "Error on ZIP import: \"{}\" ({}).",
                                 importFile.getFileName(), ex.getLocalizedMessage()));
             }
         }
-        return importRequest;
     }
 
     protected void importZipEntry(MicrositeImportRequest importRequest, ZipEntry zipEntry) {
@@ -240,7 +243,7 @@ public class MicrositeImportServiceImpl implements MicrositeImportService, Micro
                     } catch (Exception ex) {
                         LOG.error(ex.getMessage(), ex);
                         importRequest.addMessage(
-                                new MicrositeImportStatus.Message(MicrositeImportStatus.MessageLevel.error,
+                                new Message(Message.Level.error,
                                         "Error on creating folder: \"{0}\" ({1}).",
                                         path, ex.getLocalizedMessage()));
                     }
@@ -262,7 +265,11 @@ public class MicrositeImportServiceImpl implements MicrositeImportService, Micro
                     break;
                 case "css":
                 case "scss":
-                    importCssFile(importRequest, parentResource, name);
+                    importStyleFile(importRequest, parentResource, name);
+                    break;
+                case "js":
+                case "json":
+                    importSourceFile(importRequest, parentResource, name);
                     break;
                 default:
                     importFileBinary(importRequest, parentResource, name);
@@ -272,7 +279,7 @@ public class MicrositeImportServiceImpl implements MicrositeImportService, Micro
             LOG.error(ex.getMessage(), ex);
             importRequest
                     .addMessage(
-                            new MicrositeImportStatus.Message(MicrositeImportStatus.MessageLevel.error, "Error on importing file \"{0}\" ({1}).",
+                            new Message(Message.Level.error, "Error on importing file \"{0}\" ({1}).",
                                     importRequest.getRelativeBase(parentResource) + "/" + name, ex.getLocalizedMessage()));
         }
     }
@@ -293,7 +300,7 @@ public class MicrositeImportServiceImpl implements MicrositeImportService, Micro
                 indexPath = parentPath.substring(contentPath.length() + 1) + "/" + name;
             }
             if (StringUtils.isNotBlank(currentIndex)) {
-                importRequest.addMessage(new MicrositeImportStatus.Message(MicrositeImportStatus.MessageLevel.error,
+                importRequest.addMessage(new Message(Message.Level.error,
                         "More than one entry point ('" + INDEX_FILE + "') found ({0}, {1}) - must be unique!", currentIndex, indexPath));
             } else {
                 importProvider.setProperty(importRequest.getPageContent(), PN_INDEX_PATH, indexPath);
@@ -301,27 +308,58 @@ public class MicrositeImportServiceImpl implements MicrositeImportService, Micro
                 // perform the source transformation of all delayed sources...
                 MicrositeSourceTransformer transformer = importRequest.getSourceTransformer();
                 for (MicrositeImportRequest.DelayedTransformation delayed : importRequest.getDelayedTransformations()) {
-                    importProvider.storeSourceFile(delayed.parent, delayed.name, transformer
-                            .transformHtml(importRequest.getRelativeBase(delayed.parent), delayed.content, false, currentIndex));
+                    String transformedContent = null;
+                    switch (delayed.type) {
+                        case html:
+                            transformedContent = transformer.transformHtml(importRequest.getRelativeBase(delayed.parent),
+                                    delayed.content, false, currentIndex);
+                            break;
+                        case source:
+                            transformedContent = transformer.transform(importRequest.getRelativeBase(delayed.parent),
+                                    delayed.content, true, currentIndex, false, PTN_PATH_VAR);
+                            break;
+                    }
+                    importProvider.storeSourceFile(delayed.parent, delayed.name,
+                            transformedContent != null ? transformedContent : delayed.content);
                 }
             }
         }
         ZipInputStream zipStream = importRequest.getZipStream();
-        String htmlSource = IOUtils.toString(zipStream, SOURCE_ENCODING);
+        String sourceContent = IOUtils.toString(zipStream, SOURCE_ENCODING);
         if (StringUtils.isNotBlank(currentIndex)) {
-            htmlSource = importRequest.getSourceTransformer().transformHtml(relativeBase, htmlSource, isIndex, currentIndex);
-            importProvider.storeSourceFile(parentResource, name, htmlSource);
+            sourceContent = importRequest.getSourceTransformer().transformHtml(relativeBase, sourceContent, isIndex, currentIndex);
+            importProvider.storeSourceFile(parentResource, name, sourceContent);
         } else {
             // delay the source transformation and do it later with the found index path
-            importRequest.addDelayedTransformation(parentResource, name, htmlSource);
+            importRequest.addDelayedTransformation(parentResource, name, ContentType.html, sourceContent);
         }
     }
 
-    protected void importCssFile(MicrositeImportRequest importRequest, Resource parentResource, String name)
+    protected void importSourceFile(MicrositeImportRequest importRequest, Resource parentResource, String name)
             throws IOException {
+        Resource contentResource = importRequest.getPageContent();
+        String currentIndex = importProvider.getProperty(contentResource, PN_INDEX_PATH, "");
+        String relativeBase = importRequest.getRelativeBase(parentResource);
         ZipInputStream zipStream = importRequest.getZipStream();
-        String cssSource = IOUtils.toString(zipStream, SOURCE_ENCODING);
-        importProvider.storeSourceFile(parentResource, name, cssSource);
+        String sourceContent = IOUtils.toString(zipStream, SOURCE_ENCODING);
+        if (StringUtils.isNotBlank(currentIndex)) {
+            sourceContent = importRequest.getSourceTransformer()
+                    .transform(relativeBase, sourceContent, true, currentIndex, false, PTN_PATH_VAR);
+            importProvider.storeSourceFile(parentResource, name, sourceContent);
+        } else {
+            // delay the source transformation and do it later with the found index path
+            importRequest.addDelayedTransformation(parentResource, name, ContentType.source, sourceContent);
+        }
+    }
+
+    protected void importStyleFile(MicrositeImportRequest importRequest, Resource parentResource, String name)
+            throws IOException {
+        Resource contentResource = importRequest.getPageContent();
+        String currentIndex = importProvider.getProperty(contentResource, PN_INDEX_PATH, "");
+        String relativeBase = importRequest.getRelativeBase(parentResource);
+        ZipInputStream zipStream = importRequest.getZipStream();
+        String sourceContent = IOUtils.toString(zipStream, SOURCE_ENCODING);
+        importProvider.storeSourceFile(parentResource, name, sourceContent);
     }
 
     protected void importFileBinary(MicrositeImportRequest importRequest, Resource parentResource, String name)
@@ -399,7 +437,7 @@ public class MicrositeImportServiceImpl implements MicrositeImportService, Micro
         /**
          * creates a folder and all necessary parents if not available
          */
-        protected Resource buildPath(Resource contentRoot, String path) throws PersistenceException {
+        protected Resource buildPath(@Nonnull Resource contentRoot, String path) throws PersistenceException {
             Resource folder = StringUtils.isNotBlank(path) ? contentRoot.getChild(path) : contentRoot;
             if (folder == null) {
                 int lastSlash = path.lastIndexOf('/');
@@ -462,12 +500,12 @@ public class MicrositeImportServiceImpl implements MicrositeImportService, Micro
         }
 
         @Override
-        public int read(@Nonnull byte b[]) throws IOException {
+        public int read(@Nonnull byte[] b) throws IOException {
             return wrappedStream.read(b);
         }
 
         @Override
-        public int read(@Nonnull byte b[], int off, int len) throws IOException {
+        public int read(@Nonnull byte[] b, int off, int len) throws IOException {
             return wrappedStream.read(b, off, len);
         }
 

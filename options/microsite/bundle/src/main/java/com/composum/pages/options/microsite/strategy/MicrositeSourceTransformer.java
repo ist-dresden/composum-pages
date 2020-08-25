@@ -11,25 +11,26 @@ import java.util.regex.Pattern;
 public class MicrositeSourceTransformer {
 
     /**
-     * url transformation patterns - (1: tag start (2: 'tag'|'tag') (3: keep it))(4: URL)(5: ... tag end))
+     * url transformation patterns
      */
+    // HTML: <a|link ... href="uri/to/target.ext" ... >
     public static final Pattern PTN_HTML_HREF = Pattern
-            .compile("(<\\s*(a|link)\\s+([^>]+\\s+)?href\\s*=\\s*[\"'])([^\"'#]+)([\"'][^>]*>)");
+            .compile("(?<start><\\s*(a|link)\\s+([^>]+\\s+)?href\\s*=\\s*[\"'])(?<change>[^\"'#]+)(?<end>[\"'][^>]*>)");
+    // HTML: <img|audio|video|source|script|frame ... src="uri/to/file.ext" ... >
     public static final Pattern PTN_HTML_SRC = Pattern
-            .compile("(<\\s*(img|audio|video|source|script|frame)\\s+([^>]+\\s+)?src\\s*=\\s*[\"'])([^\"']+)([\"'][^>]*>)");
+            .compile("(?<start><\\s*(img|audio|video|source|script|frame)\\s+([^>]+\\s+)?src\\s*=\\s*[\"'])(?<change>[^\"']+)(?<end>[\"'][^>]*>)");
+    // HTML: <div ... data-file="path/to/file.ext" ... >
     public static final Pattern PTN_HTML_DATA = Pattern
-            .compile("(<\\s*(div)\\s+([^>]+\\s+)?data-file\\s*=\\s*[\"'])([^\"']+)([\"'][^>]*>)");
-    public static final Pattern PTN_CSS_URL = Pattern
-            .compile("((background|background-image)\\s*:\\s*([^;}]+\\s+)?url\\s*\\(\\s*[\"']?)([^'\")]+)([\"']?\\s*\\))");
-
-    protected static final int TAG_START_GROUP = 1;
-    protected static final int EXTRACT_URL_GROUP = 4;
-    protected static final int TAG_END_GROUP = 5;
+            .compile("(?<start><\\s*(div)\\s+([^>]+\\s+)?data-file\\s*=\\s*[\"'])(?<change>[^\"']+)(?<end>[\"'][^>]*>)");
+    // JS,JSON: "some/${path}/to/file.ext" or './to/file.ext'
+    public static final Pattern PTN_PATH_VAR = Pattern
+            .compile("(?<start>[\"'])(?<change>([^$\"']*\\$\\{path}|\\./)[^\"']*)(?<end>[\"'])");
 
     /**
-     * decide between external or absolute and relative URLs (1: scheme (3: host, 4: port))(5: absolute path)
+     * decide between external or absolute and relative URLs
      */
-    public static final Pattern PTN_EXT_ABS_URL = Pattern.compile("^(https?:(//([^:/]+)(:[\\d]+)?)?)?(/.*)$");
+    public static final Pattern PTN_EXT_ABS_URL = Pattern
+            .compile("^((?<scheme>https?):(//(?<host>[^:/]+)(:(?<port>[\\d]+))?)?)?(?<path>/.*)$");
 
     /**
      * the base URL for all relative URLs in the source
@@ -56,17 +57,24 @@ public class MicrositeSourceTransformer {
      * @param isIndex 'true' if transforming the 'index.html' file
      * @return the transformed URL in relation to the root base
      */
-    public String transformUrl(String relBase, String url, boolean isIndex, String indexPath) {
+    public String transformUrl(String relBase, String url, boolean isIndex, String indexPath, boolean htmlContext) {
         StringBuilder transformedUrl = null;
         Matcher external = PTN_EXT_ABS_URL.matcher(url);
         if (!external.matches()) { // ignore external URLs
             String targetExt = StringUtils.substringAfterLast(url, ".");
             boolean isHtmlTarget = "html".equalsIgnoreCase(targetExt);
-            String rootUrl = isHtmlTarget ? htmlRoot : fileRoot; // use different paths for HTML links and resource files
-            transformedUrl = new StringBuilder(rootUrl + relBase + "/" + url);
+            final String rootUrl = isHtmlTarget ? htmlRoot : fileRoot; // use different paths for HTML links and resource files
+            final String relPath = rootUrl + relBase;
+            if (url.contains("${path}")) {
+                transformedUrl = new StringBuilder(url.replaceFirst("\\$\\{path}", relPath));
+            } else if (url.startsWith("./")) {
+                transformedUrl = new StringBuilder(relPath + url.substring(1));
+            } else {
+                transformedUrl = new StringBuilder(relPath + "/" + url);
+            }
             transformedUrl = new StringBuilder(transformedUrl.toString().replaceAll("/\\./", "/")); // remove '/.' path segments
             transformedUrl = new StringBuilder(transformedUrl.toString().replaceAll("/[^/]+/\\.\\./", "/"));
-            if (!rootUrl.startsWith("/")) {
+            if (htmlContext && !rootUrl.startsWith("/")) {
                 if (transformedUrl.toString().equals(htmlRoot + (indexPath.startsWith("/") ? indexPath : "/" + indexPath))) {
                     transformedUrl = new StringBuilder(htmlRoot);
                 }
@@ -89,9 +97,10 @@ public class MicrositeSourceTransformer {
      */
     public String transformHtml(String relBase, String source, boolean isIndex, String indexPath) {
         String result = source;
-        result = transform(relBase, result, isIndex, indexPath, PTN_HTML_HREF);
-        result = transform(relBase, result, isIndex, indexPath, PTN_HTML_SRC);
-        result = transform(relBase, result, isIndex, indexPath, PTN_HTML_DATA);
+        result = transform(relBase, result, isIndex, indexPath, true, PTN_HTML_HREF);
+        result = transform(relBase, result, isIndex, indexPath, true, PTN_HTML_SRC);
+        result = transform(relBase, result, isIndex, indexPath, true, PTN_HTML_DATA);
+        result = transform(relBase, result, isIndex, indexPath, true, PTN_PATH_VAR);
         return result;
     }
 
@@ -104,18 +113,20 @@ public class MicrositeSourceTransformer {
      * @param pattern the pattern to apply
      * @return the transformed source code
      */
-    protected String transform(String relBase, String source, boolean isIndex, String indexPath, Pattern pattern) {
+    public String transform(String relBase, String source,
+                            boolean isIndex, String indexPath, boolean htmlContext,
+                            Pattern pattern) {
         StringBuilder transformed = new StringBuilder();
         int len = source.length();
         int pos = 0;
         Matcher matcher = pattern.matcher(source);
         while (matcher.find(pos)) {
-            String url = matcher.group(EXTRACT_URL_GROUP); // extract URL from pattern
-            url = transformUrl(relBase, url, isIndex, indexPath); // and transform the URL
-            transformed.append(source.substring(pos, matcher.start())); // copy up to the start of the pattern
-            transformed.append(matcher.group(TAG_START_GROUP)); // copy unmodified start sequence of the pattern
+            String url = matcher.group("change"); // extract URL from pattern
+            url = transformUrl(relBase, url, isIndex, indexPath, htmlContext); // and transform the URL
+            transformed.append(source, pos, matcher.start()); // copy up to the start of the pattern
+            transformed.append(matcher.group("start")); // copy unmodified start sequence of the pattern
             transformed.append(url); // add transformed URL part of the pattern
-            transformed.append(matcher.group(TAG_END_GROUP)); // copy unmodified end sequence of the pattern
+            transformed.append(matcher.group("end")); // copy unmodified end sequence of the pattern
             pos = matcher.end(); // continue at position at the end of the pattern
         }
         if (pos >= 0 && pos < len) {

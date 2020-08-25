@@ -3,12 +3,10 @@ package com.composum.pages.options.microsite.servlet;
 import com.composum.pages.commons.request.DisplayMode;
 import com.composum.pages.options.microsite.MicrositeConstants;
 import com.composum.pages.options.microsite.service.MicrositeImportService;
-import com.composum.pages.options.microsite.service.MicrositeImportStatus;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.filter.StringFilter;
-import com.composum.sling.core.util.I18N;
+import com.composum.sling.core.servlet.Status;
 import com.composum.sling.core.util.XSS;
-import com.google.gson.stream.JsonWriter;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.vault.util.JcrConstants;
@@ -136,36 +134,22 @@ public class MicrositeServlet extends SlingAllMethodsServlet implements Microsit
             throws IOException, ServletException {
         List<String> selectors = Arrays.asList(request.getRequestPathInfo().getSelectors());
         if (selectors.contains(SELECTOR_UPLOAD)) {
+            Status status = new Status(request, response);
             RequestParameter importFile;
             importFile = request.getRequestParameter(PARAM_IMPORT_FILE);
             if (importFile != null) {
                 BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
-                MicrositeImportStatus importResult = importService.importSiteContent(context, request.getResource(), importFile);
-                boolean success = importResult.isSuccessful();
-                if (success) {
+                importService.importSiteContent(context, status, request.getResource(), importFile);
+                if (status.isSuccess()) {
                     context.getResolver().commit();
-                    response.setStatus(HttpServletResponse.SC_CREATED);
+                    status.setStatus(HttpServletResponse.SC_CREATED);
                 } else {
-                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    status.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 }
-                response.setContentType("application/json; charset=\"UTF-8\"");
-                JsonWriter jsonAnswer = new JsonWriter(response.getWriter());
-                jsonAnswer.beginObject();
-                jsonAnswer.name("success").value(success);
-                jsonAnswer.name("title").value(I18N.get(request,
-                        success ? "Import sucessful" : "Import failed"));
-                jsonAnswer.name("messages").beginArray();
-                for (MicrositeImportStatus.Message msg : importResult.getMessages()) {
-                    jsonAnswer.beginObject();
-                    jsonAnswer.name("level").value(msg.getLevel().name());
-                    jsonAnswer.name("text").value(msg.toString());
-                    jsonAnswer.endObject();
-                }
-                jsonAnswer.endArray();
-                jsonAnswer.endObject();
             } else {
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "no file to upload");
+                status.error("no file to upload");
             }
+            status.sendJson();
         } else {
             // forward to normal POST handling (e.g. for the default edit dialog of a page)...
             forward(request, response, PAGE_FORWARD_TYPE);
