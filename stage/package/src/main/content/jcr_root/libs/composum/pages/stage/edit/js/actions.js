@@ -67,10 +67,14 @@
                 for (var i = 0; i < event.length; i++) {
                     switch (event[i]) {
                         case 'messages':
-                            if (_.isObject(result) && _.isObject(result.response)) {
-                                var response = result.response;
-                                var messages = result.messages;
-                                core.messages(response.level, response.text, messages);
+                            if (_.isObject(result)) {
+                                if (_.isObject(result.response)) {
+                                    var response = result.response;
+                                    var messages = result.messages;
+                                    core.messages(response.level, response.text, messages);
+                                } else {
+                                    core.alert(result);
+                                }
                             }
                             break;
                         default:
