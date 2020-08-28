@@ -17,13 +17,13 @@
                       value="true"/></c:if><%-- and now the input field... --%>
             <input <%-- set name attribute for the input field only if box should be checked --%>
                     <c:if test="${widget.model.checked}">name="${widget.name}"</c:if> data-i18n="${widget.i18n}"
-                    class="${widgetCSS}_input" type="checkbox" value="${cpn:text(widget.model.inputValue)}"
+                    class="${widgetCSS}_input" type="checkbox" value="${cpn:value(widget.model.inputValue)}"
                     <c:if test="${widget.disabled}">disabled</c:if>
                 ${widget.model.checkedValue}/></c:if><c:if test="${!widget.formWidget}"><%--
                not a Sling POST form: generate a simple checkbox input field...
            --%><input data-i18n="${widget.i18n}" class="${widgetCSS}_input" type="checkbox"
                       <c:if test="${widget.model.checked}">name="${widget.name}"</c:if>
-                      value="${cpn:text(widget.model.inputValue)}"
+                      value="${cpn:value(widget.model.inputValue)}"
                       <c:if test="${widget.disabled}">disabled</c:if> ${widget.model.checkedValue}/></c:if><%--
            in each case - the label of the checkbox... --%><span class="label-text">${cpn:text(widget.label)}</span>
     <c:if test="${widget.model.hasSecondValue}"><%--
@@ -31,5 +31,5 @@
            --%><input type="hidden" class="${widget.widgetType}-widget_second" <%--
                       the name attribute is set for the selected value... (this or the input field)--%>
                       <c:if test="${!widget.model.checked}">name="${widget.name}"</c:if>
-                      value="${cpn:text(widget.model.secondValue)}"</c:if></span></label>
+                      value="${cpn:value(widget.model.secondValue)}"</c:if></span></label>
 </div>

@@ -11,7 +11,7 @@
             <div class="${widgetCSS}_radiolist-item">
                 <div class="radio-inline"><label><input
                         type="radio" <c:if test="${widget.formWidget}">name="${widget.name}"</c:if>
-                        value="${cpn:text(option.value)}" <c:if test="${option.selected}"> checked="checked"</c:if> />${cpn:text(option.label)}</label></div>
+                        value="${cpn:value(option.value)}" <c:if test="${option.selected}"> checked="checked"</c:if> />${cpn:text(option.label)}</label></div>
             </div>
         </c:forEach>
     </div>
