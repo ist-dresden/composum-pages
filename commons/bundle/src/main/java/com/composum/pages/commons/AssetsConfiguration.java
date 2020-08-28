@@ -13,6 +13,12 @@ import java.util.Set;
  * The configuration service for the Assets aspect of the Pages implementation.
  */
 public interface AssetsConfiguration {
+    
+    String ASSET_FILTER_ALL = "all";
+    String ASSET_FILTER_ASSET = "asset";
+    String ASSET_FILTER_IMAGE = "image";
+    String ASSET_FILTER_VIDEO = "video";
+    String ASSET_FILTER_DOCUMENT = "document";
 
     class ConfigurableFilter {
 

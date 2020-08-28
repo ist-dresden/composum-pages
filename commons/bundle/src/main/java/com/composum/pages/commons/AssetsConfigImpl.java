@@ -41,12 +41,6 @@ import java.util.Set;
 @Designate(ocd = AssetsConfigImpl.Configuration.class)
 public class AssetsConfigImpl implements AssetsConfiguration {
 
-    public static final String ASSET_FILTER_ALL = "all";
-    public static final String ASSET_FILTER_ASSET = "asset";
-    public static final String ASSET_FILTER_IMAGE = "image";
-    public static final String ASSET_FILTER_VIDEO = "video";
-    public static final String ASSET_FILTER_DOCUMENT = "document";
-
     public static final String ASSETS_MODULE_CONFIG_CLASS = "com.composum.assets.commons.AssetsConfiguration";
 
     @ObjectClassDefinition(
@@ -248,14 +242,13 @@ public class AssetsConfigImpl implements AssetsConfiguration {
         documentNodeFilter = buildTreeFilter(new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.and,
                 replicationRootFilter, documentFileFilter), treeIntermediateFilter);
         if (assetsModuleConfig != null) {
-            assetFileFilter = ResourceFilterMapping.fromString(config.assetNodeFilterRule());
+            assetFileFilter = new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.or,
+                    ResourceFilterMapping.fromString(config.assetNodeFilterRule()),
+                    imageFileFilter);
             assetNodeFilter = buildTreeFilter(new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.and,
                     replicationRootFilter, assetFileFilter), treeIntermediateFilter);
             anyFileFilter = new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.or,
-                    ResourceFilterMapping.fromString(config.assetNodeFilterRule()),
-                    ResourceFilterMapping.fromString(config.imageNodeFilterRule()),
-                    ResourceFilterMapping.fromString(config.videoNodeFilterRule()),
-                    ResourceFilterMapping.fromString(config.documentNodeFilterRule()));
+                    assetFileFilter, videoFileFilter, documentFileFilter);
         } else {
             assetFileFilter = null;
             assetNodeFilter = null;

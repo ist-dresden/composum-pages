@@ -70,6 +70,7 @@ public class ModelTag extends ComponentTag implements DynamicAttributes {
     private transient Boolean testResult;
 
     private transient String attributes;
+    private transient Map<String, Object> attributeSet;
     protected DisplayMode.Value displayMode;
 
     private transient String language;
@@ -85,6 +86,7 @@ public class ModelTag extends ComponentTag implements DynamicAttributes {
         dynamicAttributes = new AttributeSet();
         languageSet = null;
         language = null;
+        attributeSet = null;
         attributes = null;
         displayMode = null;
         testResult = null;
@@ -269,15 +271,24 @@ public class ModelTag extends ComponentTag implements DynamicAttributes {
     public String getAttributes() {
         if (attributes == null) {
             StringBuilder builder = new StringBuilder();
-            Map<String, Object> attributeSet = new LinkedHashMap<>();
-            defaultAttributes(attributeSet);
-            collectAttributes(attributeSet);
-            for (Map.Entry<String, Object> attribute : attributeSet.entrySet()) {
+            for (Map.Entry<String, Object> attribute : getAttributeSet().entrySet()) {
                 builder.append(" ").append(attribute.getKey()).append("=\"").append(attribute.getValue()).append("\"");
             }
             attributes = builder.toString();
         }
         return attributes;
+    }
+
+    /**
+     * returns the complete set of attributes as a map
+     */
+    public Map<String, Object> getAttributeSet() {
+        if (attributeSet == null) {
+            attributeSet = new LinkedHashMap<>();
+            defaultAttributes(attributeSet);
+            collectAttributes(attributeSet);
+        }
+        return attributeSet;
     }
 
     /**
@@ -321,6 +332,7 @@ public class ModelTag extends ComponentTag implements DynamicAttributes {
 
     /**
      * retrieves the resource to use for the model construction
+     *
      * @param context the current request context
      * @return the resource base of the model instance
      */
