@@ -6,6 +6,7 @@
                   jslibs/highlight/(9.*:9.15.6)/clientlib]"
         embed="[category:composum.pages.widgets,
                 jslibs/iframeResizer/(4.*:4.0.4)/js/iframeResizer.js,
+                jslibs/iframeResizer/(4.*:4.0.4)/js/iframeResizer.contentWindow.js,
                 composum/pages/components/composed/illustration/js/illustration.js,
                 composum/pages/components/element/codeblock/js/codeblock.js,
                 composum/pages/components/element/map/google/js/google.js,
