@@ -1,7 +1,6 @@
-(function (window) {
-    window.composum = window.composum || {};
-    window.composum.pages = window.composum.pages || {};
-    window.composum.pages.widgets = window.composum.pages.widgets || {};
+(function () {
+    'use strict';
+    CPM.namespace('pages.widgets');
 
     (function (widgets, pages, core) {
         'use strict';
@@ -47,7 +46,7 @@
             },
 
             /**
-             * store value on profile for the next dialog initialization
+             * @override store value on profile for the next dialog initialization
              */
             setValue: function (value, triggerChange) {
                 core.components.PathWidget.prototype.setValue.apply(this, [value, triggerChange]);
@@ -62,6 +61,9 @@
                 this.setRootPath(this.config.rootPath); // adjust configured root path
             },
 
+            /**
+             * @override
+             */
             adjustRootPath: function (path) {
                 var g = pages.const.profile.pages;
                 if (pages.current.site) {
@@ -84,8 +86,7 @@
             }
         });
 
-        window.widgets.register('.widget.' + widgets.const.pathfield.css.base, widgets.PathFieldWidget);
+        CPM.widgets.register('.widget.' + widgets.const.pathfield.css.base, widgets.PathFieldWidget);
 
-
-    })(window.composum.pages.widgets, window.composum.pages, window.core);
-})(window);
+    })(CPM.pages.widgets, CPM.pages, CPM.core);
+})();
