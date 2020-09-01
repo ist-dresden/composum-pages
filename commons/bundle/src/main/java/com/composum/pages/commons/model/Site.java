@@ -174,6 +174,14 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
         return getLanguages().getDefaultLanguage();
     }
 
+    /**
+     * @return the path; supports the use of a site as is (maybe null) in a JSP expression
+     */
+    @Override
+    public String toString() {
+        return getPath();
+    }
+
     // site hierarchy
 
     @Nonnull

@@ -2,10 +2,12 @@ package com.composum.pages.commons.taglib;
 
 import com.composum.pages.commons.PagesConstants;
 import com.composum.pages.commons.model.Page;
+import com.composum.pages.commons.model.Site;
 import com.composum.pages.commons.model.properties.Languages;
 import com.composum.pages.commons.request.DisplayMode;
 import com.composum.pages.commons.request.PagesLocale;
 import com.composum.pages.commons.service.PageManager;
+import com.composum.pages.commons.service.SiteManager;
 import com.composum.pages.commons.service.Theme;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.platform.security.AccessMode;
@@ -16,6 +18,7 @@ import javax.servlet.jsp.PageContext;
 
 import static com.composum.pages.commons.PagesConstants.RA_CONTEXT_PATH;
 import static com.composum.pages.commons.PagesConstants.RA_CURRENT_PAGE;
+import static com.composum.pages.commons.PagesConstants.RA_CURRENT_SITE;
 import static com.composum.pages.commons.PagesConstants.RA_RESOURCE_REF;
 
 public class DefineObjectsTag extends org.apache.sling.scripting.jsp.taglib.DefineObjectsTag {
@@ -66,6 +69,7 @@ public class DefineObjectsTag extends org.apache.sling.scripting.jsp.taglib.Defi
             resourceRef = request.getResource();
         }
         setCurrentPage(resourceRef);
+        setCurrentSite(resourceRef);
         setLanguages(resourceRef);
 
         return result;
@@ -89,6 +93,20 @@ public class DefineObjectsTag extends org.apache.sling.scripting.jsp.taglib.Defi
                 if (theme != null) {
                     request.setAttribute(PagesConstants.RA_CURRENT_THEME, theme);
                 }
+            }
+        }
+    }
+
+    protected void setCurrentSite(Resource resource) {
+
+        if (context.getAttribute(RA_CURRENT_SITE, Site.class) == null) {
+            SlingHttpServletRequest request = context.getRequest();
+            SiteManager siteManager = context.getService(SiteManager.class);
+            Resource siteResource = siteManager.getContainingSiteResource(resource);
+
+            if (siteResource != null) {
+                Site site = siteManager.createBean(context, siteResource);
+                request.setAttribute(RA_CURRENT_SITE, site);
             }
         }
     }

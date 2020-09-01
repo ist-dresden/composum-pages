@@ -35,6 +35,7 @@ public interface PagesConstants {
     String RA_CONTEXT_PATH = "contextPath";
     String RA_RESOURCE_REF = "resourceRef";
     String RA_CURRENT_PAGE = "currentPage";
+    String RA_CURRENT_SITE = "currentSite";
     String RA_CURRENT_THEME = "currentTheme";
 
     /** I18N */

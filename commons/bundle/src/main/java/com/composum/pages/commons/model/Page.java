@@ -236,6 +236,14 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
         this.pageManager = pageManager;
     }
 
+    /**
+     * @return the path; supports the use of a page as is (maybe null) in a JSP expression
+     */
+    @Override
+    public String toString() {
+        return getPath();
+    }
+
     @Override
     public int compareTo(@Nonnull Page page) {
         CompareToBuilder builder = new CompareToBuilder();
