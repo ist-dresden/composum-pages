@@ -46,6 +46,23 @@
         <textimage jcr:primaryType="sling:MessageEntry"
                 sling:key="Text &amp; Image" sling:message="Text &amp; Bild"/>
 
+        <reference jcr:primaryType="sling:Folder">
+            <label jcr:primaryType="sling:MessageEntry"
+                    sling:key="Reference" sling:message="Inhaltsreferenz"/>
+            <dialog-create jcr:primaryType="sling:MessageEntry"
+                    sling:key="Create a Reference"
+                    sling:message="Inhaltsreferenz Erzeugen"/>
+            <dialog-edit jcr:primaryType="sling:MessageEntry"
+                    sling:key="Edit Reference"
+                    sling:message="Inhaltsreferenz Bearbeiten"/>
+            <path-hint jcr:primaryType="sling:MessageEntry"
+                    sling:key="the path of a content resource; recursive references or references to pages are not allowed"
+                    sling:message="der Pfad zu einem Inhaltselement; rekursive Referenzen oder Referenzen auf Seiten sind nicht erlaubt"/>
+            <placeholder jcr:primaryType="sling:MessageEntry"
+                    sling:key="content reference (empty or invalid)"
+                    sling:message="Inhaltsreferenz (leer oder fehlerhaft)"/>
+        </reference>
+
     </element>
 
     <property jcr:primaryType="sling:Folder"><!-- some property labels -->

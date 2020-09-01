@@ -4,7 +4,8 @@
 <cpp:defineFrameObjects/>
 <cpp:editDialog var="model" type="com.composum.pages.components.model.reference.Reference"
                 title="@{dialog.selector=='create'?'Create a Reference':'Edit Reference'}">
-    <cpp:widget label="Path" property="contentReference" type="pathfield"/>
+    <cpp:widget label="Path" property="contentReference" type="pathfield"
+                hint="the path of a content resource; recursive references or references to pages are not allowed"/>
     <cpn:div test="${model.valid}" class="form-group">
         <label class="control-label composum-pages-edit-widget_label"><span
                 class="label-text">${cpn:i18n(slingRequest,'Preview')}</span></label>

@@ -24,7 +24,8 @@
                         base: 'composum-pages-edit-widget',
                         _: {
                             ref: '_contentReference'
-                        }
+                        },
+                        field: '.widget.pathfield-widget'
                     }
                 }
             }
@@ -36,7 +37,7 @@
                 var c = components.const.reference.css;
                 this.$frame = this.$('.' + c.base + c._.preview + c._.frame);
                 this.widget = core.getView(this.$el.closest('.' + c.dlg.base + c.dlg._.content)
-                    .find('.' + c.wgt.base + c.wgt._.ref), core.components.PathWidget);
+                    .find('.' + c.wgt.base + c.wgt._.ref + ' ' + c.wgt.field), core.components.PathWidget);
                 this.widget.$input.change(_.bind(function () {
                     this.$frame.attr('src', core.getContextUrl(
                         this.$el.data('path') + '.preview.html' + this.widget.getValue()));
