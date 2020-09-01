@@ -411,6 +411,11 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
             PathPatternSet typePatterns = new PathPatternSet(getReference(designNode, null), PROP_TYPE_PATTERNS);
             return typePatterns.matches(designNode.getResourceResolver(), resourceType);
         }
+
+        @Override
+        public String toString() {
+            return templatePath;
+        }
     }
 
     /**
@@ -537,8 +542,10 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
                     template = toTemplate(templateResource);
                 }
             } else {
-                if (!Folder.isFolder(resource) && !File.isFile(resource) &&
-                        !JcrConstants.JCR_CONTENT.equals(resource.getName())) {
+                if (Folder.isFolder(resource)) {
+                    // a folder without a template reference is skipped to find the template driven parent
+                    return getTemplateOf(resource.getParent());
+                } else if (!File.isFile(resource) && !JcrConstants.JCR_CONTENT.equals(resource.getName())) {
                     Template parentTemplate = getTemplateOf(resource.getParent());
                     if (parentTemplate != null) {
                         ResourceResolver resolver = resource.getResourceResolver();
@@ -1381,7 +1388,7 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
         ResourceResolver resolver = context.getResolver();
         ValueMap templateValues = template.getValueMap();
         String createdPath = SlingResourceUtil.appendPaths(parent.getPath(), name);
-        if (resolver.getResource(createdPath) != null) { // can't happen, but rather do a safety check.
+        if (createdPath == null || resolver.getResource(createdPath) != null) { // can't happen, but rather do a safety check.
             throw new IllegalArgumentException("Can't create, already exists: {}" + createdPath);
         }
         Resource target = ResourceUtil.getOrCreateResource(resolver, createdPath,
