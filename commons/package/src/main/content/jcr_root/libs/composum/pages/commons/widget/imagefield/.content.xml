@@ -4,5 +4,5 @@
         sling:resourceType="composum/pages/commons/widget/imagefield"
         sling:resourceSuperType="composum/pages/commons/widget"
         modelClass="com.composum.pages.commons.widget.ImageField">
-    <attributes jcr:primaryType="nt:unstructured" filter="asset" maxlength="4000"/>
+    <attributes jcr:primaryType="nt:unstructured" filter="asset" root="${currentSite}" maxlength="4000"/>
 </jcr:root>

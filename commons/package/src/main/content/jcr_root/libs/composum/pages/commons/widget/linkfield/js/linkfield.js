@@ -1,7 +1,6 @@
-(function (window) {
-    window.composum = window.composum || {};
-    window.composum.pages = window.composum.pages || {};
-    window.composum.pages.widgets = window.composum.pages.widgets || {};
+(function () {
+    'use strict';
+    CPM.namespace('pages.widgets');
 
     (function (widgets, pages, core) {
         'use strict';
@@ -17,10 +16,24 @@
 
             profileAspect: function () {
                 return widgets.const.linkfield.profile;
+            },
+
+            isExternal: function (path) {
+                return /^([a-zA-Z]+:)?\/\/.*$/.exec(path) !== null;
+            },
+
+            /**
+             * @override suppress root path handling for external links
+             */
+            applyRootPath: function (path, shorten) {
+                if (!this.isExternal(path)) {
+                    path = widgets.PathFieldWidget.prototype.applyRootPath.apply(this, [path, shorten]);
+                }
+                return path;
             }
         });
 
-        window.widgets.register('.widget.' + widgets.const.linkfield.cssBase, widgets.LinkFieldWidget);
+        CPM.widgets.register('.widget.' + widgets.const.linkfield.cssBase, widgets.LinkFieldWidget);
 
-    })(window.composum.pages.widgets, window.composum.pages, window.core);
-})(window);
+    })(CPM.pages.widgets, CPM.pages, CPM.core);
+})();
