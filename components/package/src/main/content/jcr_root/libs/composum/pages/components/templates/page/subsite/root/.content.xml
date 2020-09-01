@@ -8,7 +8,10 @@
             jcr:primaryType="cpp:PageContent"
             jcr:title="Pages Components Subsite Root"
             jcr:description="A subsite root navigation point with a redirect to a page of the subsite as the entrty point (subsite home)."
-            sling:resourceType="composum/pages/components/page/subsite/root">
+            sling:resourceType="composum/pages/components/page/subsite/root"
+            allowedChildTemplates="[
+                ^(.*/)?pages/components/templates/page/subsite/(content|redirect)$
+            ]">
     </jcr:content>
     <meta/>
 </jcr:root>
