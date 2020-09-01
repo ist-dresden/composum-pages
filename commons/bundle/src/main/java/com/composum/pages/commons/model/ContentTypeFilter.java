@@ -6,6 +6,8 @@ import com.composum.pages.commons.service.ResourceManager;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -14,6 +16,8 @@ import javax.annotation.Nullable;
  * a filter implementation to determine a set of potential children types or templates of a target resource
  */
 public class ContentTypeFilter {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ContentTypeFilter.class);
 
     protected final ResourceManager resourceManager;
     protected final ResourceManager.ResourceReference designatedTarget;
@@ -71,13 +75,17 @@ public class ContentTypeFilter {
         PathPatternSet forbiddenParents = getForbiddenParentTemplates(template, resourceReference);
         PathPatternSet allowedChildren = getAllowedChildTemplates();
         PathPatternSet forbiddenChildren = getForbiddenChildTemplates();
-        @SuppressWarnings("UnnecessaryLocalVariable")
         boolean isAllowed = (targetTemplate == null
                 || ((!allowedParents.isValid() || allowedParents.matches(resolver, targetTemplate.getPath()))
                 && (!forbiddenParents.isValid() || !forbiddenParents.matches(resolver, targetTemplate.getPath())))
                 && (template != null
                 && (!allowedChildren.isValid() || allowedChildren.matches(resolver, template.getPath()))
                 && (!forbiddenChildren.isValid() || !forbiddenChildren.matches(resolver, template.getPath()))));
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("isAllowedChildByTemplate({},{}): {}\n    >{}({})\n    ({},{})\n    ({},{})",
+                    template, resourceReference, isAllowed, designatedTarget, targetTemplate,
+                    allowedParents, forbiddenParents, allowedChildren, forbiddenChildren);
+        }
         return isAllowed;
     }
 
@@ -88,13 +96,17 @@ public class ContentTypeFilter {
         PathPatternSet forbiddenParents = getForbiddenParentTypes(template, resourceReference);
         PathPatternSet allowedChildren = getAllowedChildTypes();
         PathPatternSet forbiddenChildren = getForbiddenChildTypes();
-        @SuppressWarnings("UnnecessaryLocalVariable")
         boolean isAllowed = (targetTemplate == null
                 || ((!allowedParents.isValid() || allowedParents.matches(resolver, resourceType))
                 && (!forbiddenParents.isValid() || !forbiddenParents.matches(resolver, resourceType)))
                 && (template != null
                 && (!allowedChildren.isValid() || allowedChildren.matches(resolver, resourceReference.getType()))
                 && (!forbiddenChildren.isValid() || !forbiddenChildren.matches(resolver, resourceReference.getType()))));
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("isAllowedChildByType({},{}): {}\n    >{}({})\n    ({},{})\n    ({},{})",
+                    template, resourceReference, isAllowed, designatedTarget, targetTemplate,
+                    allowedParents, forbiddenParents, allowedChildren, forbiddenChildren);
+        }
         return isAllowed;
     }
 
