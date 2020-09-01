@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
         jcr:primaryType="cpp:Widget"
-        sling:resourceType="composum/pages/commons/widget/videofield"
+        sling:resourceType="composum/pages/commons/widget/assetfield"
         sling:resourceSuperType="composum/pages/commons/widget"
-        modelClass="com.composum.pages.commons.widget.VideoField">
-    <attributes jcr:primaryType="nt:unstructured" filter="video" root="${currentSite}" maxlength="4000"/>
+        modelClass="com.composum.pages.commons.widget.AssetField">
+    <attributes jcr:primaryType="nt:unstructured" filter="document" root="${currentSite}" maxlength="4000"/>
 </jcr:root>

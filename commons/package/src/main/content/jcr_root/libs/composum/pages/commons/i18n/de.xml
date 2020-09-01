@@ -85,6 +85,30 @@
 
         </linkfield>
 
+        <assetfield jcr:primaryType="sling:Folder">
+
+            <select-path-title jcr:primaryType="sling:MessageEntry"
+                    sling:key="Select the asset path"
+                    sling:message="Dokument-Pfad auswählen"/>
+
+        </assetfield>
+
+        <imagefield jcr:primaryType="sling:Folder">
+
+            <select-path-title jcr:primaryType="sling:MessageEntry"
+                    sling:key="Select the image path"
+                    sling:message="Bild-Pfad auswählen"/>
+
+        </imagefield>
+
+        <videofield jcr:primaryType="sling:Folder">
+
+            <select-path-title jcr:primaryType="sling:MessageEntry"
+                    sling:key="Select the video path"
+                    sling:message="Video-Pfad auswählen"/>
+
+        </videofield>
+
     </widget>
 
     <release jcr:primaryType="sling:Folder"><!-- widget and dialog buttons, labels and titles -->

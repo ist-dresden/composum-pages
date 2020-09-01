@@ -10,6 +10,7 @@
                 composum/pages/commons/widget/datetimefield/js/datetimefield.js,
                 composum/pages/commons/widget/pathfield/js/pathfield.js,
                 composum/pages/commons/widget/linkfield/js/linkfield.js,
+                composum/pages/commons/widget/assetfield/js/assetfield.js,
                 composum/pages/commons/widget/imagefield/js/imagefield.js,
                 composum/pages/commons/widget/videofield/js/videofield.js]">
 </jcr:root>

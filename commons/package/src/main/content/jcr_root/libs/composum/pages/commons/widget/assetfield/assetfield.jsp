@@ -10,8 +10,7 @@
         <input type="hidden" class="sling-post-hint" name="${widget.name}@Delete" value="true"/>
         <input type="hidden" class="sling-post-hint" name="${widget.name}@IgnoreBlanks" value="true"/>
     </c:if>
-    <div class="${widgetCSS}_path-field widget videofield-widget widget-name_${widget.cssName}"${widget.attributes}>
-        <sling:call script="preview.jsp"/>
+    <div class="${widgetCSS}_path-field widget assetfield-widget widget-name_${widget.cssName}" ${widget.attributes}>
         <div class="input-group">
             <input name="${widget.name}" class="${widgetCSS}_input form-control"
                    data-label="${widget.label}" data-i18n="${widget.i18n}" maxlength="${widget.model.maxlength}"
@@ -19,9 +18,8 @@
                    <c:if test="${widget.disabled}">disabled</c:if> />
             <span class="${widgetCSS}_popup-button input-group-btn">
                   <button class="${widgetCSS}_select select btn btn-default" type="button"
-                          title="${cpn:i18n(slingRequest,'Select the video path')}..."
+                          title="${cpn:i18n(slingRequest,'Select the asset path')}..."
                           <c:if test="${widget.disabled}">disabled</c:if>>...</button></span>
         </div>
     </div>
 </div>
-
