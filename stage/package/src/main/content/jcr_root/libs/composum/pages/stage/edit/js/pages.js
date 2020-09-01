@@ -382,7 +382,8 @@
                         data: {
                             name: name ? name : '',
                             type: type ? type : '',
-                            'pages.locale': pages.getLocale()
+                            'pages.locale': pages.getLocale(),
+                            'pages.view': pages.current.mode
                         }
                     },
                     _.bind(function (data) {
