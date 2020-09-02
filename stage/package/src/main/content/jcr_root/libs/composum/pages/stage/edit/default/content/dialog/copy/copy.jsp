@@ -14,7 +14,8 @@
     <div class="row">
         <div class="col col-xs-6">
             <cpp:widget label="Name" name="name" value="${model.name}" type="textfield"
-                        required="true" pattern="^[\\w][\\w -]*$"/>
+                        required="true" pattern="/^[\\p{L}_][\\p{N}\\p{L} _-]*$/u"
+                        pattern-hint="a letter followed by letters, digits, blanks or any of '_-'"/>
         </div>
         <div class="col col-xs-4">
             <cpp:widget label="Order Before" name="before" hint="or ..." type="textfield"/>

@@ -331,17 +331,19 @@
                 dialogs.ElementDialog.prototype.onValidationFault.apply(this);
                 var dialog = this;
                 var $first = undefined;
-                this.tabs.forEach(function (item) {
-                    var $tab = $(item);
-                    if ($tab.find('.has-error').length > 0) {
-                        var $tabLink = dialog.$tabList.find('[href="#' + $tab[0].id + '"]');
-                        $tabLink.parent().addClass('has-error');
-                        if (!$first) {
-                            $first = $tabLink;
-                            $first.tab('show');
+                if (this.tabs) {
+                    this.tabs.forEach(function (item) {
+                        var $tab = $(item);
+                        if ($tab.find('.has-error').length > 0) {
+                            var $tabLink = dialog.$tabList.find('[href="#' + $tab[0].id + '"]');
+                            $tabLink.parent().addClass('has-error');
+                            if (!$first) {
+                                $first = $tabLink;
+                                $first.tab('show');
+                            }
                         }
-                    }
-                });
+                    });
+                }
             }
         });
 

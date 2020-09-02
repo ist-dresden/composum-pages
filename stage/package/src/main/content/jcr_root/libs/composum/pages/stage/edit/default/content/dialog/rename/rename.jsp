@@ -10,5 +10,6 @@
     </div>
     <cpp:widget name="path" value="${model.path}" type="hidden"/>
     <cpp:widget label="New Name" name="name" value="${model.name}" type="textfield"
-                required="true" pattern="^[\\w][\\w -]*$"/>
+                required="true" pattern="/^[\\p{L}_][\\p{N}\\p{L} _-]*$/u"
+                pattern-hint="a letter followed by letters, digits, blanks or any of '_-'"/>
 </cpp:editDialog>

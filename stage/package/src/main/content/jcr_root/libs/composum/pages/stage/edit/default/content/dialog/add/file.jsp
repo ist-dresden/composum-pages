@@ -6,6 +6,6 @@
                 submit="/bin/cpm/pages/assets.fileCreate.json@{model.path}" successEvent="content:inserted">
     <cpp:widget label="Select File" name="file" type="fileupload" required="true"/>
     <cpp:widget label="Name" name="name" placeholder="the repository name" type="textfield"
-                pattern="^[\\w][\\w -]*(\\.\\w+)?$" blank="true"
-                hint="add a name if the file name is not the right choice"/>
+                blank="true" hint="add a name if the file name is not the right choice"
+                pattern="^[\\w][\\w_-]*(\\.\\w+)?$" />
 </cpp:editDialog>
