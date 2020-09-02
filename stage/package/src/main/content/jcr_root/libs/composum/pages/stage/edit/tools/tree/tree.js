@@ -263,7 +263,7 @@
                     }, {}, _.bind(function (result) {
                         pages.trigger('tree.content.dnd.drop', pages.const.event.content.moved, [
                             new pages.Reference(draggedNode.name, draggedNode.path, draggedNode.type),
-                            new pages.Reference(result.reference)
+                            new pages.Reference(result.data.reference)
                         ]);
                     }, this), _.bind(function (xhr) {
                         core.alert('error', 'Error', 'Error on moving content', xhr);
