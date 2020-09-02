@@ -256,8 +256,8 @@ public abstract class PagesContentServlet extends ContentServlet {
                     jsonAnswerItemExists(request, response);
 
                 } catch (RepositoryException | RuntimeException ex) {
-                    LOG.error(ex.getMessage(), ex);
-                    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ex.getMessage());
+                    status.error(ex.getMessage(), ex);
+                    status.sendJson();
                 }
 
             } else {

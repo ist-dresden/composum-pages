@@ -787,7 +787,7 @@
 
             initView: function () {
                 dialogs.EditDialog.prototype.initView.apply(this);
-                this.$path = this.$('.widget-name_path');
+                this.$path = this.$('.hidden-widget.widget-name_path');
                 this.toLabel = this.$('.composum-pages-edit-widget_newPath .label-text').text();
                 this.oldPath = core.getWidget(this.el, '.widget-name_oldPath', core.components.PathWidget);
                 this.newPath = core.getWidget(this.el, '.widget-name_newPath', core.components.PathWidget);
@@ -838,7 +838,7 @@
             doSubmit: function () {
                 var config = this.getConfig();
                 var oldPath = this.$path.val();
-                var newPath = this.newPath.getValue();
+                var newPath = this.newPath.$input.val();    // after finalize()...
                 core.ajaxPost(config.action + core.encodePath(oldPath), {
                     _charset_: 'UTF-8',
                     targetPath: newPath,

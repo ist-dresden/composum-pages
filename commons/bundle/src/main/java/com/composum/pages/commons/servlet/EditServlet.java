@@ -1047,7 +1047,7 @@ public class EditServlet extends PagesContentServlet {
         public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
                          ResourceHandle resource)
                 throws IOException {
-
+            Status status = new Status(request, response);
             String targetPath = request.getParameter("targetPath");
             String name = request.getParameter(PARAM_NAME);
 
@@ -1062,7 +1062,8 @@ public class EditServlet extends PagesContentServlet {
                 }
 
             } else {
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "target doesn't exist: '" + targetPath + "'");
+                status.error("target doesn't exist: '" + targetPath + "'");
+                status.sendJson();
             }
         }
     }
