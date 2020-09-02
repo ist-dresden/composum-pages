@@ -177,7 +177,7 @@ public class EditServlet extends PagesContentServlet {
     protected PagesEditOperationSet operations = new PagesEditOperationSet();
 
     @Override
-    protected ServletOperationSet getOperations() {
+    protected PagesEditOperationSet getOperations() {
         return operations;
     }
 
@@ -292,7 +292,7 @@ public class EditServlet extends PagesContentServlet {
         @Override
         public void doIt(@Nonnull final SlingHttpServletRequest request,
                          @Nonnull final SlingHttpServletResponse response,
-                         @Nonnull ResourceHandle resource)
+                         ResourceHandle resource)
                 throws IOException {
             BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
 
@@ -332,7 +332,7 @@ public class EditServlet extends PagesContentServlet {
         @Override
         public void doIt(@Nonnull final SlingHttpServletRequest request,
                          @Nonnull final SlingHttpServletResponse response,
-                         @Nonnull ResourceHandle resource)
+                         ResourceHandle resource)
                 throws IOException {
             try {
                 BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
@@ -363,7 +363,8 @@ public class EditServlet extends PagesContentServlet {
     protected class CheckIsTemplate implements ServletOperation {
 
         @Override
-        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
+        public void doIt(@Nonnull SlingHttpServletRequest request,
+                         @Nonnull SlingHttpServletResponse response,
                          ResourceHandle resource)
                 throws IOException {
 
@@ -619,7 +620,8 @@ public class EditServlet extends PagesContentServlet {
     protected class CheckIsAllowedElement implements ServletOperation {
 
         @Override
-        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
+        public void doIt(@Nonnull SlingHttpServletRequest request,
+                         @Nonnull SlingHttpServletResponse response,
                          ResourceHandle resource)
                 throws IOException {
 
@@ -657,7 +659,8 @@ public class EditServlet extends PagesContentServlet {
     protected class GetPageComponents implements ServletOperation {
 
         @Override
-        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
+        public void doIt(@Nonnull SlingHttpServletRequest request,
+                         @Nonnull SlingHttpServletResponse response,
                          ResourceHandle resource)
                 throws ServletException, IOException {
 
@@ -749,7 +752,8 @@ public class EditServlet extends PagesContentServlet {
     protected class GetTargetContainers implements ServletOperation {
 
         @Override
-        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
+        public void doIt(@Nonnull SlingHttpServletRequest request,
+                         @Nonnull SlingHttpServletResponse response,
                          ResourceHandle resource)
                 throws IOException {
             final BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
@@ -781,7 +785,8 @@ public class EditServlet extends PagesContentServlet {
     protected class FilterDropZones implements ServletOperation {
 
         @Override
-        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
+        public void doIt(@Nonnull SlingHttpServletRequest request,
+                         @Nonnull SlingHttpServletResponse response,
                          ResourceHandle resource)
                 throws IOException {
             final BeanContext context = new BeanContext.Servlet(
@@ -809,7 +814,8 @@ public class EditServlet extends PagesContentServlet {
     protected class GetComponentCategories implements ServletOperation {
 
         @Override
-        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
+        public void doIt(@Nonnull SlingHttpServletRequest request,
+                         @Nonnull SlingHttpServletResponse response,
                          ResourceHandle resource)
                 throws IOException {
 
@@ -835,7 +841,8 @@ public class EditServlet extends PagesContentServlet {
     protected abstract class ElementResourceOperation extends ChangeContentOperation {
 
         @Override
-        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
+        public void doIt(@Nonnull SlingHttpServletRequest request,
+                         @Nonnull SlingHttpServletResponse response,
                          ResourceHandle resource)
                 throws IOException {
             Status status = new Status(request, response);
@@ -958,7 +965,8 @@ public class EditServlet extends PagesContentServlet {
     protected class CreatePage implements ServletOperation {
 
         @Override
-        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
+        public void doIt(@Nonnull SlingHttpServletRequest request,
+                         @Nonnull SlingHttpServletResponse response,
                          ResourceHandle resource)
                 throws IOException {
 
@@ -1010,7 +1018,8 @@ public class EditServlet extends PagesContentServlet {
     protected class DeletePage implements ServletOperation {
 
         @Override
-        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
+        public void doIt(@Nonnull SlingHttpServletRequest request,
+                         @Nonnull SlingHttpServletResponse response,
                          ResourceHandle resource)
                 throws IOException {
 
@@ -1075,7 +1084,8 @@ public class EditServlet extends PagesContentServlet {
     protected class CreateSite implements ServletOperation {
 
         @Override
-        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
+        public void doIt(@Nonnull SlingHttpServletRequest request,
+                         @Nonnull SlingHttpServletResponse response,
                          ResourceHandle resource)
                 throws IOException {
 
@@ -1112,7 +1122,8 @@ public class EditServlet extends PagesContentServlet {
     protected class DeleteSite implements ServletOperation {
 
         @Override
-        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
+        public void doIt(@Nonnull SlingHttpServletRequest request,
+                         @Nonnull SlingHttpServletResponse response,
                          ResourceHandle resource)
                 throws IOException {
 
@@ -1150,7 +1161,8 @@ public class EditServlet extends PagesContentServlet {
     protected class GetContextTools implements ServletOperation {
 
         @Override
-        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
+        public void doIt(@Nonnull SlingHttpServletRequest request,
+                         @Nonnull SlingHttpServletResponse response,
                          ResourceHandle resource)
                 throws ServletException, IOException {
 
