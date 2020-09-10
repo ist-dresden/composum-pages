@@ -15,14 +15,27 @@
             <text_01
                     jcr:primaryType="cpp:Element"
                     sling:resourceType="composum/pages/components/element/text"
-                    text="XXX (EN) an iFrame to embed rendered content">
+                    text="&lt;p>an iFrame to embed rendered content.&lt;/p>">
                 <i18n
                         jcr:primaryType="nt:unstructured">
                     <de
                             jcr:primaryType="nt:unstructured"
-                            text="XXX (DE) an iFrame to embed rendered content"/>
+                            text="&lt;p>ein iFrame um fremden content einzubetten.&lt;/p>"/>
                 </i18n>
             </text_01>
+            <text
+                    jcr:primaryType="cpp:Element"
+                    sling:resourceType="composum/pages/components/element/text"
+                    text="&lt;ul>&lt;li>Title (textfield, i18n)&lt;br>a title displayed above the iframe&lt;/li>&lt;li>Frame Source (path / url)&lt;br>a path or URL to be displayed in the iframe&lt;/li>&lt;li>Service URI (textfield)&lt;br>an optional part of an URL to which the frame source is appended.&lt;/li>&lt;li>Copyright (textfield, i18n)&lt;br>an optional copyright notice displayed below the iframe&lt;br>&lt;/li>&lt;li>Style (select: simple, bordered, panel)&lt;br>one of several variants to integrate the iframe into the curent page&lt;br>&lt;/li>&lt;li>Auto Height (select: elements, body)&lt;br>if the&amp;nbsp;&lt;a href=&quot;http://davidjbradshaw.github.io/iframe-resizer/&quot;>iFrame resizer library&lt;/a>&amp;nbsp;is integrated into the iframe content (which is automatically present in composum pages), the iframe is resized according to the iframe content. This selects different modi of height calculation.&lt;br>&lt;/li>&lt;li>Collapsed Height (number)&lt;br>height in pixel for the iframe when it's marked as Expandable (see there) and is not yet expanded&lt;/li>&lt;li>Expandable (checkbox)&lt;br>if selected, a button &quot;expand view&quot; appears, and the iframe is shown with a restricted size until it is expanded with this button.&lt;/li>&lt;/ul>"
+                    title="Properties">
+                <i18n
+                        jcr:primaryType="nt:unstructured">
+                    <de
+                            jcr:primaryType="nt:unstructured"
+                            text="&lt;p>&lt;ul>&lt;li>Titel (Textfeld, i18n)&lt;br>ein Titel, der über dem iFrame angezeigt wird&lt;/li>&lt;li>Frame Source (Pfad / URL)&lt;br>ein Pfad oder eine URL, die im iFrame dargestellt wird&lt;/li>&lt;li>Service URI (Textfeld)&lt;br>ein optionaler Präfix für die Frame Source&lt;/li>&lt;li>Copyright (Textfeld, i18n)&lt;br>eine optionale Copyright-Notiz, die unter dem iFrame angezeigt wird&lt;br>&lt;/li>&lt;li>Stil (select: simple, bordered, panel)&lt;br>Auswahl einer von mehreren Varianten wie das iFrame in die Seite integriert wird&lt;/li>&lt;li>Auto Height (select: elements, body)&lt;br>wenn die&amp;nbsp;&lt;a href=&quot;http://davidjbradshaw.github.io/iframe-resizer/&quot;>iFrame resizer Bibliothek&lt;/a>&amp;nbsp;in den Inhalt des iFrame integriert ist (was bei Composum pages automatisch der Fall ist), dann wird die Höhe des iFrame automatisch an die Höhe des Inhalts angepasst. Dies selektiert verschiedene Modi zur Höhenbestimmung des Inhalts.&lt;/li>&lt;li>Collapsed Height (Zahl)&lt;br>anfängliche Höhe des Iframe in Pixel in Pixel, wenn es als Expandable (siehe dort) markiert ist&lt;/li>&lt;li>Expandable (Checkbox)&lt;br>falls selektiert wird ein &quot;expand view&quot; button angezeigt, und das iFrame erst mit einer reduzierten Höhe (Collapsed Height) angezeigt bis dieser Button betätigt wird&lt;br>&lt;/li>&lt;/ul>&lt;/p>"
+                            title="Eigenschaften"/>
+                </i18n>
+            </text>
         </main>
     </jcr:content>
 </jcr:root>

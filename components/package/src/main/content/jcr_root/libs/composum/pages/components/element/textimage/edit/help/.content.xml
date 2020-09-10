@@ -15,14 +15,40 @@
             <text_01
                     jcr:primaryType="cpp:Element"
                     sling:resourceType="composum/pages/components/element/text"
-                    text="XXX (EN) a combination of a rich text block and an image (both optional)">
+                    text="&lt;p>a combination of a rich text block and an image (both optional).&lt;/p>">
                 <i18n
                         jcr:primaryType="nt:unstructured">
                     <de
                             jcr:primaryType="nt:unstructured"
-                            text="XXX (DE) a combination of a rich text block and an image (both optional)"/>
+                            text="eine Kombination eines Richtext und eines Bildes (beide Optional)&lt;br>"/>
                 </i18n>
             </text_01>
+            <text
+                    jcr:primaryType="cpp:Element"
+                    sling:resourceType="composum/pages/components/element/text"
+                    text="&lt;ul>&lt;li>Subtitle (textfield, i18n)&lt;br>optional headline for the text&lt;/li>&lt;li>Hide Title (checkbox)&lt;br>if checked, the Subtitle is hidden&lt;br>&lt;/li>&lt;li>Text (richtext, i18n)&lt;br>the text that is displayed&lt;/li>&lt;li>Text Alignment (select)&lt;br>alignment of the text&lt;/li>&lt;li>Image Position (select)&lt;br>chooses on which side of the text the image will be displayed&lt;/li>&lt;li>Floating Text (checkbox)&lt;br>if selected, the text floats around the image&lt;/li>&lt;/ul>"
+                    title="Properties">
+                <i18n
+                        jcr:primaryType="nt:unstructured">
+                    <de
+                            jcr:primaryType="nt:unstructured"
+                            text="&lt;p>&lt;ul>&lt;li>Untertitel (textfield, i18n)&lt;br>optionale Überschrift für den Text&lt;/li>&lt;li>Titel verbergen (checkbox)&lt;br>falls selektiert wird der Untertitel versteckt&lt;/li>&lt;li>Text (richtext, i18n)&lt;br>der angezeigte Text&lt;/li>&lt;li>Text-Ausrichtung (select)&lt;br>Ausrichtung des Texts&lt;/li>&lt;li>Bildposition (select)&lt;br>wählt auf welcher Seite des Texts das Bild angezeigt wird&lt;/li>&lt;li>Umfließender Text (checkbox)&lt;br>falls selektiert umfließt der Text das Bild&lt;br>&lt;/li>&lt;/ul>&lt;/p>"
+                            title="Eigenschaften"/>
+                </i18n>
+            </text>
+            <text_1721847695
+                    jcr:primaryType="cpp:Element"
+                    sling:resourceType="composum/pages/components/element/text"
+                    text="&lt;p>The integrated image component has the following properties:&lt;/p>&lt;p>&lt;ul>&lt;li>imageRef (imagefield)&lt;br>the repository path to the image or an external URL&lt;/li>&lt;li>title (textfield, i18n)&lt;br>the image tag 'title' attribute text&lt;/li>&lt;li>alt (textfield, i18n)&lt;br>the alternative image text for text based rendering&lt;/li>&lt;/ul>&lt;/p>"
+                    title="Image Properties">
+                <i18n
+                        jcr:primaryType="nt:unstructured">
+                    <de
+                            jcr:primaryType="nt:unstructured"
+                            text="&lt;p>&lt;ul>&lt;li>imageRef (imagefield)&lt;br>der Repository-Pfad oder eine externe URL&lt;/li>&lt;li>title (textfield, i18n)&lt;br>der Text des 'title'-Attributs im Bild-HTML-Tag&lt;/li>&lt;li>alt (textfield, i18n)&lt;br>der alternative Text  für reine Text-Ansichten&lt;/li>&lt;/ul>&lt;/p>"
+                            title="Bild Eigenschaften"/>
+                </i18n>
+            </text_1721847695>
         </main>
     </jcr:content>
 </jcr:root>

@@ -15,12 +15,12 @@
             <text_01
                     jcr:primaryType="cpp:Element"
                     sling:resourceType="composum/pages/components/element/text"
-                    text="XXX (EN) a single title element">
+                    text="a single title element. It's possible to set a title, a subtitle and a background image, all optional. The background image is centered and scaled to width, the top and bottom cropped if necessary.">
                 <i18n
                         jcr:primaryType="nt:unstructured">
                     <de
                             jcr:primaryType="nt:unstructured"
-                            text="XXX (DE) a single title element"/>
+                            text="ein einfaches Titel Element. Es ist möglich einen Titel, einen Untertitel und ein Hintergrundbild zu konfigurieren (alles optional). Das Hintergrundbild wird zentriert und auf die Breite der Spalte skaliert angezeigt, wobei bei Bedarf oben und unten ein Teil abgeschnitten wird.&lt;br>"/>
                 </i18n>
             </text_01>
         </main>

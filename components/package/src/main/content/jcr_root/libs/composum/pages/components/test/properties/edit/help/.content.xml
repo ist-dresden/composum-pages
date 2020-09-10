@@ -15,12 +15,12 @@
             <text_01
                     jcr:primaryType="cpp:Element"
                     sling:resourceType="composum/pages/components/element/text"
-                    text="XXX (EN) properties editing test component">
+                    text="a component for testing purposes, containing many kinds of properties.">
                 <i18n
                         jcr:primaryType="nt:unstructured">
                     <de
                             jcr:primaryType="nt:unstructured"
-                            text="XXX (DE) properties editing test component"/>
+                            text="eine Komponente zu Testzwecken, die viele Arten von Attributen im Dialog enthält."/>
                 </i18n>
             </text_01>
         </main>

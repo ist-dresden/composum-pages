@@ -15,12 +15,12 @@
             <text_01
                     jcr:primaryType="cpp:Element"
                     sling:resourceType="composum/pages/components/element/text"
-                    text="XXX (EN) a search term input field">
+                    text="a search term input field. A search field has to be connected to a search result page via the search result path. The search result page has to contain a search result component to display the search results.">
                 <i18n
                         jcr:primaryType="nt:unstructured">
                     <de
                             jcr:primaryType="nt:unstructured"
-                            text="XXX (DE) a search term input field"/>
+                            text="ein Eingabefeld für Suchbegriffe. Ein Suchfeld muss über den Suchresultatpfad mit einer Seite verknüpft werden, die eine Suchresultat (search result) Komponente enthält, das dann die Suchresultate anzeigt.&lt;br>"/>
                 </i18n>
             </text_01>
         </main>
