@@ -162,6 +162,7 @@ public class Sitemap extends AbstractModel {
 
         protected final Page page;
         private final String lastMod;
+        private final int depth;
 
         private transient String loc;
         private transient String label;
@@ -171,6 +172,7 @@ public class Sitemap extends AbstractModel {
             this.page = page;
             Calendar lastModified = page.getProperty(ResourceUtil.PROP_LAST_MODIFIED, Calendar.class);
             lastMod = lastModified != null ? new SimpleDateFormat(SITEMAP_DATE_FORMAT).format(lastModified.getTime()) : null;
+            depth = StringUtils.countMatches(page.getSiteRelativePath(),'/');
         }
 
         public String getLoc() {
@@ -196,6 +198,11 @@ public class Sitemap extends AbstractModel {
 
         public String getLastMod() {
             return lastMod;
+        }
+
+        /** The hierarchy depth below the site root. */
+        public int getDepth() {
+            return depth;
         }
 
         @Override

@@ -27,7 +27,7 @@ import static java.util.Calendar.WEEK_OF_YEAR;
 import static java.util.Calendar.YEAR;
 
 /**
- * a range of dates (days) - 'from' day (included) to 'to' day (exculded; the next day)
+ * a range of dates (days) - 'from' day (included) to 'to' day (excluded; the next day)
  * with a range type - one of { 'year', 'month', 'week', 'day' } - to support spinning
  */
 @SuppressWarnings("MagicConstant")
