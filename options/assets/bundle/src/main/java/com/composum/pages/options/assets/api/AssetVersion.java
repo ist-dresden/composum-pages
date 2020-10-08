@@ -53,7 +53,7 @@ public class AssetVersion extends ContentVersion<AssetContent> {
     }
 
     @Nonnull
-    public String getPreviewUrl() {
-        return getViewerUrl() + getPath();
+    public String getPreviewUrl() { // no preview on deleted resource.
+        return status.getWorkspaceResource() != null ? getViewerUrl() + getPath() : null;
     }
 }

@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.jcr.RepositoryException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -127,7 +128,8 @@ public abstract class ContentVersion<ContentType extends ContentModel> {
             return status;
         }
         // the state activated can be overridden to modified if the content is modified
-        Calendar lastModified = getContent().getLastModified();
+        ContentType content = getContent();
+        Calendar lastModified = content != null ? content.getLastModified() : null;
         if (lastModified != null && state != null) {
             Calendar lastActivated = state.getLastActivatedTime();
             if (lastActivated != null && lastActivated.before(lastModified)) {
@@ -137,6 +139,7 @@ public abstract class ContentVersion<ContentType extends ContentModel> {
         return status;
     }
 
+    @Nullable
     public abstract ContentType getContent();
 
     public StatusModel getReleaseStatus() {

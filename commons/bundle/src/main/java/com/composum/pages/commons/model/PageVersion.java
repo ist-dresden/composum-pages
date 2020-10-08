@@ -1,7 +1,6 @@
 package com.composum.pages.commons.model;
 
 import com.composum.pages.commons.service.PageManager;
-import com.composum.pages.commons.util.LinkUtil;
 import com.composum.sling.platform.staging.versions.PlatformVersionsService;
 import org.apache.sling.api.resource.Resource;
 
@@ -61,7 +60,8 @@ public class PageVersion extends ContentVersion<PageContent> {
         if (page != null) {
             return page.getUrl();
         }
-        return LinkUtil.getUrl(context.getRequest(), getPath());
+        // return LinkUtil.getUrl(context.getRequest(), getPath());
+        return null; // e.g. deleted page, cannot be previewed.
     }
 
     @Nonnull

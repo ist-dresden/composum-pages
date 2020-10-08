@@ -33,11 +33,7 @@ import javax.jcr.Session;
 import javax.jcr.version.VersionHistory;
 import javax.jcr.version.VersionIterator;
 import javax.jcr.version.VersionManager;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Component(
         property = {
@@ -197,10 +193,17 @@ public class PagesVersionsService implements VersionsService {
     @Nullable
     protected ContentVersion getContentVersion(@Nonnull final SiteRelease siteRelease,
                                                @Nonnull final PlatformVersionsService.Status status) {
+        String type = null;
         Resource resource = getResource(siteRelease.getContext(), status);
+        if (resource == null) { // deleted in workspace -> look for released version to find out at least the type
+            ResourceResolver stagingResolver = releaseManager.getResolverForRelease(siteRelease.getStagingRelease(), null, false);
+            resource = stagingResolver.getResource(status.getPath());
+        }
         if (resource != null) {
             ValueMap values = resource.getValueMap();
-            String type = values.get(JcrConstants.JCR_PRIMARYTYPE, "");
+            type = values.get(JcrConstants.JCR_PRIMARYTYPE, "");
+        }
+        if (type != null) {
             for (VersionFactory factory : versionFactories) {
                 ContentVersion version = factory.getContentVersion(siteRelease, resource, type, status);
                 if (version != null) {

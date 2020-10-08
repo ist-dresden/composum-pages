@@ -12,9 +12,11 @@ import com.composum.pages.commons.util.ResourceTypeUtil;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.ResourceHandle;
 import com.composum.sling.core.filter.ResourceFilter;
+import com.composum.sling.core.logging.Message;
 import com.composum.sling.core.servlet.AbstractServiceServlet;
 import com.composum.sling.core.servlet.ServletOperation;
 import com.composum.sling.core.servlet.ServletOperationSet;
+import com.composum.sling.core.servlet.Status;
 import com.composum.sling.core.util.MimeTypeUtil;
 import com.composum.sling.core.util.ResponseUtil;
 import com.composum.sling.platform.staging.versions.PlatformVersionsService;
@@ -49,15 +51,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static com.composum.pages.commons.util.ResourceTypeUtil.EDIT_TILE_PATH;
 import static com.composum.pages.commons.util.ResourceTypeUtil.TREE_ACTIONS_PATH;
@@ -365,48 +359,52 @@ public class AssetServlet extends PagesContentServlet {
         public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
                          ResourceHandle resource)
                 throws RepositoryException, IOException {
+            try {
+                // use resource as content if name is always 'jcr:content' else use child 'jcr:content'
+                if (resource.isValid()) {
 
+                    BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
+                    ResourceResolver resolver = context.getResolver();
+                    RequestParameterMap parameters = request.getRequestParameterMap();
 
-            // use resource as content if name is always 'jcr:content' else use child 'jcr:content'
-            if (resource.isValid()) {
+                    String name = request.getParameter(PARAM_NAME);
+                    RequestParameter file = parameters.getValue(AbstractServiceServlet.PARAM_FILE);
+                    if (file != null && (StringUtils.isNotBlank(name) || StringUtils.isNotBlank(name = file.getFileName()))) {
 
-                BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
-                ResourceResolver resolver = context.getResolver();
-                RequestParameterMap parameters = request.getRequestParameterMap();
+                        Resource fileResource = resolver.create(resource, name, FILE_PROPERTIES); // FIXME(hps,07.10.20) what if it exists?
+                        Map<String, Object> content = new HashMap<>(FILE_CONTENT_PROPS);
 
-                String name = request.getParameter(PARAM_NAME);
-                RequestParameter file = parameters.getValue(AbstractServiceServlet.PARAM_FILE);
-                if (file != null && (StringUtils.isNotBlank(name) || StringUtils.isNotBlank(name = file.getFileName()))) {
+                        InputStream input = file.getInputStream();
+                        content.put(JcrConstants.JCR_DATA, input);
 
-                    Resource fileResource = resolver.create(resource, name, FILE_PROPERTIES);
-                    Map<String, Object> content = new HashMap<>(FILE_CONTENT_PROPS);
+                        MimeType mimeType = MimeTypeUtil.getMimeType(file.getFileName());
+                        if (mimeType != null) {
+                            content.put(JcrConstants.JCR_MIMETYPE, mimeType.getName());
+                        }
 
-                    InputStream input = file.getInputStream();
-                    content.put(JcrConstants.JCR_DATA, input);
+                        GregorianCalendar now = new GregorianCalendar();
+                        now.setTime(new Date());
+                        content.put(JcrConstants.JCR_LASTMODIFIED, now);
+                        content.put(JcrConstants.JCR_LASTMODIFIED + "By", resolver.getUserID());
 
-                    MimeType mimeType = MimeTypeUtil.getMimeType(file.getFileName());
-                    if (mimeType != null) {
-                        content.put(JcrConstants.JCR_MIMETYPE, mimeType.getName());
+                        resolver.create(fileResource, JcrConstants.JCR_CONTENT, content);
+
+                        resolver.commit();
+
+                        JsonWriter jsonWriter = ResponseUtil.getJsonWriter(response);
+                        writeJsonAsset(jsonWriter, context, pagesConfiguration.getPageNodeFilter(), resource);
+
+                    } else {
+                        response.sendError(HttpServletResponse.SC_BAD_REQUEST, "file or name not available '" + file + "'");
                     }
 
-                    GregorianCalendar now = new GregorianCalendar();
-                    now.setTime(new Date());
-                    content.put(JcrConstants.JCR_LASTMODIFIED, now);
-                    content.put(JcrConstants.JCR_LASTMODIFIED + "By", resolver.getUserID());
-
-                    resolver.create(fileResource, JcrConstants.JCR_CONTENT, content);
-
-                    resolver.commit();
-
-                    JsonWriter jsonWriter = ResponseUtil.getJsonWriter(response);
-                    writeJsonAsset(jsonWriter, context, pagesConfiguration.getPageNodeFilter(), resource);
-
                 } else {
-                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "file or name not available '" + file + "'");
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "no valid parent resource '" + resource.getPath() + "'");
                 }
-
-            } else {
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "no valid parent resource '" + resource.getPath() + "'");
+            } catch (IOException | RuntimeException e) {
+                Status status = new Status(request, response, LOG);
+                status.getMessages().add(new Message(Message.Level.error, "Trouble creating file"), e);
+                status.sendJson(HttpServletResponse.SC_BAD_REQUEST);
             }
         }
     }
