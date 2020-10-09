@@ -26,7 +26,7 @@ public class PagesVersionFactory implements VersionFactory {
     @Override
     @Nullable
     public ContentVersion getContentVersion(@Nonnull final SiteRelease siteRelease,
-                                            @Nonnull final Resource contentResource, @Nonnull final String type,
+                                            @Nullable final Resource contentResource, @Nonnull final String type,
                                             @Nonnull final PlatformVersionsService.Status status) {
         switch (type) {
             case PagesConstants.NODE_TYPE_PAGE:

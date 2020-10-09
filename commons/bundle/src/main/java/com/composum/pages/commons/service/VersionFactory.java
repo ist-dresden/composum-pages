@@ -14,13 +14,13 @@ public interface VersionFactory {
      * creates an appropriate version bean instance id the factory supports the resource and type
      *
      * @param siteRelease     the requested release
-     * @param contentResource the versionable resource
+     * @param contentResource the versionable resource. Might be null if this is a historical version deleted in the workspace
      * @param type            the resources primary type
      * @param status          the current release status of the versionable
      * @return the version object or 'null' if the factory can't create the version instance
      */
     @Nullable
     ContentVersion getContentVersion(@Nonnull SiteRelease siteRelease,
-                                     @Nonnull Resource contentResource, @Nonnull String type,
+                                     @Nullable Resource contentResource, @Nonnull String type,
                                      @Nonnull PlatformVersionsService.Status status);
 }

@@ -195,13 +195,11 @@ public class PagesVersionsService implements VersionsService {
                                                @Nonnull final PlatformVersionsService.Status status) {
         String type = null;
         Resource resource = getResource(siteRelease.getContext(), status);
-        if (resource == null) { // deleted in workspace -> look for released version to find out at least the type
-            ResourceResolver stagingResolver = releaseManager.getResolverForRelease(siteRelease.getStagingRelease(), null, false);
-            resource = stagingResolver.getResource(status.getPath());
-        }
-        if (resource != null) {
+        if (resource != null) { // deleted in workspace -> look for released version to find out at least the type
             ValueMap values = resource.getValueMap();
             type = values.get(JcrConstants.JCR_PRIMARYTYPE, "");
+        } else if (status.getVersionReference() != null) {
+            type = status.getVersionReference().getType();
         }
         if (type != null) {
             for (VersionFactory factory : versionFactories) {

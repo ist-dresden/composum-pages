@@ -27,17 +27,19 @@ public class AssetsVersionFactory implements VersionFactory {
     @Override
     @Nullable
     public ContentVersion<AssetContent> getContentVersion(@Nonnull final SiteRelease siteRelease,
-                                                          @Nonnull final Resource contentResource, @Nonnull final String type,
+                                                          @Nullable final Resource contentResource, @Nonnull final String type,
                                                           @Nonnull final PlatformVersionsService.Status status) {
-        boolean isAssetsRelated;
+        boolean isAssetsRelated = false;
         switch (type) {
             case AssetsConstants.NODE_TYPE_ASSET:
             case AssetsConstants.NODE_TYPE_ASSET_CONTENT:
                 isAssetsRelated = true;
                 break;
             default:
-                Resource assetsConfig = contentResource.getChild(AssetConfig.CHILD_NAME);
-                isAssetsRelated = ResourceUtil.isNodeType(assetsConfig, AssetsConstants.NODE_TYPE_ASSET_CONFIG);
+                if (contentResource != null) {
+                    Resource assetsConfig = contentResource.getChild(AssetConfig.CHILD_NAME);
+                    isAssetsRelated = ResourceUtil.isNodeType(assetsConfig, AssetsConstants.NODE_TYPE_ASSET_CONFIG);
+                }
                 break;
         }
         return isAssetsRelated ? new AssetVersion(siteRelease, status) : null;
