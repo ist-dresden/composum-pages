@@ -3,13 +3,10 @@
 <%@taglib prefix="cpn" uri="http://sling.composum.com/cpnl/1.0" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <cpp:defineFrameObjects/>
-<cpp:element var="tools" type="com.composum.pages.stage.tools.ContextTools" mode="none"
-             cssBase="tabbed-widget" cssAdd="composum-pages-stage-edit-sidebar-context"
+<cpp:element var="tools" type="com.composum.pages.stage.tools.StandaloneTools" mode="none"
+             cssBase="tabbed-widget" cssAdd="composum-pages-stage-edit-sidebar-standalone"
              data-component-type="@{tools.componentTypeName}">
-    <ul class="composum-pages-stage-edit-sidebar-context_tabs ${toolsCSS}_tabs icons-only">
-        <cpn:div test="${tools.status != null}" class="${toolsCSS}_status">
-            <cpp:include path="${tools.status.path}"/>
-        </cpn:div>
+    <ul class="composum-pages-stage-edit-sidebar-standalone_tabs ${toolsCSS}_tabs icons-only right">
         <c:forEach items="${tools.componentList}" var="component">
             <li class="${toolsCSS}_handle" data-tab="${toolsCSS}_tab_${component.key}">
                 <a class="${toolsCSS}_link" title="${cpn:i18n(slingRequest,component.hint)}">
@@ -27,7 +24,7 @@
             </div>
         </c:forEach>
     </div>
-    <div class="composum-pages-stage-edit-sidebar-context_current">
+    <div class="composum-pages-stage-edit-sidebar-standalone_current">
         <cpp:include replaceSelectors="tile"/>
     </div>
 </cpp:element>

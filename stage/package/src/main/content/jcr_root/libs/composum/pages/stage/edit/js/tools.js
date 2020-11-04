@@ -12,6 +12,13 @@
                     base: 'tabbed-widget',
                     _tab: '_tab'
                 },
+                standalone: {
+                    base: 'composum-pages-stage-edit-sidebar-standalone',
+                    _: {
+                        buffer: '_buffer',
+                        current: '_current'
+                    }
+                },
                 context: {
                     base: 'composum-pages-stage-edit-sidebar-context',
                     _: {}
@@ -24,7 +31,11 @@
             panelClass: 'tabbed-widget_panel',
 
             navigationTabs: 'composum-pages-stage-edit-sidebar-navigation',
+            standaloneTabs: 'composum-pages-stage-edit-sidebar-standalone',
             navigationContext: 'composum-pages-stage-edit-sidebar-navigation-context',
+            standaloneSidebar: 'composum-pages-stage-edit-tools_standalone',
+            standaloneStaticUrl: '/bin/cpm/pages/edit.standaloneStaticTools.html',
+            standaloneContextUrl: '/bin/cpm/pages/edit.standaloneContextTools.html',
             contextSidebar: 'composum-pages-stage-edit-tools_context',
             contextTabsHook: 'composum-pages-stage-edit-sidebar_content',
             contextTabs: 'composum-pages-stage-edit-sidebar-context',
@@ -51,17 +62,21 @@
 
             initialize: function (options) {
                 this.$tabs = this.$('.' + tools.const.tabsClass);
-                this.$handles = this.$tabs.find('.' + tools.const.handleClass);
                 this.$content = this.$('.' + tools.const.contentClass);
-                this.$panels = this.$content.find('.' + tools.const.panelClass);
-                this.$tabs.find('.' + tools.const.linkClass).click(_.bind(this.selectTab, this));
+                this.initTabs();
             },
 
-            initialKey: function () {
+            initTabs: function () {
+                this.$handles = this.$tabs.find('.' + tools.const.handleClass);
+                this.$panels = this.$content.find('.' + tools.const.panelClass);
+                this.$tabs.find('.' + tools.const.linkClass).off('click').click(_.bind(this.selectTab, this));
+            },
+
+            initialKey: function (key) {
                 return undefined;
             },
 
-            keyChanged: function () {
+            keyChanged: function (key, $panel, remember) {
             },
 
             findTabKey: function ($element) {
@@ -92,8 +107,54 @@
                 }
             },
 
+            getTabIndex: function (key) {
+                var result = -1;
+                if (key) {
+                    this.$handles.each(function (index) {
+                        if ($(this).data('tab') === key) {
+                            result = index;
+                        }
+                    });
+                }
+                return result;
+            },
+
             getTabPanel: function (key) {
                 return this.$content.find('.' + tools.const.panelClass + '.' + key);
+            },
+
+            appendTab: function ($handle, $panel) {
+                $handle.appendTo(this.$tabs);
+                $panel.appendTo(this.$content);
+                this.initTabs();
+            },
+
+            prependTab: function ($handle, $panel) {
+                $handle.prependTo(this.$tabs);
+                $panel.prependTo(this.$content);
+                this.initTabs();
+            },
+
+            removeTab: function (key) {
+                if (!this.isLocked) {
+                    var index = this.getTabIndex(key);
+                    if (index >= 0) {
+                        if (this.currentKey === key) {
+                            var next = (index >= 0 && index < this.$handles.length - 1) ? index + 1 : index - 1;
+                            if (next >= 0) {
+                                this.selectTab(undefined, $(this.$handles[next]).data('tab'), undefined, true);
+                            }
+                        }
+                        var $handle = $(this.$handles[index]);
+                        var $panel = $(this.$panels[index]);
+                        delete this.$handles[index];
+                        delete this.$panels[index];
+                        $handle.remove();
+                        $panel.remove();
+                        return true;
+                    }
+                }
+                return false;
             },
 
             activateTab: function (shortKey, onlyIfKnown) {
@@ -101,7 +162,7 @@
                 return this.selectTab(undefined, c.base + c._tab + '_' + shortKey, onlyIfKnown);
             },
 
-            selectTab: function (event, key, onlyIfKnown) {
+            selectTab: function (event, key, onlyIfKnown, suppressRemember, force) {
                 if (!this.locked) {
                     var $handle = undefined;
                     if (!key) {
@@ -117,7 +178,7 @@
                         key = $handle.data('tab');
                     }
                     if ($handle && $handle.length > 0) {
-                        if (this.currentKey !== key) {
+                        if (this.currentKey !== key || force) {
                             if (this.currentKey) {
                                 var $prevPanel = this.getTabPanel(this.currentKey);
                                 var $prevHandle = this.$tabs.find('[data-tab="' + this.currentKey + '"]');
@@ -131,7 +192,7 @@
                                 $nextPanel.addClass('active');
                                 $handle.addClass('active');
                                 this.stackHandles();
-                                this.keyChanged(key, $nextPanel);
+                                this.keyChanged(key, $nextPanel, !suppressRemember);
                             }
                         }
                         return true;
@@ -177,12 +238,17 @@
                 this.selectTab(undefined, this.initialKey());
             },
 
-            initialKey: function () {
+            initialKey: function (key) {
                 var d = tools.const.navigation.main;
-                return pages.profile.get('tabs.' + pages.current.mode, d.tabs.key, d.tabs.default);
+                if (key) {
+                    pages.profile.set('tabs.' + pages.current.mode, d.tabs.key, key);
+                } else {
+                    key = pages.profile.get('tabs.' + pages.current.mode, d.tabs.key, d.tabs.default);
+                }
+                return key;
             },
 
-            keyChanged: function (key, $panel) {
+            keyChanged: function (key, $panel, remember) {
                 var d = tools.const.navigation.main;
                 if ($panel && $panel.length === 1) {
                     var $content = $panel.children();
@@ -193,7 +259,9 @@
                         }
                     }
                 }
-                pages.profile.set('tabs.' + pages.current.mode, d.tabs.key, key)
+                if (remember) {
+                    this.initialKey(key);
+                }
             },
 
             onOpen: function (event, key, pathOrRef) {
@@ -339,8 +407,40 @@
                 tools.TabPanel.prototype.initialize.apply(this, [options]);
             },
 
+            /**
+             * @override
+             * @param key the tab key
+             * @return {boolean} 'true' if removal done
+             */
+            removeTab: function (key) {
+                if (!this.isLocked && this.getTabIndex(key) >= 0) {
+                    this.beforeClose(key);
+                    if (tools.TabPanel.prototype.removeTab.apply(this, [key])) {
+                        delete this.tools[key];
+                        return true;
+                    }
+                }
+                return false;
+            },
+
+            clearTools: function () {
+                var me = this;
+                var tools = this.tools;
+                _.each(_.keys(tools), function (key) {
+                    var view = tools[key];
+                    if (view && !view.$el.hasClass('static-tool')) {
+                        me.removeTab(key);
+                    }
+                });
+            },
+
             initTools: function () {
-                this.tools = {};
+                this.clearTools();
+                this.runInitializers();
+                this.selectTab(undefined, this.initialKey());
+            },
+
+            runInitializers: function () {
                 var contextToolsInitializers = pages.contextTools.getInitializers();
                 for (var i = 0; i < contextToolsInitializers.length; i++) {
                     // each view returned by an initializer is triggered on tab selection
@@ -352,14 +452,18 @@
                         }
                     }
                 }
-                this.selectTab(undefined, this.initialKey());
             },
 
-            initialKey: function () {
-                return pages.profile.get('tabs', 'context.' + this.componentType, undefined);
+            initialKey: function (key) {
+                if (key) {
+                    pages.profile.set('tabs', 'context.' + this.componentType, key);
+                } else {
+                    key = pages.profile.get('tabs', 'context.' + this.componentType, undefined);
+                }
+                return key;
             },
 
-            keyChanged: function (key, $panel) {
+            keyChanged: function (key, $panel, remember) {
                 // if there is a view registered for the key trigger the tab selection
                 var view = this.tools[key];
                 if (view) {
@@ -371,7 +475,9 @@
                         }
                     }
                 }
-                pages.profile.set('tabs', 'context.' + this.componentType, key)
+                if (remember) {
+                    this.initialKey(key);
+                }
             },
 
             reloadPage: function (parameters) {
@@ -385,23 +491,42 @@
                 }
             },
 
-            beforeClose: function () {
+            beforeClose: function (key) {
                 var tools = this.tools;
-                _.each(_.keys(tools), function (key) {
+                _.each(key ? [key] : _.keys(tools), function (key) {
                     var view = tools[key];
                     if (view && _.isFunction(view.beforeClose)) {
-                        view.beforeClose.call(view);
+                        try {
+                            view.beforeClose.call(view);
+                        } catch (ex) {
+                            pages.contextTools.log.error('exception: beforeClose[' + key + ']\n', ex);
+                        }
                     }
                 });
+            }
+        });
+
+        tools.StandaloneTabs = tools.ContextTabs.extend({
+
+            /**
+             * @override
+             */
+            initialKey: function (key) {
+                if (key) {
+                    pages.profile.set('tabs', 'standalone.' + this.componentType, key);
+                } else {
+                    key = pages.profile.get('tabs', 'standalone.' + this.componentType, undefined);
+                }
+                return key;
             }
         });
 
         tools.ContextTabsHook = Backbone.View.extend({
 
             initialize: function (options) {
-                var c = pages.const.event;
-                $(document).on(c.page.selected + '.Context', _.bind(this.onPageSelected, this));
-                $(document).on(c.element.selected + '.Context', _.bind(this.onElementSelected, this));
+                var e = pages.const.event;
+                $(document).on(e.page.selected + '.Context', _.bind(this.onPageSelected, this));
+                $(document).on(e.element.selected + '.Context', _.bind(this.onElementSelected, this));
             },
 
             onPageSelected: function (event, refOrPath, parameters) {
@@ -420,6 +545,15 @@
                     ? refOrPath : new pages.Reference(undefined, refOrPath, undefined));
             },
 
+            getTabs: function () {
+                var c = tools.const.css.context;
+                return core.getWidget(this.el, '.' + c.base, tools.ContextTabs);
+            },
+
+            getLoadUrl: function () {
+                return tools.const.contextLoadUrl;
+            },
+
             changeTools: function (reference) {
                 var path = reference ? reference.path : undefined;
                 if (!path) {
@@ -435,22 +569,23 @@
                     if (reference && reference.type) {
                         params.type = reference.type;
                     }
-                    var url = tools.const.contextLoadUrl + core.encodePath(path);
-                    core.ajaxGet(url, {data: params},
-                        _.bind(function (data) {
-                            this.closeCurrent();
-                            this.$el.html(data);
-                            var c = tools.const.css.context;
-                            this.contextTabs = core.getWidget(this.el, '.' + c.base, tools.ContextTabs);
-                            // noinspection JSPrimitiveTypeWrapperUsage
-                            this.contextTabs.reference = reference;
-                            this.contextTabs.initTools();
-                        }, this));
+                    var url = this.getLoadUrl() + core.encodePath(path);
+                    core.ajaxGet(url, {data: params}, _.bind(function (data) {
+                        this.closeCurrent();
+                        this.loadTools(reference, data);
+                    }, this));
                 } else {
                     // nothing selected (!?)...
                     this.closeCurrent();
                     this.$el.html('');
                 }
+            },
+
+            loadTools: function (reference, data) {
+                this.$el.html(data);
+                this.contextTabs = this.getTabs();
+                this.contextTabs.reference = reference;
+                this.contextTabs.initTools();
             },
 
             closeCurrent: function () {
@@ -461,10 +596,74 @@
             }
         });
 
+        tools.StandaloneTabsHook = tools.ContextTabsHook.extend({
+
+            /**
+             * @override
+             */
+            getTabs: function () {
+                var c = tools.const.css.standalone;
+                return core.getWidget(this.el, '.' + c.base, tools.StandaloneTabs);
+            },
+
+            /**
+             * @override
+             */
+            getLoadUrl: function () {
+                return this.staticInitialized ? tools.const.standaloneContextUrl : tools.const.standaloneStaticUrl;
+            },
+
+            /**
+             * @override
+             */
+            loadTools: function (reference, data) {
+                var c = tools.const.css.standalone;
+                if (!this.staticInitialized) {
+                    this.staticInitialized = true;
+                    tools.ContextTabsHook.prototype.loadTools.apply(this, [reference, data]);
+                    this.$current = this.$('.' + c.base + c._.current);
+                    this.$buffer = this.$('.' + c.base + c._.buffer);
+                    var e = pages.const.event;
+                    pages.trigger('sidebar.ready', e.pages.ready);
+                } else {
+                    var me = this;
+                    this.$buffer.html(data);
+                    this.contextTabs.reference = reference;
+                    this.contextTabs.componentType = this.$buffer.find('.' + c.base).data('component-type');
+                    this.$buffer.find('.' + tools.const.tabsClass + ' .' + tools.const.handleClass).each(function () {
+                        var $handle = $(this);
+                        var key = $handle.data('tab');
+                        var $panel = me.$buffer.find('.' + tools.const.contentClass
+                            + ' .' + tools.const.panelClass + '.' + key);
+                        if ($panel.length > 0) {
+                            me.contextTabs.prependTab($handle, $panel);
+                        }
+                    });
+                    this.$current.html(this.$buffer.find('.' + c.base + c._.current)[0].innerHTML);
+                    this.$buffer.html('');
+                    this.contextTabs.runInitializers();
+                }
+                this.contextTabs.selectTab(undefined, this.contextTabs.initialKey(), undefined, true, true);
+            },
+
+            /**
+             * @override
+             */
+            closeCurrent: function () {
+                if (this.contextTabs) {
+                    this.contextTabs.clearTools();
+                }
+            }
+        });
+
         tools.navigationTabs = core.getView('.' + tools.const.navigationTabs, tools.NavigationTabs);
         tools.navigationContext = core.getView('.' + tools.const.navigationContext, tools.NavigationContext);
         tools.contextTabsHook = core.getView('.' + tools.const.contextSidebar
             + ' .' + tools.const.contextTabsHook, tools.ContextTabsHook);
+        if (!tools.contextTabsHook) {
+            tools.contextTabsHook = core.getView('.' + tools.const.standaloneSidebar
+                + ' .' + tools.const.contextTabsHook, tools.StandaloneTabsHook);
+        }
 
     })(window.composum.pages.tools, window.composum.pages, window.core);
 })(window);

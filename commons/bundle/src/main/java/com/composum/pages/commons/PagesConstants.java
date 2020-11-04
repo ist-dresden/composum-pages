@@ -30,7 +30,9 @@ public interface PagesConstants {
     String COMPOSUM_PREFIX = "composum-";
     String PAGES_PREFIX = COMPOSUM_PREFIX + "pages-";
 
-    /** request attributes */
+    /**
+     * request attributes
+     */
 
     String RA_CONTEXT_PATH = "contextPath";
     String RA_RESOURCE_REF = "resourceRef";
@@ -38,7 +40,9 @@ public interface PagesConstants {
     String RA_CURRENT_SITE = "currentSite";
     String RA_CURRENT_THEME = "currentTheme";
 
-    /** I18N */
+    /**
+     * I18N
+     */
 
     String PROP_PAGE_LANGUAGES = "pageLanguages";
     String LANGUAGES_PATH = "jcr:content/languages";
@@ -48,7 +52,9 @@ public interface PagesConstants {
     String LANGUAGES_ATTR = PAGES_PREFIX + "declared-languages";
     String LANGUAGE_CSS_KEY = PAGES_PREFIX + "language";
 
-    /** request aspects */
+    /**
+     * request aspects
+     */
 
     String ACCESS_MODE_REQ_PARAM = PlatformAccessFilter.ACCESS_MODE_PARAM;
     String DISPLAY_MODE_SELECT_PARAM = "pages.mode";
@@ -62,8 +68,12 @@ public interface PagesConstants {
     String RA_STICKY_LOCALE = "composum-pages-sticky-locale";
 
     String PAGES_FRAME_PATH = "/bin/pages";
+    String PAGES_EDITOR_PATH = "/bin/edit";
+    String PAGES_EDITOR_SELECTOR = "standalone";
 
-    /** Component declarations */
+    /**
+     * Component declarations
+     */
 
     String NT_COMPONENT = CPP_PREFIX + "Component";
     String PN_COMPONENT_TYPE = "componentType";
@@ -72,9 +82,13 @@ public interface PagesConstants {
 
     /* Content elements */
 
-    /** the reference path property name of a reference component (for the referrers query) */
+    /**
+     * the reference path property name of a reference component (for the referrers query)
+     */
     String PN_CONTENT_REFERENCE = "contentReference";
-    /** the key part of a reference component type (for the referrers query) */
+    /**
+     * the key part of a reference component type (for the referrers query)
+     */
     String RES_TYPE_KEY_REFERENCE = "/reference";
 
     String NODE_TYPE_SOMETHING = "nt:unstructured";
@@ -84,7 +98,9 @@ public interface PagesConstants {
     String PROP_ALLOWED_CONTAINERS = "allowedContainers";
     String PROP_ALLOWED_ELEMENTS = "allowedElements";
 
-    /** Page */
+    /**
+     * Page
+     */
 
     String NODE_TYPE_PAGE = CPP_PREFIX + "Page";
     String NODE_TYPE_PAGE_CONTENT = CPP_PREFIX + "PageContent";
@@ -111,10 +127,14 @@ public interface PagesConstants {
     String DEFAULT_EDIT_CATEGORY = "composum.pages.components.edit";
 
     String SEARCH_PROPS = "search/";
-    /** Property of a page that, if true, hides the page in search results. */
+    /**
+     * Property of a page that, if true, hides the page in search results.
+     */
     String PROP_IGNORE_IN_SEARCH = SEARCH_PROPS + "ignoreInSearch";
 
-    /** Site */
+    /**
+     * Site
+     */
 
     String DEFAULT_SITES_ROOT = "sites";
     String NODE_TYPE_SITE = CPP_PREFIX + "Site";
@@ -122,7 +142,9 @@ public interface PagesConstants {
     String PROP_HOMEPAGE = "homepage";
     String DEFAULT_HOMEPAGE_PATH = "home";
 
-    /** Template */
+    /**
+     * Template
+     */
 
     String PROP_TEMPLATE = "template";
     String PROP_IS_TEMPLATE = "isTemplate";
@@ -145,12 +167,16 @@ public interface PagesConstants {
     String PROP_ALLOWED_PATHS = "allowedPaths";
     String PROP_FORBIDDEN_PATHS = "forbiddenPaths";
 
-    /** Widget */
+    /**
+     * Widget
+     */
 
     String NODE_TYPE_WIDGET = CPP_PREFIX + "Widget";
     String PROP_WIDGET_TYPE = "widgetType";
 
-    /** general properties */
+    /**
+     * general properties
+     */
 
     String PN_TITLE = "title";
     String PN_JCR_TITLE = ResourceUtil.PROP_TITLE;
@@ -165,13 +191,17 @@ public interface PagesConstants {
 
     String NP_SETTINGS = "settings";
 
-    /** release & version */
+    /**
+     * release & version
+     */
 
     String KEY_CURRENT_RELEASE = "current";
     String VERSION_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
     Pattern RELEASE_LABEL_PATTERN = Pattern.compile("^composum-release-(.+)$");
 
-    /** date & time */
+    /**
+     * date & time
+     */
 
     String PP_FORMAT = "format/";
 
@@ -185,7 +215,9 @@ public interface PagesConstants {
     String DEF_DATE_FMT = "yyyy-MM-dd";
     String DEF_DATETIME_FMT = DEF_DATE_FMT + " " + DEF_TIME_FMT;
 
-    /** general rendering */
+    /**
+     * general rendering
+     */
 
     Pattern TILE_TITLE_URL = Pattern.compile("^(.*/)?([^/?#;]+)([^?#;].*)?");
 
@@ -196,7 +228,7 @@ public interface PagesConstants {
 
         site, page, container, element, something;
 
-        public static ComponentType typeOf( @Nullable String string) {
+        public static ComponentType typeOf(@Nullable String string) {
             ComponentType type = something;
             if (StringUtils.isNotBlank(string)) {
                 if (string.startsWith(CPP_PREFIX)) {

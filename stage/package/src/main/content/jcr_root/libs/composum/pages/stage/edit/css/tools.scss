@@ -150,7 +150,7 @@
         }
     }
 
-    &_link {
+    &_link, &_standalone {
         position: absolute;
         top: 2px;
         left: 5px;
@@ -219,25 +219,29 @@
     }
 }
 
-.composum-pages-stage-edit-sidebar-navigation,
-.composum-pages-stage-edit-sidebar-context {
-    overflow: hidden;
+.composum-pages-stage-edit-sidebar {
 
-    &_tabs {
+    &-navigation,
+    &-standalone,
+    &-context {
+        overflow: hidden;
 
-        &.tabbed-widget_tabs {
-            padding-top: 7px;
+        &_tabs {
+
+            &.tabbed-widget_tabs {
+                padding-top: 7px;
+            }
         }
-    }
 
-    .tabbed-widget {
+        .tabbed-widget {
 
-        &_content {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 80px;
+            &_content {
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 80px;
+            }
         }
     }
 }
@@ -645,6 +649,26 @@
 
         &_button-group.btn-group {
             margin: $edit-actions-spacing-h;
+
+            .composum-pages-tools {
+
+                &_button {
+
+                    &.fa-download {
+                        padding-top: 2px;
+                    }
+                }
+            }
+
+            &.btn-group-smaller {
+
+                .composum-pages-tools {
+
+                    &_button {
+                        width: 25px;
+                    }
+                }
+            }
         }
 
         .alert {
@@ -683,318 +707,340 @@
     }
 }
 
-.composum-pages-stage-edit-sidebar-navigation,
-.composum-pages-stage-edit-sidebar-context {
+.composum-pages-stage-edit-sidebar {
 
-    .composum-pages-tools {
-
-        .tools-title {
-            .title-text {
-                display: inline-block;
-                padding-top: 5px;
-                @include title-font;
-            }
-        }
-
-        &_actions {
-
-            .composum-pages-tools {
-
-                &_menu {
-                    background-color: $edit-actions-menu-bg;
-
-                    li {
-                        a {
-                            padding: 3px 12px;
-
-                            &:hover, &:focus {
-                                background-color: #b8b8b8;
-                                background-image: -webkit-linear-gradient(top, #e5e5e5 0%, #b8b8b8 100%);
-                                background-image: -o-linear-gradient(top, #e5e5e5 0%, #b8b8b8 100%);
-                                background-image: -webkit-gradient(linear, left top, left bottom, from(#e5e5e5), to(#b8b8b8));
-                                background-image: linear-gradient(to bottom, #e5e5e5 0%, #b8b8b8 100%);
-                                filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#e5e5e5', endColorstr='#fb8b8b8', GradientType=0);
-                            }
-                        }
-
-                        i {
-                            width: 20px;
-                            margin-right: 6px;
-                            text-align: center;
-                        }
-                    }
-                }
-
-                &_right-actions {
-
-                    button.fa-filter {
-                        width: 28px;
-                        border-top-right-radius: 0;
-                        border-bottom-right-radius: 0;
-                    }
-
-                    button.fa-refresh {
-                        width: 29px;
-                    }
-                }
-            }
-        }
-    }
-}
-
-.composum-pages-stage-edit-sidebar-navigation {
-
-    &_tabs {
-
-        &.tabbed-widget_tabs {
-            padding-left: 65px;
-        }
-    }
-
-    .composum-pages-component-tile {
-        margin: $tools-pane-padding 0;
-
-        &:first-child {
-            margin-top: 0;
-        }
-
-        &:last-child {
-            margin-bottom: 0;
-        }
-    }
-
+    &-navigation,
+    &_standalone,
     &-context {
-        position: absolute;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        height: 80px;
-        background-color: $tools-pane-tabs-background;
 
-        &_actions {
-            position: absolute;
-            top: 2px;
-            right: 2px;
-            z-index: 1;
+        .composum-pages-tools {
 
-            .fa-database:before {
-                font-size: 84%;
-            }
-        }
-
-        .composum-pages-stage-edit-sidebar-navigation-context {
-
-            &_no-site {
-
-                .composum-pages-stage-site {
-
-                    &_tile {
-
-                        &_title {
-                            min-height: 50px;
-                            right: 40px;
-                            bottom: 10px;
-                            white-space: normal;
-                            cursor: pointer;
-                        }
-                    }
-                }
-            }
-        }
-
-        .composum-pages-stage-site {
-
-            &_thumbnail {
-                position: absolute;
-                top: 4px;
-                left: 4px;
-                width: 96px;
-
-
-                &_wrapper {
-                    @include aspect-ratio-wrapper(4, 3);
-                }
-
-                &_picture {
-                    @include aspect-ratio-element();
-                }
-
-                &_image {
-                    width: 100%;
-                }
-
-                .composum-pages-components-element-image {
-
-                    &_picture {
-                        width: 100%;
-                    }
-                }
-
-                &_placeholder:before {
-                    font-size: 48px;
-                }
-            }
-
-            &_tile {
-                min-height: 80px;
-
-                &_text {
-                    color: $tools-pane-foreground;
-                }
-
-                &_title, &_path {
-                    left: 108px;
-                    right: 4px;
-                    white-space: nowrap;
-                }
-
-                &_title {
-                    top: auto;
-                    bottom: 26px;
+            .tools-title {
+                .title-text {
+                    display: inline-block;
+                    padding-top: 5px;
                     @include title-font;
                 }
-
-                &_status {
-                    left: 104px;
-                    top: 6px;
-
-                    .badge {
-                        margin: 0 4px;
-                        min-width: 31px;
-
-                        &.changes {
-                            background-color: $tools-pane-main-selection-bg;
-                        }
-
-                        &.modified {
-                            background-color: $tools-pane-sec-selection-bg;
-                        }
-                    }
-                }
-
-                &_path {
-                    font-size: $hint-font-size;
-                }
             }
-        }
-    }
-}
 
-.composum-pages-stage-edit-sidebar-context {
-
-    .tabbed-widget {
-
-        &_status {
-            z-index: 2;
-            position: absolute;
-            top: 0;
-            right: 0;
-
-            .composum-pages-stage-edit-tools-page-status {
-
-                &_icon {
-                    padding: $tools-pane-padding $tools-pane-padding 0;
-                    font-size: $edit-actions-icon-font-size;
-                    cursor: pointer;
-
-                    &.release-status {
-
-                        &_initial {
-                            color: $release-status-initial;
-                        }
-
-                        &_activated {
-                            color: $release-status-activated;
-                        }
-
-                        &_modified {
-                            color: $release-status-modified;
-                        }
-
-                        &_deactivated {
-                            color: $release-status-deactivated;
-                        }
-
-                        &_deleted {
-                            color: $release-status-deleted;
-                        }
-                    }
-                }
-
-                .popover {
-                    min-width: 300px;
-
-                    .popover-content {
-                        padding: $tools-pane-padding;
-                    }
-                }
-
-                &_popover {
-                    @include hint-font;
-                    color: $bootstrap-color-default;
-
-                    hr {
-                        margin: $tools-pane-padding 0;
-                    }
-
-                    .name {
-                        margin-right: $tools-pane-padding;
-                    }
-
-                    .space {
-                        margin: 0 $tools-pane-padding;
-                    }
-
-                    .text, .state, .timestamp, .user, .text-danger {
-                        font-weight: bold;
-                    }
-
-                    .line {
-                        clear: both;
-                        display: inline-block;
-                        width: 100%;
-
-                        .label, .timestamp, .user {
-                            display: block;
-                            white-space: nowrap;
-                        }
-
-                        .name {
-                            float: left;
-                        }
-
-                        .timestamp, .user {
-                            float: right;
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    .composum-pages-tools {
-
-        .composum-pages-stage-edit-sidebar & {
-
-            &_help-context {
+            &_actions {
 
                 .composum-pages-tools {
 
-                    &_panel {
-                        top: 5px;
+                    &_menu {
+                        background-color: $edit-actions-menu-bg;
+
+                        li {
+                            a {
+                                padding: 3px 12px;
+
+                                &:hover, &:focus {
+                                    background-color: #b8b8b8;
+                                    background-image: -webkit-linear-gradient(top, #e5e5e5 0%, #b8b8b8 100%);
+                                    background-image: -o-linear-gradient(top, #e5e5e5 0%, #b8b8b8 100%);
+                                    background-image: -webkit-gradient(linear, left top, left bottom, from(#e5e5e5), to(#b8b8b8));
+                                    background-image: linear-gradient(to bottom, #e5e5e5 0%, #b8b8b8 100%);
+                                    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#e5e5e5', endColorstr='#fb8b8b8', GradientType=0);
+                                }
+                            }
+
+                            i {
+                                width: 20px;
+                                margin-right: 6px;
+                                text-align: center;
+                            }
+                        }
+                    }
+
+                    &_right-actions {
+
+                        button.fa-filter {
+                            width: 28px;
+                            border-top-right-radius: 0;
+                            border-bottom-right-radius: 0;
+                        }
+
+                        button.fa-refresh {
+                            width: 29px;
+                        }
                     }
                 }
             }
         }
     }
+}
 
-    .composum-pages-component-tile {
-        position: absolute;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        margin: 0;
-        height: 80px;
-        overflow: hidden;
+.composum-pages-stage-edit-sidebar {
+
+    &-navigation,
+    &-standalone {
+
+        &_tabs {
+
+            &.tabbed-widget_tabs {
+                padding-left: 65px;
+            }
+        }
+
+        .composum-pages-component-tile {
+            margin: $tools-pane-padding 0;
+
+            &:first-child {
+                margin-top: 0;
+            }
+
+            &:last-child {
+                margin-bottom: 0;
+            }
+        }
+
+        &-context {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 80px;
+            background-color: $tools-pane-tabs-background;
+
+            &_actions {
+                position: absolute;
+                top: 2px;
+                right: 2px;
+                z-index: 1;
+
+                .fa-database:before {
+                    font-size: 84%;
+                }
+            }
+
+            .composum-pages-stage-edit-sidebar-navigation-context {
+
+                &_no-site {
+
+                    .composum-pages-stage-site {
+
+                        &_tile {
+
+                            &_title {
+                                min-height: 50px;
+                                right: 40px;
+                                bottom: 10px;
+                                white-space: normal;
+                                cursor: pointer;
+                            }
+                        }
+                    }
+                }
+            }
+
+            .composum-pages-stage-site {
+
+                &_thumbnail {
+                    position: absolute;
+                    top: 4px;
+                    left: 4px;
+                    width: 96px;
+
+
+                    &_wrapper {
+                        @include aspect-ratio-wrapper(4, 3);
+                    }
+
+                    &_picture {
+                        @include aspect-ratio-element();
+                    }
+
+                    &_image {
+                        width: 100%;
+                    }
+
+                    .composum-pages-components-element-image {
+
+                        &_picture {
+                            width: 100%;
+                        }
+                    }
+
+                    &_placeholder:before {
+                        font-size: 48px;
+                    }
+                }
+
+                &_tile {
+                    min-height: 80px;
+
+                    &_text {
+                        color: $tools-pane-foreground;
+                    }
+
+                    &_title, &_path {
+                        left: 108px;
+                        right: 4px;
+                        white-space: nowrap;
+                    }
+
+                    &_title {
+                        top: auto;
+                        bottom: 26px;
+                        @include title-font;
+                    }
+
+                    &_status {
+                        left: 104px;
+                        top: 6px;
+
+                        .badge {
+                            margin: 0 4px;
+                            min-width: 31px;
+
+                            &.changes {
+                                background-color: $tools-pane-main-selection-bg;
+                            }
+
+                            &.modified {
+                                background-color: $tools-pane-sec-selection-bg;
+                            }
+                        }
+                    }
+
+                    &_path {
+                        font-size: $hint-font-size;
+                    }
+                }
+            }
+        }
+    }
+}
+
+.composum-pages-stage-edit-sidebar {
+
+    &-standalone {
+
+        &_buffer {
+            display: none;
+        }
+    }
+}
+
+.composum-pages-stage-edit-sidebar {
+
+    &-standalone,
+    &-context {
+
+        .tabbed-widget {
+
+            &_status {
+                z-index: 2;
+                position: absolute;
+                top: 0;
+                right: 0;
+
+                .composum-pages-stage-edit-tools-page-status {
+
+                    &_icon {
+                        padding: $tools-pane-padding $tools-pane-padding 0;
+                        font-size: $edit-actions-icon-font-size;
+                        cursor: pointer;
+
+                        &.release-status {
+
+                            &_initial {
+                                color: $release-status-initial;
+                            }
+
+                            &_activated {
+                                color: $release-status-activated;
+                            }
+
+                            &_modified {
+                                color: $release-status-modified;
+                            }
+
+                            &_deactivated {
+                                color: $release-status-deactivated;
+                            }
+
+                            &_deleted {
+                                color: $release-status-deleted;
+                            }
+                        }
+                    }
+
+                    .popover {
+                        min-width: 300px;
+
+                        .popover-content {
+                            padding: $tools-pane-padding;
+                        }
+                    }
+
+                    &_popover {
+                        @include hint-font;
+                        color: $bootstrap-color-default;
+
+                        hr {
+                            margin: $tools-pane-padding 0;
+                        }
+
+                        .name {
+                            margin-right: $tools-pane-padding;
+                        }
+
+                        .space {
+                            margin: 0 $tools-pane-padding;
+                        }
+
+                        .text, .state, .timestamp, .user, .text-danger {
+                            font-weight: bold;
+                        }
+
+                        .line {
+                            clear: both;
+                            display: inline-block;
+                            width: 100%;
+
+                            .label, .timestamp, .user {
+                                display: block;
+                                white-space: nowrap;
+                            }
+
+                            .name {
+                                float: left;
+                            }
+
+                            .timestamp, .user {
+                                float: right;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        .composum-pages-tools {
+
+            .composum-pages-stage-edit-sidebar & {
+
+                &_help-context {
+
+                    .composum-pages-tools {
+
+                        &_panel {
+                            top: 5px;
+                        }
+                    }
+                }
+            }
+        }
+
+        &_current {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            margin: 0;
+            height: 80px;
+            overflow: hidden;
+        }
     }
 }

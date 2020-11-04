@@ -17,6 +17,7 @@
             data: {
                 body: {
                     mode: 'pages-mode',
+                    editor: 'pages-editor',
                     locale: 'pages-locale'
                 }
             },
@@ -239,6 +240,7 @@
             var g = pages.const.profile.pages;
             return {
                 mode: pages.$body.data(pages.const.data.body.mode),
+                editor: pages.$body.data(pages.const.data.body.editor),
                 locale: pages.profile.get(g.aspect, g.locale, 'en'),
                 folder: undefined,
                 site: undefined,

@@ -96,6 +96,8 @@ public class EditServlet extends PagesContentServlet {
     public static final String PAGE_COMPONENT_TYPES = "composum-pages-page-component-types";
     public static final String PAGE_COMPONENT_TYPES_SCOPE = PAGE_COMPONENT_TYPES + "_scope";
 
+    public static final String STANDALONE_STATIC_RES_TYPE = "composum/pages/stage/edit/sidebar/standalone/static";
+    public static final String STANDALONE_CONTEXT_RES_TYPE = "composum/pages/stage/edit/sidebar/standalone/context";
     public static final String CONTEXT_TOOLS_RES_TYPE = "composum/pages/stage/edit/sidebar/context";
 
     @Reference
@@ -171,7 +173,7 @@ public class EditServlet extends PagesContentServlet {
         refreshElement, insertElement, moveElement, copyElement,
         createPage, deletePage, moveContent, renameContent, copyContent,
         createSite, deleteSite,
-        contextTools, context
+        standaloneStaticTools, standaloneContextTools, contextTools, context
     }
 
     protected PagesEditOperationSet operations = new PagesEditOperationSet();
@@ -218,6 +220,10 @@ public class EditServlet extends PagesContentServlet {
                 Operation.context, new GetContextResource());
         operations.setOperation(ServletOperationSet.Method.GET, Extension.html,
                 Operation.contextTools, new GetContextTools());
+        operations.setOperation(ServletOperationSet.Method.GET, Extension.html,
+                Operation.standaloneStaticTools, new GetStandaloneStaticTools());
+        operations.setOperation(ServletOperationSet.Method.GET, Extension.html,
+                Operation.standaloneContextTools, new GetStandaloneContextTools());
         operations.setOperation(ServletOperationSet.Method.GET, Extension.html,
                 Operation.refreshElement, new RefreshElementOperation());
         operations.setOperation(ServletOperationSet.Method.GET, Extension.json,
@@ -1166,7 +1172,7 @@ public class EditServlet extends PagesContentServlet {
                          ResourceHandle resource)
                 throws ServletException, IOException {
 
-            String selectors = RequestUtil.getSelectorString(request, null, 1);
+            String selectors = getSelectors(request);
             if (LOG.isDebugEnabled()) {
                 LOG.debug("GetContextTools({},{})...", resource, selectors);
             }
@@ -1174,10 +1180,34 @@ public class EditServlet extends PagesContentServlet {
             String paramType = request.getParameter(PARAM_TYPE);
 
             RequestDispatcherOptions options = new RequestDispatcherOptions();
-            options.setForceResourceType(CONTEXT_TOOLS_RES_TYPE);
+            options.setForceResourceType(getResourecType());
             options.setReplaceSelectors(selectors);
 
             forward(request, response, resource, paramType, options);
+        }
+
+        protected String getResourecType() {
+            return CONTEXT_TOOLS_RES_TYPE;
+        }
+
+        protected String getSelectors(@Nonnull SlingHttpServletRequest request) {
+            return RequestUtil.getSelectorString(request, null, 1);
+        }
+    }
+
+    protected class GetStandaloneStaticTools extends GetContextTools {
+
+        @Override
+        protected String getResourecType() {
+            return STANDALONE_STATIC_RES_TYPE;
+        }
+    }
+
+    protected class GetStandaloneContextTools extends GetContextTools {
+
+        @Override
+        protected String getResourecType() {
+            return STANDALONE_CONTEXT_RES_TYPE;
         }
     }
 }

@@ -8,6 +8,9 @@ import java.util.List;
 
 public class ContextTools extends FrameModel {
 
+    public static final String CONTEXT_CATEGORY = "context";
+    public static final String STATUS_CATEGORY = "status";
+
     private transient ToolsCollection.Component status;
     private transient ToolsCollection tools;
 
@@ -19,7 +22,7 @@ public class ContextTools extends FrameModel {
         if (status == null) {
             BeanContext context = getDelegate().getContext();
             ToolsCollection statusCollection = new ToolsCollection(context, getResource(),
-                    "status",
+                    STATUS_CATEGORY,
                     DisplayMode.requested(context).name().toLowerCase(),
                     getComponentTypeName());
             if (statusCollection.getComponentList().size() > 0) {
@@ -32,12 +35,16 @@ public class ContextTools extends FrameModel {
     public ToolsCollection getTools() {
         if (tools == null) {
             BeanContext context = getDelegate().getContext();
-            tools = new ToolsCollection(context, getResource(),
-                    "context",
-                    DisplayMode.requested(context).name().toLowerCase(),
-                    getComponentTypeName());
+            tools = createTools(context);
         }
         return tools;
+    }
+
+    protected ToolsCollection createTools(BeanContext context) {
+        return new ToolsCollection(context, getResource(),
+                CONTEXT_CATEGORY,
+                DisplayMode.requested(context).name().toLowerCase(),
+                getComponentTypeName());
     }
 
     public List<ToolsCollection.Component> getComponentList() {

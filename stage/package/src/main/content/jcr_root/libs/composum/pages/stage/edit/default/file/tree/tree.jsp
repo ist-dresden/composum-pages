@@ -16,14 +16,12 @@
         </cpp:treeMenu>
         <cpp:treeAction icon="upload" label="Upload" title="Upload new file content"
                         action="window.composum.pages.actions.file.upload"/>
-    </div>
-    <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
         <cpn:link title="${cpn:i18n(slingRequest,'Link to open or download the file')}" href="${resource.path}"
-                  target="_blank" class="fa fa-external-link composum-pages-tools_button btn btn-default"><span
+                  target="_blank" class="fa fa-download composum-pages-tools_button btn btn-default"><span
                 class="composum-pages-tools_button-label">${cpn:i18n(slingRequest,'Open or Download')}</span></cpn:link>
     </div>
     <cpn:div test="${model.versionable}"
-             class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
+             class="composum-pages-tools_button-group btn-group btn-group-smaller" role="group">
         <cpp:treeAction icon="play" label="Activate Asset" title="Activate Asset"
                         action="window.composum.pages.actions.file.activate"/>
         <cpp:treeAction icon="pause" label="Revert Asset" title="Revert Asset"

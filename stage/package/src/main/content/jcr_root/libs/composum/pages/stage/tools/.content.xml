@@ -6,7 +6,7 @@
     <pagesTree
             jcr:primaryType="nt:unstructured"
             sling:resourceType="composum/pages/stage/edit/tools/main/pages"
-            categories="[navigation,browse,edit,develop]"
+            categories="[navigation,browse,edit,develop,static]"
             iconClass="sitemap"
             hint="Pages Tree"
             title="Pages Tree"
@@ -14,7 +14,7 @@
     <assets
             jcr:primaryType="nt:unstructured"
             sling:resourceType="composum/pages/stage/edit/tools/main/assets"
-            categories="[navigation,edit,develop]"
+            categories="[navigation,standalone,edit,develop,static]"
             iconClass="picture-o"
             hint="Assets Selector"
             title="Assets"
@@ -22,7 +22,7 @@
     <components
             jcr:primaryType="nt:unstructured"
             sling:resourceType="composum/pages/stage/edit/tools/main/components"
-            categories="[navigation,edit,develop]"
+            categories="[navigation,standalone,edit,develop,static]"
             iconClass="cube"
             hint="Component Selector"
             title="Components"
@@ -77,7 +77,7 @@
     <pageContent
             jcr:primaryType="nt:unstructured"
             sling:resourceType="composum/pages/stage/edit/tools/page/content"
-            _categories="[context,edit,develop,page]"
+            _categories="[context,standalone,edit,develop,page]"
             iconClass="cubes"
             hint="Page Content"
             title="Content"
@@ -94,7 +94,7 @@
     <containerElements
             jcr:primaryType="nt:unstructured"
             sling:resourceType="composum/pages/stage/edit/tools/container/elements"
-            categories="[context,edit,develop,container,element]"
+            categories="[context,standalone,edit,develop,container,element]"
             iconClass="cubes"
             hint="Container Elements"
             title="Elements"
@@ -110,7 +110,7 @@
     <componentHelp
             jcr:primaryType="nt:unstructured"
             sling:resourceType="composum/pages/stage/edit/tools/component/help/context"
-            categories="[context,edit,develop,page,container,element]"
+            categories="[context,standalone,edit,develop,page,container,element]"
             iconClass="question-circle-o"
             hint="Component Help"
             title="Help"

@@ -188,7 +188,9 @@
             }
         });
 
-        tools.componentsTab = core.getView('.' + tools.const.components.css.base, tools.ComponentsTab);
+        $(document).on(pages.const.event.pages.ready + '.Components', function () {
+            tools.componentsTab = core.getView('.' + tools.const.components.css.base, tools.ComponentsTab);
+        });
 
     })(window.composum.pages.main, window.composum.pages, window.core);
 })(window);

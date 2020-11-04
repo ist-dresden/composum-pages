@@ -18,6 +18,7 @@ import javax.jcr.RepositoryException;
 import java.util.Locale;
 import java.util.Objects;
 
+import static com.composum.pages.commons.PagesConstants.PAGES_FRAME_PATH;
 import static com.composum.pages.commons.PagesConstants.PROP_TEMPLATE;
 
 /**
@@ -103,7 +104,7 @@ public abstract class ContentDriven<ContentType extends ContentModel> extends Ab
     public String getEditUrl() {
         if (editUrl == null) {
             SlingHttpServletRequest request = context.getRequest();
-            editUrl = LinkUtil.getUrl(request, "/bin/pages.html" + getPath(), null, null);
+            editUrl = LinkUtil.getUrl(request, PAGES_FRAME_PATH + ".html" + getPath(), null, null);
         }
         return editUrl;
     }

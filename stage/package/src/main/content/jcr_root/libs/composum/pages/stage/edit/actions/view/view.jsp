@@ -25,8 +25,9 @@
        title="${cpn:i18n(slingRequest,'Preview Mode')}"></a>
     <a class="fa fa-edit ${toolbarCssBase}_edit ${toolbarCssBase}_button" href="?pages.mode=edit"
        title="${cpn:i18n(slingRequest,'Edit Mode')}"></a>
-    <a class="fa fa-external-link ${toolbarCssBase}_open-separate ${toolbarCssBase}_button" href="#" target="_blank"
-       title="${cpn:i18n(slingRequest,'Open Page in separate View')}"></a>
+    <a class="fa fa-${frame.standalone?'minus-square-o':'square-o'} ${toolbarCssBase}_toggle-editor ${toolbarCssBase}_button"
+       href="${frame.standalone?frame.navigatorUri:frame.standaloneUri}" target="${frame.standalone?'_top':'_blank'}"
+       title="${cpn:i18n(slingRequest,frame.standalone?'Switch to Pages navigator view':'Open single page Editor')}"></a>
     <a class="fa fa-arrows-h ${toolbarCssBase}_handle ${toolbarCssBase}_button" href="#"
        title="${cpn:i18n(slingRequest,'Toolbar Handle')}"><span
             class="${toolbarCssBase}_surface-width"></span></a>
