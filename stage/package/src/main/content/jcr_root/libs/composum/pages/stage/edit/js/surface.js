@@ -68,7 +68,7 @@
 
                     if (!this.$body || !sidebar ||
                         this.isSyncedSidebar(surface.navigation, sidebar) ||
-                        this.isSyncedSidebar(surface.stzandalone, sidebar) ||
+                        this.isSyncedSidebar(surface.standalone, sidebar) ||
                         this.isSyncedSidebar(surface.contextTools, sidebar)) {
 
                         this.bodySyncOn();
@@ -96,7 +96,7 @@
                             var contextWidth = surface.contextTools.$el.width();
                             width -= contextWidth;
                         }
-                        this.width = width;
+                        this.width = width = Math.round(width);
                         this.$body.css('margin-left', margin + 'px');
                         this.$body.css('width', width + 'px');
                         this.$versionPrimary.css('left', margin + 'px');

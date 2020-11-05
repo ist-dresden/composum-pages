@@ -93,23 +93,6 @@
             }
         });
 
-        toolbars.ToggleEditorLink = Backbone.View.extend({
-
-            initialize: function (options) {
-                var e = pages.const.event;
-                $(document).on(e.page.selected + '.ToggleEditorLink', _.bind(this.setPageLink, this));
-                $(document).on(e.pages.locale + '.ToggleEditorLink', _.bind(this.setPageLink, this));
-            },
-
-            setPageLink: function () {
-                var link = pages.getPageUrl();
-                if (this.link !== link) {
-                    this.link = link;
-                    this.$el.attr('href', link);
-                }
-            }
-        });
-
         toolbars.ToolbarHandle = pages.surface.SurfaceHandle.extend({
 
             initialize: function (options) {
@@ -179,8 +162,7 @@
                 if (toolbars.localeSelector) {
                     toolbars.localeSelector.currentPage = this.currentPage;
                 }
-                //core.getView('.' + toolbars.const.toggleEditorLink, toolbars.ToggleEditorLink);
-            },
+             },
 
             profileAspect: function () {
                 return 'toolbar@' + pages.current.editor;
