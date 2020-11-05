@@ -14,6 +14,7 @@ import com.composum.pages.commons.service.Theme;
 import com.composum.pages.commons.service.ThemeManager;
 import com.composum.pages.commons.util.LinkUtil;
 import com.composum.pages.commons.util.LinkUtil.Parameters;
+import com.composum.pages.commons.util.UrlMap;
 import com.composum.platform.models.annotations.DetermineResourceStategy;
 import com.composum.platform.models.annotations.PropertyDetermineResourceStrategy;
 import com.composum.sling.core.BeanContext;
@@ -534,15 +535,28 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
     @Override
     public String getUrl() {
         if (url == null) {
-            url = getUrl(getLanguage(), false);
+            url = getUrl(getLanguage(), false, null);
         }
         return url;
+    }
+
+    /**
+     * @return a dynamic helper map to decorate the page url with selectors specified by the a maps key
+     */
+    public Map<String, String> getUrls() {
+        return new UrlMap(new UrlMap.Builder() {
+            @Nonnull
+            @Override
+            public String buildUrl(@Nonnull String selectors) {
+                return getUrl(getLanguage(), false, selectors);
+            }
+        });
     }
 
     @Nonnull
     public String getUrl(boolean preserveParameters) {
         if (url == null) {
-            url = getUrl(getLanguage(), preserveParameters);
+            url = getUrl(getLanguage(), preserveParameters, null);
         }
         return url;
     }
@@ -552,9 +566,10 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
      * - decorated with the locale URL parameter if the language is not the default language
      */
     @Nonnull
-    public String getUrl(@Nonnull final Language language, boolean preserveParameters) {
+    public String getUrl(@Nonnull final Language language, boolean preserveParameters,
+                         @Nullable final String selectors) {
         SlingHttpServletRequest request = context.getRequest();
-        String pageUrl = LinkUtil.getUrl(request, getPath(), null, null);
+        String pageUrl = LinkUtil.getUrl(request, getPath(), selectors, null);
         Parameters parameters = preserveParameters ? new Parameters(request) : new Parameters();
         if (language.equals(getPageLanguages().getDefaultLanguage())) {
             parameters.remove(LOCALE_REQUEST_PARAM);

@@ -67,7 +67,7 @@ public class LanguageRoot extends GenericModel {
         }
 
         public String getUrl() {
-            return page.getUrl(language, true);
+            return page.getUrl(language, true, null);
         }
     }
 
