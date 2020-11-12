@@ -4,6 +4,7 @@ import com.composum.pages.commons.PagesConstants;
 import com.composum.pages.commons.model.Page;
 import com.composum.pages.commons.model.PageContent;
 import com.composum.pages.commons.request.DisplayMode;
+import com.composum.pages.commons.request.LocaleRequestWrapper;
 import com.composum.pages.commons.service.PageManager;
 import com.composum.pages.commons.service.Theme;
 import com.composum.pages.commons.util.ThemeUtil;
@@ -34,6 +35,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 @Component(service = Servlet.class,
         property = {
@@ -58,7 +60,7 @@ public class PageNodeServlet extends SlingSafeMethodsServlet {
     }
 
     @Override
-    protected void doGet(@Nonnull final SlingHttpServletRequest request,
+    protected void doGet(@Nonnull SlingHttpServletRequest request,
                          @Nonnull final SlingHttpServletResponse response)
             throws ServletException, IOException {
 
@@ -82,6 +84,13 @@ public class PageNodeServlet extends SlingSafeMethodsServlet {
                         return;
                     }
                 }
+            }
+
+            // adjust the requests locale to the locale of the requested page if necessary
+            // to synchroinze the systems I18N support with the pages locale
+            Locale pageLocale = page.getLocale();
+            if (!pageLocale.equals(request.getLocale())) {
+                request = new LocaleRequestWrapper(request, pageLocale);
             }
 
             // determine the page content resource to use for the request forward
