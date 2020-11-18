@@ -12,7 +12,7 @@
             languageMenuLabel: 'composum-pages-stage-edit-toolbar_language-label',
             languageMenu: 'composum-pages-language-menu',
             languageMenuLink: 'composum-pages-language-menu_link',
-            openPageLink: 'composum-pages-stage-edit-toolbar_open-separate',
+            toggleEditorLink: 'composum-pages-stage-edit-toolbar_toggle-editor',
             pageViewActionsUri: '/libs/composum/pages/stage/edit/actions/view.html',
             previewAction: 'composum-pages-stage-edit-toolbar_preview',
             editAction: 'composum-pages-stage-edit-toolbar_edit',
@@ -26,7 +26,6 @@
                         base: 'composum-pages-stage-edit-toolbar',
                         _reload: '_reload-page',
                         _open: '_open-page',
-                        _separate: '_open-separate',
                         _width: '_surface-width'
                     }
                 }
@@ -90,23 +89,6 @@
                     pages.editFrame.reloadPage(parameters, this.currentPage);
                 } else {
                     location.href = (this.currentPage ? this.currentPage : ".") + "?pages.locale=" + key;
-                }
-            }
-        });
-
-        toolbars.OpenPageLink = Backbone.View.extend({
-
-            initialize: function (options) {
-                var e = pages.const.event;
-                $(document).on(e.page.selected + '.OpenPageLink', _.bind(this.setPageLink, this));
-                $(document).on(e.pages.locale + '.OpenPageLink', _.bind(this.setPageLink, this));
-            },
-
-            setPageLink: function () {
-                var link = pages.getPageUrl();
-                if (this.link !== link) {
-                    this.link = link;
-                    this.$el.attr('href', link);
                 }
             }
         });
@@ -180,11 +162,10 @@
                 if (toolbars.localeSelector) {
                     toolbars.localeSelector.currentPage = this.currentPage;
                 }
-                core.getView('.' + toolbars.const.openPageLink, toolbars.OpenPageLink);
-            },
+             },
 
             profileAspect: function () {
-                return 'toolbar'
+                return 'toolbar@' + pages.current.editor;
             },
 
             loadProfile: function () {

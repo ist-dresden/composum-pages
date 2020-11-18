@@ -128,8 +128,10 @@
                         }
                     }, this));
                     if (history.replaceState) {
-                        history.replaceState(path, 'pages', core.getContextUrl('/bin/pages.html' + core.encodePath(path)));
-                        //history.replaceState(path, 'pages', this.$frame.attr('src'));
+                        var view = new RegExp('^((https?:)?//[^/]+)?' + core.getContextUrl('')
+                            + '(/bin/(edit|pages)\\.html)(/.*)?$').exec(window.location.href);
+                        history.replaceState(path, 'pages', core.getContextUrl(
+                            (view ? view[3] : '/bin/pages.html') + core.encodePath(path)));
                     }
                 }
             },

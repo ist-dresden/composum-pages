@@ -11,6 +11,7 @@
             sidebarClass: 'composum-pages-stage-edit-sidebar',
             logoClass: 'composum-pages-stage-edit-sidebar-logo',
             navigationClass: 'composum-pages-stage-edit-tools_navigation',
+            standaloneClass: 'composum-pages-stage-edit-tools_standalone',
             contextToolsClass: 'composum-pages-stage-edit-tools_context',
             handleClass: 'composum-pages-stage-edit-sidebar_handle',
             handleIconClass: 'composum-pages-stage-edit-sidebar_handle-icon',
@@ -62,20 +63,31 @@
 
             bodySync: function (sidebar) {
                 if (this.isSyncedSidebar(surface.navigation) ||
+                    this.isSyncedSidebar(surface.standalone) ||
                     this.isSyncedSidebar(surface.contextTools)) {
 
                     if (!this.$body || !sidebar ||
                         this.isSyncedSidebar(surface.navigation, sidebar) ||
+                        this.isSyncedSidebar(surface.standalone, sidebar) ||
                         this.isSyncedSidebar(surface.contextTools, sidebar)) {
 
                         this.bodySyncOn();
                         var versionsVisible = pages.versionsVisible();
                         var margin = 0;
                         var width = window.innerWidth;
+                        var navWidth;
                         if (surface.navigation && (!surface.navigation.profile.overlap || versionsVisible)) {
-                            var navWidth = 0;
+                            navWidth = 0;
                             if (!versionsVisible) {
                                 navWidth = surface.navigation.$el.width();
+                            }
+                            margin += navWidth;
+                            width -= navWidth;
+                        }
+                        if (surface.standalone && (!surface.standalone.profile.overlap || versionsVisible)) {
+                            navWidth = 0;
+                            if (!versionsVisible) {
+                                navWidth = surface.standalone.$el.width();
                             }
                             margin += navWidth;
                             width -= navWidth;
@@ -84,7 +96,7 @@
                             var contextWidth = surface.contextTools.$el.width();
                             width -= contextWidth;
                         }
-                        this.width = width;
+                        this.width = width = Math.round(width);
                         this.$body.css('margin-left', margin + 'px');
                         this.$body.css('width', width + 'px');
                         this.$versionPrimary.css('left', margin + 'px');
@@ -418,6 +430,21 @@
             }
         });
 
+        surface.Standalone = surface.Sidebar.extend({
+
+            initialize: function (options) {
+                surface.Sidebar.prototype.initialize.apply(this, [options]);
+            },
+
+            profileAspect: function () {
+                return 'standalone'
+            },
+
+            sizeDirection: function () {
+                return 1;
+            }
+        });
+
         surface.ContextTools = surface.Sidebar.extend({
 
             initialize: function (options) {
@@ -435,6 +462,7 @@
 
         surface.logo = core.getView('.' + surface.const.logoClass, surface.Logo);
         surface.navigation = core.getView('.' + surface.const.navigationClass, surface.Navigation);
+        surface.standalone = core.getView('.' + surface.const.standaloneClass, surface.Standalone);
         surface.contextTools = core.getView('.' + surface.const.css.tools.base + surface.const.css.tools._.context, surface.ContextTools);
         surface.surface = core.getView('.' + surface.const.toolsPanelClass, surface.Surface);
 

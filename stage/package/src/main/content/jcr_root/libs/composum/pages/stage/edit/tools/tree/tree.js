@@ -1033,9 +1033,15 @@
             }
         });
 
-        tree.pageTreePanel = core.getView('.' + tree.const.pages.css.base, tree.PageTreePanel);
-        tree.assetsTreePanel = core.getView('.' + tree.const.assets.css.base, tree.AssetsTreePanel);
-        tree.developTreePanel = core.getView('.' + tree.const.develop.css.base, tree.DevelopTreePanel);
+        tree.setup = function () {
+            tree.pageTreePanel = core.getView('.' + tree.const.pages.css.base, tree.PageTreePanel);
+            tree.assetsTreePanel = core.getView('.' + tree.const.assets.css.base, tree.AssetsTreePanel);
+            tree.developTreePanel = core.getView('.' + tree.const.develop.css.base, tree.DevelopTreePanel);
+        };
+        tree.setup();
+        $(document).on(pages.const.event.pages.ready + '.Tree', function () {
+            tree.setup();
+        });
 
     })(window.composum.pages.tree, window.composum.pages, window.core);
 })(window);

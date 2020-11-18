@@ -226,7 +226,7 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
             // assuming insufficient permissions (no content access) if homepage is the site itself
             return getSiteManager().getPreviewUrl(this);
         } else {
-            return "/bin/pages.html" + getPath();
+            return PAGES_FRAME_PATH + ".html" + getPath();
         }
     }
 

@@ -7,12 +7,13 @@ import java.util.List;
 
 public class NavigationTools extends FramePage {
 
+    public static final String NAVIGATION_CATEGORY = "navigation";
+
     private transient ToolsCollection tools;
 
     public ToolsCollection getTools() {
         if (tools == null) {
-            tools = new ToolsCollection(context, null,
-                    "navigation",
+            tools = new ToolsCollection(context, null, NAVIGATION_CATEGORY,
                     DisplayMode.requested(context).name().toLowerCase());
         }
         return tools;
