@@ -42,9 +42,9 @@
                             com.composum.pages.options.assets.*
                         </Export-Package>
                         <Import-Package>
-                            com.composum.sling.core.*;version="[1.11,2.1)",
-                            com.composum.sling.nodes.*;version="[1.11,2.1)",
-                            com.composum.sling.cpnl.*;version="[1.11,2.1)",
+                            com.composum.sling.core.*;version="[1.11,3)",
+                            com.composum.sling.nodes.*;version="[1.11,3)",
+                            com.composum.sling.cpnl.*;version="[1.11,3)",
                             javax.annotation.*;version="[0,4)",
                             *
                         </Import-Package>
