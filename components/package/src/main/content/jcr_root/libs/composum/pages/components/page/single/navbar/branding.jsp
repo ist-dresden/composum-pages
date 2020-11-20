@@ -3,7 +3,7 @@
 <%@taglib prefix="cpn" uri="http://sling.composum.com/cpnl/1.0" %>
 <cpp:defineObjects/>
 <cpp:element var="navbar" type="com.composum.pages.components.model.page.SinglePageMenu" mode="none"
-             tagName="none">
+             cssBase="composum-pages-components-navigation-navbar" tagName="none">
     <cpn:link class="${navbarCSS}_brand navbar-brand"
               href="${navbar.singlePage.logoLinkUrl}"><img
             class="${navbarCSS}_logo" src="${navbar.singlePage.logoImageUrl}"/><span
