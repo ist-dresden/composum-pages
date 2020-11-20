@@ -60,6 +60,9 @@ public class PagesEditService implements EditService {
     @Reference
     protected PageManager pageManager;
 
+    @Reference
+    protected SiteManager siteManager;
+
     //
     // hierarchy management for the page content
     //
@@ -282,9 +285,9 @@ public class PagesEditService implements EditService {
      * @return the new resource at the target path
      */
     @Override
-    public Resource moveElement(ResourceResolver resolver, Resource changeRoot,
+    public Resource moveElement(ResourceResolver resolver, @Nullable Resource changeRoot,
                                 Resource source, ResourceManager.ResourceReference targetParent, Resource before,
-                                @Nonnull List<Resource> updatedReferrers)
+                                @Nonnull final List<Resource> updatedReferrers)
             throws RepositoryException, PersistenceException {
         Resource result = null;
 
@@ -302,6 +305,15 @@ public class PagesEditService implements EditService {
                 newName = checkNameCollision(collection, newName);
             }
 
+            if (changeRoot == null) {
+                changeRoot = siteManager.getContainingSiteResource(source);
+                if (changeRoot == null) {
+                    changeRoot = pageManager.getContainingPageResource(source);
+                    if (changeRoot == null) {
+                        changeRoot = resolver.resolve("/content");
+                    }
+                }
+            }
             result = resourceManager.moveContentResource(resolver, changeRoot, source, collection,
                     isAnotherParent ? newName : null, before, updatedReferrers);
             pageManager.touch(context, collection, null);

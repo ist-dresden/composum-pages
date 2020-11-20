@@ -933,7 +933,7 @@ public class EditServlet extends PagesContentServlet {
         public Resource doIt(ResourceResolver resolver, ResourceManager.ResourceReference source,
                              ResourceManager.ResourceReference target, Resource before, List<Resource> updatedReferrers)
                 throws PersistenceException, RepositoryException {
-            return editService.moveElement(resolver, resolver.getResource("/content"),
+            return editService.moveElement(resolver, null,
                     source.getResource(), target, before, updatedReferrers);
         }
 
