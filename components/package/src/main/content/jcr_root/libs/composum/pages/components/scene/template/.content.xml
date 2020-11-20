@@ -9,7 +9,14 @@
             templateRef="composum/pages/components/templates/page/scene"
             isTemplate="{Boolean}false">
         <main jcr:primaryType="cpp:Container" sling:resourceType="composum/pages/components/container/parsys">
-            <element jcr:primaryType="cpp:Element" sling:resourceType="${type}"/>
+            <row jcr:primaryType="cpp:Container"
+                    sling:resourceType="composum/pages/components/container/row"
+                    columns="-12-">
+                <column-0 jcr:primaryType="cpp:Container"
+                        sling:resourceType="composum/pages/components/container/row/column">
+                    <sample jcr:primaryType="cpp:Element" sling:resourceType="${type}"/>
+                </column-0>
+            </row>
         </main>
     </jcr:content>
 </jcr:root>

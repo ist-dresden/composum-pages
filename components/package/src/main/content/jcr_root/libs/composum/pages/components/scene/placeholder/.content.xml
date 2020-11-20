@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:cpp="http://sling.composum.com/pages/1.0"
+        xmlns:jcr="http://www.jcp.org/jcr/1.0"
+        xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+        xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+        jcr:primaryType="cpp:Page">
+    <jcr:content
+            jcr:primaryType="cpp:PageContent"
+            sling:resourceType="composum/pages/components/page/single"
+            jcr:title="Composum Pages Components Scene"
+            isTemplate="{Boolean}false">
+        <logo
+                jcr:primaryType="nt:unstructured"
+                imageRef="/libs/composum/pages/components/assets/logo/Composum-color.svg"/>
+        <style
+                jcr:primaryType="nt:unstructured"/>
+        <top
+                jcr:primaryType="cpp:Container"
+                sling:resourceType="composum/pages/components/container/parsys">
+            <title
+                    jcr:primaryType="cpp:Element"
+                    sling:resourceType="composum/pages/components/element/title"
+                    subtitle="the scene plugin for the Composum Nodes Browser"
+                    title="Components Scene">
+                <image
+                        jcr:primaryType="nt:unstructured"
+                        imageRef="/libs/composum/pages/components/assets/background/gravitational_waves.jpg"/>
+            </title>
+        </top>
+        <main
+                jcr:primaryType="cpp:Container"
+                sling:resourceType="composum/pages/components/container/parsys">
+            <row_1417376226
+                    jcr:primaryType="cpp:Container"
+                    sling:resourceType="composum/pages/components/container/row"
+                    columns="-12-">
+                <column-0
+                        jcr:primaryType="cpp:Container"
+                        sling:resourceType="composum/pages/components/container/row/column">
+                    <text
+                            jcr:primaryType="cpp:Element"
+                            sling:resourceType="composum/pages/components/element/text"
+                            text="This plugin enables the use (and on the fly creation) of a Composum Pages Components based scene with an embedded component content instance.."/>
+                </column-0>
+            </row_1417376226>
+            <row
+                    jcr:primaryType="cpp:Container"
+                    sling:resourceType="composum/pages/components/container/row"
+                    columns="-6--6-">
+                <column-0
+                        jcr:primaryType="cpp:Container"
+                        sling:resourceType="composum/pages/components/container/row/column">
+                    <section
+                            jcr:primaryType="cpp:Container"
+                            sling:resourceType="composum/pages/components/container/section"/>
+                    <section_1819725917
+                            jcr:primaryType="cpp:Container"
+                            sling:resourceType="composum/pages/components/container/section"
+                            jcr:title="Tools / Views">
+                        <text1
+                                jcr:primaryType="cpp:Element"
+                                sling:resourceType="composum/pages/components/element/text"
+                                text="The same scene - the prepared content with the embedded component instance - can be displayed by various tools or views. The Pages Components scene plugin provides an editing tool and the content&amp;nbsp; preview. Both views are available only if the scenes content is prepared."/>
+                        <section
+                                jcr:primaryType="cpp:Container"
+                                sling:resourceType="composum/pages/components/container/section"
+                                jcr:title="Pages Editor"
+                                icon="edit">
+                            <text
+                                    jcr:primaryType="cpp:Element"
+                                    sling:resourceType="composum/pages/components/element/text"
+                                    text="The 'Pages Editor' tool presents the prepared scene page in a Composum Pages editor. All editing function of the embedded component instance are available for testing."/>
+                        </section>
+                        <section_1188373428
+                                jcr:primaryType="cpp:Container"
+                                sling:resourceType="composum/pages/components/container/section"
+                                jcr:title="Pages Preview"
+                                icon="eye">
+                            <text
+                                    jcr:primaryType="cpp:Element"
+                                    sling:resourceType="composum/pages/components/element/text"
+                                    text="The 'Pages Preview' is showing the scenes page as a normal view without editing functionality but with the current data."/>
+                        </section_1188373428>
+                    </section_1819725917>
+                </column-0>
+                <column-1
+                        jcr:primaryType="cpp:Container"
+                        sling:resourceType="composum/pages/components/container/row/column">
+                    <section_883751902
+                            jcr:primaryType="cpp:Container"
+                            sling:resourceType="composum/pages/components/container/section"
+                            jcr:title="Preparation - Reset - Removal">
+                        <text
+                                jcr:primaryType="cpp:Element"
+                                sling:resourceType="composum/pages/components/element/text"
+                                text="On the scenes preparation a component resource of the 'current' - the selected - resource type is created and embedded in a new copy of a page preconfigured by this plugin. The scene is an editable page with the created component instance as an element of this page."/>
+                        <section
+                                jcr:primaryType="cpp:Container"
+                                sling:resourceType="composum/pages/components/container/section"
+                                jcr:title="Prepare / Reset"
+                                icon="asterisk">
+                            <text
+                                    jcr:primaryType="cpp:Element"
+                                    sling:resourceType="composum/pages/components/element/text"
+                                    text="If there is no scenes content available a new scene page with an instance of the current component will be created and displayed using the selected tool or view. If the is a scene prepared a click to 'prepare' will reset the scenes page."/>
+                        </section>
+                        <section1
+                                jcr:primaryType="cpp:Container"
+                                sling:resourceType="composum/pages/components/container/section"
+                                jcr:title="Remove"
+                                icon="trash">
+                            <text
+                                    jcr:primaryType="cpp:Element"
+                                    sling:resourceType="composum/pages/components/element/text"
+                                    text="Clicking this button the scene (the content) is removed immediately without each kind of confirmation. This information 'placeholder' is shown after the removal. If you prepare the scene again a new and fresh content resource will be embedded in the scenes page."/>
+                        </section1>
+                    </section_883751902>
+                </column-1>
+            </row>
+        </main>
+        <bottom
+                jcr:primaryType="cpp:Container"
+                sling:resourceType="composum/pages/components/container/iparsys"/>
+    </jcr:content>
+</jcr:root>

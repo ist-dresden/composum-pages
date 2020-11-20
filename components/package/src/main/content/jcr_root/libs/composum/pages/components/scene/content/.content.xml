@@ -5,7 +5,7 @@
         sling:resourceType="composum/nodes/console/scene"
         key="cmpcomp"
         template="/libs/composum/pages/components/scene/template"
-        order="{Long}50">
+        placeholder="/libs/composum/pages/components/scene/placeholder.html">
     <edit jcr:primaryType="nt:unstructured"
             jcr:title="Pages Editor"
             jcr:description="Composum Pages Components editor scene"
