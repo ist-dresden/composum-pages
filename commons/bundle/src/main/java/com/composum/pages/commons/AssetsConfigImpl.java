@@ -242,13 +242,13 @@ public class AssetsConfigImpl implements AssetsConfiguration {
         documentNodeFilter = buildTreeFilter(new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.and,
                 replicationRootFilter, documentFileFilter), treeIntermediateFilter);
         if (assetsModuleConfig != null) {
-            assetFileFilter = new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.or,
-                    ResourceFilterMapping.fromString(config.assetNodeFilterRule()),
-                    imageFileFilter);
+            assetFileFilter = /*new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.or,*/
+                    ResourceFilterMapping.fromString(config.assetNodeFilterRule())/*,
+                    imageFileFilter)*/;//FIXME
             assetNodeFilter = buildTreeFilter(new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.and,
                     replicationRootFilter, assetFileFilter), treeIntermediateFilter);
             anyFileFilter = new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.or,
-                    assetFileFilter, videoFileFilter, documentFileFilter);
+                    assetFileFilter, imageFileFilter/*FIXME*/, videoFileFilter, documentFileFilter);
         } else {
             assetFileFilter = null;
             assetNodeFilter = null;

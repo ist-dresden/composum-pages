@@ -277,7 +277,7 @@
 
             move: function (event) {
                 var move = this.getMove(event, this.start);
-                var width = Math.max(this.start.width + (move.x * this.sidebar.sizeDirection()), 300);
+                var width = Math.max(this.start.width + (move.x * this.sidebar.sizeDirection()), 320);
                 this.sidebar.$el.css('width', width + 'px');
                 this.$el.css('top', this.adjustTop(this.start.handle + move.y) + 'px');
                 surface.surface.bodySync(this.sidebar);

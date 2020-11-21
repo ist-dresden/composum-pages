@@ -152,7 +152,7 @@ $breadcrumbs-menu-indent: 20px;
             width: 100%;
             justify-content: flex-end;
 
-            .composum-pages-components-navigation {
+            > .composum-pages-components-navigation {
 
                 &-menuitem {
                     max-width: 25%;

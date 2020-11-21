@@ -3,7 +3,7 @@
         jcr:primaryType="sling:OrderedFolder"
         jcr:title="Pages Components Scene"
         sling:resourceType="composum/nodes/console/scene"
-        key="cmpcomp"
+        key="cpmcomp"
         template="/libs/composum/pages/components/scene/template"
         placeholder="/libs/composum/pages/components/scene/placeholder.html">
     <edit jcr:primaryType="nt:unstructured"

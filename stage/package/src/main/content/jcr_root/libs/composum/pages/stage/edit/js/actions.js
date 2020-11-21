@@ -394,6 +394,14 @@
                 pages.dialogs.openDeleteSiteDialog(name, path, type);
             },
 
+            activate: function (event, name, path, type) {
+                pages.dialogs.openActivateContentDialog(name, path, type);
+            },
+
+            revert: function (event, name, path, type) {
+                pages.dialogs.openRevertContentDialog(name, path, type);
+            },
+
             manage: function (event) {
                 pages.dialogs.openManageSitesDialog();
             }

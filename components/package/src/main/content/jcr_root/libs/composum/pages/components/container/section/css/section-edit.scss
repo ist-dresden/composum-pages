@@ -1,0 +1,11 @@
+@charset "UTF-8";
+
+@import "../../../css/variables";
+@import "../../../css/mixins";
+
+.composum-pages-components-container-section {
+
+    &_title {
+        margin-top: $title-margin-level-1-top - $edit-container-padding-top;
+    }
+}

@@ -3,14 +3,14 @@
 <cpp:defineFrameObjects/>
 <cpp:editToolbar>
     <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
-        <%--
-        <cpp:treeMenu key="more" icon="navicon" label="More..." title="more page manipulation actions...">
-            <cpp:menuItem icon="id-badge" label="Rename" title="Rename the selected folder"
-                          action="window.composum.pages.actions.site.rename"/>
-            <cpp:menuItem icon="arrows-alt" label="Move" title="Move the selected folder"
-                          action="window.composum.pages.actions.site.move"/>
-        </cpp:treeMenu>
-        --%>
+            <%--
+            <cpp:treeMenu key="more" icon="navicon" label="More..." title="more page manipulation actions...">
+                <cpp:menuItem icon="id-badge" label="Rename" title="Rename the selected folder"
+                              action="window.composum.pages.actions.site.rename"/>
+                <cpp:menuItem icon="arrows-alt" label="Move" title="Move the selected folder"
+                              action="window.composum.pages.actions.site.move"/>
+            </cpp:treeMenu>
+            --%>
         <cpp:treeAction icon="database" label="Manage" title="Manage Sites"
                         action="window.composum.pages.actions.site.manage"/>
         <cpp:treeAction icon="edit" label="Edit" title="Edit the site properties"
@@ -27,18 +27,24 @@
         </cpp:treeMenu>
         <cpp:treeAction icon="paste" label="Paste into Site" title="Paste element as child of the site"
                         action="window.composum.pages.actions.site.paste"/>
-        <%--
-        <cpp:treeMenu key="changes" icon="cog" label="More..." title="new site, copy, paste or delete...">
-            <cpp:menuItem icon="sitemap" label="Create Site" title="Create a new Site"
-                          action="window.composum.pages.actions.site.create"/>
-            <cpp:menuItem icon="copy" label="Copy Site" title="Copy the selected site"
-                          action="window.composum.pages.actions.site.copy"/>
-            <cpp:menuItem icon="paste" label="Paste into Site" title="Paste element as child of the site"
-                          condition=""
-                          action="window.composum.pages.actions.site.paste"/>
-            <cpp:menuItem icon="trash" label="Delete Site" title="Delete the selected site!"
-                          action="window.composum.pages.actions.site.delete"/>
-        </cpp:treeMenu>
-        --%>
+            <%--
+            <cpp:treeMenu key="changes" icon="cog" label="More..." title="new site, copy, paste or delete...">
+                <cpp:menuItem icon="sitemap" label="Create Site" title="Create a new Site"
+                              action="window.composum.pages.actions.site.create"/>
+                <cpp:menuItem icon="copy" label="Copy Site" title="Copy the selected site"
+                              action="window.composum.pages.actions.site.copy"/>
+                <cpp:menuItem icon="paste" label="Paste into Site" title="Paste element as child of the site"
+                              condition=""
+                              action="window.composum.pages.actions.site.paste"/>
+                <cpp:menuItem icon="trash" label="Delete Site" title="Delete the selected site!"
+                              action="window.composum.pages.actions.site.delete"/>
+            </cpp:treeMenu>
+            --%>
+    </div>
+    <div class="composum-pages-tools_button-group btn-group btn-group-smaller" role="group">
+        <cpp:treeAction icon="play" label="Activate Site Configuration" title="Activate Site Configuration"
+                        action="window.composum.pages.actions.site.activate"/>
+        <cpp:treeAction icon="pause" label="Revert Site Configuration" title="Revert Site Configuration"
+                        action="window.composum.pages.actions.site.revert"/>
     </div>
 </cpp:editToolbar>
