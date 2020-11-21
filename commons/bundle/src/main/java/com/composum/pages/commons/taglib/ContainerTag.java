@@ -1,7 +1,9 @@
 package com.composum.pages.commons.taglib;
 
+import com.composum.pages.commons.model.Component;
 import com.composum.pages.commons.model.Container;
 import com.composum.pages.commons.request.DisplayMode;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,11 +42,11 @@ public class ContainerTag extends ElementTag {
         if (decoration && isEditMode() && isWithTag() && component instanceof Container) {
             Container container = (Container) component;
             try {
-                out.append("<div class=\"composum-pages-container_start\"");
+                out.append("<div class=\"composum-pages-container_wrapper\"");
                 if (DisplayMode.isDevelopMode(context)) {
                     out.append(" title=\"type: ").append(container.getType()).append("\"");
                 }
-                out.append(">").append("&nbsp;>> ");
+                out.append(">");
                 writeContainerDecoration(container);
             } catch (IOException ioex) {
                 LOG.error(ioex.getMessage(), ioex);
@@ -59,8 +61,7 @@ public class ContainerTag extends ElementTag {
         if (decoration && isEditMode() && isWithTag() && component instanceof Container) {
             Container container = (Container) component;
             try {
-                out.append("<div class=\"composum-pages-container_end\">").append("&nbsp;<< ");
-                writeContainerDecoration(container);
+                out.append("</div>");
             } catch (IOException ioex) {
                 LOG.error(ioex.getMessage(), ioex);
             }
@@ -70,7 +71,29 @@ public class ContainerTag extends ElementTag {
     }
 
     protected void writeContainerDecoration(Container container) throws IOException {
-        out.append("<span class=\"composum-pages-container_path-hint\">").append(container.getPathHint()).append("</span>");
-        out.append("<span class=\"composum-pages-container_name-hint\">").append(container.getName()).append("</span></div>\n");
+        String typeLabel = null;
+        String typeHint = null;
+        Component component = container.getComponent();
+        if (component != null) {
+            typeLabel = component.getTitle();
+            typeHint = container.getTypeHint();
+        }
+        if (StringUtils.isBlank(typeLabel)) {
+            typeLabel = container.getTypeHint();
+        }
+        out.append("<div class=\"composum-pages-container_wrapper-hints\"");
+        if (DisplayMode.isDevelopMode(context)) {
+            out.append(" title=\"type: ").append(container.getType()).append("\"");
+        }
+        out.append(">");
+        out.append("<span class=\"composum-pages-container_type-label\">").append(typeLabel).append("</span> (");
+        if (DisplayMode.isDevelopMode(context)) {
+            if (StringUtils.isNotBlank(typeHint)) {
+                out.append("<span class=\"composum-pages-container_type-hint\">").append(typeHint).append("</span>");
+            }
+            out.append("<span class=\"composum-pages-container_path-hint\">").append(container.getPathHint()).append("</span>");
+        }
+        out.append("<span class=\"composum-pages-container_name-hint\">").append(container.getName()).append("</span>");
+        out.append(")</div>\n");
     }
 }

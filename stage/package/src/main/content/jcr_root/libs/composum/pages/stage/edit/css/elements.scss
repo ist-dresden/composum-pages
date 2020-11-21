@@ -13,29 +13,45 @@
 
     .composum-pages-container {
 
-        &_start, &_end {
-            width: 100%;
-            white-space: nowrap;
-            overflow: hidden;
-            @include edit-hint-font;
-            color: $edit-hint-color;
+        &_wrapper {
+            position: relative;
+            min-width: 60px;
+            min-height: 40px;
+            border: $edit-hint-border;
+            padding: 1.5rem 0;
 
             .composum-pages-container {
 
-                &_path-hint {
-                    margin-right: 0.2rem;
+                &_wrapper {
+                    margin: 0 -1px -1px;
+                }
+
+                &_wrapper-hints {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    max-width: 100%;
+                    overflow: hidden;
+                    white-space: nowrap;
+                    @include edit-hint-font;
+                    background: $edit-hint-background;
+                    color: $edit-hint-foreground;
+                    opacity: $edit-hint-opacity;
+
+                    & > span {
+                        display: inline-block;
+                        padding: 0 2px;
+                    }
+
+                    .composum-pages-container {
+
+                        &_type-label {
+                            padding: 0 4px;
+                            font-weight: bold;
+                        }
+                    }
                 }
             }
-        }
-
-        &_start {
-            padding: 12px 4px 0;
-            border-bottom: 2px dashed $edit-hint-color;
-        }
-
-        &_end {
-            border-top: 2px dashed $edit-hint-color;
-            padding: 0 4px 8px;
         }
     }
 
