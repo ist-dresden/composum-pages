@@ -276,6 +276,7 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
         return initialResource != null ? getPageManager().getContainingPageResource(initialResource) : null;
     }
 
+    @Nonnull
     @Override
     protected PageContent createContentModel(BeanContext context, Resource contentResource) {
         return new PageContent(context, contentResource);

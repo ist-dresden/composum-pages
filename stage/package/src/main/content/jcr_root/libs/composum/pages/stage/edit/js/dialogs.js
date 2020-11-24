@@ -68,17 +68,29 @@
                     },
                     version: {
                         base: '/bin/cpm/platform/versions',
-                        activate: {
-                            _dialog: '/page/dialog/activate.html',
-                            _action: '.activate.json'
+                        page: {
+                            activate: {
+                                _dialog: '/page/dialog/activate.html',
+                                _action: '.activate.json'
+                            },
+                            revert: {
+                                _dialog: '/page/dialog/revert.html',
+                                _action: '.revert.json'
+                            },
+                            deactivate: {
+                                _dialog: '/page/dialog/deactivate.html',
+                                _action: '.deactivate.json'
+                            }
                         },
-                        revert: {
-                            _dialog: '/page/dialog/revert.html',
-                            _action: '.revert.json'
-                        },
-                        deactivate: {
-                            _dialog: '/page/dialog/deactivate.html',
-                            _action: '.deactivate.json'
+                        folder: {
+                            activate: {
+                                _dialog: '/folder/dialog/activate.html',
+                                _action: '.activate.json'
+                            },
+                            revert: {
+                                _dialog: '/folder/dialog/revert.html',
+                                _action: '.revert.json'
+                            }
                         }
                     },
                     sites: {
@@ -1002,7 +1014,7 @@
             },
 
             submitActionKey: function () {
-                return dialogs.const.edit.url.version.activate._action;
+                return dialogs.const.edit.url.version.page.activate._action;
             },
 
             show: function () {
@@ -1021,7 +1033,7 @@
 
         dialogs.openActivateContentDialog = function (name, path, type, setupDialog) {
             var c = dialogs.const.edit.url;
-            pages.dialogHandler.openEditDialog(c.path + c.version.activate._dialog,
+            pages.dialogHandler.openEditDialog(c.path + c.version.page.activate._dialog,
                 dialogs.ActivateContentDialog, name, path, type, undefined/*context*/, setupDialog);
         };
 
@@ -1035,13 +1047,13 @@
             },
 
             submitActionKey: function () {
-                return dialogs.const.edit.url.version.revert._action;
+                return dialogs.const.edit.url.version.page.revert._action;
             }
         });
 
         dialogs.openRevertContentDialog = function (name, path, type, setupDialog) {
             var c = dialogs.const.edit.url;
-            pages.dialogHandler.openEditDialog(c.path + c.version.revert._dialog,
+            pages.dialogHandler.openEditDialog(c.path + c.version.page.revert._dialog,
                 dialogs.RevertContentDialog, name, path, type, undefined/*context*/, setupDialog);
         };
 
@@ -1055,14 +1067,48 @@
             },
 
             submitActionKey: function () {
-                return dialogs.const.edit.url.version.deactivate._action;
+                return dialogs.const.edit.url.version.page.deactivate._action;
             }
         });
 
         dialogs.openDeactivateContentDialog = function (name, path, type, setupDialog) {
             var c = dialogs.const.edit.url;
-            pages.dialogHandler.openEditDialog(c.path + c.version.deactivate._dialog,
+            pages.dialogHandler.openEditDialog(c.path + c.version.page.deactivate._dialog,
                 dialogs.DeactivateContentDialog, name, path, type, undefined/*context*/, setupDialog);
+        };
+
+        dialogs.ActivateTreeDialog = dialogs.ManageReleaseStatusDialog.extend({
+
+            initialize: function (options) {
+                dialogs.ManageReleaseStatusDialog.prototype.initialize.call(this, options);
+                this.refs = {
+                    page: core.getWidget(this.el, '.widget-name_page-references', pages.widgets.PageReferencesWidget),
+                    asset: core.getWidget(this.el, '.widget-name_asset-references', pages.widgets.PageReferencesWidget)
+                };
+            },
+
+            submitActionKey: function () {
+                return dialogs.const.edit.url.version.folder.activate._action;
+            },
+
+            show: function () {
+                if (this.hasReferences()) {
+                    // the normal show() if unresolved references found
+                    dialogs.ElementDialog.prototype.show.apply(this);
+                } else {
+                    // the show() is suppressed if no unresolved references found
+                    this.doSubmit(undefined, _.bind(function (xhr) {
+                        core.alert(xhr);
+                    }, this));
+                    this.destroy();
+                }
+            }
+        });
+
+        dialogs.openActivateTreeDialog = function (name, path, type, setupDialog) {
+            var c = dialogs.const.edit.url;
+            pages.dialogHandler.openEditDialog(c.path + c.version.folder.activate._dialog,
+                dialogs.ActivateTreeDialog, name, path, type, undefined/*context*/, setupDialog);
         };
 
         //

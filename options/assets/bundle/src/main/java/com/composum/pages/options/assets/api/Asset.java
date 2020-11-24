@@ -11,6 +11,8 @@ import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.util.ResourceUtil;
 import org.apache.sling.api.resource.Resource;
 
+import javax.annotation.Nonnull;
+
 public class Asset extends ContentDriven<AssetContent> {
 
     private transient ImageAsset imageAsset;
@@ -33,6 +35,7 @@ public class Asset extends ContentDriven<AssetContent> {
         initialize(context, resource);
     }
 
+    @Nonnull
     @Override
     protected AssetContent createContentModel(BeanContext context, Resource contentResource) {
         return new AssetContent(context, contentResource);

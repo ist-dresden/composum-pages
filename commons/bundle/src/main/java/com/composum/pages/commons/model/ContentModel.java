@@ -1,6 +1,8 @@
 package com.composum.pages.commons.model;
 
 import com.composum.pages.commons.util.PagesUtil;
+import com.composum.sling.core.util.NodeUtil;
+import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.api.JackrabbitSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,9 +38,13 @@ public abstract class ContentModel<ParentModel extends ContentDriven> extends Ab
     private transient Calendar creationDate;
     private transient Calendar lastModified;
 
-    private transient Boolean locked;
-    private transient String lockOwner;
+    private transient Boolean versionable;
     private transient Boolean checkedOut;
+
+    private transient Boolean lockable;
+    private transient Boolean locked;
+    private transient Boolean holdsLock;
+    private transient String lockOwner;
 
     private transient VersionManager versionManager;
 
@@ -96,33 +102,21 @@ public abstract class ContentModel<ParentModel extends ContentDriven> extends Ab
         return true;
     }
 
-    public boolean isLocked() {
-        if (locked == null) {
-            locked = false;
-            lockOwner = "";
+    // versionable
+
+    public boolean isVersionable() {
+        if (versionable == null) {
+            versionable = false;
             Node node = getResource().adaptTo(Node.class);
             if (node != null) {
-                Session session = getContext().getResolver().adaptTo(Session.class);
-                if (session != null) {
-                    Workspace workspace = session.getWorkspace();
-                    try {
-                        LockManager lockManager = workspace.getLockManager();
-                        locked = node.isLocked();
-                        if (locked) {
-                            Lock lock = lockManager.getLock(node.getPath());
-                            lockOwner = lock.getLockOwner();
-                        }
-                    } catch (RepositoryException ex) {
-                        LOG.error(ex.getMessage(), ex);
-                    }
+                try {
+                    versionable = NodeUtil.isNodeType(node, JcrConstants.MIX_VERSIONABLE);
+                } catch (RepositoryException ex) {
+                    LOG.error(ex.getMessage(), ex);
                 }
             }
         }
-        return locked;
-    }
-
-    public String getLockOwner() {
-        return isLocked() ? lockOwner : "";
+        return versionable;
     }
 
     public boolean isCheckedOut() {
@@ -146,5 +140,52 @@ public abstract class ContentModel<ParentModel extends ContentDriven> extends Ab
             versionManager = session.getWorkspace().getVersionManager();
         }
         return versionManager;
+    }
+
+    // lockable
+
+    public boolean isLockable() {
+        if (lockable == null) {
+            lockable = false;
+            holdsLock = false;
+            locked = false;
+            lockOwner = "";
+            Node node = getResource().adaptTo(Node.class);
+            if (node != null) {
+                try {
+                    lockable = NodeUtil.isNodeType(node, JcrConstants.MIX_LOCKABLE);
+                    locked = node.isLocked();
+                    if (locked) {
+                        Session session = getContext().getResolver().adaptTo(Session.class);
+                        if (session != null) {
+                            Workspace workspace = session.getWorkspace();
+                            String path = node.getPath();
+                            LockManager lockManager = workspace.getLockManager();
+                            holdsLock = lockManager.holdsLock(path);
+                            Lock lock = lockManager.getLock(path);
+                            lockOwner = lock.getLockOwner();
+                        }
+                    }
+                } catch (RepositoryException ex) {
+                    LOG.error(ex.getMessage(), ex);
+                }
+            }
+        }
+        return lockable;
+    }
+
+    public boolean isHoldsLock() {
+        isLockable();
+        return holdsLock;
+    }
+
+    public boolean isLocked() {
+        isLockable();
+        return locked;
+    }
+
+    public String getLockOwner() {
+        isLockable();
+        return lockOwner;
     }
 }

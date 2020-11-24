@@ -444,6 +444,14 @@
 
             delete: function (event, name, path, type) {
                 pages.dialogs.openDeleteContentDialog('folder', name, path, type);
+            },
+
+            activate: function (event, name, path, type) {
+                pages.dialogs.openActivateTreeDialog(name, path, type);
+            },
+
+            revert: function (event, name, path, type) {
+                pages.dialogs.openRevertTreeDialog(name, path, type);
             }
         };
 

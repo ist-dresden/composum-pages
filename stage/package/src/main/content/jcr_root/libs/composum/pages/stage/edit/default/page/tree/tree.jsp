@@ -10,4 +10,7 @@
     <div class="composum-pages-tools_button-group btn-group btn-group-sm" role="group">
         <sling:call script="editing.jsp"/>
     </div>
+    <div class="composum-pages-tools_button-group btn-group btn-group-smaller" role="group">
+        <sling:call script="activation.jsp"/>
+    </div>
 </cpp:editToolbar>

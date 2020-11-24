@@ -11,6 +11,8 @@ import com.composum.sling.core.util.ResourceUtil;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.resource.Resource;
 
+import javax.annotation.Nonnull;
+
 public class File extends ContentDriven<FileResource> {
 
     public enum Type {asset, document, file, image, video}
@@ -34,6 +36,7 @@ public class File extends ContentDriven<FileResource> {
         initialize(context, resource);
     }
 
+    @Nonnull
     @Override
     protected FileResource createContentModel(BeanContext context, Resource contentResource) {
         return new FileResource(context, contentResource);

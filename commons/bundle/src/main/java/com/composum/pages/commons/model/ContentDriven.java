@@ -56,6 +56,7 @@ public abstract class ContentDriven<ContentType extends ContentModel> extends Ab
         content.parent = this;
     }
 
+    @Nonnull
     protected abstract ContentType createContentModel(BeanContext context, Resource contentResource);
 
     public ContentType getContent() {
@@ -147,7 +148,15 @@ public abstract class ContentDriven<ContentType extends ContentModel> extends Ab
         return value;
     }
 
-    // release
+    // lockable
+
+    public boolean isLockable() {
+        return getContent().isLockable();
+    }
+
+    public boolean isHoldsLock() {
+        return getContent().isHoldsLock();
+    }
 
     public boolean isLocked() {
         return getContent().isLocked();
@@ -155,6 +164,12 @@ public abstract class ContentDriven<ContentType extends ContentModel> extends Ab
 
     public String getLockOwner() {
         return getContent().getLockOwner();
+    }
+
+    // release
+
+    public boolean isVersionable() {
+        return getContent().isVersionable();
     }
 
     public boolean isCheckedOut() {
