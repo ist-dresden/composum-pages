@@ -13,12 +13,14 @@ import java.util.Set;
  * The configuration service for the Assets aspect of the Pages implementation.
  */
 public interface AssetsConfiguration {
-    
+
     String ASSET_FILTER_ALL = "all";
     String ASSET_FILTER_ASSET = "asset";
     String ASSET_FILTER_IMAGE = "image";
     String ASSET_FILTER_VIDEO = "video";
+    String ASSET_FILTER_AUDIO = "audio";
     String ASSET_FILTER_DOCUMENT = "document";
+    String ASSET_FILTER_BINARY = "binary";
 
     class ConfigurableFilter {
 
@@ -95,16 +97,16 @@ public interface AssetsConfiguration {
     ResourceFilter getVideoNodeFilter();
 
     @Nonnull
-    ResourceFilter getAnyNodeFilter();
+    ResourceFilter getAudioNodeFilter();
 
     @Nonnull
     ResourceFilter getDocumentNodeFilter();
 
     @Nonnull
-    Set<String> getFileFilterKeys();
+    ResourceFilter getBinaryNodeFilter();
 
-    @Nullable
-    ResourceFilter getFileFilter(@Nonnull BeanContext context, @Nonnull String key);
+    @Nonnull
+    ResourceFilter getAnyNodeFilter();
 
     @Nullable
     ResourceFilter getAssetFileFilter();
@@ -116,8 +118,22 @@ public interface AssetsConfiguration {
     ResourceFilter getVideoFileFilter();
 
     @Nonnull
+    ResourceFilter getAudioFileFilter();
+
+    @Nonnull
     ResourceFilter getDocumentFileFilter();
 
     @Nonnull
+    ResourceFilter getBinaryFileFilter();
+
+    @Nonnull
     ResourceFilter getAnyFileFilter();
+
+    // configured node filters
+
+    @Nonnull
+    Set<String> getFileFilterKeys();
+
+    @Nullable
+    ResourceFilter getFileFilter(@Nonnull BeanContext context, @Nonnull String key);
 }
