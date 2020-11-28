@@ -118,6 +118,7 @@ public interface PagesConstants {
     String PROP_NAV_TITLE = NAVIGATION_PROPS + "title";
 
     String PROP_SLING_TARGET = "sling:target";
+    String PN_ALTERNATIVES = "alternatives";
 
     String SUBNODE_STYLE = "style/";
     String PROP_THEME = SUBNODE_STYLE + "theme";
