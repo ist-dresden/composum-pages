@@ -4,8 +4,8 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <cpp:defineObjects/>
 <cpp:container var="model" type="com.composum.pages.components.model.composed.Carousel"
-               tagId="@{modelId}" cssAdd="@{model.editMode?'':'carousel slide'}"
-               data-ride="model.autoStart?'carousel':''}"
+               tagId="@{modelId}" cssAdd="@{model.editModeRequested?'':'carousel slide'}"
+               data-ride="@{model.autoStart?'carousel':''}"
                data-interval="@{model.autoStart?model.interval:'false'}"
                data-pause="@{model.noPause?'':'hover'}">
     <%-- Indicators --%>
@@ -20,7 +20,7 @@
     <%-- Wrapper for slides --%>
     <div class="${modelCSS}_element-set carousel-inner" role="listbox">
         <c:forEach items="${model.elements}" var="element" varStatus="loop">
-            <div class="${modelCSS}_element item ${loop.index == 0 ? 'active' : ''}" data-path="${element.path}"
+            <div class="${modelCSS}_element carousel-item item ${loop.index == 0 ? 'active' : ''}" data-path="${element.path}"
                  data-index="${loop.index}">
                 <cpp:include resource="${element.resource}"/>
             </div>
@@ -28,12 +28,12 @@
     </div>
     <%-- Left and right controls --%>
     <c:if test="${model.useControls}">
-        <a class="${modelCSS}_handle-prev left carousel-control" href="#${modelId}" role="button"
+        <a class="${modelCSS}_handle-prev left carousel-control carousel-control-prev" href="#${modelId}" role="button"
            data-slide="prev">
             <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
             <span class="sr-only">${cpn:i18n(slingRequest,'Previous')}</span>
         </a>
-        <a class="${modelCSS}_handle-next right carousel-control" href="#${modelId}" role="button"
+        <a class="${modelCSS}_handle-next right carousel-control carousel-control-next" href="#${modelId}" role="button"
            data-slide="next">
             <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
             <span class="sr-only">${cpn:i18n(slingRequest,'Next')}</span>

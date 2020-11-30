@@ -44,12 +44,23 @@ public class Row extends Element {
                 "col-lg-3 col-md-3 col-sm-12 col-xs-12",
                 "col-lg-6 col-md-6 col-sm-12 col-xs-12",
                 "col-lg-3 col-md-3 col-sm-12 col-xs-12"});
+        COLUMN_RULES.put("-3--3--3--3-", new String[]{
+                "col-lg-3 col-md-3 col-sm-6 col-xs-12",
+                "col-lg-3 col-md-3 col-sm-6 col-xs-12",
+                "col-lg-3 col-md-3 col-sm-6 col-xs-12",
+                "col-lg-3 col-md-3 col-sm-6 col-xs-12"});
+        COLUMN_RULES.put("-5--7-", new String[]{
+                "col-lg-5 col-md-5 col-sm-12 col-xs-12",
+                "col-lg-7 col-md-7 col-sm-12 col-xs-12"});
+        COLUMN_RULES.put("-7--5-", new String[]{
+                "col-lg-7 col-md-7 col-sm-12 col-xs-12",
+                "col-lg-5 col-md-5 col-sm-12 col-xs-12"});
         COLUMN_RULES.put("-3--9-", new String[]{
-                "col-lg-3 col-md-3 col-sm-4 col-xs-12",
-                "col-lg-9 col-md-9 col-sm-8 col-xs-12"});
+                "col-lg-3 col-md-3 col-sm-12 col-xs-12",
+                "col-lg-9 col-md-9 col-sm-12 col-xs-12"});
         COLUMN_RULES.put("-9--3-", new String[]{
-                "col-lg-9 col-md-9 col-sm-8 col-xs-12",
-                "col-lg-3 col-md-3 col-sm-4 col-xs-12"});
+                "col-lg-9 col-md-9 col-sm-12 col-xs-12",
+                "col-lg-3 col-md-3 col-sm-12 col-xs-12"});
     }
 
     public String[] getColumns() {

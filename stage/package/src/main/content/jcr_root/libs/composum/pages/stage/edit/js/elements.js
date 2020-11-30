@@ -2,10 +2,9 @@
  * edit user interface functions embedded in a content page to support edit interaction
  * strong dependency to: 'invoke.js' ('commons.js'; libs: 'backbone.js', 'underscore.js', 'loglevel.js', 'jquery.js')
  */
-(function (window) {
-    window.composum = window.composum || {};
-    window.composum.pages = window.composum.pages || {};
-    window.composum.pages.elements = window.composum.pages.elements || {};
+(function () {
+    'use strict';
+    CPM.namespace('pages.elements');
 
     (function (elements, pages, core) {
         'use strict';
@@ -1350,5 +1349,5 @@
         elements.pageBody = core.getView('body.' + elements.const.class.editBody, elements.PageBody);
         elements.pageBody.initComponents();
 
-    })(window.composum.pages.elements, window.composum.pages, window.core);
-})(window);
+    })(CPM.pages.elements, CPM.pages, CPM.core);
+})();

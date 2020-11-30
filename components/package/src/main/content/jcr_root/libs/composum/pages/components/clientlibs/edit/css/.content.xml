@@ -9,6 +9,7 @@
                 composum/pages/components/container/row/css/row-edit.css,
                 composum/pages/components/container/section/css/section-edit.css,
                 composum/pages/components/element/image/css/image-edit.css,
+                composum/pages/components/element/map/here/css/here-edit.css,
                 composum/pages/components/element/map/google/css/google-edit.css,
                 composum/pages/components/element/reference/css/reference-edit.css,
                 composum/pages/components/element/teaser/css/teaser-edit.css,

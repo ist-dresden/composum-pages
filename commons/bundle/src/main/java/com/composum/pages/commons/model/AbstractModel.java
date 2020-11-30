@@ -137,6 +137,7 @@ public abstract class AbstractModel implements SlingBean, Model {
 
     private transient Page currentPage;
     private transient Page containingPage;
+    private Boolean fromCurrentPage;
 
     private transient Locale locale;
     private transient Languages languages;
@@ -251,6 +252,14 @@ public abstract class AbstractModel implements SlingBean, Model {
         return domId;
     }
 
+    public boolean isFromCurrentPage() {
+        if (fromCurrentPage == null) {
+            Page containingPage = getContainingPage();
+            fromCurrentPage = containingPage != null && containingPage.equals(getCurrentPage());
+        }
+        return fromCurrentPage;
+    }
+
     public boolean isPublicMode() {
         return AccessMode.PUBLIC == getAccessMode();
     }
@@ -268,11 +277,25 @@ public abstract class AbstractModel implements SlingBean, Model {
         return accessMode;
     }
 
+    /**
+     * @return 'true' if the current display mode (the topmost of the stack) is an edit mode
+     */
     public boolean isEditMode() {
         DisplayMode.Value mode = getDisplayMode();
         return mode == DisplayMode.Value.EDIT || mode == DisplayMode.Value.DEVELOP;
     }
 
+    /**
+     * @return 'true' if the requests display mode (the first mode of the stack) is an edit mode
+     */
+    public boolean isEditModeRequested() {
+        DisplayMode.Value mode = DisplayMode.requested(context);
+        return mode == DisplayMode.Value.EDIT || mode == DisplayMode.Value.DEVELOP;
+    }
+
+    /**
+     * @return the current display mode (the topmost of the stack)
+     */
     public DisplayMode.Value getDisplayMode() {
         if (displayMode == null) {
             displayMode = DisplayMode.current(context);

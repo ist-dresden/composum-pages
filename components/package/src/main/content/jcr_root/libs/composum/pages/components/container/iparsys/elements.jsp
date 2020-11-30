@@ -5,6 +5,6 @@
 <cpp:model var="container" type="com.composum.pages.commons.model.IParSys"
            cssBase="composum-pages-components-container">
     <c:forEach items="${container.elements}" var="element">
-        <cpp:include resource="${element.resource}"/>
+        <cpp:include resource="${element.resource}" mode="${element.fromCurrentPage?element.displayMode:'none'}"/>
     </c:forEach>
 </cpp:model>
