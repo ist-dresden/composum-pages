@@ -84,9 +84,10 @@ public class PagesReleaseFilter implements Filter {
                 description = "the URI patterns for general (unreleased) artifacts"
         )
         String[] unreleased_uri_allow() default {
-                "^/(apps|libs)/.+$",
+                "^/(apps|libs)/.*\\.(css|js|jpg|jpeg|gif|png|ico|ttf|woff2?)$",
                 "^/bin/public/.+$",
-                "^/j_security_check$"
+                "^/j_security_check$",
+                "^/bin/cpm/platform/auth/sessionTransferCallback$"
         };
 
         @AttributeDefinition(
@@ -94,7 +95,7 @@ public class PagesReleaseFilter implements Filter {
                 description = "the path patterns for general (unreleased) artifacts"
         )
         String[] unreleased_path_allow() default {
-                "^/(apps|libs)/.+$",
+                "^/(apps|libs)/.*\\.(css|js|jpg|jpeg|gif|png|ico|ttf|woff2?)$",
                 "^/libs/sling/servlet/errorhandler/.+$",
                 "^/libs/(themes|fonts|jslibs|composum|sling)/.+$",
                 "^/libs(/composum/platform/security)?/login.*$",
