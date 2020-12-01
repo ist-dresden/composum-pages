@@ -3,9 +3,9 @@
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <cpp:defineObjects/>
 <cpp:element var="model" type="com.composum.pages.components.model.map.HereMap">
-    <script src="https://js.api.here.com/v3/3.1/mapsjs-core.js" type="text/javascript" charset="utf-8"></script>
-    <script src="https://js.api.here.com/v3/3.1/mapsjs-service.js" type="text/javascript" charset="utf-8"></script>
     <div class="${modelCSS}_wrapper">
-        <img class="${modelCSS}_map" src="${model.mapviewUrl}"/>
+        <cpn:link href="${model.linkUrl}" test="${not empty model.linkUrl}" class="${modelCSS}_link" body="true">
+            <img class="${modelCSS}_image" src="${model.mapviewUrl}" alt="${model.linkUrl}"/>
+        </cpn:link>
     </div>
 </cpp:element>
