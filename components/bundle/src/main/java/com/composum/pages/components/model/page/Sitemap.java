@@ -45,7 +45,8 @@ public class Sitemap extends AbstractModel {
 
     private transient String sitemapRootPath;
 
-    private transient List<SitemapEntry> entries;
+    private transient List<SitemapEntry> sitemapMenuEntries;
+    private transient List<SitemapEntry> sitemapDataEntries;
 
     private transient ResourceFilter sitemapPageFilter;
     private transient ResourceFilter searchFilter;
@@ -72,73 +73,76 @@ public class Sitemap extends AbstractModel {
     }
 
     /**
-     * Gets entries.
-     *
-     * @return the entries
+     * Gets entries for a sitemap based menu; this ignores pages marked with 'hideInNavigation'.
      */
-    public List<SitemapEntry> getEntries() {
-        if (entries == null) {
-            Resource root = null;
-            String rootPath = getSitemapRootPath();
-            if (StringUtils.isNotBlank(rootPath)) {
-                root = getContext().getResolver().getResource(rootPath);
-            }
-            if (root == null) {
-                root = resource.getParent();
-            }
-            if (root != null) {
-                Stream<Page> roots;
-                if (Page.isPage(root)) {
-                    roots = Stream.of(toPage(root));
-                } else {
-                    roots = StreamSupport.stream(root.getChildren().spliterator(), false)
-                            .filter(Page::isPage)
-                            .map(this::toPage);
-                }
-                entries = roots
-                        .filter((page) -> getSitemapPageFilter().accept(page.getResource()))
-                        .flatMap(this::collectNavigableDescendants)
-                        .filter((page) -> getSearchFilter().accept(page.getResource()))
-                        .map(SitemapEntry::new).sorted()
-                        .collect(Collectors.toList());
-            } else {
-                entries = Collections.emptyList();
-            }
+    public List<SitemapEntry> getSitemapMenuEntries() {
+        if (sitemapMenuEntries == null) {
+            sitemapMenuEntries = getSitemapEntries(getSitemapMenuFilter());
         }
-        return entries;
+        return sitemapMenuEntries;
+    }
+
+    /**
+     * Gets entries for the 'sitemap.xml'; this doesn't honor a 'hideInNavigation' to find all searchable pages.
+     */
+    public List<SitemapEntry> getSitemapDataEntries() {
+        if (sitemapMenuEntries == null) {
+            sitemapMenuEntries = getSitemapEntries(getSitemapDataFilter());
+        }
+        return sitemapMenuEntries;
+    }
+
+    /**
+     * Gets entries using the given filter.
+     */
+    @Nonnull
+    protected List<SitemapEntry> getSitemapEntries(ResourceFilter pageFilter) {
+        List<SitemapEntry> sitemapMenuEntries;
+        Resource root = null;
+        String rootPath = getSitemapRootPath();
+        if (StringUtils.isNotBlank(rootPath)) {
+            root = getContext().getResolver().getResource(rootPath);
+        }
+        if (root == null) {
+            root = resource.getParent();
+        }
+        if (root != null) {
+            Stream<Page> roots;
+            if (Page.isPage(root)) {
+                roots = Stream.of(toPage(root));
+            } else {
+                roots = StreamSupport.stream(root.getChildren().spliterator(), false)
+                        .filter(Page::isPage)
+                        .map(this::toPage);
+            }
+            sitemapMenuEntries = roots
+                    .filter((page) -> pageFilter.accept(page.getResource()))
+                    .flatMap(this::collectNavigableDescendants)
+                    .filter((page) -> getSearchFilter().accept(page.getResource()))
+                    .map(SitemapEntry::new).sorted()
+                    .collect(Collectors.toList());
+        } else {
+            sitemapMenuEntries = Collections.emptyList();
+        }
+        return sitemapMenuEntries;
     }
 
     private Stream<Page> collectNavigableDescendants(Page page) {
         return Stream.concat(Stream.of(page),
-                page.getChildPages(getSitemapPageFilter()).stream().flatMap(this::collectNavigableDescendants)
+                page.getChildPages(getSitemapMenuFilter()).stream().flatMap(this::collectNavigableDescendants)
         );
     }
 
-    protected ResourceFilter getSitemapPageFilter() {
+    protected ResourceFilter getSitemapMenuFilter() {
         if (sitemapPageFilter == null) {
-            sitemapPageFilter = new ResourceFilter.FilterSet(and, new NavigationPageFilter(context), new ResourceFilter() {
+            sitemapPageFilter = new ResourceFilter.FilterSet(and, new NavigationPageFilter(context), new PageRedirectFilter());
+        }
+        return sitemapPageFilter;
+    }
 
-                @Override
-                public boolean accept(@Nullable Resource resource) {
-                    if (Page.isPage(resource)) {
-                        Resource content = resource.getChild(JcrConstants.JCR_CONTENT);
-                        if (content != null) {
-                            ValueMap values = content.getValueMap();
-                            return StringUtils.isBlank(values.get("sling:target", ""));
-                        }
-                    }
-                    return false;
-                }
-
-                @Override
-                public boolean isRestriction() {
-                    return true;
-                }
-
-                @Override
-                public void toString(@Nonnull StringBuilder builder) {
-                }
-            });
+    protected ResourceFilter getSitemapDataFilter() {
+        if (sitemapPageFilter == null) {
+            sitemapPageFilter = new PageRedirectFilter();
         }
         return sitemapPageFilter;
     }
@@ -152,6 +156,30 @@ public class Sitemap extends AbstractModel {
 
     protected Page toPage(Resource aResource) {
         return getPageManager().createBean(context, aResource);
+    }
+
+    protected class PageRedirectFilter implements ResourceFilter {
+
+        @Override
+        public boolean accept(@Nullable Resource resource) {
+            if (Page.isPage(resource)) {
+                Resource content = resource.getChild(JcrConstants.JCR_CONTENT);
+                if (content != null) {
+                    ValueMap values = content.getValueMap();
+                    return StringUtils.isBlank(values.get("sling:target", ""));
+                }
+            }
+            return false;
+        }
+
+        @Override
+        public boolean isRestriction() {
+            return true;
+        }
+
+        @Override
+        public void toString(@Nonnull StringBuilder builder) {
+        }
     }
 
     /**
@@ -172,7 +200,7 @@ public class Sitemap extends AbstractModel {
             this.page = page;
             Calendar lastModified = page.getProperty(ResourceUtil.PROP_LAST_MODIFIED, Calendar.class);
             lastMod = lastModified != null ? new SimpleDateFormat(SITEMAP_DATE_FORMAT).format(lastModified.getTime()) : null;
-            depth = StringUtils.countMatches(page.getSiteRelativePath(),'/');
+            depth = StringUtils.countMatches(page.getSiteRelativePath(), '/');
         }
 
         public String getLoc() {
@@ -200,7 +228,9 @@ public class Sitemap extends AbstractModel {
             return lastMod;
         }
 
-        /** The hierarchy depth below the site root. */
+        /**
+         * The hierarchy depth below the site root.
+         */
         public int getDepth() {
             return depth;
         }

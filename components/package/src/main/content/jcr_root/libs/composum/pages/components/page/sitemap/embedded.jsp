@@ -5,7 +5,7 @@
 <cpp:defineObjects/>
 <cpp:model var="model" type="com.composum.pages.components.model.page.Sitemap">
     <ul class="${modelCSS}_list">
-        <c:forEach items="${model.entries}" var="item">
+        <c:forEach items="${model.sitemapMenuEntries}" var="item">
             <li class="${modelCSS}_item ${modelCSS}_depth_${item.depth}"><cpn:link href="${item.loc}">
                 <div class="${modelCSS}_label">${cpn:text(item.label)}</div>
                 <div class="${modelCSS}_path">${cpn:text(item.path)}</div>
