@@ -482,7 +482,7 @@ public abstract class AbstractModel implements SlingBean, Model {
     @Nonnull
     public List<String> getCategory() {
         if (category == null) {
-            category = Arrays.asList(getProperty(PN_CATEGORY, new String[0]));
+            category = Arrays.asList(getInherited(PN_CATEGORY, new String[0]));
         }
         return category;
     }
