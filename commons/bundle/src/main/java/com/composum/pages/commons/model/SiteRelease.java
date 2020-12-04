@@ -5,7 +5,7 @@ import com.composum.pages.commons.service.VersionsService;
 import com.composum.pages.commons.util.PagesUtil;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.util.I18N;
-import com.composum.sling.platform.security.AccessMode;
+import com.composum.platform.commons.request.AccessMode;
 import com.composum.sling.platform.staging.Release;
 import com.composum.sling.platform.staging.StagingConstants;
 import com.composum.sling.platform.staging.StagingReleaseManager;

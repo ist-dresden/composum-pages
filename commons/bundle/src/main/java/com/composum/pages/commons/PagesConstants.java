@@ -11,6 +11,7 @@ import com.composum.pages.commons.model.Element;
 import com.composum.pages.commons.model.Page;
 import com.composum.pages.commons.model.Site;
 import com.composum.pages.commons.util.ResolverUtil;
+import com.composum.platform.commons.request.AccessMode;
 import com.composum.sling.core.util.ResourceUtil;
 import com.composum.sling.platform.security.PlatformAccessFilter;
 import org.apache.commons.lang3.StringUtils;
@@ -61,7 +62,7 @@ public interface PagesConstants {
     String DISPLAY_MODE_VIEW_PARAM = "pages.view";
     String LOCALE_REQUEST_PARAM = "pages.locale";
 
-    String ACCESS_MODE_ATTR = PlatformAccessFilter.ACCESS_MODE_KEY;
+    String ACCESS_MODE_ATTR = AccessMode.RA_ACCESS_MODE;
     String DISPLAY_MODE_ATTR = "composum-pages-request-display";
     String RA_PAGES_LOCALE = "composum-pages-request-locale";
     String RA_PAGES_LANGUAGE = "composum-pages-request-language";

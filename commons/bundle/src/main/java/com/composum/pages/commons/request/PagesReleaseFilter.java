@@ -3,7 +3,7 @@ package com.composum.pages.commons.request;
 import com.composum.pages.commons.model.Site;
 import com.composum.pages.commons.service.SiteManager;
 import com.composum.sling.core.BeanContext;
-import com.composum.sling.platform.security.AccessMode;
+import com.composum.platform.commons.request.AccessMode;
 import com.composum.sling.platform.staging.ReleaseChangeEventPublisher;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;

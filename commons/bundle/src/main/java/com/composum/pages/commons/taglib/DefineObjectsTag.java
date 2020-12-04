@@ -10,7 +10,7 @@ import com.composum.pages.commons.service.PageManager;
 import com.composum.pages.commons.service.SiteManager;
 import com.composum.pages.commons.service.Theme;
 import com.composum.sling.core.BeanContext;
-import com.composum.sling.platform.security.AccessMode;
+import com.composum.platform.commons.request.AccessMode;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
 

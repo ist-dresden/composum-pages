@@ -26,7 +26,7 @@ import com.composum.sling.core.request.DomIdentifiers;
 import com.composum.sling.core.util.I18N;
 import com.composum.sling.core.util.PropertyUtil;
 import com.composum.sling.core.util.ResourceUtil;
-import com.composum.sling.platform.security.AccessMode;
+import com.composum.platform.commons.request.AccessMode;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.apache.sling.api.SlingHttpServletRequest;
@@ -59,7 +59,7 @@ import static com.composum.pages.commons.PagesConstants.RA_CURRENT_PAGE;
 import static com.composum.pages.commons.PagesConstants.RA_STICKY_LOCALE;
 import static com.composum.pages.commons.servlet.PagesContentServlet.EDIT_RESOURCE_TYPE_KEY;
 import static com.composum.platform.models.annotations.InternationalizationStrategy.I18NFOLDER;
-import static com.composum.sling.platform.security.PlatformAccessFilter.ACCESS_MODE_KEY;
+import static com.composum.platform.commons.request.AccessMode.RA_ACCESS_MODE;
 
 /**
  * the base class for all models beans in the pages context
@@ -270,7 +270,7 @@ public abstract class AbstractModel implements SlingBean, Model {
 
     public AccessMode getAccessMode() {
         if (accessMode == null) {
-            Object value = context.getRequest().getAttribute(ACCESS_MODE_KEY);
+            Object value = context.getRequest().getAttribute(RA_ACCESS_MODE);
             accessMode = value instanceof AccessMode ? (AccessMode) value
                     : (value != null ? AccessMode.valueOf(value.toString()) : null);
         }

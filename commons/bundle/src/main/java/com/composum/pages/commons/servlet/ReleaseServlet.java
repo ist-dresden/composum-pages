@@ -10,7 +10,7 @@ import com.composum.sling.core.servlet.ServletOperationSet;
 import com.composum.sling.core.servlet.Status;
 import com.composum.sling.core.util.RequestUtil;
 import com.composum.sling.core.util.XSS;
-import com.composum.sling.platform.security.AccessMode;
+import com.composum.platform.commons.request.AccessMode;
 import com.composum.sling.platform.staging.*;
 import com.composum.sling.platform.staging.Release;
 import org.apache.commons.lang3.StringUtils;

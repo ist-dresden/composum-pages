@@ -10,7 +10,7 @@ import com.composum.platform.models.annotations.DetermineResourceStategy;
 import com.composum.platform.models.annotations.PropertyDetermineResourceStrategy;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.util.ResourceUtil;
-import com.composum.sling.platform.security.AccessMode;
+import com.composum.platform.commons.request.AccessMode;
 import com.composum.sling.platform.staging.*;
 import com.composum.sling.platform.staging.replication.ReplicationConstants;
 import org.apache.commons.lang3.StringUtils;

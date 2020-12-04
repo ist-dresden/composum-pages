@@ -2,7 +2,7 @@ package com.composum.pages.commons.request;
 
 import com.composum.pages.commons.PagesConfiguration;
 import com.composum.pages.commons.model.Page;
-import com.composum.sling.platform.security.AccessMode;
+import com.composum.platform.commons.request.AccessMode;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.adapter.AdapterFactory;
