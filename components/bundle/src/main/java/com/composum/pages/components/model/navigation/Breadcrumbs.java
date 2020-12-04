@@ -3,6 +3,11 @@ package com.composum.pages.components.model.navigation;
 import com.composum.pages.commons.model.Page;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.filter.ResourceFilter;
+import com.composum.sling.core.util.XSS;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.slf4j.Logger;
@@ -16,10 +21,13 @@ public class Breadcrumbs extends NavbarItem {
 
     private static final Logger LOG = LoggerFactory.getLogger(Breadcrumbs.class);
 
+    protected static final Gson GSON = new GsonBuilder().create();
+
     public class BreadcrumbsMenu extends NavbarMenu {
 
         private transient Menuitem current;
         private transient List<Menuitem> breadcrumbItems;
+        private transient String jsonLdScript;
 
         public BreadcrumbsMenu() {
             super(Breadcrumbs.this.context, Breadcrumbs.this.resource);
@@ -58,6 +66,29 @@ public class Breadcrumbs extends NavbarItem {
             }
             return current;
         }
+
+        @Nonnull
+        public String getJsonLdScript() {
+            if (jsonLdScript == null) {
+                int index = 1;
+                JsonArray itemList = new JsonArray();
+                for (Menuitem item : getBreadcrumbItems()) {
+                    JsonObject json = new JsonObject();
+                    json.addProperty("@type", "ListItem");
+                    json.addProperty("position", index);
+                    json.addProperty("name", item.getTitle());
+                    json.addProperty("item", XSS.getValidHref(item.getUrl()));
+                    itemList.add(json);
+                    index++;
+                }
+                JsonObject jsonLd = new JsonObject();
+                jsonLd.addProperty("@context", "https://schema.org");
+                jsonLd.addProperty("@type", "BreadcrumbList");
+                jsonLd.add("itemListElement", itemList);
+                jsonLdScript = "<script type=\"application/ld+json\">" + GSON.toJson(jsonLd) + "</script>";
+            }
+            return jsonLdScript;
+        }
     }
 
     public Breadcrumbs() {
@@ -84,6 +115,11 @@ public class Breadcrumbs extends NavbarItem {
     @Nonnull
     public List<Menuitem> getBreadcrumbItems() {
         return ((BreadcrumbsMenu) getMenu()).getBreadcrumbItems();
+    }
+
+    @Nonnull
+    public String getJsonLdScript() {
+        return ((BreadcrumbsMenu) getMenu()).getJsonLdScript();
     }
 
     @Override
