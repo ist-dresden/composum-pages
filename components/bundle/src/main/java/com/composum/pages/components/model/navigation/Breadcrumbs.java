@@ -1,6 +1,7 @@
 package com.composum.pages.components.model.navigation;
 
 import com.composum.pages.commons.model.Page;
+import com.composum.pages.commons.util.LinkUtil;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.util.XSS;
@@ -15,6 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class Breadcrumbs extends NavbarItem {
@@ -70,22 +72,27 @@ public class Breadcrumbs extends NavbarItem {
         @Nonnull
         public String getJsonLdScript() {
             if (jsonLdScript == null) {
-                int index = 1;
-                JsonArray itemList = new JsonArray();
-                for (Menuitem item : getBreadcrumbItems()) {
-                    JsonObject json = new JsonObject();
-                    json.addProperty("@type", "ListItem");
-                    json.addProperty("position", index);
-                    json.addProperty("name", item.getTitle());
-                    json.addProperty("item", XSS.getValidHref(item.getUrl()));
-                    itemList.add(json);
-                    index++;
+                jsonLdScript = "";
+                Collection<Menuitem> items = getBreadcrumbItems();
+                if (items.size() > 0) {
+                    int index = 1;
+                    JsonArray itemList = new JsonArray();
+                    for (Menuitem item : getBreadcrumbItems()) {
+                        JsonObject json = new JsonObject();
+                        json.addProperty("@type", "ListItem");
+                        json.addProperty("position", index);
+                        json.addProperty("name", item.getTitle());
+                        json.addProperty("item", XSS.getValidHref(
+                                LinkUtil.getAbsoluteUrl(getContext().getRequest(), item.getUrl())));
+                        itemList.add(json);
+                        index++;
+                    }
+                    JsonObject jsonLd = new JsonObject();
+                    jsonLd.addProperty("@context", "https://schema.org");
+                    jsonLd.addProperty("@type", "BreadcrumbList");
+                    jsonLd.add("itemListElement", itemList);
+                    jsonLdScript = "<script type=\"application/ld+json\">" + GSON.toJson(jsonLd) + "</script>";
                 }
-                JsonObject jsonLd = new JsonObject();
-                jsonLd.addProperty("@context", "https://schema.org");
-                jsonLd.addProperty("@type", "BreadcrumbList");
-                jsonLd.add("itemListElement", itemList);
-                jsonLdScript = "<script type=\"application/ld+json\">" + GSON.toJson(jsonLd) + "</script>";
             }
             return jsonLdScript;
         }
