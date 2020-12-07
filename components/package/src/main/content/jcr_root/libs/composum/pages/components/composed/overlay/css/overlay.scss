@@ -1,0 +1,102 @@
+@charset "UTF-8";
+
+@import "../../../css/variables";
+@import "../../../css/mixins";
+
+.composum-pages-components-composed-overlay {
+    position: relative;
+
+    &-item {
+        position: absolute;
+
+        &.hide-content {
+            position: relative;
+        }
+
+        .composum-pages-components-composed-overlay-item {
+
+            &_wrapper {
+
+                > div {
+                    margin: 0;
+                }
+            }
+        }
+    }
+
+    &-foreground {
+        overflow: hidden;
+
+        &_replace {
+            position: relative;
+        }
+
+        &_modify {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+
+            .composum-pages-components-composed-overlay-item {
+
+                &.horizontal {
+
+                    &-left {
+                        left: 0;
+                        max-width: 100%;
+                    }
+
+                    &-center {
+                        left: 50%;
+                        max-width: 100%;
+
+                        .composum-pages-components-composed-overlay-item {
+
+                            &_wrapper {
+                                margin-left: -50%;
+                            }
+                        }
+                    }
+
+                    &-right {
+                        right: 0;
+                        max-width: 100%;
+                    }
+
+                    &-full {
+                        left: 0;
+                        right: 0;
+                    }
+                }
+
+                &.vertical {
+
+                    &-top {
+                        top: 0;
+                    }
+
+                    &-center {
+                        top: 50%;
+
+                        .composum-pages-components-composed-overlay-item {
+
+                            &_wrapper {
+                                margin-top: -50%;
+                            }
+                        }
+                    }
+
+                    &-bottom {
+                        bottom: 0;
+                    }
+
+                    &-full {
+                        top: 0;
+                        bottom: 0;
+                    }
+                }
+            }
+        }
+    }
+}

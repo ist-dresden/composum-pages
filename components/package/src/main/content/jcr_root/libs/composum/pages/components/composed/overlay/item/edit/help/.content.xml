@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:cpp="http://sling.composum.com/pages/1.0"
+        xmlns:jcr="http://www.jcp.org/jcr/1.0"
+        xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+        xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+        jcr:primaryType="cpp:Page">
+    <jcr:content
+            jcr:primaryType="cpp:PageContent"
+            sling:resourceType="composum/pages/stage/edit/tools/component/help/page"
+            template="/libs/composum/pages/stage/edit/tools/component/help/template">
+        <main
+                jcr:primaryType="cpp:Container"
+                sling:resourceType="composum/pages/stage/edit/tools/component/help/parsys">
+            <text_01
+                    jcr:primaryType="cpp:Element"
+                    sling:resourceType="composum/pages/components/element/text"
+                    text="a collapsible container inside of an accordion. It can be given a title, and it is possible to determine whether the item is initially open or collapsed after rendering the page.">
+                <i18n
+                        jcr:primaryType="nt:unstructured">
+                    <de
+                            jcr:primaryType="nt:unstructured"
+                            text="ein kollabierbarer Container innerhalb eines Accordion. Es kann einen optionalen Titel besitzen, und es kann eingestellt werden, ob von Anfang an geöffnet oder geschlossen ist.&lt;br>"/>
+                </i18n>
+            </text_01>
+        </main>
+    </jcr:content>
+</jcr:root>

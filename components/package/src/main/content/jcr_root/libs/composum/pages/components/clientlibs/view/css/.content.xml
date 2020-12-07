@@ -19,6 +19,7 @@
                 composum/pages/components/composed/decorator/css/decorator.css,
                 composum/pages/components/composed/illustration/css/illustration.css,
                 composum/pages/components/composed/list/css/list.css,
+                composum/pages/components/composed/overlay/css/overlay.css,
                 composum/pages/components/composed/table/css/table.css,
                 composum/pages/components/element/codeblock/css/codeblock.css,
                 composum/pages/components/element/map/here/css/here.css,

@@ -91,9 +91,13 @@ public class Container extends Element {
      */
     protected ResourceFilter getRenderFilter() {
         if (renderFilter == null) {
-            renderFilter = new ElementFilter(this);
+            renderFilter = createRenderFilter();
         }
         return renderFilter;
+    }
+
+    protected ResourceFilter createRenderFilter() {
+        return new ElementFilter(this);
     }
 
     /**
