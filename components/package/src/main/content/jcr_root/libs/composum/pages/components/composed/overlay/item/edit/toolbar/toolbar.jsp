@@ -8,7 +8,7 @@
                     action="window.composum.pages.actions.container.insert"/>
     <cpp:editAction icon="paste" label="Paste copied Element" title="Insert a copy of an Element from the clipboard"
                     action="window.composum.pages.actions.container.paste"/>
-    <cpp:editAction icon="copy" label="Copy" title="Copy the selected element"
+    <cpp:editAction icon="copy" label="Copy" title="Copy the selected Alement"
                     action="window.composum.pages.actions.element.copy"/>
     <cpp:editAction icon="trash" label="Delete" title="Delete the selected Element"
                     action="window.composum.pages.actions.element.delete"/>
