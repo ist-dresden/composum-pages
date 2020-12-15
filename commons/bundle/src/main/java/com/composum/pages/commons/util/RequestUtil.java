@@ -1,5 +1,8 @@
 package com.composum.pages.commons.util;
 
+import com.composum.pages.commons.request.DisplayMode;
+import com.composum.platform.commons.request.AccessMode;
+import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.filter.StringFilter;
 import com.composum.sling.core.util.XSS;
 import org.apache.commons.lang3.StringUtils;
@@ -23,10 +26,29 @@ import java.util.List;
 
 import static com.composum.pages.commons.servlet.PagesContentServlet.EDIT_RESOURCE_KEY;
 import static com.composum.pages.commons.servlet.PagesContentServlet.EDIT_RESOURCE_TYPE_KEY;
+import static com.composum.platform.commons.request.AccessMode.PREVIEW;
+import static com.composum.platform.commons.request.AccessMode.RA_ACCESS_MODE;
 
 public class RequestUtil extends com.composum.sling.core.util.RequestUtil {
 
     private static final Logger LOG = LoggerFactory.getLogger(RequestUtil.class);
+
+    public static boolean isPreviewMode(BeanContext context) {
+        return isAccessMode(context.getRequest(), PREVIEW)
+                || DisplayMode.requested(context).equals(DisplayMode.Value.PREVIEW);
+    }
+
+    public static boolean isAccessMode(SlingHttpServletRequest request, AccessMode accessMode) {
+        AccessMode fromRequest = getAccessMode(request);
+        return fromRequest != null && fromRequest.equals(accessMode);
+    }
+
+    @Nullable
+    public static AccessMode getAccessMode(@Nullable final SlingHttpServletRequest request) {
+        Object value = request != null ? request.getAttribute(RA_ACCESS_MODE) : null;
+        return value instanceof AccessMode ? (AccessMode) value
+                : (value != null ? AccessMode.valueOf(value.toString()) : null);
+    }
 
     public static class GetWrapper extends SlingHttpServletRequestWrapper {
 

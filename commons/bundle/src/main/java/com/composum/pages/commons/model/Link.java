@@ -6,8 +6,10 @@
 package com.composum.pages.commons.model;
 
 import com.composum.pages.commons.util.LinkUtil;
+import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.util.ResourceUtil;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.sling.api.resource.Resource;
 
 import javax.annotation.Nonnull;
 import java.util.regex.Matcher;
@@ -27,6 +29,13 @@ public class Link extends Element {
     private transient String target;
 
     private transient String tileTitle;
+
+    public Link(BeanContext context, Resource resource) {
+        super(context, resource);
+    }
+
+    public Link() {
+    }
 
     public boolean isValid() {
         return isHasLink();

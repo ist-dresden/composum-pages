@@ -1,12 +1,18 @@
 package com.composum.pages.components.model.composed.overlay;
 
 import com.composum.pages.commons.model.Container;
+import com.composum.pages.commons.util.RequestUtil;
+import com.composum.sling.core.BeanContext;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ValueMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Calendar;
 
 public class OverlayItem extends Container {
+
+    private static final Logger LOG = LoggerFactory.getLogger(OverlayItem.class);
 
     public static final String PN_DISABLED = "disabled";
     public static final String PN_HIDE_CONTENT = "hideContent";
@@ -21,7 +27,7 @@ public class OverlayItem extends Container {
     private transient String alignment;
     private transient String cssStyle;
 
-    public static boolean isEnabled(Resource item) {
+    public static boolean isEnabled(BeanContext context, Resource item) {
         ValueMap values = item.getValueMap();
         boolean enabled = !values.get(PN_DISABLED, Boolean.FALSE);
         if (enabled) {
@@ -40,13 +46,20 @@ public class OverlayItem extends Container {
                     }
                 }
             }
+            if (LOG.isInfoEnabled()) {
+                LOG.info("item: {} ({},{})", enabled, RequestUtil.isPreviewMode(context), item.getPath());
+            }
+            if (!enabled && RequestUtil.isPreviewMode(context)) {
+                // show conditional content in preview mode
+                enabled = true;
+            }
         }
         return enabled;
     }
 
     public boolean isEnabled() {
         if (enabled == null) {
-            enabled = isEnabled(resource);
+            enabled = isEnabled(context, resource);
         }
         return enabled;
     }

@@ -34,7 +34,7 @@ public class Foreground extends Container {
 
             @Override
             public boolean accept(@Nullable Resource resource) {
-                return resource != null && (isEditMode() || OverlayItem.isEnabled(resource));
+                return resource != null && (isEditMode() || OverlayItem.isEnabled(context, resource));
             }
 
             @Override

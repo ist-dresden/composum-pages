@@ -18,7 +18,7 @@
             min-width: 60px;
             min-height: 40px;
             border: $edit-hint-border;
-            padding: 1.5rem 0 0;
+            padding: $edit-container-padding-top 0 0;
 
             .composum-pages-container {
 
@@ -31,6 +31,7 @@
                     top: 0;
                     left: 0;
                     max-width: 100%;
+                    margin: -1px 0 0 -1px;
                     overflow: hidden;
                     white-space: nowrap;
                     @include edit-hint-font;

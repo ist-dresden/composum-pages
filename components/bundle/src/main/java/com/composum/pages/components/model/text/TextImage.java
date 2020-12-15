@@ -1,7 +1,9 @@
 package com.composum.pages.components.model.text;
 
 import com.composum.pages.components.model.ImageRelatedElement;
+import com.composum.sling.core.BeanContext;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.sling.api.resource.Resource;
 
 import javax.annotation.Nonnull;
 
@@ -16,6 +18,13 @@ public class TextImage extends ImageRelatedElement {
     private transient String text;
     private transient Boolean hideTitle;
     private transient String tileTitle;
+
+    public TextImage(BeanContext context, Resource resource) {
+        super(context, resource);
+    }
+
+    public TextImage() {
+    }
 
     public boolean isTextValid() {
         return StringUtils.isNotBlank(getTitle()) || StringUtils.isNotBlank(getText());

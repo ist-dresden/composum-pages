@@ -1,7 +1,9 @@
 package com.composum.pages.components.model.text;
 
 import com.composum.pages.commons.model.Element;
+import com.composum.sling.core.BeanContext;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.sling.api.resource.Resource;
 
 import javax.annotation.Nonnull;
 import java.util.regex.Pattern;
@@ -16,6 +18,13 @@ public class Text extends Element {
     private transient String text;
     private transient Boolean hideTitle;
     private transient String tileTitle;
+
+    public Text(BeanContext context, Resource resource) {
+        super(context, resource);
+    }
+
+    public Text() {
+    }
 
     public boolean isValid() {
         return StringUtils.isNotBlank(getTitle()) || StringUtils.isNotBlank(getText());

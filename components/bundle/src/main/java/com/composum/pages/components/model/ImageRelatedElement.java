@@ -2,6 +2,7 @@ package com.composum.pages.components.model;
 
 import com.composum.pages.commons.model.Image;
 import com.composum.pages.commons.model.Link;
+import com.composum.sling.core.BeanContext;
 import org.apache.sling.api.resource.Resource;
 
 import javax.annotation.Nonnull;
@@ -13,6 +14,13 @@ public abstract class ImageRelatedElement extends Link {
 
     private transient Image image;
     private transient String imageUrl;
+
+    public ImageRelatedElement(BeanContext context, Resource resource) {
+        super(context, resource);
+    }
+
+    public ImageRelatedElement() {
+    }
 
     @Nullable
     public Image getImage() {

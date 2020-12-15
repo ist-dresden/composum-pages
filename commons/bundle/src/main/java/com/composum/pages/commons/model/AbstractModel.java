@@ -15,6 +15,7 @@ import com.composum.pages.commons.service.SiteManager;
 import com.composum.pages.commons.service.VersionsService;
 import com.composum.pages.commons.util.LinkUtil;
 import com.composum.pages.commons.util.PagesUtil;
+import com.composum.pages.commons.util.RequestUtil;
 import com.composum.pages.commons.util.TagCssClasses;
 import com.composum.platform.models.annotations.PropertyDefaults;
 import com.composum.sling.core.BeanContext;
@@ -264,15 +265,17 @@ public abstract class AbstractModel implements SlingBean, Model {
         return AccessMode.PUBLIC == getAccessMode();
     }
 
+    public boolean isPreviewMode() {
+        return RequestUtil.isPreviewMode(context);
+    }
+
     public boolean isAuthorMode() {
         return AccessMode.AUTHOR == getAccessMode();
     }
 
     public AccessMode getAccessMode() {
         if (accessMode == null) {
-            Object value = context.getRequest().getAttribute(RA_ACCESS_MODE);
-            accessMode = value instanceof AccessMode ? (AccessMode) value
-                    : (value != null ? AccessMode.valueOf(value.toString()) : null);
+            accessMode = RequestUtil.getAccessMode(context.getRequest());
         }
         return accessMode;
     }

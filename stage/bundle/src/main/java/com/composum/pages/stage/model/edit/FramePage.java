@@ -103,7 +103,7 @@ public class FramePage extends Page {
      * @return the URL of the edited page
      */
     public String getPageUrl() {
-        return LinkUtil.getUrl(context.getRequest(), getPagePath());
+        return LinkUtil.getUrl(context.getRequest(), getPage().getUrl());
     }
 
     /**

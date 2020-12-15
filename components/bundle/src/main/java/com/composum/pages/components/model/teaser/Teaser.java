@@ -6,6 +6,7 @@
 package com.composum.pages.components.model.teaser;
 
 import com.composum.pages.components.model.ImageRelatedElement;
+import com.composum.sling.core.BeanContext;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 
@@ -41,6 +42,13 @@ public class Teaser extends ImageRelatedElement {
     private transient String text;
 
     private transient String icon;
+
+    public Teaser(BeanContext context, Resource resource) {
+        super(context, resource);
+    }
+
+    public Teaser() {
+    }
 
     public String getVariation() {
         if (variation == null) {

@@ -7,7 +7,7 @@
         sling:resourceSuperType="composum/pages/components/composed/list"
         jcr:description="a set of link elements"
         jcr:title="Link Set"
-        allowedElements="[composum/pages/components/element/link]"
+        allowedElements="[composum/pages/components/element/link,composum/pages/components/element/popover]"
         category="[General,Blueprint]">
     <jcr:content
             jcr:primaryType="nt:unstructured">

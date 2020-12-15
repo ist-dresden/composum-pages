@@ -41,6 +41,7 @@ import java.util.regex.Matcher;
 
 import static com.composum.pages.commons.PagesConstants.DEFAULT_EDIT_CATEGORY;
 import static com.composum.pages.commons.PagesConstants.DEFAULT_VIEW_CATEGORY;
+import static com.composum.pages.commons.PagesConstants.DISPLAY_MODE_VIEW_PARAM;
 import static com.composum.pages.commons.PagesConstants.LANGUAGE_CSS_KEY;
 import static com.composum.pages.commons.PagesConstants.LOCALE_REQUEST_PARAM;
 import static com.composum.pages.commons.PagesConstants.META_NODE_NAME;
@@ -576,6 +577,9 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
             parameters.remove(LOCALE_REQUEST_PARAM);
         } else {
             parameters.set(LOCALE_REQUEST_PARAM, language.getKey());
+        }
+        if (DisplayMode.isPreviewMode(context)) {
+            parameters.set(DISPLAY_MODE_VIEW_PARAM, DisplayMode.DISPLAY_MODE_PREVIEW.toLowerCase());
         }
         pageUrl += parameters.toString();
         return pageUrl;
