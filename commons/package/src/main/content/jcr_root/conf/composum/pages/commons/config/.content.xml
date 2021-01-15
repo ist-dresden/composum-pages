@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:jcr="http://www.jcp.org/jcr/1.0"
+        xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+        xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="composum/nodes/commons/components/security/config"
+        jcr:title="Composum Pages Security Setup"
+        jcr:description="the Composum Pages security configuration set"
+        category="[composum,pages]"
+        rank="{Long}30">
+    <setup jcr:primaryType="nt:unstructured"
+            category="[service,setup]"
+            autoSetup="{Boolean}true"
+            jcr:title="Composum Pages 'setup' ACL script"
+            jcr:description="the access control rule script to setup the rules for the Composum Pages services"
+            script="/conf/composum/pages/commons/acl/setup.json"/>
+</jcr:root>
