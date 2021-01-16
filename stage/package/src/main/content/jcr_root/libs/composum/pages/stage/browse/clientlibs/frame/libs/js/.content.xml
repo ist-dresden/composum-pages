@@ -1,12 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
         jcr:primaryType="sling:OrderedFolder"
-        embed="[jslibs/jquery/3.4.1/jquery.js,
-                jslibs/js-base64/2.5.2/base64.js,
-                jslibs/loglevel/1.6.1/loglevel.js,
-                jslibs/underscore/1.9.1/underscore.js,
-                jslibs/backbone/1.4.0/backbone.js,
-                jslibs/bootstrap/3.4.1/js/bootstrap.js,
-                jslibs/typeahead/3.1.0/bootstrap3-typeahead.js,
+        embed="[category:composum.components.core,
                 jslibs/jstree/3.3.8/jstree.js]">
 </jcr:root>

@@ -11,7 +11,7 @@
                   action="${dialog.action.url}" enctype="${dialog.action.encType}">
                 <div class="modal-header ${dialogCSS}_header">
                     <button type="button" class="${dialogCSS}_button-close fa fa-close"
-                            data-dismiss="modal" aria-label="Close"/>
+                            data-dismiss="modal" aria-label="Close"></button>
                     <h4 class="modal-title ${dialogCSS}_dialog-title">
                         ${cpn:text(dialog.title)}
                     </h4>
