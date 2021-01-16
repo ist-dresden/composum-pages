@@ -4,7 +4,7 @@
 <cpp:defineObjects/>
 <cpp:element var="model" type="com.composum.pages.components.model.text.Popup"
              test="@{model.valid||model.editMode}" cssAdd="@{modelCSS}_align-@{model.alignment}">
-    <a type="button" class="${modelCSS}_link"
+    <a class="${modelCSS}_link"
        data-trigger="focus" tabindex="0" role="button"
        data-toggle="popover" data-container="body" data-placement="${model.placement}"
        title="${model.title}" data-content='${cpn:attr(slingRequest,model.text,1)}'>
