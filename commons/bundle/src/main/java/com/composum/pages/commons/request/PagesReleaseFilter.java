@@ -1,12 +1,10 @@
 package com.composum.pages.commons.request;
 
 import com.composum.pages.commons.model.Site;
-import com.composum.pages.commons.replication.PagesReplicationConfig;
-import com.composum.pages.commons.replication.ReplicationManager;
 import com.composum.pages.commons.service.SiteManager;
-import com.composum.pages.commons.util.LinkUtil;
 import com.composum.sling.core.BeanContext;
-import com.composum.sling.platform.security.AccessMode;
+import com.composum.platform.commons.request.AccessMode;
+import com.composum.sling.platform.staging.ReleaseChangeEventPublisher;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
@@ -86,9 +84,10 @@ public class PagesReleaseFilter implements Filter {
                 description = "the URI patterns for general (unreleased) artifacts"
         )
         String[] unreleased_uri_allow() default {
-                "^/(apps|libs)/.+$",
+                "^/(apps|libs)/.*\\.(css|js|jpg|jpeg|gif|png|ico|ttf|woff2?)$",
                 "^/bin/public/.+$",
-                "^/j_security_check$"
+                "^/j_security_check$",
+                "^/bin/cpm/platform/auth/sessionTransferCallback$"
         };
 
         @AttributeDefinition(
@@ -96,7 +95,7 @@ public class PagesReleaseFilter implements Filter {
                 description = "the path patterns for general (unreleased) artifacts"
         )
         String[] unreleased_path_allow() default {
-                "^/(apps|libs)/.+$",
+                "^/(apps|libs)/.*\\.(css|js|jpg|jpeg|gif|png|ico|ttf|woff2?)$",
                 "^/libs/sling/servlet/errorhandler/.+$",
                 "^/libs/(themes|fonts|jslibs|composum|sling)/.+$",
                 "^/libs(/composum/platform/security)?/login.*$",
@@ -117,7 +116,7 @@ public class PagesReleaseFilter implements Filter {
     protected SiteManager siteManager;
 
     @Reference
-    protected ReplicationManager replicationManager;
+    protected ReleaseChangeEventPublisher releaseChangeEventPublisher;
 
     protected ServletContext servletContext;
 
@@ -172,36 +171,8 @@ public class PagesReleaseFilter implements Filter {
                         String mode = site.getPublicMode();
                         switch (mode) {
                             case Site.PUBLIC_MODE_IN_PLACE:
-                                PagesReplicationConfig config = replicationManager.getConfig();
-                                String replicationRoot = null;
-                                switch (accessMode) {
-                                    case PUBLIC:
-                                        replicationRoot = config.inPlacePublicPath();
-                                        break;
-                                    case PREVIEW:
-                                        replicationRoot = config.inPlacePreviewPath();
-                                        break;
-                                }
-                                if (replicationRoot != null) {
-                                    String path = resource.getPath();
-                                    if (!path.startsWith(replicationRoot + "/")) {
-                                        String contentPath = config.contentPath();
-                                        if (path.startsWith(contentPath + "/")) {
-                                            path = path.replaceFirst("^" + contentPath, replicationRoot);
-                                            String url = LinkUtil.getUrl(slingRequest, path);
-                                            ((SlingHttpServletResponse) response).sendRedirect(url);
-                                            return;
-                                        } else {
-                                            sendReject(response, "not a released resource", uri, resource);
-                                            return;
-                                        }
-                                    }
-                                    if (LOG.isDebugEnabled()) {
-                                        LOG.debug("replication: '{}' ('{}')", accessMode + "@" + site.getPath(), resource);
-                                    }
-                                } else {
-                                    sendReject(response, "no replication configured", uri, resource);
-                                    return;
+                                if (LOG.isDebugEnabled()) {
+                                    LOG.debug("replication: '{}' ('{}')", accessMode + "@" + site.getPath(), resource);
                                 }
                                 break;
                             case Site.PUBLIC_MODE_VERSIONS:

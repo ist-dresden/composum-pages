@@ -1,0 +1,42 @@
+@charset "UTF-8";
+
+@import "../../css/variables.scss";
+@import "../../css/mixins.scss";
+
+.composum-pages-components-search-result {
+    @include default-font;
+
+    &_title {
+        color: $dark-foreground;
+    }
+}
+
+.composum-pages-components-page {
+
+    &_search-item {
+
+        &_link {
+
+            &, &:hover {
+
+                .composum-pages-components-page {
+
+                    &_search-item {
+
+                        &_title {
+                            color: $dark-link;
+                        }
+                    }
+                }
+            }
+        }
+
+        &_title {
+            color: $dark-highlight;
+        }
+
+        &_excerpt, &_description {
+            color: $dark-foreground;
+        }
+    }
+}

@@ -12,7 +12,7 @@
             languageMenuLabel: 'composum-pages-stage-edit-toolbar_language-label',
             languageMenu: 'composum-pages-language-menu',
             languageMenuLink: 'composum-pages-language-menu_link',
-            openPageLink: 'composum-pages-stage-edit-toolbar_open-separate',
+            toggleEditorLink: 'composum-pages-stage-edit-toolbar_toggle-editor',
             pageViewActionsUri: '/libs/composum/pages/stage/edit/actions/view.html',
             previewAction: 'composum-pages-stage-edit-toolbar_preview',
             editAction: 'composum-pages-stage-edit-toolbar_edit',
@@ -26,7 +26,6 @@
                         base: 'composum-pages-stage-edit-toolbar',
                         _reload: '_reload-page',
                         _open: '_open-page',
-                        _separate: '_open-separate',
                         _width: '_surface-width'
                     }
                 }
@@ -94,23 +93,6 @@
             }
         });
 
-        toolbars.OpenPageLink = Backbone.View.extend({
-
-            initialize: function (options) {
-                var e = pages.const.event;
-                $(document).on(e.page.selected + '.OpenPageLink', _.bind(this.setPageLink, this));
-                $(document).on(e.pages.locale + '.OpenPageLink', _.bind(this.setPageLink, this));
-            },
-
-            setPageLink: function () {
-                var link = pages.getPageUrl();
-                if (this.link !== link) {
-                    this.link = link;
-                    this.$el.attr('href', link);
-                }
-            }
-        });
-
         toolbars.ToolbarHandle = pages.surface.SurfaceHandle.extend({
 
             initialize: function (options) {
@@ -155,7 +137,7 @@
                 this.initPageView();
                 var e = pages.const.event;
                 $(document)
-                    .on(e.page.view + '.PageToolbar', _.bind(this.onPageView, this))
+                    .on(e.content.view + '.PageToolbar', _.bind(this.onPageView, this))
                     .on(e.page.selected + '.PageToolbar', _.bind(this.onPageSelected, this))
                     .on(e.element.selected + '.PageToolbar', _.bind(this.onComponentSelected, this))
                     .on('body:size.PageToolbar', _.bind(this.onResize, this));
@@ -180,11 +162,10 @@
                 if (toolbars.localeSelector) {
                     toolbars.localeSelector.currentPage = this.currentPage;
                 }
-                core.getView('.' + toolbars.const.openPageLink, toolbars.OpenPageLink);
-            },
+             },
 
             profileAspect: function () {
-                return 'toolbar'
+                return 'toolbar@' + pages.current.editor;
             },
 
             loadProfile: function () {
@@ -235,7 +216,7 @@
                 if (path) {
                     if (this.currentPage !== path) {
                         pages.log.debug('toolbars.PageToolbar.onPageSelected(' + path + ')');
-                        core.ajaxGet(toolbars.const.pageViewActionsUri + path, {},
+                        core.ajaxGet(toolbars.const.pageViewActionsUri + core.encodePath(path), {},
                             _.bind(function (data) {
                                 this.$view.html(data);
                                 this.initPageView(path);
@@ -271,7 +252,7 @@
 
             loadComponentToolbar: function (path, type) {
                 if (path) {
-                    core.ajaxGet(toolbars.const.editToolbarLoadUri + path, {
+                    core.ajaxGet(toolbars.const.editToolbarLoadUri + core.encodePath(path), {
                             data: {
                                 type: type
                             }

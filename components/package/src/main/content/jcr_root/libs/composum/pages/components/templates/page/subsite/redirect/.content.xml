@@ -7,5 +7,11 @@
             jcr:primaryType="cpp:PageContent"
             jcr:title="Pages Components Subsite Redirect"
             jcr:description="A simple navigation point with a redirect to another page and without own content."
-            sling:resourceType="composum/pages/components/page/subsite/redirect"/>
+            sling:resourceType="composum/pages/components/page/subsite/redirect"
+            allowedParentTemplates="[
+                ^(.*/)?pages/components/templates/page/subsite/.+$
+            ]"
+            allowedChildTemplates="[
+                ^(.*/)?pages/components/templates/page/subsite/(content|redirect)$
+            ]"/>
 </jcr:root>

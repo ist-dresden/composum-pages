@@ -6,7 +6,10 @@
 package com.composum.pages.commons.model;
 
 import com.composum.pages.commons.util.LinkUtil;
+import com.composum.sling.core.BeanContext;
+import com.composum.sling.core.util.ResourceUtil;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.sling.api.resource.Resource;
 
 import javax.annotation.Nonnull;
 import java.util.regex.Matcher;
@@ -19,12 +22,20 @@ public class Link extends Element {
     public static final String PN_LINK_TITLE = "linkTitle";
     public static final String PN_LINK_TARGET = "linkTarget";
 
+    private transient Boolean hasLink;
     private transient String link;
     private transient String linkTitle;
     private transient String linkUrl;
     private transient String target;
 
     private transient String tileTitle;
+
+    public Link(BeanContext context, Resource resource) {
+        super(context, resource);
+    }
+
+    public Link() {
+    }
 
     public boolean isValid() {
         return isHasLink();
@@ -61,7 +72,12 @@ public class Link extends Element {
     }
 
     public boolean isHasLink() {
-        return StringUtils.isNotBlank(getLink());
+        if (hasLink == null) {
+            String link = getLink();
+            hasLink = StringUtils.isNotBlank(link) && (LinkUtil.isExternalUrl(link) ||
+                            !ResourceUtil.isNonExistingResource(getContext().getResolver().resolve(link)));
+        }
+        return hasLink;
     }
 
     public String getLink() {

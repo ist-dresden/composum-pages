@@ -11,7 +11,7 @@
     <c:forEach var="option" items="${widget.model.options}">
         <label class="${widgetCSS}_option"><input class="${widgetCSS}_input" type="checkbox"<c:if
                 test="${widget.formWidget}"> name="${widget.name}"</c:if>
-                                                  value="${option.value}"<c:if
+                                                  value="${cpn:value(option.value)}"<c:if
                 test="${widget.disabled}"> disabled</c:if><c:if
                 test="${option.selected}"> checked="checked"</c:if>/><span
                 class="label-text">${cpn:text(option.label)}</span></label>

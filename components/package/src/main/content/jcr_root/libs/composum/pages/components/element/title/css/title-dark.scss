@@ -1,0 +1,69 @@
+@charset "UTF-8";
+
+@import "../../../css/variables";
+@import "../../../css/mixins";
+
+/*
+ * default (bootstrap -sm,md-)
+ */
+
+.composum-pages-components-page {
+
+    &_content {
+
+        &_main {
+
+            > .composum-pages-components-element-title {
+                background-color: $dark-highlight-border;
+            }
+        }
+    }
+}
+
+/*
+ * bootstrap -xs-
+ */
+@media screen and (max-width: 767px) {
+
+    .composum-pages-components-page {
+
+        &_content {
+
+            &_top {
+
+                .composum-pages-components-element-title {
+                    height: 80px;
+                    padding: 16px 24px;
+
+                    &_title {
+                        @include a-title-font($site-title-font-size-xs);
+                    }
+
+                    &_subtitle {
+                        @include a-title-font($site-subtitle-font-size-xs);
+                    }
+                }
+            }
+
+            &_main {
+
+                .composum-pages-components-element-title {
+
+                    &_text {
+                        padding: $main-title-padding  / 2;
+                    }
+
+                    &_title {
+                        margin: 0;
+                        @include a-title-font($site-title-font-size-xs);
+                    }
+
+                    &_subtitle {
+                        margin: 0;
+                        @include a-title-font($site-subtitle-font-size-xs);
+                    }
+                }
+            }
+        }
+    }
+}

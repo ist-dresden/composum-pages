@@ -54,7 +54,7 @@
                 var c = widgets.const.element.type.css;
                 var p = widgets.const.element.type.profile;
                 core.components.RadioGroupWidget.prototype.initialize.apply(this, [options]);
-                this.containerRef = JSON.parse(atob(this.$el.data('container')));
+                this.containerRef = JSON.parse(Base64.decode(this.$el.data('container')));
                 this.$content = this.$('.' + c.base + c._.content);
                 this.$searchField = this.$('.' + c.base + c._.search);
                 this.$filterToggle = this.$('.' + c.base + c._.filterToggle);
@@ -114,7 +114,7 @@
                     params.push('query=' + encodeURIComponent(this.searchTerm));
                     this.probablyFiltered = true;
                 }
-                var url = u.get.components + pages.current.page;
+                var url = u.get.components + core.encodePath(pages.current.page);
                 if (params.length > 0) {
                     url += '?' + params.join('&');
                 }

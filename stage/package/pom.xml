@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.composum.pages</groupId>
         <artifactId>composum-pages-stage</artifactId>
-        <version>1.1.0</version>
+        <version>1.2.0</version>
     </parent>
 
     <artifactId>composum-pages-stage-package</artifactId>
@@ -105,7 +105,28 @@
                             <root>/libs/jslibs/chartist/0.11.0</root>
                         </filter>
                         <filter>
-                            <root>/libs/composum/pages/stage</root>
+                            <root>/libs/composum/pages/stage/browse</root>
+                        </filter>
+                        <filter>
+                            <root>/libs/composum/pages/stage/edit</root>
+                        </filter>
+                        <filter>
+                            <root>/libs/composum/pages/stage/home</root>
+                        </filter>
+                        <filter>
+                            <root>/libs/composum/pages/stage/i18n</root>
+                        </filter>
+                        <filter>
+                            <root>/libs/composum/pages/stage/images</root>
+                        </filter>
+                        <filter>
+                            <root>/libs/composum/pages/stage/preview</root>
+                        </filter>
+                        <filter>
+                            <root>/libs/composum/pages/stage/tools</root>
+                        </filter>
+                        <filter>
+                            <root>/libs/composum/pages/stage/widget</root>
                         </filter>
                         <filter>
                             <root>/libs/composum/pages/home</root>
@@ -160,12 +181,12 @@
 
         <!-- Composum Core -->
         <dependency>
-            <groupId>com.composum.sling.core</groupId>
-            <artifactId>composum-sling-core-console</artifactId>
+            <groupId>com.composum.nodes</groupId>
+            <artifactId>composum-nodes-console</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.composum.sling.core</groupId>
-            <artifactId>composum-sling-core-commons</artifactId>
+            <groupId>com.composum.nodes</groupId>
+            <artifactId>composum-nodes-commons</artifactId>
         </dependency>
 
         <!-- JSON -->

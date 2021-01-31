@@ -4,7 +4,7 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <cpp:defineFrameObjects/>
 <cpp:model var="model" type="com.composum.pages.stage.model.edit.site.ReleaseModel"
-           cssBase="composum-pages-stage-edit-site-release-changes">
+           cssBase="composum-pages-site-view_release_changes">
     <div class="${modelCSS}_details panel panel-default">
         <div class="${modelCSS}_details-head panel-heading"><h4
                 class="panel-title">${cpn:i18n(slingRequest,'Release Details')}</h4></div>
@@ -15,7 +15,7 @@
     <div class="panel panel-default releaseChanges">
         <div class="panel-heading">
             <h4 class="panel-title"
-                title="${cpn:i18n(slingRequest,'pages activated with changes since the previous release')}">
+                title="${cpn:i18n(slingRequest,'content activated with changes since the previous release')}">
                     ${cpn:i18n(slingRequest,'Release Changes')}
             </h4>
         </div>
@@ -30,15 +30,15 @@
                 </tr>
                 </thead>
                 <tbody class="${modelCSS}_tbody">
-                <c:forEach items="${model.release.changes}" var="pageVersion">
-                    <tr class="release-status_${pageVersion.releaseStatus.activationState}">
+                <c:forEach items="${model.release.changes}" var="version">
+                    <tr class="release-status_${version.releaseStatus.activationState}">
                         <td class="_page-state"
-                            title="${cpn:i18n(slingRequest,pageVersion.releaseStatus.activationState)}"></td>
-                        <td class="_page-path"><a href="${pageVersion.url}"
-                                                  target="_blank">${cpn:path(pageVersion.siteRelativePath)}</a>
+                            title="${cpn:i18n(slingRequest,version.releaseStatus.activationState)}"></td>
+                        <td class="_page-path"><a href="${version.previewUrl}"
+                                                  target="_blank">${cpn:path(version.siteRelativePath)}</a>
                         </td>
-                        <td class="_page-title">${cpn:text(pageVersion.title)}</td>
-                        <td class="_page-time">${cpn:text(pageVersion.releaseStatus.lastModified)}</td>
+                        <td class="_page-title">${cpn:text(version.title)}</td>
+                        <td class="_page-time">${cpn:text(version.releaseStatus.lastModified)}</td>
                     </tr>
                 </c:forEach>
                 </tbody>

@@ -13,6 +13,9 @@ import com.composum.pages.commons.util.RequestUtil;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.mapping.jcr.ResourceFilterMapping;
+import com.composum.sling.core.util.I18N;
+import org.apache.commons.lang3.LocaleUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -30,6 +33,9 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
@@ -68,6 +74,15 @@ public class PagesConfigImpl implements PagesConfiguration {
         };
 
         @AttributeDefinition(
+                description = "the language / country mappings"
+        )
+        String[] preferredCountry() default {
+                "en:US",
+                "de:DE",
+                "fr:FR"
+        };
+
+        @AttributeDefinition(
                 description = "the filter configuration to set the scope to the internet sites"
         )
         String siteNodeFilterRule() default "PrimaryType(+'^cpp:(Site)$')";
@@ -90,7 +105,32 @@ public class PagesConfigImpl implements PagesConfiguration {
         @AttributeDefinition(
                 description = "the filter configuration to set the scope to component development"
         )
-        String develomentTreeFilterRule() default "PrimaryType(+'^cpp:(Component|Page)$,^nt:(file)$')";
+        String develomentTreeFilterRule() default "PrimaryType(+'^cpp:(Component|Page|Theme)$,^nt:(file)$')";
+
+        @AttributeDefinition(
+                description = "the filter configuration for site resources (reference type 'site')"
+        )
+        String siteFilterRule() default "PrimaryType(+'^cpp:Site$')";
+
+        @AttributeDefinition(
+                description = "the filter configuration for page resources (reference type 'page')"
+        )
+        String pageFilterRule() default "PrimaryType(+'^cpp:Page$')";
+
+        @AttributeDefinition(
+                description = "the filter configuration for asset resources (reference type 'asset')"
+        )
+        String assetFilterRule() default "PrimaryType(+'^(cpp:Asset|nt:file)$')";
+
+        @AttributeDefinition(
+                description = "the filter configuration to restrict Pages content paths"
+        )
+        String contentRootFilterRule() default "Path(+'^/(content)')";
+
+        @AttributeDefinition(
+                description = "the filter configuration to determine all intermediate nodes in the tree view"
+        )
+        String treeIntermediateFilterRule() default "Folder()";
 
         @AttributeDefinition(
                 description = "the filter configuration to determine all intermediate nodes in the content structure"
@@ -103,30 +143,17 @@ public class PagesConfigImpl implements PagesConfiguration {
         String devIntermediateFilterRule() default "and{or{Folder(),PrimaryType(+'^nt:(unstructured)$')},Path(+'^/(apps|libs)(/.+)?')}";
 
         @AttributeDefinition(
-                description = "the filter configuration to determine all intermediate nodes in the tree view"
-        )
-        String treeIntermediateFilterRule() default "and{Folder(),Path(-'^/(etc|conf|apps|libs|sightly|htl|var)')}";
-
-        @AttributeDefinition(
                 description = "the filter configuration to detect ordered nodes (prevent from sorting in the tree)"
         )
         String orderableNodesFilterRule() default "or{Type(+[node:orderable]),PrimaryType(+'^.*([Oo]rdered|[Pp]age).*$')}";
 
         @AttributeDefinition(
-                description = "the filter configuration to hide replication paths"
+                description = "the cache timeout for the themes cache entries in minutes (default: 2h)"
         )
-        String replicationRootFilterRule() default "Path(-'^/(public|preview)')";
-
-        @AttributeDefinition(
-                description = "the filter configuration for page resources (reference type 'page')"
-        )
-        String pageFilterRule() default "PrimaryType(+'^cpp:Page$')";
-
-        @AttributeDefinition(
-                description = "the filter configuration for asset resources (reference type 'asset')"
-        )
-        String assetFilterRule() default "PrimaryType(+'^(cpp:Asset|nt:file)$')";
+        int themeCacheTimeout() default 120;
     }
+
+    private Map<String, String> preferredCountry;
 
     private ResourceFilter siteNodeFilter;
     private ResourceFilter pageNodeFilter;
@@ -135,13 +162,30 @@ public class PagesConfigImpl implements PagesConfiguration {
     private ResourceFilter develomentTreeFilter;
     private ResourceFilter treeIntermediateFilter;
     private ResourceFilter orderableNodesFilter;
-    private ResourceFilter replicationRootFilter;
+    private ResourceFilter contentRootFilter;
 
     private Map<String, ResourceFilter> pageFilters;
 
     protected Configuration config;
     private transient BundleContext bundleContext;
     private transient SiteManager siteManager;
+
+    @Nonnull
+    @Override
+    public Configuration getConfig() {
+        return config;
+    }
+
+    @Override
+    @Nonnull
+    public String getPreferredCountry(@Nonnull final String language) {
+        String country = preferredCountry.get(language);
+        if (country == null) {
+            List<Locale> locales = LocaleUtils.countriesByLanguage(language);
+            country = locales.size() > 0 ? locales.get(0).getCountry() : "";
+        }
+        return country;
+    }
 
     @Nonnull
     @Override
@@ -163,12 +207,6 @@ public class PagesConfigImpl implements PagesConfiguration {
             default:
                 return getPageNodeFilter();
         }
-    }
-
-    @Nonnull
-    @Override
-    public Configuration getConfig() {
-        return config;
     }
 
     @Nonnull
@@ -215,8 +253,14 @@ public class PagesConfigImpl implements PagesConfiguration {
 
     @Nonnull
     @Override
-    public ResourceFilter getReplicationRootFilter() {
-        return replicationRootFilter;
+    public ResourceFilter getContentRootFilter() {
+        return contentRootFilter;
+    }
+
+    @Nonnull
+    @Override
+    public ResourceFilter getSiteFilter() {
+        return siteFilter;
     }
 
     @Nullable
@@ -232,6 +276,7 @@ public class PagesConfigImpl implements PagesConfiguration {
         return filter;
     }
 
+    protected ResourceFilter siteFilter;
     protected ResourceFilter pageFilter;
     protected ResourceFilter assetFilter;
 
@@ -245,6 +290,25 @@ public class PagesConfigImpl implements PagesConfiguration {
             default:
                 return pageFilter;
         }
+    }
+
+    @Nonnull
+    @Override
+    public Map<String, String> getPublicModeOptions(SlingHttpServletRequest request) {
+        Map<String, String> publicModeOptions = new LinkedHashMap<>();
+        if (isReplicationOptionAvailable()) {
+            publicModeOptions.put("configured", I18N.get(request, "Replication Configuration"));
+        }
+        publicModeOptions.put("inPlace", I18N.get(request, "In-Place replication"));
+        publicModeOptions.put("versions", I18N.get(request, "Versions resolver"));
+        publicModeOptions.put("live", I18N.get(request, "Live immediately"));
+        return publicModeOptions;
+    }
+
+    @Override
+    public boolean isReplicationOptionAvailable() {
+        return (bundleContext.getServiceReference(
+                "com.composum.platform.replication.remote.RemotePublisherService") != null);
     }
 
     protected SiteManager getSiteManager() {
@@ -272,33 +336,41 @@ public class PagesConfigImpl implements PagesConfiguration {
     protected void activate(BundleContext bundleContext, Configuration config) {
         this.bundleContext = bundleContext;
         this.config = config;
+        preferredCountry = new HashMap<>();
+        for (String value : config.preferredCountry()) {
+            String[] rule = StringUtils.split(value, ":", 2);
+            if (rule.length > 1) {
+                preferredCountry.put(rule[0], rule[1]);
+            }
+        }
         orderableNodesFilter = ResourceFilterMapping.fromString(config.orderableNodesFilterRule());
-        replicationRootFilter = ResourceFilterMapping.fromString(config.replicationRootFilterRule());
+        contentRootFilter = ResourceFilterMapping.fromString(config.contentRootFilterRule());
         treeIntermediateFilter = new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.and,
-                replicationRootFilter,
+                contentRootFilter,
                 ResourceFilterMapping.fromString(config.treeIntermediateFilterRule()));
         siteNodeFilter = buildTreeFilter(new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.and,
-                        replicationRootFilter,
+                        contentRootFilter,
                         ResourceFilterMapping.fromString(config.siteNodeFilterRule())),
                 treeIntermediateFilter);
         pageNodeFilter = buildTreeFilter(new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.and,
-                        replicationRootFilter,
+                        contentRootFilter,
                         ResourceFilterMapping.fromString(config.pageNodeFilterRule())),
                 treeIntermediateFilter);
         ResourceFilter componentIntermediateFilter = new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.or,
                 ResourceFilterMapping.fromString(config.componentIntermediateFilterRule()),
                 treeIntermediateFilter);
         containerNodeFilter = buildTreeFilter(new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.and,
-                        replicationRootFilter,
+                        contentRootFilter,
                         ResourceFilterMapping.fromString(config.containerNodeFilterRule())),
                 componentIntermediateFilter);
         elementNodeFilter = buildTreeFilter(new ResourceFilter.FilterSet(ResourceFilter.FilterSet.Rule.and,
-                        replicationRootFilter,
+                        contentRootFilter,
                         ResourceFilterMapping.fromString(config.elementNodeFilterRule())),
                 componentIntermediateFilter);
         ResourceFilter devIntermediateFilter = ResourceFilterMapping.fromString(config.devIntermediateFilterRule());
         develomentTreeFilter = buildTreeFilter(
                 ResourceFilterMapping.fromString(config.develomentTreeFilterRule()), devIntermediateFilter);
+        siteFilter = ResourceFilterMapping.fromString(config.siteFilterRule());
         pageFilter = ResourceFilterMapping.fromString(config.pageFilterRule());
         assetFilter = ResourceFilterMapping.fromString(config.assetFilterRule());
         pageFilters = new HashMap<>();

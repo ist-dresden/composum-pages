@@ -1,7 +1,6 @@
-(function (window) {
-    window.composum = window.composum || {};
-    window.composum.pages = window.composum.pages || {};
-    window.composum.pages.widgets = window.composum.pages.widgets || {};
+(function () {
+    'use strict';
+    CPM.namespace('pages.widgets');
 
     (function (widgets, pages, core) {
         'use strict';
@@ -53,13 +52,13 @@
                     if (/^https?:\/\//.exec(path)) { // fill players 'src' with external URL
                         this.$videoFrame.find('video').attr('src', path);
                     } else { // replace player by 'include' via Ajax with 'player' selector
-                        core.ajaxGet(u.player + path, {
+                        core.ajaxGet(u.player + core.encodePath(path), {
                             data: {
                                 resourceType: u.type
                             }
                         }, _.bind(function (content) {
                             this.$videoFrame.html(content);
-                            core.ajaxGet(u.base + u._data + path, {}, _.bind(function (data) {
+                            core.ajaxGet(u.base + u._data + core.encodePath(path), {}, _.bind(function (data) {
                                 var mimeType = data.asset.mimeType;
                                 if (mimeType) {
                                     this.$preview.addClass(mimeType.replace(/[/+]/g, ' '));
@@ -75,8 +74,7 @@
             }
         });
 
-        window.widgets.register('.widget.' + widgets.const.videofield.css.base, widgets.VideoFieldWidget);
+        CPM.widgets.register('.widget.' + widgets.const.videofield.css.base, widgets.VideoFieldWidget);
 
-
-    })(window.composum.pages.widgets, window.composum.pages, window.core);
-})(window);
+    })(CPM.pages.widgets, CPM.pages, CPM.core);
+})();

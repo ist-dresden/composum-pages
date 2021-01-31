@@ -16,7 +16,7 @@
         @media (min-width: 840px) {
 
             .modal-dialog {
-                width: 800px;
+                width: 900px; // equal to 'modal-lg'
             }
 
             &.extra-wide {
@@ -159,7 +159,8 @@
 
         &_tabs {
             display: none;
-            margin-bottom: $bootstrap-spacing-v;
+            margin: 0 (-$bootstrap-spacing-h) $bootstrap-spacing-v;
+            padding: 0 $bootstrap-spacing-h;
             @include clear-after;
 
             .has-error {

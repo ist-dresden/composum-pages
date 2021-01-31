@@ -67,7 +67,7 @@ public class LanguageRoot extends GenericModel {
         }
 
         public String getUrl() {
-            return page.getUrl(language, true);
+            return page.getUrl(language, true, null);
         }
     }
 
@@ -125,7 +125,7 @@ public class LanguageRoot extends GenericModel {
 
     @Nonnull
     public String getLanguageKeyLabel() {
-        return getLanguage().getKey().toUpperCase();
+        return getLanguage().getLanguageKey().toUpperCase();
     }
 
     @Nonnull
@@ -187,7 +187,7 @@ public class LanguageRoot extends GenericModel {
         for (Resource child : getLanguageSiblingsParent().getChildren()) {
             if (Page.isPage(child)) {
                 Page page = getPageManager().createBean(getContext(), child);
-                if (page.getPageLanguages().contains(language)) {
+                if (page.isLanguageRoot() && page.getPageLanguages().contains(language)) {
                     return page;
                 }
             }

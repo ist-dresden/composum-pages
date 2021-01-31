@@ -47,9 +47,9 @@ public class AssetRelated extends Element {
         if (tileTitle == null) {
             tileTitle = super.getTileTitle();
             if (StringUtils.isBlank(tileTitle)) {
-                String url = getAssetUrl();
-                if (StringUtils.isNotBlank(url)) {
-                    Matcher matcher = TILE_TITLE_URL.matcher(url);
+                String ref = getAssetRef();
+                if (StringUtils.isNotBlank(ref)) {
+                    Matcher matcher = TILE_TITLE_URL.matcher(ref);
                     if (matcher.matches()) {
                         tileTitle = matcher.group(2);
                     }
@@ -77,11 +77,14 @@ public class AssetRelated extends Element {
         return assetRef;
     }
 
+    /**
+     * @return the final Link (probably encoded! - don't use in in an cpn:image tag)
+     */
     public String getAssetUrl() {
         if (assetUrl == null) {
             assetUrl = getAssetRef();
             if (StringUtils.isNotBlank(assetUrl)) {
-                assetUrl = LinkUtil.getUrl(context.getRequest(), assetUrl);
+                assetUrl = LinkUtil.getUrl(context.getRequest(), assetUrl, "");
             }
         }
         return assetUrl;

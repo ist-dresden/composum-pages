@@ -104,6 +104,7 @@ public class PropertyEditHandle<T> extends AbstractModel {
         }
     }
 
+    /** The current value (can change after {@link #nextValue()} is called). */
     public T getValue() {
         ValueSet<T> values = getValues();
         return values != null ? values.getValue() : null;

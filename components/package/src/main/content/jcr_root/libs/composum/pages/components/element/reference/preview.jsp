@@ -10,7 +10,7 @@
     </head>
     <body class="composum-pages-components-page">
     <div class="composum-pages-components-element-reference_preview-content">
-        <cpp:include path="${reference.contentReference}" mode="none"/>
+        <cpp:include path="${reference.includePath}" mode="none"/>
     </div>
     </body>
     </html>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+        jcr:primaryType="sling:OrderedFolder"
+        jcr:title="Pages Components Scene"
+        sling:resourceType="composum/nodes/console/scene"
+        key="cpmcomp"
+        template="/libs/composum/pages/components/scene/template"
+        placeholder="/libs/composum/pages/components/scene/placeholder.html">
+    <edit jcr:primaryType="nt:unstructured"
+            jcr:title="Pages Editor"
+            jcr:description="Composum Pages Components editor scene"
+            uri="/bin/edit.html${path}"/>
+    <view jcr:primaryType="nt:unstructured"
+            jcr:title="Pages Preview"
+            jcr:description="Composum Pages Components preview scene"
+            uri="${path}.html"/>
+</jcr:root>

@@ -1,17 +1,24 @@
 package com.composum.pages.commons.model;
 
 import com.composum.pages.commons.util.LinkUtil;
+import com.composum.pages.commons.util.ResolverUtil;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.util.ResourceUtil;
+import com.composum.sling.core.util.SlingResourceUtil;
+import com.composum.sling.platform.staging.versions.PlatformVersionsService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
+import javax.jcr.RepositoryException;
 import java.util.Locale;
 import java.util.Objects;
 
+import static com.composum.pages.commons.PagesConstants.PAGES_FRAME_PATH;
 import static com.composum.pages.commons.PagesConstants.PROP_TEMPLATE;
 
 /**
@@ -21,12 +28,17 @@ import static com.composum.pages.commons.PagesConstants.PROP_TEMPLATE;
  */
 public abstract class ContentDriven<ContentType extends ContentModel> extends AbstractModel {
 
+    private static final Logger LOG = LoggerFactory.getLogger(ContentDriven.class);
+
     protected Boolean valid;
     protected ContentType content;
 
     private transient Resource template;
     private transient String templatePath;
     private transient String editUrl;
+
+    private transient ContentVersion.StatusModel releaseStatus;
+    private transient PlatformVersionsService platformVersionsService;
 
     // initializer extensions
 
@@ -44,6 +56,7 @@ public abstract class ContentDriven<ContentType extends ContentModel> extends Ab
         content.parent = this;
     }
 
+    @Nonnull
     protected abstract ContentType createContentModel(BeanContext context, Resource contentResource);
 
     public ContentType getContent() {
@@ -59,16 +72,20 @@ public abstract class ContentDriven<ContentType extends ContentModel> extends Ab
 
     public String getTemplatePath() {
         if (templatePath == null) {
-            templatePath = content.getProperty(PROP_TEMPLATE, null, "");
+            templatePath = determineTemplatePath();
         }
         return templatePath;
+    }
+
+    public String determineTemplatePath() {
+        return content.getProperty(PROP_TEMPLATE, null, "");
     }
 
     public Resource getTemplate() {
         if (template == null) {
             String templatePath = getTemplatePath();
             if (StringUtils.isNotBlank(templatePath)) {
-                template = getContext().getResolver().getResource(templatePath);
+                template = ResolverUtil.getTemplate(getContext().getResolver(), templatePath);
             }
         }
         return template;
@@ -88,7 +105,7 @@ public abstract class ContentDriven<ContentType extends ContentModel> extends Ab
     public String getEditUrl() {
         if (editUrl == null) {
             SlingHttpServletRequest request = context.getRequest();
-            editUrl = LinkUtil.getUrl(request, "/bin/pages.html" + getPath(), null, null);
+            editUrl = LinkUtil.getUrl(request, PAGES_FRAME_PATH + ".html" + getPath(), null, null);
         }
         return editUrl;
     }
@@ -129,5 +146,57 @@ public abstract class ContentDriven<ContentType extends ContentModel> extends Ab
             value = content.getInherited(key, locale, type);
         }
         return value;
+    }
+
+    // lockable
+
+    public boolean isLockable() {
+        return getContent().isLockable();
+    }
+
+    public boolean isHoldsLock() {
+        return getContent().isHoldsLock();
+    }
+
+    public boolean isLocked() {
+        return getContent().isLocked();
+    }
+
+    public String getLockOwner() {
+        return getContent().getLockOwner();
+    }
+
+    // release
+
+    public boolean isVersionable() {
+        return getContent().isVersionable();
+    }
+
+    public boolean isCheckedOut() {
+        return getContent().isCheckedOut();
+    }
+
+    public ContentVersion.StatusModel getReleaseStatus() {
+        if (releaseStatus == null) {
+            try {
+                PlatformVersionsService.Status status = getPlatformVersionsService().getStatus(getResource(), null);
+                if (status == null) { // rare strange case - needs to be investigated.
+                    LOG.warn("No release status for {}", SlingResourceUtil.getPath(getResource()));
+                }
+                releaseStatus = new ContentVersion.StatusModel(status);
+            } catch (RepositoryException ex) {
+                LOG.error("Error calculating status for " + SlingResourceUtil.getPath(getResource()), ex);
+            }
+        }
+        if (releaseStatus != null && releaseStatus.releaseStatus == null)
+            return null;
+        return releaseStatus;
+    }
+
+    protected PlatformVersionsService getPlatformVersionsService() {
+        if (platformVersionsService == null) {
+            platformVersionsService = context.getService(PlatformVersionsService.class);
+        }
+        return platformVersionsService;
     }
 }

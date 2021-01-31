@@ -1,7 +1,6 @@
-(function (window) {
-    window.composum = window.composum || {};
-    window.composum.pages = window.composum.pages || {};
-    window.composum.pages.widgets = window.composum.pages.widgets || {};
+(function () {
+    'use strict';
+    CPM.namespace('pages.widgets');
 
     (function (widgets, pages, core) {
         'use strict';
@@ -55,8 +54,7 @@
             }
         });
 
-        window.widgets.register('.widget.' + widgets.const.checkselect.cssBase, widgets.CheckSelectWidget);
+        CPM.widgets.register('.widget.' + widgets.const.checkselect.cssBase, widgets.CheckSelectWidget);
 
-
-    })(window.composum.pages.widgets, window.composum.pages, window.core);
-})(window);
+    })(CPM.pages.widgets, CPM.pages, CPM.core);
+})();

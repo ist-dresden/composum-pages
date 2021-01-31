@@ -190,17 +190,13 @@ body {
                 margin-right: 0;
             }
 
-            &_open-separate {
-                margin-left: 0;
-            }
-
-            &_reload-page,
-            &_open-separate {
+            &_reload-page {
                 font-size: 19px;
             }
 
-            &_open-separate {
-                line-height: 33px;
+            &_toggle-editor {
+                margin-left: 0;
+                padding-top: 2px;
             }
         }
     }

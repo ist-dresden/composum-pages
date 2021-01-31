@@ -3,4 +3,6 @@
         jcr:primaryType="cpp:Widget"
         sling:resourceType="composum/pages/commons/widget/videofield"
         sling:resourceSuperType="composum/pages/commons/widget"
-        modelClass="com.composum.pages.commons.widget.VideoField"/>
+        modelClass="com.composum.pages.commons.widget.VideoField">
+    <attributes jcr:primaryType="nt:unstructured" filter="video" root="${currentSite}" maxlength="4000"/>
+</jcr:root>

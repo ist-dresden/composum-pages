@@ -64,6 +64,11 @@ public interface ResourceManager {
          */
         @Nullable
         <T extends Serializable> T getProperty(@Nonnull String name, @Nonnull Class<T> type);
+
+        /**
+         * returns the property value using the cascade: resource - resource type - design;
+         */
+        <T extends Serializable> T getRuleProperty(@Nonnull String name, @Nonnull Class<T> type);
     }
 
     /**
@@ -331,5 +336,5 @@ public interface ResourceManager {
      */
     Resource createFromTemplate(@Nonnull TemplateContext context, @Nonnull Resource parent, @Nonnull String name,
                                 @Nonnull Resource template, boolean setTemplateProperty)
-            throws PersistenceException;
+            throws PersistenceException, RepositoryException;
 }

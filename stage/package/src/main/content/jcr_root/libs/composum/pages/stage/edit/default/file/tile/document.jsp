@@ -12,5 +12,6 @@
                 <cpn:text value="${model.mimeType}" class="${modelCSS}_mime-type"></cpn:text>
             </div>
         </div>
+        <cpp:include resourceType="composum/pages/stage/edit/default/file/status"/>
     </div>
 </cpp:model>

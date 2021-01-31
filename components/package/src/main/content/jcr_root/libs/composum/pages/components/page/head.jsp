@@ -5,10 +5,9 @@
 <cpp:defineObjects/>
 <sling:call script="meta.jsp"/>
 <title>${cpn:text(currentPage.title)}</title>
-<cpn:link test="${!currentPage.canonicalRequest}" tagName="link" rel="canonical" href="${currentPage.canonicalUrl}"/>
+<cpn:link test="${currentPage.home||!currentPage.canonicalRequest}"
+          tagName="link" rel="canonical" href="${currentPage.canonicalUrl}"/>
 <sling:call script="hreflang.jsp"/>
 <cpn:clientlib type="link" category="${currentPage.viewClientlibCategory}"/>
 <cpn:clientlib type="css" category="${currentPage.viewClientlibCategory}"/>
-<cpn:clientlib type="css" test="${not empty currentPage.themeClientlibCategory}"
-               category="${currentPage.themeClientlibCategory}"/>
 <cpn:clientlib type="css" test="${currentPage.editMode}" category="${currentPage.editClientlibCategory}"/>

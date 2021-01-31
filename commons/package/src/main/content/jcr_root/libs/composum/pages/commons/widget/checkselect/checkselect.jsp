@@ -1,5 +1,6 @@
 <%@page session="false" pageEncoding="UTF-8" %>
 <%@taglib prefix="sling" uri="http://sling.apache.org/taglibs/sling/1.2" %>
+<%@taglib prefix="cpn" uri="http://sling.composum.com/cpnl/1.0" %>
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <cpp:defineFrameObjects/><%-- the 'checkselect' (checkbox) widget form template --%>
@@ -16,19 +17,19 @@
                       value="true"/></c:if><%-- and now the input field... --%>
             <input <%-- set name attribute for the input field only if box should be checked --%>
                     <c:if test="${widget.model.checked}">name="${widget.name}"</c:if> data-i18n="${widget.i18n}"
-                    class="${widgetCSS}_input" type="checkbox" value="${widget.model.inputValue}"
+                    class="${widgetCSS}_input" type="checkbox" value="${cpn:value(widget.model.inputValue)}"
                     <c:if test="${widget.disabled}">disabled</c:if>
                 ${widget.model.checkedValue}/></c:if><c:if test="${!widget.formWidget}"><%--
                not a Sling POST form: generate a simple checkbox input field...
            --%><input data-i18n="${widget.i18n}" class="${widgetCSS}_input" type="checkbox"
                       <c:if test="${widget.model.checked}">name="${widget.name}"</c:if>
-                      value="${widget.model.inputValue}"
+                      value="${cpn:value(widget.model.inputValue)}"
                       <c:if test="${widget.disabled}">disabled</c:if> ${widget.model.checkedValue}/></c:if><%--
-           in each case - the label of the checkbox... --%><span class="label-text">${widget.label}</span>
+           in each case - the label of the checkbox... --%><span class="label-text">${cpn:text(widget.label)}</span>
     <c:if test="${widget.model.hasSecondValue}"><%--
            an additional hidden field for the 'unchecked' value if such an option is configured
            --%><input type="hidden" class="${widget.widgetType}-widget_second" <%--
                       the name attribute is set for the selected value... (this or the input field)--%>
                       <c:if test="${!widget.model.checked}">name="${widget.name}"</c:if>
-                      value="${widget.model.secondValue}"</c:if></span></label>
+                      value="${cpn:value(widget.model.secondValue)}"</c:if></span></label>
 </div>

@@ -8,7 +8,11 @@
         "acl": [
           {
             "allow": true,
-            "privileges": "jcr:all"
+            "privileges": [
+              "jcr:read",
+              "rep:write",
+              "jcr:versionManagement"
+            ]
           }
         ]
       }
@@ -23,7 +27,11 @@
         "acl": [
           {
             "allow": true,
-            "privileges": "jcr:all"
+            "privileges": [
+              "jcr:read",
+              "rep:write",
+              "jcr:versionManagement"
+            ]
           }
         ]
       }
@@ -38,7 +46,11 @@
         "acl": [
           {
             "allow": true,
-            "privileges": "jcr:all"
+            "privileges": [
+              "jcr:read",
+              "rep:write",
+              "jcr:versionManagement"
+            ]
           }
         ]
       }
@@ -57,7 +69,11 @@
         "acl": [
           {
             "allow": true,
-            "privileges": "jcr:all"
+            "privileges": [
+              "jcr:read",
+              "rep:write",
+              "jcr:versionManagement"
+            ]
           }
         ]
       },
@@ -66,7 +82,41 @@
         "acl": [
           {
             "allow": true,
-            "privileges": "jcr:all"
+            "privileges": [
+              "jcr:read",
+              "rep:write",
+              "jcr:versionManagement"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "path": "/apps",
+    "jcr:primaryType": "sling:Folder",
+    "acl": [
+      {
+        "principal": "composum-pages-service",
+        "acl": [
+          {
+            "allow": true,
+            "privileges": "jcr:read"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "path": "/libs",
+    "jcr:primaryType": "sling:Folder",
+    "acl": [
+      {
+        "principal": "composum-pages-service",
+        "acl": [
+          {
+            "allow": true,
+            "privileges": "jcr:read"
           }
         ]
       }

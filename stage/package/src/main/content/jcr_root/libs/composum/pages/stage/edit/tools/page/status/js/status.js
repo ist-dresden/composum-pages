@@ -33,7 +33,7 @@
                 var e = pages.const.event;
                 var id = tools.const.pageStatus.event.id;
                 $(document)
-                    .on(e.page.state + id, _.bind(this.reload, this))
+                    .on(e.content.state + id, _.bind(this.reload, this))
                     .on(e.page.changed + id, _.bind(this.reload, this))
                     .on(e.element.inserted + id, _.bind(this.reload, this))
                     .on(e.element.changed + id, _.bind(this.reload, this))
@@ -46,7 +46,7 @@
                 var e = pages.const.event;
                 var id = tools.const.pageStatus.event.id;
                 $(document)
-                    .off(e.page.state + id)
+                    .off(e.content.state + id)
                     .off(e.page.changed + id)
                     .off(e.element.inserted + id)
                     .off(e.element.changed + id)
@@ -62,12 +62,13 @@
                 }
                 if (pages.current.page) {
                     var u = tools.const.pageStatus.uri;
-                    core.getHtml(u.base + u._.release + pages.current.page, _.bind(function (content) {
-                        this.$el.html(content);
-                        var c = tools.const.pageStatus.css;
-                        this.$icon = this.$('.' + c.base + c._.icon);
-                        this.$icon.click(_.bind(this.initPopover, this));
-                    }, this));
+                    core.getHtml(u.base + u._.release + core.encodePath(pages.current.page),
+                        _.bind(function (content) {
+                            this.$el.html(content);
+                            var c = tools.const.pageStatus.css;
+                            this.$icon = this.$('.' + c.base + c._.icon);
+                            this.$icon.click(_.bind(this.initPopover, this));
+                        }, this));
                 } else {
                     this.$el.html('');
                 }
@@ -77,17 +78,18 @@
                 event.preventDefault();
                 if (!this.popover) {
                     var u = tools.const.pageStatus.uri;
-                    core.getHtml(u.base + u._.popover + pages.current.page, _.bind(function (content) {
-                        this.popover = true;
-                        this.$icon.popover({
-                            placement: 'bottom',
-                            animation: false,
-                            html: true,
-                            sanitize: false,
-                            content: content
-                        });
-                        this.$icon.popover('show');
-                    }, this));
+                    core.getHtml(u.base + u._.popover + core.encodePath(pages.current.page),
+                        _.bind(function (content) {
+                            this.popover = true;
+                            this.$icon.popover({
+                                placement: 'bottom',
+                                animation: false,
+                                html: true,
+                                sanitize: false,
+                                content: content
+                            });
+                            this.$icon.popover('show');
+                        }, this));
                 }
                 return false;
             }

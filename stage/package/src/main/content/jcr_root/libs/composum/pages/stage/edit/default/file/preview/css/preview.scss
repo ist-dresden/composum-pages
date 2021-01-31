@@ -1,0 +1,105 @@
+@charset "UTF-8";
+
+$preview-content-head-height: 24px;
+$preview-content-padding: 8px;
+$preview-content-border: 1px solid #e0e0e0;
+
+.composum-pages-stage-preview {
+    box-sizing: border-box;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    overflow: auto;
+
+    &_file-header {
+        position: relative;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: $preview-content-head-height;
+        padding: $preview-content-padding / 2 $preview-content-padding;
+        background: #e0e0e0;
+        text-align: left;
+        font-family: "roboto", sans-serif;
+        font-size: 14px;
+        line-height: $preview-content-head-height;
+
+        .composum-pages-stage-preview {
+
+            &_path {
+                white-space: nowrap;
+            }
+
+            &_date {
+                position: absolute;
+                top: $preview-content-padding / 2;
+                right: $preview-content-padding;
+            }
+        }
+    }
+
+    &_content {
+        position: relative;
+        padding: $preview-content-padding;
+
+        &.composum-pages-stage-preview {
+
+            &_type-asset,
+            &_type-image,
+            &_type-video {
+                display: inline-block;
+
+                .composum-pages-stage-preview {
+
+                    &_file {
+                        max-width: 100%;
+                        border: $preview-content-border;
+                        padding: $preview-content-padding / 2;
+
+                        &_image,
+                        &_asset,
+                        &_video {
+                            max-width: 100%;
+                            min-width: 100px;
+                        }
+                    }
+                }
+            }
+
+            &_type-document,
+            &_type-file {
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                margin: 0;
+
+                .composum-pages-stage-preview {
+
+                    &_file {
+                        position: absolute;
+                        top: $preview-content-head-height + $preview-content-padding * 2;
+                        left: $preview-content-padding;
+                        right: $preview-content-padding;
+                        bottom: $preview-content-padding;
+
+                        &_frame {
+                            position: absolute;
+                            top: 0;
+                            left: 0;
+                            right: 0;
+                            bottom: 0;
+                            border: $preview-content-border;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -14,11 +14,13 @@
         <sling:call script="preview.jsp"/>
         <div class="input-group">
             <input name="${widget.name}" class="${widgetCSS}_input form-control"
-                   data-label="${widget.label}" data-i18n="${widget.i18n}"
-                   type="text" value="${widget.model.path}" placeholder="${widget.placeholder}"/>
+                   data-label="${widget.label}" data-i18n="${widget.i18n}" maxlength="${widget.model.maxlength}"
+                   type="text" value="${cpn:value(widget.model.path)}" placeholder="${widget.placeholder}"
+                   <c:if test="${widget.disabled}">disabled</c:if> />
             <span class="${widgetCSS}_popup-button input-group-btn">
                   <button class="${widgetCSS}_select select btn btn-default" type="button"
-                          title="Select the video path">...</button></span>
+                          title="${cpn:i18n(slingRequest,'Select the video path')}..."
+                          <c:if test="${widget.disabled}">disabled</c:if>>...</button></span>
         </div>
     </div>
 </div>

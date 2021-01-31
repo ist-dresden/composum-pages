@@ -10,7 +10,7 @@
                  name="pages.locale" value="${model.linkLocaleParam}"/>
         <div class="${modelCSS}_group input-group" title="${cpn:text(model.hint)}">
             <input type="text" name="search.term" class="${modelCSS}_input form-control"
-                   placeholder="${cpn:text(model.placeholderText)}" value="${cpn:text(model.searchTerm)}"
+                   placeholder="${cpn:text(model.placeholderText)}" value="${cpn:value(model.searchTerm)}"
                    aria-labelledby="searchbutton" role="searchbox">
             <span class="${modelCSS}_button input-group-btn">
                 <button type="submit" class="btn btn-default fa fa-${cpn:text(model.buttonSymbol)}"

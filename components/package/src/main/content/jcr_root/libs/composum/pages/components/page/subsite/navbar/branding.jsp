@@ -5,7 +5,7 @@
 <cpp:element var="navbar" type="com.composum.pages.components.model.subsite.SubsiteMenu" mode="none"
              tagName="none">
     <cpn:link class="${navbarCSS}_brand navbar-brand"
-              href="${navbar.rootPage.path}"><cpn:image
+              href="${navbar.rootPage.path}"><img
             class="${navbarCSS}_logo" src="${navbar.rootPage.logoUrl}"/><span
             class="${navbarCSS}_title">${cpn:text(navbar.rootPage.title)}</span></cpn:link>
 </cpp:element>

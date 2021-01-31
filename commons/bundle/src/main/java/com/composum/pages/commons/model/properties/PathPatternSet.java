@@ -3,7 +3,6 @@ package com.composum.pages.commons.model.properties;
 import com.composum.pages.commons.service.ResourceManager;
 import com.composum.pages.commons.util.ResolverUtil;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.sling.api.resource.ResourceResolver;
 
 import javax.annotation.Nonnull;
@@ -19,7 +18,7 @@ public class PathPatternSet {
     protected List<Pattern> patternList = null;
 
     public PathPatternSet(@Nonnull ResourceManager.ResourceReference reference, @Nonnull String propertyName) {
-        this(reference.getProperty(propertyName, String[].class));
+        this(reference.getRuleProperty(propertyName, String[].class));
     }
 
     public PathPatternSet(@Nonnull ResourceResolver resolver, @Nonnull String resourceType, @Nonnull String propertyName) {
@@ -50,12 +49,16 @@ public class PathPatternSet {
         }
     }
 
-    /** is valid if the property is present */
+    /**
+     * is valid if the property is present
+     */
     public boolean isValid() {
         return patternList != null;
     }
 
-    /** is empty if no property found or the value set contains no value */
+    /**
+     * is empty if no property found or the value set contains no value
+     */
     public boolean isEmpty() {
         return !isValid() || patternList.isEmpty();
     }
@@ -80,8 +83,6 @@ public class PathPatternSet {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this)
-                .append(patternList)
-                .toString();
+        return "[" + isValid() + ":" + StringUtils.join(patternList, ",") + "]";
     }
 }

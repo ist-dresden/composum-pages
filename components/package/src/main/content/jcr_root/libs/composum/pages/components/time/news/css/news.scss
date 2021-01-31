@@ -1,0 +1,217 @@
+@charset "UTF-8";
+
+@import "../../css/defaults";
+
+$news-icon-font-size: 18px;
+
+.composum-pages-components-time-news {
+
+    &_teaser {
+        display: flex;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        margin: $text-spacing-default 0;
+        @include default-font;
+
+        .composum-pages-components-time-news {
+
+            &_teaser-text {
+
+                &, & a, & a:hover, & a:focus, & a:visited {
+                    color: inherit;
+                    text-decoration: none;
+                }
+            }
+
+            &_title, &_subtitle {
+                margin: 0 0 $text-spacing-default;
+            }
+
+            &_title {
+                font-size: $column-title-font-size;
+            }
+
+            &_subtitle {
+                font-size: $column-title-font-size-xs;
+            }
+
+            &_line {
+                margin: $text-spacing-default 0 $text-spacing-default;
+                padding-left: 24px;
+                text-indent: -24px;
+
+                .date {
+                    white-space: nowrap;
+                }
+            }
+
+            &_icon {
+                width: 15px;
+                margin-right: 15px;
+                text-indent: 0;
+                text-align: center;
+                font-size: $news-icon-font-size;
+            }
+
+            &_description {
+                margin-top: $text-spacing-default;
+            }
+        }
+    }
+}
+
+.composum-pages-components-time-news-page_content {
+
+    .composum-pages-components-page_content {
+
+        &_top {
+            position: relative;
+
+            .composum-pages-components-page {
+
+                &_image {
+                    pointer-events: all;
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    z-index: -1;
+
+                    .composum-pages-components-element-image-background {
+                        height: 100%;
+
+                        &_picture {
+                            background-repeat: no-repeat;
+                            background-color: #000;
+                        }
+                    }
+                }
+
+                &_teaser {
+                    pointer-events: none;
+                    padding: 50px 15px 30px;
+
+                    .composum-pages-components-time-news {
+
+                        &_teaser {
+                            pointer-events: auto;
+                            margin: 0;
+                        }
+
+                        &_title, &_subtitle {
+                            margin: 0 0 $title-spacing-default;
+                        }
+
+                        &_title {
+                            font-size: $site-title-font-size;
+                        }
+
+                        &_subtitle {
+                            font-size: $site-subtitle-font-size;
+                        }
+
+                        &_description {
+                            display: none;
+                        }
+
+                        &_teaser-text {
+
+                            &, & a, & a:hover, & a:focus, & a:visited {
+                                color: $site-bright-text-color;
+                                @include bright-font;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        &_main {
+            clear: both;
+            padding: 0;
+        }
+    }
+}
+
+/*
+ * bootstrap -lg-
+ */
+@media screen and (min-width: 1200px) {
+
+    .composum-pages-components-time-news-page {
+
+        &_content {
+
+            .composum-pages-components-page {
+
+                &_content {
+
+                    &_top {
+
+                        .composum-pages-components-page {
+
+                            &_image {
+
+                                .composum-pages-components-element-image-background {
+                                    @include aspect-ratio-wrapper(6, 1);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+/*
+ * bootstrap -xs-
+ */
+@media screen and (max-width: 767px) {
+
+    .composum-pages-components-time-news-page_content {
+
+        .composum-pages-components-page_content {
+
+            &_top {
+
+                .composum-pages-components-time-news {
+
+                    &_teaser {
+                        width: 100%;
+                    }
+                }
+            }
+        }
+    }
+
+    .composum-pages-components-time-news {
+
+        &_teaser {
+
+            .composum-pages-components-time-news {
+
+                &_title, &_subtitle {
+                    margin: 0 0 $title-spacing-default * 0.6;
+                }
+
+                &_title {
+                    @include a-title-font($site-title-font-size-xs);
+                }
+
+                &_subtitle {
+                    @include a-title-font($site-subtitle-font-size-xs);
+                }
+
+                &_line {
+                    @include small-font;
+                }
+
+                &_icon {
+                    margin-right: 10px;
+                }
+            }
+        }
+    }
+}

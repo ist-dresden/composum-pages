@@ -68,8 +68,7 @@ public class SiteNodeServlet extends SlingSafeMethodsServlet {
                 Site site = siteManager.createBean(context, resource);
                 Homepage homepage = site.getHomepage(request.getLocale());
 
-                if (homepage != null && homepage.isValid()) {
-
+                if (homepage.isValid()) {
                     response.sendRedirect(homepage.getUrl());
                 }
             }

@@ -45,7 +45,7 @@
 
                 &_title,
                 &_subtitle {
-                    margin: 0 0 $text-spacing-default 0;
+                    margin: 0 0 $text-spacing-default;
                 }
 
                 &_text-block {
@@ -130,7 +130,7 @@
                         &_icon {
                             min-width: $symbol-width;
                             max-width: $symbol-width;
-                            padding: $symbol-title-top 0 0;
+                            margin-top: -5px;
                             font-size: $symbol-font-size;
                             color: $symbol-color;
 
@@ -181,12 +181,12 @@
 
                         &_text-block {
                             color: $site-bright-text-color;
-                            mix-blend-mode: difference;
+                            mix-blend-mode: screen;
                         }
 
                         &_title,
                         &_subtitle {
-                            color: $site-bright-text-color;
+                            color: $site-bright-title-color;
                         }
                     }
 

@@ -1,12 +1,14 @@
 package com.composum.pages.commons.request;
 
+import com.composum.pages.commons.PagesConfiguration;
 import com.composum.pages.commons.model.Page;
-import com.composum.sling.platform.security.AccessMode;
+import com.composum.platform.commons.request.AccessMode;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.adapter.AdapterFactory;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,14 +60,17 @@ public class RequestAspectAdapterFactory implements AdapterFactory {
 
     public static final String REQUEST_ASPECTS_PREFIX = "pages_request_aspect#";
 
-    protected static final Map<String, AspectFactory> FACTORY_MAP;
+    protected final Map<String, AspectFactory> factoryMap;
 
-    static {
-        FACTORY_MAP = new HashMap<>();
-        FACTORY_MAP.put(AccessMode.class.getName(), new AccessModeFactory());
-        FACTORY_MAP.put(DisplayMode.class.getName(), new DisplayModeFactory());
-        FACTORY_MAP.put(PagesLocale.class.getName(), new PagesLocaleFactory());
+    public RequestAspectAdapterFactory() {
+        factoryMap = new HashMap<>();
+        factoryMap.put(AccessMode.class.getName(), new AccessModeFactory());
+        factoryMap.put(DisplayMode.class.getName(), new DisplayModeFactory());
+        factoryMap.put(PagesLocale.class.getName(), new PagesLocaleFactory());
     }
+
+    @Reference
+    protected PagesConfiguration pagesConfiguration;
 
     @Override
     public <AdapterType> AdapterType getAdapter(@Nonnull Object adaptable, @Nonnull Class<AdapterType> type) {
@@ -73,7 +78,7 @@ public class RequestAspectAdapterFactory implements AdapterFactory {
         if (adaptable instanceof SlingHttpServletRequest) {
             SlingHttpServletRequest request = (SlingHttpServletRequest) adaptable;
             String typeName = type.getName();
-            AspectFactory factory = FACTORY_MAP.get(typeName);
+            AspectFactory factory = factoryMap.get(typeName);
             String key = factory.getKey();
             result = type.cast(factory.getFromRequest(request, key));
             if (result == null) {
@@ -116,7 +121,7 @@ public class RequestAspectAdapterFactory implements AdapterFactory {
      * this factory is adapting to the instance controlled by the platform access manager only
      * - the name of the enum value is stored in request / session
      */
-    protected static class AccessModeFactory implements AspectFactory<AccessMode> {
+    protected class AccessModeFactory implements AspectFactory<AccessMode> {
 
         @Override
         public String getKey() {
@@ -166,7 +171,7 @@ public class RequestAspectAdapterFactory implements AdapterFactory {
      * - the session does not store this aspect
      * - he PagesFrameServlet is storing another value of the same type and key in the session for the frames display mode
      */
-    protected static class DisplayModeFactory implements AspectFactory<DisplayMode> {
+    protected class DisplayModeFactory implements AspectFactory<DisplayMode> {
 
         @Override
         public String getKey() {
@@ -201,7 +206,7 @@ public class RequestAspectAdapterFactory implements AdapterFactory {
     /**
      * the locale is stored if specified as is in the request and also in the session for further requests
      */
-    protected static class PagesLocaleFactory implements AspectFactory<PagesLocale> {
+    protected class PagesLocaleFactory implements AspectFactory<PagesLocale> {
 
         @Override
         public String getKey() {
@@ -217,7 +222,7 @@ public class RequestAspectAdapterFactory implements AdapterFactory {
         @Override
         @Nullable
         public PagesLocale createFromRequest(@Nonnull SlingHttpServletRequest request, @Nonnull String key) {
-            Locale locale = null;
+            Locale locale = request.getLocale();
             String parameter = request.getParameter(LOCALE_REQUEST_PARAM);
             if (StringUtils.isNotBlank(parameter)) {
                 locale = getLocale(parameter, locale);
@@ -249,7 +254,7 @@ public class RequestAspectAdapterFactory implements AdapterFactory {
         /**
          * transforms a string value into the best matching Locale instance
          */
-        public Locale getLocale(String rule, Locale defaultValue) {
+        public Locale getLocale(@Nonnull String rule, @Nonnull final Locale defaultValue) {
             Locale locale = defaultValue;
             if (StringUtils.isNotBlank(rule)) {
                 rule = rule.trim().replaceAll(" +", "_").replaceAll("-", "_");
@@ -258,7 +263,11 @@ public class RequestAspectAdapterFactory implements AdapterFactory {
                     case 0:
                         break;
                     case 1:
-                        locale = new Locale(values[0]);
+                        String country = defaultValue.getCountry();
+                        if (StringUtils.isBlank(country)) {
+                            country = pagesConfiguration.getPreferredCountry(values[0]);
+                        }
+                        locale = new Locale(values[0], country);
                         break;
                     case 2:
                         locale = new Locale(values[0], values[1]);

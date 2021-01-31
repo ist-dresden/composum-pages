@@ -68,17 +68,29 @@
                     },
                     version: {
                         base: '/bin/cpm/platform/versions',
-                        activate: {
-                            _dialog: '/page/dialog/activate.html',
-                            _action: '.activate.json'
+                        page: {
+                            activate: {
+                                _dialog: '/page/dialog/activate.html',
+                                _action: '.activate.json'
+                            },
+                            revert: {
+                                _dialog: '/page/dialog/revert.html',
+                                _action: '.revert.json'
+                            },
+                            deactivate: {
+                                _dialog: '/page/dialog/deactivate.html',
+                                _action: '.deactivate.json'
+                            }
                         },
-                        revert: {
-                            _dialog: '/page/dialog/revert.html',
-                            _action: '.revert.json'
-                        },
-                        deactivate: {
-                            _dialog: '/page/dialog/deactivate.html',
-                            _action: '.deactivate.json'
+                        folder: {
+                            activate: {
+                                _dialog: '/folder/dialog/activate.html',
+                                _action: '.activate.json'
+                            },
+                            revert: {
+                                _dialog: '/folder/dialog/revert.html',
+                                _action: '.revert.json'
+                            }
                         }
                     },
                     sites: {
@@ -168,6 +180,53 @@
                         initialFocus.focus();
                     }
                 }
+            },
+
+            /**
+             * the validation strategy with support for an asynchronous validation call
+             */
+            doValidate: function (onSuccess, onError) {
+                var valid = this.validateForm();
+                var validationUrl = this.$el.data('pages-edit-validation');
+                if (validationUrl) {
+                    if (validationUrl.indexOf('/') !== 0) { // asuming a selector as 'validation' option
+                        validationUrl = this.data.path + '.' + validationUrl + '.json';
+                    }
+                    this.form.prepare();
+                    this.form.finalize();
+                    var formData = new FormData(this.form.el);
+                    $.ajax({
+                        type: 'POST',
+                        url: core.getContextUrl(validationUrl),
+                        data: formData,
+                        cache: false,
+                        contentType: false,
+                        processData: false,
+                        complete: _.bind(function (xhr) {
+                            var result = xhr.responseJSON;
+                            if (result) {
+                                if (result.messages) {
+                                    for (var i = 0; i < result.messages.length; i++) {
+                                        this.validationHint(result.messages[i].level, result.messages[i].label, result.messages[i].text);
+                                    }
+                                }
+                                if (valid && result.success) {
+                                    onSuccess();
+                                } else {
+                                    onError();
+                                }
+                            } else {
+                                this.onError(xhr);
+                            }
+                        }, this)
+                    });
+                } else {
+                    if (valid) {
+                        onSuccess();
+                    } else {
+                        onError();
+                    }
+                }
             }
         });
 
@@ -193,27 +252,20 @@
 
             initTabs: function () {
                 var c = dialogs.const.edit.css;
-                var $tabList = this.$tabList = this.$('.' + c.base + c._tabList);
-                // noinspection JSMismatchedCollectionQueryUpdate
-                var tabs = this.tabs = [];
-                this.$('.' + c.base + c._tab).each(function () {
-                    var $tab = $(this);
-                    $tabList.append('<li><a data-toggle="tab" href="#' + $tab.attr('id') + '">'
-                        + $tab.data('label') + '</a></li>');
-                    tabs.push($tab);
-                });
                 // in case of a wizard set up button and tab control
                 if (this.$el.is('.' + c.base + c._wizard)) {
                     this.$prevButton = this.$('.' + c.base + c._prevButton);
                     this.$nextButton = this.$('.' + c.base + c._nextButton);
                     this.$prevButton.click(_.bind(this.prevStep, this));
                     this.$nextButton.click(_.bind(this.nextStep, this));
-                    this.$tabList.find('a').on('shown.bs.tab', _.bind(this.tabChanged, this));
+                    if (this.form.tabbed) {
+                        this.form.tabbed.$nav.find('a').on('shown.bs.tab', _.bind(this.tabChanged, this));
+                    }
                 }
-                if (this.tabs.length > 0) {
+                if (this.form.tabbed) {
                     this.$('.' + c.base + c._tabContent).addClass('tab-content');
                     this.$el.addClass(c.base + c._tabbed);
-                    $(this.$tabList.find('li a')[0]).tab('show');
+                    $(this.form.tabbed.$nav.find('li a')[0]).tab('show');
                 }
             },
 
@@ -231,8 +283,8 @@
              * adjust the wizard state on tab change
              */
             tabChanged: function () {
-                var $links = this.$tabList.find('li');
-                var index = $links.index(this.$tabList.find('li.active'));
+                var $links = this.form.tabbed.$nav.find('li');
+                var index = $links.index(this.form.tabbed.$nav.find('li.active'));
                 if (index < $links.length - 1) {
                     this.$nextButton.removeClass('btn-default').addClass('btn-primary');
                     this.$submitButton.removeClass('btn-primary').addClass('btn-default');
@@ -251,14 +303,14 @@
              * trigger the switch to the previous tab if 'prev' button is clicked
              */
             prevStep: function () {
-                this.$tabList.find('li.active').prev().find('a').tab('show');
+                this.form.tabbed.$nav.find('li.active').prev().find('a').tab('show');
             },
 
             /**
              * trigger the switch to the next tab if 'next' button is clicked
              */
             nextStep: function () {
-                this.$tabList.find('li.active').next().find('a').tab('show');
+                this.form.tabbed.$nav.find('li.active').next().find('a').tab('show');
             },
 
             /**
@@ -276,37 +328,7 @@
             },
 
             triggerEvents: function (result, defaultEvents) {
-                var event = this.$el.data('pages-edit-success');
-                if (event) {
-                    event = event.split(';');
-                } else {
-                    event = defaultEvents || this.getDefaultSuccessEvents().split(';');
-                }
-                for (var i = 0; i < event.length; i++) {
-                    switch (event[i]) {
-                        case 'messages':
-                            if (_.isObject(result) && _.isObject(result.response)) {
-                                var response = result.response;
-                                var messages = result.messages;
-                                core.messages(response.level, response.text, messages);
-                            }
-                            break;
-                        default:
-                            var key = event[i].split('#');
-                            var args;
-                            if (key.length > 1) {
-                                var values = key[1].split(',');
-                                args = [new pages.Reference(undefined, values[0])];
-                                for (var j = 1; j < values.length; j++) {
-                                    args.push(values[j])
-                                }
-                            } else {
-                                args = [new pages.Reference(this.data.name, this.data.path, this.data.type)];
-                            }
-                            pages.trigger('dialog.event.final', key[0], args);
-                            break;
-                    }
-                }
+                pages.actions.dialog.triggerEvents(this, result, defaultEvents);
             },
 
             getDefaultSuccessEvents: function () {
@@ -315,24 +337,25 @@
 
             validationReset: function () {
                 dialogs.ElementDialog.prototype.validationReset.apply(this);
-                this.$tabList.find('li').removeClass('has-error');
             },
 
             onValidationFault: function () {
                 dialogs.ElementDialog.prototype.onValidationFault.apply(this);
                 var dialog = this;
                 var $first = undefined;
-                this.tabs.forEach(function (item) {
-                    var $tab = $(item);
-                    if ($tab.find('.has-error').length > 0) {
-                        var $tabLink = dialog.$tabList.find('[href="#' + $tab[0].id + '"]');
-                        $tabLink.parent().addClass('has-error');
-                        if (!$first) {
-                            $first = $tabLink;
-                            $first.tab('show');
+                if (this.tabs) {
+                    this.tabs.forEach(function (item) {
+                        var $tab = $(item);
+                        if ($tab.find('.has-error').length > 0) {
+                            var $tabLink = dialog.$tabList.find('[href="#' + $tab[0].id + '"]');
+                            $tabLink.parent().addClass('has-error');
+                            if (!$first) {
+                                $first = $tabLink;
+                                $first.tab('show');
+                            }
                         }
-                    }
-                });
+                    });
+                }
             }
         });
 
@@ -443,7 +466,7 @@
                     if (selection) {
                         this.doSubmit(undefined, selection);
                         // dispose the dialog to avoid reuse of a dialog which is not initialized during shown
-                        this.onClose();
+                        this.destroy();
                         return;
                     }
                 }
@@ -541,11 +564,11 @@
                 };
                 this.hide(); // this is resetting the dialog
                 if (template) {
-                    core.ajaxGet(c.base + c._isTemplate + template, {}, _.bind(function (result) {
+                    core.ajaxGet(c.base + c._isTemplate + core.encodePath(template), {}, _.bind(function (result) {
                         if (result.isTemplate) {
                             postData.template = template;
                             // create page as a copy of the template
-                            core.ajaxPost(c.base + c._create.page + this.data.path, postData, {},
+                            core.ajaxPost(c.base + c._create.page + core.encodePath(this.data.path), postData, {},
                                 _.bind(function (result) {
                                     pages.trigger('dialog.page.new', pages.const.event.content.inserted, [
                                         new pages.Reference(this.data.name, this.data.path, this.data.type),
@@ -557,7 +580,7 @@
                                 // if no create dialog exists (not found) create a new instance directly
                                 _.bind(function (name, path, type) {
                                     postData.resourceType = type;
-                                    core.ajaxPost(c.base + c._create.page + path, postData, {},
+                                    core.ajaxPost(c.base + c._create.page + core.encodePath(path), postData, {},
                                         _.bind(function (result) {
                                             pages.trigger('dialog.page.new', pages.const.event.content.inserted, [
                                                 new pages.Reference(name, path, type),
@@ -616,7 +639,10 @@
 
             initView: function () {
                 dialogs.EditDialog.prototype.initView.apply(this);
-                this.file = core.getWidget(this.el, '.widget-name_STAR', core.components.FileUploadWidget);
+                this.file = core.getWidget(this.el, '.widget-name_file', core.components.FileUploadWidget);
+                if (!this.file) {
+                    this.file = core.getWidget(this.el, '.widget-name_STAR', core.components.FileUploadWidget);
+                }
                 this.name = core.getWidget(this.el, '.widget-name_name', core.components.TextFieldWidget);
                 this.source = core.getWidget(this.el, '.widget-name_code', pages.widgets.CodeAreaWidget);
                 this.type = core.getWidget(this.el, '.widget-name_type', core.components.SelectWidget);
@@ -652,7 +678,7 @@
                             this.hide();
                         }, this), _.bind(this.onError, this));
                     } else {
-                        this.file.setName(name); // apply name mangling
+                        this.name.setValue(name); // apply name mangling
                         dialogs.EditDialog.prototype.doSubmit.apply(this);
                     }
                 } else {
@@ -773,7 +799,7 @@
 
             initView: function () {
                 dialogs.EditDialog.prototype.initView.apply(this);
-                this.$path = this.$('.widget-name_path');
+                this.$path = this.$('.hidden-widget.widget-name_path');
                 this.toLabel = this.$('.composum-pages-edit-widget_newPath .label-text').text();
                 this.oldPath = core.getWidget(this.el, '.widget-name_oldPath', core.components.PathWidget);
                 this.newPath = core.getWidget(this.el, '.widget-name_newPath', core.components.PathWidget);
@@ -803,21 +829,19 @@
             doValidate: function (onSuccess, onError) {
                 if (this.validateForm()) {
                     var config = this.getConfig();
-                    core.ajaxGet(config.check + core.encodePath(this.$path.val()), {
-                        data: {
-                            path: this.newPath.getValue()
-                        }
-                    }, _.bind(function (data) {
-                        if (data.isAllowed) {
-                            onSuccess();
-                        } else {
-                            this.validationHint('danger', this.toLabel, data.messages[0].text, data.messages[0].hint);
+                    core.getJson(config.check + core.encodePath(this.$path.val())
+                        + '?_charset_=UTF-8&path=' + core.encodePath(this.newPath.getValue()),
+                        _.bind(function (data) {
+                            if (data.isAllowed) {
+                                onSuccess();
+                            } else {
+                                this.validationHint('danger', this.toLabel, data.messages[0].text, data.messages[0].hint);
+                                onError();
+                            }
+                        }, this), _.bind(function (result) {
+                            this.validationHint('danger', this.toLabel, 'Error on validation', result.responseText);
                             onError();
-                        }
-                    }, this), _.bind(function (result) {
-                        this.validationHint('danger', this.toLabel, 'Error on validation', result.responseText);
-                        onError();
-                    }, this));
+                        }, this));
                 } else {
                     onError();
                 }
@@ -826,7 +850,7 @@
             doSubmit: function () {
                 var config = this.getConfig();
                 var oldPath = this.$path.val();
-                var newPath = this.newPath.getValue();
+                var newPath = this.newPath.$input.val();    // after finalize()...
                 core.ajaxPost(config.action + core.encodePath(oldPath), {
                     _charset_: 'UTF-8',
                     targetPath: newPath,
@@ -834,9 +858,10 @@
                     before: this.before.getValue(),
 
                     index: this.index.getValue()
-                }, {}, _.bind(function (data) {
+                }, {}, _.bind(function (result) {
+                    var reference = result.reference || result.data.reference;
                     pages.trigger('dialog.content.move', pages.const.event.content.moved,
-                        [oldPath, data.reference.path]);
+                        [oldPath, reference.path]);
                     this.hide();
                 }, this));
             }
@@ -870,9 +895,10 @@
                 core.ajaxPost(c._rename.action + core.encodePath(oldPath), {
                     _charset_: 'UTF-8',
                     name: this.name.getValue()
-                }, {}, _.bind(function (data) {
+                }, {}, _.bind(function (result) {
+                    var reference = result.reference || result.data.reference;
                     pages.trigger('dialog.content.rename', pages.const.event.content.moved,
-                        [oldPath, data.reference.path]);
+                        [oldPath, reference.path]);
                     this.hide();
                 }, this));
             }
@@ -904,10 +930,10 @@
         // Releases & Versions...
         //
 
-        dialogs.ManagePagesDialog = dialogs.ElementDialog.extend({
+        dialogs.ManageReleaseStatusDialog = dialogs.ElementDialog.extend({
 
-            initialize: function () {
-                dialogs.ElementDialog.prototype.initialize.apply(this);
+            initialize: function (options) {
+                dialogs.ElementDialog.prototype.initialize.call(this, options);
                 this.refs = {};
             },
 
@@ -942,7 +968,10 @@
              * named 'target' embedded in the dialog form, one for each selected target
              */
             getActionData: function () {
-                var data = {target: []};
+                var data = {
+                    _charset_: 'UTF-8',
+                    target: []
+                };
                 this.$('input[name="target"]').each(function () { // multi mode
                     var target = $(this).val();
                     if (target && !_.contains(data.target, target)) {
@@ -964,20 +993,20 @@
             triggerStateChange: function (data) {
                 var e = pages.const.event;
                 data.target.forEach(function (path) {
-                    pages.trigger('dialog.state.change', e.page.state, [new pages.Reference(undefined, path)]);
+                    pages.trigger('dialog.state.change', e.content.state, [new pages.Reference(undefined, path)]);
                 });
                 if (data.pageRef) {
                     data.pageRef.forEach(function (path) {
-                        pages.trigger('dialog.state.change', e.page.state, [new pages.Reference(undefined, path)]);
+                        pages.trigger('dialog.state.change', e.content.state, [new pages.Reference(undefined, path)]);
                     });
                 }
             }
         });
 
-        dialogs.ActivatePageDialog = dialogs.ManagePagesDialog.extend({
+        dialogs.ActivateContentDialog = dialogs.ManageReleaseStatusDialog.extend({
 
-            initialize: function () {
-                dialogs.ManagePagesDialog.prototype.initialize.apply(this);
+            initialize: function (options) {
+                dialogs.ManageReleaseStatusDialog.prototype.initialize.call(this, options);
                 this.refs = {
                     page: core.getWidget(this.el, '.widget-name_page-references', pages.widgets.PageReferencesWidget),
                     asset: core.getWidget(this.el, '.widget-name_asset-references', pages.widgets.PageReferencesWidget)
@@ -985,7 +1014,7 @@
             },
 
             submitActionKey: function () {
-                return dialogs.const.edit.url.version.activate._action;
+                return dialogs.const.edit.url.version.page.activate._action;
             },
 
             show: function () {
@@ -997,55 +1026,89 @@
                     this.doSubmit(undefined, _.bind(function (xhr) {
                         core.alert(xhr);
                     }, this));
-                    this.onClose();
+                    this.destroy();
                 }
             }
         });
 
-        dialogs.openActivatePageDialog = function (name, path, type, setupDialog) {
+        dialogs.openActivateContentDialog = function (name, path, type, setupDialog) {
             var c = dialogs.const.edit.url;
-            pages.dialogHandler.openEditDialog(c.path + c.version.activate._dialog,
-                dialogs.ActivatePageDialog, name, path, type, undefined/*context*/, setupDialog);
+            pages.dialogHandler.openEditDialog(c.path + c.version.page.activate._dialog,
+                dialogs.ActivateContentDialog, name, path, type, undefined/*context*/, setupDialog);
         };
 
-        dialogs.RevertPageDialog = dialogs.ManagePagesDialog.extend({
+        dialogs.RevertContentDialog = dialogs.ManageReleaseStatusDialog.extend({
 
-            initialize: function () {
-                dialogs.ManagePagesDialog.prototype.initialize.apply(this);
+            initialize: function (options) {
+                dialogs.ManageReleaseStatusDialog.prototype.initialize.call(this, options);
                 this.refs = {
                     page: core.getWidget(this.el, '.widget-name_page-referrers', pages.widgets.PageReferrersWidget)
                 };
             },
 
             submitActionKey: function () {
-                return dialogs.const.edit.url.version.revert._action;
+                return dialogs.const.edit.url.version.page.revert._action;
             }
         });
 
-        dialogs.openRevertPageDialog = function (name, path, type, setupDialog) {
+        dialogs.openRevertContentDialog = function (name, path, type, setupDialog) {
             var c = dialogs.const.edit.url;
-            pages.dialogHandler.openEditDialog(c.path + c.version.revert._dialog,
-                dialogs.RevertPageDialog, name, path, type, undefined/*context*/, setupDialog);
+            pages.dialogHandler.openEditDialog(c.path + c.version.page.revert._dialog,
+                dialogs.RevertContentDialog, name, path, type, undefined/*context*/, setupDialog);
         };
 
-        dialogs.DeactivatePageDialog = dialogs.ManagePagesDialog.extend({
+        dialogs.DeactivateContentDialog = dialogs.ManageReleaseStatusDialog.extend({
 
-            initialize: function () {
-                dialogs.ManagePagesDialog.prototype.initialize.apply(this);
+            initialize: function (options) {
+                dialogs.ManageReleaseStatusDialog.prototype.initialize.call(this, options);
                 this.refs = {
                     page: core.getWidget(this.el, '.widget-name_page-referrers', pages.widgets.PageReferrersWidget)
                 };
             },
 
             submitActionKey: function () {
-                return dialogs.const.edit.url.version.deactivate._action;
+                return dialogs.const.edit.url.version.page.deactivate._action;
             }
         });
 
-        dialogs.openDeactivatePageDialog = function (name, path, type, setupDialog) {
+        dialogs.openDeactivateContentDialog = function (name, path, type, setupDialog) {
             var c = dialogs.const.edit.url;
-            pages.dialogHandler.openEditDialog(c.path + c.version.deactivate._dialog,
-                dialogs.DeactivatePageDialog, name, path, type, undefined/*context*/, setupDialog);
+            pages.dialogHandler.openEditDialog(c.path + c.version.page.deactivate._dialog,
+                dialogs.DeactivateContentDialog, name, path, type, undefined/*context*/, setupDialog);
+        };
+
+        dialogs.ActivateTreeDialog = dialogs.ManageReleaseStatusDialog.extend({
+
+            initialize: function (options) {
+                dialogs.ManageReleaseStatusDialog.prototype.initialize.call(this, options);
+                this.refs = {
+                    page: core.getWidget(this.el, '.widget-name_page-references', pages.widgets.PageReferencesWidget),
+                    asset: core.getWidget(this.el, '.widget-name_asset-references', pages.widgets.PageReferencesWidget)
+                };
+            },
+
+            submitActionKey: function () {
+                return dialogs.const.edit.url.version.folder.activate._action;
+            },
+
+            show: function () {
+                if (this.hasReferences()) {
+                    // the normal show() if unresolved references found
+                    dialogs.ElementDialog.prototype.show.apply(this);
+                } else {
+                    // the show() is suppressed if no unresolved references found
+                    this.doSubmit(undefined, _.bind(function (xhr) {
+                        core.alert(xhr);
+                    }, this));
+                    this.destroy();
+                }
+            }
+        });
+
+        dialogs.openActivateTreeDialog = function (name, path, type, setupDialog) {
+            var c = dialogs.const.edit.url;
+            pages.dialogHandler.openEditDialog(c.path + c.version.folder.activate._dialog,
+                dialogs.ActivateTreeDialog, name, path, type, undefined/*context*/, setupDialog);
         };
 
         //

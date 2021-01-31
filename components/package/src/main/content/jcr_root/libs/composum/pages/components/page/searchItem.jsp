@@ -10,7 +10,7 @@
     </cpn:link>
     <cpp:include resourceType="composum/pages/components/navigation/breadcrumbs" replaceSelectors="search"/>
     <cpn:link test="${(searchresult != null && not empty searchresult.excerpt) || not empty model.description}"
-              href="${model.url}" class="${modelCSS}_link">
+              href="${model.url}" class="${modelCSS}_excerpt-link">
         <c:choose>
             <c:when test="${searchresult != null && not empty searchresult.excerpt}">
                 <cpn:text class="${modelCSS}_excerpt" value="${searchresult.excerpt}" type="rich"/>

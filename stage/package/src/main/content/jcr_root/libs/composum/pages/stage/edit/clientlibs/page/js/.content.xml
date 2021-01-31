@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
-        jcr:primaryType="sling:OrderedFolder"
-        depends="[category:composum.components.view]"
-        embed="[composum/pages/commons/js/core.js,
-                composum/pages/stage/edit/js/commons.js,
-                composum/pages/stage/edit/js/invoke.js,
-                composum/pages/stage/edit/js/elements.js]">
+          jcr:primaryType="sling:OrderedFolder"
+          depends="[category:composum.components.view]"
+          embed="[composum/pages/commons/js/core.js,
+                  composum/pages/stage/edit/js/commons.js,
+                  composum/pages/stage/edit/js/invoke.js,
+                  composum/pages/stage/edit/js/elements.js]">
 </jcr:root>

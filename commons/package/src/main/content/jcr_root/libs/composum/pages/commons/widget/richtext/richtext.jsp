@@ -14,7 +14,7 @@
          data-style="height:${widget.model.height}"
          data-label="${widget.label}" data-i18n="${widget.i18n}" ${widget.attributes}>
         <textarea class="${widgetCSS}_value richtext-widget widget rich-editor"
-                  name="${widget.name}" >${widget.model.text}</textarea>
+                  name="${widget.name}" >${cpn:text(widget.model.text)}</textarea>
     </div>
 </div>
 

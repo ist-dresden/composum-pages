@@ -1,12 +1,11 @@
 /**
  * the Pages edit frame UI component with the embedded content page
  */
-(function (window) {
-    window.composum = window.composum || {};
-    window.composum.pages = window.composum.pages || {};
+(function () {
+    'use strict';
+    CPM.namespace('pages');
 
     (function (pages, core) {
-        'use strict';
 
         pages.PageView = Backbone.View.extend({
 
@@ -47,10 +46,11 @@
                 $(document).on(e.content.inserted + id, _.bind(this.onElementChanged, this));
                 $(document).on(e.content.changed + id, _.bind(this.onElementChanged, this));
                 $(document).on(e.content.deleted + id, _.bind(this.onElementDeleted, this));
-                $(document).on(e.page.state + id, _.bind(this.onPageState, this));
+                $(document).on(e.content.state + id, _.bind(this.onPageState, this));
+                $(document).on(e.content.view + id, _.bind(this.onViewPage, this));
                 $(document).on(e.page.selected + id, _.bind(this.onPageSelected, this));
                 $(document).on(e.page.select + id, _.bind(this.selectPage, this));
-                $(document).on(e.page.view + id, _.bind(this.onViewPage, this));
+                $(document).on(e.page.reload + id, _.bind(this.onPageReload, this));
                 $(document).on(e.page.inserted + id, _.bind(this.onElementChanged, this));
                 $(document).on(e.page.changed + id, _.bind(this.onElementChanged, this));
                 $(document).on(e.page.deleted + id, _.bind(this.onElementDeleted, this));
@@ -92,7 +92,7 @@
                         frameUrl = this.$frame.attr('src');
                     }
                     if (frameUrl) {
-                        var url = new core.SlingUrl(frameUrl);
+                        var url = new core.SlingUrl(core.decodeUri(frameUrl));
                         data = {
                             'url': frameUrl
                         };
@@ -102,7 +102,10 @@
                     }
                 }
                 if (suffix || data) {
-                    core.ajaxGet(pages.const.url.get.pageData + suffix, {data: data}, callback, failure);
+                    core.ajaxGet(pages.const.url.get.pageData + (suffix ? core.encodePath(suffix) : ''),
+                        {
+                            data: data
+                        }, callback, failure);
                 } else {
                     if (_.isFunction(failure)) {
                         failure();
@@ -125,8 +128,10 @@
                         }
                     }, this));
                     if (history.replaceState) {
-                        history.replaceState(path, 'pages', core.getContextUrl('/bin/pages.html' + path));
-                        //history.replaceState(path, 'pages', this.$frame.attr('src'));
+                        var view = new RegExp('^((https?:)?//[^/]+)?' + core.getContextUrl('')
+                            + '(/bin/(edit|pages)\\.html)(/.*)?$').exec(window.location.href);
+                        history.replaceState(path, 'pages', core.getContextUrl(
+                            (view ? view[3] : '/bin/pages.html') + core.encodePath(path)));
                     }
                 }
             },
@@ -212,16 +217,19 @@
                         pages.trigger('frame.page.select', pages.const.event.content.selected, ["/"]);
                         pages.trigger('frame.page.select', pages.const.event.site.selected);
                     }, this));
-                } else {
-                    pages.trigger('frame.page.select', pages.const.event.path.selected, [path]);
                 }
+            },
+
+            onPageReload: function (event, pathOrRef) {
+                var path = pathOrRef && pathOrRef.path ? pathOrRef.path : pathOrRef;
+                this.reloadPage(undefined, path);
             },
 
             reloadPage: function (parameters, path, servicePath) {
                 var pagePath = path || pages.current.page;
                 if (pagePath) {
-                    var frameUrl = new core.SlingUrl(core.getContextUrl(
-                        servicePath ? servicePath + pagePath : pagePath + '.html'));
+                    var pageUri = core.encodePath(pagePath);
+                    var frameUrl = new core.SlingUrl(servicePath ? servicePath + pageUri : pageUri + '.html');
                     if (parameters) {
                         frameUrl.parameters = parameters;
                     }
@@ -265,7 +273,7 @@
             },
 
             onPageState: function (event, reference) {
-                this.$frame[0].contentWindow.postMessage(pages.const.event.page.state
+                this.$frame[0].contentWindow.postMessage(pages.const.event.content.state
                     + JSON.stringify(reference), '*');
             },
 
@@ -436,6 +444,15 @@
                                     args.target.name, args.target.path, args.target.type);
                             }
                             break;
+                        case t.dialog.custom:
+                            // opens an custom dialog with an evaluated dialog type ('class')
+                            this.log.frame.trace('frame.message.on.dialog.custom(' + message[2] + ')');
+                            pages.dialogHandler.openLoadedDialog(args.url, eval(args.type), args.config,
+                                args.init ? eval(args.init) : undefined,
+                                args.trigger ? function () {
+                                    pages.trigger(args.trigger.context, args.trigger.event, args.trigger.args);
+                                } : undefined);
+                            break;
                         case t.dialog.alert:
                             // displays an alert message by opening an alert dialog
                             this.log.frame.trace('frame.message.on.dialog.alert(' + message[2] + ')');
@@ -483,5 +500,5 @@
 
         pages.editFrame = core.getView('.' + pages.const.frameWrapperClass, pages.EditFrame);
 
-    })(window.composum.pages, window.core);
-})(window);
+    })(CPM.pages, CPM.core);
+})();

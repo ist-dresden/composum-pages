@@ -6,16 +6,18 @@ import com.composum.pages.commons.util.RequestUtil;
 import com.composum.pages.commons.util.ResourceTypeUtil;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.ResourceHandle;
+import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.servlet.ServletOperation;
 import com.composum.sling.core.servlet.Status;
 import com.composum.sling.core.util.I18N;
 import com.composum.sling.core.util.ResourceUtil;
 import com.composum.sling.core.util.ResponseUtil;
+import com.composum.sling.platform.staging.versions.PlatformVersionsService;
 import com.google.gson.stream.JsonWriter;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
-import org.apache.sling.api.request.RequestDispatcherOptions;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -25,8 +27,6 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nonnull;
 import javax.jcr.ItemExistsException;
 import javax.jcr.RepositoryException;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -38,14 +38,38 @@ public abstract class PagesContentServlet extends ContentServlet {
 
     private static final Logger LOG = LoggerFactory.getLogger(PagesContentServlet.class);
 
+    public static final String PARAM_ATTR = "attr";
+
     public static final String PARAM_FILTER = "filter";
 
-    public static final String EDIT_RESOURCE_KEY = EditServlet.class.getName() + "_resource";
-    public static final String EDIT_RESOURCE_TYPE_KEY = EditServlet.class.getName() + "_resourceType";
+    protected abstract PlatformVersionsService getPlatformVersionsService();
 
     protected abstract PagesConfiguration getPagesConfiguration();
 
-    // TreeNodeServlet...
+    //
+    // Tree
+    //
+
+    @Override
+    public void writeNodeTreeType(JsonWriter writer, ResourceFilter filter,
+                                  ResourceHandle resource, boolean isVirtual)
+            throws IOException {
+        super.writeNodeTreeType(writer, filter, resource, isVirtual);
+        Resource content;
+        if (resource.isValid() && (content = resource.getChild(JcrConstants.JCR_CONTENT)) != null
+                && ResourceUtil.isResourceType(content, JcrConstants.MIX_VERSIONABLE)) {
+            try {
+                PlatformVersionsService.Status status = getPlatformVersionsService().getStatus(resource, null);
+                if (null != status) {
+                    writer.name("release").beginObject();
+                    writer.name("status").value(status.getActivationState().name());
+                    writer.endObject();
+                }
+            } catch (RepositoryException ex) {
+                LOG.error(ex.getMessage(), ex);
+            }
+        }
+    }
 
     /**
      * sort children of nodes which are not marked 'orderable'
@@ -98,6 +122,7 @@ public abstract class PagesContentServlet extends ContentServlet {
         public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
                          ResourceHandle resource)
                 throws IOException {
+            Status status = new Status(request, response);
 
             if (resource != null) {
                 BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
@@ -115,13 +140,17 @@ public abstract class PagesContentServlet extends ContentServlet {
                     jsonWriter.name("isAllowed").value(allowed);
                     addAllowedChildInfo(context, parent, resource, jsonWriter, allowed);
                     jsonWriter.endObject();
+                    return; // TODO send result via status
 
                 } else {
-                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "invalid parent");
+                    status.error("invalid parent '{}'", parentPath);
                 }
             } else {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND);
+                return;
             }
+
+            status.sendJson();
         }
     }
 
@@ -226,9 +255,9 @@ public abstract class PagesContentServlet extends ContentServlet {
                 } catch (ItemExistsException itex) {
                     jsonAnswerItemExists(request, response);
 
-                } catch (RepositoryException ex) {
-                    LOG.error(ex.getMessage(), ex);
-                    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ex.getMessage());
+                } catch (RepositoryException | RuntimeException ex) {
+                    status.error(ex.getMessage(), ex);
+                    status.sendJson();
                 }
 
             } else {
@@ -268,7 +297,7 @@ public abstract class PagesContentServlet extends ContentServlet {
             } catch (ItemExistsException itex) {
                 jsonAnswerItemExists(request, response);
 
-            } catch (RepositoryException ex) {
+            } catch (RepositoryException | RuntimeException ex) {
                 LOG.error(ex.getMessage(), ex);
                 response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ex.getMessage());
             }
@@ -320,33 +349,6 @@ public abstract class PagesContentServlet extends ContentServlet {
             } else {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "target doesn't exist: '" + targetPath + "'");
             }
-        }
-    }
-
-    //
-    // general request forward to render an editing resource of a resource to edit
-    //
-
-    /**
-     * forward to the edit component
-     *
-     * @param request  the current request
-     * @param response the current response
-     * @param resource the resource to edit (maybe synthetic)
-     * @param typeHint the type of the resource to edit (maybe overlayed)
-     * @param options  sling include options (selectors, suffix, resource type) for the edit component
-     */
-    protected static void forward(SlingHttpServletRequest request, SlingHttpServletResponse response,
-                                  Resource resource, String typeHint, RequestDispatcherOptions options)
-            throws ServletException, IOException {
-        RequestDispatcher dispatcher = request.getRequestDispatcher(resource, options);
-        if (dispatcher != null) {
-            request.setAttribute(EDIT_RESOURCE_KEY, resource);
-            request.setAttribute(EDIT_RESOURCE_TYPE_KEY,
-                    StringUtils.isNotBlank(typeHint) ? typeHint : resource.getResourceType());
-            dispatcher.forward(request, response);
-            request.removeAttribute(EDIT_RESOURCE_TYPE_KEY);
-            request.removeAttribute(EDIT_RESOURCE_KEY);
         }
     }
 }

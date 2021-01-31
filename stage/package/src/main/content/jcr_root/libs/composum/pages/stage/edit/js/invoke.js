@@ -40,6 +40,7 @@
                 dialog: {
                     edit: 'dialog:edit',
                     generic: 'dialog:generic',
+                    custom: 'dialog:custom',
                     alert: 'dialog:alert'
                 }
             },
@@ -61,22 +62,22 @@
                     deleted: 'site:deleted'         // done.
                 },
                 page: {
-                    view: 'page:view',              // do it!...
                     select: 'page:select',          // do it!...
                     selected: 'page:selected',      // done.
                     inserted: 'page:inserted',      // done.
                     changed: 'page:changed',        // done.
                     deleted: 'page:deleted',        // done.
-                    state: 'page:state',            // changed state of the page itself only (no structure change)
                     containerRefs: 'page:containerRefs'
                 },
                 content: {
+                    view: 'content:view',              // do it!...
                     select: 'content:select',       // do it!...
                     selected: 'content:selected',   // done.
                     inserted: 'content:inserted',   // done.
                     changed: 'content:changed',     // done.
                     deleted: 'content:deleted',     // done.
-                    moved: 'content:moved'          // done.
+                    moved: 'content:moved',         // done.
+                    state: 'content:state'          // changed state of the content itself only (no page structure change)
                 },
                 element: {
                     select: 'element:select',       // do it!...
@@ -199,7 +200,33 @@
         };
 
         /**
-         * open a dialog loaded via PUT with the generic 'editResource' selector
+         * open a dialog loaded in the edit frames context with a raw dialog parameter set
+         * @param url the url to load the dialog (includes necessary selectors, extension, suffix and parameters)
+         * @param type the type (class name) of the dialog behaviour implementation
+         * @param config the config object to initialize the dialog
+         * @param init a function reference (will be evaluated) to initialize the dialog
+         * @param trigger the event to trigger as dialogs callback
+         */
+        elements.openCustomDialog = function (url, type, config, init, trigger) {
+            if (elements.log.std.getLevel() <= log.levels.DEBUG) {
+                elements.log.std.debug('elements.postMessage.' + elements.const.trigger.dialog.custom + '('
+                    + url + ','
+                    + type + ')');
+
+            }
+            // call the action in the 'edit' layer of the UI
+            parent.postMessage(elements.const.trigger.dialog.custom
+                + JSON.stringify({
+                    url: url,
+                    type: type,
+                    config: config,
+                    init: init,
+                    trigger: trigger
+                }), '*');
+        };
+
+        /**
+         * open a dialog loaded in the edit frames context with the generic 'editResource' selector
          * @param target
          * @param dialog
          * @param values the values object transmitted as PUT data object (JSON)
@@ -222,7 +249,7 @@
         };
 
         /**
-         * open the edit dialog for an element of the page
+         * open the edit dialog for an element of the page in the edit frames context
          * @param target
          * @param dialog
          * @param values

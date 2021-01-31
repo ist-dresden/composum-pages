@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class FileResource extends ContentModel<File> {
+public class FileResource extends ContentModel<File> implements FileContent {
 
     public static final Map<String, Type> TYPE_MAP;
 
@@ -27,14 +27,6 @@ public class FileResource extends ContentModel<File> {
         TYPE_MAP.put("application/pdf", Type.document);
         TYPE_MAP.put("cpa:Asset", Type.asset);
     }
-
-    public static final String PROP_SHOW_COPYRIGHT = "showCopyright";
-    public static final String PROP_COPYRIGHT = "copyright";
-    public static final String PROP_COPYRIGHT_URL = "copyrightUrl";
-    public static final String PROP_LICENSE = "license";
-    public static final String PROP_LICENSE_URL = "licenseUrl";
-
-    public static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
     private transient Type fileType;
     private transient String mimeType;
@@ -54,21 +46,32 @@ public class FileResource extends ContentModel<File> {
     }
 
     @Nonnull
-    public Resource getFileResource(){
+    public Resource getFileResource() {
         return Objects.requireNonNull(getResource().getParent());
     }
 
-    public String getFileName(){
+    /**
+     * @return the files content resource (normally the 'jcr:content' child - of type 'nt:resource')
+     */
+    public Resource getContentResource() {
+        return getResource();
+    }
+
+    public boolean isVersionable() {
+        return ResourceUtil.isResourceType(getResource(), JcrConstants.MIX_VERSIONABLE);
+    }
+
+    public String getFileName() {
         return getFileResource().getName();
     }
 
-    public String getFilePath(){
+    public String getFilePath() {
         return getFileResource().getPath();
     }
 
     public Type getFileType() {
         if (fileType == null) {
-            Resource resource = getResource();
+            Resource resource = getContentResource();
             String primaryType = ResourceUtil.getPrimaryType(resource);
             if (StringUtils.isNotBlank(primaryType)) {
                 fileType = TYPE_MAP.get(primaryType);

@@ -90,9 +90,13 @@ public class ToolsCollection {
     private transient List<Component> componentList;
 
     public ToolsCollection(BeanContext context, Resource targetResource, String... categories) {
+        this(context, targetResource, Arrays.asList(categories));
+    }
+
+    public ToolsCollection(BeanContext context, Resource targetResource, List<String> categories) {
         this.context = context;
         this.targetResource = targetResource;
-        this.categories = Arrays.asList(categories);
+        this.categories = categories;
     }
 
     public List<Component> getComponentList() {
@@ -103,6 +107,17 @@ public class ToolsCollection {
             Collections.sort(componentList);
         }
         return componentList;
+    }
+
+    public void reverseComponentList() {
+        if (componentList == null) {
+            componentList = new ArrayList<>();
+            findComponents(componentList, CONTENT_QUERY_APPS);
+            findComponents(componentList, CONTENT_QUERY_LIBS);
+            Collections.sort(componentList);
+        }
+        getComponentList();
+        Collections.reverse(componentList);
     }
 
     protected void findComponents(List<Component> list, String query) {

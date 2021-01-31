@@ -5,6 +5,14 @@
 
 .composum-pages-components-container-section {
 
+    &_icon {
+        color: $dark-foreground;
+    }
+
+    &_title {
+        color: $dark-foreground;
+    }
+
     &.panel.panel {
 
         &-info {

@@ -1,11 +1,13 @@
 package com.composum.pages.options.microsite.service.impl;
 
-import com.composum.pages.options.microsite.service.MicrositeImportStatus;
 import com.composum.pages.options.microsite.strategy.MicrositeSourceTransformer;
 import com.composum.sling.core.BeanContext;
+import com.composum.sling.core.logging.Message;
+import com.composum.sling.core.servlet.Status;
 import org.apache.sling.api.request.RequestParameter;
 import org.apache.sling.api.resource.Resource;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipInputStream;
@@ -13,9 +15,35 @@ import java.util.zip.ZipInputStream;
 /**
  * the stateful import request object of the import service
  */
-public class MicrositeImportRequest implements MicrositeImportStatus {
+public class MicrositeImportRequest {
+
+    enum ContentType {html, style, source}
+
+    /**
+     * Up to the entry point (index.html) found in the ZIP file all source transformations are delayed
+     * to ensure that all URLs in all source files are transformed relative to the index file path
+     */
+    protected class DelayedTransformation {
+
+        public final Resource parent;
+        public final String name;
+        public final ContentType type;
+        public final String content;
+
+        public DelayedTransformation(Resource parent, String name, ContentType type, String content) {
+            this.parent = parent;
+            this.name = name;
+            this.type = type;
+            this.content = content;
+        }
+    }
 
     protected final BeanContext context;
+
+    /**
+     * the status object to use during import
+     */
+    protected final Status status;
 
     /**
      * the content resource of the target page for the import
@@ -38,70 +66,23 @@ public class MicrositeImportRequest implements MicrositeImportStatus {
     protected MicrositeSourceTransformer sourceTransformer;
 
     /**
-     * Up to the entry point (index.html) found in the ZIP file all source transformations are delayed
-     * to ensure that all URLs in all source files are transformed relative to the index file path
-     */
-    protected class DelayedTransformation {
-
-        public final Resource parent;
-        public final String name;
-        public final String content;
-
-        public DelayedTransformation(Resource parent, String name, String content) {
-            this.parent = parent;
-            this.name = name;
-            this.content = content;
-        }
-    }
-
-    /**
      * the buf to collect all delayed source transformations
      */
     protected final List<DelayedTransformation> delayedTransformations = new ArrayList<>();
 
-    /**
-     * the collection of general messages collected during import
-     */
-    protected final List<Message> messages = new ArrayList<>();
-
-    /**
-     * the final status of the import
-     */
-    protected MessageLevel importStatus = MessageLevel.info;
-
-    @Override
-    public boolean isSuccessful() {
-        return importStatus != MessageLevel.error;
-    }
-
     public void addMessage(Message message) {
-        messages.add(message);
-        switch (message.getLevel()) {
-            case warn:
-                if (importStatus == MessageLevel.info) {
-                    importStatus = MessageLevel.warn;
-                }
-                break;
-            case error:
-                if (importStatus != MessageLevel.error) {
-                    importStatus = MessageLevel.error;
-                }
-                break;
-        }
+        status.addMessage(message);
     }
 
-    @Override
-    public List<Message> getMessages() {
-        return messages;
-    }
-
-    public MicrositeImportRequest(BeanContext context, Resource pageContent, RequestParameter importFile) {
+    public MicrositeImportRequest(@Nonnull BeanContext context, @Nonnull Status status,
+                                  @Nonnull Resource pageContent, @Nonnull RequestParameter importFile) {
         this.context = context;
+        this.status = status;
         this.pageContent = pageContent;
         this.importFile = importFile;
     }
 
-    public void startImport (MicrositeSourceTransformer sourceTransformer, ZipInputStream zipStream) {
+    public void startImport(MicrositeSourceTransformer sourceTransformer, ZipInputStream zipStream) {
         this.sourceTransformer = sourceTransformer;
         this.zipStream = zipStream;
     }
@@ -130,8 +111,8 @@ public class MicrositeImportRequest implements MicrositeImportStatus {
         return baseResource.getPath().substring(pageContent.getPath().length());
     }
 
-    public void addDelayedTransformation(Resource parent, String name, String content) {
-        getDelayedTransformations().add(new DelayedTransformation(parent, name, content));
+    public void addDelayedTransformation(Resource parent, String name, ContentType type, String content) {
+        getDelayedTransformations().add(new DelayedTransformation(parent, name, type, content));
     }
 
     public List<DelayedTransformation> getDelayedTransformations() {

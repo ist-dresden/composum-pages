@@ -43,7 +43,7 @@
                 var reference = undefined;
                 var encoded = nameOrData.data(d.encoded);
                 if (encoded) {
-                    reference = JSON.parse(atob(encoded));
+                    reference = JSON.parse(Base64.decode(encoded));
                 } else {
                     reference = nameOrData.data(d.reference);
 
@@ -90,7 +90,7 @@
                             type: this.type
                         };
                     }
-                    core.ajaxGet(u.edit + u._resourceInfo + this.path, options, _.bind(function (data) {
+                    core.ajaxGet(u.edit + u._resourceInfo + core.encodePath(this.path), options, _.bind(function (data) {
                         // '' as fallback to prevent from infinite recursion..
                         if (!this.name) {
                             this.name = data.name ? data.name : '';

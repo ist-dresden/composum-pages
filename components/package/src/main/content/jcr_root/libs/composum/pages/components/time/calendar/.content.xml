@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:cpp="http://sling.composum.com/pages/1.0"
+        xmlns:jcr="http://www.jcp.org/jcr/1.0"
+        xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+        jcr:primaryType="cpp:Component"
+        sling:resourceSuperType="composum/pages/components/element"
+        jcr:description="a calendar to navigate through the time and find events and/or news content elements"
+        jcr:title="News &amp; Events Calendar"
+        category="[News &amp; Events,Blueprint]">
+</jcr:root>

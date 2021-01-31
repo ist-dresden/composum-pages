@@ -24,10 +24,12 @@
             actions: {
                 css: 'composum-pages-tools_left-actions',
                 url: '/bin/cpm/pages/edit.treeActions.html',
+                assets: '/bin/cpm/pages/assets.treeActions.html',
                 develop: '/bin/cpm/pages/develop.treeActions.html'
             },
             tile: {
-                url: '/bin/cpm/pages/edit.editTile.html'
+                url: '/bin/cpm/pages/edit.editTile.html',
+                asset: '/bin/cpm/pages/assets.editTile.html'
             },
             pages: {
                 css: {
@@ -135,6 +137,20 @@
                     .on(e.dnd.finished + '.' + this.nodeIdPrefix + 'tree', _.bind(this.onDragFinished, this));
             },
 
+            /**
+             * add the release status CSS class for the page
+             */
+            refreshNodeState: function ($node, node) {
+                node = tree.ToolsTree.prototype.refreshNodeState.apply(this, [$node, node]);
+                if (node.original.release && node.original.release.status) {
+                    ['initial', 'activated', 'modified', 'deactivated'].forEach(function (value) {
+                        $node.removeClass('release-status_' + value);
+                    });
+                    $node.addClass('release-status_' + node.original.release.status);
+                }
+                return node;
+            },
+
             onContentInserted: function (event, parentRef, /*optional*/ resultRef) {
                 var path = parentRef && parentRef.path ? parentRef.path : parentRef;
                 if (path) {
@@ -173,6 +189,14 @@
                 this.onPathDeleted(event, path);
             },
 
+            onContentStateChanged: function (event, refOrPath) {
+                var path = refOrPath && refOrPath.path ? refOrPath.path : refOrPath;
+                if (this.log.getLevel() <= log.levels.DEBUG) {
+                    this.log.debug(this.nodeIdPrefix + 'tree.onContentStateChanged(' + path + ')');
+                }
+                this.refreshTreeNodeState(path);
+            },
+
             setRootPath: function (rootPath, refresh) {
                 rootPath = this.adjustRootPath(rootPath);
                 if (refresh === undefined) {
@@ -194,14 +218,16 @@
                 var parentPath = core.getParentPath(nodePath);
                 var oldPath = core.buildContentPath(parentPath, oldName);
                 core.ajaxPost('/bin/cpm/pages/edit.renameContent.json' + core.encodePath(oldPath), {
+                    _charset_: 'UTF-8',
                     name: newName
-                }, {}, _.bind(function (data) {
+                }, {}, _.bind(function (result) {
+                    var reference = result.reference || result.data.reference;
                     if (this.isElementType(node)) {
                         pages.trigger('tree.content.rename', pages.const.event.element.moved,
-                            [oldPath, data.reference.path]);
+                            [oldPath, reference.path]);
                     } else {
                         pages.trigger('tree.content.rename', pages.const.event.content.moved,
-                            [oldPath, data.reference.path]);
+                            [oldPath, reference.path]);
                     }
                 }, this), _.bind(function (result) {
                     this.refreshNodeById(node.id);
@@ -231,12 +257,13 @@
                 if (oldParentPath === targetPath) {
                     // reordering in the same parent resource - keep that simple...
                     core.ajaxPost('/bin/cpm/pages/edit.moveContent.json' + core.encodePath(oldPath), {
+                        _charset_: 'UTF-8',
                         targetPath: targetPath,
                         before: before ? before.original.path : undefined
                     }, {}, _.bind(function (result) {
                         pages.trigger('tree.content.dnd.drop', pages.const.event.content.moved, [
                             new pages.Reference(draggedNode.name, draggedNode.path, draggedNode.type),
-                            new pages.Reference(result.reference)
+                            new pages.Reference(result.data.reference)
                         ]);
                     }, this), _.bind(function (xhr) {
                         core.alert('error', 'Error', 'Error on moving content', xhr);
@@ -399,8 +426,8 @@
                     .on(e.content.changed + '.' + id, _.bind(this.onContentChanged, this))
                     .on(e.content.deleted + '.' + id, _.bind(this.onContentDeleted, this))
                     .on(e.content.moved + '.' + id, _.bind(this.onContentMoved, this))
+                    .on(e.content.state + '.' + id, _.bind(this.onContentStateChanged, this))
                     .on(e.page.selected + '.' + id, _.bind(this.onContentSelected, this))
-                    .on(e.page.state + '.' + id, _.bind(this.onPageStateChanged, this))
                     .on(e.page.inserted + '.' + id, _.bind(this.onContentInserted, this))
                     .on(e.page.changed + '.' + id, _.bind(this.onContentChanged, this))
                     .on(e.page.deleted + '.' + id, _.bind(this.onContentDeleted, this))
@@ -431,20 +458,6 @@
                 return '/bin/cpm/pages/edit.pageTree.json' + path + params;
             },
 
-            /**
-             * add the release status CSS class for the page
-             */
-            refreshNodeState: function ($node, node) {
-                node = tree.ContentTree.prototype.refreshNodeState.apply(this, [$node, node]);
-                if (node.original.release && node.original.release.status) {
-                    ['initial', 'activated', 'modified', 'deactivated'].forEach(function (value) {
-                        $node.removeClass('release-status_' + value);
-                    });
-                    $node.addClass('release-status_' + node.original.release.status);
-                }
-                return node;
-            },
-
             onNodeSelected: function (path, node) {
                 if (!this.suppressEvent) {
                     pages.trigger('tree.page.on.node', "path:select", [path, node.original.name, node.original.type]);
@@ -462,14 +475,6 @@
                 if (applicable) {
                     this.onPathSelected(event, path);
                 }
-            },
-
-            onPageStateChanged: function (event, refOrPath) {
-                var path = refOrPath && refOrPath.path ? refOrPath.path : refOrPath;
-                if (this.log.getLevel() <= log.levels.DEBUG) {
-                    this.log.debug(this.nodeIdPrefix + 'tree.onPageStateChanged(' + path + ')');
-                }
-                this.refreshTreeNodeState(path);
             },
 
             /**
@@ -564,7 +569,8 @@
                 var before = this.getNodeOfIndex(targetNode, index);
                 if (this.isElementType(targetNode) && this.isElementType(draggedNode)) {
                     // move elements on a page or between pages via tree...
-                    core.ajaxPost(pages.const.url.edit.move + oldPath, {
+                    core.ajaxPost(pages.const.url.edit.move + core.encodePath(oldPath), {
+                        _charset_: 'UTF-8',
                         targetPath: targetPath,
                         targetType: targetNode.type,
                         before: before ? before.original.path : undefined
@@ -597,7 +603,9 @@
                     .on(e.content.inserted + '.' + id, _.bind(this.onContentInserted, this))
                     .on(e.content.changed + '.' + id, _.bind(this.onContentChanged, this))
                     .on(e.content.deleted + '.' + id, _.bind(this.onContentDeleted, this))
-                    .on(e.content.moved + '.' + id, _.bind(this.onContentMoved, this));
+                    .on(e.content.moved + '.' + id, _.bind(this.onContentMoved, this))
+                    .on(e.content.state + '.' + id, _.bind(this.onContentStateChanged, this))
+                    .on(e.content.view + '.' + id, _.bind(this.onAssetSelected, this));
             },
 
             initializeFilter: function () {
@@ -626,8 +634,16 @@
                 }
                 if (applicable) {
                     this.onPathSelected(event, path);
-                    var p = pages.const.profile.asset.tree;
-                    pages.profile.set(p.aspect, p.path, path);
+                    var node = this.getTreeNode(path);
+                    if (node && node.original.type !== 'folder') {
+                        if (node.original.type !== 'site') {
+                            var p = pages.const.profile.asset.tree;
+                            pages.profile.set(p.aspect, p.path, path);
+                            pages.current.file = path;
+                        } else {
+                            pages.trigger('tree.asset.on.node', "path:select", [path, node.original.name, node.original.type]);
+                        }
+                    }
                 }
             }
         });
@@ -719,7 +735,7 @@
             },
 
             getNodeActionsUrl: function (path) {
-                return tree.const.actions.url + path;
+                return tree.const.actions.url + core.encodePath(path);
             },
 
             setNodeActions: function () {
@@ -905,7 +921,7 @@
                 var p = pages.const.profile.asset.tree;
                 var path = pages.profile.get(p.aspect, p.path, '');
                 if (path) {
-                    this.selectAsset(event, path);
+                    this.tree.selectNode(path);
                 }
             },
 
@@ -916,6 +932,10 @@
             },
 
             selectDefaultNode: function () {
+            },
+
+            getNodeActionsUrl: function (path) {
+                return tree.const.actions.assets + path;
             },
 
             setFilter: function (filter) {
@@ -929,11 +949,12 @@
 
             showPreview: function (node) {
                 if (node && node.original.path && node.original.type.indexOf('file') >= 0) {
-                    core.ajaxGet(tree.const.tile.url + node.original.path, {},
+                    core.ajaxGet(tree.const.tile.asset + core.encodePath(node.original.path), {},
                         _.bind(function (data) {
                             if (data) {
                                 this.$treePanelPreview.html(data);
                                 this.$el.addClass('preview-available');
+                                core.getWidget(this.$el, '.' + pages.tools.const.fileStatus.css.base, pages.tools.FileStatus);
                                 this.$treePanelPreview.find('[draggable="true"]')
                                     .on('dragstart', _.bind(this.onPreviewDragStart, this))
                                     .on('dragend', _.bind(this.tree.onDragEnd, this.tree));
@@ -1012,9 +1033,15 @@
             }
         });
 
-        tree.pageTreePanel = core.getView('.' + tree.const.pages.css.base, tree.PageTreePanel);
-        tree.assetsTreePanel = core.getView('.' + tree.const.assets.css.base, tree.AssetsTreePanel);
-        tree.developTreePanel = core.getView('.' + tree.const.develop.css.base, tree.DevelopTreePanel);
+        tree.setup = function () {
+            tree.pageTreePanel = core.getView('.' + tree.const.pages.css.base, tree.PageTreePanel);
+            tree.assetsTreePanel = core.getView('.' + tree.const.assets.css.base, tree.AssetsTreePanel);
+            tree.developTreePanel = core.getView('.' + tree.const.develop.css.base, tree.DevelopTreePanel);
+        };
+        tree.setup();
+        $(document).on(pages.const.event.pages.ready + '.Tree', function () {
+            tree.setup();
+        });
 
     })(window.composum.pages.tree, window.composum.pages, window.core);
 })(window);

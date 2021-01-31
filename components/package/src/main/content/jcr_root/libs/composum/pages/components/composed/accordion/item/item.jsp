@@ -5,18 +5,20 @@
 <cpp:defineObjects/>
 <cpp:container var="model" type="com.composum.pages.components.model.composed.accordion.AccordionItem"
                cssAdd="panel panel-default">
-    <div id="${modelId}_head" class="panel-heading" role="tab">
+    <div id="${modelId}_head" class="${modelCSS}_head panel-heading" role="tab">
         <cpn:div tagName="${model.titleTagName}" class="panel-title">
             <%-- the item is using the id of the accordion - available in request scope --%>
             <a role="button" data-toggle="collapse" data-parent="#${accordionId}" href="#${modelId}_body"
-               aria-expanded="${model.initialOpen||model.editMode}" aria-controls="${modelId}_body">
+               aria-expanded="${model.initialOpen||model.editMode}" aria-controls="${modelId}_body"
+               class="${modelCSS}_toggle${model.initialOpen||model.editMode?'':' collapsed'}">
                 <cpn:text value="${model.title}"/>
             </a>
         </cpn:div>
     </div>
-    <div id="${modelId}_body" class="panel-collapse collapse ${model.initialOpen||model.editMode?'in':''}"
+    <div id="${modelId}_body"
+         class="${modelCSS}_body panel-collapse collapse ${model.initialOpen||model.editMode?'in':''}"
          role="tabpanel" aria-labelledby="${modelId}_head">
-        <div class="panel-body">
+        <div class="${modelCSS}_content panel-body">
             <c:forEach items="${model.elements}" var="element" varStatus="loop">
                 <cpp:include resource="${element.resource}"/>
             </c:forEach>

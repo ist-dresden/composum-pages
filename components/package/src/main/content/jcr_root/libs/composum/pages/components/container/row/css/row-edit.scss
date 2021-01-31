@@ -1,8 +1,9 @@
 @charset "UTF-8";
 
-.composum-pages-EDIT_body {
+.composum-pages-EDIT_body,
+.composum-pages-DEVELOP_body {
 
     .composum-pages-components-container-row {
-        border-top: 15px dotted rgba(200, 200, 200, 0.5); /* edit handle */
+        border-top: 11px dotted rgba(200, 200, 200, 0.5); /* edit handle */
     }
 }

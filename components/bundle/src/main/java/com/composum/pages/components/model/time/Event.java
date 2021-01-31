@@ -19,6 +19,10 @@ import static com.composum.pages.commons.model.Link.PN_LINK_TITLE;
 
 public class Event extends TimeRelated {
 
+    public static final String TYPE = "event";
+    public static final String PAGE_TYPE = "composum/pages/components/time/" + TYPE + "/page";
+    public static final String TEASER_TYPE = "composum/pages/components/time/" + TYPE + "/teaser";
+
     private transient String link;
     private transient String linkTitle;
     private transient String linkUrl;

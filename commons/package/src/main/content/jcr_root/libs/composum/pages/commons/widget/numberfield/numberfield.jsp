@@ -13,7 +13,7 @@
          data-label="${widget.label}" data-options="${widget.model.options.rule}" ${widget.attributes}>
         <cpn:div test="${!widget.required}" tagName="span" class="input-group-addon clear fa fa-times-circle"></cpn:div>
         <input name="${widget.name}" class="${widgetCSS}_input form-control" type="text"
-               value="${widget.model.value}"
+               value="${cpn:value(widget.model.value)}"
                <c:if test="${widget.disabled}">disabled</c:if> />
         <span class="input-group-addon spinner"><span
                 class="decrement fa fa-minus" title="decrement"></span><span

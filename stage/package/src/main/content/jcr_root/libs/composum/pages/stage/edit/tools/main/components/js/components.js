@@ -98,7 +98,7 @@
                 if (this.searchTerm) {
                     params.push('query=' + encodeURIComponent(this.searchTerm));
                 }
-                var url = u.get.components + pages.current.page;
+                var url = u.get.components + core.encodePath(pages.current.page);
                 if (params.length > 0) {
                     url += '?' + params.join('&');
                 }
@@ -188,7 +188,9 @@
             }
         });
 
-        tools.componentsTab = core.getView('.' + tools.const.components.css.base, tools.ComponentsTab);
+        $(document).on(pages.const.event.pages.ready + '.Components', function () {
+            tools.componentsTab = core.getView('.' + tools.const.components.css.base, tools.ComponentsTab);
+        });
 
     })(window.composum.pages.main, window.composum.pages, window.core);
 })(window);

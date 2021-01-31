@@ -21,7 +21,7 @@ public class TimeRelated extends Page {
 
     public static final String PN_DATE = "date";
     public static final String PN_START_DATE = PN_DATE;
-    public static final String PN_END_DATE = "dateEnd";
+    public static final String PN_DATE_END = "dateEnd";
 
     public static final long DAY_IN_MILLIS = 24 * 60 * 60 * 1000;
 
@@ -73,6 +73,10 @@ public class TimeRelated extends Page {
             return date;
         }
 
+        public boolean isShowTime() {
+            return value.get(Calendar.HOUR) != 0 || value.get(Calendar.MINUTE) != 0;
+        }
+
         @Nonnull
         public String getTime() {
             if (time == null) {
@@ -114,6 +118,8 @@ public class TimeRelated extends Page {
     private transient Moment date;
     private transient Moment dateEnd;
 
+    private transient DateRange dateRange;
+
     private transient String tileStyle;
 
     @Nonnull
@@ -129,13 +135,27 @@ public class TimeRelated extends Page {
         return getDate();
     }
 
-
     @Nonnull
     public Moment getEndDate() {
         if (dateEnd == null) {
-            dateEnd = new Moment(PN_END_DATE);
+            dateEnd = new Moment(PN_DATE_END);
         }
         return dateEnd;
+    }
+
+    public DateRange getDateRange() {
+        if (dateRange == null) {
+            Calendar to = getEndDate().getValue();
+            if (to != null) {
+                to.add(Calendar.DAY_OF_MONTH, 1);
+                to.set(Calendar.HOUR, 0);
+                to.set(Calendar.MINUTE, 0);
+                to.set(Calendar.SECOND, 0);
+                to.set(Calendar.MILLISECOND, 0);
+            }
+            dateRange = new DateRange(getStartDate().getValue(), to);
+        }
+        return dateRange;
     }
 
     public boolean isOneDayOnly() {

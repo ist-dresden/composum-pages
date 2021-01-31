@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jcr:root xmlns:cpp="http://sling.composum.com/pages/1.0"
-          xmlns:jcr="http://www.jcp.org/jcr/1.0"
-          xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
-          jcr:primaryType="cpp:Page">
+        xmlns:jcr="http://www.jcp.org/jcr/1.0"
+        xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+        xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+        jcr:primaryType="cpp:Page">
     <jcr:content
             jcr:primaryType="cpp:PageContent"
             sling:resourceType="composum/pages/stage/edit/tools/component/help/page"
@@ -13,7 +14,14 @@
             <text_01
                     jcr:primaryType="cpp:Element"
                     sling:resourceType="composum/pages/components/element/text"
-                    text="A table component to create an HTML table element as a collection of rows with inserted cells. The rows are edited (inserted / moved / deleted) as the elements of the table itself. The cells are the elements of the rows an must be inserted also."/>
+                    text="&lt;p>A table component to create an HTML table element as a collection of rows with inserted cells. The table serves as a container into which rows can be inserted (edited / moved / deleted), and each row is a container into which cells can be inserted.&lt;br>&lt;/p>">
+                <i18n
+                        jcr:primaryType="nt:unstructured">
+                    <de
+                            jcr:primaryType="nt:unstructured"
+                            text="Eine Tabelle ist eine Komponente zum erzeugen einer HTML Tabelle. Die Tabelle ist ein Container, in den Zeilen (row) eingefügt (und rearrangiert) werden können. Jede Zeile wiederum ist ein Container in den Zellen eingefügt werden können.&lt;br>"/>
+                </i18n>
+            </text_01>
             <image
                     jcr:primaryType="cpp:Element"
                     sling:resourceType="composum/pages/components/element/image"

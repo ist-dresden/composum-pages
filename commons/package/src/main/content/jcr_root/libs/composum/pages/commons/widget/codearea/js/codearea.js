@@ -1,7 +1,6 @@
-(function (window) {
-    window.composum = window.composum || {};
-    window.composum.pages = window.composum.pages || {};
-    window.composum.pages.widgets = window.composum.pages.widgets || {};
+(function () {
+    'use strict';
+    CPM.namespace('pages.widgets');
 
     (function (widgets, pages, core) {
         'use strict';
@@ -19,7 +18,7 @@
             }
         });
 
-        widgets.CodeAreaWidget = window.widgets.Widget.extend({
+        widgets.CodeAreaWidget = CPM.widgets.Widget.extend({
 
             initialize: function (options) {
                 this.searchOptions = {
@@ -31,7 +30,7 @@
                 this.$editor.css('height', this.$el.data('height') || '150px');
                 this.initEditor();
                 this.$el.append(widgets.const.codearea.textarea);
-                window.widgets.Widget.prototype.initialize.apply(this, [options]);
+                CPM.widgets.Widget.prototype.initialize.apply(this, [options]);
                 this.$input.attr('name', this.name);
                 var encoded = this.$el.data('encoded');
                 if (encoded) {
@@ -111,7 +110,7 @@
 
             open: function (path, onSuccess, onError, onComplete) {
                 if (path) {
-                    core.ajaxGet(path, {
+                    core.ajaxGet(core.encodePath(path), {
                         contentType: 'text/plain;charset=UTF-8',
                         dataType: 'text'
                     }, _.bind(function (content) {
@@ -134,7 +133,7 @@
             saveAs: function (path, onSuccess, onError, onComplete) {
                 if (path) {
                     this.$el.data('path', path);
-                    core.ajaxPut('/bin/cpm/pages/develop.updateFile.json' + path,
+                    core.ajaxPut('/bin/cpm/pages/develop.updateFile.json' + core.encodePath(path),
                         this.getValue(), {
                             contentType: 'text/plain;charset=UTF-8',
                             dataType: 'text'
@@ -199,7 +198,7 @@
             }
         });
 
-        window.widgets.register('.widget.codearea-widget', widgets.CodeAreaWidget);
+        CPM.widgets.register('.widget.codearea-widget', widgets.CodeAreaWidget);
 
-    })(window.composum.pages.widgets, window.composum.pages, window.core);
-})(window);
+    })(CPM.pages.widgets, CPM.pages, CPM.core);
+})();

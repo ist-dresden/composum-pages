@@ -1,0 +1,146 @@
+@charset "UTF-8";
+
+@import "../../css/defaults";
+
+$time-calendar-day-highlight: $site-default-link-color;
+
+$time-calendar-label-margin: $time-navigator-header-margin / 2;
+
+$time-calendar-day-margin: 0.5rem;
+$time-calendar-day-min-width: 2rem;
+$time-calendar-week-width: 1.7rem;
+
+@mixin time-calendar-label($size:90%) {
+    text-align: right;
+    color: $bootstrap-color-muted;
+    font-size: $size;
+    font-style: italic;
+}
+
+.composum-pages-components-time-calendar {
+    margin-bottom: $time-navigator-header-margin;
+    @include default-font;
+
+    .composum-pages-components-time-calendar {
+
+        &_row, &_row-header {
+            display: flex;
+        }
+
+        &_row-header {
+            flex-wrap: nowrap;
+            margin: $time-navigator-header-margin 0 $time-calendar-label-margin;
+            padding: $time-navigator-header-padding;
+            background-color: $time-navigator-header-background;
+        }
+
+        &_row {
+            flex-wrap: wrap;
+            justify-content: space-around;
+            margin: $time-calendar-label-margin;
+        }
+
+        &_year {
+            flex-grow: 1;
+            text-align: center;
+        }
+
+        &_move {
+            cursor: pointer;
+            min-width: $time-navigator-nav-handle-width;
+            line-height: $time-navigator-nav-handle-height;
+            text-align: center;
+            color: $bootstrap-color-muted;
+        }
+
+        &_label {
+            text-align: center;
+        }
+
+        &_week,
+        &_weekdays {
+            display: flex;
+            flex-wrap: nowrap;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        &_weekdays {
+            margin: $time-calendar-label-margin / 2 0;
+        }
+
+        &_week-col {
+            width: $time-calendar-week-width;
+            margin-right: 1.4rem;
+            @include time-calendar-label;
+        }
+
+        &_weekday {
+            min-width: $time-calendar-day-min-width;
+            margin: 0 $time-calendar-day-margin;
+            padding-right: 3px;
+            @include time-calendar-label(80%);
+        }
+
+        &_day {
+            min-width: $time-calendar-day-min-width;
+            margin: 0 $time-calendar-day-margin;
+
+            .composum-pages-components-time-calendar {
+
+                &_text {
+                    text-align: right;
+                }
+            }
+
+            &.outside {
+                color: $bootstrap-color-muted;
+
+                &.no-items {
+                    opacity: 0.5;
+                }
+            }
+
+            &.items {
+                cursor: pointer;
+                font-family: $site-bold-font-family;
+
+                &.inside {
+                    color: $time-calendar-day-highlight;
+                }
+            }
+        }
+
+        &_month {
+            margin: $time-calendar-label-margin 1.5rem;
+
+            &-header {
+                cursor: pointer;
+                display: flex;
+                flex-wrap: nowrap;
+                margin: $time-calendar-label-margin;
+
+                .composum-pages-components-time-calendar {
+
+                    &_label {
+                        flex-grow: 7;
+                        text-align: center;
+                    }
+                }
+            }
+        }
+    }
+
+    &-columns {
+
+        &-1 {
+
+            .composum-pages-components-time-calendar {
+
+                &_month, &_weekday, &_day {
+                    flex-grow: 1
+                }
+            }
+        }
+    }
+}

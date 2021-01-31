@@ -27,6 +27,7 @@ body {
     .composum-pages-stage-edit-tools {
 
         &_navigation,
+        &_standalone,
         &_context {
             position: fixed;
             top: 0;
@@ -37,7 +38,8 @@ body {
             color: $tools-pane-foreground;
         }
 
-        &_navigation {
+        &_navigation,
+        &_standalone {
             left: 0;
 
             .composum-pages-stage-edit-sidebar {

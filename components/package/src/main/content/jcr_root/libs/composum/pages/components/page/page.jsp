@@ -3,8 +3,9 @@
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <cpp:defineObjects/>
 <!DOCTYPE html>
-<html ${currentPage.htmlLangAttribute} ${currentPage.htmlDirAttribute}
-        class="${currentPage.htmlClasses}" data-context-path="${slingRequest.contextPath}">
+<html ${currentPage.htmlLangAttribute} ${currentPage.htmlDirAttribute} class="${currentPage.htmlClasses}"
+                                                                       data-context-path="${slingRequest.contextPath}"
+                                                                       data-locale="${currentPage.locale}">
 <cpp:head>
     <sling:call script="head.jsp"/>
 </cpp:head>

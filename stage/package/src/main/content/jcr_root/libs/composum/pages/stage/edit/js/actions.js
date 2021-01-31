@@ -7,13 +7,11 @@
  * @param path the path of the content element
  * @param type the resource type of the content element
  */
-(function (window) {
-    window.composum = window.composum || {};
-    window.composum.pages = window.composum.pages || {};
-    window.composum.pages.actions = window.composum.pages.actions || {};
+(function () {
+    'use strict';
+    CPM.namespace('pages.actions');
 
     (function (actions, pages, core) {
-        'use strict';
 
         actions.const = _.extend(actions.const || {}, {
             version: {
@@ -54,6 +52,47 @@
                 var selectors = $action.data('selectors');
                 var dialogUrl = pages.dialogs.getEditDialogUrl('load', selectors);
                 pages.dialogs.openEditDialog(name, path, type, undefined/*context*/, dialogUrl);
+            },
+
+            triggerEvents: function (dialog, result, defaultEvents) {
+                var event = dialog.$el.data('pages-edit-success');
+                if (event) {
+                    event = event.split(';');
+                } else {
+                    event = defaultEvents;
+                    if (!event && _.isFunction(dialog.getDefaultSuccessEvents)) {
+                        event = dialog.getDefaultSuccessEvents().split(';');
+                    }
+                }
+                for (var i = 0; i < event.length; i++) {
+                    switch (event[i]) {
+                        case 'messages':
+                            if (_.isObject(result)) {
+                                if (_.isObject(result.response)) {
+                                    var response = result.response;
+                                    var messages = result.messages;
+                                    core.messages(response.level, response.text, messages);
+                                } else {
+                                    core.alert(result);
+                                }
+                            }
+                            break;
+                        default:
+                            var key = event[i].split('#');
+                            var args;
+                            if (key.length > 1) {
+                                var values = key[1].split(',');
+                                args = [new pages.Reference(undefined, values[0])];
+                                for (var j = 1; j < values.length; j++) {
+                                    args.push(values[j])
+                                }
+                            } else {
+                                args = [new pages.Reference(dialog.data.name, dialog.data.path, dialog.data.type)];
+                            }
+                            pages.trigger('dialog.event.final', key[0], args);
+                            break;
+                    }
+                }
             }
         };
 
@@ -100,7 +139,8 @@
                 if (path && clipboard && clipboard.path) {
                     var sourceName = core.getNameFromPath(clipboard.path);
                     // copy to the target with the same name
-                    core.ajaxPost("/bin/cpm/pages/edit.copyElement.json" + clipboard.path, {
+                    core.ajaxPost("/bin/cpm/pages/edit.copyElement.json" + core.encodePath(clipboard.path), {
+                        _charset_: 'UTF-8',
                         targetPath: path,
                         targetType: type,
                         name: sourceName
@@ -133,7 +173,8 @@
                 if (path && clipboard && clipboard.path) {
                     var name = core.getNameFromPath(clipboard.path);
                     // copy to the target with the same name
-                    core.ajaxPost("/bin/cpm/pages/edit.copyContent.json" + clipboard.path, {
+                    core.ajaxPost("/bin/cpm/pages/edit.copyContent.json" + core.encodePath(clipboard.path), {
+                        _charset_: 'UTF-8',
                         targetPath: path,
                         name: name
                     }, {}, _.bind(function (result) {
@@ -203,22 +244,24 @@
             },
 
             activate: function (event, name, path, type) {
-                pages.dialogs.openActivatePageDialog(name, path, type);
+                pages.dialogs.openActivateContentDialog(name, path, type);
             },
 
             revert: function (event, name, path, type) {
-                pages.dialogs.openRevertPageDialog(name, path, type);
+                pages.dialogs.openRevertContentDialog(name, path, type);
             },
 
             deactivate: function (event, name, path, type) {
-                pages.dialogs.openDeactivatePageDialog(name, path, type);
+                pages.dialogs.openDeactivateContentDialog(name, path, type);
             },
 
             checkpoint: function (event, name, path, type) {
                 var u = actions.const.version.uri;
-                core.ajaxPost(u.pages.base + u.pages._.checkpoint + path, {}, {},
+                core.ajaxPost(u.pages.base + u.pages._.checkpoint + core.encodePath(path), {
+                        _charset_: 'UTF-8'
+                    }, {},
                     _.bind(function (result) {
-                        pages.trigger('actions.page.checkpoint', pages.const.event.page.state,
+                        pages.trigger('actions.page.checkpoint', pages.const.event.content.state,
                             [new pages.Reference(name, path, type)]);
                     }, this), function (xhr) {
                         actions.error('Error on checkpoint', xhr);
@@ -227,9 +270,11 @@
 
             checkout: function (event, name, path, type) {
                 var u = actions.const.version.uri;
-                core.ajaxPost(u.pages.base + u.pages._.checkout + path, {}, {},
+                core.ajaxPost(u.pages.base + u.pages._.checkout + core.encodePath(path), {
+                        _charset_: 'UTF-8'
+                    }, {},
                     _.bind(function (result) {
-                        pages.trigger('actions.page.checkout', pages.const.event.page.state,
+                        pages.trigger('actions.page.checkout', pages.const.event.content.state,
                             [new pages.Reference(name, path, type)]);
                     }, this), function (xhr) {
                         actions.error('Error on checkout', xhr);
@@ -238,9 +283,11 @@
 
             checkin: function (event, name, path, type) {
                 var u = actions.const.version.uri;
-                core.ajaxPost(u.pages.base + u.pages._.checkin + path, {}, {},
+                core.ajaxPost(u.pages.base + u.pages._.checkin + core.encodePath(path), {
+                        _charset_: 'UTF-8'
+                    }, {},
                     _.bind(function (result) {
-                        pages.trigger('actions.page.checkin', pages.const.event.page.state,
+                        pages.trigger('actions.page.checkin', pages.const.event.content.state,
                             [new pages.Reference(name, path, type)]);
                     }, this), function (xhr) {
                         actions.error('Error on checkin', xhr);
@@ -249,9 +296,11 @@
 
             toggleCheckout: function (event, name, path, type) {
                 var u = actions.const.version.uri;
-                core.ajaxPost(u.pages.base + u.pages._.toggleCheckout + path, {}, {},
+                core.ajaxPost(u.pages.base + u.pages._.toggleCheckout + core.encodePath(path), {
+                        _charset_: 'UTF-8'
+                    }, {},
                     _.bind(function (result) {
-                        pages.trigger('actions.page.toggleCheckout', pages.const.event.page.state,
+                        pages.trigger('actions.page.toggleCheckout', pages.const.event.content.state,
                             [new pages.Reference(name, path, type)]);
                     }, this), function (xhr) {
                         actions.error('Error on toggle checkout', xhr);
@@ -260,9 +309,11 @@
 
             lock: function (event, name, path, type) {
                 var u = actions.const.version.uri;
-                core.ajaxPost(u.pages.base + u.pages._.lock + path, {}, {},
+                core.ajaxPost(u.pages.base + u.pages._.lock + core.encodePath(path), {
+                        _charset_: 'UTF-8'
+                    }, {},
                     _.bind(function (result) {
-                        pages.trigger('actions.page.lock', pages.const.event.page.state,
+                        pages.trigger('actions.page.lock', pages.const.event.content.state,
                             [new pages.Reference(name, path, type)]);
                     }, this), function (xhr) {
                         actions.error('Error on lock page', xhr);
@@ -271,9 +322,11 @@
 
             unlock: function (event, name, path, type) {
                 var u = actions.const.version.uri;
-                core.ajaxPost(u.pages.base + u.pages._.unlock + path, {}, {},
+                core.ajaxPost(u.pages.base + u.pages._.unlock + core.encodePath(path), {
+                        _charset_: 'UTF-8'
+                    }, {},
                     _.bind(function (result) {
-                        pages.trigger('actions.page.unlock', pages.const.event.page.state,
+                        pages.trigger('actions.page.unlock', pages.const.event.content.state,
                             [new pages.Reference(name, path, type)]);
                     }, this), function (xhr) {
                         actions.error('Error on unlock page', xhr);
@@ -282,9 +335,11 @@
 
             toggleLock: function (event, name, path, type) {
                 var u = actions.const.version.uri;
-                core.ajaxPost(u.pages.base + u.pages._.toggleLock + path, {}, {},
+                core.ajaxPost(u.pages.base + u.pages._.toggleLock + core.encodePath(path), {
+                        _charset_: 'UTF-8'
+                    }, {},
                     _.bind(function (result) {
-                        pages.trigger('actions.page.toggleLock', pages.const.event.page.state,
+                        pages.trigger('actions.page.toggleLock', pages.const.event.content.state,
                             [new pages.Reference(name, path, type)]);
                     }, this), function (xhr) {
                         actions.error('Error on toggle lock', xhr);
@@ -339,6 +394,14 @@
                 pages.dialogs.openDeleteSiteDialog(name, path, type);
             },
 
+            activate: function (event, name, path, type) {
+                pages.dialogs.openActivateContentDialog(name, path, type);
+            },
+
+            revert: function (event, name, path, type) {
+                pages.dialogs.openRevertContentDialog(name, path, type);
+            },
+
             manage: function (event) {
                 pages.dialogs.openManageSitesDialog();
             }
@@ -381,6 +444,14 @@
 
             delete: function (event, name, path, type) {
                 pages.dialogs.openDeleteContentDialog('folder', name, path, type);
+            },
+
+            activate: function (event, name, path, type) {
+                pages.dialogs.openActivateTreeDialog(name, path, type);
+            },
+
+            revert: function (event, name, path, type) {
+                pages.dialogs.openRevertTreeDialog(name, path, type);
             }
         };
 
@@ -408,6 +479,18 @@
 
             delete: function (event, name, path, type) {
                 pages.dialogs.openDeleteContentDialog('file', name, path, type);
+            },
+
+            activate: function (event, name, path, type) {
+                pages.dialogs.openActivateContentDialog(name, path, type);
+            },
+
+            revert: function (event, name, path, type) {
+                pages.dialogs.openRevertContentDialog(name, path, type);
+            },
+
+            deactivate: function (event, name, path, type) {
+                pages.dialogs.openDeactivateContentDialog(name, path, type);
             }
         };
 
@@ -552,7 +635,8 @@
 
             doDropMove: function (target, object) {
                 if (target && target.container.reference.path && object && object.type === 'element') {
-                    core.ajaxPost(pages.const.url.edit.move + object.reference.path, {
+                    core.ajaxPost(pages.const.url.edit.move + core.encodePath(object.reference.path), {
+                        _charset_: 'UTF-8',
                         targetPath: target.container.reference.path,
                         targetType: target.container.reference.type,
                         before: target.before && target.before.reference.path ? target.before.reference.path : ''
@@ -580,7 +664,7 @@
                         data['jcr:primaryType'] = zone.prim;
                     }
                     data[zone.property] = object.reference.path;
-                    core.ajaxPost(zone.path, data, {}, function (result) {
+                    core.ajaxPost(core.encodePath(zone.path), data, {}, function (result) {
                         var event = zone.event ? zone.event : pages.const.event.element.changed;
                         var reference = new pages.Reference(zone);
                         pages.trigger('actions.dnd.zone', event, [reference]);
@@ -600,5 +684,5 @@
             }
         };
 
-    })(window.composum.pages.actions, window.composum.pages, window.core);
-})(window);
+    })(CPM.pages.actions, CPM.pages, CPM.core);
+})();

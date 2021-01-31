@@ -4,17 +4,19 @@ import com.composum.pages.commons.PagesConstants;
 import com.composum.sling.core.ResourceHandle;
 import com.composum.sling.core.util.ResourceUtil;
 import com.composum.sling.core.util.SlingResourceUtil;
-import com.composum.sling.platform.staging.ReleaseChangeEventListener;
-import com.composum.sling.platform.staging.StagingConstants;
-import com.composum.sling.platform.staging.StagingReleaseManager;
-import com.composum.sling.platform.staging.StagingReleaseManagerPlugin;
+import com.composum.sling.platform.staging.*;
+import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.Resource;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
 
 import javax.annotation.Nonnull;
 import javax.jcr.RepositoryException;
+import java.util.Objects;
 import java.util.Set;
+
+import static com.composum.sling.core.util.CoreConstants.TYPE_SLING_ORDERED_FOLDER;
+import static org.apache.jackrabbit.JcrConstants.JCR_FROZENPRIMARYTYPE;
 
 /**
  * Fixes the Release Worktree for inconsistencies due to deactivated pages. In that case, there is a cpp:Page in the worktree
@@ -39,7 +41,7 @@ public class PagesReleaseManagerPlugin implements StagingReleaseManagerPlugin {
      * change the resource type to {@link com.composum.sling.core.util.ResourceUtil#TYPE_SLING_ORDERED_FOLDER}.
      */
     @Override
-    public void fixupReleaseForChanges(@Nonnull StagingReleaseManager.Release release, Resource workspaceCopyNode, @Nonnull Set<String> changedPaths, ReleaseChangeEventListener.ReleaseChangeEvent event) throws RepositoryException {
+    public void fixupReleaseForChanges(@Nonnull Release release, Resource workspaceCopyNode, @Nonnull Set<String> changedPaths, ReleaseChangeEvent event) throws RepositoryException {
         fixup(release, workspaceCopyNode.getPath(), workspaceCopyNode, event);
     }
 
@@ -51,13 +53,13 @@ public class PagesReleaseManagerPlugin implements StagingReleaseManagerPlugin {
      *
      * @return true if the resource is an activated versionable or has active subnodes, and thus needs to be kept in the release.
      */
-    private boolean fixup(StagingReleaseManager.Release release, String workspaceCopyPath, Resource rawResource, ReleaseChangeEventListener.ReleaseChangeEvent event) throws RepositoryException {
+    private boolean fixup(Release release, String workspaceCopyPath, Resource rawResource, ReleaseChangeEvent event) throws RepositoryException {
         ResourceHandle resource = ResourceHandle.use(rawResource);
         if (resource.isOfType(StagingConstants.TYPE_VERSIONREFERENCE)) {
             Boolean disabled = resource.getProperty(StagingConstants.PROP_DEACTIVATED, false);
             return !disabled;
         }
-        boolean isPage = PagesConstants.NODE_TYPE_PAGE.equals(resource.getProperty(ResourceUtil.JCR_FROZENPRIMARYTYPE));
+        boolean isPage = PagesConstants.NODE_TYPE_PAGE.equals(resource.getProperty(JCR_FROZENPRIMARYTYPE));
         boolean hasActiveChildren = false;
         boolean hasActivePageContent = false;
         for (Resource child : resource.getChildren()) {
@@ -70,14 +72,38 @@ public class PagesReleaseManagerPlugin implements StagingReleaseManagerPlugin {
         if (isPage && !hasActivePageContent) {
             String relativePath = SlingResourceUtil.relativePath(workspaceCopyPath, resource.getPath());
             String workspacePath = release.absolutePath(relativePath);
-            event.addMoveOrUpdate(workspacePath, workspacePath);
             if (hasActiveChildren) {
-                resource.setProperty(ResourceUtil.JCR_FROZENPRIMARYTYPE, ResourceUtil.TYPE_SLING_ORDERED_FOLDER);
+                boolean typechange = changeValueTo(resource,
+                        JCR_FROZENPRIMARYTYPE, "", TYPE_SLING_ORDERED_FOLDER, event, workspacePath);
+                boolean disabledchange = changeValueTo(resource,
+                        StagingConstants.PROP_DEACTIVATED, Boolean.FALSE, Boolean.FALSE, event, workspacePath);
+                if (disabledchange) {
+                    event.addMoveOrUpdate(null, workspacePath);
+                } else if (typechange) {
+                    event.addMoveOrUpdate(workspacePath, workspacePath);
+                }
             } else {
                 resource.setProperty(StagingConstants.PROP_DEACTIVATED, true);
+                if (changeValueTo(resource, StagingConstants.PROP_DEACTIVATED, Boolean.FALSE, Boolean.TRUE,
+                        event, workspacePath)) {
+                    event.addMoveOrUpdate(workspacePath, null);
+                }
             }
         }
         return hasActiveChildren;
+    }
+
+    /**
+     * Changes a property to wantedValue if neccesary, possibly adding change to event, returns true if changed.
+     */
+    protected <T> boolean changeValueTo(ResourceHandle handle, String propertyName, T defaultValue, T wantedValue,
+                                        ReleaseChangeEvent event, String workspacePath) {
+        boolean result = false;
+        if (!Objects.equals(handle.getProperty(propertyName, defaultValue), wantedValue)) {
+            handle.adaptTo(ModifiableValueMap.class).put(propertyName, wantedValue);
+            result = true;
+        }
+        return result;
     }
 
 }

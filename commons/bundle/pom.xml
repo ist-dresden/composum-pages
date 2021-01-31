@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.composum.pages</groupId>
         <artifactId>composum-pages-commons</artifactId>
-        <version>1.1.0</version>
+        <version>1.2.0</version>
     </parent>
 
     <artifactId>composum-pages-commons-bundle</artifactId>
@@ -21,6 +21,11 @@
 
     <build>
         <plugins>
+
+            <plugin>
+                <groupId>pl.project13.maven</groupId>
+                <artifactId>git-commit-id-plugin</artifactId>
+            </plugin>
 
             <plugin>
                 <groupId>org.apache.felix</groupId>
@@ -38,9 +43,9 @@
                             com.composum.pages.commons.*
                         </Export-Package>
                         <Import-Package>
-                            com.composum.sling.core.*;version="[1.11,2.1)",
-                            com.composum.sling.clientlibs.*;version="[1.11,2.1)",
-                            com.composum.sling.cpnl.*;version="[1.11,2.1)",
+                            com.composum.sling.core.*;version="[1.11,3)",
+                            com.composum.sling.clientlibs.*;version="[1.11,3)",
+                            com.composum.sling.cpnl.*;version="[1.11,3)",
                             javax.annotation.*;version="[0,4)",
                             *
                         </Import-Package>
@@ -126,8 +131,8 @@
 
         <!-- Composum Core -->
         <dependency>
-            <groupId>com.composum.sling.core</groupId>
-            <artifactId>composum-sling-core-commons</artifactId>
+            <groupId>com.composum.nodes</groupId>
+            <artifactId>composum-nodes-commons</artifactId>
         </dependency>
 
         <!-- Sling, JCR -->
@@ -280,6 +285,10 @@
         <dependency>
             <groupId>com.composum.platform</groupId>
             <artifactId>composum-platform-testing-testutil</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.sling</groupId>
+            <artifactId>org.apache.sling.testing.sling-mock-oak</artifactId>
         </dependency>
 
         <!-- TODO Temporary workaround for https://issues.apache.org/jira/browse/SLING-8576 . Once that's fixed this

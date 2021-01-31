@@ -20,6 +20,7 @@ import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.servlet.ServletOperation;
 import com.composum.sling.core.servlet.ServletOperationSet;
 import com.composum.sling.core.util.ResponseUtil;
+import com.composum.sling.core.util.XSS;
 import com.google.gson.stream.JsonWriter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
@@ -38,6 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
@@ -145,6 +147,12 @@ public class GetServlet extends ContentServlet {
         }
     }
 
+    protected BeanContext newBeanContext(@Nonnull SlingHttpServletRequest request,
+                                         @Nonnull SlingHttpServletResponse response,
+                                         @Nullable Resource resource) {
+        return new BeanContext.Servlet(getServletContext(), bundleContext, request, response, resource);
+    }
+
     //
     // Page
     //
@@ -209,7 +217,7 @@ public class GetServlet extends ContentServlet {
                          final ResourceHandle resource)
                 throws ServletException, IOException {
 
-            final String path = request.getRequestPathInfo().getSuffix();
+            final String path = XSS.filter(request.getRequestPathInfo().getSuffix());
             if (StringUtils.isNotBlank(path)) {
                 final RequestDispatcherOptions options = new RequestDispatcherOptions();
 

@@ -14,6 +14,7 @@ import com.composum.pages.commons.model.Folder;
 import com.composum.pages.commons.model.Page;
 import com.composum.pages.commons.model.Site;
 import com.composum.pages.commons.model.properties.PathPatternSet;
+import com.composum.pages.commons.request.DisplayMode;
 import com.composum.pages.commons.util.ResolverUtil;
 import com.composum.platform.cache.service.CacheConfiguration;
 import com.composum.platform.cache.service.CacheManager;
@@ -24,12 +25,15 @@ import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.filter.StringFilter;
 import com.composum.sling.core.util.PropertyUtil;
 import com.composum.sling.core.util.ResourceUtil;
+import com.composum.sling.core.util.SlingResourceUtil;
+import com.composum.sling.platform.security.PlatformAccessService;
 import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
+import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
@@ -79,6 +83,7 @@ import static com.composum.pages.commons.PagesConstants.PROP_TEMPLATE;
 import static com.composum.pages.commons.PagesConstants.PROP_TEMPLATE_REF;
 import static com.composum.pages.commons.PagesConstants.PROP_TYPE_PATTERNS;
 import static com.composum.pages.commons.model.Page.isPage;
+import static com.composum.sling.core.util.SlingResourceUtil.getPath;
 
 /**
  * the ResourceManager implementation of Pages handles templates and design rules of content resources and
@@ -137,6 +142,12 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
      */
     @Reference
     protected CacheManager cacheManager;
+
+    @Reference
+    protected ThemeManager themeManager;
+
+    @Reference(cardinality = ReferenceCardinality.OPTIONAL)
+    protected PlatformAccessService accessService;
 
     protected Config config;
 
@@ -400,6 +411,11 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
             PathPatternSet typePatterns = new PathPatternSet(getReference(designNode, null), PROP_TYPE_PATTERNS);
             return typePatterns.matches(designNode.getResourceResolver(), resourceType);
         }
+
+        @Override
+        public String toString() {
+            return templatePath;
+        }
     }
 
     /**
@@ -479,14 +495,32 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
     public Template getTemplateOf(@Nullable Resource resource) {
         Template template = null;
         if (resource != null) {
-            String path = resource.getPath();
-            template = get(path);
-            if (template == null) {
+            Theme theme = themeManager.getTheme(resource);
+            String cacheKey = resource.getPath();
+            if (theme != null) { // the template can vary if a theme is referenced
+                cacheKey += '@' + theme.getName();
+            }
+            if (ignoreTemplateCache() || (template = get(cacheKey)) == null) {
                 template = findTemplateOf(resource);
-                put(path, template != null ? template : NO_TEMPLATE);
+                put(cacheKey, template != null ? template : NO_TEMPLATE);
             }
         }
         return template != NO_TEMPLATE ? template : null;
+    }
+
+    /**
+     * @return 'true' if the requested display mode is 'develop'
+     */
+    protected boolean ignoreTemplateCache() {
+        if (accessService != null) {
+            PlatformAccessService.AccessContext accessContext = accessService.getAccessContext();
+            if (accessContext != null) {
+                SlingHttpServletRequest request = accessContext.getRequest();
+                DisplayMode displayMode = request.adaptTo(DisplayMode.class);
+                return displayMode != null && DisplayMode.isDevelopMode(displayMode.firstElement());
+            }
+        }
+        return false;
     }
 
     /**
@@ -502,13 +536,16 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
         } else {
             String templatePath = resource.getValueMap().get(PagesConstants.PROP_TEMPLATE, "");
             if (StringUtils.isNotBlank(templatePath)) {
-                Resource templateResource = resource.getResourceResolver().getResource(templatePath);
+                templatePath = getThemeTemplate(resource, templatePath);
+                Resource templateResource = ResolverUtil.getTemplate(resource.getResourceResolver(), templatePath);
                 if (templateResource != null && !ResourceUtil.isNonExistingResource(templateResource)) {
                     template = toTemplate(templateResource);
                 }
             } else {
-                if (!Folder.isFolder(resource) && !File.isFile(resource) &&
-                        !JcrConstants.JCR_CONTENT.equals(resource.getName())) {
+                if (Folder.isFolder(resource)) {
+                    // a folder without a template reference is skipped to find the template driven parent
+                    return getTemplateOf(resource.getParent());
+                } else if (!File.isFile(resource) && !JcrConstants.JCR_CONTENT.equals(resource.getName())) {
                     Template parentTemplate = getTemplateOf(resource.getParent());
                     if (parentTemplate != null) {
                         ResourceResolver resolver = resource.getResourceResolver();
@@ -519,6 +556,17 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
             }
         }
         return template;
+    }
+
+    protected String getThemeTemplate(@Nonnull final Resource pageContent, @Nonnull String templateType) {
+        Theme theme = themeManager.getTheme(pageContent);
+        if (theme != null) {
+            ResourceResolver resolver = pageContent.getResourceResolver();
+            templateType = theme.getPageTemplate(
+                    Objects.requireNonNull(pageContent.getParent()),
+                    Objects.requireNonNull(ResolverUtil.toPageTemplate(resolver, templateType)));
+        }
+        return templateType;
     }
 
     /**
@@ -669,6 +717,26 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
                 }
                 if (value == null) {
                     value = ResolverUtil.getTypeProperty(resolver, getType(), name, type);
+                }
+            }
+            return value;
+        }
+
+        /**
+         * returns the property value using the cascade: resource - resource type - design;
+         * no 18n support for this property value retrieval
+         */
+        @Override
+        @Nullable
+        public <T extends Serializable> T getRuleProperty(@Nonnull String name, @Nonnull Class<T> type) {
+            T value = getResourceValues().get(name, type);
+            if (value == null) {
+                value = ResolverUtil.getTypeProperty(resolver, getType(), name, type);
+                if (value == null) {
+                    Design design = getDesign();
+                    if (design != null) {
+                        value = design.getProperty(resolver, name, type);
+                    }
                 }
             }
             return value;
@@ -941,6 +1009,16 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
 
         Session session = Objects.requireNonNull(resolver.adaptTo(Session.class));
 
+        if (!SlingResourceUtil.isSameOrDescendant(changeRoot, source)) {
+            LOG.error("Move requested with changeRoot {} but source {}", getPath(changeRoot), getPath(source));
+            throw new IllegalArgumentException("Source not descendant of changeroot");
+        }
+
+        if (!SlingResourceUtil.isSameOrDescendant(changeRoot, targetParent)) {
+            LOG.error("Move requested with changeRoot {} but target {}", getPath(changeRoot), getPath(targetParent));
+            throw new IllegalArgumentException("Target not descendant of changeroot");
+        }
+
         String oldPath = source.getPath();
         int lastSlash = oldPath.lastIndexOf('/');
         String oldParentPath = lastSlash == 0 ? "/" : oldPath.substring(0, lastSlash);
@@ -1126,15 +1204,15 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
      * @return the changed value if changed otherwise 'null'
      */
     protected String changeReferences(String value, String oldPath, String newPath) {
-        if (value.matches("^" + oldPath + "(/.*)?$")) {
+        if (value.matches("^" + Pattern.quote(oldPath) + "(/.*)?$")) {
             // simple path value...
             return newPath + value.substring(oldPath.length());
         } else {
             // check for HTML patterns and change all references if found
-            Pattern htmlPattern = Pattern.compile("(href|src)=\"" + oldPath + "(/[^\"]*)?\"");
+            Pattern htmlPattern = Pattern.compile("(href|src)=\"" + Pattern.quote(oldPath) + "(/[^\"]*)?\"");
             Matcher matcher = htmlPattern.matcher(value);
             if (matcher.matches()) {
-                return matcher.replaceAll("$1=\"" + newPath + "$2\"");
+                return matcher.replaceAll("$1=\"" + Matcher.quoteReplacement(newPath) + "$2\"");
             }
         }
         return null;
@@ -1283,7 +1361,7 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
         }
 
         @Override
-        public void toString(StringBuilder builder) {
+        public void toString(@Nonnull final StringBuilder builder) {
             builder.append(getClass().getSimpleName());
         }
     }
@@ -1306,11 +1384,15 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
     @Override
     public Resource createFromTemplate(@Nonnull TemplateContext context, @Nonnull Resource parent, @Nonnull String name,
                                        @Nonnull Resource template, boolean setTemplateProperty)
-            throws PersistenceException {
+            throws RepositoryException, PersistenceException {
         ResourceResolver resolver = context.getResolver();
         ValueMap templateValues = template.getValueMap();
-        Resource target = resolver.create(parent, name, Collections.singletonMap(
-                JcrConstants.JCR_PRIMARYTYPE, templateValues.get(JcrConstants.JCR_PRIMARYTYPE)));
+        String createdPath = SlingResourceUtil.appendPaths(parent.getPath(), name);
+        if (createdPath == null || resolver.getResource(createdPath) != null) { // can't happen, but rather do a safety check.
+            throw new IllegalArgumentException("Can't create, already exists: {}" + createdPath);
+        }
+        Resource target = ResourceUtil.getOrCreateResource(resolver, createdPath,
+                ResourceUtil.TYPE_SLING_FOLDER + "/" + templateValues.get(JcrConstants.JCR_PRIMARYTYPE, String.class));
         Resource templateContent = template.getChild(JcrConstants.JCR_CONTENT);
         Resource referencedTemplate = null;
 
@@ -1322,7 +1404,7 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
             if (StringUtils.isNotBlank(templateRef)) {
                 // if the templates 'jcr:content' resource has a property 'template'
                 // use the template referenced by this property instead if this template exists
-                referencedTemplate = resolver.getResource(templateRef);
+                referencedTemplate = ResolverUtil.getTemplate(resolver, templateRef);
                 if (referencedTemplate != null) {
                     Resource referencedContent = referencedTemplate.getChild(JcrConstants.JCR_CONTENT);
                     if (referencedContent != null) {
@@ -1344,7 +1426,8 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
                 if (setTemplateProperty && !primaryContentType.startsWith("nt:")) {
                     if (targetValues.get(PROP_TEMPLATE) == null) {
                         // write template only if not always set by the template properties
-                        targetValues.put(PROP_TEMPLATE, Objects.requireNonNull(templateContent.getParent()).getPath());
+                        targetValues.put(PROP_TEMPLATE, ResolverUtil.toPageTemplate(resolver,
+                                Objects.requireNonNull(templateContent.getParent()).getPath()));
                     }
                 }
             } else {

@@ -2,12 +2,11 @@
  * the 'pages' namespace and core Pages edit frame functions
  * strong dependency to: 'commons.js' (libs: 'backbone.js', 'underscore.js', 'loglevel.js', 'jquery.js')
  */
-(function (window) {
-    window.composum = window.composum || {};
-    window.composum.pages = window.composum.pages || {};
+(function () {
+    'use strict';
+    CPM.namespace('pages');
 
     (function (pages, core) {
-        'use strict';
 
         pages.const = _.extend(pages.const || {}, {
             modes: {
@@ -18,6 +17,7 @@
             data: {
                 body: {
                     mode: 'pages-mode',
+                    editor: 'pages-editor',
                     locale: 'pages-locale'
                 }
             },
@@ -39,6 +39,7 @@
                 dialog: {
                     edit: 'dialog:edit',
                     generic: 'dialog:generic',
+                    custom: 'dialog:custom',
                     alert: 'dialog:alert'
                 }
             },
@@ -60,22 +61,23 @@
                     deleted: 'site:deleted'         // done.
                 },
                 page: {
-                    view: 'page:view',              // do it!...
                     select: 'page:select',          // do it!...
+                    reload: 'page:reload',          // do it!...
                     selected: 'page:selected',      // done.
                     inserted: 'page:inserted',      // done.
                     changed: 'page:changed',        // done.
                     deleted: 'page:deleted',        // done.
-                    state: 'page:state',            // changed state of the page itself only (no structure change)
                     containerRefs: 'page:containerRefs'
                 },
                 content: {
+                    view: 'content:view',              // do it!...
                     select: 'content:select',       // do it!...
                     selected: 'content:selected',   // done.
                     inserted: 'content:inserted',   // done.
                     changed: 'content:changed',     // done.
                     deleted: 'content:deleted',     // done.
-                    moved: 'content:moved'          // done.
+                    moved: 'content:moved',         // done.
+                    state: 'content:state'          // changed state of the content itself only (no page structure change)
                 },
                 component: {
                     select: 'component:select',     // do it!...
@@ -238,11 +240,13 @@
             var g = pages.const.profile.pages;
             return {
                 mode: pages.$body.data(pages.const.data.body.mode),
+                editor: pages.$body.data(pages.const.data.body.editor),
                 locale: pages.profile.get(g.aspect, g.locale, 'en'),
                 folder: undefined,
                 site: undefined,
                 page: undefined,
                 element: undefined,
+                file: undefined,
                 dnd: {}
             }
         }();
@@ -306,7 +310,7 @@
             if (!locale) {
                 locale = pages.getLocale();
             }
-            var url = core.getContextUrl((path || pages.current.page) + '.html');
+            var url = core.getContextUrl(core.encodePath(path || pages.current.page) + '.html');
             if (locale !== pages.current.localeDefault) {
                 url += '?pages.locale=' + locale;
             }
@@ -361,7 +365,7 @@
         pages.loadFrameContent = function (uri, callback) {
             var target = pages.current.page || pages.current.site;
             if (target) {
-                uri += target;
+                uri += core.encodePath(target);
             }
             uri += '?pages.view=' + pages.current.mode;
             core.getHtml(uri, _.bind(function (content) {
@@ -376,11 +380,12 @@
         pages.DialogHandler = Backbone.View.extend({
 
             openEditDialog: function (url, viewType, name, path, type, context, setupDialog, onNotFound) {
-                core.ajaxGet(url + (path ? path : ''), {
+                core.ajaxGet(url + (path ? core.encodePath(path) : ''), {
                         data: {
                             name: name ? name : '',
                             type: type ? type : '',
-                            'pages.locale': pages.getLocale()
+                            'pages.locale': pages.getLocale(),
+                            'pages.view': pages.current.mode
                         }
                     },
                     _.bind(function (data) {
@@ -412,6 +417,26 @@
                     }
                     dialog.show();
                 }
+            },
+
+            /**
+             * the dialog load analogous to the core.openLoadedDialog
+             * @param url       the complete URL to load the dialog (including selectors, extension, suffix, patameters)
+             * @param viewType  the dialogs behaviour implewmentation class
+             * @param config    the 'options' parameter object for the dialogs initialzer
+             * @param initView  an option function for further initializaion on shown
+             * @param callback  the final callback function on the dialogs successful finishing
+             */
+            openLoadedDialog: function (url, viewType, config, initView, callback) {
+                core.getHtml(url, _.bind(function (content) {
+                    this.$el.append(content);
+                    var $dialog = this.$el.children(':last-child');
+                    var dialog = core.getWidget(this.el, $dialog[0], viewType,
+                        config ? _.extend({loaded: true}, config) : {loaded: true});
+                    if (dialog) {
+                        dialog.show(initView, callback);
+                    }
+                }, this));
             },
 
             openDialog: function (id, url, viewType, initView, callback) {
@@ -526,5 +551,5 @@
             }, this));
         };
 
-    })(window.composum.pages, window.core);
-})(window);
+    })(CPM.pages, CPM.core);
+})();

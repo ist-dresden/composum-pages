@@ -1,5 +1,6 @@
 package com.composum.pages.commons.service;
 
+import com.composum.pages.commons.AssetsConfiguration;
 import com.composum.pages.commons.PagesConfiguration;
 import com.composum.pages.commons.PagesConstants;
 import com.composum.pages.commons.filter.TemplateFilter;
@@ -10,7 +11,7 @@ import com.composum.pages.commons.util.LinkUtil;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.util.ResourceUtil;
-import com.composum.sling.platform.security.AccessMode;
+import com.composum.platform.commons.request.AccessMode;
 import com.composum.sling.platform.staging.StagingReleaseManager;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
@@ -68,6 +69,9 @@ public class PagesSiteManager extends PagesContentManager<Site> implements SiteM
     @Reference
     protected PagesConfiguration pagesConfig;
 
+    @Reference
+    protected AssetsConfiguration assetsConfig;
+
     @Reference(cardinality = ReferenceCardinality.OPTIONAL)
     protected volatile PagesTenantSupport tenantSupport;
 
@@ -81,8 +85,17 @@ public class PagesSiteManager extends PagesContentManager<Site> implements SiteM
     protected StagingReleaseManager releaseManager;
 
     @Override
-    public Site createBean(BeanContext context, Resource resource) {
-        return new Site(this, context, resource);
+    @Nonnull
+    public <T extends Site> T createBean(@Nonnull BeanContext context, @Nonnull Resource resource, Class<T> type) {
+        try {
+            T site = type.newInstance();
+            site.setSiteManager(this);
+            site.initialize(context, resource);
+            return site;
+        } catch (InstantiationException | IllegalAccessException ex) {
+            LOG.error(ex.toString());
+            throw new IllegalArgumentException(ex);
+        }
     }
 
     @Override
@@ -123,6 +136,14 @@ public class PagesSiteManager extends PagesContentManager<Site> implements SiteM
             }
         }
         return null;
+    }
+
+    /**
+     * @return 'true' if assets module supported on the platform
+     */
+    @Override
+    public boolean isAssetsSupport() {
+        return assetsConfig.isAssetsModuleSupport();
     }
 
     /**
@@ -167,7 +188,7 @@ public class PagesSiteManager extends PagesContentManager<Site> implements SiteM
             BeanContext serviceContext = new BeanContext.Wrapper(site.getContext(), serviceResolver);
             Resource serviceSiteRes = serviceResolver.getResource(site.getPath());
             if (serviceSiteRes != null) {
-                Site serviceSite = createBean(serviceContext, serviceSiteRes);
+                Site serviceSite = createBean(serviceContext, serviceSiteRes, Site.class);
                 Homepage homepage = serviceSite.getHomepage(site.getLocale());
                 return LinkUtil.getMappedUrl(serviceContext.getRequest(), serviceSite.getStagePath(AccessMode.PREVIEW)
                         + homepage.getPath().substring(serviceSite.getPath().length()) + ".html");
@@ -234,7 +255,7 @@ public class PagesSiteManager extends PagesContentManager<Site> implements SiteM
     @Nonnull
     public Collection<Site> getSites(@Nonnull final BeanContext context, @Nullable final Resource searchRoot,
                                      @Nonnull final ResourceFilter filter) {
-        return getModels(context, NODE_TYPE_SITE, searchRoot, filter);
+        return getModels(context, NODE_TYPE_SITE, Site.class, searchRoot, filter);
     }
 
     @Override
@@ -268,7 +289,7 @@ public class PagesSiteManager extends PagesContentManager<Site> implements SiteM
         if (commit) {
             resolver.commit();
         }
-        return instanceCreated(context, siteResource);
+        return instanceCreated(context, siteResource, Site.class);
     }
 
     @Override
@@ -307,12 +328,12 @@ public class PagesSiteManager extends PagesContentManager<Site> implements SiteM
 
                 @Override
                 public String applyTemplatePlaceholders(@Nonnull final Resource target, @Nonnull final String value) {
-                    String result = value.replaceAll("\\$\\{path}", target.getPath());
+                    String result = StringUtils.replace(value,"${path}", target.getPath());
                     Resource pageResource = pageManager.getContainingPageResource(target);
                     if (pageResource != null) {
-                        result = result.replaceAll("\\$\\{page}", pageResource.getPath());
+                        result = StringUtils.replace(result,"${page}", pageResource.getPath());
                     }
-                    result = result.replaceAll("\\$\\{site}", sitePath);
+                    result = StringUtils.replace(result,"${site}", sitePath);
                     if (!value.equals(result)) {
                         result = result.replaceAll("/[^/]+/\\.\\./", "/");
                     }
@@ -337,7 +358,7 @@ public class PagesSiteManager extends PagesContentManager<Site> implements SiteM
         if (commit) {
             resolver.commit();
         }
-        return instanceCreated(context, siteResource);
+        return instanceCreated(context, siteResource, Site.class);
     }
 
     @Override

@@ -8,4 +8,5 @@
                 composum/pages/stage/edit/js/toolbars.js,
                 composum/pages/stage/edit/js/dialogs.js,
                 composum/pages/stage/edit/js/actions.js,
+                composum/pages/stage/edit/js/hybrid.js,
                 composum/pages/stage/edit/site/js/releases.js]"/>

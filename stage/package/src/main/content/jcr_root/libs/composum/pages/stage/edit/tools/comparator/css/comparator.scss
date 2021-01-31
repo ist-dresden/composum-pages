@@ -1,0 +1,229 @@
+@charset "UTF-8";
+
+$node-level-indent: 20px;
+$property-name-width: 150px;
+$value-padding-h: 4px;
+$value-padding-v: 2px;
+$value-padding: $value-padding-v $value-padding-h;
+
+$value-font-size: 14px;
+$value-line-heigth: 19px;
+
+.composum-pages-tools-comparator {
+
+    &_nodes {
+        clear: both;
+        width: 100%;
+        list-style: none;
+        padding: 5px 0 5px $node-level-indent;
+
+        .composum-pages-tools-comparator {
+
+            &_node {
+
+                &-meta {
+                    display: none;
+                }
+            }
+
+            &_node-head {
+
+                &_left, &_right {
+                    background-color: #c0c0c0;
+                }
+            }
+        }
+
+        .composum-pages-tools-comparator_nodes {
+
+            .composum-pages-tools-comparator_node-head {
+
+                &_left, &_right {
+                    background-color: #c8c8c8;
+                }
+            }
+
+            .composum-pages-tools-comparator_nodes {
+
+                .composum-pages-tools-comparator_node-head {
+
+                    &_left, &_right {
+                        background-color: #d0d0d0;
+                    }
+                }
+
+                .composum-pages-tools-comparator_nodes {
+
+                    .composum-pages-tools-comparator_node-head {
+
+                        &_left, &_right {
+                            background-color: #d8d8d8;
+                        }
+                    }
+
+                    .composum-pages-tools-comparator_nodes {
+
+                        .composum-pages-tools-comparator_node-head {
+
+                            &_left, &_right {
+                                background-color: #e0e0e0;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    &_node {
+        width: 100%;
+        font-family: sans-serif;
+        font-size: $value-font-size;
+
+        &-name, &-type {
+            padding: $value-padding;
+        }
+
+        &-name {
+            float: left;
+            line-height: $value-line-heigth;
+        }
+
+        &-type {
+            float: right;
+            font-size: 80%;
+            line-height: $value-line-heigth +1px;
+        }
+
+        &-path, &-language, &-version {
+            padding: 0 $value-padding-h;
+            font-size: 80%;
+            opacity: 0.8;
+        }
+
+        &-path {
+            flex-grow: 9;
+        }
+
+        &-meta {
+            clear: both;
+            display: flex;
+            margin-bottom: 5px;
+        }
+
+        &-head {
+            display: flex;
+            flex-wrap: nowrap;
+            margin-bottom: 1px;
+
+            &_indent {
+                min-width: $property-name-width;
+                max-width: $property-name-width;
+            }
+
+            &_left, &_right {
+                flex: 1;
+                margin-left: 1px;
+            }
+        }
+
+        &.same-path {
+
+            .composum-pages-tools-comparator_node-head_right {
+
+                .composum-pages-tools-comparator_node-path {
+                    display: none;
+                }
+            }
+        }
+
+        &.same-language {
+
+            .composum-pages-tools-comparator_node-head_left {
+
+                .composum-pages-tools-comparator_node-language {
+                    display: none;
+                }
+            }
+        }
+
+        &.same-version {
+
+            .composum-pages-tools-comparator_node-head_right {
+
+                .composum-pages-tools-comparator_node-version {
+                    display: none;
+                }
+            }
+        }
+    }
+
+    &_properties {
+        clear: both;
+        width: 100%;
+        list-style: none;
+        padding: 0;
+    }
+
+    &_property {
+        width: 100%;
+        display: flex;
+        flex-wrap: nowrap;
+        margin-bottom: 1px;
+        font-family: sans-serif;
+
+        &-name, &-value {
+            padding: $value-padding;
+            vertical-align: top;
+        }
+
+        &-name {
+            min-width: $property-name-width;
+            max-width: $property-name-width;
+            font-size: 90%;
+            background-color: #f0f0f0;
+        }
+
+        &-value {
+            flex: 1;
+            margin-left: 1px;
+            background-color: #f6f6f6;
+
+            > p {
+                margin: 0;
+                padding: 0;
+            }
+        }
+    }
+
+    // highlight different properties
+
+    > .composum-pages-tools-comparator_node {
+
+        &.highlight-differences {
+
+            .composum-pages-tools-comparator {
+
+                &_property {
+
+                    &.different-property {
+
+                        .composum-pages-tools-comparator {
+
+                            &_property {
+
+                                &-name {
+                                    background-color: #dcdcfc;
+                                }
+
+                                &-value {
+                                    background-color: #e8e8f8;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

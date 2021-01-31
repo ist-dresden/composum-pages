@@ -1,27 +1,33 @@
-(function (window) {
-    window.composum = window.composum || {};
-    window.composum.pages = window.composum.pages || {};
-    window.composum.pages.tools = window.composum.pages.tools || {};
+(function () {
+    'use strict';
+    CPM.namespace('pages.tools.site');
 
-    (function (tools, pages, core) {
-        'use strict';
+    (function (site, pages, core) {
 
-        tools.const = _.extend(tools.const || {}, {
+        site.const = _.extend(site.const || {}, {
             releases: {
                 event: {
                     id: '.tools.SiteReleases'
                 },
                 css: {
                     site: {
-                        base: 'composum-pages-stage-edit-site-releases'
+                        base: 'composum-pages-site-tools_releases',
+                        _release: '_release',
+                        _select: '-select'
                     },
                     release: {
-                        base: 'composum-pages-stage-edit-site-releases-release',
-                        _listentry: '_listentry',
-                        _entry: '_entry'
+                        base: 'composum-pages-site-tools_releases_release',
+                        _listentry: '-listentry',
+                        _entry: '-entry'
                     },
                     tools: {
                         base: 'composum-pages-stage-edit-tools-site-releases'
+                    },
+                    dialog: {
+                        base: 'composum-pages-stage-edit-dialog',
+                        _number: '_number',
+                        _publish: '_publish',
+                        _current: '_current'
                     }
                 },
                 uri: {
@@ -33,12 +39,60 @@
             }
         });
 
-        tools.SiteReleases = pages.releases.SiteReleases.extend({
+        pages.releases.profile = pages.releases.profile || new core.LocalProfile('composum.pages.releases');
 
-            initialize: function () {
-                this.initContent();
+        site.FinalizeDialog = core.components.FormDialog.extend({
+
+            initialize: function (options) {
+                var c = site.const.releases.css.dialog;
+                core.components.FormDialog.prototype.initialize.call(this, options);
+                this.number = core.getWidget(this.$el, '.' + c.base + c._number, core.components.RadioGroupWidget);
+                this.$publish = this.$('.' + c.base + c._publish);
+                this.$current = this.$('.' + c.base + c._current);
+                this.public = [
+                    core.getWidget(this.$publish, '[value="public"]', core.components.CheckboxWidget),
+                    core.getWidget(this.$current, '[value="public"]', core.components.CheckboxWidget)
+                ];
+                this.preview = [
+                    core.getWidget(this.$publish, '[value="preview"]', core.components.CheckboxWidget),
+                    core.getWidget(this.$current, '[value="preview"]', core.components.CheckboxWidget)
+                ];
+                this.number.setValue(pages.releases.profile.get('finalize', 'number', 'BUGFIX'));
+                this.number.changed('finalize', _.bind(function () {
+                    pages.releases.profile.set('finalize', 'number', this.number.getValue());
+                }, this));
+                this.public.forEach(function (widget, index) {
+                    widget.changed('finalize', _.bind(function (event, value) {
+                        this.likeARadio(this.public, event, value);
+                    }, this));
+                }, this);
+                this.preview.forEach(function (widget, index) {
+                    widget.changed('finalize', _.bind(function (event, value) {
+                        this.likeARadio(this.preview, event, value);
+                    }, this));
+                }, this);
+            },
+
+            likeARadio: function (set, event, value) {
+                if (value) {
+                    var view = event.currentTarget.view;
+                    if (view) {
+                        set.forEach(function (widget, index) {
+                            if (view !== widget) {
+                                widget.setValue(false);
+                            }
+                        }, this);
+                    }
+                }
+            }
+        });
+
+        site.SiteReleases = pages.releases.SiteReleases.extend({
+
+            initialize: function (options) {
+                this.initContent(options);
                 var e = pages.const.event;
-                var id = tools.const.releases.event.id;
+                var id = site.const.releases.event.id;
                 $(document)
                     .on(e.site.state + id, _.bind(this.reload, this))
                     .on(e.site.changed + id, _.bind(this.reload, this));
@@ -47,22 +101,24 @@
             beforeClose: function () {
                 this.beforeHideTab();
                 var e = pages.const.event;
-                var id = tools.const.releases.event.id;
+                var id = site.const.releases.event.id;
                 $(document)
                     .off(e.site.state + id)
                     .off(e.site.changed + id);
             },
 
-            initContent: function () {
-                var c = tools.const.releases.css;
-                pages.releases.SiteReleases.prototype.initialize.apply(this);
+            initContent: function (options) {
+                var c = site.const.releases.css;
+                pages.releases.SiteReleases.prototype.initialize.call(this, _.extend(options || {}, {
+                    cssBase: site.const.releases.css.site
+                }));
                 this.sitePath = this.$('.' + c.site.base).data('path');
                 this.$releaseView = [];
                 this.$('.' + c.release.base + c.release._entry).click(_.bind(this.releaseView, this));
             },
 
             releaseView: function (event) {
-                var c = tools.const.releases.css.release;
+                var c = site.const.releases.css.release;
                 var $entry = $(event.currentTarget);
                 var path = $entry.data('path');
                 var $listEntry = $entry.closest('.' + c.base + c._listentry);
@@ -76,8 +132,8 @@
                     this.$releaseView = $listEntry;
                     $('body').addClass('context-driven-view');
                     $listEntry.addClass('selected');
-                    pages.trigger('site.release.view', pages.const.event.page.view, [path, {'pages.view': 'preview'},
-                        tools.const.releases.uri.release.view]);
+                    pages.trigger('site.release.view', pages.const.event.content.view, [path, {'pages.view': 'preview'},
+                        site.const.releases.uri.release.view]);
                 }
             },
 
@@ -86,7 +142,7 @@
                     $('body').removeClass('context-driven-view');
                     this.$releaseView.removeClass('selected');
                     this.$releaseView = [];
-                    pages.trigger('site.release.close', pages.const.event.page.view, [null, {}]);
+                    pages.trigger('site.release.close', pages.const.event.content.view, [null, {}]);
                 }
             },
 
@@ -100,15 +156,15 @@
 
             reload: function () {
                 this.closeReleaseView();
-                var c = tools.const.releases.uri;
-                core.getHtml(c.load + this.contextTabs.reference.path,
+                var c = site.const.releases.uri;
+                core.getHtml(c.load + core.encodePath(this.contextTabs.reference.path),
                     undefined, undefined, _.bind(function (data) {
                         if (data.status === 200) {
                             this.$el.html(data.responseText);
                         } else {
                             this.$el.html("");
                         }
-                        this.initContent();
+                        this.initContent({});
                     }, this));
             }
         });
@@ -117,13 +173,13 @@
          * register these tools as a pages context tool for initialization after load of the context tools set
          */
         pages.contextTools.addTool(function (contextTabs) {
-            var c = tools.const.releases.css;
-            var panel = core.getWidget(contextTabs.el, '.' + c.tools.base, tools.SiteReleases);
+            var c = site.const.releases.css;
+            var panel = core.getWidget(contextTabs.el, '.' + c.tools.base, site.SiteReleases);
             if (panel) {
                 panel.contextTabs = contextTabs;
             }
             return panel;
         });
 
-    })(window.composum.pages.tools, window.composum.pages, window.core);
-})(window);
+    })(CPM.pages.tools.site, CPM.pages, CPM.core);
+})();

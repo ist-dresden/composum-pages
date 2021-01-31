@@ -9,6 +9,7 @@ import org.apache.sling.api.resource.ResourceResolver;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Map;
 
 /**
  * The configuration service for all servlets in the pages bundle.
@@ -24,6 +25,9 @@ public interface PagesConfiguration {
 
     @Nonnull
     PagesConfigImpl.Configuration getConfig();
+
+    @Nonnull
+    String getPreferredCountry(@Nonnull final String language);
 
     @Nonnull
     ResourceFilter getSiteNodeFilter();
@@ -47,11 +51,19 @@ public interface PagesConfiguration {
     ResourceFilter getOrderableNodesFilter();
 
     @Nonnull
-    ResourceFilter getReplicationRootFilter();
+    ResourceFilter getContentRootFilter();
+
+    @Nonnull
+    ResourceFilter getSiteFilter();
 
     @Nullable
     ResourceFilter getPageFilter(@Nonnull BeanContext context, @Nonnull String key);
 
     @Nonnull
     ResourceFilter getReferenceFilter(@Nonnull ReferenceType type);
+
+    @Nonnull
+    Map<String, String> getPublicModeOptions(SlingHttpServletRequest request);
+
+    boolean isReplicationOptionAvailable();
 }

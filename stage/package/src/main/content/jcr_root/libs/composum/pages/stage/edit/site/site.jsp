@@ -3,9 +3,10 @@
 <%@taglib prefix="cpn" uri="http://sling.composum.com/cpnl/1.0" %>
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <cpp:defineObjects/>
+<!DOCTYPE html>
 <html data-context-path="${slingRequest.contextPath}">
 <cpp:model var="model" type="com.composum.pages.stage.model.edit.site.SiteModel"
-           cssBase="composum-pages-stage-edit-site">
+           cssBase="composum-pages-site-view">
     <head>
         <title>"${cpn:text(model.site.title)}"</title>
         <sling:call script="head.jsp"/>
@@ -15,7 +16,7 @@
         <div class="row">
             <div class="${modelCSS} col col-xs-12">
                 <h2 class="${modelCSS}_title">${cpn:text(model.site.title)}
-                    <span class="${modelCSS}_title-type">(Site:${cpn:path(model.site.path)})</span></h2>
+                    <span class="${modelCSS}_title-type">[${cpn:text(model.site.path)}]</span></h2>
                 <sling:call script="content.jsp"/>
             </div>
         </div>

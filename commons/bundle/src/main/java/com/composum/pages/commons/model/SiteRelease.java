@@ -5,11 +5,14 @@ import com.composum.pages.commons.service.VersionsService;
 import com.composum.pages.commons.util.PagesUtil;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.util.I18N;
+import com.composum.platform.commons.request.AccessMode;
+import com.composum.sling.platform.staging.Release;
 import com.composum.sling.platform.staging.StagingConstants;
 import com.composum.sling.platform.staging.StagingReleaseManager;
 import com.composum.sling.platform.staging.impl.StagingUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.CompareToBuilder;
+import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.resource.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +23,7 @@ import javax.jcr.RepositoryException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import static com.composum.pages.commons.PagesConstants.KEY_CURRENT_RELEASE;
@@ -33,10 +37,12 @@ public class SiteRelease extends AbstractModel implements Comparable<SiteRelease
 
     private static final Logger LOG = LoggerFactory.getLogger(SiteRelease.class);
 
-    protected StagingReleaseManager.Release stagingRelease;
+    protected Release stagingRelease;
     private transient Calendar creationDate;
     private transient Calendar lastModified;
 
+    private transient SiteRelease previousRelease;
+    private transient Map<String, String> nextReleaseNumbers;
 
     public static boolean isSiteRelease(Resource resource) {
         return resource != null && StagingUtils.RELEASE_PATH_PATTERN.matcher(resource.getPath()).matches();
@@ -46,7 +52,7 @@ public class SiteRelease extends AbstractModel implements Comparable<SiteRelease
         // empty default constructor
     }
 
-    public SiteRelease(BeanContext context, StagingReleaseManager.Release release) {
+    public SiteRelease(BeanContext context, Release release) {
         this.stagingRelease = release;
         initialize(context, release.getMetaDataNode());
     }
@@ -68,7 +74,7 @@ public class SiteRelease extends AbstractModel implements Comparable<SiteRelease
     @Override
     protected void initializeWithResource(@Nonnull Resource releaseMetadataNode) {
         super.initializeWithResource(releaseMetadataNode);
-        creationDate = getProperty("jcr:created", Calendar.class);
+        creationDate = getProperty(JcrConstants.JCR_CREATED, Calendar.class);
     }
 
     /**
@@ -82,6 +88,35 @@ public class SiteRelease extends AbstractModel implements Comparable<SiteRelease
 
     public boolean isCurrent() {
         return KEY_CURRENT_RELEASE.equals(getKey());
+    }
+
+    public boolean isPublic() {
+        return getCategories().contains(AccessMode.PUBLIC.name().toLowerCase());
+    }
+
+    public boolean isPreview() {
+        return getCategories().contains(AccessMode.PREVIEW.name().toLowerCase());
+    }
+
+    public SiteRelease getPreviousRelease() {
+        if (previousRelease == null) {
+            try {
+                Release previous = getStagingRelease().getPreviousRelease();
+                if (previous != null) {
+                    previousRelease = new SiteRelease(getContext(), previous);
+                }
+            } catch (RepositoryException ex) {
+                LOG.error(ex.getMessage(), ex);
+            }
+        }
+        return previousRelease;
+    }
+
+    public Map<String, String> getNextReleaseNumbers() {
+        if (nextReleaseNumbers == null) {
+            nextReleaseNumbers = getContext().getService(StagingReleaseManager.class).nextRealeaseNumbers(getResource());
+        }
+        return nextReleaseNumbers;
     }
 
     @Nonnull
@@ -134,15 +169,15 @@ public class SiteRelease extends AbstractModel implements Comparable<SiteRelease
     /**
      * The underlying release info from the platform.
      */
-    public StagingReleaseManager.Release getStagingRelease() {
+    public Release getStagingRelease() {
         return stagingRelease;
     }
 
-    public List<PageVersion> getChanges() {
+    public List<ContentVersion> getChanges() {
         return getChanges(null);
     }
 
-    public List<PageVersion> getChanges(@Nullable final VersionsService.PageVersionFilter filter) {
+    public List<ContentVersion> getChanges(@Nullable final VersionsService.ContentVersionFilter filter) {
         try {
             return getVersionsService().findReleaseChanges(getContext(), this, filter);
         } catch (RepositoryException ex) {

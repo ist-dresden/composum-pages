@@ -2,10 +2,9 @@
  * edit user interface functions embedded in a content page to support edit interaction
  * strong dependency to: 'invoke.js' ('commons.js'; libs: 'backbone.js', 'underscore.js', 'loglevel.js', 'jquery.js')
  */
-(function (window) {
-    window.composum = window.composum || {};
-    window.composum.pages = window.composum.pages || {};
-    window.composum.pages.elements = window.composum.pages.elements || {};
+(function () {
+    'use strict';
+    CPM.namespace('pages.elements');
 
     (function (elements, pages, core) {
         'use strict';
@@ -58,7 +57,7 @@
                 this.$parent = this.$el.parent().closest('.' + elements.const.class.component);
                 // drop zone property data
                 var encoded = this.$el.data(d.encoded);
-                this.data = JSON.parse(atob(encoded));
+                this.data = JSON.parse(Base64.decode(encoded));
             }
         });
 
@@ -181,7 +180,7 @@
                 if (this.toolbar) {
                     callback(this, this.toolbar);
                 } else {
-                    core.ajaxGet(elements.const.edit.url.toolbar + this.reference.path, {
+                    core.ajaxGet(elements.const.edit.url.toolbar + core.encodePath(this.reference.path), {
                             data: {
                                 type: this.reference.type
                             }
@@ -472,7 +471,8 @@
                     candidate.$el.addClass(c.base + c._disabled);
                 });
                 var path = reference.path;
-                core.ajaxPut(elements.const.edit.url.dropzones + path, JSON.stringify(candidates), {},
+                core.ajaxPut(elements.const.edit.url.dropzones + core.encodePath(path),
+                    JSON.stringify(candidates), {},
                     _.bind(function (result) {
                         this.dropZones = [];
                         result.forEach(function (dropZone) {
@@ -567,7 +567,8 @@
                     });
                 });
                 var path = reference.path;
-                core.ajaxPost(elements.const.edit.url.targets + path, {
+                core.ajaxPost(elements.const.edit.url.targets + core.encodePath(path), {
+                    _charset_: 'UTF-8',
                     type: reference.type,
                     targetList: JSON.stringify(candidates)
                 }, {}, _.bind(function (result) {
@@ -654,12 +655,12 @@
                     }
                     */
                     //if (this.insert.vertical) {
-                        this.insert.x = this.insert.containerRect.x1 - this.insert.handlePos.left;
-                        this.insert.w = this.insert.containerRect.w;
-                        this.$insert.css('left', this.insert.x);
-                        this.$insert.css('width', this.insert.w);
-                        this.$insert.css('height', 0);
-                        this.$insert.addClass(c.base + c.insert._vertical);
+                    this.insert.x = this.insert.containerRect.x1 - this.insert.handlePos.left;
+                    this.insert.w = this.insert.containerRect.w;
+                    this.$insert.css('left', this.insert.x);
+                    this.$insert.css('width', this.insert.w);
+                    this.$insert.css('height', 0);
+                    this.$insert.addClass(c.base + c.insert._vertical);
                     /*
                     } else {
                         this.insert.y = this.insert.containerRect.y1 - this.insert.handlePos.top;
@@ -688,19 +689,19 @@
                     var element = this.dragTarget.elements[i];
                     var eRect = elements.pageBody.getViewRect(element.$el);
                     //if (this.insert.vertical) {
-                        if (pointer.y >= eRect.y1 && pointer.y <= eRect.y2) {
-                            if (pointer.y > eRect.y1 + eRect.h / 2) {
-                                this.insert.y = eRect.y2;
-                                this.insert.before = i + 1 < this.dragTarget.elements.length
-                                    ? this.dragTarget.elements[i + 1] : undefined;
-                            } else {
-                                this.insert.y = eRect.y1;
-                                this.insert.before = element;
-                            }
-                            this.insert.y -= this.insert.handlePos.top + 3;
-                            this.$insert.css('top', this.insert.y);
-                            break;
+                    if (pointer.y >= eRect.y1 && pointer.y <= eRect.y2) {
+                        if (pointer.y > eRect.y1 + eRect.h / 2) {
+                            this.insert.y = eRect.y2;
+                            this.insert.before = i + 1 < this.dragTarget.elements.length
+                                ? this.dragTarget.elements[i + 1] : undefined;
+                        } else {
+                            this.insert.y = eRect.y1;
+                            this.insert.before = element;
                         }
+                        this.insert.y -= this.insert.handlePos.top + 3;
+                        this.$insert.css('top', this.insert.y);
+                        break;
+                    }
                     /*
                     } else {
                         if (pointer.x >= eRect.x1 && pointer.x <= eRect.x2) {
@@ -735,7 +736,7 @@
                 var c = elements.const.handle.css;
                 var d = elements.const.dnd.css;
                 var e = elements.const.event;
-                this.params = core.url.getParameters(window.location.search);
+                this.location = new core.SlingUrl(window.location);
                 // determine the editing UI components of the page
                 this.$handles = this.$('.' + c.root);
                 this.pointer = core.getWidget(this.el, '.' + c.base + c._pointer + ' .' + c.base, elements.Pointer);
@@ -747,8 +748,8 @@
                 window.addEventListener("message", _.bind(this.onMessage, this), false);
                 var id = elements.const.dnd.id;
                 this.$el
-                //.on('mouseover' + id, _.bind(this.onMouseOver, this))
-                //.on('mouseout' + id, _.bind(this.onMouseOver, this))
+                    //.on('mouseover' + id, _.bind(this.onMouseOver, this))
+                    //.on('mouseout' + id, _.bind(this.onMouseOver, this))
                     .on('dragenter' + id, _.bind(this.onDragEnter, this))
                     .on('dragover' + id, _.bind(this.onDragOver, this))
                     .on('drop' + id, _.bind(this.onDrop, this));
@@ -848,7 +849,11 @@
                 if (selection) {
                     selection = selection.reference;
                 }
-                var index = this.getElementIndex(reference.path);
+                var path = reference.path;
+                var index = this.getElementIndex(path);
+                while (index.length < 1 && path.lastIndexOf('/') > 0) {
+                    index = this.getElementIndex(path = core.getParentPath(path));
+                }
                 var toRefresh = []; // collect the views of the element on the current page...
                 var i;
                 for (i = 0; i < index.length; i++) {
@@ -875,8 +880,8 @@
              * @param callback some things to do after reload of the HTML code (optional)
              */
             redrawComponent: function (component, callback) {
-                core.ajaxGet(component.reference.path + '.html', {
-                    data: _.extend(this.params, {
+                core.ajaxGet('/bin/cpm/pages/edit.refreshElement.html' + core.encodePath(component.reference.path), {
+                    data: _.extend({}, this.location.parameters, {
                         type: component.reference.type
                     })
                 }, _.bind(function (content) {
@@ -1257,6 +1262,12 @@
                     var $target = $(domEl).closest(selector);
                     if ($target.length > 0 && $target[0].view) {
                         component = this.getPointerView($target[0].view, pointer, selector, condition);
+                    } else {
+                        // if no target found try to find a sibling (or a child of it) witch matching selector
+                        $target = $(domEl.parentElement).find(selector);
+                        if ($target.length > 0 && $target[0].view) {
+                            component = this.getPointerView($target[0].view, pointer, selector, condition);
+                        }
                     }
                 }
                 return component;
@@ -1338,5 +1349,5 @@
         elements.pageBody = core.getView('body.' + elements.const.class.editBody, elements.PageBody);
         elements.pageBody.initComponents();
 
-    })(window.composum.pages.elements, window.composum.pages, window.core);
-})(window);
+    })(CPM.pages.elements, CPM.pages, CPM.core);
+})();

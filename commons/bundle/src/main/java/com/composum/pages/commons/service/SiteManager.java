@@ -58,7 +58,12 @@ public interface SiteManager extends ContentManager<Site> {
      * @param resource the site resource
      * @return the bean/model object
      */
-    Site createBean(BeanContext context, Resource resource);
+    <T extends Site> T createBean(BeanContext context, Resource resource, Class<T> type);
+
+    @Nonnull
+    default Site createBean(@Nonnull BeanContext context, @Nonnull Resource resource) {
+        return createBean(context, resource, Site.class);
+    }
 
     /**
      * Adapts any model instance into the bean of the containing site.
@@ -83,6 +88,11 @@ public interface SiteManager extends ContentManager<Site> {
      * @return the resource of the site if found; maybe &gt;null&lt; if no parent resource represents a site
      */
     Resource getContainingSiteResource(Resource resource);
+
+    /**
+     * @return 'true' if assets module supported on the platform
+     */
+    boolean isAssetsSupport();
 
     /**
      * @return 'true' if tenants are supported on the platform

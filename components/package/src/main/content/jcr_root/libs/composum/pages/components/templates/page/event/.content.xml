@@ -8,7 +8,7 @@
             jcr:primaryType="cpp:PageContent"
             jcr:title="Pages Components Event Page"
             jcr:description="A page of an Event."
-            sling:resourceType="composum/pages/components/time/event"
+            sling:resourceType="composum/pages/components/time/event/page"
             allowedChildTemplates="[
                 ^(.*/)?pages/components/templates/page/(event|content)$,
                 ^(.*/)?pages/options/.*/template(s(/page)?(/.+)?)?$

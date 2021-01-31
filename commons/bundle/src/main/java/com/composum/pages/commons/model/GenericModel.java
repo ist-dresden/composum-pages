@@ -4,9 +4,13 @@ import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.SlingBean;
 import org.apache.sling.api.resource.Resource;
 
+import javax.annotation.Nonnull;
+
 public class GenericModel extends ModelWrapper implements SlingBean {
 
-    /** For instantiation with {@link BeanContext#adaptTo(Class)}. */
+    /**
+     * For instantiation with {@link BeanContext#adaptTo(Class)}.
+     */
     public GenericModel() {
         // empty
     }
@@ -15,36 +19,47 @@ public class GenericModel extends ModelWrapper implements SlingBean {
         initialize(context, resource);
     }
 
-    /** @deprecated the normal instantiation mechanism is by using the constructor. */
+    /**
+     * @deprecated the normal instantiation mechanism is by using the constructor.
+     */
     @Override
     @Deprecated
     public void initialize(BeanContext context, Resource resource) {
         resource = determineDelegateResource(context, resource);
+        delegate = createDelegate(context, resource);
+    }
+
+    @Nonnull
+    protected Model createDelegate(BeanContext context, Resource resource) {
         if (Site.isSite(resource)) {
-            delegate = new Site(context, resource);
+            return new Site(context, resource);
         } else if (Page.isPage(resource)) {
-            delegate = new Page(context, resource);
+            return new Page(context, resource);
+        } else if (Page.isPageContent(resource)) {
+            return new PageContent(context, resource);
         } else if (Folder.isFolder(resource)) {
-            delegate = new Folder(context, resource);
+            return new Folder(context, resource);
         } else if (File.isFile(resource)) {
-            delegate = new File(context, resource);
+            return new File(context, resource);
         } else if (Component.isComponent(resource)) {
-            delegate = new Component(context, resource);
+            return new Component(context, resource);
         } else if (Container.isContainer(context.getResource().getResourceResolver(), resource, null)) {
-            delegate = new Container(context, resource);
+            return new Container(context, resource);
         } else {
-            delegate = new Element(context, resource);
+            return new Element(context, resource);
         }
     }
 
-    /** @deprecated the normal instantiation mechanism is by using the constructor. */
+    /**
+     * @deprecated the normal instantiation mechanism is by using the constructor.
+     */
     @Override
     @Deprecated
     public void initialize(BeanContext context) {
         initialize(context, context.getResource());
     }
 
-    protected Resource determineDelegateResource (BeanContext context, Resource resource) {
+    protected Resource determineDelegateResource(BeanContext context, Resource resource) {
         return resource;
     }
 }

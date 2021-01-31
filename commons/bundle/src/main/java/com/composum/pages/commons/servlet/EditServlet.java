@@ -7,6 +7,7 @@ package com.composum.pages.commons.servlet;
 
 import com.composum.pages.commons.AssetsConfiguration;
 import com.composum.pages.commons.PagesConfiguration;
+import com.composum.pages.commons.PagesConstants;
 import com.composum.pages.commons.model.Container;
 import com.composum.pages.commons.model.GenericModel;
 import com.composum.pages.commons.model.Model;
@@ -18,9 +19,11 @@ import com.composum.pages.commons.service.EditService;
 import com.composum.pages.commons.service.PageManager;
 import com.composum.pages.commons.service.ResourceManager;
 import com.composum.pages.commons.service.SiteManager;
+import com.composum.pages.commons.service.Theme;
 import com.composum.pages.commons.util.RequestUtil;
 import com.composum.pages.commons.util.ResolverUtil;
 import com.composum.pages.commons.util.ResourceTypeUtil;
+import com.composum.pages.commons.util.ThemeUtil;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.ResourceHandle;
 import com.composum.sling.core.filter.ResourceFilter;
@@ -30,6 +33,7 @@ import com.composum.sling.core.servlet.ServletOperationSet;
 import com.composum.sling.core.servlet.Status;
 import com.composum.sling.core.util.ResourceUtil;
 import com.composum.sling.core.util.ResponseUtil;
+import com.composum.sling.core.util.XSS;
 import com.composum.sling.platform.staging.versions.PlatformVersionsService;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
@@ -55,6 +59,7 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.jcr.RepositoryException;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
@@ -84,8 +89,6 @@ public class EditServlet extends PagesContentServlet {
 
     private static final Logger LOG = LoggerFactory.getLogger(EditServlet.class);
 
-    public static final String PARAM_ATTR = "attr";
-
     public static final String DEFAULT_FILTER = "page";
 
     public static final String PAGE_COMPONENTS_RES_TYPE = "composum/pages/stage/edit/tools/main/components";
@@ -93,6 +96,8 @@ public class EditServlet extends PagesContentServlet {
     public static final String PAGE_COMPONENT_TYPES = "composum-pages-page-component-types";
     public static final String PAGE_COMPONENT_TYPES_SCOPE = PAGE_COMPONENT_TYPES + "_scope";
 
+    public static final String STANDALONE_STATIC_RES_TYPE = "composum/pages/stage/edit/sidebar/standalone/static";
+    public static final String STANDALONE_CONTEXT_RES_TYPE = "composum/pages/stage/edit/sidebar/standalone/context";
     public static final String CONTEXT_TOOLS_RES_TYPE = "composum/pages/stage/edit/sidebar/context";
 
     @Reference
@@ -124,6 +129,11 @@ public class EditServlet extends PagesContentServlet {
     @Activate
     private void activate(final BundleContext bundleContext) {
         this.bundleContext = bundleContext;
+    }
+
+    @Override
+    protected PlatformVersionsService getPlatformVersionsService() {
+        return platformVersionsService;
     }
 
     @Override
@@ -160,16 +170,16 @@ public class EditServlet extends PagesContentServlet {
         resourceInfo, editDialog, newDialog,
         editTile, editToolbar, treeActions, editResource,
         pageComponents, elementTypes, targetContainers, isAllowedElement, filterDropZones, componentCategories,
-        insertElement, moveElement, copyElement,
+        refreshElement, insertElement, moveElement, copyElement,
         createPage, deletePage, moveContent, renameContent, copyContent,
         createSite, deleteSite,
-        contextTools, context
+        standaloneStaticTools, standaloneContextTools, contextTools, context
     }
 
     protected PagesEditOperationSet operations = new PagesEditOperationSet();
 
     @Override
-    protected ServletOperationSet getOperations() {
+    protected PagesEditOperationSet getOperations() {
         return operations;
     }
 
@@ -210,6 +220,12 @@ public class EditServlet extends PagesContentServlet {
                 Operation.context, new GetContextResource());
         operations.setOperation(ServletOperationSet.Method.GET, Extension.html,
                 Operation.contextTools, new GetContextTools());
+        operations.setOperation(ServletOperationSet.Method.GET, Extension.html,
+                Operation.standaloneStaticTools, new GetStandaloneStaticTools());
+        operations.setOperation(ServletOperationSet.Method.GET, Extension.html,
+                Operation.standaloneContextTools, new GetStandaloneContextTools());
+        operations.setOperation(ServletOperationSet.Method.GET, Extension.html,
+                Operation.refreshElement, new RefreshElementOperation());
         operations.setOperation(ServletOperationSet.Method.GET, Extension.json,
                 Operation.isAllowedElement, new CheckIsAllowedElement());
         operations.setOperation(ServletOperationSet.Method.GET, Extension.json,
@@ -262,6 +278,12 @@ public class EditServlet extends PagesContentServlet {
         }
     }
 
+    protected BeanContext newBeanContext(@Nonnull SlingHttpServletRequest request,
+                                         @Nonnull SlingHttpServletResponse response,
+                                         @Nullable Resource resource) {
+        return new BeanContext.Servlet(getServletContext(), bundleContext, request, response, resource);
+    }
+
     //
     // Page
     //
@@ -276,7 +298,7 @@ public class EditServlet extends PagesContentServlet {
         @Override
         public void doIt(@Nonnull final SlingHttpServletRequest request,
                          @Nonnull final SlingHttpServletResponse response,
-                         @Nonnull ResourceHandle resource)
+                         ResourceHandle resource)
                 throws IOException {
             BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
 
@@ -311,10 +333,44 @@ public class EditServlet extends PagesContentServlet {
         }
     }
 
+    protected class RefreshElementOperation implements ServletOperation {
+
+        @Override
+        public void doIt(@Nonnull final SlingHttpServletRequest request,
+                         @Nonnull final SlingHttpServletResponse response,
+                         ResourceHandle resource)
+                throws IOException {
+            try {
+                BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
+                RequestDispatcherOptions options = new RequestDispatcherOptions();
+                Page page = pageManager.getContainingPage(context, resource);
+                if (page != null) {
+                    request.setAttribute(PagesConstants.RA_CURRENT_PAGE, page);
+                    Theme theme = page.getTheme();
+                    if (theme != null) {
+                        request.setAttribute(PagesConstants.RA_CURRENT_THEME, theme);
+                        ThemeUtil.applyTheme(theme, resource, options);
+                    }
+                }
+                RequestDispatcher dispatcher = request.getRequestDispatcher(resource, options);
+                if (dispatcher != null) {
+                    dispatcher.forward(request, response);
+                    return;
+                } else {
+                    LOG.error("can't get dispatcher for '{}'", resource.getPath());
+                }
+            } catch (ServletException ex) {
+                LOG.error(ex.getMessage(), ex);
+            }
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+        }
+    }
+
     protected class CheckIsTemplate implements ServletOperation {
 
         @Override
-        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
+        public void doIt(@Nonnull SlingHttpServletRequest request,
+                         @Nonnull SlingHttpServletResponse response,
                          ResourceHandle resource)
                 throws IOException {
 
@@ -422,88 +478,9 @@ public class EditServlet extends PagesContentServlet {
         }
     }
 
-    @Override
-    public void writeNodeTreeType(JsonWriter writer, ResourceFilter filter,
-                                  ResourceHandle resource, boolean isVirtual)
-            throws IOException {
-        super.writeNodeTreeType(writer, filter, resource, isVirtual);
-        if (Page.isPage(resource)) {
-            try {
-                PlatformVersionsService.Status status = platformVersionsService.getStatus(resource, null);
-                if (null != status) {
-                    writer.name("release").beginObject();
-                    writer.name("status").value(status.getActivationState().name());
-                    writer.endObject();
-                }
-            } catch (RepositoryException ex) {
-                LOG.error(ex.getMessage(), ex);
-            }
-        }
-    }
-
     //
     //
     //
-
-    public static abstract class GetEditResource implements ServletOperation {
-
-        @Override
-        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
-                         ResourceHandle resource)
-                throws ServletException, IOException {
-
-            Resource contentResource = resource;
-            if (Page.isPage(contentResource) || Site.isSite(contentResource)) {
-                contentResource = contentResource.getChild("jcr:content");
-                if (contentResource == null) {
-                    contentResource = resource;
-                }
-            }
-
-            String selectors = RequestUtil.getSelectorString(request, null, 1);
-            if (StringUtils.isBlank(selectors)) {
-                selectors = getDefaultSelectors();
-            }
-            String paramType = request.getParameter(PARAM_TYPE);
-            Resource editResource = getEditResource(request, contentResource, selectors, paramType);
-
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("GetEditResource({},{})...", contentResource.getPath(), editResource != null ? editResource.getPath() : "null");
-            }
-
-            if (editResource != null) {
-                RequestDispatcherOptions options = new RequestDispatcherOptions();
-                options.setForceResourceType(editResource.getPath());
-                options.setReplaceSelectors(selectors);
-                SlingHttpServletRequest forwardRequest = prepareForward(request, options);
-                forward(forwardRequest, response, contentResource, paramType, options);
-
-            } else {
-                response.sendError(HttpServletResponse.SC_NOT_FOUND);
-            }
-        }
-
-        protected Resource getEditResource(@Nonnull SlingHttpServletRequest request, @Nonnull Resource contentResource,
-                                           @Nonnull String selectors, @Nullable String type) {
-            ResourceResolver resolver = request.getResourceResolver();
-            return ResourceTypeUtil.getSubtype(resolver, contentResource, type, getResourcePath(request), selectors);
-        }
-
-        protected String getSelectors(SlingHttpServletRequest request) {
-            return RequestUtil.getSelectorString(request, null, 1);
-        }
-
-        protected abstract String getResourcePath(SlingHttpServletRequest request);
-
-        protected String getDefaultSelectors() {
-            return "";
-        }
-
-        protected SlingHttpServletRequest prepareForward(@Nonnull final SlingHttpServletRequest request,
-                                                         @Nonnull final RequestDispatcherOptions options) {
-            return request;
-        }
-    }
 
     /**
      * response with a forward to GET the rendered resource referenced by the requests suffix
@@ -513,7 +490,7 @@ public class EditServlet extends PagesContentServlet {
         @Override
         protected String getResourcePath(SlingHttpServletRequest request) {
             RequestPathInfo pathInfo = request.getRequestPathInfo();
-            String suffix = pathInfo.getSuffix();
+            String suffix = XSS.filter(pathInfo.getSuffix());
             if (StringUtils.isNotBlank(suffix) && !"/".equals(suffix)) {
                 Resource resource = request.getResourceResolver().getResource(suffix);
                 if (resource != null) {
@@ -556,6 +533,15 @@ public class EditServlet extends PagesContentServlet {
         protected String getResourcePath(SlingHttpServletRequest request) {
             return EDIT_DIALOG_PATH;
         }
+
+        @Override
+        protected Resource getEditResource(@Nonnull final SlingHttpServletRequest request,
+                                           @Nonnull final SlingHttpServletResponse response,
+                                           @Nonnull final Resource contentResource,
+                                           @Nonnull final String selectors, @Nullable final String type) {
+            return adjustToTheme(newBeanContext(request, response, contentResource), contentResource,
+                    super.getEditResource(request, response, contentResource, selectors, type));
+        }
     }
 
     protected class GetNewDialog extends GetEditDialog {
@@ -572,17 +558,6 @@ public class EditServlet extends PagesContentServlet {
         protected String getResourcePath(SlingHttpServletRequest request) {
             return EDIT_TILE_PATH;
         }
-
-        @Override
-        protected Resource getEditResource(@Nonnull SlingHttpServletRequest request, @Nonnull Resource contentResource,
-                                           @Nonnull String selectors, @Nullable String type) {
-            if (assetsConfiguration.getAnyFileFilter().accept(contentResource)) {
-                ResourceResolver resolver = request.getResourceResolver();
-                return ResolverUtil.getResourceType(resolver, ResourceTypeUtil.DEFAULT_FILE_TILE);
-            } else {
-                return super.getEditResource(request, contentResource, selectors, type);
-            }
-        }
     }
 
     protected class GetEditToolbar extends GetEditResource {
@@ -590,6 +565,15 @@ public class EditServlet extends PagesContentServlet {
         @Override
         protected String getResourcePath(SlingHttpServletRequest request) {
             return EDIT_TOOLBAR_PATH;
+        }
+
+        @Override
+        protected Resource getEditResource(@Nonnull final SlingHttpServletRequest request,
+                                           @Nonnull final SlingHttpServletResponse response,
+                                           @Nonnull final Resource contentResource,
+                                           @Nonnull final String selectors, @Nullable final String type) {
+            return adjustToTheme(newBeanContext(request, response, contentResource), contentResource,
+                    super.getEditResource(request, response, contentResource, selectors, type));
         }
     }
 
@@ -601,13 +585,15 @@ public class EditServlet extends PagesContentServlet {
         }
 
         @Override
-        protected Resource getEditResource(@Nonnull SlingHttpServletRequest request, @Nonnull Resource contentResource,
-                                           @Nonnull String selectors, @Nullable String type) {
+        protected Resource getEditResource(@Nonnull final SlingHttpServletRequest request,
+                                           @Nonnull final SlingHttpServletResponse response,
+                                           @Nonnull final Resource contentResource,
+                                           @Nonnull final String selectors, @Nullable final String type) {
             if (assetsConfiguration.getAnyFileFilter().accept(contentResource)) {
                 ResourceResolver resolver = request.getResourceResolver();
                 return ResolverUtil.getResourceType(resolver, ResourceTypeUtil.DEFAULT_FILE_ACTIONS);
             } else {
-                return super.getEditResource(request, contentResource, selectors, type);
+                return super.getEditResource(request, response, contentResource, selectors, type);
             }
         }
     }
@@ -640,7 +626,8 @@ public class EditServlet extends PagesContentServlet {
     protected class CheckIsAllowedElement implements ServletOperation {
 
         @Override
-        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
+        public void doIt(@Nonnull SlingHttpServletRequest request,
+                         @Nonnull SlingHttpServletResponse response,
                          ResourceHandle resource)
                 throws IOException {
 
@@ -678,7 +665,8 @@ public class EditServlet extends PagesContentServlet {
     protected class GetPageComponents implements ServletOperation {
 
         @Override
-        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
+        public void doIt(@Nonnull SlingHttpServletRequest request,
+                         @Nonnull SlingHttpServletResponse response,
                          ResourceHandle resource)
                 throws ServletException, IOException {
 
@@ -770,7 +758,8 @@ public class EditServlet extends PagesContentServlet {
     protected class GetTargetContainers implements ServletOperation {
 
         @Override
-        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
+        public void doIt(@Nonnull SlingHttpServletRequest request,
+                         @Nonnull SlingHttpServletResponse response,
                          ResourceHandle resource)
                 throws IOException {
             final BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
@@ -802,7 +791,8 @@ public class EditServlet extends PagesContentServlet {
     protected class FilterDropZones implements ServletOperation {
 
         @Override
-        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
+        public void doIt(@Nonnull SlingHttpServletRequest request,
+                         @Nonnull SlingHttpServletResponse response,
                          ResourceHandle resource)
                 throws IOException {
             final BeanContext context = new BeanContext.Servlet(
@@ -830,7 +820,8 @@ public class EditServlet extends PagesContentServlet {
     protected class GetComponentCategories implements ServletOperation {
 
         @Override
-        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
+        public void doIt(@Nonnull SlingHttpServletRequest request,
+                         @Nonnull SlingHttpServletResponse response,
                          ResourceHandle resource)
                 throws IOException {
 
@@ -856,7 +847,8 @@ public class EditServlet extends PagesContentServlet {
     protected abstract class ElementResourceOperation extends ChangeContentOperation {
 
         @Override
-        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
+        public void doIt(@Nonnull SlingHttpServletRequest request,
+                         @Nonnull SlingHttpServletResponse response,
                          ResourceHandle resource)
                 throws IOException {
             Status status = new Status(request, response);
@@ -941,7 +933,7 @@ public class EditServlet extends PagesContentServlet {
         public Resource doIt(ResourceResolver resolver, ResourceManager.ResourceReference source,
                              ResourceManager.ResourceReference target, Resource before, List<Resource> updatedReferrers)
                 throws PersistenceException, RepositoryException {
-            return editService.moveElement(resolver, resolver.getResource("/content"),
+            return editService.moveElement(resolver, null,
                     source.getResource(), target, before, updatedReferrers);
         }
 
@@ -979,7 +971,8 @@ public class EditServlet extends PagesContentServlet {
     protected class CreatePage implements ServletOperation {
 
         @Override
-        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
+        public void doIt(@Nonnull SlingHttpServletRequest request,
+                         @Nonnull SlingHttpServletResponse response,
                          ResourceHandle resource)
                 throws IOException {
 
@@ -994,7 +987,7 @@ public class EditServlet extends PagesContentServlet {
                 String templatePath;
                 if (StringUtils.isNotBlank(templatePath = request.getParameter("template"))) {
                     ResourceResolver resolver = context.getResolver();
-                    template = resolver.getResource(templatePath);
+                    template = ResolverUtil.getTemplate(resolver, templatePath);
                 }
 
                 if (template != null) {
@@ -1031,7 +1024,8 @@ public class EditServlet extends PagesContentServlet {
     protected class DeletePage implements ServletOperation {
 
         @Override
-        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
+        public void doIt(@Nonnull SlingHttpServletRequest request,
+                         @Nonnull SlingHttpServletResponse response,
                          ResourceHandle resource)
                 throws IOException {
 
@@ -1068,7 +1062,7 @@ public class EditServlet extends PagesContentServlet {
         public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
                          ResourceHandle resource)
                 throws IOException {
-
+            Status status = new Status(request, response);
             String targetPath = request.getParameter("targetPath");
             String name = request.getParameter(PARAM_NAME);
 
@@ -1083,7 +1077,8 @@ public class EditServlet extends PagesContentServlet {
                 }
 
             } else {
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "target doesn't exist: '" + targetPath + "'");
+                status.error("target doesn't exist: '" + targetPath + "'");
+                status.sendJson();
             }
         }
     }
@@ -1095,7 +1090,8 @@ public class EditServlet extends PagesContentServlet {
     protected class CreateSite implements ServletOperation {
 
         @Override
-        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
+        public void doIt(@Nonnull SlingHttpServletRequest request,
+                         @Nonnull SlingHttpServletResponse response,
                          ResourceHandle resource)
                 throws IOException {
 
@@ -1132,7 +1128,8 @@ public class EditServlet extends PagesContentServlet {
     protected class DeleteSite implements ServletOperation {
 
         @Override
-        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
+        public void doIt(@Nonnull SlingHttpServletRequest request,
+                         @Nonnull SlingHttpServletResponse response,
                          ResourceHandle resource)
                 throws IOException {
 
@@ -1170,11 +1167,12 @@ public class EditServlet extends PagesContentServlet {
     protected class GetContextTools implements ServletOperation {
 
         @Override
-        public void doIt(SlingHttpServletRequest request, SlingHttpServletResponse response,
+        public void doIt(@Nonnull SlingHttpServletRequest request,
+                         @Nonnull SlingHttpServletResponse response,
                          ResourceHandle resource)
                 throws ServletException, IOException {
 
-            String selectors = RequestUtil.getSelectorString(request, null, 1);
+            String selectors = getSelectors(request);
             if (LOG.isDebugEnabled()) {
                 LOG.debug("GetContextTools({},{})...", resource, selectors);
             }
@@ -1182,10 +1180,34 @@ public class EditServlet extends PagesContentServlet {
             String paramType = request.getParameter(PARAM_TYPE);
 
             RequestDispatcherOptions options = new RequestDispatcherOptions();
-            options.setForceResourceType(CONTEXT_TOOLS_RES_TYPE);
+            options.setForceResourceType(getResourecType());
             options.setReplaceSelectors(selectors);
 
             forward(request, response, resource, paramType, options);
+        }
+
+        protected String getResourecType() {
+            return CONTEXT_TOOLS_RES_TYPE;
+        }
+
+        protected String getSelectors(@Nonnull SlingHttpServletRequest request) {
+            return RequestUtil.getSelectorString(request, null, 1);
+        }
+    }
+
+    protected class GetStandaloneStaticTools extends GetContextTools {
+
+        @Override
+        protected String getResourecType() {
+            return STANDALONE_STATIC_RES_TYPE;
+        }
+    }
+
+    protected class GetStandaloneContextTools extends GetContextTools {
+
+        @Override
+        protected String getResourecType() {
+            return STANDALONE_CONTEXT_RES_TYPE;
         }
     }
 }

@@ -11,8 +11,7 @@
             <cpn:div test="${model.hasIcon}" class="${modelCSS}_icon"><i class="fa fa-${model.icon}"></i></cpn:div>
             <cpn:div test="${model.hasIcon}" body="true" class="${modelCSS}_content">
                 <cpn:div test="${model.hasTitle}" class="${modelCSS}_header">
-                    <cpn:text tagName="${model.titleTagName}" value="${model.title}" i18n="true"
-                              class="${modelCSS}_title"/>
+                    <cpn:text tagName="${model.titleTagName}" value="${model.title}" class="${modelCSS}_title"/>
                 </cpn:div>
                 <sling:call script="elements.jsp"/>
             </cpn:div>

@@ -1,10 +1,8 @@
-(function (window) {
-    window.composum = window.composum || {};
-    window.composum.pages = window.composum.pages || {};
-    window.composum.pages.site = window.composum.pages.site || {};
+(function () {
+    'use strict';
+    CPM.namespace('pages.site');
 
     (function (site, pages, core) {
-        'use strict';
 
         site.const = _.extend(site.const || {}, {
             tabs: {
@@ -13,7 +11,7 @@
                     key: 'tab'
                 },
                 css: {
-                    base: "composum-pages-stage-edit-site"
+                    base: "composum-pages-site-view"
                 }
             },
             sites: {
@@ -52,7 +50,7 @@
                     var args = JSON.parse(message[2]); // argument object|array
                     switch (message[1]) { // operation
                         case e.site.changed:
-                        case e.page.state:
+                        case e.content.state:
                             window.location.reload();
                             break;
                     }
@@ -69,7 +67,7 @@
                 this.$createSite.click(_.bind(this.createSite, this));
                 $(document).on('site:created.Home', _.bind(function (event, pathOrRef) {
                     var path = pathOrRef.path ? pathOrRef.path : pathOrRef;
-                    window.location.href = core.getContextUrl('/bin/pages.html' + path);
+                    window.location.href = core.getContextUrl('/bin/pages.html' + core.encodePath(path));
                 }, this));
             },
 
@@ -82,5 +80,5 @@
 
         site.sites = core.getView('.' + site.const.sites.css.base, site.Sites);
 
-    })(window.composum.pages.site, window.composum.pages, window.core);
-})(window);
+    })(CPM.pages.site, CPM.pages, CPM.core);
+})();

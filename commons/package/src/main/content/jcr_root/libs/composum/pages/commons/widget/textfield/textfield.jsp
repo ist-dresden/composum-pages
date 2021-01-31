@@ -13,6 +13,6 @@
     <input <c:if test="${widget.formWidget}">name="${widget.name}"</c:if> data-label="${widget.label}"
            class="${widgetCSS}_input ${widgetCSS}_text-field widget text-field-widget form-control widget-name_${widget.cssName}"
            data-i18n="${widget.i18n}" ${widget.attributes} type="text"
-           value="${widget.model.text}" placeholder="${widget.placeholder}"
+           value="${cpn:value(widget.model.text)}" placeholder="${widget.placeholder}"
            <c:if test="${widget.disabled}">disabled</c:if> />
 </div>

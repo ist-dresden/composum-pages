@@ -7,6 +7,8 @@ package com.composum.pages.commons.service.search;
 
 import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.filter.StringFilter;
+import com.composum.sling.platform.staging.search.AbstractSearchPlugin;
+import com.composum.sling.platform.staging.search.SearchPlugin;
 import org.apache.jackrabbit.JcrConstants;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
@@ -16,11 +18,14 @@ import javax.annotation.Nonnull;
 @Component(
         service = SearchPlugin.class,
         property = {
-                Constants.SERVICE_DESCRIPTION + "=Composum Pages Default Asset Search Plugin"
+                Constants.SERVICE_DESCRIPTION + "=Composum Pages Default Asset Search Plugin",
+                Constants.SERVICE_RANKING + ":Integer=200"
         },
         immediate = true
 )
 public class AssetSearchPlugin extends AbstractSearchPlugin {
+
+    public static final String SELECTOR_ASSET = "asset";
 
     /** target resource filter matching file resources. */
     public static final ResourceFilter TARGET_FILTER = new ResourceFilter.PrimaryTypeFilter(
@@ -28,8 +33,7 @@ public class AssetSearchPlugin extends AbstractSearchPlugin {
 
     @Override
     public int rating(@Nonnull String selectors) {
-        return selectors.startsWith("asset") ? 9 : 0;
-
+        return selectors.startsWith(SELECTOR_ASSET) ? 6 : 0;
     }
 
     @Nonnull

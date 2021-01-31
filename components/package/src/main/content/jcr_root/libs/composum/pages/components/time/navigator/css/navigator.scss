@@ -1,0 +1,32 @@
+@charset "UTF-8";
+
+@import "../../css/defaults";
+
+.composum-pages-components-time-navigator {
+    margin-bottom: $time-navigator-header-margin;
+    @include default-font;
+
+    .composum-pages-components-time-navigator {
+
+        &_header {
+            display: flex;
+            flex-wrap: nowrap;
+            margin: $time-navigator-header-margin 0 $time-navigator-header-margin * 2;
+            padding: $time-navigator-header-padding;
+            background-color: $time-navigator-header-background;
+        }
+
+        &_move {
+            cursor: pointer;
+            min-width: $time-navigator-nav-handle-width;
+            line-height: $time-navigator-nav-handle-height;
+            text-align: center;
+            color: $bootstrap-color-muted;
+        }
+
+        &_label {
+            flex-grow: 1;
+            text-align: center;
+        }
+    }
+}

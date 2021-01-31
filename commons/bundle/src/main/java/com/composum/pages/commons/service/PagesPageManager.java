@@ -9,7 +9,6 @@ import com.composum.pages.commons.model.Model;
 import com.composum.pages.commons.model.Page;
 import com.composum.pages.commons.model.PageContent;
 import com.composum.pages.commons.model.Site;
-import com.composum.pages.commons.replication.ReplicationManager;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.filter.StringFilter;
@@ -81,9 +80,6 @@ public class PagesPageManager extends PagesContentManager<Page> implements PageM
     protected ResourceManager resourceManager;
 
     @Reference
-    protected ReplicationManager replicationManager;
-
-    @Reference
     protected PlatformVersionsService versionsService;
 
     @Override
@@ -95,8 +91,16 @@ public class PagesPageManager extends PagesContentManager<Page> implements PageM
 
     @Nonnull
     @Override
-    public Page createBean(@Nonnull BeanContext context, @Nonnull Resource resource) {
-        return new Page(this, context, resource);
+    public <T extends Page> T createBean(@Nonnull BeanContext context, @Nonnull Resource resource, Class<T> type) {
+        try {
+            T page = type.newInstance();
+            page.setPageManager(this);
+            page.initialize(context, resource);
+            return page;
+        } catch (InstantiationException | IllegalAccessException ex) {
+            LOG.error(ex.toString());
+            throw new IllegalArgumentException(ex);
+        }
     }
 
     @Override
@@ -135,7 +139,7 @@ public class PagesPageManager extends PagesContentManager<Page> implements PageM
             }
             Resource searchRoot;
             if (StringUtils.isNotBlank(searchRootPath) && (searchRoot = resolver.getResource(searchRootPath)) != null) {
-                Collection<Page> templates = getModels(context, NODE_TYPE_PAGE, searchRoot, TemplateFilter.INSTANCE);
+                Collection<Page> templates = getModels(context, NODE_TYPE_PAGE, Page.class, searchRoot, TemplateFilter.INSTANCE);
                 result.addAll(templates);
             }
             if (APPS_RESOLVER_ROOT.equals(root)) {
@@ -143,7 +147,7 @@ public class PagesPageManager extends PagesContentManager<Page> implements PageM
                     if (StringUtils.isNotBlank(additionalRoot)
                             && (!additionalRoot.startsWith(APPS_RESOLVER_ROOT) || StringUtils.isNotBlank(tenantId))
                             && (searchRoot = resolver.getResource(additionalRoot)) != null) {
-                        Collection<Page> templates = getModels(context, NODE_TYPE_PAGE, searchRoot, TemplateFilter.INSTANCE);
+                        Collection<Page> templates = getModels(context, NODE_TYPE_PAGE, Page.class, searchRoot, TemplateFilter.INSTANCE);
                         result.addAll(templates);
                     }
                 }
@@ -189,7 +193,7 @@ public class PagesPageManager extends PagesContentManager<Page> implements PageM
             resolver.commit();
         }
 
-        return instanceCreated(context, pageResource);
+        return instanceCreated(context, pageResource, Page.class);
     }
 
     @Override
@@ -217,10 +221,10 @@ public class PagesPageManager extends PagesContentManager<Page> implements PageM
                 Resource siteResource = siteManager.getContainingSiteResource(target);
                 Resource pageResource = getContainingPageResource(target);
                 if (pageResource != null) {
-                    String result = value.replaceAll("\\$\\{path}", target.getPath());
-                    result = result.replaceAll("\\$\\{page}", pageResource.getPath());
+                    String result = StringUtils.replace(value, "${path}", target.getPath());
+                    result = StringUtils.replace(result, "${page}", pageResource.getPath());
                     if (siteResource != null) {
-                        result = result.replaceAll("\\$\\{site}", siteResource.getPath());
+                        result = StringUtils.replace(result, "${site}", siteResource.getPath());
                     }
                     if (!value.equals(result)) {
                         result = result.replaceAll("/[^/]+/\\.\\./", "/");
@@ -245,7 +249,7 @@ public class PagesPageManager extends PagesContentManager<Page> implements PageM
         if (commit) {
             resolver.commit();
         }
-        return instanceCreated(context, pageResource);
+        return instanceCreated(context, pageResource, Page.class);
     }
 
     @Override
@@ -338,7 +342,7 @@ public class PagesPageManager extends PagesContentManager<Page> implements PageM
         if (resolved) {
             ResourceFilter.ContentNodeFilter contentNodeFilter = new ResourceFilter.ContentNodeFilter(true, pagesConfig.getReferenceFilter(ReferenceType.page), ResourceFilter.ALL);
             referringPageFilter =
-                    ResourceFilter.FilterSet.Rule.and.of(referringPageFilter, versionsService.releaseAsResourceFilter(searchRoot, null, replicationManager, contentNodeFilter));
+                    ResourceFilter.FilterSet.Rule.and.of(referringPageFilter, versionsService.releaseAsResourceFilter(searchRoot, null, null, contentNodeFilter));
         }
         for (Resource resource : referringResources) {
             Resource referringPage = getContainingPageResource(resource);
@@ -372,7 +376,7 @@ public class PagesPageManager extends PagesContentManager<Page> implements PageM
         if (unresolved) {
             // this filtering does not work when pages are renamed wrt. to the release. But there is currently no good way to handle this - you'll run into path problems,
             // anyway. :-(
-            releaseAsResourceFilter = versionsService.releaseAsResourceFilter(page.getResource(), null, replicationManager, contentNodeFilter);
+            releaseAsResourceFilter = versionsService.releaseAsResourceFilter(page.getResource(), null, null, contentNodeFilter);
         }
         ResourceFilter unresolvedFilter = ResourceFilter.FilterSet.Rule.none.of(releaseAsResourceFilter);
         ResourceFilter resourceFilter = type != null

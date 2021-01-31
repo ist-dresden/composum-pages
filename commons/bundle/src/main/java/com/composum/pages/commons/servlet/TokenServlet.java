@@ -4,6 +4,7 @@ import com.composum.pages.commons.service.TrackingService;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.servlet.AbstractServiceServlet;
 import com.composum.sling.core.util.ResourceUtil;
+import com.composum.sling.core.util.XSS;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
@@ -72,7 +73,7 @@ public class TokenServlet extends SlingSafeMethodsServlet {
             if (!ResourceUtil.isNonExistingResource(resource)) {
                 try {
                     String path = resource.getPath();
-                    String suffix = request.getRequestPathInfo().getSuffix();
+                    String suffix = XSS.filter(request.getRequestPathInfo().getSuffix());
                     String referer = null;
                     if (StringUtils.isNotBlank(suffix)) {
                         referer = suffix.substring(1);

@@ -3,4 +3,5 @@
         jcr:primaryType="sling:OrderedFolder"
         embed="[composum/pages/stage/edit/tools/search/js/search.js,
                 composum/pages/stage/edit/tools/tree/tree.js,
+                composum/pages/stage/edit/default/file/status/js/status.js,
                 composum/pages/stage/edit/tools/main/components/js/components.js]"/>

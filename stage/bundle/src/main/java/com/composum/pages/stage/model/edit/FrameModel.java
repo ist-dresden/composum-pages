@@ -2,7 +2,10 @@ package com.composum.pages.stage.model.edit;
 
 import com.composum.pages.commons.PagesConstants;
 import com.composum.pages.commons.model.Component;
+import com.composum.pages.commons.model.ContentDriven;
+import com.composum.pages.commons.model.ContentVersion;
 import com.composum.pages.commons.model.GenericModel;
+import com.composum.pages.commons.model.Model;
 import com.composum.pages.commons.request.DisplayMode;
 import com.composum.pages.commons.service.PageManager;
 import com.composum.pages.commons.service.PagesTenantSupport;
@@ -13,13 +16,13 @@ import com.composum.pages.commons.util.ResourceTypeUtil;
 import com.composum.pages.commons.util.TagCssClasses;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.CoreConfiguration;
+import com.composum.sling.core.util.XSS;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
 
 import javax.annotation.Nonnull;
-
-import java.util.Dictionary;
+import javax.annotation.Nullable;
 
 import static com.composum.pages.commons.model.AbstractModel.CSS_BASE_TYPE_RESTRICTION;
 import static com.composum.pages.commons.util.ResourceTypeUtil.EDIT_TILE_PATH;
@@ -112,7 +115,7 @@ public class FrameModel extends GenericModel {
      */
     public String getDelegatePath(BeanContext context) {
         SlingHttpServletRequest request = context.getRequest();
-        String delegatePath = request.getRequestPathInfo().getSuffix();
+        String delegatePath = XSS.filter(request.getRequestPathInfo().getSuffix());
         if (StringUtils.isBlank(delegatePath)) {
             delegatePath = "/";
         }
@@ -130,12 +133,6 @@ public class FrameModel extends GenericModel {
     public String getTypePath() {
         Resource type = getTypeResource();
         return type != null ? type.getPath() : "";
-    }
-
-    public String getLogoutUrl() {
-        // FIXME(hps,16.09.19) replace this by {@link com.composum.sling.core.CoreConfiguration#getLogoutUrl()} once it is old enough.
-        Dictionary properties = getContext().getService(CoreConfiguration.class).getProperties();
-        return StringUtils.defaultIfBlank(StringUtils.trim((String) properties.get("logouturl")), "/system/sling/logout.html?logout=true&GLO=true");
     }
 
     // view mode
@@ -162,10 +159,91 @@ public class FrameModel extends GenericModel {
         return ResourceTypeUtil.getSubtypePath(getContext().getResolver(), getResource(), getPath(), EDIT_TILE_PATH, null);
     }
 
+    // Versionable
+
+    public boolean isVersionable() {
+        Model model = getDelegate();
+        if (model instanceof ContentDriven) {
+            ContentDriven<?> content = (ContentDriven<?>) model;
+            return content.isVersionable();
+        }
+        return false;
+    }
+
+    public ContentVersion.StatusModel getReleaseStatus() {
+        Model model = getDelegate();
+        if (model instanceof ContentDriven) {
+            ContentDriven<?> content = (ContentDriven<?>) model;
+            return content.getReleaseStatus();
+        }
+        return null;
+    }
+
+    public boolean isCheckedOut() {
+        Model model = getDelegate();
+        if (model instanceof ContentDriven) {
+            ContentDriven<?> content = (ContentDriven<?>) model;
+            return content.isCheckedOut();
+        }
+        return false;
+    }
+
+    public boolean isToggleLockAvailable() {
+        Model model = getDelegate();
+        if (model instanceof ContentDriven) {
+            ContentDriven<?> content = (ContentDriven<?>) model;
+            return content.isLockable() && (!content.isLocked() || content.isHoldsLock());
+        }
+        return false;
+    }
+
+    public boolean isLockable() {
+        Model model = getDelegate();
+        if (model instanceof ContentDriven) {
+            ContentDriven<?> content = (ContentDriven<?>) model;
+            return content.isLockable();
+        }
+        return false;
+    }
+
+    public boolean isHoldsLock() {
+        Model model = getDelegate();
+        if (model instanceof ContentDriven) {
+            ContentDriven<?> content = (ContentDriven<?>) model;
+            return content.isHoldsLock();
+        }
+        return false;
+    }
+
+    public boolean isLocked() {
+        Model model = getDelegate();
+        if (model instanceof ContentDriven) {
+            ContentDriven<?> content = (ContentDriven<?>) model;
+            return content.isLocked();
+        }
+        return false;
+    }
+
+    @Nullable
+    public String getLockOwner() {
+        Model model = getDelegate();
+        if (model instanceof ContentDriven) {
+            ContentDriven<?> content = (ContentDriven<?>) model;
+            return content.getLockOwner();
+        }
+        return null;
+    }
+
     // Tenants
 
     public boolean isTenantSupport() {
         return getSiteManager().isTenantSupport();
+    }
+
+    // Assets
+
+    public boolean isAssetsSupport() {
+        return getSiteManager().isAssetsSupport();
     }
 
     // User context
@@ -179,6 +257,11 @@ public class FrameModel extends GenericModel {
         //return false;
         PagesTenantSupport tenantSupport = getSiteManager().getTenantSupport();
         return tenantSupport == null || tenantSupport.isDevelopModeAllowed(getContext(), getResource());
+    }
+
+    public String getLogoutUrl() {
+        String logoutUrl = getContext().getService(CoreConfiguration.class).getLogoutUrl();
+        return StringUtils.defaultIfBlank(logoutUrl, "/system/sling/logout.html?logout=true&GLO=true");
     }
 
     // Services...

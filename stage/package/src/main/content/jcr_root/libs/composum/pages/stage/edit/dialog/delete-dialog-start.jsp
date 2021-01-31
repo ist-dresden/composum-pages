@@ -11,7 +11,7 @@
                   action="${dialog.action.url}" enctype="${dialog.action.encType}">
                 <div class="modal-header ${dialogCSS}_header">
                     <button type="button" class="${dialogCSS}_button-close fa fa-close"
-                            data-dismiss="modal" aria-label="Close"/>
+                            data-dismiss="modal" aria-label="Close"></button>
                     <h4 class="modal-title ${dialogCSS}_dialog-title">
                         ${cpn:text(dialog.title)}
                     </h4>
@@ -28,10 +28,10 @@
                             <div class="panel-body hidden"></div>
                         </div>
                     </div>
-                    <ul class="${dialogCSS}_tabs nav nav-tabs">
+                    <ul class="${dialogCSS}_tabs nav nav-tabs composum-commons-form-tab-nav">
                     </ul>
                     <input name="_charset_" type="hidden" value="UTF-8" class="${dialogCSS}_hidden"/>
                     <input name=":operation" type="hidden" value="delete" class="${dialogCSS}_hidden ${dialogCSS}_operation"/>
                     <input name="path" type="hidden" value="${dialog.editPath}" class="${dialogCSS}_hidden ${dialogCSS}_path"/>
-                    <div class="${dialogCSS}_tabbed-content">
+                    <div class="${dialogCSS}_tabbed-content composum-commons-form-tabbed">
 <!-- start of dialog content -->

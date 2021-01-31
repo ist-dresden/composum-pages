@@ -13,10 +13,13 @@ import com.composum.pages.commons.service.ResourceManager;
 import com.composum.pages.commons.util.ResolverUtil;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.filter.ResourceFilter;
+import com.composum.sling.core.util.SlingResourceUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.SyntheticResource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -29,6 +32,8 @@ import static com.composum.pages.commons.PagesConstants.PROP_ALLOWED_ELEMENTS;
  * The Container is an Element to arrange some Elements within dynamically...
  */
 public class Container extends Element {
+
+    private static final Logger LOG = LoggerFactory.getLogger(Container.class);
 
     public static final String PROP_WITH_SPACING = "withSpacing";
     public static final String PROP_MIN_ELEMENTS = "minElements";
@@ -86,9 +91,13 @@ public class Container extends Element {
      */
     protected ResourceFilter getRenderFilter() {
         if (renderFilter == null) {
-            renderFilter = new ElementFilter(this);
+            renderFilter = createRenderFilter();
         }
         return renderFilter;
+    }
+
+    protected ResourceFilter createRenderFilter() {
+        return new ElementFilter(this);
     }
 
     /**
@@ -118,6 +127,8 @@ public class Container extends Element {
                 Element element = new Element();
                 element.initialize(context, resource);
                 elements.add(element);
+            } else {
+                LOG.debug("renderfilter removed {}", SlingResourceUtil.getPath(resource));
             }
         }
         return elements;

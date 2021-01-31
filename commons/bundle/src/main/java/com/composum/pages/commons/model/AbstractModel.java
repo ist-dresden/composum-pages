@@ -15,6 +15,7 @@ import com.composum.pages.commons.service.SiteManager;
 import com.composum.pages.commons.service.VersionsService;
 import com.composum.pages.commons.util.LinkUtil;
 import com.composum.pages.commons.util.PagesUtil;
+import com.composum.pages.commons.util.RequestUtil;
 import com.composum.pages.commons.util.TagCssClasses;
 import com.composum.platform.models.annotations.PropertyDefaults;
 import com.composum.sling.core.BeanContext;
@@ -23,9 +24,10 @@ import com.composum.sling.core.SlingBean;
 import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.filter.StringFilter;
 import com.composum.sling.core.request.DomIdentifiers;
+import com.composum.sling.core.util.I18N;
 import com.composum.sling.core.util.PropertyUtil;
 import com.composum.sling.core.util.ResourceUtil;
-import com.composum.sling.platform.security.AccessMode;
+import com.composum.platform.commons.request.AccessMode;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.apache.sling.api.SlingHttpServletRequest;
@@ -44,19 +46,21 @@ import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
+import static com.composum.pages.commons.PagesConstants.PN_CATEGORY;
 import static com.composum.pages.commons.PagesConstants.PN_DESCRIPTION;
 import static com.composum.pages.commons.PagesConstants.PN_TITLE_KEYS;
 import static com.composum.pages.commons.PagesConstants.RA_CURRENT_PAGE;
 import static com.composum.pages.commons.PagesConstants.RA_STICKY_LOCALE;
 import static com.composum.pages.commons.servlet.PagesContentServlet.EDIT_RESOURCE_TYPE_KEY;
 import static com.composum.platform.models.annotations.InternationalizationStrategy.I18NFOLDER;
-import static com.composum.sling.platform.security.PlatformAccessFilter.ACCESS_MODE_KEY;
+import static com.composum.platform.commons.request.AccessMode.RA_ACCESS_MODE;
 
 /**
  * the base class for all models beans in the pages context
@@ -134,6 +138,7 @@ public abstract class AbstractModel implements SlingBean, Model {
 
     private transient Page currentPage;
     private transient Page containingPage;
+    private Boolean fromCurrentPage;
 
     private transient Locale locale;
     private transient Languages languages;
@@ -148,6 +153,8 @@ public abstract class AbstractModel implements SlingBean, Model {
 
     protected transient String url;
     protected transient String title;
+    private transient List<String> category;
+    private transient String keywords;
     private transient String description;
 
     protected transient PagesConstants.ComponentType componentType;
@@ -177,22 +184,21 @@ public abstract class AbstractModel implements SlingBean, Model {
      * @param resource the resource to use (normally the resource addressed by the request)
      */
     @Override
-    public void initialize(BeanContext context, @Nonnull final Resource resource) {
+    public void initialize(BeanContext context, final Resource resource) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("initialize (" + context + ", " + resource + ")");
         }
         this.context = context;
         if (this.resolver == null) {
-            this.resolver = resource.getResourceResolver();
+            this.resolver = resource != null ? resource.getResourceResolver() : context.getResolver();
         }
         this.resource = determineResource(resource);
         if (this.resource == null) {
             this.resource = resource;
-        }
-        if (this.resolver == null) {
+        } else {
             this.resolver = this.resource.getResourceResolver();
         }
-        initializeWithResource(this.resource);
+        initializeWithResource(Objects.requireNonNull(this.resource));
     }
 
     /**
@@ -247,8 +253,20 @@ public abstract class AbstractModel implements SlingBean, Model {
         return domId;
     }
 
+    public boolean isFromCurrentPage() {
+        if (fromCurrentPage == null) {
+            Page containingPage = getContainingPage();
+            fromCurrentPage = containingPage != null && containingPage.equals(getCurrentPage());
+        }
+        return fromCurrentPage;
+    }
+
     public boolean isPublicMode() {
         return AccessMode.PUBLIC == getAccessMode();
+    }
+
+    public boolean isPreviewMode() {
+        return RequestUtil.isPreviewMode(context);
     }
 
     public boolean isAuthorMode() {
@@ -257,18 +275,30 @@ public abstract class AbstractModel implements SlingBean, Model {
 
     public AccessMode getAccessMode() {
         if (accessMode == null) {
-            Object value = context.getRequest().getAttribute(ACCESS_MODE_KEY);
-            accessMode = value instanceof AccessMode ? (AccessMode) value
-                    : (value != null ? AccessMode.valueOf(value.toString()) : null);
+            accessMode = RequestUtil.getAccessMode(context.getRequest());
         }
         return accessMode;
     }
 
+    /**
+     * @return 'true' if the current display mode (the topmost of the stack) is an edit mode
+     */
     public boolean isEditMode() {
         DisplayMode.Value mode = getDisplayMode();
         return mode == DisplayMode.Value.EDIT || mode == DisplayMode.Value.DEVELOP;
     }
 
+    /**
+     * @return 'true' if the requests display mode (the first mode of the stack) is an edit mode
+     */
+    public boolean isEditModeRequested() {
+        DisplayMode.Value mode = DisplayMode.requested(context);
+        return mode == DisplayMode.Value.EDIT || mode == DisplayMode.Value.DEVELOP;
+    }
+
+    /**
+     * @return the current display mode (the topmost of the stack)
+     */
     public DisplayMode.Value getDisplayMode() {
         if (displayMode == null) {
             displayMode = DisplayMode.current(context);
@@ -452,6 +482,30 @@ public abstract class AbstractModel implements SlingBean, Model {
         return getTitle();
     }
 
+    @Nonnull
+    public List<String> getCategory() {
+        if (category == null) {
+            category = Arrays.asList(getInherited(PN_CATEGORY, new String[0]));
+        }
+        return category;
+    }
+
+    @Nonnull
+    public String getKeywords() {
+        if (keywords == null) {
+            SlingHttpServletRequest request = context.getRequest();
+            StringBuilder builder = new StringBuilder();
+            for (String keyword : getCategory()) {
+                if (builder.length() > 0) {
+                    builder.append(",");
+                }
+                builder.append(I18N.get(request, keyword));
+            }
+            keywords = builder.toString();
+        }
+        return keywords;
+    }
+
     @Override
     @Nonnull
     public String getDescription() {
@@ -576,6 +630,12 @@ public abstract class AbstractModel implements SlingBean, Model {
             }
         }
         return null;
+    }
+
+    @Override
+    @Nonnull
+    public ValueMap getValueMap() {
+        return properties;
     }
 
     /**

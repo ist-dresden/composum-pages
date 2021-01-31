@@ -17,8 +17,8 @@
                 sling:key="Modification Date" sling:message="Änderungsdatum"/>
         <settings jcr:primaryType="sling:MessageEntry"
                 sling:key="Settings" sling:message="Einstellungen"/>
-
     </general>
+
     <frame jcr:primaryType="sling:Folder"><!-- Stage frame -->
 
         <browser-preview jcr:primaryType="sling:MessageEntry"
@@ -29,8 +29,8 @@
                 sling:key="Toggle Favorite" sling:message="Favorit-Markierung ändern"/>
         <toolbar-handle jcr:primaryType="sling:MessageEntry"
                 sling:key="Toolbar Handle" sling:message="Toolbar positionieren"/>
-
     </frame>
+
     <versions jcr:primaryType="sling:Folder"><!-- version tools -->
 
         <initial jcr:primaryType="sling:MessageEntry"
@@ -93,22 +93,41 @@
                 sling:message="Die oben angezeigten Elemente werden direkt oder indirekt durch diese Seite referenziert und sind nicht im vorgesehenen Release enthalten (möglichweise geändert und nicht aktiviert). Alle selektierten Referenzen werden zusammen mit dieser Seite aktiviert."/>
 
     </versions>
+
     <releases jcr:primaryType="sling:Folder"><!-- version tools -->
+
+        <preview jcr:primaryType="sling:MessageEntry"
+                sling:key="preview" sling:message="Vorschau"/>
+        <public jcr:primaryType="sling:MessageEntry"
+                sling:key="public" sling:message="publiziert"/>
+
+        <Activate-Content jcr:primaryType="sling:MessageEntry"
+                sling:key="Activate Content" sling:message="Inhalt Aktivieren"/>
+        <Deactivate-Content jcr:primaryType="sling:MessageEntry"
+                sling:key="Deactivate Content" sling:message="Inhalt Deaktivieren"/>
 
         <Activated jcr:primaryType="sling:MessageEntry"
                 sling:key="Activated" sling:message="Aktiviert"/>
         <Activate jcr:primaryType="sling:MessageEntry"
                 sling:key="Activate" sling:message="Aktivieren"/>
         <Activate-hint jcr:primaryType="sling:MessageEntry"
-                sling:key="Activate selected pages" sling:message="die markierten Seiten Aktivieren"/>
+                sling:key="Activate selected content" sling:message="die markierten Inhalte Aktivieren"/>
         <Revert jcr:primaryType="sling:MessageEntry"
                 sling:key="Revert" sling:message="Zurücksetzen"/>
         <Revert-hint jcr:primaryType="sling:MessageEntry"
-                sling:key="Revert selected pages" sling:message="die markierten Seiten Zurücksetzen"/>
+                sling:key="Revert selected content" sling:message="die markierten Inhalte Zurücksetzen"/>
         <Deactivate jcr:primaryType="sling:MessageEntry"
                 sling:key="Deactivate" sling:message="Deaktivieren"/>
         <Modified jcr:primaryType="sling:MessageEntry"
                 sling:key="Modified" sling:message="Geändert"/>
+
+        <Number jcr:primaryType="sling:MessageEntry"
+                sling:key="Number" sling:message="Nummer"/>
+
+        <Finalize jcr:primaryType="sling:MessageEntry"
+                sling:key="Finalize" sling:message="Vollenden"/>
+        <Finalize_Release jcr:primaryType="sling:MessageEntry"
+                sling:key="Finalize Release" sling:message="'Release' Vollenden"/>
 
         <release jcr:primaryType="sling:MessageEntry"
                 sling:key="release" sling:message="Release"/>
@@ -118,24 +137,22 @@
                 sling:key="current" sling:message="aktuell"/>
         <Current jcr:primaryType="sling:MessageEntry"
                 sling:key="Current" sling:message="Aktuell"/>
+        <current_Release jcr:primaryType="sling:MessageEntry"
+                sling:key="'current' Release" sling:message="'current'-Release"/>
         <activated-pages jcr:primaryType="sling:MessageEntry"
                 sling:key="Activated Pages" sling:message="Aktivierte Seiten"/>
-        <activated-pages-hint jcr:primaryType="sling:MessageEntry"
-                sling:key="pages activated with changes since the previous release"
-                sling:message="seit dem letzten Release aktivierte Seiten"/>
+        <activated-hint jcr:primaryType="sling:MessageEntry"
+                sling:key="content activated with changes since the previous release"
+                sling:message="seit dem letzten Release aktivierte Inhalte"/>
         <current-changes jcr:primaryType="sling:MessageEntry"
                 sling:key="Current Changes" sling:message="Aktuelle Änderungen"/>
         <release-changes jcr:primaryType="sling:MessageEntry"
                 sling:key="Release Changes" sling:message="Release-Änderungen"/>
         <modified-pages jcr:primaryType="sling:MessageEntry"
                 sling:key="Modified Pages" sling:message="Geänderte Seiten"/>
-        <modified-pages-hint jcr:primaryType="sling:MessageEntry"
+        <modified-hint jcr:primaryType="sling:MessageEntry"
                 sling:key="modified but last changes not activated yet"
                 sling:message="seit der letzten Änderung noch nicht aktiviert"/>
-        <preview jcr:primaryType="sling:MessageEntry"
-                sling:key="preview" sling:message="Vorschau"/>
-        <public jcr:primaryType="sling:MessageEntry"
-                sling:key="public" sling:message="publiziert"/>
 
         <release-edit jcr:primaryType="sling:MessageEntry"
                 sling:key="Edit Release properties" sling:message="Die Release-Eigenschaften bearbeiten"/>
@@ -154,7 +171,25 @@
         <release-delete-marked-error jcr:primaryType="sling:MessageEntry"
                 sling:key="Cannot delete a release marked with preview or public."
                 sling:message="Ein Release, dass als public oder preview gekennzeichnet ist, kann nicht gelöscht werden."/>
+
+        <finalize-number-major jcr:primaryType="sling:MessageEntry"
+                sling:key="major / essential" sling:message="essentielle Änderungen"/>
+        <finalize-number-minor jcr:primaryType="sling:MessageEntry"
+                sling:key="minor / modification" sling:message="normale Modifikation"/>
+        <finalize-number-bugfix jcr:primaryType="sling:MessageEntry"
+                sling:key="bugfix / correction" sling:message="Fehler- / Korrektur"/>
+        <finalize-number-hint jcr:primaryType="sling:MessageEntry"
+                sling:key="The release number is built by incrementing the number of the last release at the segment you've chosen."
+                sling:message="Die Release-Nummer wird durch Hochzählen der Zahl des gewählten Segments gebildet."/>
+        <finalize-release-publish jcr:primaryType="sling:MessageEntry"
+                sling:key="If the finalized release should be published imediately select the designated stages..."
+                sling:message="Wenn das fertige Release sofort publiziert werden soll, wählen Sie die vorgesehene 'Stage'..."/>
+        <finalize-current-publish jcr:primaryType="sling:MessageEntry"
+                sling:key="If the next open release should be published imediately select its designated stages also..."
+                sling:message="Wenn das nächste, offene Release zugleich publiziert sein soll, wählen Sie dessen 'Stage' ebenfalls..."/>
+
     </releases>
+
     <site jcr:primaryType="sling:Folder"><!-- Site actions -->
 
         <copy-site jcr:primaryType="sling:MessageEntry"
@@ -218,6 +253,9 @@
         <checked-in jcr:primaryType="sling:MessageEntry"
                 sling:key="checked in" sling:message="eingecheckt"/>
 
+        <category-hint jcr:primaryType="sling:MessageEntry"
+                sling:key="a set of short keywords in the site context; used for searching and filtering and embedded as 'keywords' in the pages meta data"
+                sling:message="die Schlüsselwörter der Seite; genutzt für Suche und Filterung sowie als 'keywords' in den Meta-Daten der Seite"/>
     </page>
 
     <content jcr:primaryType="sling:Folder"><!-- Content operations -->
@@ -300,7 +338,6 @@
         <category-hint jcr:primaryType="sling:MessageEntry"
                 sling:key="the first category declares the group in a structured component view"
                 sling:message="die erste Kategorie bestimmt die Gruppe in einer gegliederten Komponenten-Ansicht"/>
-
     </component>
 
     <dialog jcr:primaryType="sling:Folder"><!-- Stage Dialogs -->

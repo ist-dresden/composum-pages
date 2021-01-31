@@ -85,6 +85,30 @@
 
         </linkfield>
 
+        <assetfield jcr:primaryType="sling:Folder">
+
+            <select-path-title jcr:primaryType="sling:MessageEntry"
+                    sling:key="Select the asset path"
+                    sling:message="Dokument-Pfad auswählen"/>
+
+        </assetfield>
+
+        <imagefield jcr:primaryType="sling:Folder">
+
+            <select-path-title jcr:primaryType="sling:MessageEntry"
+                    sling:key="Select the image path"
+                    sling:message="Bild-Pfad auswählen"/>
+
+        </imagefield>
+
+        <videofield jcr:primaryType="sling:Folder">
+
+            <select-path-title jcr:primaryType="sling:MessageEntry"
+                    sling:key="Select the video path"
+                    sling:message="Video-Pfad auswählen"/>
+
+        </videofield>
+
     </widget>
 
     <release jcr:primaryType="sling:Folder"><!-- widget and dialog buttons, labels and titles -->
@@ -93,6 +117,15 @@
                 sling:key="&lt;no title>" sling:message="&lt;kein Titel>"/>
         <current-title jcr:primaryType="sling:MessageEntry"
                 sling:key="the open next release" sling:message="das offene, nächste Release"/>
+
+        <Replication_Configuration jcr:primaryType="sling:MessageEntry"
+                sling:key="Replication Configuration" sling:message="Replikationskonfiguration"/>
+        <In-Place_replication jcr:primaryType="sling:MessageEntry"
+                sling:key="In-Place replication" sling:message="In-Place-Replikation"/>
+        <Versions_resolver jcr:primaryType="sling:MessageEntry"
+                sling:key="Versions resolver" sling:message="Inhaltsversionen"/>
+        <Live_immediately jcr:primaryType="sling:MessageEntry"
+                sling:key="Live immediately" sling:message="unmittelbar Live"/>
 
     </release>
 

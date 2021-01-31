@@ -15,10 +15,10 @@ import org.osgi.service.component.annotations.Modified;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static com.composum.pages.commons.PagesConstants.NODE_TYPE_WIDGET;
 import static com.composum.pages.commons.PagesConstants.PROP_WIDGET_TYPE;
@@ -82,7 +82,7 @@ public class PagesWidgetManager implements WidgetManager {
     @Activate
     @Modified
     protected void activate(ComponentContext context) {
-        widgetTypes = new HashMap<>();
+        widgetTypes = new ConcurrentHashMap<>();
     }
 
     @Deactivate

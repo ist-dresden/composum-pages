@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:cpp="http://sling.composum.com/pages/1.0"
+        xmlns:jcr="http://www.jcp.org/jcr/1.0"
+        xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+        jcr:primaryType="cpp:Component"
+        sling:resourceSuperType="composum/pages/components/time/navigator"
+        jcr:description="a collecting container of the upcoming events teasers and/or current news teasers"
+        jcr:title="Current News &amp; Events"
+        category="[News &amp; Events,Blueprint]">
+</jcr:root>

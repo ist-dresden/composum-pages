@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.composum.pages.options</groupId>
         <artifactId>composum-pages-options-microsite</artifactId>
-        <version>1.1.0</version>
+        <version>1.2.0</version>
     </parent>
 
     <artifactId>composum-pages-options-microsite-bundle</artifactId>
@@ -23,6 +23,11 @@
         <plugins>
 
             <plugin>
+                <groupId>pl.project13.maven</groupId>
+                <artifactId>git-commit-id-plugin</artifactId>
+            </plugin>
+
+            <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
                 <extensions>true</extensions>
@@ -37,7 +42,7 @@
                             com.composum.pages.options.microsite.*
                         </Export-Package>
                         <Import-Package>
-                            com.composum.sling.core.*;version="[1.11,2.1)",
+                            com.composum.sling.core.*;version="[1.11,3)",
                             javax.annotation.*;version="[0,4)",
                             *
                         </Import-Package>
@@ -68,8 +73,8 @@
 
         <!-- Composum Core -->
         <dependency>
-            <groupId>com.composum.sling.core</groupId>
-            <artifactId>composum-sling-core-commons</artifactId>
+            <groupId>com.composum.nodes</groupId>
+            <artifactId>composum-nodes-commons</artifactId>
         </dependency>
 
         <!-- Sling, JCR -->

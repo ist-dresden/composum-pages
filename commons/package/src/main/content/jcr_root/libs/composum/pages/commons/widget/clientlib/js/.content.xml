@@ -3,12 +3,14 @@
         jcr:primaryType="sling:OrderedFolder"
         embed="[category:composum.components.widgets,
                 composum/pages/commons/js/core.js,
+                composum/pages/commons/js/pages.js,
                 composum/pages/commons/js/widgets.js,
                 composum/pages/commons/widget/checkselect/js/checkselect.js,
                 composum/pages/commons/widget/codearea/js/codearea.js,
                 composum/pages/commons/widget/datetimefield/js/datetimefield.js,
                 composum/pages/commons/widget/pathfield/js/pathfield.js,
                 composum/pages/commons/widget/linkfield/js/linkfield.js,
+                composum/pages/commons/widget/assetfield/js/assetfield.js,
                 composum/pages/commons/widget/imagefield/js/imagefield.js,
                 composum/pages/commons/widget/videofield/js/videofield.js]">
 </jcr:root>

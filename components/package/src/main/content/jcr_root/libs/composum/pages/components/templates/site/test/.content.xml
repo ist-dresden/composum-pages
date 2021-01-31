@@ -11,7 +11,8 @@
             sling:resourceType="composum/pages/stage/edit/site"
             siteComponentSettings="composum/pages/components/site/settings"
             allowedChildTemplates="[
-                (.*/)?templates/(page/)?home(page)?$
+                ^(.*/)?templates/(page/)?home(page)?$,
+                ^(.*/)?templates/page/meta/sitemap$
             ]">
         <style
                 jcr:primaryType="nt:unstructured"

@@ -4,17 +4,36 @@ import com.composum.pages.commons.model.Page;
 import com.composum.pages.commons.request.DisplayMode;
 import com.composum.pages.commons.util.LinkUtil;
 import com.composum.sling.core.util.ResourceUtil;
+import com.composum.sling.core.util.XSS;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static com.composum.pages.commons.PagesConstants.PAGES_EDITOR_PATH;
+import static com.composum.pages.commons.PagesConstants.PAGES_FRAME_PATH;
 
 public class FramePage extends Page {
+
+    public static final String HEADER_REFERER = "Referer";
+    public static final Pattern EDITOR_URL = Pattern.compile(
+            "^((https?:)?//[^/]+)?((/.*)?(?<path>/bin/(pages|edit)\\.html))((?<suffix>/[^?]*)?([?].*)?)?$",
+            Pattern.CASE_INSENSITIVE);
+    public static final Pattern GENERAL_URL = Pattern.compile(
+            "^((https?:)?//[^/]+)?(?<path>[^.]+\\.html)((?<suffix>/[^?]*)?([?].*)?)?$",
+            Pattern.CASE_INSENSITIVE);
+    public static final String DEFAULT_EDITOR_URI = PAGES_FRAME_PATH + ".html";
 
     private transient Page page;
     private transient Resource pageResource;
     private transient String pagePath;
+
+    private transient String editorUri;
+    private transient String editorSuffix;
 
     private transient DisplayMode.Value displayMode;
 
@@ -63,7 +82,7 @@ public class FramePage extends Page {
      */
     public String getPagePath() {
         if (pagePath == null) {
-            pagePath = context.getRequest().getRequestPathInfo().getSuffix();
+            pagePath = XSS.filter(context.getRequest().getRequestPathInfo().getSuffix());
             if (StringUtils.isBlank(pagePath)) {
                 pagePath = "/";
             } else {
@@ -84,7 +103,7 @@ public class FramePage extends Page {
      * @return the URL of the edited page
      */
     public String getPageUrl() {
-        return LinkUtil.getUrl(context.getRequest(), getPagePath());
+        return LinkUtil.getUrl(context.getRequest(), getPage().getUrl());
     }
 
     /**
@@ -96,6 +115,58 @@ public class FramePage extends Page {
 
     public boolean isHasLanguageVariations() {
         return getPage().getPageLanguages().getLanguages().size() > 1;
+    }
+
+    // frame type
+
+    public boolean isNavigator() {
+        return getEditorUri().equals(DEFAULT_EDITOR_URI);
+    }
+
+    public String getNavigatorUri() {
+        SlingHttpServletRequest request = getContext().getRequest();
+        getEditorUri();
+        return request.getContextPath() + DEFAULT_EDITOR_URI + editorSuffix;
+    }
+
+    public boolean isStandalone() {
+        return getEditorUri().equals(PAGES_EDITOR_PATH + ".html");
+    }
+
+    public String getStandaloneUri() {
+        SlingHttpServletRequest request = getContext().getRequest();
+        getEditorUri();
+        return request.getContextPath() + PAGES_EDITOR_PATH + ".html" + editorSuffix;
+    }
+
+    protected String getEditorUri() {
+        if (editorUri == null) {
+            editorUri = DEFAULT_EDITOR_URI;
+            SlingHttpServletRequest request = getContext().getRequest();
+            if (request != null) {
+                String requestUri = request.getRequestURI();
+                Matcher editor = EDITOR_URL.matcher(requestUri);
+                if (editor.matches()) {
+                    editorSuffix = editor.group("suffix");
+                    editorUri = editor.group("path");
+                } else {
+                    String referer = request.getHeader(HEADER_REFERER);
+                    if (StringUtils.isNotBlank(referer)) {
+                        editor = EDITOR_URL.matcher(referer);
+                        if (editor.matches()) {
+                            editorUri = editor.group("path");
+                            Matcher general = GENERAL_URL.matcher(requestUri);
+                            if (general.matches()) {
+                                editorSuffix = general.group("suffix");
+                            } else {
+                                editorSuffix = editor.group("suffix");
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return editorUri;
     }
 
     // view mode

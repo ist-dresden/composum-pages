@@ -1,5 +1,6 @@
 <%@page session="false" pageEncoding="UTF-8" %>
 <%@taglib prefix="sling" uri="http://sling.apache.org/taglibs/sling/1.2" %>
+<%@taglib prefix="cpn" uri="http://sling.composum.com/cpnl/1.0" %>
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <cpp:defineFrameObjects/>
@@ -10,8 +11,8 @@
         <c:forEach var="option" items="${widget.model.options}">
             <div class="radio-inline"><label><input
                     type="radio"
-                    <c:if test="${widget.formWidget}">name="${widget.name}"</c:if> value="${option.value}" <c:if
-                    test="${option.selected}"> checked="checked"</c:if> />${option.label}</label></div>
+                    <c:if test="${widget.formWidget}">name="${widget.name}"</c:if> value="${cpn:value(option.value)}" <c:if
+                    test="${option.selected}"> checked="checked"</c:if> />${cpn:text(option.label)}</label></div>
         </c:forEach>
     </div>
 </div>

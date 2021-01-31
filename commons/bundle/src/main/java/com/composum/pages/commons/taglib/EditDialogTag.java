@@ -1,5 +1,6 @@
 package com.composum.pages.commons.taglib;
 
+import com.composum.pages.commons.util.LinkUtil;
 import com.composum.pages.commons.util.ResourceTypeUtil;
 import com.composum.pages.commons.util.TagCssClasses;
 import org.apache.commons.lang3.StringUtils;
@@ -55,6 +56,7 @@ public class EditDialogTag extends AbstractEditTag {
 
     public static final String ATTR_INITIAL_ALERT = "alert-";
 
+    public static final String PAGES_EDIT_VALIDATION = PAGES_EDIT_DATA + "-validation";
     public static final String PAGES_EDIT_SUCCESS_EVENT = PAGES_EDIT_DATA + "-success";
 
     private transient String dialogId;
@@ -72,6 +74,8 @@ public class EditDialogTag extends AbstractEditTag {
     protected String submitLabel;
     private transient EditDialogAction action;
 
+    protected String validation;
+    protected String validationValue;
     protected String successEvent;
 
     protected String alertKey;
@@ -82,6 +86,8 @@ public class EditDialogTag extends AbstractEditTag {
         alertText = null;
         alertKey = null;
         successEvent = null;
+        validationValue = null;
+        validation = null;
         action = null;
         submit = null;
         submitLabel = null;
@@ -274,6 +280,25 @@ public class EditDialogTag extends AbstractEditTag {
         }
     }
 
+    // validation request
+
+    public String getValidation() {
+        return validation;
+    }
+
+    public String getValidationValue() {
+        if (validation != null) {
+            if (validationValue == null) {
+                validationValue = eval(validation, "");
+            }
+        }
+        return validationValue;
+    }
+
+    public void setValidation(String requestRule) {
+        this.validation = requestRule;
+    }
+
     // post dialog event
 
     public String getSuccessEvent() {
@@ -323,6 +348,9 @@ public class EditDialogTag extends AbstractEditTag {
         super.collectAttributes(attributeSet);
         attributeSet.put("role", "dialog");
         attributeSet.put("aria-hidden", "true");
+        if (StringUtils.isNotBlank(value = getValidationValue())) {
+            attributeSet.put(PAGES_EDIT_VALIDATION, value);
+        }
         if (StringUtils.isNotBlank(value = getSuccessEvent())) {
             attributeSet.put(PAGES_EDIT_SUCCESS_EVENT, value);
         }
@@ -398,7 +426,7 @@ public class EditDialogTag extends AbstractEditTag {
         }
 
         public String getUrl() {
-            String url = request.getContextPath() + getResource().getPath();
+            String url = request.getContextPath() + LinkUtil.encodePath(getResource().getPath());
             String nameParam = request.getParameter("name");
             if ("*".equals(nameParam)) {
                 // append a '/*' on element creation

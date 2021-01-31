@@ -231,6 +231,18 @@
             <type>java.lang.Boolean</type>
         </attribute>
         <attribute>
+            <name>path</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <name>resource</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>org.apache.sling.api.resource.Resource</type>
+        </attribute>
+        <attribute>
             <name>cssBase</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -672,6 +684,13 @@
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>the validation action selector or an uri for server side validation</description>
+            <name>validation</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
             <description>the event key of the event to trigger after a successful change request</description>
             <name>successEvent</name>
             <required>false</required>
@@ -1058,6 +1077,12 @@
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
+        <attribute>
+            <name>test</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.Boolean</type>
+        </attribute>
         <dynamic-attributes>true</dynamic-attributes>
     </tag>
 
@@ -1139,6 +1164,12 @@
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <name>test</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.Boolean</type>
         </attribute>
         <dynamic-attributes>true</dynamic-attributes>
     </tag>

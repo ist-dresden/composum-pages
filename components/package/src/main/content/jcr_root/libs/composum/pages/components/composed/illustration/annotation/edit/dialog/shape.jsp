@@ -12,4 +12,4 @@
 <cpp:widget label="Position" property="shape/position" type="position"
             hint="the position in percent"/>
 <cpp:widget label="Placement" property="shape/placement" type="select" options=":default,top,left,right,bottom"
-            hint="placment relative to the symbol"/>
+            hint="placement relative to the symbol"/>

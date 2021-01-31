@@ -1,8 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
-          jcr:primaryType="cpp:Component"
-          jcr:description="a layout row which controls a set of columns defined by a column setup rule property"
-          jcr:title="Row"
-          category="[Layout,Blueprint]"
-          sling:resourceSuperType="composum/pages/components/container"
-          allowedElements="[composum/pages/components/container/row/column]"/>
+<jcr:root xmlns:cpp="http://sling.composum.com/pages/1.0"
+        xmlns:jcr="http://www.jcp.org/jcr/1.0"
+        xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+        xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+        jcr:primaryType="cpp:Component"
+        sling:resourceSuperType="composum/pages/components/container"
+        jcr:description="a layout row which controls a set of columns defined by a column setup rule property"
+        jcr:title="Row"
+        allowedElements="[composum/pages/components/container/row/column]"
+        category="[Layout,Blueprint]">
+    <jcr:content
+            jcr:primaryType="nt:unstructured">
+        <properties
+                jcr:primaryType="nt:unstructured">
+            <title
+                    jcr:primaryType="nt:unstructured"
+                    i18n="{Boolean}true"
+                    text="plain"/>
+            <anchor
+                    jcr:primaryType="nt:unstructured"/>
+            <columns
+                    jcr:primaryType="nt:unstructured"
+                    required="{Boolean}true"/>
+        </properties>
+    </jcr:content>
+</jcr:root>

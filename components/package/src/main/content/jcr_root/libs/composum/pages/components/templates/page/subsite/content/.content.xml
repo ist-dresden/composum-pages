@@ -7,7 +7,13 @@
             jcr:primaryType="cpp:PageContent"
             jcr:title="Pages Components Subsite Content"
             jcr:description="A multi purpose content page with only one 'main' container to arrange content of all general element types including rows and columns."
-            sling:resourceType="composum/pages/components/page/subsite">
+            sling:resourceType="composum/pages/components/page/subsite"
+            allowedParentTemplates="[
+                ^(.*/)?pages/components/templates/page/subsite/.+$
+            ]"
+            allowedChildTemplates="[
+                ^(.*/)?pages/components/templates/page/subsite/(content|redirect)$
+            ]">
         <main
                 jcr:primaryType="cpp:Container"
                 sling:resourceType="composum/pages/components/container/parsys">

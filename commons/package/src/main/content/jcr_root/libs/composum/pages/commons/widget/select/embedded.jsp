@@ -13,7 +13,7 @@
         <c:if test="${widget.disabled}">disabled</c:if>
         class="${widgetCSS}_select widget select-widget form-control widget-name_${widget.cssName}">
     <c:forEach var="option" items="${widget.model.options}">
-        <option value="${option.default?'':option.value}"<c:if
+        <option value="${cpn:text(option.default?'':option.value)}"<c:if
                 test="${option.selected}"> selected</c:if>>${cpn:text(option.label)}</option>
     </c:forEach>
 </select>

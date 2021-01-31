@@ -19,6 +19,7 @@ public class Image extends AssetRelated {
     public static final String PROP_IMAGE_REF = "imageRef";
     public static final String PROP_ALT = "alt";
 
+    private transient String imageRef;
     private transient String src;
     private transient String alt;
 
@@ -46,11 +47,24 @@ public class Image extends AssetRelated {
         return valid;
     }
 
+    public String getImageRef() {
+        if (imageRef == null) {
+            imageRef = getAssetRef();
+            if (StringUtils.isBlank(imageRef)) {
+                imageRef = getPlaceholder();
+            }
+        }
+        return imageRef;
+    }
+
+    /**
+     * @return the final Link (probably encoded! - don't use in in an cpn:image tag)
+     */
     public String getSrc() {
         if (src == null) {
             src = getAssetUrl();
             if (StringUtils.isBlank(src)) {
-                src = LinkUtil.getUrl(context.getRequest(), getPlaceholder());
+                src = LinkUtil.getUrl(context.getRequest(), getPlaceholder(), "");
             }
         }
         return src;

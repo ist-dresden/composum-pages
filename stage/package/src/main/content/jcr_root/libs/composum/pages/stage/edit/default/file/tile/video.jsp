@@ -15,5 +15,6 @@
             </div>
         </div>
         <sling:call script="_text.jsp"/>
+        <cpp:include resourceType="composum/pages/stage/edit/default/file/status"/>
     </div>
 </cpp:model>

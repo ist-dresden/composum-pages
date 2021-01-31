@@ -1,7 +1,6 @@
-(function (window) {
-    window.composum = window.composum || {};
-    window.composum.pages = window.composum.pages || {};
-    window.composum.pages.components = window.composum.pages.components || {};
+(function () {
+    'use strict';
+    CPM.namespace('pages.components');
 
     (function (components, pages, core) {
         'use strict';
@@ -36,5 +35,5 @@
             });
         });
 
-    })(window.composum.pages.components, window.composum.pages, window.core);
-})(window);
+    })(CPM.pages.components, CPM.pages, CPM.core);
+})();

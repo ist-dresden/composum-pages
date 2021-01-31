@@ -2,11 +2,16 @@ package com.composum.pages.commons.servlet;
 
 import com.composum.pages.commons.PagesConstants;
 import com.composum.pages.commons.model.Page;
+import com.composum.pages.commons.model.PageContent;
 import com.composum.pages.commons.request.DisplayMode;
+import com.composum.pages.commons.request.LocaleRequestWrapper;
 import com.composum.pages.commons.service.PageManager;
+import com.composum.pages.commons.service.Theme;
+import com.composum.pages.commons.util.ThemeUtil;
 import com.composum.sling.core.BeanContext;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
+import org.apache.sling.api.request.RequestDispatcherOptions;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.servlets.HttpConstants;
 import org.apache.sling.api.servlets.ServletResolverConstants;
@@ -30,6 +35,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 @Component(service = Servlet.class,
         property = {
@@ -54,7 +60,7 @@ public class PageNodeServlet extends SlingSafeMethodsServlet {
     }
 
     @Override
-    protected void doGet(@Nonnull final SlingHttpServletRequest request,
+    protected void doGet(@Nonnull SlingHttpServletRequest request,
                          @Nonnull final SlingHttpServletResponse response)
             throws ServletException, IOException {
 
@@ -65,6 +71,10 @@ public class PageNodeServlet extends SlingSafeMethodsServlet {
         if (page.isValid()) {
             // ensure that the current page is declared before any property access
             request.setAttribute(PagesConstants.RA_CURRENT_PAGE, page);
+            Theme theme = page.getTheme();
+            if (theme != null) {
+                request.setAttribute(PagesConstants.RA_CURRENT_THEME, theme);
+            }
 
             // if not in edit mode check for a HTTP redirect triggered by one of the dispatchers
             DisplayMode.Value displayMode = DisplayMode.current(context);
@@ -76,13 +86,23 @@ public class PageNodeServlet extends SlingSafeMethodsServlet {
                 }
             }
 
+            // adjust the requests locale to the locale of the requested page if necessary
+            // to synchroinze the systems I18N support with the pages locale
+            Locale pageLocale = page.getLocale();
+            if (!pageLocale.equals(request.getLocale())) {
+                request = new LocaleRequestWrapper(request, pageLocale);
+            }
+
             // determine the page content resource to use for the request forward
             for (PageDispatcher dispatcher : pageDispatchers) {
                 page = dispatcher.getForwardPage(page);
             }
-            Resource forwardContent = page.getContent().getResource();
+            PageContent pageContent = page.getContent();
+            Resource forwardContent = pageContent.getResource();
 
-            RequestDispatcher dispatcher = request.getRequestDispatcher(forwardContent);
+            RequestDispatcherOptions options = new RequestDispatcherOptions();
+            ThemeUtil.applyTheme(theme, forwardContent, options);
+            RequestDispatcher dispatcher = request.getRequestDispatcher(forwardContent, options);
             if (dispatcher != null) {
                 dispatcher.forward(request, response);
             }

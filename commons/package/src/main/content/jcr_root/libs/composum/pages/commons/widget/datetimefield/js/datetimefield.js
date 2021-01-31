@@ -1,7 +1,6 @@
-(function (window) {
-    window.composum = window.composum || {};
-    window.composum.pages = window.composum.pages || {};
-    window.composum.pages.widgets = window.composum.pages.widgets || {};
+(function () {
+    'use strict';
+    CPM.namespace('pages.widgets');
 
     (function (widgets, pages, core) {
         'use strict';
@@ -34,7 +33,7 @@
              * applied during 'initialize' (!)
              */
             retrieveName: function () {
-                return this.hiddenSubmit().attr(window.widgets.const.attr.name);
+                return this.hiddenSubmit().attr(CPM.widgets.const.attr.name);
             },
 
             /**
@@ -47,8 +46,7 @@
             }
         });
 
-        window.widgets.register('.widget.' + widgets.const.datetime.css.widget, widgets.DateTimeFieldWidget);
+        CPM.widgets.register('.widget.' + widgets.const.datetime.css.widget, widgets.DateTimeFieldWidget);
 
-
-    })(window.composum.pages.widgets, window.composum.pages, window.core);
-})(window);
+    })(CPM.pages.widgets, CPM.pages, CPM.core);
+})();

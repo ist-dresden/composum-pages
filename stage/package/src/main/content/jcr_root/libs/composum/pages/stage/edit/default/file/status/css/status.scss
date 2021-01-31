@@ -1,0 +1,93 @@
+@charset "UTF-8";
+
+@import "../../../../css/variables";
+@import "../../../../css/mixins";
+
+.composum-pages-stage-file {
+
+    &_tile {
+
+        .composum-pages-stage-file-status {
+            position: absolute;
+            top: 0;
+            right: 0;
+
+            &_icon {
+                padding: $tools-pane-padding $tools-pane-padding $tools-pane-padding 0;
+                font-size: $edit-actions-icon-font-size;
+                cursor: pointer;
+
+                &.release-status {
+
+                    &_initial {
+                        color: $release-status-initial;
+                    }
+
+                    &_activated {
+                        color: $release-status-activated;
+                    }
+
+                    &_modified {
+                        color: $release-status-modified;
+                    }
+
+                    &_deactivated {
+                        color: $release-status-deactivated;
+                    }
+
+                    &_deleted {
+                        color: $release-status-deleted;
+                    }
+                }
+            }
+
+            .popover {
+                min-width: 300px;
+
+                .popover-content {
+                    padding: $tools-pane-padding;
+                }
+            }
+
+            &_popover {
+                @include hint-font;
+                color: $bootstrap-color-default;
+
+                hr {
+                    margin: $tools-pane-padding 0;
+                }
+
+                .name {
+                    margin-right: $tools-pane-padding;
+                }
+
+                .space {
+                    margin: 0 $tools-pane-padding;
+                }
+
+                .text, .state, .timestamp, .user, .text-danger {
+                    font-weight: bold;
+                }
+
+                .line {
+                    clear: both;
+                    display: inline-block;
+                    width: 100%;
+
+                    .label, .timestamp, .user {
+                        display: block;
+                        white-space: nowrap;
+                    }
+
+                    .name {
+                        float: left;
+                    }
+
+                    .timestamp, .user {
+                        float: right;
+                    }
+                }
+            }
+        }
+    }
+}

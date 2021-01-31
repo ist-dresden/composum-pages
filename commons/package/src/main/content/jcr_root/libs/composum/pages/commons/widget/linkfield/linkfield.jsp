@@ -13,11 +13,13 @@
     <div class="${widgetCSS}_link-field input-group widget linkfield-widget widget-name_${widget.cssName}" ${widget.attributes}
          title="${cpn:i18n(slingRequest,'Select Target')}"
          data-label="${cpn:i18n(slingRequest,'Link or select(ed) path')}">
-        <input name="${widget.name}" class="${widgetCSS}_input form-control" type="text"
-               data-label="${widget.label}" data-i18n="${widget.i18n}"
-               value="${widget.model.path}" placeholder="${widget.placeholder}"/>
+        <input name="${widget.name}" class="${widgetCSS}_input form-control"
+               data-label="${widget.label}" data-i18n="${widget.i18n}" maxlength="${widget.model.maxlength}"
+               type="text" value="${cpn:value(widget.model.path)}" placeholder="${widget.placeholder}"
+               <c:if test="${widget.disabled}">disabled</c:if> />
         <span class="${widgetCSS}_popup-button input-group-btn">
-              <button class="${widgetCSS}_select select btn btn-default" type="button"
-                      title="${cpn:i18n(slingRequest,'Select the repository path')}...">...</button></span>
+                  <button class="${widgetCSS}_select select btn btn-default" type="button"
+                          title="${cpn:i18n(slingRequest,'Select the repository path')}..."
+                          <c:if test="${widget.disabled}">disabled</c:if>>...</button></span>
     </div>
 </div>

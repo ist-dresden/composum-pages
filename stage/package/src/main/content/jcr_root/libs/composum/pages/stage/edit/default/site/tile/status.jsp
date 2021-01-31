@@ -16,7 +16,7 @@
                    title="${cpn:i18n(slingRequest,'Release Changes')}"><%=site.getReleaseChanges().size()%>
                 </a><a href="#"
                        class="badge badge-pill modified"
-                       title="${cpn:i18n(slingRequest,'Modified Pages')}"><%=site.getModifiedPages().size()%>
+                       title="${cpn:i18n(slingRequest,'Modified Pages')}"><%=site.getModifiedContent().size()%>
             </a>
             </div>
             <h4 class="${siteCssBase}_path">${cpn:path(site.path)}</h4>

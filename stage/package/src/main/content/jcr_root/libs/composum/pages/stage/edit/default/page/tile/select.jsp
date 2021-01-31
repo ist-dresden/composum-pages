@@ -5,7 +5,7 @@
 <cpp:defineObjects/>
 <cpp:model var="tilepage" type="com.composum.pages.commons.model.Page" mode="none"
            cssBase="composum-pages-stage-page_tile">
-    <cpn:link class="${tilepageCssBase}" href="/bin/pages.html${tilepage.path}">
+    <cpn:link class="${tilepageCssBase}" href="/bin/pages.html${cpn:path(tilepage.path)}">
         <sling:call script="_page.jsp"/>
     </cpn:link>
 </cpp:model>

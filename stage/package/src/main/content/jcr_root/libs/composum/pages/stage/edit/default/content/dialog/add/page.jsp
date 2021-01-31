@@ -9,7 +9,8 @@
     </cpp:editDialogTab>
     <cpp:editDialogTab tabId="page" label="Page Properties">
         <cpp:widget label="Name" name="name" placeholder="the repository name" type="textfield"
-                    required="true" pattern="^[\\w][- \\w]*$"/>
+                    required="true" pattern="/^[\\p{L}_][\\p{N}\\p{L} _-]*$/u"
+                    pattern-hint="a letter followed by letters, digits, blanks or any of '_-'"/>
         <cpp:widget label="Title" name="jcr:title" placeholder="the more readable title" type="textfield"/>
         <cpp:widget label="Description" name="jcr:description" type="richtext"/>
     </cpp:editDialogTab>

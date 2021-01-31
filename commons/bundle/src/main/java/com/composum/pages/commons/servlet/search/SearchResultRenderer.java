@@ -5,7 +5,7 @@
  */
 package com.composum.pages.commons.servlet.search;
 
-import com.composum.pages.commons.service.search.SearchService;
+import com.composum.sling.platform.staging.search.SearchService;
 
 import java.io.IOException;
 import java.util.Collection;

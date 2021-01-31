@@ -19,8 +19,10 @@
                 composum/pages/components/composed/decorator/css/decorator.css,
                 composum/pages/components/composed/illustration/css/illustration.css,
                 composum/pages/components/composed/list/css/list.css,
+                composum/pages/components/composed/overlay/css/overlay.css,
                 composum/pages/components/composed/table/css/table.css,
                 composum/pages/components/element/codeblock/css/codeblock.css,
+                composum/pages/components/element/map/here/css/here.css,
                 composum/pages/components/element/map/google/css/google.css,
                 composum/pages/components/element/iframe/css/iframe.css,
                 composum/pages/components/element/image/css/image.css,
@@ -31,4 +33,7 @@
                 composum/pages/components/element/title/css/title.css,
                 composum/pages/components/element/video/css/video.css,
                 composum/pages/components/search/css/search.css,
-                composum/pages/components/time/event/css/event.css]"/>
+                composum/pages/components/time/calendar/css/calendar.css,
+                composum/pages/components/time/navigator/css/navigator.css,
+                composum/pages/components/time/event/css/event.css,
+                composum/pages/components/time/news/css/news.css]"/>

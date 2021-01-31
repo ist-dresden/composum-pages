@@ -107,3 +107,93 @@
         }
     }
 }
+
+.composum-pages-site-view {
+
+    &_releases {
+
+        &_publish-target {
+
+            .composum-pages-site-view_releases {
+
+                &_release {
+
+                    &-heading {
+                        display: flex;
+                        flex-wrap: nowrap;
+                        align-items: baseline;
+                    }
+
+                    &-title {
+                        flex-grow: 1;
+                        font-size: 18px;
+                    }
+
+                    &-key {
+                        font-size: 16px;
+                        font-weight: bold;
+                    }
+
+                    &-creationDate {
+                        margin-left: $bootstrap-spacing-h;
+                    }
+
+                    &-description {
+                        padding: 7px $bootstrap-spacing-h;
+
+                        p {
+                            margin: 5px 0;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+.composum-pages-stage-edit-dialog {
+
+    .composum-pages-edit-widget {
+
+        &_radio-group {
+            margin: 5px 0 -4px 10px;
+
+            .radio {
+                margin: 0 0 2px;
+
+                .value {
+                    display: inline-block;
+                    min-width: 60px;
+                    margin-right: 10px;
+                    font-weight: bold;
+                }
+
+                .hint {
+                    border: none;
+                    padding: 0;
+                    text-shadow: none;
+                    box-shadow: none;
+                    white-space: nowrap;
+                    @include hint-font;
+                    color: #777;
+                }
+            }
+        }
+
+        &_category-set {
+            margin: 0;
+
+            .label {
+                position: relative;
+                display: inline-block;
+                height: 31px;
+                min-width: 90px;
+                margin: 0 0 5px 10px;
+                padding: 5px 10px 5px 30px;
+                line-height: 18px;
+                font-size: 14px;
+                text-align: left;
+            }
+        }
+    }
+}

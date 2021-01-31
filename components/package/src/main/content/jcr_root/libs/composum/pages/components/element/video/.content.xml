@@ -1,7 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+<jcr:root xmlns:cpp="http://sling.composum.com/pages/1.0"
+        xmlns:jcr="http://www.jcp.org/jcr/1.0"
+        xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+        xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
         jcr:primaryType="cpp:Component"
+        sling:resourceSuperType="composum/pages/components/element/asset"
         jcr:description="a video player"
         jcr:title="Video"
-        category="[Video,General,Blueprint]"
-        sling:resourceSuperType="composum/pages/components/element/asset"/>
+        category="[Video,General,Blueprint]">
+    <jcr:content
+            jcr:primaryType="nt:unstructured">
+        <properties
+                jcr:primaryType="nt:unstructured">
+            <videoRef
+                    jcr:primaryType="nt:unstructured"/>
+            <posterRef
+                    jcr:primaryType="nt:unstructured"/>
+            <controls
+                    jcr:primaryType="nt:unstructured"
+                    type="Boolean"/>
+            <autoplay
+                    jcr:primaryType="nt:unstructured"
+                    type="Boolean"/>
+            <muted
+                    jcr:primaryType="nt:unstructured"
+                    type="Boolean"/>
+            <loop
+                    jcr:primaryType="nt:unstructured"
+                    type="Boolean"/>
+            <copyright
+                    jcr:primaryType="nt:unstructured"
+                    i18n="{Boolean}true"
+                    text="plain"/>
+            <copyrightUrl
+                    jcr:primaryType="nt:unstructured"/>
+            <license
+                    jcr:primaryType="nt:unstructured"
+                    i18n="{Boolean}true"
+                    text="plain"/>
+            <licenseUrl
+                    jcr:primaryType="nt:unstructured"/>
+        </properties>
+    </jcr:content>
+</jcr:root>

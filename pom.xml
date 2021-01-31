@@ -6,14 +6,14 @@
     <parent>
         <groupId>com.composum.meta.ist</groupId>
         <artifactId>parent-2-public</artifactId>
-        <version>1.2</version>
-        <relativePath></relativePath>
+        <version>1.3</version>
+        <relativePath/>
     </parent>
 
     <groupId>com.composum.pages</groupId>
     <artifactId>composum-pages</artifactId>
     <packaging>pom</packaging>
-    <version>1.1.0</version>
+    <version>1.2.0</version>
 
     <name>Composum Pages</name>
     <description>Maven parent for Composum Pages packages</description>
@@ -23,8 +23,8 @@
         <package.group>com/composum/pages</package.group>
         <package.company>IST GmbH Dresden</package.company>
         <bundle.category>composum,pages</bundle.category>
-        <composum.nodes.version>1.11.6</composum.nodes.version>
-        <composum.platform.version>1.1.0</composum.platform.version>
+        <composum.nodes.version>2.2.2</composum.nodes.version>
+        <composum.platform.version>1.3.0</composum.platform.version>
     </properties>
 
     <scm>
@@ -105,28 +105,28 @@
 
             <!-- Composum Nodes -->
             <dependency>
-                <groupId>com.composum.sling.core</groupId>
-                <artifactId>composum-sling-core-console</artifactId>
+                <groupId>com.composum.nodes</groupId>
+                <artifactId>composum-nodes-console</artifactId>
                 <version>${composum.nodes.version}</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
-                <groupId>com.composum.sling.core</groupId>
-                <artifactId>composum-sling-user-management</artifactId>
+                <groupId>com.composum.nodes</groupId>
+                <artifactId>composum-nodes-usermgr</artifactId>
                 <version>${composum.nodes.version}</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
-                <groupId>com.composum.sling.core</groupId>
-                <artifactId>composum-sling-core-commons</artifactId>
+                <groupId>com.composum.nodes</groupId>
+                <artifactId>composum-nodes-commons</artifactId>
                 <version>${composum.nodes.version}</version>
                 <scope>provided</scope>
             </dependency>
 
             <!-- Setup utilities -->
             <dependency>
-                <groupId>com.composum.sling.core.setup</groupId>
-                <artifactId>composum-sling-core-setup-util</artifactId>
+                <groupId>com.composum.nodes.setup</groupId>
+                <artifactId>composum-nodes-setup-util</artifactId>
                 <version>${composum.nodes.version}</version>
                 <scope>provided</scope>
             </dependency>
@@ -135,7 +135,7 @@
             <dependency>
                 <groupId>org.ehcache</groupId>
                 <artifactId>ehcache-bundle</artifactId>
-                <version>3.4.0</version>
+                <version>3.6.3</version>
                 <scope>provided</scope>
             </dependency>
 

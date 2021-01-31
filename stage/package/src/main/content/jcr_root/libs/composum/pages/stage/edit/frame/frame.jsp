@@ -8,7 +8,8 @@
         <html data-context-path="${slingRequest.contextPath}">
         <head>
             <title>Composum Pages</title>
-            <meta name="viewport" content="width=device-width, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"/>
+            <meta name="viewport"
+                  content="width=device-width, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"/>
             <meta name="format-detection" content="telephone=no">
             <cpn:clientlib type="link" category="composum.pages.edit.frame"/>
             <cpn:clientlib type="css" category="composum.pages.edit.frame"/>
@@ -16,7 +17,7 @@
             <cpn:clientlib test="${frame.developMode}" type="css" category="composum.pages.develop.frame"/>
         </head>
         <body class="composum-pages-${frame.displayModeHint}_body" data-path="${frame.pagePath}"
-              data-pages-mode="${frame.displayMode}">
+              data-pages-mode="${frame.displayMode}" data-pages-editor="navigator">
         <div class="composum-pages-stage-edit-frame_wrapper" data-path="${frame.pagePath}">
             <iframe class="composum-pages-stage-edit-frame"></iframe>
         </div>

@@ -6,10 +6,10 @@
 <c:choose><c:when test="${widget.model.collection}">
     <c:forEach items="${widget.model.values}" var="value">
         <input type="hidden" name="${widget.name}" class="widget hidden-widget widget-name_${widget.cssName}"
-               data-i18n="${widget.i18n}" value="${value}"/>
+               data-i18n="${widget.i18n}" value="${cpn:value(value)}"/>
     </c:forEach></c:when><c:otherwise>
     <input type="hidden" name="${widget.name}" class="widget hidden-widget widget-name_${widget.cssName}"
-           data-i18n="${widget.i18n}" value="${widget.value}"/>
+           data-i18n="${widget.i18n}" value="${cpn:value(widget.value)}"/>
 </c:otherwise>
 </c:choose>
 

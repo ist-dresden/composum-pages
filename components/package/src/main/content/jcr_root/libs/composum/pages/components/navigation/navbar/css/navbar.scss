@@ -20,10 +20,26 @@ $breadcrumbs-menu-indent: 20px;
         padding-right: 0;
     }
 
+    .composum-pages-components-navigation {
+
+        &-menuitem {
+
+            a {
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+        }
+    }
+
     .composum-pages-components-navigation-breadcrumbs {
 
         &_dropdown {
             margin-left: 70px;
+
+            &.no-logo {
+                margin-left: 0;
+            }
         }
 
         &_icon {
@@ -114,6 +130,35 @@ $breadcrumbs-menu-indent: 20px;
     .composum-pages-components-navigation-button {
         float: left;
         margin: 8px 0 8px 15px;
+    }
+}
+
+@media screen and (min-width: $bootstrap-screen-sm-min) {
+
+    .composum-pages-components-navigation-navbar {
+
+        &_container {
+            display: flex;
+            flex-wrap: nowrap;
+        }
+
+        &_navbar-right {
+            flex-grow: 1;
+        }
+
+        &_navbar-nav {
+            display: flex;
+            flex-wrap: nowrap;
+            width: 100%;
+            justify-content: flex-end;
+
+            > .composum-pages-components-navigation {
+
+                &-menuitem {
+                    max-width: 25%;
+                }
+            }
+        }
     }
 }
 

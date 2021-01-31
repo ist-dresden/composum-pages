@@ -3,6 +3,7 @@ package com.composum.pages.commons.setup;
 import com.composum.sling.core.service.RepositorySetupService;
 import com.composum.sling.core.setup.util.SetupUtil;
 import com.composum.sling.core.util.CoreConstants;
+import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.commons.cnd.CndImporter;
 import org.apache.jackrabbit.vault.fs.io.Archive;
 import org.apache.jackrabbit.vault.packaging.InstallContext;
@@ -23,13 +24,10 @@ import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 
 @SuppressWarnings({"Duplicates"})
@@ -109,9 +107,14 @@ public class SetupHook implements InstallHook {
             Session session = ctx.getSession();
             NodeTypeManager nodeTypeManager = session.getWorkspace().getNodeTypeManager();
             NodeType siteConfigType = nodeTypeManager.getNodeType("cpp:SiteConfiguration");
-            boolean updateNeeded = !siteConfigType.isNodeType("cpl:releaseConfig");
+            boolean siteConfigVersionable = siteConfigType.isNodeType(JcrConstants.MIX_VERSIONABLE);
+            if (!siteConfigVersionable) {
+                addVersionableMixinToSiteConfigurations(session);
+            }
+            boolean updateNeeded =
+                    siteConfigType.isNodeType("cpl:releaseConfig") || !siteConfigVersionable;
             if (updateNeeded) {
-                LOG.warn("cpl:releaseConfig still in cpp:SiteConfiguration even after package installation - updating nodetypes.");
+                LOG.warn("Update pages nodetypes neccesary.");
 
                 Archive archive = ctx.getPackage().getArchive();
                 try (InputStream stream = archive.openInputStream(archive.getEntry("/META-INF/vault/nodetypes.cnd"))) {
@@ -120,16 +123,33 @@ public class SetupHook implements InstallHook {
                 }
 
                 siteConfigType = nodeTypeManager.getNodeType("cpp:SiteConfiguration");
-                if (!siteConfigType.isNodeType("cpl:releaseConfig")) {
-                    LOG.error("cpp:SiteConfig does still not contain cpl:releaseConfig even after attempted migration!");
+                if (siteConfigType.isNodeType("cpl:releaseConfig") || !siteConfigType.isNodeType(JcrConstants.MIX_VERSIONABLE)) {
+                    LOG.error("Something went wrong when updating nodetypes: cpp:SiteConfig does still contain " +
+                            "cpl:releaseConfig or does not contain mix:versionable even after attempted migration!");
                 }
             } else {
-                LOG.info("OK: no nodetype update needed");
+                LOG.info("OK: no pages nodetype update needed");
             }
         } catch (Exception rex) {
             LOG.error(rex.getMessage(), rex);
             throw new PackageException(rex);
         }
+    }
+
+    /**
+     * Strangely, adding mix:versionable through the nodetype update fails with a CommitFailedException "Mandatory
+     * property jcr:predecessors not found in a new node". So we have to add the mixin by hand first. :-(
+     */
+    protected void addVersionableMixinToSiteConfigurations(Session session) throws RepositoryException {
+        LOG.info("Adding mix:versionable to all cpp:SiteConfiguration");
+        QueryManager queryManager = session.getWorkspace().getQueryManager();
+        Query query = queryManager.createQuery("SELECT * from [cpp:SiteConfiguration]", Query.JCR_SQL2);
+        NodeIterator nodeIterator = query.execute().getNodes();
+        while (nodeIterator.hasNext()) {
+            Node node = nodeIterator.nextNode();
+            node.addMixin(JcrConstants.MIX_VERSIONABLE);
+        }
+        session.save();
     }
 
     /** Execute the renaming of the "column" component within tables to "cell", since that's the actual use. */

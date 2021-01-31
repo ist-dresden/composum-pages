@@ -1,7 +1,9 @@
 package com.composum.pages.components.model.text;
 
 import com.composum.pages.components.model.ImageRelatedElement;
+import com.composum.sling.core.BeanContext;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.sling.api.resource.Resource;
 
 public class Title extends ImageRelatedElement {
 
@@ -9,6 +11,13 @@ public class Title extends ImageRelatedElement {
     private transient String subtitle;
     private transient String cssType;
     private transient String style;
+
+    public Title(BeanContext context, Resource resource) {
+        super(context, resource);
+    }
+
+    public Title() {
+    }
 
     public boolean isValid() {
         return StringUtils.isNotBlank(getTitle()) || StringUtils.isNotBlank(getSubtitle());
