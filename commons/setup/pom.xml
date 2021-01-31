@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.composum.pages</groupId>
         <artifactId>composum-pages-commons</artifactId>
-        <version>1.1.1-SNAPSHOT</version>
+        <version>1.2.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>composum-pages-commons-setup</artifactId>
@@ -51,8 +51,8 @@
                         <configuration>
                             <artifactItems>
                                 <artifactItem>
-                                    <groupId>com.composum.sling.core.setup</groupId>
-                                    <artifactId>composum-sling-core-setup-util</artifactId>
+                                    <groupId>com.composum.nodes.setup</groupId>
+                                    <artifactId>composum-nodes-setup-util</artifactId>
                                     <outputDirectory>${project.build.directory}/classes</outputDirectory>
                                 </artifactItem>
                             </artifactItems>
@@ -67,12 +67,12 @@
 
         <!-- Composum Nodes (Core) -->
         <dependency>
-            <groupId>com.composum.sling.core</groupId>
-            <artifactId>composum-sling-core-commons</artifactId>
+            <groupId>com.composum.nodes</groupId>
+            <artifactId>composum-nodes-commons</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.composum.sling.core</groupId>
-            <artifactId>composum-sling-user-management</artifactId>
+            <groupId>com.composum.nodes</groupId>
+            <artifactId>composum-nodes-usermgr</artifactId>
         </dependency>
 
         <!-- Composum Platform -->
@@ -83,8 +83,8 @@
 
         <!-- Setup utilities -->
         <dependency>
-            <groupId>com.composum.sling.core.setup</groupId>
-            <artifactId>composum-sling-core-setup-util</artifactId>
+            <groupId>com.composum.nodes.setup</groupId>
+            <artifactId>composum-nodes-setup-util</artifactId>
         </dependency>
 
         <!-- Apache Sling -->
