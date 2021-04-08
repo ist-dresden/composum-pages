@@ -115,6 +115,7 @@ public interface PagesConstants {
     String PROP_ALLOWED_CHILDREN = "allowedChildren";
 
     String NAVIGATION_PROPS = "navigation/";
+    String PROP_IS_NAV_ROOT = NAVIGATION_PROPS + "isNavRoot";
     String PROP_HIDE_IN_NAV = NAVIGATION_PROPS + "hideInNav";
     String PROP_NAV_TITLE = NAVIGATION_PROPS + "title";
 

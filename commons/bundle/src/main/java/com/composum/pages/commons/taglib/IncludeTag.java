@@ -261,17 +261,19 @@ public class IncludeTag extends IncludeTagHandler {
         // FIXME(hps,10.08.20) log IOExceptions as warning only - that can happen anytime
         LOG.error(msg.toString(), exception);
         try {
-            String logType;
-            if (resourceType != null) {
-                logType = resourceType;
-            } else if (resource != null) {
-                logType = resource.getResourceType();
-            } else if (path != null && context.getResolver() != null && context.getResolver().getResource(path) != null) {
-                logType = context.getResolver().getResource(path).getResourceType();
-            } else {
-                logType = "(unknown)";
+            if (!DisplayMode.isLiveMode(DisplayMode.requested(context))) {
+                String logType;
+                if (resourceType != null) {
+                    logType = resourceType;
+                } else if (resource != null) {
+                    logType = resource.getResourceType();
+                } else if (path != null && context.getResolver() != null && context.getResolver().getResource(path) != null) {
+                    logType = context.getResolver().getResource(path).getResourceType();
+                } else {
+                    logType = "(unknown)";
+                }
+                pageContext.getOut().print(" ERROR: include failed at " + Instant.now() + " for resource type " + logType + " ");
             }
-            pageContext.getOut().print(" ERROR: include failed at " + Instant.now() + " for resource type " + logType + " ");
         } catch (IOException | RuntimeException ioex) {
             LOG.warn("Could not include error message into page - might be OK", ioex);
         }

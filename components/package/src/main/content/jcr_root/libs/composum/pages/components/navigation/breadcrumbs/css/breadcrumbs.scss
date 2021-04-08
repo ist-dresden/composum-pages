@@ -3,37 +3,31 @@
 @import "../../../css/variables";
 @import "../../../css/mixins";
 
-.composum-pages-components-page {
+.composum-pages-components-navigation-breadcrumbs {
+    min-height: 30px;
+    margin: 10px 15px 0 10px;
+    @include default-font;
+    font-size: $site-small-font-size;
 
-    &_breadcrumbs {
-        @include default-font;
-        font-size: $site-small-font-size;
+    &_list {
+        padding: 0;
+        list-style: none;
+        white-space: nowrap;
 
-        &_list {
-            padding: 0;
-            list-style: none;
-
-            a, a:hover, a:focus, a:visited {
-                text-decoration: none;
-                color: $bootstrap-color-muted;
-            }
+        a, a:hover, a:focus, a:visited {
+            text-decoration: none;
+            color: $bootstrap-color-muted;
         }
+    }
 
-        &_path {
-            position: relative;
+    &_item {
+        position: relative;
+        display: inline-block;
+
+        &:before {
+            content: '/';
             display: inline-block;
-
-            &:before {
-                content: '/';
-                display: inline-block;
-                margin: 0 5px;
-            }
-
-            &:first-child {
-                &:before {
-                    margin-left: 3px;
-                }
-            }
+            margin: 0 5px;
         }
     }
 }

@@ -185,7 +185,7 @@ public class Site extends ContentDriven<SiteConfiguration> implements Comparable
     // site hierarchy
 
     @Nonnull
-    public Homepage getHomepage(Locale locale) {
+    public Homepage getHomepage(@Nonnull final Locale locale) {
         if (homepage == null) {
             PageManager pageManager = getPageManager();
             String homepagePath = getConfiguredHome();

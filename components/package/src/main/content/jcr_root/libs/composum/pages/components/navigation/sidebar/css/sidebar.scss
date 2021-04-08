@@ -1,0 +1,38 @@
+@charset "UTF-8";
+
+@import "../../../css/variables";
+
+$sidebar-menu-indent: 20px;
+
+.composum-pages-components-navigation-sidebar {
+    margin-left: -$sidebar-menu-indent;
+
+    &_list {
+        padding-left: $sidebar-menu-indent;
+
+        .composum-pages-components-navigation {
+
+            &-menuitem {
+
+                .composum-pages-components-navigation-menuitem_link {
+                    margin: 1px 0;
+                    border-bottom: 1px solid transparent;
+                    padding: 6px $sidebar-menu-indent 4px 0;
+                }
+
+                &.active {
+
+                    > .composum-pages-components-navigation-menuitem_link {
+                    }
+                }
+
+                &.current {
+
+                    > .composum-pages-components-navigation-menuitem_link {
+                        border-bottom: 1px dotted $bootstrap-background-primary;
+                    }
+                }
+            }
+        }
+    }
+}

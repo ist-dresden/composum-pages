@@ -256,7 +256,7 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
 
     @Override
     public boolean equals(Object other) {
-        return other instanceof Page && compareTo((Page) other) == 0;
+        return other instanceof Page && getPath().equals(((Page) other).getPath());
     }
 
     // initializer extensions
