@@ -65,7 +65,6 @@
              * @override
              */
             adjustRootPath: function (path) {
-                var g = pages.const.profile.pages;
                 if (pages.current.site) {
                     // replace a ${site} placeholder in the configured root with the path of the current site
                     path = path.replace(/\${site}/, pages.current.site);
