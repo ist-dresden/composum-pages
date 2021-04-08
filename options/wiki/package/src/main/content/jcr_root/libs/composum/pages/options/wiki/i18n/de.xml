@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+        jcr:language="de"
+        jcr:mixinTypes="[mix:language]"
+        jcr:primaryType="sling:Folder"
+        sling:basename="composum-pages-option-wiki">
+
+    <markup_component_title jcr:primaryType="sling:MessageEntry"
+            sling:key="Wiki Markup" sling:message="Wiki-Markup"/>
+    <markup_component_hint jcr:primaryType="sling:MessageEntry"
+            sling:key="a Wiki hypertext block with an optional title"
+            sling:message="ein Wiki-Hypertext-Block mit einem optionalen Titel"/>
+
+    <Edit_Wiki_Markup jcr:primaryType="sling:MessageEntry"
+            sling:key="Edit Wiki Markup" sling:message="Wiki Markup Bearbeiten"/>
+    <Wiki_Type jcr:primaryType="sling:MessageEntry"
+            sling:key="Wiki Type" sling:message="Wiki-Typ"/>
+    <Markup_Code jcr:primaryType="sling:MessageEntry"
+            sling:key="Markup Code" sling:message="Markup-Code"/>
+    <Markup_Resource jcr:primaryType="sling:MessageEntry"
+            sling:key="Markup Resource" sling:message="Markup-Ressource"/>
+
+    <wiki_title_hint jcr:primaryType="sling:MessageEntry"
+            sling:key="an optional title text rendered on top of the markup text"
+            sling:message="ein optionaler Titel, der oberhalb des Markup-Texts dargestellt wird"/>
+    <wiki_code_hint jcr:primaryType="sling:MessageEntry"
+            sling:key="the Wiki markup code according to the selected markup type"
+            sling:message="der Wiki-Markup-Code passend zum ausgewählten Typ"/>
+    <wiki_ref_hint jcr:primaryType="sling:MessageEntry"
+            sling:key="an alternative resource path to the markup file used if the code is empty"
+            sling:message="der Pfad eines alternativen Markup-Files, das verwendet wird, wenn der Code leer ist"/>
+
+</jcr:root>
