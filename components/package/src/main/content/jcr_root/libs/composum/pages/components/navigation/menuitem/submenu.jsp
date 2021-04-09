@@ -3,7 +3,8 @@
 <%@taglib prefix="cpn" uri="http://sling.composum.com/cpnl/1.0" %>
 <cpp:defineObjects/>
 <cpp:element var="menuitem" type="com.composum.pages.components.model.navigation.Menuitem"
-             tagName="li" cssAdd="@{menuitemCSS}_self menu-item link@{menuitem.cssClasses}">
-    <a class="${menuitemCSS}_link" href="${menuitem.url}" role="menuitem"
+             tagName="li" cssAdd="nav-item@{menuitem.cssClasses}">
+    <a class="${menuitemCSS}_link${menuitem.navRoot?' nav-root':''} nav-link" href="${menuitem.url}" role="menuitem"
        aria-label="${cpn:text(menuitem.title)}">${cpn:text(menuitem.title)}</a>
+    <cpp:include test="${!menuitem.navRoot}" resourceType="composum/pages/components/navigation/submenu"/>
 </cpp:element>

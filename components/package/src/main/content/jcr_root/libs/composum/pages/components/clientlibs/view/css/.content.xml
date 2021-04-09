@@ -7,6 +7,7 @@
                   jslibs/bootstrap/(3.*:3.4.1)/css/bootstrap.css,
                   jslibs/highlight/(9.*:9.15.6)/clientlib]"
         embed="[composum/pages/components/css/general.css,
+                composum/pages/components/page/css/navbar.css,
                 composum/pages/components/page/css/page.css,
                 composum/pages/components/css/token.css,
                 composum/pages/components/navigation/breadcrumbs/css/breadcrumbs.css,

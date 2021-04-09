@@ -18,10 +18,10 @@
             <sling:call script="branding.jsp"/>
         </div>
         <nav class="${menuCSS}_navbar-left navbar-collapse collapse navbar-left">
-            <ul class="${menuCSS}_navbar-nav nav navbar-nav">
+            <%--ul class="${menuCSS}_navbar-nav nav navbar-nav">
                 <cpp:include resourceType="composum/pages/components/navigation/breadcrumbs"
                              replaceSelectors="dropdown"/>
-            </ul>
+            </ul--%>
         </nav>
         <nav class="${menuCSS}_navbar-right navbar-collapse collapse navbar-right">
             <ul class="${menuCSS}_navbar-nav nav navbar-nav">

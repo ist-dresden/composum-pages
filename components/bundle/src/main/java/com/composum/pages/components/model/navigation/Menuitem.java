@@ -1,5 +1,6 @@
 package com.composum.pages.components.model.navigation;
 
+import com.composum.pages.commons.PagesConstants;
 import com.composum.pages.commons.model.Page;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.util.ResourceUtil;
@@ -74,6 +75,10 @@ public class Menuitem extends Page {
             }
         }
         return cssClasses.toString();
+    }
+
+    public boolean isNavRoot() {
+        return getProperty(PagesConstants.PROP_IS_NAV_ROOT, null, Boolean.FALSE);
     }
 
     public boolean isActive() {

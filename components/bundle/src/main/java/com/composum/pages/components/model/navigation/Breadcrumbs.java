@@ -20,25 +20,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import static com.composum.pages.commons.PagesConstants.PROP_HIDE_IN_NAV;
 import static com.composum.pages.components.model.navigation.Menuitem.PROP_TITLE_KEYS;
 
 public class Breadcrumbs extends AbstractModel {
 
     private static final Logger LOG = LoggerFactory.getLogger(Breadcrumbs.class);
-
-    public class Filter extends Page.DefaultPageFilter {
-
-        public Filter(BeanContext context) {
-            super(context);
-        }
-
-        @Override
-        public boolean accept(Resource resource) {
-            Page page = isAcceptedPage(resource);
-            return page != null && !page.getProperty(PROP_HIDE_IN_NAV, false);
-        }
-    }
 
     protected static final Gson GSON = new GsonBuilder().create();
 
@@ -97,7 +83,7 @@ public class Breadcrumbs extends AbstractModel {
 
     protected ResourceFilter getFilter() {
         if (filter == null) {
-            filter = new Filter(context);
+            filter = new NavigationPageFilter(context);
         }
         return filter;
     }

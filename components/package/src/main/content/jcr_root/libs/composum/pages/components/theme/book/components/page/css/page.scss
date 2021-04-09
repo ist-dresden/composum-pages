@@ -1,0 +1,22 @@
+.composum-pages-components-page {
+
+    &_content {
+
+        &-row {
+            margin: 0;
+        }
+
+        &_main {
+            padding: 0;
+
+            .composum-pages-components {
+
+                &-container {
+
+                    &-row {
+                    }
+                }
+            }
+        }
+    }
+}

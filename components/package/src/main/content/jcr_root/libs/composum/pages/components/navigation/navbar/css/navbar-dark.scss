@@ -1,0 +1,51 @@
+@charset "UTF-8";
+
+@import "../../../css/variables";
+
+.composum-pages-components-navigation-navbar {
+
+    .dropdown-menu {
+
+        .composum-pages-components-navigation-menuitem {
+
+            > .composum-pages-components-navigation-menuitem {
+
+                &_link {
+
+                    &, &:focus {
+                        color: $dark-link;
+                    }
+
+                    &:hover {
+                        color: $site-default-link-hover;
+                        background-color: $dark-badge-bg;
+                    }
+                }
+            }
+
+            &.active {
+
+                > .composum-pages-components-navigation-menuitem {
+
+                    &_link {
+                        &.nav-root {
+                            color: $dark-highlight;
+                            background-color: $dark-highlight-border;
+                        }
+                    }
+                }
+            }
+
+            &.current {
+
+                > .composum-pages-components-navigation-menuitem {
+
+                    &_link {
+                        color: $dark-highlight;
+                        background-color: $dark-highlight-border;
+                    }
+                }
+            }
+        }
+    }
+}

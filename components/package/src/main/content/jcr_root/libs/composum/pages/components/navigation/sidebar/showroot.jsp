@@ -6,6 +6,6 @@
              cssBase="composum-pages-components-navigation-sidebar">
     <ul class="${menuCSS}_list nav" role="menu">
         <cpp:include path="${menu.path}" resourceType="composum/pages/components/navigation/menuitem"
-                     replaceSelectors="sidebar"/>
+                     replaceSelectors="sidebarroot"/>
     </ul>
 </cpp:element>

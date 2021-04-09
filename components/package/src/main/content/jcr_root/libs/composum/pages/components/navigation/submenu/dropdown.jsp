@@ -7,7 +7,7 @@
              cssBase="composum-pages-components-navigation-dropdown" cssAdd="menu dropdown-menu">
     <cpp:include resourceType="composum/pages/components/navigation/menuitem" replaceSelectors="self"/>
     <c:forEach items="${menu.menuItems}" var="item">
-        <cpp:include path="${item.content.path}" resourceType="composum/pages/components/navigation/menuitem"
-                     replaceSelectors=""/>
+        <cpp:include path="${item.path}" resourceType="composum/pages/components/navigation/menuitem"
+                     replaceSelectors="submenu"/>
     </c:forEach>
 </cpp:element>
