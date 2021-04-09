@@ -3,7 +3,7 @@
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <cpp:defineFrameObjects/>
 <cpp:editDialog var="pageProps" type="com.composum.pages.commons.model.Page"
-                title="Edit Page Properties">
+                title="Edit Page Properties" successEvent="page:reload">
     <cpp:editDialogTab tabId="page" label="Page">
         <sling:call script="general.jsp"/>
     </cpp:editDialogTab>
