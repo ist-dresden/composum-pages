@@ -495,7 +495,7 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
     public Template getTemplateOf(@Nullable Resource resource) {
         Template template = null;
         if (resource != null) {
-            Theme theme = themeManager.getTheme(resource);
+            Theme theme = themeManager.getTheme(resource, false);
             String cacheKey = resource.getPath();
             if (theme != null) { // the template can vary if a theme is referenced
                 cacheKey += '@' + theme.getName();
@@ -559,7 +559,7 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
     }
 
     protected String getThemeTemplate(@Nonnull final Resource pageContent, @Nonnull String templateType) {
-        Theme theme = themeManager.getTheme(pageContent);
+        Theme theme = themeManager.getTheme(pageContent, false);
         if (theme != null) {
             ResourceResolver resolver = pageContent.getResourceResolver();
             templateType = theme.getPageTemplate(

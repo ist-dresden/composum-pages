@@ -632,7 +632,8 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
         if (theme == null && themeName == null) {
             themeName = getInherited(PROP_THEME, "");
             if (StringUtils.isNotBlank(themeName)) {
-                theme = context.getService(ThemeManager.class).getTheme(context.getResolver(), themeName);
+                theme = context.getService(ThemeManager.class).getTheme(context.getResolver(), themeName,
+                        DisplayMode.current(context) == DisplayMode.Value.DEVELOP);
             }
         }
         return theme;
@@ -665,7 +666,8 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
         String themeFilter = getInherited(PROP_THEME_FILTER, null, "");
         if (!"none".equals(themeFilter)) {
             Pattern themeNamePattern = StringUtils.isNotBlank(themeFilter) ? Pattern.compile(themeFilter) : null;
-            Collection<Theme> themes = context.getService(ThemeManager.class).getThemes(context.getResolver());
+            Collection<Theme> themes = context.getService(ThemeManager.class).getThemes(context.getResolver(),
+                    DisplayMode.current(context) == DisplayMode.Value.DEVELOP);
             result.put("", I18N.get(context.getRequest(), "default"));
             for (Theme theme : themes) {
                 if (themeNamePattern == null || themeNamePattern.matcher(theme.getName()).matches()) {
