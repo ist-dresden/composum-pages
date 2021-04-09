@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static com.composum.pages.commons.PagesConstants.DEFAULT_EDIT_CATEGORY;
 import static com.composum.pages.commons.PagesConstants.DEFAULT_VIEW_CATEGORY;
@@ -55,6 +56,7 @@ import static com.composum.pages.commons.PagesConstants.PROP_EDIT_CATEGORY;
 import static com.composum.pages.commons.PagesConstants.PROP_PAGE_LANGUAGES;
 import static com.composum.pages.commons.PagesConstants.PROP_SLING_TARGET;
 import static com.composum.pages.commons.PagesConstants.PROP_THEME;
+import static com.composum.pages.commons.PagesConstants.PROP_THEME_FILTER;
 import static com.composum.pages.commons.PagesConstants.PROP_VIEW_CATEGORY;
 import static java.lang.Boolean.FALSE;
 
@@ -659,13 +661,19 @@ public class Page extends ContentDriven<PageContent> implements Comparable<Page>
 
     @Nonnull
     public Map<String, String> getThemes() {
-        Collection<Theme> themes = context.getService(ThemeManager.class).getThemes(context.getResolver());
         Map<String, String> result = new LinkedHashMap<>();
-        result.put("", I18N.get(context.getRequest(), "default"));
-        for (Theme theme : themes) {
-            result.put(theme.getName(), theme.getTitle());
+        String themeFilter = getInherited(PROP_THEME_FILTER, null, "");
+        if (!"none".equals(themeFilter)) {
+            Pattern themeNamePattern = StringUtils.isNotBlank(themeFilter) ? Pattern.compile(themeFilter) : null;
+            Collection<Theme> themes = context.getService(ThemeManager.class).getThemes(context.getResolver());
+            result.put("", I18N.get(context.getRequest(), "default"));
+            for (Theme theme : themes) {
+                if (themeNamePattern == null || themeNamePattern.matcher(theme.getName()).matches()) {
+                    result.put(theme.getName(), theme.getTitle());
+                }
+            }
+            result.put("none", I18N.get(context.getRequest(), "no theme"));
         }
-        result.put("none", I18N.get(context.getRequest(), "no theme"));
         return result;
     }
 

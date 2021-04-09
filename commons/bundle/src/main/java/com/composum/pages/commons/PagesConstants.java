@@ -124,6 +124,7 @@ public interface PagesConstants {
 
     String SUBNODE_STYLE = "style/";
     String PROP_THEME = SUBNODE_STYLE + "theme";
+    String PROP_THEME_FILTER = SUBNODE_STYLE + "themeFilter";
     String PROP_VIEW_CATEGORY = SUBNODE_STYLE + "category.view";
     String PROP_EDIT_CATEGORY = SUBNODE_STYLE + "category.edit";
     String DEFAULT_VIEW_CATEGORY = "composum.pages.components.view";

@@ -14,5 +14,7 @@
                     hint="the clientlib category for the normal and public page rendering"/>
         <cpp:widget label="Edit Styles" property="style/category.edit" type="textfield"
                     hint="the additional clientlib category for the style modifications during the page editing"/>
+        <cpp:widget label="Theme Filter" property="style/themeFilter" type="textfield"
+                    hint="a regular expression of theme names (keys) to find themes allowed for theme selection"/>
     </div>
 </div>

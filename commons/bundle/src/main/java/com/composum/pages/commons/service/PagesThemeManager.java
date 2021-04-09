@@ -320,7 +320,11 @@ public class PagesThemeManager implements ThemeManager {
                     Query query = queryBuilder.createQuery().path(root).type("cpp:Theme");
                     try {
                         for (Resource config : query.execute()) {
-                            String name = config.getPath().substring(root.length());
+                            ValueMap values = config.getValueMap();
+                            String name = values.get("themeName", "");
+                            if (StringUtils.isBlank(name)) {
+                                name = config.getPath().substring(root.length());
+                            }
                             if (!themes.containsKey(name)) {
                                 if (removedConfig.contains(name)) {
                                     LOG.info("refreshTheme: {}", name);
