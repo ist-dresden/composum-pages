@@ -137,9 +137,9 @@
 
                     <dependencies>
                         <dependency>
-                            <group>com.composum.platform</group>
+                            <group>com/composum/platform</group>
                             <name>composum-platform-services-package</name>
-                            <version>${composum.platform.version}</version>
+                            <!-- <version>[${composum.platform.version},2.0)</version> -->
                         </dependency>
                     </dependencies>
 

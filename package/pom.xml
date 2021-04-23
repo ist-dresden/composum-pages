@@ -13,7 +13,7 @@
     <packaging>content-package</packaging>
 
     <name>Composum Pages Package</name>
-    <description>The couple of all Pages packages</description>
+    <description>A package containing all Pages packages as subpackages, except the optional packages</description>
     <url>https://github.com/ist-dresden/composum</url>
 
     <build>
