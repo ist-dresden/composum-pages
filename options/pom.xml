@@ -15,8 +15,10 @@
     <name>Composum Pages Options...</name>
 
     <modules>
+        <module>blog</module>
         <module>assets</module>
         <module>microsite</module>
+        <module>wiki</module>
     </modules>
 
 </project>
