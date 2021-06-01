@@ -6,6 +6,18 @@
 .composum-pages-EDIT_body,
 .composum-pages-DEVELOP_body {
 
+    // disable event handling of the edited content in EDIT mode
+    * {
+        pointer-events: none;
+    }
+
+    // ... and reenable it for the edit boxes of the elements
+    .composum-pages-element,
+    .composum-pages-container,
+    .composum-pages-edit_drop-zone {
+        pointer-events: auto;
+    }
+
     .composum-pages-element {
         min-width: 30px;
         min-height: 30px;
