@@ -3,7 +3,7 @@
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <cpp:defineObjects/>
-<cpp:model var="model" type="com.composum.pages.components.model.navigation.Breadcrumbs"
+<cpp:model var="model" type="com.composum.pages.components.model.navigation.NavbarBreadcrumbs"
            cssBase="composum-pages-components-navigation-breadcrumbs">
     <li class="${modelCSS}_dropdown ${not empty model.currentPage.logoUrl?'has-logo':'no-logo'}">
         <c:choose>

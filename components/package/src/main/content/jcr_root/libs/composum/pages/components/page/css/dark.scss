@@ -8,6 +8,10 @@ body {
     color: $dark-foreground;
 }
 
+a {
+
+}
+
 .composum-pages-components-navigation-navbar {
     background-color: $dark-background;
     border-color: $dark-highlight-bg;
@@ -90,6 +94,36 @@ body {
             &:hover {
                 color: $dark-highlight;
                 background-color: $dark-highlight-border;
+            }
+        }
+
+        .menu {
+
+            > li {
+
+                > a {
+                    &, &:focus {
+                        color: $dark-link;
+                    }
+
+                    &:hover {
+                        color: $site-default-link-hover;
+                        background-color: $dark-highlight-border;
+                    }
+                }
+
+                &.active > a, &.open > a {
+
+                    &, &:focus {
+                        color: $dark-foreground;
+                        background-color: $dark-highlight-bg;
+                    }
+
+                    &:hover {
+                        color: $dark-highlight;
+                        background-color: $dark-highlight-border;
+                    }
+                }
             }
         }
     }

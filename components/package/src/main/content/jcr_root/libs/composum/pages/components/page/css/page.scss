@@ -3,77 +3,16 @@
 @import "../../css/variables";
 @import "../../css/mixins";
 
-html {
+html, body {
     width: 100%;
     height: 100%;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
 
-.composum-pages-components-navigation-navbar,
-.composum-pages-components-page-subsite-navbar {
-    @include default-font;
-
-    &_logo {
-        position: absolute;
-        top: 9px;
-    }
-
-    &_search {
-        height: 34px;
-    }
-}
-
-.composum-pages-components-navigation-navbar {
-    @include default-font;
-
-    &_logo {
-        width: 70px;
-        max-height: 70px;
-    }
-
-    &_title {
-        @include default-font;
-        padding-left: 80px;
-    }
-
-    .dropdown-menu {
-
-        .composum-pages-components-navigation-menuitem {
-
-            &_link {
-                @include font($site-default-font-family, $site-small-font-size);
-                white-space: nowrap;
-                padding-right: 10px;
-            }
-        }
-    }
-}
-
-.composum-pages-components-page-subsite-navbar {
-    background-color: #fff;
-    border: none;
-    @include default-font;
-
-    &_brand {
-        position: absolute;
-    }
-
-    &_logo {
-        width: 120px;
-    }
-
-    &_title {
-        display: block;
-        width: 240px;
-        margin-top: -4px;
-        padding-left: 130px;
-        @include font('robotolight', 16px);
-        line-height: 18px;
-    }
-}
-
 .composum-pages-components-page_body {
+    width: 100%;
+    height: 100%;
     margin: 50px 0 0;
     padding: 0;
 }
@@ -81,6 +20,11 @@ html {
 .composum-pages-components-page {
 
     &_content {
+
+        & {
+            width: 100%;
+            height: 100%;
+        }
 
         /* general changes to modify to the bootstrap presets... */
 

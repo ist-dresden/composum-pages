@@ -13,11 +13,11 @@ import java.util.Collection;
 public interface ThemeManager {
 
     @Nonnull
-    Collection<Theme> getThemes(@Nonnull ResourceResolver resolver);
+    Collection<Theme> getThemes(@Nonnull ResourceResolver resolver, boolean resetCache);
 
     @Nullable
-    Theme getTheme(@Nonnull ResourceResolver resolver, @Nonnull String name);
+    Theme getTheme(@Nonnull ResourceResolver resolver, @Nonnull String name, boolean resetCache);
 
     @Nullable
-    Theme getTheme(@Nullable Resource pageResource);
+    Theme getTheme(@Nullable Resource pageResource, boolean resetCache);
 }

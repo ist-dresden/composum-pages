@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+        jcr:primaryType="sling:Folder"
+        sling:resourceType="composum/nodes/commons/clientlib"
+        jcr:description="the Components clientlib for the Book theme of the common components"
+        category="[composum.pages.components.book]"
+        overlays="[^composum\\.pages\\.components\\.view$]">
+    <css
+            jcr:primaryType="nt:unstructured"
+            depends="[category:composum.pages.components.view]"
+            embed="[composum/pages/components/themes/book/components/page/css/page.css]"/>
+    <js
+            jcr:primaryType="nt:unstructured"
+            depends="[category:composum.pages.components.view]"
+            embed="[composum/pages/components/themes/book/components/page/js/page.js]"/>
+    <link
+            jcr:primaryType="nt:unstructured"
+            depends="[category:composum.pages.components.view]"/>
+</jcr:root>

@@ -193,7 +193,7 @@
                         validationUrl = this.data.path + '.' + validationUrl + '.json';
                     }
                     this.form.prepare();
-                    this.form.finalize();
+                    // FIXME use prepared data instead of raw form data
                     var formData = new FormData(this.form.el);
                     $.ajax({
                         type: 'POST',

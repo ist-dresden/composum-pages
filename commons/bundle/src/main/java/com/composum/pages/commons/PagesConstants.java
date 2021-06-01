@@ -115,6 +115,7 @@ public interface PagesConstants {
     String PROP_ALLOWED_CHILDREN = "allowedChildren";
 
     String NAVIGATION_PROPS = "navigation/";
+    String PROP_IS_NAV_ROOT = NAVIGATION_PROPS + "isNavRoot";
     String PROP_HIDE_IN_NAV = NAVIGATION_PROPS + "hideInNav";
     String PROP_NAV_TITLE = NAVIGATION_PROPS + "title";
 
@@ -123,6 +124,7 @@ public interface PagesConstants {
 
     String SUBNODE_STYLE = "style/";
     String PROP_THEME = SUBNODE_STYLE + "theme";
+    String PROP_THEME_FILTER = SUBNODE_STYLE + "themeFilter";
     String PROP_VIEW_CATEGORY = SUBNODE_STYLE + "category.view";
     String PROP_EDIT_CATEGORY = SUBNODE_STYLE + "category.edit";
     String DEFAULT_VIEW_CATEGORY = "composum.pages.components.view";

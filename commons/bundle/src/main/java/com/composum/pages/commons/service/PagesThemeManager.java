@@ -3,6 +3,7 @@ package com.composum.pages.commons.service;
 import com.composum.pages.commons.PagesConfiguration;
 import com.composum.pages.commons.PagesConstants;
 import com.composum.pages.commons.model.Page;
+import com.composum.pages.commons.request.DisplayMode;
 import com.composum.pages.commons.util.ResolverUtil;
 import com.composum.sling.core.InheritedValues;
 import com.composum.sling.core.util.ResourceUtil;
@@ -248,7 +249,7 @@ public class PagesThemeManager implements ThemeManager {
 
     @Nullable
     @Override
-    public Theme getTheme(@Nullable Resource pageResource) {
+    public Theme getTheme(@Nullable Resource pageResource, boolean resetCache) {
         Theme theme = null;
         if (pageResource != null) {
             if (Page.isPage(pageResource)) {
@@ -260,7 +261,7 @@ public class PagesThemeManager implements ThemeManager {
                     String themeName = inherited.get(PROP_THEME, "");
                     if (StringUtils.isNotBlank(themeName)) {
                         ResourceResolver resolver = pageResource.getResourceResolver();
-                        theme = getTheme(resolver, themeName);
+                        theme = getTheme(resolver, themeName, resetCache);
                     }
                 }
             }
@@ -270,9 +271,9 @@ public class PagesThemeManager implements ThemeManager {
 
     @Nonnull
     @Override
-    public Collection<Theme> getThemes(@Nonnull final ResourceResolver resolver) {
+    public Collection<Theme> getThemes(@Nonnull final ResourceResolver resolver, boolean resetCache) {
         List<Theme> result = new ArrayList<>();
-        for (Theme theme : getThemesMap().values()) {
+        for (Theme theme : getThemesMap(resetCache).values()) {
             if (accessGranted(resolver, theme)) {
                 result.add(theme);
             }
@@ -284,8 +285,8 @@ public class PagesThemeManager implements ThemeManager {
     @Nullable
     @Override
     public Theme getTheme(@Nonnull final ResourceResolver resolver,
-                          @Nonnull final String name) {
-        Theme theme = getThemesMap().get(name);
+                          @Nonnull final String name, boolean resetCache) {
+        Theme theme = getThemesMap(resetCache).get(name);
         return accessGranted(resolver, theme) ? theme : null;
     }
 
@@ -294,9 +295,10 @@ public class PagesThemeManager implements ThemeManager {
                 || resolver.getResource(((ThemeConfiguration) theme).getPath()) != null;
     }
 
-    protected Map<String, Theme> getThemesMap() {
+    protected Map<String, Theme> getThemesMap(boolean resetCache) {
         synchronized (this) {
-            if (lastCollection < System.currentTimeMillis() - pagesConfig.getConfig().themeCacheTimeout() * MINUTE) {
+            if (resetCache ||
+                    lastCollection < System.currentTimeMillis() - pagesConfig.getConfig().themeCacheTimeout() * MINUTE) {
                 collectThemes();
             }
         }
@@ -304,6 +306,7 @@ public class PagesThemeManager implements ThemeManager {
     }
 
     protected void collectThemes() {
+        LOG.info("collectThemes...");
         try (ResourceResolver resolver = resolverFactory.getServiceResourceResolver(null)) {
             lastCollection = System.currentTimeMillis();
             HashSet<String> removedConfig = new HashSet<>();
@@ -320,7 +323,11 @@ public class PagesThemeManager implements ThemeManager {
                     Query query = queryBuilder.createQuery().path(root).type("cpp:Theme");
                     try {
                         for (Resource config : query.execute()) {
-                            String name = config.getPath().substring(root.length());
+                            ValueMap values = config.getValueMap();
+                            String name = values.get("themeName", "");
+                            if (StringUtils.isBlank(name)) {
+                                name = config.getPath().substring(root.length());
+                            }
                             if (!themes.containsKey(name)) {
                                 if (removedConfig.contains(name)) {
                                     LOG.info("refreshTheme: {}", name);

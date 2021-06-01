@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.composum.pages</groupId>
         <artifactId>composum-pages-commons</artifactId>
-        <version>1.2.0</version>
+        <version>1.2.1</version>
     </parent>
 
     <artifactId>composum-pages-commons-package</artifactId>
@@ -137,9 +137,9 @@
 
                     <dependencies>
                         <dependency>
-                            <group>com.composum.platform</group>
+                            <group>com/composum/platform</group>
                             <name>composum-platform-services-package</name>
-                            <version>${composum.platform.version}</version>
+                            <!-- <version>[${composum.platform.version},2.0)</version> -->
                         </dependency>
                     </dependencies>
 

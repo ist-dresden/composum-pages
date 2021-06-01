@@ -6,6 +6,10 @@ $breadcrumbs-menu-indent: 20px;
 
 .composum-pages-components-navigation-navbar {
 
+    .navbar-collapse {
+        max-height: 480px;
+    }
+
     .navbar-form {
         border: none;
         box-shadow: none;
@@ -105,12 +109,28 @@ $breadcrumbs-menu-indent: 20px;
 
         .composum-pages-components-navigation-submenu {
             list-style: none;
+            padding-inline-start: $breadcrumbs-menu-indent;
+            padding-inline-end: $breadcrumbs-menu-indent / 2;
+
+            .composum-pages-components-navigation-menuitem {
+
+                &_link {
+                    display: block;
+                    padding: 0 $breadcrumbs-menu-indent;
+
+                    &:hover {
+                        color: #262626;
+                        background-color: #f5f5f5;
+                    }
+                }
+            }
         }
 
         .composum-pages-components-navigation-menuitem {
             white-space: nowrap;
 
             &_link {
+                margin-bottom: 2px;
 
                 &.active {
 
@@ -122,7 +142,36 @@ $breadcrumbs-menu-indent: 20px;
             }
 
             &_self {
+                padding-bottom: 1px;
                 border-bottom: 1px dotted #e7e7e7;
+                margin-bottom: 4px;
+            }
+
+            &.active {
+
+                > .composum-pages-components-navigation-menuitem {
+
+                    &_link {
+                        background-color: transparent;
+                        color: $bootstrap-color-info;
+
+                        &.nav-root {
+                            background-color: $bootstrap-background-info;
+                            color: $bootstrap-color-info;
+                        }
+                    }
+                }
+            }
+
+            &.current {
+
+                > .composum-pages-components-navigation-menuitem {
+
+                    &_link {
+                        background-color: $bootstrap-background-info;
+                        color: $bootstrap-color-info;
+                    }
+                }
             }
         }
     }

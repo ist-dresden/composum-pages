@@ -34,12 +34,12 @@ public class EventValidator extends AbstractValidationServlet {
         ValueMap values = properties.getValueMap();
         Calendar date = values.get("date", Calendar.class);
         if (date == null) {
-            status.error("", "Date", "a date must be specified");
+            status.validationError("", "Date", "a date must be specified");
         } else {
             Calendar dateEnd = values.get("dateEnd", Calendar.class);
             if (dateEnd != null) {
                 if (date.after(dateEnd)) {
-                    status.error("", "to", "start date must be before end date");
+                    status.validationError("", "to", "start date must be before end date");
                 }
             }
         }

@@ -4,7 +4,7 @@
 <cpp:defineObjects/>
 <cpp:element var="menu" type="com.composum.pages.components.model.navigation.Menu" mode="none"
              test="@{not empty menu.menuItems}" tagName="ul"
-             cssBase="composum-pages-components-navigation-sidebar" cssAdd="nav nav-pills nav-stacked">
+             cssBase="composum-pages-components-navigation-sidebar_list" cssAdd="nav">
     <c:forEach items="${menu.menuItems}" var="item">
         <cpp:include path="${item.content.path}" resourceType="composum/pages/components/navigation/menuitem"/>
     </c:forEach>

@@ -7,6 +7,7 @@ import com.composum.sling.core.BeanContext;
 import org.apache.sling.api.resource.Resource;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class NavbarMenu extends Menu {
@@ -63,6 +64,9 @@ public class NavbarMenu extends Menu {
                     menuItems = buildMenuItems(menuParent);
                 }
             } while ((menuItems == null || menuItems.size() < 1) && (menuParent = menuParent.getParent()) != null);
+            if (menuItems == null) {
+                menuItems = new ArrayList<>();
+            }
         }
         return menuItems;
     }

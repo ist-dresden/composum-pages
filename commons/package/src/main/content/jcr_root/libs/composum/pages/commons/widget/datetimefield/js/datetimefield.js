@@ -37,9 +37,9 @@
             },
 
             /**
-             * prepare date/time value for submit to the POST servlet
+             * prepare date/time value for validation and for submit to the POST servlet
              */
-            finalize: function () {
+            prepare: function () {
                 var date = this.datetimepicker.date();
                 var value = date ? date.toISOString(true) : null;
                 this.hiddenSubmit().attr('value', value);
