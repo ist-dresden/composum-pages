@@ -13,7 +13,7 @@
     <groupId>com.composum.pages</groupId>
     <artifactId>composum-pages</artifactId>
     <packaging>pom</packaging>
-    <version>1.2.1-SNAPSHOT</version>
+    <version>1.2.1</version>
 
     <name>Composum Pages</name>
     <description>Maven parent for Composum Pages packages</description>
@@ -38,18 +38,18 @@
         <module>components</module>
         <module>stage</module>
         <module>package</module>
+        <module>options</module>
+        <module>package/all</module>
     </modules>
 
     <profiles>
         <profile>
-            <id>options</id>
+            <id>core</id>
             <modules>
                 <module>commons</module>
                 <module>components</module>
                 <module>stage</module>
                 <module>package</module>
-                <module>options</module>
-                <module>package/all</module>
             </modules>
         </profile>
     </profiles>
