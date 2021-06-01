@@ -17,7 +17,7 @@
         <style
                 jcr:primaryType="nt:unstructured"
                 category.edit="composum.pages.components.edit"
-                category.view="composum.pages.components.blog"/>
+                category.view="composum.pages.options.blog"/>
         <logo
                 jcr:primaryType="nt:unstructured"
                 sling:resourceType="composum/pages/components/element/image"

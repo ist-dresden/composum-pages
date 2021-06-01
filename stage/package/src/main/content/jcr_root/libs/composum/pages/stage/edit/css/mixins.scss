@@ -23,7 +23,7 @@
 }
 
 @mixin title-font {
-    @include font('roboto', $title-font-size);
+    @include font('robotolight', $title-font-size);
 }
 
 @mixin hint-font {
