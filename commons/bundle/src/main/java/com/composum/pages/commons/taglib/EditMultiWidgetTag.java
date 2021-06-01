@@ -204,12 +204,12 @@ public class EditMultiWidgetTag extends AbstractWidgetTag implements LoopTag {
 
         protected void exposeCurrent(PropertyNode current) {
             if (current == null) {
-                pageContext.removeAttribute(var, PageContext.PAGE_SCOPE);
+                pageContext.removeAttribute(getVar(), PageContext.PAGE_SCOPE);
                 pageContext.removeAttribute(EditWidgetTag.PROPERTY_PATH_ATTR, PageContext.PAGE_SCOPE);
                 pageContext.removeAttribute(EditWidgetTag.PROPERTY_RESOURCE_ATTR, PageContext.PAGE_SCOPE);
             } else {
                 String propertyPath = getPropertyName() + "/" + current.getName();
-                pageContext.setAttribute(var, current, PageContext.PAGE_SCOPE);
+                pageContext.setAttribute(getVar(), current, PageContext.PAGE_SCOPE);
                 pageContext.setAttribute(EditWidgetTag.PROPERTY_PATH_ATTR, propertyPath, PageContext.PAGE_SCOPE);
                 pageContext.setAttribute(EditWidgetTag.PROPERTY_RESOURCE_ATTR,
                         current.getResource(), PageContext.PAGE_SCOPE);

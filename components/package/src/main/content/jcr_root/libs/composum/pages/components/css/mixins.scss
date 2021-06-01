@@ -172,6 +172,12 @@
     }
 }
 
+@mixin screen-size-m-max {
+    @media (max-width: #{$screen-size-m - 1px}) {
+        @content;
+    }
+}
+
 @mixin screen-size-s-m {
     @media (min-width: #{$screen-size-s}) and (max-width: #{$screen-size-m - 1px}) {
         @content;

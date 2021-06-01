@@ -1,6 +1,7 @@
 @charset "UTF-8";
 
 @import "../../../css/variables";
+@import "../../../css/mixins";
 
 $sidebar-menu-indent: 20px;
 
@@ -18,6 +19,7 @@ $sidebar-menu-indent: 20px;
                     margin: 1px 0;
                     border-bottom: 1px solid transparent;
                     padding: 6px $sidebar-menu-indent 4px 0;
+                    @include default-font;
                 }
 
                 &.active {

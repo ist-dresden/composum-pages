@@ -6,8 +6,7 @@
 .composum-pages-components-navigation-breadcrumbs {
     min-height: 30px;
     margin: 10px 15px 0 10px;
-    @include default-font;
-    font-size: $site-small-font-size;
+    @include font($site-default-font-family, $site-small-font-size);
 
     &_list {
         padding: 0;
