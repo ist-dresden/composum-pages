@@ -18,7 +18,7 @@ public class NavbarItem extends Menuitem {
 
     @Override
     public boolean isSubmenu() {
-        return super.isSubmenu() && !getMenu().isParentUsed();
+        return super.isSubmenu() && !isNavRoot() && !getMenu().isParentUsed();
     }
 
     @Override
