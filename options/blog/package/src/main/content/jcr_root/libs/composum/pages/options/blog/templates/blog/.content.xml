@@ -10,10 +10,13 @@
             jcr:description="The root of a blog."
             sling:resourceType="composum/pages/options/blog/components/page/blog"
             allowedChildTemplates="[
-                ^(.*/)?pages/options/blog/templates/article
+                ^(.*/)?pages/options/blog/templates/(article|sequence)$,
+                ^(.*/)?pages/components/templates/page/content$
             ]">
         <navigation jcr:primaryType="nt:unstructured"
                 isNavRoot="{Boolean}true"/>
+        <style jcr:primaryType="nt:unstructured"
+                theme="composum/pages/options/blog/theme"/>
         <top
                 jcr:primaryType="cpp:Container"
                 sling:resourceType="composum/pages/components/container/iparsys">

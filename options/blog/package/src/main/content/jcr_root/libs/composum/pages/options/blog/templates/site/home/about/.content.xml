@@ -3,9 +3,7 @@
         jcr:primaryType="cpp:Page">
     <jcr:content
             jcr:primaryType="cpp:PageContent"
-            jcr:title="Home"
-            templateRef="composum/pages/components/templates/page/home"
+            jcr:title="About"
+            templateRef="composum/pages/components/templates/page/content"
             isTemplate="{Boolean}false"/>
-    <blog/>
-    <about/>
 </jcr:root>

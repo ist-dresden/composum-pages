@@ -1,9 +1,96 @@
+@charset "UTF-8";
+
+$bootstrap-color-muted: #777;
+$bootstrap-color-default: #333;
+$bootstrap-color-info: #31708f;
+$bootstrap-color-primary: #fff;
+$bootstrap-color-success: #3c763d;
+$bootstrap-color-warning: #8a6d3b;
+$bootstrap-color-danger: #a94442;
+
+$bootstrap-table-border-color: #ddd;
+
+$screen-size-l: 1200px; // bootstrap -lg-
+
+@mixin screen-size-l-max {
+    @media (max-width: #{$screen-size-l - 1px}) {
+        @content;
+    }
+}
+
 .composum-pages-components-page {
 
     &_content {
 
         &-row {
+            position: relative;
             margin: 0;
+
+            &.sidebar-visible { // sidebar menu toggling...
+
+                .composum-pages-components-page_content_nav {
+                    visibility: visible;
+                    opacity: 1;
+                    transition: visibility 0s linear 0s, opacity 500ms;
+
+                    &_toggle:before {
+                        content: '\f00d';
+                    }
+                }
+            }
+        }
+
+        &_top {
+            min-height: 0;
+        }
+
+        .composum-pages-components-navigation-breadcrumbs {
+
+            @include screen-size-l-max {
+                margin-left: 44px;
+            }
+        }
+
+        &_nav { // sidebar menu toggling...
+
+            @include screen-size-l-max {
+                visibility: hidden;
+                position: absolute;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                width: 90%;
+                max-width: 400px;
+                min-height: 470px;
+                border-bottom: 1px solid $bootstrap-table-border-color;
+                overflow: auto;
+                z-index: 1;
+                background-color: rgba(255, 255, 255, 0.9);
+                opacity: 0;
+                transition: visibility 0s linear 500ms, opacity 300ms;
+            }
+
+            &_toggle {
+                display: none;
+
+                &, &:hover, &:focus, &:visited, &:active {
+                    text-decoration: none;
+                    color: $bootstrap-color-default;
+                }
+
+                @include screen-size-l-max {
+                    display: block;
+                    position: absolute;
+                    top: -40px;
+                    left: 5px;
+                    width: 40px;
+                    height: 40px;
+                    padding: 10px;
+                    font-size: 20px;
+                    line-height: 20px;
+                    cursor: pointer;
+                }
+            }
         }
 
         &_main {

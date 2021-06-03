@@ -10,7 +10,7 @@
             jcr:description="A page to create and edit an acrticle of a blog."
             sling:resourceType="composum/pages/options/blog/components/page/article"
             allowedChildTemplates="[
-                ^(.*/)?pages/options/blog/templates/article$
+                ^(.*/)?pages/options/blog/templates/(article|sequence)$
             ]">
         <main
                 jcr:primaryType="cpp:Container"

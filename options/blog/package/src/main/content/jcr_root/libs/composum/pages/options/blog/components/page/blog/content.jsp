@@ -4,6 +4,7 @@
 <div class="composum-pages-components-page_content">
     <cpp:include resourceType="composum/pages/components/navigation/breadcrumbs"/>
     <div class="composum-pages-components-page_content-row row">
+        <a class="composum-pages-components-page_content_nav_toggle fa fa-bars" href="#"></a>
         <nav class="composum-pages-components-page_content_nav col-lg-3 col-md-12">
             <cpp:include resourceType="composum/pages/components/navigation/sidebar" replaceSelectors="showroot"/>
         </nav>

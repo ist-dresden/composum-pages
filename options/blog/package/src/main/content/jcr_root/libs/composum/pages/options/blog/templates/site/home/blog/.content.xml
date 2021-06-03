@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:cpp="http://sling.composum.com/pages/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+        jcr:primaryType="cpp:Page">
+    <jcr:content
+            jcr:primaryType="cpp:PageContent"
+            jcr:title="Blog"
+            templateRef="composum/pages/options/blog/templates/blog"
+            isTemplate="{Boolean}false">
+        <style
+                jcr:primaryType="nt:unstructured"
+                category.edit="composum.pages.components.edit"
+                category.view="composum.pages.options.blog"/>
+    </jcr:content>
+</jcr:root>

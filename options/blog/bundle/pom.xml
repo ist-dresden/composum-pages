@@ -71,6 +71,12 @@
             <artifactId>composum-pages-commons-bundle</artifactId>
         </dependency>
 
+        <!-- Composum Platform -->
+        <dependency>
+            <groupId>com.composum.platform</groupId>
+            <artifactId>composum-platform-commons-bundle</artifactId>
+        </dependency>
+
         <!-- Composum Core -->
         <dependency>
             <groupId>com.composum.nodes</groupId>
@@ -110,8 +116,20 @@
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient-osgi</artifactId>
+        </dependency>
 
         <!-- Web Application API -->
+        <dependency>
+            <groupId>javax.servlet.jsp</groupId>
+            <artifactId>jsp-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>jstl</artifactId>
+        </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
