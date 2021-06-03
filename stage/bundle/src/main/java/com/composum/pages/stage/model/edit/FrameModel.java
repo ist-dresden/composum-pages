@@ -24,6 +24,7 @@ import org.apache.sling.api.resource.Resource;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import static com.composum.pages.commons.PagesConstants.PAGES_FRAME_PATH;
 import static com.composum.pages.commons.model.AbstractModel.CSS_BASE_TYPE_RESTRICTION;
 import static com.composum.pages.commons.util.ResourceTypeUtil.EDIT_TILE_PATH;
 import static com.composum.sling.core.servlet.AbstractServiceServlet.PARAM_TYPE;
@@ -260,7 +261,9 @@ public class FrameModel extends GenericModel {
     }
 
     public String getLogoutUrl() {
-        String logoutUrl = getContext().getService(CoreConfiguration.class).getLogoutUrl();
+        CoreConfiguration config = getContext().getService(CoreConfiguration.class);
+        String targetUri = PAGES_FRAME_PATH + ".html" + getResource().getPath();
+        String logoutUrl = config.getLogoutUrl(config.getLoginUrl(targetUri));
         return StringUtils.defaultIfBlank(logoutUrl, "/system/sling/logout.html?logout=true&GLO=true");
     }
 

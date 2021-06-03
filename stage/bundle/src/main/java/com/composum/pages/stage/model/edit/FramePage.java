@@ -150,7 +150,7 @@ public class FramePage extends Page {
                     editorSuffix = editor.group("suffix");
                     editorUri = editor.group("path");
                 } else {
-                    String referer = request.getHeader(HEADER_REFERER);
+                    String referer = XSS.filter(request.getHeader(HEADER_REFERER));
                     if (StringUtils.isNotBlank(referer)) {
                         editor = EDITOR_URL.matcher(referer);
                         if (editor.matches()) {
