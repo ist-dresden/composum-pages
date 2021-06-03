@@ -277,7 +277,7 @@
 
             move: function (event) {
                 var move = this.getMove(event, this.start);
-                var width = Math.max(this.start.width + (move.x * this.sidebar.sizeDirection()), 320);
+                var width = Math.max(this.start.width + (move.x * this.sidebar.sizeDirection()), 340);
                 this.sidebar.$el.css('width', width + 'px');
                 this.$el.css('top', this.adjustTop(this.start.handle + move.y) + 'px');
                 surface.surface.bodySync(this.sidebar);
@@ -363,7 +363,7 @@
             loadProfile: function () {
                 this.profile = {
                     open: pages.profile.get(this.profileAspect(), 'open', true),
-                    width: pages.profile.get(this.profileAspect(), 'width', 300),
+                    width: pages.profile.get(this.profileAspect(), 'width', 340),
                     handle: pages.profile.get(this.profileAspect(), 'handle', 30),
                     overlap: pages.profile.get(this.profileAspect(), 'overlap', true)
                 };

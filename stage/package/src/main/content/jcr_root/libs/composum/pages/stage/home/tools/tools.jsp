@@ -7,7 +7,7 @@
     <div class="composum-pages-stage-home-tools">
         <c:forEach items="${status.consoles}" var="console">
             <a class="btn btn-sm btn-default composum-pages-stage-home-tools_console_${console.name} composum-pages-stage-home-tools_console-link"
-               href="${console.url}"${console.linkAttributes} target="console"><span
+               href="${console.url}"${console.linkAttributes}><span
                     class="composum-pages-stage-home-tools_console-label">${console.label}</span></a>
         </c:forEach>
     </div>
