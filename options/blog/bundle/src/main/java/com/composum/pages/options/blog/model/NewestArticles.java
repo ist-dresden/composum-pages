@@ -7,6 +7,8 @@ import com.composum.sling.core.BeanContext;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.jcr.query.Query;
@@ -18,6 +20,8 @@ import java.util.TreeSet;
 import static com.composum.pages.options.blog.model.BlogRoot.findBlogRoot;
 
 public class NewestArticles extends Element {
+
+    private static final Logger LOG = LoggerFactory.getLogger(NewestArticles.class);
 
     private transient String searchRoot;
     private transient int maxCount;
@@ -45,14 +49,20 @@ public class NewestArticles extends Element {
         Set<BlogArticle> result = new TreeSet<>();
         PageManager pageManager = context.getService(PageManager.class);
         ResourceResolver resolver = context.getResolver();
+        String queryString = buildContentQuery();
+        LOG.info("query: |{}|", queryString);
         int count = 0;
-        Iterator<Resource> articleContents = resolver.findResources(buildContentQuery(), Query.XPATH);
-        while (articleContents.hasNext() && maxCount < 1 || count < maxCount) {
-            Resource article = articleContents.next().getParent();
-            if (article != null) {
-                result.add(pageManager.createBean(context, article, BlogArticle.class));
-                count++;
+        Iterator<Resource> articleContents = resolver.findResources(queryString, Query.XPATH);
+        try {
+            while (articleContents.hasNext() && maxCount < 1 || count < maxCount) {
+                Resource articlePage = articleContents.next();
+                if (articlePage != null) {
+                    result.add(pageManager.createBean(context, articlePage, BlogArticle.class));
+                    count++;
+                }
             }
+        } catch (Exception ex) {
+            LOG.error(ex.toString());
         }
         return result;
     }
@@ -61,10 +71,10 @@ public class NewestArticles extends Element {
     protected String buildContentQuery() {
         StringBuilder builder = new StringBuilder("/jcr:root");
         builder.append(StringUtils.isNotBlank(searchRoot) ? searchRoot : findBlogRoot(context, getResource()).getPath());
-        builder.append("//element(*,cpp:PageContent)[")
-                .append("resourceType='").append(BlogConstants.RT_ARTICLE).append("'")
+        builder.append("//element(*,cpp:Page)[")
+                .append("jcr:content/@sling:resourceType='").append(BlogConstants.RT_ARTICLE).append("'")
                 .append("]");
-        builder.append(" order by @meta/date desc");
+        builder.append(" order by jcr:content/meta/@date descending");
         return builder.toString();
     }
 }

@@ -10,7 +10,8 @@
             jcr:description="A folder to arrange a set of articles as an article sequence."
             sling:resourceType="composum/pages/options/blog/components/page/sequence"
             allowedChildTemplates="[
-                ^(.*/)?pages/options/blog/templates/article$
+                ^(.*/)?pages/options/blog/templates/article$,
+                ^(.*/)?pages/components/templates/page/content$
             ]">
         <bottom
                 jcr:primaryType="cpp:Container"

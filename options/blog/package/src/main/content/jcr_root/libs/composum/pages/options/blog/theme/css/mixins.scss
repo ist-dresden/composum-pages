@@ -1,0 +1,21 @@
+@charset "UTF-8";
+
+@import "variables";
+
+@mixin font($family, $size) {
+    font-family: $family, sans-serif;
+    font-size: $size;
+    font-weight: normal;
+    font-style: normal;
+    text-decoration: none;
+}
+
+@mixin default-font($size: $site-default-font-size) {
+    @include font($site-default-font-family, $size);
+}
+
+@mixin screen-size-l-max {
+    @media (max-width: #{$screen-size-l - 1px}) {
+        @content;
+    }
+}

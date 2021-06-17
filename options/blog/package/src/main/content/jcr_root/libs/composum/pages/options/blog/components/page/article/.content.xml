@@ -23,6 +23,15 @@
                     jcr:primaryType="nt:unstructured"
                     i18n="{Boolean}true"
                     text="rich"/>
+            <meta
+                    jcr:primaryType="nt:unstructured">
+                <author
+                        jcr:primaryType="nt:unstructured"
+                        text="plain"/>
+                <date
+                        jcr:primaryType="nt:unstructured"
+                        type="Date"/>
+            </meta>
             <search
                     jcr:primaryType="nt:unstructured">
                 <ignoreInSearch

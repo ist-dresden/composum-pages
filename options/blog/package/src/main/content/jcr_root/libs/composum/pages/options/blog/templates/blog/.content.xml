@@ -41,6 +41,7 @@
                         ^(/[^/]+/)?composum/pages/components/container/parsys$
                     ]"
                     allowedElements="[
+                        ^(/[^/]+/)?composum/pages/options/blog/components/(collection)/.*$,
                         ^(/[^/]+/)?composum/pages/components/(element|composed)/.*$,
                         ^(/[^/]+/)?composum/pages/components/container/(section)$
                     ]">
@@ -56,6 +57,7 @@
                         ^(/[^/]+/)?composum/pages/components/container/iparsys$
                     ]"
                     allowedElements="[
+                        ^(/[^/]+/)?composum/pages/options/blog/components/(collection)/.*$,
                         ^(/[^/]+/)?composum/pages/components/element/text$
                     ]">
             </cpp:design>

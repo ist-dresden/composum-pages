@@ -35,7 +35,7 @@
                     variation="bgimage">
                 <image
                         jcr:primaryType="nt:unstructured"
-                        imageRef="/content/shared/composum/pages/components/assets/background/synchlotron.jpg"/>
+                        imageRef="${site}/assets/background/synchlotron.jpg"/>
             </teaser>
         </stage>
         <main

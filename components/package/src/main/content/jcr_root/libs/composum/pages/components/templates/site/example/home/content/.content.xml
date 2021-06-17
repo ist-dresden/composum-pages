@@ -8,7 +8,7 @@
             jcr:primaryType="cpp:PageContent"
             jcr:title="Component Test"
             sling:resourceType="composum/pages/components/page"
-            template="composum/pages/components/templates/page/test">
+            template="composum/pages/components/templates/page/content">
         <main
                 jcr:primaryType="cpp:Container"
                 sling:resourceType="composum/pages/components/container/parsys">
@@ -31,7 +31,7 @@
                     sling:resourceType="composum/pages/components/element/title"
                     path=""
                     subtitle="component testing"
-                    title="A Page for testing features">
+                    title="A Content Page">
                 <image
                         jcr:primaryType="nt:unstructured"
                         imageRef="${site}/assets/background/synchlotron.jpg"/>
@@ -39,6 +39,6 @@
         </top>
         <navigation
                 jcr:primaryType="nt:unstructured"
-                title="Testpage"/>
+                title="Content"/>
     </jcr:content>
 </jcr:root>
