@@ -9,7 +9,7 @@
             <c:forEach items="${sites.sites}" var="site">
                 <li class="${sitesCSS}_site">
                     <input type="radio" name="select" value="${site.path}" class="${sitesCSS}_radio"/>
-                    <cpp:include resource="${site.resource}" subtype="edit/tile" replaceSelectors="select"/>
+                    <cpp:include resource="${site.resource}" subtype="edit/tile" replaceSelectors="select" mode="none"/>
                 </li>
             </c:forEach>
         </ul>

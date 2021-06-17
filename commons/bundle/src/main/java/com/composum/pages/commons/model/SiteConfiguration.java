@@ -1,12 +1,15 @@
 package com.composum.pages.commons.model;
 
 import com.composum.sling.core.BeanContext;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.SyntheticResource;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Locale;
 
 import static com.composum.pages.commons.PagesConstants.NP_SETTINGS;
+import static com.composum.pages.commons.model.Image.PROP_IMAGE_REF;
 
 /**
  * Created by rw on 13.01.17.
@@ -23,12 +26,17 @@ public class SiteConfiguration extends ContentModel<Site> {
     }
 
     private transient Settings settings;
+    private transient String thumbnailImageRef;
 
     public SiteConfiguration() {
     }
 
     public SiteConfiguration(BeanContext context, Resource resource) {
         initialize(context, resource);
+    }
+
+    public boolean isTemplate() {
+        return getParent().isTemplate();
     }
 
     public <T> T getSettingsProperty(String key, Locale locale, Class<T> type) {
@@ -53,6 +61,24 @@ public class SiteConfiguration extends ContentModel<Site> {
     }
 
     public boolean isThumbnailAvailable() {
-        return getResource().getChild("thumbnail/image") != null;
+        return StringUtils.isNotBlank(getThumbnailImageRef());
+    }
+
+    @NotNull
+    public String getThumbnailImageRef() {
+        if (thumbnailImageRef == null) {
+            thumbnailImageRef = "";
+            final Resource thumbnailImage = getResource().getChild("thumbnail/image");
+            if (thumbnailImage != null) {
+                String imageRef = thumbnailImage.getValueMap().get(PROP_IMAGE_REF, String.class);
+                if (StringUtils.isNotBlank(imageRef)) {
+                    imageRef = StringUtils.replace(imageRef, "${site}", getParent().getPath());
+                    if (thumbnailImage.getResourceResolver().getResource(imageRef) != null) {
+                        thumbnailImageRef = imageRef;
+                    }
+                }
+            }
+        }
+        return thumbnailImageRef;
     }
 }

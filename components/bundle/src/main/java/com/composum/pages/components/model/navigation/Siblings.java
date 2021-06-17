@@ -25,7 +25,7 @@ public class Siblings extends Menu {
 
     @Nullable
     protected Resource determineResource(@Nullable Resource resource) {
-        currentPage = getPageManager().getContainingPage(context, resource);
+        currentPage = getCurrentPage();
         Resource parentRes = currentPage != null ? currentPage.getResource().getParent() : null;
         return parentRes != null ? parentRes : resource;
     }
