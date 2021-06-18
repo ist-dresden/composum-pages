@@ -4,7 +4,7 @@
 <div class="row" style="align-items: flex-start;">
     <div class="col col-xs-9">
         <cpp:include resourceType="composum/pages/options/blog/components/static/intro/edit/dialog"
-                     replaceSelectors="header"/>
+                     replaceSelectors="blog"/>
     </div>
     <div class="col col-xs-3">
         <cpp:widget label="Category" property="category" type="textfield" multi="true"/>

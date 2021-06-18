@@ -6,5 +6,5 @@
         jcr:primaryType="cpp:Component"
         jcr:title="Blog Sequence Folder"
         componentType="cpp:Page"
-        sling:resourceSuperType="composum/pages/components/page/redirect">
+        sling:resourceSuperType="composum/pages/components/page">
 </jcr:root>

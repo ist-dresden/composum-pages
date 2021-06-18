@@ -1,4 +1,5 @@
 <%@page session="false" pageEncoding="utf-8" %>
+<%@taglib prefix="sling" uri="http://sling.apache.org/taglibs/sling/1.2" %>
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
 <cpp:defineFrameObjects/><%--
   we are editing the page content itself (resourcePath is set to page content)
@@ -7,7 +8,7 @@
                 title="Edit Intro" resourcePath="${currentPage.content.path}" selector="change"
                 successEvent="page:reload">
     <cpp:editDialogTab tabId="blog" label="Blog Intro">
-        <cpp:include replaceSelectors="${model.blogRoot?'header':'intro'}"/>
+        <sling:call script="${model.blogRoot?'blog':'article'}.jsp"/>
     </cpp:editDialogTab>
     <cpp:editDialogTab tabId="nav" label="Navigation / SEO">
         <div class="row" style="align-items: flex-start;">
