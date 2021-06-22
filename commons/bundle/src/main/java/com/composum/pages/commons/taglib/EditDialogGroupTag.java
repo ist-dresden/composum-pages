@@ -15,7 +15,7 @@ import static com.composum.pages.commons.taglib.EditDialogTag.DIALOG_VAR;
 /**
  * the PageBodyTag creates the HTML body tag and the EDIT elements around the page content
  */
-public class EditDialogGroupTag extends AbstractEditElementTag {
+public class EditDialogGroupTag extends AbstractFormTag {
 
     public static final String DIALOG_GROUP_VAR = "dialogGroup";
 
@@ -37,6 +37,10 @@ public class EditDialogGroupTag extends AbstractEditElementTag {
 
     public String getDialogId() {
         return getDialog().getDialogId();
+    }
+
+    public FormAction getDefaultAction(){
+        return getDialog().getDefaultAction();
     }
 
     public String getGroupId() {
@@ -78,7 +82,7 @@ public class EditDialogGroupTag extends AbstractEditElementTag {
 
     @Override
     protected void prepareTagStart() {
-        pageContext.setAttribute(DIALOG_GROUP_VAR, this, PageContext.REQUEST_SCOPE);
+        setAttribute(DIALOG_GROUP_VAR, this, PageContext.REQUEST_SCOPE);
     }
 
     protected String getSnippetResourceType() {
@@ -93,10 +97,5 @@ public class EditDialogGroupTag extends AbstractEditElementTag {
     @Override
     protected void renderTagEnd() throws JspException, IOException {
         includeSnippet(getSnippetResourceType(), "edit-dialog-group-end");
-    }
-
-    @Override
-    protected void finishTagEnd() {
-        pageContext.removeAttribute(DIALOG_GROUP_VAR, PageContext.REQUEST_SCOPE);
     }
 }

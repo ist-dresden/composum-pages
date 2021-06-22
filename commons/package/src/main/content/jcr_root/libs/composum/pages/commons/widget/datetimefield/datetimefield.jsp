@@ -15,6 +15,8 @@
                   <span class="${widgetCSS}_select select fa fa-${widget.model.icon}"
                         title="Choose date and/or time" <c:if test="${widget.disabled}">disabled</c:if>></span></span>
     </div>
-    <input type="hidden" class="sling-post-type-hint" name="${widget.name}@TypeHint" value="Date"/>
+    <c:if test="${widget.slingPost}">
+        <input type="hidden" class="sling-post-type-hint" name="${widget.name}@TypeHint" value="Date"/>
+    </c:if>
     <input type="hidden" class="composum-pages-edit-widget_submit" name="${widget.name}"/>
 </div>

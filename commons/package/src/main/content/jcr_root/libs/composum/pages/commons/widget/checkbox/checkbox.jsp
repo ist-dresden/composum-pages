@@ -12,9 +12,9 @@
         ${widget.attributes}><c:if test="${widget.formWidget}"><%--
                if the widget is embedded in a Sling POST form generate all hidden hints for the POST servlet
             --%><input type="hidden" class="sling-post-type-hint" name="${widget.name}@TypeHint" value="Boolean"/>
-            <c:if test="${!widget.model.storeFalse}"><%-- if 'removable' add delete hint
+            <c:if test="${!widget.model.storeFalse&&widget.slingPost}"><%-- if 'removable' add delete hint
             --%><input type="hidden" class="sling-post-delete-hint" name="${widget.name}@Delete" value="true"/></c:if><%-- otherwise...
-            --%><c:if test="${widget.model.storeFalse}"><%-- if not 'removable' add default value (false)
+            --%><c:if test="${widget.model.storeFalse&&widget.slingPost}"><%-- if not 'removable' add default value (false)
             --%><input type="hidden" class="sling-post-default-hint" name="${widget.name}@DefaultValue"
                        value="false"/><input type="hidden" class="sling-post-use-default-hint"
                                              name="${widget.name}@UseDefaultWhenMissing" value="true"/></c:if><%--

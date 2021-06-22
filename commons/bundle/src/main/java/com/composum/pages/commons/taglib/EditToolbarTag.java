@@ -17,16 +17,6 @@ public class EditToolbarTag extends AbstractEditTag {
 
     public static final String DEFAULT_CSS_BASE = "composum-pages-stage-edit-toolbar";
 
-    protected String tagId;
-
-    public String getTagId() {
-        return tagId;
-    }
-
-    public void setTagId(String id) {
-        tagId = id;
-    }
-
     @Override
     public int doStartTag() throws JspException {
         if (StringUtils.isBlank(cssBase)) {
@@ -36,17 +26,10 @@ public class EditToolbarTag extends AbstractEditTag {
     }
 
     @Override
-    protected void clear() {
-        tagId = null;
-        super.clear();
-    }
-
-    @Override
     protected void prepareTagStart() {
-        pageContext.setAttribute(TOOLBAR_VAR, this, PageContext.REQUEST_SCOPE);
+        setAttribute(TOOLBAR_VAR, this, PageContext.REQUEST_SCOPE);
         if (StringUtils.isNotBlank(cssBase)) {
-            pageContext.setAttribute(TOOLBAR_CSS_VAR, cssBase, PageContext.REQUEST_SCOPE);
-            pageContext.setAttribute(TOOLBAR_CSSBASE_VAR, cssBase, PageContext.REQUEST_SCOPE);
+            setAttribute(TOOLBAR_CSS_VAR, cssBase, PageContext.REQUEST_SCOPE);
         }
     }
 
@@ -58,13 +41,5 @@ public class EditToolbarTag extends AbstractEditTag {
     @Override
     protected void renderTagEnd() throws IOException {
         out.append("</div>\n");
-    }
-
-    @Override
-    protected void finishTagEnd() {
-        if (StringUtils.isNotBlank(cssBase)) {
-            pageContext.removeAttribute(TOOLBAR_CSSBASE_VAR, PageContext.REQUEST_SCOPE);
-        }
-        pageContext.removeAttribute(TOOLBAR_VAR, PageContext.REQUEST_SCOPE);
     }
 }

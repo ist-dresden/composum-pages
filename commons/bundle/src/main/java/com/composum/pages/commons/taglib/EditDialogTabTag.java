@@ -12,7 +12,7 @@ import static com.composum.pages.commons.taglib.EditDialogTag.DIALOG_VAR;
 /**
  * the PageBodyTag creates the HTML body tag and the EDIT elements around the page content
  */
-public class EditDialogTabTag extends AbstractEditElementTag {
+public class EditDialogTabTag extends AbstractFormTag {
 
     public static final String DIALOG_TAB_VAR = "dialogTab";
 
@@ -32,6 +32,10 @@ public class EditDialogTabTag extends AbstractEditElementTag {
 
     public String getDialogId() {
         return getDialog().getDialogId();
+    }
+
+    public FormAction getDefaultAction(){
+        return getDialog().getDefaultAction();
     }
 
     public String getTabId() {
@@ -56,7 +60,7 @@ public class EditDialogTabTag extends AbstractEditElementTag {
 
     @Override
     protected void prepareTagStart() {
-        pageContext.setAttribute(DIALOG_TAB_VAR, this, PageContext.REQUEST_SCOPE);
+        setAttribute(DIALOG_TAB_VAR, this, PageContext.REQUEST_SCOPE);
     }
 
     protected String getSnippetResourceType() {
@@ -71,10 +75,5 @@ public class EditDialogTabTag extends AbstractEditElementTag {
     @Override
     protected void renderTagEnd() throws JspException, IOException {
         includeSnippet(getSnippetResourceType(), "edit-dialog-tab-end");
-    }
-
-    @Override
-    protected void finishTagEnd() {
-        pageContext.removeAttribute(DIALOG_TAB_VAR, PageContext.REQUEST_SCOPE);
     }
 }

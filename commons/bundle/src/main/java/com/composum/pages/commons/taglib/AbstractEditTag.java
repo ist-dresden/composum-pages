@@ -20,7 +20,7 @@ import static com.composum.pages.commons.servlet.EditServlet.EDIT_RESOURCE_TYPE_
  * the EditDialogTag creates the HTML code for an edit dialog of a component
  */
 @SuppressWarnings("JavaDoc")
-public abstract class AbstractEditTag extends AbstractEditElementTag {
+public abstract class AbstractEditTag extends AbstractFormTag {
 
     protected Resource editResource;
     protected Resource referenceResource;
