@@ -1,11 +1,14 @@
 package com.composum.pages.commons.taglib;
 
 import com.composum.pages.commons.util.TagCssClasses;
+import com.composum.sling.core.util.SlingUrl;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.annotation.Nonnull;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 import static com.composum.pages.commons.taglib.AbstractPageTag.COMMONS_COMPONENT_BASE;
@@ -25,6 +28,12 @@ public class WidgetFormTag extends AbstractFormTag {
 
     public static final String GENERIC_FORM_ACTION = "Gereric-Form";
 
+    public static final Map<String, String> FORM_TYPES = new HashMap<>() {{
+        put("sling", SLING_POST_SERVLET_ACTION);
+        put("generic", GENERIC_FORM_ACTION);
+    }};
+
+    protected String formType;
     protected String action;
     protected String method;
     protected String encType;
@@ -34,10 +43,19 @@ public class WidgetFormTag extends AbstractFormTag {
         encType = null;
         method = null;
         action = null;
+        formType = null;
         super.clear();
     }
 
     // tag attributes
+
+    public String getFormType() {
+        return formType;
+    }
+
+    public void setFormType(String formType) {
+        this.formType = formType;
+    }
 
     public String getAction() {
         return action;
@@ -45,6 +63,11 @@ public class WidgetFormTag extends AbstractFormTag {
 
     public void setAction(String action) {
         this.action = action;
+    }
+
+    public boolean isPostMethod() {
+        String method = getMethod();
+        return method == null || "POST".equalsIgnoreCase(method);
     }
 
     public String getMethod() {
@@ -105,27 +128,49 @@ public class WidgetFormTag extends AbstractFormTag {
     // form submit action ...
 
     public FormAction getDefaultAction() {
-        return new GenericFormAction();
+        String type = getFormType();
+        if (type != null) {
+            type = FORM_TYPES.get(type);
+        }
+        if (type == null) {
+            type = isPostMethod() ? SLING_POST_SERVLET_ACTION : GENERIC_FORM_ACTION;
+        }
+        switch (type) {
+            case GENERIC_FORM_ACTION:
+                return new GenericFormAction();
+            default:
+                return new SlingPostServletAction(getAction());
+        }
     }
 
     public class GenericFormAction implements FormAction {
 
+        @Override
+        @Nonnull
         public String getName() {
             return GENERIC_FORM_ACTION;
         }
 
+        @Override
+        @Nonnull
         public String getUrl() {
-            return request.getContextPath() + eval(getAction(), "");
+            return new SlingUrl(request, eval(WidgetFormTag.this.getAction(), "")).getUrl();
         }
 
+        @Override
+        @Nonnull
         public String getMethod() {
-            return eval(getMethod(), "POST");
+            return eval(WidgetFormTag.this.getMethod(), "POST");
         }
 
+        @Override
+        @Nonnull
         public String getEncType() {
-            return eval(getEncType(), "multipart/form-data");
+            return eval(WidgetFormTag.this.getEncType(), "multipart/form-data");
         }
 
+        @Override
+        @Nonnull
         public String getPropertyPath(String relativePath, String name) {
             return getI18nPath(relativePath, name);
         }

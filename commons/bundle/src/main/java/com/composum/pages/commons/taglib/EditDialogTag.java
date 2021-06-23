@@ -1,10 +1,10 @@
 package com.composum.pages.commons.taglib;
 
-import com.composum.pages.commons.util.LinkUtil;
 import com.composum.pages.commons.util.ResourceTypeUtil;
 import com.composum.pages.commons.util.TagCssClasses;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.annotation.Nonnull;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 import java.io.IOException;
@@ -375,22 +375,32 @@ public class EditDialogTag extends AbstractEditTag {
             this.uri = uri;
         }
 
+        @Override
+        @Nonnull
         public String getName() {
             return CUSTOM_POST_SERVLET_ACTION;
         }
 
+        @Override
+        @Nonnull
         public String getUrl() {
             return request.getContextPath() + eval(uri, "/");
         }
 
+        @Override
+        @Nonnull
         public String getMethod() {
             return "POST";
         }
 
+        @Override
+        @Nonnull
         public String getEncType() {
             return "multipart/form-data";
         }
 
+        @Override
+        @Nonnull
         public String getPropertyPath(String relativePath, String name) {
             return getI18nPath(relativePath, name);
         }

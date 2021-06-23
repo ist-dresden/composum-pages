@@ -1,0 +1,64 @@
+@charset "UTF-8";
+
+@import "../../../css/variables";
+@import "../../../css/mixins";
+
+.composum-pages-widgets-form {
+
+    .composum-pages-edit-widget {
+
+        &_label {
+            height: 24px;
+            margin-bottom: 0;
+            line-height: 24px;
+            white-space: nowrap;
+            font-family: "robotolight", sans-serif;
+            font-size: 14px;
+            font-weight: bold;
+            color: $bootstrap-default-color;
+        }
+    }
+
+    .btn-col {
+        width: 100%;
+        margin-top: 28px;
+    }
+
+    .lock-curtain {
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
+        content: '';
+
+        i {
+            display: none;
+        }
+    }
+
+    &.dialog-locked {
+
+        .lock-curtain {
+            content: ' ';
+            right: 0;
+            bottom: 0;
+            z-index: 1060;
+            pointer-events: all;
+        }
+
+        &.dialog-busy {
+
+            .lock-curtain {
+                background: rgba(0, 0, 0, 0.4);
+                color: rgba(255, 255, 255, 0.5);
+                text-align: center;
+
+                i {
+                    display: inline-block;
+                    margin: 30%;
+                    font-size: 100px;
+                }
+            }
+        }
+    }
+}

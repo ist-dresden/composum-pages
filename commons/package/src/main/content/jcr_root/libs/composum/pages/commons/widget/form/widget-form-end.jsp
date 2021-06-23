@@ -3,4 +3,5 @@
 <cpp:defineObjects/>
 <!-- end of form content -->
     </form>
+    <div class="lock-curtain"><i class="fa fa-spinner fa-pulse"></i></div>
 </div>

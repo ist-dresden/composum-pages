@@ -1,16 +1,12 @@
 package com.composum.pages.commons.taglib;
 
-import com.composum.pages.commons.util.LinkUtil;
-import com.composum.pages.commons.util.TagCssClasses;
+import com.composum.sling.core.util.SlingUrl;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.PageContext;
-import java.io.IOException;
 import java.util.Map;
-
-import static com.composum.pages.commons.taglib.AbstractPageTag.COMMONS_COMPONENT_BASE;
 
 /**
  * the EditDialogTag creates the HTML code for an edit dialog of a component
@@ -146,25 +142,45 @@ public abstract class AbstractFormTag extends AbstractWrappingTag {
 
     public interface FormAction {
 
+        @Nonnull
         String getName();
 
+        @Nonnull
         String getUrl();
 
+        @Nonnull
         String getMethod();
 
+        @Nonnull
         String getEncType();
 
+        @Nonnull
         String getPropertyPath(String relativePath, String name);
     }
 
     public class SlingPostServletAction implements FormAction {
 
+        @Nonnull
+        protected final SlingUrl action;
+
+        public SlingPostServletAction() {
+            this(null);
+        }
+
+        public SlingPostServletAction(@Nullable final String action) {
+            this.action = new SlingUrl(request, action != null ? action : getResource().getPath());
+        }
+
+        @Override
+        @Nonnull
         public String getName() {
             return SLING_POST_SERVLET_ACTION;
         }
 
+        @Override
+        @Nonnull
         public String getUrl() {
-            String url = request.getContextPath() + LinkUtil.encodePath(getResource().getPath());
+            String url = action.getUrl();
             String nameParam = request.getParameter("name");
             if ("*".equals(nameParam)) {
                 // append a '/*' on element creation
@@ -175,14 +191,20 @@ public abstract class AbstractFormTag extends AbstractWrappingTag {
             return url;
         }
 
+        @Override
+        @Nonnull
         public String getMethod() {
             return "POST";
         }
 
+        @Override
+        @Nonnull
         public String getEncType() {
             return "multipart/form-data";
         }
 
+        @Override
+        @Nonnull
         public String getPropertyPath(String relativePath, String name) {
             return getI18nPath(relativePath, name);
         }

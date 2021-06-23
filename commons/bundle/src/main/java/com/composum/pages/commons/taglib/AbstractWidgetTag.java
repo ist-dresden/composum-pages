@@ -38,7 +38,7 @@ public abstract class AbstractWidgetTag extends AbstractFormTag {
     }
 
     public boolean getHasLabel() {
-        return StringUtils.isNotBlank(label);
+        return label != null;
     }
 
     public String getLabel() {

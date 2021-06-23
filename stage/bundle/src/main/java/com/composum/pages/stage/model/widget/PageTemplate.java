@@ -1,6 +1,7 @@
 package com.composum.pages.stage.model.widget;
 
 import com.composum.pages.commons.model.Page;
+import com.composum.pages.commons.taglib.EditDialogTag;
 import com.composum.pages.commons.taglib.EditWidgetTag;
 import com.composum.pages.commons.taglib.PropertyEditHandle;
 import com.composum.pages.commons.widget.WidgetModel;
@@ -28,7 +29,7 @@ public class PageTemplate extends PropertyEditHandle<String> implements WidgetMo
         super.setWidget(tag);
         parent = widget.consumeDynamicAttribute(ATTR_PARENT, Resource.class);
         if (parent == null) {
-            parent = tag.getDialog().getParentResource();
+            parent = ((EditDialogTag) tag.getFormTag()).getParentResource();
             if (parent == null) {
                 parent = getResource();
             }
