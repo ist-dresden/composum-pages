@@ -38,6 +38,7 @@
 
     &_hint {
         display: block;
+        float: right;
         margin-top: 1px;
         @include edit-hint-font;
         text-align: right;

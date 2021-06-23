@@ -5,23 +5,29 @@
 
 .composum-pages-widgets-form {
 
+    .row {
+        display: flex;
+        align-items: flex-end;
+    }
+
     .composum-pages-edit-widget {
 
         &_label {
-            height: 24px;
             margin-bottom: 0;
-            line-height: 24px;
-            white-space: nowrap;
             font-family: "robotolight", sans-serif;
             font-size: 14px;
             font-weight: bold;
             color: $bootstrap-default-color;
         }
+
+        &_hint {
+            font-size: 12px;
+        }
     }
 
     .btn-col {
         width: 100%;
-        margin-top: 28px;
+        margin-bottom: 15px;
     }
 
     .lock-curtain {
