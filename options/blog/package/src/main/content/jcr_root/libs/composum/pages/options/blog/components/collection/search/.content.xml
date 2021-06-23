@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:cpp="http://sling.composum.com/pages/1.0"
+        xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+        xmlns:jcr="http://www.jcp.org/jcr/1.0"
+        xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+        jcr:primaryType="cpp:Component"
+        jcr:title="Blog Article search and result"
+        jcr:description=""
+        sling:resourceSuperType="composum/pages/options/blog/components/collection/newest">
+    <jcr:content
+            jcr:primaryType="nt:unstructured">
+        <properties
+                jcr:primaryType="nt:unstructured">
+            <pattern
+                    jcr:primaryType="nt:unstructured"
+                    text="plain"/>
+            <author
+                    jcr:primaryType="nt:unstructured"
+                    text="plain"/>
+            <date
+                    jcr:primaryType="nt:unstructured"
+                    type="Date"/>
+            <period
+                    jcr:primaryType="nt:unstructured"
+                    type="plain"/>
+        </properties>
+    </jcr:content>
+</jcr:root>

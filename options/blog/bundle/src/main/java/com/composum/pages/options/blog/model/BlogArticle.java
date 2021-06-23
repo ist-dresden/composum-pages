@@ -35,8 +35,8 @@ public class BlogArticle extends Page {
         super.initialize(context, resource);
         subtitle = getProperty(BlogConstants.PN_SUBTITLE, String.class);
         introText = getProperty(BlogConstants.PN_INTRO, String.class);
-        author = getProperty(BlogConstants.PN_AUTHOR, String.class);
-        date = getProperty(BlogConstants.PN_DATE, Calendar.class);
+        author = getProperty(BlogConstants.PN_META_AUTHOR, String.class);
+        date = getProperty(BlogConstants.PN_META_DATE, Calendar.class);
     }
 
     @Nullable

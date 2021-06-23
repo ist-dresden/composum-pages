@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.composum.pages.options</groupId>
         <artifactId>composum-pages-options-blog</artifactId>
-        <version>1.2.1-SNAPSHOT</version>
+        <version>1.2.2-SNAPSHOT</version>
     </parent>
 
     <artifactId>composum-pages-options-blog-package</artifactId>
@@ -119,7 +119,6 @@
         <dependency>
             <groupId>com.composum.pages</groupId>
             <artifactId>composum-pages-commons-bundle</artifactId>
-            <version>${project.version}</version>
         </dependency>
 
         <!-- Composum Core -->
