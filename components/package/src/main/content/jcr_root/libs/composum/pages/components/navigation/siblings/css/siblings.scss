@@ -6,7 +6,7 @@
 .composum-pages-components-navigation-siblings {
     display: table;
     width: 100%;
-    padding: 13px 15px;
+    padding: 10px 15px;
 
     @media screen and (max-width: $bootstrap-screen-xs-max) {
         padding: 10px;
@@ -24,10 +24,10 @@
     &_link {
         display: inline-block;
         min-width: 120px;
-        @include a-title-font($text-title-font-size);
+        @include default-font;
 
         @media screen and (max-width: $bootstrap-screen-xs-max) {
-            font-size: $text-title-font-size-xs;
+            font-family: $site-condensed-font-family;
         }
 
         &, & a, & a:focus {
@@ -49,11 +49,7 @@
                     display: inline-block;
                     padding: 0 8px 0 0;
                     font-family: 'FontAwesome', sans-serif;
-                    font-size: $text-title-font-size;
-
-                    @media screen and (max-width: $bootstrap-screen-xs-max) {
-                        font-size: $text-title-font-size-xs;
-                    }
+                    font-size: $site-default-font-size;
                 }
             }
         }
@@ -70,11 +66,7 @@
                     display: inline-block;
                     padding: 0 0 0 8px;
                     font-family: 'FontAwesome', sans-serif;
-                    font-size: $text-title-font-size;
-
-                    @media screen and (max-width: $bootstrap-screen-xs-max) {
-                        font-size: $text-title-font-size-xs;
-                    }
+                    font-size: $site-default-font-size;
                 }
             }
         }

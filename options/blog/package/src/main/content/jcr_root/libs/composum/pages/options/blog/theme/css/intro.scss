@@ -19,8 +19,7 @@
 
         h2 {
             margin: -1rem 0 $title-margin-level-1-2-gap;
-            @include default-font($intro-subtitle-font-size);
-            font-weight: bold;
+            @include font('robotomedium', $intro-subtitle-font-size);
             color: $intro-title-text-color;
         }
     }
