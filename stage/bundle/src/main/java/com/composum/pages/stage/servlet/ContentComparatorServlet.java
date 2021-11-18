@@ -86,7 +86,7 @@ public class ContentComparatorServlet extends AbstractServiceServlet {
         this.bundleContext = bundleContext;
     }
 
-    @Override
+    @Deprecated
     protected boolean isEnabled() {
         return true;
     }

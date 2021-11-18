@@ -69,7 +69,7 @@ public class PagesVersionServlet extends AbstractServiceServlet {
 
     protected BundleContext bundleContext;
 
-    @Override
+    @Deprecated
     protected boolean isEnabled() {
         return true;
     }

@@ -151,7 +151,7 @@ public class EditServlet extends PagesContentServlet {
         return pageManager;
     }
 
-    @Override
+    @Deprecated
     protected boolean isEnabled() {
         return true;
     }

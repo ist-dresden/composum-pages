@@ -105,7 +105,7 @@ public class DevelopServlet extends ContentServlet {
         this.bundleContext = bundleContext;
     }
 
-    @Override
+    @Deprecated
     protected boolean isEnabled() {
         return true;
     }

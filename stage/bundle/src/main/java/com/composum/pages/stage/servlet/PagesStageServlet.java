@@ -57,7 +57,7 @@ public class PagesStageServlet extends AbstractServiceServlet {
         this.bundleContext = bundleContext;
     }
 
-    @Override
+    @Deprecated
     protected boolean isEnabled() {
         return true;
     }

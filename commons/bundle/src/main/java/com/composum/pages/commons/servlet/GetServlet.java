@@ -85,7 +85,7 @@ public class GetServlet extends ContentServlet {
 
     // ContentServlet
 
-    @Override
+    @Deprecated
     protected boolean isEnabled() {
         return true;
     }

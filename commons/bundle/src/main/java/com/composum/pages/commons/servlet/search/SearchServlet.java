@@ -96,7 +96,7 @@ public class SearchServlet extends AbstractServiceServlet {
         return operations;
     }
 
-    @Override
+    @Deprecated
     protected boolean isEnabled() {
         return true;
     }
