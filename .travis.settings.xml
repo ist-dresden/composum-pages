@@ -5,17 +5,17 @@
 
     <servers>
         <server>
-            <id>archiva</id>
+            <id>istrepo</id>
             <username>buildmgr</username>
             <password>${deploy_password}</password>
         </server>
         <server>
-            <id>archiva-internal</id>
+            <id>istrepo-internal</id>
             <username>buildmgr</username>
             <password>${deploy_password}</password>
         </server>
         <server>
-            <id>archiva-snapshots</id>
+            <id>istrepo-snapshots</id>
             <username>buildmgr</username>
             <password>${deploy_password}</password>
         </server>
@@ -24,10 +24,10 @@
     <mirrors>
         <!-- -->
         <mirror>
-            <id>archiva</id>
-            <name>archiva</name>
+            <id>istrepo</id>
+            <name>istrepo</name>
             <mirrorOf>*</mirrorOf>
-            <url>https://repo.ist-software.com/nexus/repository/maven-public</url>
+            <url>https://repo.ist-software.com/repository/maven-public</url>
         </mirror>
         <!-- -->
     </mirrors>
@@ -49,7 +49,7 @@
                 <deploy.package>true</deploy.package>
                 <sling.scheme>https</sling.scheme>
                 <sling.secure>true</sling.secure>
-                <sling.host>test.ist-software.com</sling.host>
+                <sling.host>test.composum.com</sling.host>
                 <sling.port>443</sling.port>
                 <sling.context></sling.context>
                 <sling.password>${deploy_password}</sling.password>
@@ -60,23 +60,23 @@
          * default repository profiles
         -->
         <profile>
-            <id>archiva</id>
+            <id>istrepo</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
             <repositories>
                 <repository>
-                    <id>archiva-internal</id>
-                    <name>archiva</name>
-                    <url>https://build.ist-software.com/nexus/repository/maven-releases</url>
+                    <id>istrepo-internal</id>
+                    <name>istrepo</name>
+                    <url>https://repo.ist-software.com/repository/maven-releases</url>
                     <snapshots>
                         <enabled>false</enabled>
                     </snapshots>
                 </repository>
                 <repository>
-                    <id>archiva-snapshots</id>
-                    <name>archiva</name>
-                    <url>https://build.ist-software.com/nexus/repository/maven-snapshots</url>
+                    <id>istrepo-snapshots</id>
+                    <name>istrepo</name>
+                    <url>https://repo.ist-software.com/repository/maven-snapshots</url>
                     <snapshots>
                         <enabled>true</enabled>
                     </snapshots>
@@ -84,59 +84,19 @@
             </repositories>
             <pluginRepositories>
                 <pluginRepository>
-                    <id>archiva-internal</id>
-                    <name>archiva</name>
-                    <url>https://build.ist-software.com/nexus/repository/maven-releases</url>
+                    <id>istrepo-internal</id>
+                    <name>istrepo</name>
+                    <url>https://repo.ist-software.com/repository/maven-releases</url>
                     <snapshots>
                         <enabled>false</enabled>
                     </snapshots>
                 </pluginRepository>
                 <pluginRepository>
-                    <id>archiva-snapshots</id>
-                    <name>archiva</name>
-                    <url>https://build.ist-software.com/nexus/repository/maven-snapshots</url>
+                    <id>istrepo-snapshots</id>
+                    <name>istrepo</name>
+                    <url>https://repo.ist-software.com/repository/maven-snapshots</url>
                     <snapshots>
                         <enabled>true</enabled>
-                    </snapshots>
-                </pluginRepository>
-            </pluginRepositories>
-        </profile>
-
-        <profile>
-            <id>adobe</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <properties>
-                <releaseRepository-Id>adobe-public-releases</releaseRepository-Id>
-                <releaseRepository-Name>Adobe Public Releases</releaseRepository-Name>
-                <releaseRepository-URL>https://repo.adobe.com/nexus/content/groups/public</releaseRepository-URL>
-            </properties>
-            <repositories>
-                <repository>
-                    <id>adobe-public-releases</id>
-                    <name>Adobe Basel Public Repository</name>
-                    <url>https://repo.adobe.com/nexus/content/groups/public</url>
-                    <releases>
-                        <enabled>true</enabled>
-                        <updatePolicy>never</updatePolicy>
-                    </releases>
-                    <snapshots>
-                        <enabled>false</enabled>
-                    </snapshots>
-                </repository>
-            </repositories>
-            <pluginRepositories>
-                <pluginRepository>
-                    <id>adobe-public-releases</id>
-                    <name>Adobe Basel Public Repository</name>
-                    <url>https://repo.adobe.com/nexus/content/groups/public</url>
-                    <releases>
-                        <enabled>true</enabled>
-                        <updatePolicy>never</updatePolicy>
-                    </releases>
-                    <snapshots>
-                        <enabled>false</enabled>
                     </snapshots>
                 </pluginRepository>
             </pluginRepositories>
