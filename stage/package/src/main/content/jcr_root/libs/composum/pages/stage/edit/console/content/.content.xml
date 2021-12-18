@@ -9,7 +9,9 @@
             jcr:title="Pages"
             description="/libs/composum/pages/stage/edit/console/description"
             sling:redirect="/bin/pages.html${path}"
+            pathCondition="^/content(/.+)?$"
+            dynamicRedirect="{Boolean}true"
             categories="[nodes,pages]"
-            order="{Long}150"
+            order="{Long}700"
             target="pages"/>
 </jcr:root>
