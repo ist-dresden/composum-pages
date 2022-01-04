@@ -13,7 +13,7 @@
     <groupId>com.composum.pages</groupId>
     <artifactId>composum-pages</artifactId>
     <packaging>pom</packaging>
-    <version>1.3.0-SNAPSHOT</version>
+    <version>1.3.0</version>
 
     <name>Composum Pages</name>
     <description>Maven parent for Composum Pages packages</description>
@@ -23,8 +23,8 @@
         <package.group>com/composum/pages</package.group>
         <package.company>IST GmbH Dresden</package.company>
         <bundle.category>composum,pages</bundle.category>
-        <composum.nodes.version>2.6.5</composum.nodes.version>
-        <composum.platform.version>1.3.0</composum.platform.version>
+        <composum.nodes.version>3.2.0</composum.nodes.version>
+        <composum.platform.version>1.4.0</composum.platform.version>
     </properties>
 
     <scm>
