@@ -306,7 +306,7 @@ $breadcrumbs-menu-indent: 20px;
         }
 
         &_search {
-            width: 80%;
+            width: 60%;
             float: left;
             margin: 0;
             padding: 10px 15px;
@@ -317,8 +317,15 @@ $breadcrumbs-menu-indent: 20px;
         .composum-pages-components-navigation-button {
 
             &_language {
+                max-width: 30%;
                 float: right;
                 margin: 10px 15px;
+                text-align: right;
+
+                .composum-pages-components-navigation-language_list {
+                    min-width: 100px;
+                    background-color: #eee;
+                }
             }
         }
     }

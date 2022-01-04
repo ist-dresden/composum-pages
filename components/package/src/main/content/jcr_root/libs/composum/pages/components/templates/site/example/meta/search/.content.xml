@@ -17,7 +17,7 @@
                     title="Search">
                 <image
                         jcr:primaryType="cpp:Element"
-                        imageRef="/content/shared/composum/pages/components/assets/background/synchlotron.jpg"/>
+                        imageRef="${site}/assets/background/synchlotron.jpg"/>
             </title>
         </top>
         <main

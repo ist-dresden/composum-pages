@@ -3,7 +3,7 @@
 <%@taglib prefix="cpn" uri="http://sling.composum.com/cpnl/1.0" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <cpp:defineFrameObjects/>
-<c:if test="${widget.model.hasDefaultOption}">
+<c:if test="${widget.model.hasDefaultOption&&widget.slingPost}">
     <input type="hidden" class="sling-post-hint" name="${widget.name}@Delete" value="true"/>
     <input type="hidden" class="sling-post-hint" name="${widget.name}@IgnoreBlanks" value="true"/>
 </c:if>

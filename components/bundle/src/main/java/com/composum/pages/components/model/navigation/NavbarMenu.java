@@ -42,7 +42,7 @@ public class NavbarMenu extends Menu {
     }
 
     public String getSizeCss() {
-        return getSize() < 4 ? "default" : "condensed";
+        return getSize() < 6 ? "default" : "condensed";
     }
 
     public List<Menuitem> getMenuItems() {

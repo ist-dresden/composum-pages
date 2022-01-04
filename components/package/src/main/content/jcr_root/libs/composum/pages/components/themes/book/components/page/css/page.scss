@@ -49,8 +49,8 @@
                 min-height: 470px;
                 border-bottom: 1px solid $bootstrap-table-border-color;
                 overflow: auto;
-                z-index: 1;
-                background-color: rgba(255, 255, 255, 0.9);
+                z-index: 10;
+                background-color: rgba(255, 255, 255, 0.95);
                 opacity: 0;
                 transition: visibility 0s linear 500ms, opacity 300ms;
             }
@@ -80,15 +80,6 @@
 
         &_main {
             padding: 0;
-
-            .composum-pages-components {
-
-                &-container {
-
-                    &-row {
-                    }
-                }
-            }
         }
     }
 }

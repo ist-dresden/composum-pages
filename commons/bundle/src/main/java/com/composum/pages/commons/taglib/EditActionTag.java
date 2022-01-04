@@ -85,7 +85,7 @@ public class EditActionTag extends AbstractWrappingTag {
 
     @Override
     protected void prepareTagStart() {
-        pageContext.setAttribute(ACTION_VAR, this, PageContext.REQUEST_SCOPE);
+        setAttribute(ACTION_VAR, this, PageContext.REQUEST_SCOPE);
     }
 
     @Override
@@ -95,10 +95,5 @@ public class EditActionTag extends AbstractWrappingTag {
 
     @Override
     protected void renderTagEnd() throws JspException {
-    }
-
-    @Override
-    protected void finishTagEnd() {
-        pageContext.removeAttribute(ACTION_VAR, PageContext.REQUEST_SCOPE);
     }
 }

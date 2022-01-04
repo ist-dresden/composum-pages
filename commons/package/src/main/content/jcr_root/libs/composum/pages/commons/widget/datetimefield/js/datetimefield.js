@@ -18,6 +18,11 @@
 
         widgets.DateTimeFieldWidget = core.components.DateTimeWidget.extend({
 
+            initialize: function (options) {
+                core.components.DateTimeWidget.prototype.initialize.apply(this, [options]);
+                this.data.fieldtype = this.$el.data('fieldtype');
+            },
+
             /**
              * retrieves the hidden 'submit' input field 'lazy' (triggered during 'core.Widget.initialize()')
              */
@@ -41,7 +46,17 @@
              */
             prepare: function () {
                 var date = this.datetimepicker.date();
-                var value = date ? date.toISOString(true) : null;
+                var value = null;
+                if (date) {
+                    switch (this.data.fieldtype) {
+                        default:
+                            value = date.toISOString(true);
+                            break;
+                        case 'date':
+                            value = date.format(this.$el.data('format') || 'YYYY-MM-DD');
+                            break;
+                    }
+                }
                 this.hiddenSubmit().attr('value', value);
             }
         });

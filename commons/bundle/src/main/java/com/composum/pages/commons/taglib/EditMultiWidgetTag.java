@@ -98,6 +98,11 @@ public class EditMultiWidgetTag extends AbstractWidgetTag implements LoopTag {
     }
 
     @Override
+    public FormAction getDefaultAction() {
+        return null;
+    }
+
+    @Override
     public int doStartTag() throws JspException {
         if (StringUtils.isBlank(cssBase)) {
             cssBase = DEFAULT_CSS_BASE;

@@ -1,13 +1,15 @@
 <%@page session="false" pageEncoding="UTF-8" %>
 <%@taglib prefix="cpp" uri="http://sling.composum.com/cppl/1.0" %>
-<cpp:defineObjects/>
+<cpp:defineObjects/><%
+    slingRequest.setAttribute("NARROW_MAIN", true);
+%>
 <div class="composum-pages-components-page_content">
     <div class="composum-pages-components-page_content_top">
         <cpp:include path="top" resourceType="composum/pages/components/container/iparsys"/>
     </div>
     <cpp:include resourceType="composum/pages/components/navigation/breadcrumbs"/>
     <div class="composum-pages-components-page_content-row row">
-        <a class="composum-pages-components-page_content_nav_toggle" href="#"></a>
+        <a class="composum-pages-components-page_content_nav_toggle fa fa-bars" href="#"></a>
         <nav class="composum-pages-components-page_content_nav col-xl-2 col-md-3 col-sm-12">
             <cpp:include resourceType="composum/pages/components/navigation/sidebar" replaceSelectors="showroot"/>
         </nav>

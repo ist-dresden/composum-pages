@@ -9,7 +9,7 @@
     <label class="${widgetCSS}_label"><%-- for checkboxes the label is the checkbox label itself --%>
         <%-- this 'span' is the widget 'div'; the hook for the widgets JS view --%>
         <span class="widget ${widget.widgetType}-widget widget-name_${widget.cssName}" data-name="${widget.name}"
-              data-options='${widget.model.optionsData}' ${widget.attributes}><c:if test="${widget.formWidget}"><%--
+              data-options='${widget.model.optionsData}' ${widget.attributes}><c:if test="${widget.formWidget&&widget.slingPost}"><%--
                if the widget is embedded in a Sling POST form generate all hidden hints for the POST servlet
            --%><input type="hidden" class="sling-post-type-hint" name="${widget.name}@TypeHint" value="String"/>
             <c:if test="${widget.model.removable}"><%-- if 'removable' add delete hint
@@ -19,7 +19,7 @@
                     <c:if test="${widget.model.checked}">name="${widget.name}"</c:if> data-i18n="${widget.i18n}"
                     class="${widgetCSS}_input" type="checkbox" value="${cpn:value(widget.model.inputValue)}"
                     <c:if test="${widget.disabled}">disabled</c:if>
-                ${widget.model.checkedValue}/></c:if><c:if test="${!widget.formWidget}"><%--
+                ${widget.model.checkedValue}/></c:if><c:if test="${!widget.formWidget||!widget.slingPost}"><%--
                not a Sling POST form: generate a simple checkbox input field...
            --%><input data-i18n="${widget.i18n}" class="${widgetCSS}_input" type="checkbox"
                       <c:if test="${widget.model.checked}">name="${widget.name}"</c:if>

@@ -1,0 +1,25 @@
+@charset "UTF-8";
+
+@import "mixins";
+
+.composum-pages-options-blog-components-collection {
+
+    &-search {
+
+        .composum-pages-widgets-form {
+
+            .composum-pages-edit-widget {
+
+                &_date {
+
+                    .composum-pages-edit-widget {
+
+                        &_hint {
+                            margin-left: -60%;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

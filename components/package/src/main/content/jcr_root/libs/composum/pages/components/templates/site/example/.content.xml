@@ -6,8 +6,8 @@
         jcr:primaryType="cpp:Site">
     <jcr:content
             jcr:primaryType="cpp:SiteConfiguration"
-            jcr:title="A Site for Testing"
-            jcr:description="A Pages Components site template for testing purposes with a test page as child of the sites homepage."
+            jcr:title="A Pages Example Site"
+            jcr:description="A Pages Components site template to start expirience with Composum Pages."
             sling:resourceType="composum/pages/stage/edit/site"
             siteComponentSettings="composum/pages/components/site/settings"
             allowedChildTemplates="[
@@ -21,13 +21,13 @@
         <logo
                 jcr:primaryType="nt:unstructured"
                 sling:resourceType="composum/pages/components/element/image"
-                imageRef="/content/shared/composum/pages/components/assets/logo/Composum-color.svg"/>
+                imageRef="${site}/assets/logo/Composum-color.svg"/>
         <thumbnail
                 jcr:primaryType="nt:unstructured">
             <image
                 jcr:primaryType="nt:unstructured"
                     sling:resourceType="composum/pages/components/element/image"
-                    imageRef="/content/shared/composum/pages/components/assets/thumbnail/site/blank-lt-gr.png"/>
+                    imageRef="${site}/assets/thumbnail/pages-dk.png"/>
         </thumbnail>
         <languages
                 jcr:primaryType="nt:unstructured">

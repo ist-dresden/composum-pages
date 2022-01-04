@@ -11,7 +11,7 @@ import static com.composum.pages.commons.taglib.EditDialogTabTag.DIALOG_TAB_VAR;
 /**
  * the EditWidgetTag is rendering a dialog widget as an element of the edit dialog form
  */
-public abstract class AbstractWidgetTag extends AbstractEditElementTag {
+public abstract class AbstractWidgetTag extends AbstractFormTag {
 
     public static final String PROPERTY_RESOURCE_ATTR = "propertyResource";
     public static final String PROPERTY_PATH_ATTR = "propertyPath";
@@ -38,7 +38,7 @@ public abstract class AbstractWidgetTag extends AbstractEditElementTag {
     }
 
     public boolean getHasLabel() {
-        return StringUtils.isNotBlank(label);
+        return label != null;
     }
 
     public String getLabel() {
@@ -107,7 +107,7 @@ public abstract class AbstractWidgetTag extends AbstractEditElementTag {
                 }
             }
         }
-        return result != null ? result : getDialog().isDisabledSet();
+        return result != null ? result : getFormTag().isDisabledSet();
     }
 
     /**
@@ -128,9 +128,9 @@ public abstract class AbstractWidgetTag extends AbstractEditElementTag {
     public Resource getModelResource(BeanContext context) {
         Resource resource = context.getAttribute(PROPERTY_RESOURCE_ATTR, Resource.class);
         if (resource == null) {
-            EditDialogTag dialog = getDialog();
-            if (dialog != null) {
-                resource = dialog.getModelResource(context);
+            AbstractFormTag formTag = getFormTag();
+            if (formTag instanceof EditDialogTag) {
+                resource = ((EditDialogTag) formTag).getModelResource(context);
             }
             if (resource == null) {
                 resource = super.getModelResource(context);
@@ -147,7 +147,7 @@ public abstract class AbstractWidgetTag extends AbstractEditElementTag {
             relativePath = context.getAttribute(PROPERTY_PATH_ATTR, String.class);
             if (StringUtils.isBlank(relativePath)) {
                 String resourcePath = getResource().getPath();
-                String actionPath = getDialog().getResource().getPath();
+                String actionPath = getFormTag().getResource().getPath();
                 if (!resourcePath.equals(actionPath) && resourcePath.startsWith(actionPath)) {
                     relativePath = resourcePath.substring(actionPath.length() + 1);
                 }
@@ -172,9 +172,9 @@ public abstract class AbstractWidgetTag extends AbstractEditElementTag {
             String relativePath = getRelativePath();
             // prepend relative path and i18n path if 'i18n' is on
             if (isI18n()) {
-                EditDialogTag dialog = getDialog();
-                if (dialog != null) {
-                    propertyName = dialog.getPropertyPath(relativePath, propertyName);
+                AbstractFormTag formTag = getFormTag();
+                if (formTag instanceof EditDialogTag) {
+                    propertyName = ((EditDialogTag) formTag).getPropertyPath(relativePath, propertyName);
                 } else {
                     propertyName = getI18nPath(relativePath, propertyName);
                 }
@@ -185,15 +185,26 @@ public abstract class AbstractWidgetTag extends AbstractEditElementTag {
         return propertyName;
     }
 
+    @Override
     public String getRequestLanguage() {
         return request.getLocale().getLanguage();
     }
 
-    public EditDialogTag getDialog() {
-        return (EditDialogTag) pageContext.findAttribute(EditDialogTag.DIALOG_VAR);
+    public AbstractFormTag getFormTag() {
+        return (AbstractFormTag) pageContext.findAttribute(EditDialogTag.DIALOG_VAR);
+    }
+
+    public boolean isSlingPost() {
+        FormAction formAction = getFormTag().getFormAction();
+        return formAction != null && SLING_POST_SERVLET_ACTION.equals(formAction.getName());
     }
 
     protected String getDialogActionType() {
-        return getDialog().getAction().getName().toLowerCase();
+        return getFormTag().getFormAction().getName().toLowerCase();
+    }
+
+    @Override
+    public FormAction getDefaultAction() {
+        return getFormTag().getDefaultAction();
     }
 }

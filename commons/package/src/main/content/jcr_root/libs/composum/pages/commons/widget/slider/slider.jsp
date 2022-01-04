@@ -6,9 +6,11 @@
 <cpp:defineFrameObjects/>
 <div class="${widgetCSS}_${widget.widgetType} ${widgetCSS}_${widget.cssName}${widget.required?' required':''} form-group">
     <sling:call script="label.jsp"/>
-    <input type="hidden" class="sling-post-hint" name="${widget.name}@Delete" value="true"/>
-    <input type="hidden" class="sling-post-hint" name="${widget.name}@IgnoreBlanks" value="true"/>
-    <input type="hidden" class="sling-post-type-hint" name="${widget.name}@TypeHint" value="Decimal"/>
+    <c:if test="${widget.slingPost}">
+        <input type="hidden" class="sling-post-hint" name="${widget.name}@Delete" value="true"/>
+        <input type="hidden" class="sling-post-hint" name="${widget.name}@IgnoreBlanks" value="true"/>
+        <input type="hidden" class="sling-post-type-hint" name="${widget.name}@TypeHint" value="Decimal"/>
+    </c:if>
     <div class="${widgetCSS}_${widget.widgetType}_wrapper widget slider-widget" ${widget.attributes}
          data-label="${widget.label}" data-i18n="${widget.i18n}">
         <input name="${widget.name}"

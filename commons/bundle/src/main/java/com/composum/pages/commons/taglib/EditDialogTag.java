@@ -1,10 +1,10 @@
 package com.composum.pages.commons.taglib;
 
-import com.composum.pages.commons.util.LinkUtil;
 import com.composum.pages.commons.util.ResourceTypeUtil;
 import com.composum.pages.commons.util.TagCssClasses;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.annotation.Nonnull;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 import java.io.IOException;
@@ -48,19 +48,15 @@ public class EditDialogTag extends AbstractEditTag {
 
     public static final String DIALOG_PATH = "/edit/dialog";
 
-    public static final String SLING_POST_SERVLET_ACTION = "Sling-POST";
     public static final String CUSTOM_POST_SERVLET_ACTION = "Custom-POST";
 
     public static final String ATTR_SUBMIT_LABEL = "submitLabel";
     public static final String DEFAULT_SUBMIT_LABEL = "Submit";
 
-    public static final String ATTR_INITIAL_ALERT = "alert-";
-
     public static final String PAGES_EDIT_VALIDATION = PAGES_EDIT_DATA + "-validation";
     public static final String PAGES_EDIT_SUCCESS_EVENT = PAGES_EDIT_DATA + "-success";
 
     private transient String dialogId;
-    protected String tagId;
 
     protected String title;
     protected String titleValue;
@@ -72,43 +68,30 @@ public class EditDialogTag extends AbstractEditTag {
 
     protected String submit;
     protected String submitLabel;
-    private transient EditDialogAction action;
+    private transient FormAction action;
 
     protected String validation;
     protected String validationValue;
     protected String successEvent;
 
-    protected String alertKey;
-    protected String alertText;
-
     @Override
     protected void clear() {
-        alertText = null;
-        alertKey = null;
         successEvent = null;
         validationValue = null;
         validation = null;
         action = null;
         submit = null;
         submitLabel = null;
+        languageContext = true;
         selectorValue = null;
         selector = null;
         titleValue = null;
         title = null;
-        tagId = null;
         dialogId = null;
         super.clear();
     }
 
     // tag attributes
-
-    public String getTagId() {
-        return tagId;
-    }
-
-    public void setTagId(String id) {
-        tagId = id;
-    }
 
     public String getTitle() {
         if (titleValue == null) {
@@ -204,20 +187,6 @@ public class EditDialogTag extends AbstractEditTag {
         return selectorValue;
     }
 
-    // initial alert message
-
-    public boolean isAlertSet() {
-        return StringUtils.isNotBlank(alertKey);
-    }
-
-    public String getAlertKey() {
-        return isAlertSet() ? alertKey : "warning hidden";
-    }
-
-    public String getAlertText() {
-        return isAlertSet() ? i18n(alertText) : "";
-    }
-
     /**
      * adds the set of initial default tag attributes
      */
@@ -229,17 +198,12 @@ public class EditDialogTag extends AbstractEditTag {
     /**
      * filters dynamic attributes for special purposes:
      * <ul>
-     * <li>initial 'alert' settings for initial hints</li>
      * <li>'submit' button label for the 'generic' dialog</li>
      * </ul>
      */
     @Override
     protected boolean acceptDynamicAttribute(String key, Object value) throws JspException {
-        if (key.startsWith(ATTR_INITIAL_ALERT)) {
-            alertKey = key.substring(ATTR_INITIAL_ALERT.length());
-            alertText = (String) value;
-            return false;
-        } else if (ATTR_SUBMIT_LABEL.equals(key)) {
+        if (ATTR_SUBMIT_LABEL.equals(key)) {
             submitLabel = (String) value;
             return false;
         } else {
@@ -341,11 +305,8 @@ public class EditDialogTag extends AbstractEditTag {
 
     @Override
     protected void collectAttributes(Map<String, Object> attributeSet) {
-        String value;
-        if (StringUtils.isNotBlank(value = getTagId())) {
-            attributeSet.put(TAG_ID, value);
-        }
         super.collectAttributes(attributeSet);
+        String value;
         attributeSet.put("role", "dialog");
         attributeSet.put("aria-hidden", "true");
         if (StringUtils.isNotBlank(value = getValidationValue())) {
@@ -395,62 +356,18 @@ public class EditDialogTag extends AbstractEditTag {
 
     // dialog submit action ...
 
-    public EditDialogAction getDefaultAction() {
+    public FormAction getDefaultAction() {
         return new SlingPostServletAction();
     }
 
-    public EditDialogAction getAction() {
+    public FormAction getAction() {
         if (action == null) {
             action = getDefaultAction();
         }
         return action;
     }
 
-    public interface EditDialogAction {
-
-        String getName();
-
-        String getUrl();
-
-        String getMethod();
-
-        String getEncType();
-
-        String getPropertyPath(String relativePath, String name);
-    }
-
-    public class SlingPostServletAction implements EditDialogAction {
-
-        public String getName() {
-            return SLING_POST_SERVLET_ACTION;
-        }
-
-        public String getUrl() {
-            String url = request.getContextPath() + LinkUtil.encodePath(getResource().getPath());
-            String nameParam = request.getParameter("name");
-            if ("*".equals(nameParam)) {
-                // append a '/*' on element creation
-                if (!url.endsWith(nameParam)) {
-                    url += "/" + nameParam;
-                }
-            }
-            return url;
-        }
-
-        public String getMethod() {
-            return "POST";
-        }
-
-        public String getEncType() {
-            return "multipart/form-data";
-        }
-
-        public String getPropertyPath(String relativePath, String name) {
-            return getI18nPath(relativePath, name);
-        }
-    }
-
-    public class CustomPostAction implements EditDialogAction {
+    public class CustomPostAction implements FormAction {
 
         protected final String uri;
 
@@ -458,22 +375,32 @@ public class EditDialogTag extends AbstractEditTag {
             this.uri = uri;
         }
 
+        @Override
+        @Nonnull
         public String getName() {
             return CUSTOM_POST_SERVLET_ACTION;
         }
 
+        @Override
+        @Nonnull
         public String getUrl() {
             return request.getContextPath() + eval(uri, "/");
         }
 
+        @Override
+        @Nonnull
         public String getMethod() {
             return "POST";
         }
 
+        @Override
+        @Nonnull
         public String getEncType() {
             return "multipart/form-data";
         }
 
+        @Override
+        @Nonnull
         public String getPropertyPath(String relativePath, String name) {
             return getI18nPath(relativePath, name);
         }

@@ -87,7 +87,8 @@ public abstract class AbstractWrappingTag extends ModelTag {
 
     protected abstract void renderTagEnd() throws JspException, IOException;
 
-    protected abstract void finishTagEnd();
+    protected void finishTagEnd() {
+    }
 
     /**
      * collects all CSS classes and attributes, prepares the rendering (prepareTagStart())

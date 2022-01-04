@@ -75,7 +75,7 @@
             .composum-pages-components-element-title {
                 margin: 0;
                 height: 120px;
-                padding: 24px 36px;
+                padding: 24px 15px;
                 background-position: 0 40%;
                 background-size: 200%;
 
@@ -109,7 +109,7 @@
 
                 .composum-pages-components-element-title {
                     height: 80px;
-                    padding: 16px 24px;
+                    padding: 16px 15px;
 
                     &_title {
                         @include a-title-font($site-title-font-size-xs);

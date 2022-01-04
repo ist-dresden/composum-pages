@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+        jcr:language="de"
+        jcr:mixinTypes="[mix:language]"
+        jcr:primaryType="sling:Folder"
+        sling:basename="composum-pages-option-blog">
+
+    <general jcr:primaryType="sling:Folder">
+
+        <Author jcr:primaryType="sling:MessageEntry"
+                sling:key="Author" sling:message="Autor"/>
+        <Date jcr:primaryType="sling:MessageEntry"
+                sling:key="Date" sling:message="Datum"/>
+
+    </general>
+
+    <forms jcr:primaryType="sling:Folder">
+
+        <Filter_Articles jcr:primaryType="sling:MessageEntry"
+                sling:key="Filter Articles" sling:message="Artikel filtern"/>
+
+        <Search_Root jcr:primaryType="sling:MessageEntry"
+                sling:key="Search Root" sling:message="Such-Wurzel"/>
+
+        <period-last-month jcr:primaryType="sling:MessageEntry"
+                sling:key="last month" sling:message="letzter Monat"/>
+        <period-last-year jcr:primaryType="sling:MessageEntry"
+                sling:key="last year" sling:message="letztes Jahr"/>
+        <period-about jcr:primaryType="sling:MessageEntry"
+                sling:key="about" sling:message="ungefähr"/>
+        <period-before jcr:primaryType="sling:MessageEntry"
+                sling:key="before" sling:message="vor"/>
+        <period-after jcr:primaryType="sling:MessageEntry"
+                sling:key="after" sling:message="nach"/>
+
+    </forms>
+
+    <messages jcr:primaryType="sling:Folder">
+
+        <search-root-path jcr:primaryType="sling:MessageEntry"
+                sling:key="the repository root path for the search; default: the blog root page"
+                sling:message="der Root-Verzeichnispfad des Repositorys für die Suche; Standard: die Blog-Root-Page"/>
+        <search-period-hint jcr:primaryType="sling:MessageEntry"
+                sling:key="a period to filter the articles by date"
+                sling:message="ein Zeitraum, um die Artikel nach Datum zu filtern"/>
+        <search-text-pattern jcr:primaryType="sling:MessageEntry"
+                sling:key="a search text pattern to filter the articles by their content"
+                sling:message="ein Suchtextmuster, um die Artikel nach ihrem Inhalt zu filtern"/>
+
+    </messages>
+
+</jcr:root>

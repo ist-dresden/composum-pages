@@ -1,7 +1,10 @@
 package com.composum.pages.commons.model.properties;
 
+import com.composum.pages.commons.util.DateConverter;
+
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -121,6 +124,8 @@ public class ValueSet<T> extends ArrayList<T> implements Iterator<T> {
         if (object != null) {
             if (type.isInstance(object)) {
                 value = (T) object;
+            } else if (type.equals(Calendar.class)) {
+                value = (T) DateConverter.convert(object);
             } else {
                 Constructor<T> constructor;
                 try {

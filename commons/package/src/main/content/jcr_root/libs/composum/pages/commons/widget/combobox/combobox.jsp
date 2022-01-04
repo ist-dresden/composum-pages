@@ -8,7 +8,7 @@
     <sling:call script="label.jsp"/>
     <div class="${widgetCSS}_combobox widget combobox-widget widget-name_${widget.cssName} input-group" ${widget.attributes}>
         <sling:call script="left.jsp"/>
-        <c:if test="${!widget.blankAllowed}">
+        <c:if test="${!widget.blankAllowed&&widget.slingPost}">
             <input type="hidden" class="sling-post-hint" name="${widget.name}@Delete" value="true"/>
             <input type="hidden" class="sling-post-hint" name="${widget.name}@IgnoreBlanks" value="true"/>
         </c:if>

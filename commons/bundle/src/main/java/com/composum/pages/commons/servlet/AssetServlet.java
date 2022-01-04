@@ -115,7 +115,7 @@ public class AssetServlet extends PagesContentServlet {
         return pageManager;
     }
 
-    @Override
+    @Deprecated
     protected boolean isEnabled() {
         return true;
     }

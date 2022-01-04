@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:cpp="http://sling.composum.com/pages/1.0"
+        xmlns:jcr="http://www.jcp.org/jcr/1.0"
+        xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+        xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+        jcr:primaryType="cpp:Page">
+    <jcr:content
+            jcr:primaryType="cpp:PageContent"
+            jcr:title="Pages Components Blog Sequence Folder"
+            jcr:description="A folder to arrange a set of articles as an article sequence."
+            sling:resourceType="composum/pages/options/blog/components/page/sequence"
+            allowedChildTemplates="[
+                ^(.*/)?pages/options/blog/templates/article$,
+                ^(.*/)?pages/components/templates/page/content$
+            ]">
+        <bottom
+                jcr:primaryType="cpp:Container"
+                sling:resourceType="composum/pages/components/container/iparsys">
+            <siblings
+                    jcr:primaryType="cpp:Element"
+                    sling:resourceType="/libs/composum/pages/components/navigation/siblings"/>
+        </bottom>
+    </jcr:content>
+</jcr:root>

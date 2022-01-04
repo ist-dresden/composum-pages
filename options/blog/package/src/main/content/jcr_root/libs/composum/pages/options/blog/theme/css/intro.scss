@@ -1,0 +1,41 @@
+@charset "UTF-8";
+
+@import "mixins";
+
+.composum-pages-options-blog-components-static-intro {
+    margin: 0 0 $title-margin-level-1-top;
+
+    .composum-pages-components-page_main-top & {
+        border-bottom: 1px solid $bootstrap-table-border-color;
+    }
+
+    &_header {
+
+        h1 {
+            margin: $title-margin-level-3-4-gap 0 $title-margin-level-1-2-gap;
+            @include default-font($intro-title-font-size);
+            color: $intro-title-text-color;
+        }
+
+        h2 {
+            margin: -1rem 0 $title-margin-level-1-2-gap;
+            @include font('robotomedium', $intro-subtitle-font-size);
+            color: $intro-title-text-color;
+        }
+    }
+
+    &_text {
+        @include default-font();
+    }
+
+    &_meta {
+        display: flex;
+        margin: $title-margin-level-1-2-gap 0 0;
+        @include default-font($intro-subtitle-font-size);
+        font-style: italic;
+
+        &-author {
+            flex-grow: 1;
+        }
+    }
+}

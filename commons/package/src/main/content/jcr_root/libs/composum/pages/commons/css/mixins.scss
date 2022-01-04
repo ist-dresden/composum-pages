@@ -30,6 +30,12 @@
 }
 
 @mixin edit-hint-font {
-    font-family: $edit-label-font-family;
+    font-family: $edit-hint-font-family;
     font-size: $edit-hint-font-size;
+}
+
+@mixin screen-size-xs-max {
+    @media (max-width: #{$screen-size-xs - 1px}) {
+        @content;
+    }
 }

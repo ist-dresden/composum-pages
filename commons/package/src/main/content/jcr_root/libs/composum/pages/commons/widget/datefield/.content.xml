@@ -4,4 +4,7 @@
         jcr:title="Date field"
         jcr:description="&lt;p>This a simple restriction of the genaral 'datetimefield'.&lt;/p>"
         sling:resourceType="composum/pages/commons/widget/datefield"
-        sling:resourceSuperType="composum/pages/commons/widget/datetimefield"/>
+        sling:resourceSuperType="composum/pages/commons/widget/datetimefield">
+    <attributes jcr:primaryType="nt:unstructured"
+            data-fieldtype="date"/>
+</jcr:root>
