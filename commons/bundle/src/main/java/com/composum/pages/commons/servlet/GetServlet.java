@@ -16,6 +16,7 @@ import com.composum.pages.commons.util.RequestUtil;
 import com.composum.pages.commons.util.ResolverUtil;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.ResourceHandle;
+import com.composum.sling.core.Restricted;
 import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.servlet.ServletOperation;
 import com.composum.sling.core.servlet.ServletOperationSet;
@@ -46,15 +47,20 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+import static com.composum.pages.commons.servlet.GetServlet.SERVICE_KEY;
+
 @Component(service = Servlet.class,
         property = {
                 Constants.SERVICE_DESCRIPTION + "=Composum Pages Get Servlet",
                 ServletResolverConstants.SLING_SERVLET_PATHS + "=/bin/cpm/pages/get",
                 ServletResolverConstants.SLING_SERVLET_METHODS + "=" + HttpConstants.METHOD_GET
         })
+@Restricted(key = SERVICE_KEY)
 public class GetServlet extends ContentServlet {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetServlet.class);
+
+    public static final String SERVICE_KEY = "pages/content/view";
 
     public static final String PARAM_SUFFIX = "suffix";
 

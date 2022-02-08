@@ -4,6 +4,7 @@ import com.composum.pages.commons.service.VersionsService;
 import com.composum.pages.commons.util.RequestUtil;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.ResourceHandle;
+import com.composum.sling.core.Restricted;
 import com.composum.sling.core.mapping.MappingRules;
 import com.composum.sling.core.servlet.AbstractServiceServlet;
 import com.composum.sling.core.servlet.ServletOperation;
@@ -49,6 +50,7 @@ import java.util.Collection;
 import java.util.List;
 
 import static com.composum.pages.commons.servlet.PagesContentServlet.forward;
+import static com.composum.pages.commons.servlet.PagesVersionServlet.SERVICE_KEY;
 
 @Component(service = Servlet.class,
         property = {
@@ -58,9 +60,12 @@ import static com.composum.pages.commons.servlet.PagesContentServlet.forward;
                 ServletResolverConstants.SLING_SERVLET_METHODS + "=" + HttpConstants.METHOD_POST,
                 ServletResolverConstants.SLING_SERVLET_METHODS + "=" + HttpConstants.METHOD_PUT
         })
+@Restricted(key = SERVICE_KEY)
 public class PagesVersionServlet extends AbstractServiceServlet {
 
     private static final Logger LOG = LoggerFactory.getLogger(PagesVersionServlet.class);
+
+    public static final String SERVICE_KEY = "pages/content/version";
 
     public static final String VERSIONS_RESOURCE_TYPE = "composum/pages/stage/edit/tools/page/versions";
 
@@ -101,7 +106,9 @@ public class PagesVersionServlet extends AbstractServiceServlet {
         return operations;
     }
 
-    /** setup of the servlet operation set for this servlet instance */
+    /**
+     * setup of the servlet operation set for this servlet instance
+     */
     @Override
     @SuppressWarnings("Duplicates")
     public void init() throws ServletException {
@@ -412,7 +419,7 @@ public class PagesVersionServlet extends AbstractServiceServlet {
                         lockManager.addLockToken(token);
                         lockManager.unlock(path);
                     } else {
-                        if (!node.isNodeType(JcrConstants.MIX_LOCKABLE)){
+                        if (!node.isNodeType(JcrConstants.MIX_LOCKABLE)) {
                             node.addMixin(JcrConstants.MIX_LOCKABLE);
                             session.save();
                         }
@@ -434,7 +441,7 @@ public class PagesVersionServlet extends AbstractServiceServlet {
             for (Resource resource : lockable) {
                 Node node = resource.adaptTo(Node.class);
                 if (node != null && !node.isLocked()) {
-                    if (!node.isNodeType(JcrConstants.MIX_LOCKABLE)){
+                    if (!node.isNodeType(JcrConstants.MIX_LOCKABLE)) {
                         node.addMixin(JcrConstants.MIX_LOCKABLE);
                         session.save();
                     }

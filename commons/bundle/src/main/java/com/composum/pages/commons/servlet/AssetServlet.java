@@ -11,6 +11,7 @@ import com.composum.pages.commons.util.ResolverUtil;
 import com.composum.pages.commons.util.ResourceTypeUtil;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.ResourceHandle;
+import com.composum.sling.core.Restricted;
 import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.logging.Message;
 import com.composum.sling.core.servlet.AbstractServiceServlet;
@@ -53,6 +54,7 @@ import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static com.composum.pages.commons.servlet.AssetServlet.SERVICE_KEY;
 import static com.composum.pages.commons.util.ResourceTypeUtil.EDIT_TILE_PATH;
 import static com.composum.pages.commons.util.ResourceTypeUtil.TREE_ACTIONS_PATH;
 
@@ -65,9 +67,12 @@ import static com.composum.pages.commons.util.ResourceTypeUtil.TREE_ACTIONS_PATH
                 ServletResolverConstants.SLING_SERVLET_METHODS + "=" + HttpConstants.METHOD_PUT,
                 ServletResolverConstants.SLING_SERVLET_METHODS + "=" + HttpConstants.METHOD_DELETE
         })
+@Restricted(key = SERVICE_KEY)
 public class AssetServlet extends PagesContentServlet {
 
     private static final Logger LOG = LoggerFactory.getLogger(AssetServlet.class);
+
+    public static final String SERVICE_KEY = "pages/asset/edit";
 
     public static final String DEFAULT_FILTER = "page";
     public static final String TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";

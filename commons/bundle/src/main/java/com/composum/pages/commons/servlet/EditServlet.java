@@ -26,6 +26,7 @@ import com.composum.pages.commons.util.ResourceTypeUtil;
 import com.composum.pages.commons.util.ThemeUtil;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.ResourceHandle;
+import com.composum.sling.core.Restricted;
 import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.servlet.NodeTreeServlet;
 import com.composum.sling.core.servlet.ServletOperation;
@@ -68,6 +69,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import static com.composum.pages.commons.servlet.EditServlet.SERVICE_KEY;
 import static com.composum.pages.commons.util.ResourceTypeUtil.CONTEXT_ACTIONS_PATH;
 import static com.composum.pages.commons.util.ResourceTypeUtil.CONTEXT_CONTAINER_PATH;
 import static com.composum.pages.commons.util.ResourceTypeUtil.EDIT_DIALOG_PATH;
@@ -85,9 +87,12 @@ import static com.composum.pages.commons.util.ResourceTypeUtil.TREE_ACTIONS_PATH
                 ServletResolverConstants.SLING_SERVLET_METHODS + "=" + HttpConstants.METHOD_PUT,
                 ServletResolverConstants.SLING_SERVLET_METHODS + "=" + HttpConstants.METHOD_DELETE
         })
+@Restricted(key = SERVICE_KEY)
 public class EditServlet extends PagesContentServlet {
 
     private static final Logger LOG = LoggerFactory.getLogger(EditServlet.class);
+
+    public static final String SERVICE_KEY = "pages/content/edit";
 
     public static final String DEFAULT_FILTER = "page";
 
