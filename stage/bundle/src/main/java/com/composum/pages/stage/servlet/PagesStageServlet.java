@@ -1,6 +1,7 @@
 package com.composum.pages.stage.servlet;
 
 import com.composum.sling.core.ResourceHandle;
+import com.composum.sling.core.Restricted;
 import com.composum.sling.core.servlet.AbstractServiceServlet;
 import com.composum.sling.core.servlet.ServletOperation;
 import com.composum.sling.core.servlet.ServletOperationSet;
@@ -27,6 +28,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.composum.pages.stage.servlet.PagesStageServlet.SERVICE_KEY;
+
 /**
  *
  */
@@ -36,9 +39,12 @@ import java.util.Map;
                 ServletResolverConstants.SLING_SERVLET_PATHS + "=/bin/cpm/pages/stage",
                 ServletResolverConstants.SLING_SERVLET_METHODS + "=" + HttpConstants.METHOD_GET
         })
+@Restricted(key = SERVICE_KEY)
 public class PagesStageServlet extends AbstractServiceServlet {
 
     private static final Logger LOG = LoggerFactory.getLogger(PagesStageServlet.class);
+
+    public static final String SERVICE_KEY = "pages/content/preview";
 
     enum Extension {
         html

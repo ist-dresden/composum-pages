@@ -4,6 +4,7 @@ import com.composum.pages.commons.util.RequestUtil;
 import com.composum.pages.stage.model.tools.PropertiesComparatorModel;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.ResourceHandle;
+import com.composum.sling.core.Restricted;
 import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.filter.StringFilter;
 import com.composum.sling.core.servlet.AbstractServiceServlet;
@@ -34,6 +35,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Locale;
 
+import static com.composum.pages.stage.servlet.ContentComparatorServlet.SERVICE_KEY;
+
 /**
  * compare content properties - traverses the hierarchy and lists properties side by side
  * <p>
@@ -63,9 +66,12 @@ import java.util.Locale;
                 ServletResolverConstants.SLING_SERVLET_PATHS + "=/bin/cpm/pages/compare",
                 ServletResolverConstants.SLING_SERVLET_METHODS + "=" + HttpConstants.METHOD_GET
         })
+@Restricted(key = SERVICE_KEY)
 public class ContentComparatorServlet extends AbstractServiceServlet {
 
     private static final Logger LOG = LoggerFactory.getLogger(ContentComparatorServlet.class);
+
+    public static final String SERVICE_KEY = "pages/content/compare";
 
     enum Extension {
         html, json

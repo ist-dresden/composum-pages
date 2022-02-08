@@ -20,6 +20,7 @@ import com.composum.pages.commons.util.ResolverUtil;
 import com.composum.pages.commons.util.ResourceTypeUtil;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.ResourceHandle;
+import com.composum.sling.core.Restricted;
 import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.filter.StringFilter;
 import com.composum.sling.core.servlet.ServletOperation;
@@ -51,6 +52,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import static com.composum.pages.commons.model.Component.isComponent;
+import static com.composum.pages.commons.servlet.DevelopServlet.SERVICE_KEY;
 import static com.composum.pages.commons.util.ResourceTypeUtil.DEVELOP_ACTIONS_PATH;
 
 /**
@@ -64,9 +66,12 @@ import static com.composum.pages.commons.util.ResourceTypeUtil.DEVELOP_ACTIONS_P
                 ServletResolverConstants.SLING_SERVLET_METHODS + "=" + HttpConstants.METHOD_POST,
                 ServletResolverConstants.SLING_SERVLET_METHODS + "=" + HttpConstants.METHOD_PUT
         })
+@Restricted(key = SERVICE_KEY)
 public class DevelopServlet extends ContentServlet {
 
     private static final Logger LOG = LoggerFactory.getLogger(DevelopServlet.class);
+
+    public static final String SERVICE_KEY = "pages/component/develop";
 
     public static final String PARAM_TEMPLATE_PATH = "templatePath";
 

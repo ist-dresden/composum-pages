@@ -4,6 +4,7 @@ import com.composum.pages.commons.model.Site;
 import com.composum.pages.commons.service.SiteManager;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.ResourceHandle;
+import com.composum.sling.core.Restricted;
 import com.composum.sling.core.servlet.AbstractServiceServlet;
 import com.composum.sling.core.servlet.ServletOperation;
 import com.composum.sling.core.servlet.ServletOperationSet;
@@ -38,6 +39,7 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.Objects;
 
+import static com.composum.pages.commons.servlet.ReleaseServlet.SERVICE_KEY;
 import static com.composum.sling.core.util.CoreConstants.JCR_DESCRIPTION;
 import static com.composum.sling.core.util.CoreConstants.JCR_TITLE;
 import static com.composum.sling.platform.staging.StagingConstants.CURRENT_RELEASE;
@@ -55,9 +57,12 @@ import static org.apache.jackrabbit.JcrConstants.JCR_LASTMODIFIED;
                 ServletResolverConstants.SLING_SERVLET_METHODS + "=" + HttpConstants.METHOD_GET,
                 ServletResolverConstants.SLING_SERVLET_METHODS + "=" + HttpConstants.METHOD_POST
         })
+@Restricted(key = SERVICE_KEY)
 public class ReleaseServlet extends AbstractServiceServlet {
 
     private static final Logger LOG = LoggerFactory.getLogger(ReleaseServlet.class);
+
+    public static final String SERVICE_KEY = "pages/content/release";
 
     public static final String PARAM_NUMBER = "number";
 

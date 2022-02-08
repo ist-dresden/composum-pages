@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.composum.pages.options</groupId>
         <artifactId>composum-pages-options</artifactId>
-        <version>1.3.0</version>
+        <version>1.4.0</version>
     </parent>
 
     <artifactId>composum-pages-options-blog</artifactId>
@@ -14,7 +14,7 @@
     <name>Composum Pages Options - Blog</name>
 
     <properties>
-        <composum.pages.version>1.3.0</composum.pages.version>
+        <composum.pages.version>1.4.0</composum.pages.version>
     </properties>
 
     <modules>
