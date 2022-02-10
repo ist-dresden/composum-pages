@@ -56,6 +56,16 @@
                             <artifactId>composum-pages-options-microsite-package</artifactId>
                             <filter>true</filter>
                         </subPackage>
+                        <subPackage>
+                            <groupId>${project.groupId}.options</groupId>
+                            <artifactId>composum-pages-options-blog-package</artifactId>
+                            <filter>true</filter>
+                        </subPackage>
+                        <subPackage>
+                            <groupId>${project.groupId}.options</groupId>
+                            <artifactId>composum-pages-options-wiki-package</artifactId>
+                            <filter>true</filter>
+                        </subPackage>
                     </subPackages>
 
                 </configuration>
@@ -96,6 +106,20 @@
         <dependency>
             <groupId>${project.groupId}.options</groupId>
             <artifactId>composum-pages-options-microsite-package</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}.options</groupId>
+            <artifactId>composum-pages-options-blog-package</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}.options</groupId>
+            <artifactId>composum-pages-options-wiki-package</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
         </dependency>
