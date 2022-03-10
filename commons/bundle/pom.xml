@@ -43,9 +43,9 @@
                             com.composum.pages.commons.*
                         </Export-Package>
                         <Import-Package>
-                            com.composum.sling.core.*;version="[2,4)",
-                            com.composum.sling.clientlibs.*;version="[2,4)",
-                            com.composum.sling.cpnl.*;version="[2,4)",
+                            com.composum.sling.core.*;version="[2,5)",
+                            com.composum.sling.clientlibs.*;version="[2,5)",
+                            com.composum.sling.cpnl.*;version="[2,5)",
                             javax.annotation.*;version="[0,4)",
                             *
                         </Import-Package>
