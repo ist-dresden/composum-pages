@@ -68,6 +68,19 @@
                         </subPackage>
                     </subPackages>
 
+                    <dependencies>
+                        <dependency>
+                            <group>com/composum/platform</group>
+                            <name>composum-platform-package</name>
+                            <!-- <version>[${composum.platform.version},2.0)</version> -->
+                        </dependency>
+
+                        <dependency>
+                            <group>com/composum/assets</group>
+                            <name>composum-assets-package</name>
+                        </dependency>
+                    </dependencies>
+
                 </configuration>
             </plugin>
 
