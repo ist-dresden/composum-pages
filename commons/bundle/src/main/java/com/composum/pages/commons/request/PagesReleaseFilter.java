@@ -49,8 +49,7 @@ import static com.composum.sling.platform.staging.impl.ResourceResolverChangeFil
         service = {Filter.class},
         property = {
                 Constants.SERVICE_DESCRIPTION + "=Composum Pages Release Filter",
-                "sling.filter.scope=REQUEST",
-                "service.ranking:Integer=" + 5070
+                "sling.filter.scope=REQUEST"
         },
         configurationPolicy = ConfigurationPolicy.REQUIRE
 )
@@ -99,6 +98,12 @@ public class PagesReleaseFilter implements Filter {
                 "^/(system|bin)/.*$",
                 "^/(apps|libs)/.*$"
         };
+
+        @AttributeDefinition(
+                name = "Service Ranking",
+                description = "the ranking of the service to place the servlet filter at the right place in the filter chain"
+        )
+        int service_ranking() default 5070;
     }
 
     private PagesReleaseFilter.Config config;
