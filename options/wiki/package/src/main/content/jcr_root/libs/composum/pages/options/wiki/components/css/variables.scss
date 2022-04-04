@@ -1,0 +1,46 @@
+@charset "UTF-8";
+
+$bootstrap-color-muted: #777;
+$bootstrap-color-default: #333;
+$bootstrap-color-info: #31708f;
+$bootstrap-color-primary: #fff;
+$bootstrap-color-success: #3c763d;
+$bootstrap-color-warning: #8a6d3b;
+$bootstrap-color-danger: #a94442;
+
+$bootstrap-table-border-color: #ddd;
+
+$bootstrap-spacing-v: 10px;
+$bootstrap-spacing-h: 15px;
+
+$screen-size-l: 1200px; // bootstrap -lg-
+
+// general (site)
+
+$icon-default-font-family: 'FontAwesome';
+$site-default-font-family: 'robotolight', sans-serif;
+$site-condensed-font-family: 'roboto_condensedlight', 'robotolight', sans-serif;
+
+$site-small-font-size: 14px;
+$site-default-font-size: 16px;
+
+$title-margin-level-1-top: 3rem;
+$title-margin-level-1-2-gap: 2.5rem;
+$title-margin-level-2-3-gap: 2rem;
+$title-margin-level-3-4-gap: 1.5rem;
+$title-margin-level-4-5-gap: 1em;
+$title-margin-level-1: $title-margin-level-1-top 0 $title-margin-level-1-2-gap;
+$title-margin-level-2: $title-margin-level-1-2-gap 0 $title-margin-level-2-3-gap;
+$title-margin-level-3: $title-margin-level-2-3-gap 0 $title-margin-level-3-4-gap;
+$title-margin-level-4: $title-margin-level-3-4-gap 0 $title-margin-level-4-5-gap;
+$title-margin-level-5: $title-margin-level-4-5-gap 0 0.5rem;
+$title-margin-level-6: 0;
+
+// intro
+
+$wiki-title-text-color: #444;
+
+$wiki-title-font-size: 22px;
+$wiki-title-font-size-xs: 18px;
+$wiki-title-2-font-size: 20px;
+$wiki-title-2-font-size-xs: 17px;

@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
         jcr:primaryType="sling:OrderedFolder"
-        embed="[composum/pages/options/wiki/components/markup/css/markup.css]"/>
+        embed="[composum/pages/options/wiki/components/markup/css/markup.css,
+                composum/pages/options/wiki/components/markup/css/confluence.css,
+                composum/pages/options/wiki/components/markup/css/markdown.css,
+                composum/pages/options/wiki/components/markup/css/mediawiki.css,
+                composum/pages/options/wiki/components/markup/css/textile.css,
+                composum/pages/options/wiki/components/markup/css/tracwiki.css,
+                composum/pages/options/wiki/components/markup/css/twiki.css]"/>
