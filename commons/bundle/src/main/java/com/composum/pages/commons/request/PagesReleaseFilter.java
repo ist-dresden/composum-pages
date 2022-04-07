@@ -14,6 +14,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
@@ -48,9 +49,9 @@ import static com.composum.sling.platform.staging.impl.ResourceResolverChangeFil
         service = {Filter.class},
         property = {
                 Constants.SERVICE_DESCRIPTION + "=Composum Pages Release Filter",
-                "sling.filter.scope=REQUEST",
-                "service.ranking:Integer=" + 5070
-        }
+                "sling.filter.scope=REQUEST"
+        },
+        configurationPolicy = ConfigurationPolicy.REQUIRE
 )
 @Designate(ocd = PagesReleaseFilter.Config.class)
 public class PagesReleaseFilter implements Filter {
@@ -71,7 +72,7 @@ public class PagesReleaseFilter implements Filter {
                 name = "enabled",
                 description = "the on/off switch for the Release Filter"
         )
-        boolean release_filter_enabled() default true;
+        boolean release_filter_enabled() default false;
 
         @AttributeDefinition(
                 name = "unreleased Hosts",
@@ -84,10 +85,9 @@ public class PagesReleaseFilter implements Filter {
                 description = "the URI patterns for general (unreleased) artifacts"
         )
         String[] unreleased_uri_allow() default {
-                "^/(apps|libs)/.*\\.(css|js|jpg|jpeg|gif|png|ico|ttf|woff2?)$",
-                "^/bin/public/.+$",
-                "^/j_security_check$",
-                "^/bin/cpm/platform/auth/sessionTransferCallback$"
+                "^/(system|bin)/.*$",
+                "^/(apps|libs)/.*$",
+                "^/j_security_check$"
         };
 
         @AttributeDefinition(
@@ -95,13 +95,15 @@ public class PagesReleaseFilter implements Filter {
                 description = "the path patterns for general (unreleased) artifacts"
         )
         String[] unreleased_path_allow() default {
-                "^/(apps|libs)/.*\\.(css|js|jpg|jpeg|gif|png|ico|ttf|woff2?)$",
-                "^/libs/sling/servlet/errorhandler/.+$",
-                "^/libs/(themes|fonts|jslibs|composum|sling)/.+$",
-                "^/libs(/composum/platform/security)?/login.*$",
-                "^/libs/composum/pages/home(/.*)?$",
-                "^/content/shared/.*$"
+                "^/(system|bin)/.*$",
+                "^/(apps|libs)/.*$"
         };
+
+        @AttributeDefinition(
+                name = "Service Ranking",
+                description = "the ranking of the service to place the servlet filter at the right place in the filter chain"
+        )
+        int service_ranking() default 5070;
     }
 
     private PagesReleaseFilter.Config config;

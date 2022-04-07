@@ -1,3 +1,6 @@
+@charset "UTF-8";
+
+@import "../../css/mixins";
 
 .composum-pages-options-wiki-components-markup {
 
@@ -5,5 +8,41 @@
     }
 
     &_markup {
+        font-family: "robotolight", sans-serif;
+        font-size: 16px;
+
+        h1, h2, h3, h4, h5, h6 {
+            color: $wiki-title-text-color;
+        }
+
+        h1 {
+            margin: $title-margin-level-1;
+            @include font('robotolight', $wiki-title-font-size);
+        }
+
+        h2 {
+            margin: $title-margin-level-2;
+            @include font('robotolight', $wiki-title-2-font-size);
+        }
+
+        h3 {
+            margin: $title-margin-level-3;
+            font-size: 18px;
+        }
+
+        h4 {
+            margin: $title-margin-level-4;
+            font-size: 18px;
+        }
+
+        h5 {
+            margin: $title-margin-level-5;
+            font-size: 18px;
+        }
+
+        h6 {
+            margin: $title-margin-level-6;
+            font-size: 18px;
+        }
     }
 }

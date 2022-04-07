@@ -263,8 +263,8 @@ public class FrameModel extends GenericModel {
     public String getLogoutUrl() {
         CoreConfiguration config = getContext().getService(CoreConfiguration.class);
         String targetUri = PAGES_FRAME_PATH + ".html" + getResource().getPath();
-        String logoutUrl = config.getLogoutUrl(config.getLoginUrl(targetUri));
-        return StringUtils.defaultIfBlank(logoutUrl, "/system/sling/logout.html?logout=true&GLO=true");
+        String logoutUrl = config.getLogoutUrl(targetUri);
+        return StringUtils.defaultIfBlank(logoutUrl, "/system/sling/logout");
     }
 
     // Services...

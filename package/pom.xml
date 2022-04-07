@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.composum.pages</groupId>
         <artifactId>composum-pages</artifactId>
-        <version>1.4.0</version>
+        <version>1.4.1</version>
     </parent>
 
     <artifactId>composum-pages-package</artifactId>
@@ -46,6 +46,14 @@
                             <filter>true</filter>
                         </subPackage>
                     </subPackages>
+
+                    <dependencies>
+                        <dependency>
+                            <group>com/composum/platform</group>
+                            <name>composum-platform-package</name>
+                            <!-- <version>[${composum.platform.version},2.0)</version> -->
+                        </dependency>
+                    </dependencies>
 
                 </configuration>
             </plugin>

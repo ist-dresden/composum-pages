@@ -26,7 +26,7 @@ public class Markup extends Element {
             "wikifile.txt", "wikifile.md", "wikifile"
     };
 
-    public static final String PN_WIKI_TYPE = "type";
+    public static final String PN_WIKI_TYPE = "wikiType";
     public static final String WIKI_TYPE_DEFAULT = WikiHtmlBuilder.CONFLUENCE;
 
     public static final List<String> WIKI_TYPES = Arrays.asList(

@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.composum.pages</groupId>
         <artifactId>composum-pages</artifactId>
-        <version>1.4.0</version>
+        <version>1.4.1</version>
         <relativePath>../..</relativePath>
     </parent>
 
@@ -56,7 +56,30 @@
                             <artifactId>composum-pages-options-microsite-package</artifactId>
                             <filter>true</filter>
                         </subPackage>
+                        <subPackage>
+                            <groupId>${project.groupId}.options</groupId>
+                            <artifactId>composum-pages-options-blog-package</artifactId>
+                            <filter>true</filter>
+                        </subPackage>
+                        <subPackage>
+                            <groupId>${project.groupId}.options</groupId>
+                            <artifactId>composum-pages-options-wiki-package</artifactId>
+                            <filter>true</filter>
+                        </subPackage>
                     </subPackages>
+
+                    <dependencies>
+                        <dependency>
+                            <group>com/composum/platform</group>
+                            <name>composum-platform-package</name>
+                            <!-- <version>[${composum.platform.version},2.0)</version> -->
+                        </dependency>
+
+                        <dependency>
+                            <group>com/composum/assets</group>
+                            <name>composum-assets-package</name>
+                        </dependency>
+                    </dependencies>
 
                 </configuration>
             </plugin>
@@ -96,6 +119,20 @@
         <dependency>
             <groupId>${project.groupId}.options</groupId>
             <artifactId>composum-pages-options-microsite-package</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}.options</groupId>
+            <artifactId>composum-pages-options-blog-package</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}.options</groupId>
+            <artifactId>composum-pages-options-wiki-package</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
         </dependency>

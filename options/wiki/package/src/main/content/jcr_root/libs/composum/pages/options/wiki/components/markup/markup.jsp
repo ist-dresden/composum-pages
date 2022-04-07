@@ -4,5 +4,6 @@
 <cpp:defineObjects/>
 <cpp:element var="model" type="com.composum.pages.options.wiki.model.Markup">
     <cpn:text tagName="h3" class="${modelCSS}_title" value="${model.title}"/>
-    <cpn:div test="${not empty model.markup}" class="${modelCSS}_markup">${model.markup}</cpn:div>
+    <cpn:div test="${not empty model.markup}"
+             class="${modelCSS}_markup wikitype_${model.wikiType}">${model.markup}</cpn:div>
 </cpp:element>
