@@ -49,6 +49,7 @@
                             com.composum.sling.core.*;version="[2,5)",
                             !javax.annotation.meta,
                             javax.annotation.*;version="[0,4)",
+                            !com.google.*,
                             *
                         </Import-Package>
                         <Embed-Dependency>
@@ -111,6 +112,14 @@
             <groupId>org.eclipse.mylyn.docs</groupId>
             <artifactId>org.eclipse.mylyn.wikitext.twiki</artifactId>
             <version>${wikitext.version}</version>
+        </dependency>
+
+        <!-- The version in the sling launcher is horrifyingly old :-( - wikitext needs a new one. -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>30.1-jre</version>
+            <scope>compile</scope>
         </dependency>
 
         <!-- Composum Pages -->
