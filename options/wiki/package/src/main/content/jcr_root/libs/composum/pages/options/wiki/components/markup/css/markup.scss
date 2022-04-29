@@ -27,22 +27,50 @@
 
         h3 {
             margin: $title-margin-level-3;
-            font-size: 18px;
+            @include font('robotolight', $wiki-title-3-font-size);
         }
 
         h4 {
             margin: $title-margin-level-4;
-            font-size: 18px;
+            @include font('robotolight', $wiki-title-4-font-size);
         }
 
         h5 {
             margin: $title-margin-level-5;
-            font-size: 18px;
+            @include font('robotolight', $wiki-title-5-font-size);
         }
 
         h6 {
             margin: $title-margin-level-6;
-            font-size: 18px;
+            @include font('robotolight', $wiki-title-6-font-size);
         }
+
+        a,
+        a:visited {
+            text-decoration: none;
+            color: $site-default-link-color;
+        }
+
+        a:hover {
+            color: $site-default-link-hover;
+        }
+
+        pre {
+            background-color: $code-bg;
+            font-size: $site-default-font-size;
+
+            code {
+                background-color: $code-bg;
+                color: inherit;
+                font-size: 90%;
+            }
+        }
+
+        img {
+            margin: $element-image-margin-v auto;
+            border: $element-image-border;
+            padding: $element-image-padding;
+        }
+
     }
 }
