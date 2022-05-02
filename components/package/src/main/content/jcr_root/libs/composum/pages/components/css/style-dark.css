@@ -1,0 +1,37 @@
+/*
+ * cpc - Composum Pages Components
+ *
+ * 'dark' style variables set, usage: var(--cpc-...)
+ */
+body {
+
+    --cpc-general--spacing-v: 10px;
+    --cpc-general--spacing-h: 15px;
+
+    --cpc-general--color-muted: #777;
+    --cpc-general--color-default: #333;
+    --cpc-general--color-info: #31708f;
+    --cpc-general--color-primary: #fff;
+    --cpc-general--color-success: #3c763d;
+    --cpc-general--color-warning: #8a6d3b;
+    --cpc-general--color-danger: #a94442;
+
+    --cpc-general--background-info: #d9edf7;
+    --cpc-general--background-primary: #337ab7;
+    --cpc-general--background-success: #dff0d8;
+    --cpc-general--background-warning: #fcf8e3;
+    --cpc-general--background-danger: #f2dede;
+
+    --cpc-general--navbar-background: #f8f8f8;
+    --cpc-general--table-border-color: #ddd;
+
+    --cpc-edit--container-padding-top: 1.35rem;
+
+    --cpc-site--default-text-color: #eee;
+    --cpc-site--default-link-color: #fc0;
+    --cpc-site--default-link-hover: #fe0;
+    --cpc-site--main-title-background-color: #777;
+    --cpc-site--main-title-text-color: var(--cpc-site--default-text-color);
+    --cpc-site--column-title-text-color: var(--cpc-site--main-title-text-color);
+
+}
