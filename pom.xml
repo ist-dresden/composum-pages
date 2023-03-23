@@ -59,7 +59,7 @@
 
             <!-- Composum Pages -->
             <dependency>
-                <groupId>${project.groupId}</groupId>
+                <groupId>com.composum.pages</groupId>
                 <artifactId>composum-pages-commons-bundle</artifactId>
                 <version>${project.version}</version>
                 <scope>provided</scope>
