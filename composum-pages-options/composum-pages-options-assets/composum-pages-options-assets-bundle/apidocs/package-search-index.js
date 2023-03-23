@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","url":"allpackages-index.html"},{"l":"com.composum.pages.options.assets.api"},{"l":"com.composum.pages.options.assets.model"},{"l":"com.composum.pages.options.assets.service"}]

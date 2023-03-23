@@ -1,0 +1,14 @@
+com.composum.pages.options.assets.api
+com.composum.pages.options.assets.model
+com.composum.pages.options.assets.service
+com.composum.pages.options.blog
+com.composum.pages.options.blog.model
+com.composum.pages.options.microsite
+com.composum.pages.options.microsite.model
+com.composum.pages.options.microsite.service
+com.composum.pages.options.microsite.service.impl
+com.composum.pages.options.microsite.servlet
+com.composum.pages.options.microsite.strategy
+com.composum.pages.options.wiki
+com.composum.pages.options.wiki.impl
+com.composum.pages.options.wiki.model

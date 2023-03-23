@@ -1,0 +1,6 @@
+com.composum.pages.options.microsite
+com.composum.pages.options.microsite.model
+com.composum.pages.options.microsite.service
+com.composum.pages.options.microsite.service.impl
+com.composum.pages.options.microsite.servlet
+com.composum.pages.options.microsite.strategy

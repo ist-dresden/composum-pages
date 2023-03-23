@@ -1,0 +1,16 @@
+com.composum.pages.commons
+com.composum.pages.commons.event
+com.composum.pages.commons.filter
+com.composum.pages.commons.filter.tree
+com.composum.pages.commons.model
+com.composum.pages.commons.model.properties
+com.composum.pages.commons.request
+com.composum.pages.commons.service
+com.composum.pages.commons.service.impl
+com.composum.pages.commons.service.search
+com.composum.pages.commons.servlet
+com.composum.pages.commons.servlet.edit
+com.composum.pages.commons.servlet.search
+com.composum.pages.commons.taglib
+com.composum.pages.commons.util
+com.composum.pages.commons.widget
