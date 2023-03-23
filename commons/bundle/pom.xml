@@ -196,8 +196,10 @@
 
         <!-- Cache -->
         <dependency>
+            <!-- used in platform, but we need it for the unittests here. -->
             <groupId>org.ehcache</groupId>
-            <artifactId>ehcache-bundle</artifactId>
+            <artifactId>ehcache</artifactId>
+            <scope>test</scope>
         </dependency>
 
         <!-- JSON -->
