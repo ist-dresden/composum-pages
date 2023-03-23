@@ -14,7 +14,6 @@
     <name>Composum Pages Options - Assets</name>
 
     <properties>
-        <composum.pages.version>1.4.0</composum.pages.version>
         <composum.assets.version>1.3.0</composum.assets.version>
     </properties>
 
@@ -30,13 +29,13 @@
             <dependency>
                 <groupId>com.composum.pages</groupId>
                 <artifactId>composum-pages-components-bundle</artifactId>
-                <version>${composum.pages.version}</version>
+                <version>${project.version}</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>com.composum.pages</groupId>
                 <artifactId>composum-pages-commons-bundle</artifactId>
-                <version>${composum.pages.version}</version>
+                <version>${project.version}</version>
                 <scope>provided</scope>
             </dependency>
 

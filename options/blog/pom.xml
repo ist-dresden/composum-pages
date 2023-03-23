@@ -14,7 +14,6 @@
     <name>Composum Pages Options - Blog</name>
 
     <properties>
-        <composum.pages.version>1.4.0</composum.pages.version>
     </properties>
 
     <modules>
@@ -29,7 +28,7 @@
             <dependency>
                 <groupId>com.composum.pages</groupId>
                 <artifactId>composum-pages-commons-bundle</artifactId>
-                <version>${composum.pages.version}</version>
+                <version>${project.version}</version>
                 <scope>provided</scope>
             </dependency>
 
