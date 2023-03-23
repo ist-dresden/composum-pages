@@ -196,8 +196,10 @@
 
         <!-- Cache -->
         <dependency>
+            <!-- used in platform, but we need it for the unittests here. -->
             <groupId>org.ehcache</groupId>
-            <artifactId>ehcache-bundle</artifactId>
+            <artifactId>ehcache</artifactId>
+            <scope>test</scope>
         </dependency>
 
         <!-- JSON -->
@@ -288,15 +290,6 @@
         <dependency>
             <groupId>org.apache.sling</groupId>
             <artifactId>org.apache.sling.testing.sling-mock-oak</artifactId>
-        </dependency>
-
-        <!-- TODO Temporary workaround for https://issues.apache.org/jira/browse/SLING-8576 . Once that's fixed this
-          should be removed. -->
-        <dependency>
-            <groupId>org.apache.sling</groupId>
-            <artifactId>org.apache.sling.scripting.core</artifactId>
-            <version>2.0.50</version>
-            <scope>test</scope>
         </dependency>
 
     </dependencies>
