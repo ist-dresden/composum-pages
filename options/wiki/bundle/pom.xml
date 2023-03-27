@@ -50,6 +50,7 @@
                             !javax.annotation.meta,
                             javax.annotation.*;version="[0,4)",
                             !com.google.*,
+                            !sun.misc,
                             *
                         </Import-Package>
                         <Embed-Dependency>
