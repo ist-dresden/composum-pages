@@ -24,6 +24,9 @@ $site-condensed-font-family: 'roboto_condensedlight', 'robotolight', sans-serif;
 $site-small-font-size: 14px;
 $site-default-font-size: 16px;
 
+$site-default-link-color: #c33;
+$site-default-link-hover: #e33;
+
 $title-margin-level-1-top: 3rem;
 $title-margin-level-1-2-gap: 2.5rem;
 $title-margin-level-2-3-gap: 2rem;
@@ -40,7 +43,21 @@ $title-margin-level-6: 0;
 
 $wiki-title-text-color: #444;
 
-$wiki-title-font-size: 22px;
-$wiki-title-font-size-xs: 18px;
-$wiki-title-2-font-size: 20px;
-$wiki-title-2-font-size-xs: 17px;
+$wiki-title-font-size: 36px;
+// $wiki-title-font-size-xs: 18px;
+$wiki-title-2-font-size: 24px;
+// $wiki-title-2-font-size-xs: 17px;
+$wiki-title-3-font-size: 20px;
+$wiki-title-4-font-size: 18px;
+$wiki-title-5-font-size: 18px;
+$wiki-title-6-font-size: 18px;
+
+// code
+
+$code-bg: #fff;
+
+//
+
+$element-image-padding: 5px;
+$element-image-margin-v: 10px;
+$element-image-border: 1px solid #ccc;

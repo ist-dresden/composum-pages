@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <groupId>com.composum.pages</groupId>
         <artifactId>composum-pages-components</artifactId>
-        <version>1.4.1</version>
+        <version>1.5.0</version>
     </parent>
 
     <artifactId>composum-pages-components-bundle</artifactId>
@@ -192,15 +191,6 @@
         <dependency>
             <groupId>org.apache.sling</groupId>
             <artifactId>org.apache.sling.testing.hamcrest</artifactId>
-        </dependency>
-
-        <!-- TODO Temporary workaround for https://issues.apache.org/jira/browse/SLING-8576 . Once that's fixed this
-          should be removed. -->
-        <dependency>
-            <groupId>org.apache.sling</groupId>
-            <artifactId>org.apache.sling.scripting.core</artifactId>
-            <version>2.0.50</version>
-            <scope>test</scope>
         </dependency>
 
     </dependencies>

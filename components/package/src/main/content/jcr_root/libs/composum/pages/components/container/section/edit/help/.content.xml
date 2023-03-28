@@ -19,7 +19,7 @@
                         jcr:primaryType="nt:unstructured">
                     <de
                             jcr:primaryType="nt:unstructured"
-                            text="&lt;p>Eine Sektion (section) Komponente ist ein universeller container um eine Anzahl von Elementen zu kombinieren. Diese kann dann zusammen mit allen enthaltenen Elementen verschoben, kopiert und referenziert werden. Sektionen können ineinander geschachtelt werden.&lt;/p>&lt;p>Es gibt einige Optionen um das Erscheinungsbild zu verändern und damit die Aufmerksamkeit des Lesers zu lenken.&lt;/p>"/>
+                            text="&lt;p>Eine Sektion (section) Komponente ist ein universeller Container um eine Anzahl von Elementen zu kombinieren. Diese kann dann zusammen mit allen enthaltenen Elementen verschoben, kopiert und referenziert werden. Sektionen können ineinander geschachtelt werden.&lt;/p>&lt;p>Es gibt einige Optionen um das Erscheinungsbild zu verändern und damit die Aufmerksamkeit des Lesers zu lenken.&lt;/p>"/>
                 </i18n>
             </text_01>
             <text_564896083
