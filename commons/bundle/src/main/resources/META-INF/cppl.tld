@@ -10,12 +10,13 @@
 
     <tag>
         <description>
-            the tag to reder a token request (image)
+            The tag to render a token request (image).
         </description>
         <name>token</name>
         <tag-class>com.composum.pages.commons.taglib.TokenTag</tag-class>
         <body-content>empty</body-content>
         <attribute>
+            <description>nothing is rendered if the test attribute value is "false' (general condition)</description>
             <name>test</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -62,30 +63,35 @@
             <type>java.lang.Boolean</type>
         </attribute>
         <attribute>
+            <description>nothing is rendered if the test attribute value is "false' (general condition)</description>
             <name>test</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.Object</type>
         </attribute>
         <attribute>
+            <description>The edit mode for this render step and all included components</description>
             <name>mode</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>If false, the decoration div will not be written.</description>
             <name>decoration</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.Boolean</type>
         </attribute>
         <attribute>
+            <description>the optional DOM tree id for the HTML tag</description>
             <name>tagId</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>the tag name to render the wrapping tag (default: 'div')</description>
             <name>tagName</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -113,6 +119,12 @@
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>
+                a string of tag attributes embedded 'as is' in the rendered HTML tag; this is useful if tag
+                attributes are calculated by the model implementation and used in the tag which declares the model
+                instance variable - with the @{...} JSP-EL expression declaration such a set of dynamic tag attributes
+                can be embedded
+            </description>
             <name>tagAttributes</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -160,24 +172,28 @@
             <type>java.lang.Boolean</type>
         </attribute>
         <attribute>
+            <description>nothing is rendered if the test attribute value is "false' (general condition)</description>
             <name>test</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.Object</type>
         </attribute>
         <attribute>
+            <description>The edit mode for this render step and all included components</description>
             <name>mode</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>the optional DOM tree id for the HTML tag</description>
             <name>tagId</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>the tag name to render the wrapping tag (default: 'div')</description>
             <name>tagName</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -205,6 +221,12 @@
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>
+                a string of tag attributes embedded 'as is' in the rendered HTML tag; this is useful if tag
+                attributes are calculated by the model implementation and used in the tag which declares the model
+                instance variable - with the @{...} JSP-EL expression declaration such a set of dynamic tag attributes
+                can be embedded
+            </description>
             <name>tagAttributes</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -215,7 +237,7 @@
 
     <tag>
         <description>
-            a tag to instantiate a model object
+            A tag to instantiate a model object.
         </description>
         <name>model</name>
         <tag-class>com.composum.pages.commons.taglib.ModelTag</tag-class>
@@ -252,12 +274,14 @@
             <type>java.lang.Boolean</type>
         </attribute>
         <attribute>
+            <description>The resource path to create the model from, if it isn't the currently rendered resource.</description>
             <name>path</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>The resource to create the model from. if it isn't the currently rendered resource.</description>
             <name>resource</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -271,6 +295,7 @@
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>nothing is rendered if the test attribute value is "false' (general condition)</description>
             <name>test</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -281,7 +306,7 @@
 
     <tag>
         <description>
-            a tag to instantiate a property model object
+            A tag to instantiate a property model object.
         </description>
         <name>property</name>
         <tag-class>com.composum.pages.commons.taglib.PropertyTag</tag-class>
@@ -318,12 +343,14 @@
             <type>java.lang.Boolean</type>
         </attribute>
         <attribute>
+            <description>The name of the property of the resource from which we create the model.</description>
             <name>property</name>
             <required>true</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>If true, i18n is observed - the model is instantiated from the i18nized property.</description>
             <name>i18n</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -514,7 +541,7 @@
 
     <tag>
         <description>
-            the wrapper for the HTML HEAD tag
+            The wrapper for the HTML HEAD tag.
         </description>
         <name>head</name>
         <tag-class>com.composum.pages.commons.taglib.PageHeadTag</tag-class>
@@ -524,7 +551,7 @@
 
     <tag>
         <description>
-            the wrapper for a drop target on editing
+            The wrapper for a drop target on editing.
         </description>
         <name>dropZone</name>
         <tag-class>com.composum.pages.commons.taglib.DropZoneTag</tag-class>
@@ -651,6 +678,7 @@
             <type>java.lang.Boolean</type>
         </attribute>
         <attribute>
+            <description>the optional DOM tree id for the HTML tag</description>
             <name>tagId</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -756,6 +784,7 @@
             <type>java.lang.Boolean</type>
         </attribute>
         <attribute>
+            <description>the optional DOM tree id for the HTML tag</description>
             <name>tagId</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -880,6 +909,7 @@
             <type>java.lang.Object</type>
         </attribute>
         <attribute>
+            <description>nothing is rendered if the test attribute value is "false' (general condition)</description>
             <name>test</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -921,6 +951,7 @@
             <type>java.lang.Object</type>
         </attribute>
         <attribute>
+            <description>nothing is rendered if the test attribute value is "false' (general condition)</description>
             <name>test</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -1013,6 +1044,7 @@
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>nothing is rendered if the test attribute value is "false' (general condition)</description>
             <name>test</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -1131,6 +1163,7 @@
             <type>java.lang.Boolean</type>
         </attribute>
         <attribute>
+            <description>the optional DOM tree id for the HTML tag</description>
             <name>tagId</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -1240,6 +1273,7 @@
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>nothing is rendered if the test attribute value is "false' (general condition)</description>
             <name>test</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -1328,6 +1362,7 @@
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>nothing is rendered if the test attribute value is "false' (general condition)</description>
             <name>test</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -1344,6 +1379,7 @@
         <tag-class>com.composum.pages.commons.taglib.InvokeTag</tag-class>
         <body-content>JSP</body-content>
         <attribute>
+            <description>the tag name to render the wrapping tag (default: 'div')</description>
             <name>tagName</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -1386,6 +1422,7 @@
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>nothing is rendered if the test attribute value is "false' (general condition)</description>
             <name>test</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
