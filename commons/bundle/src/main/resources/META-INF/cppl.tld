@@ -32,12 +32,16 @@
         <tei-class>com.composum.pages.commons.taglib.ContainerTagTEI</tei-class>
         <body-content>JSP</body-content>
         <attribute>
+            <description>
+                the name of the model variable; this name must be unique in the chosen scope
+            </description>
             <name>var</name>
             <required>true</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>the full class name of the models Java class</description>
             <name>type</name>
             <required>true</required>
             <rtexprvalue>true</rtexprvalue>
@@ -51,6 +55,7 @@
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>if 'true' an existing value of the same type is replaced by a new instance otherwise an existing instance of the chosen type is reused</description>
             <name>replace</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -87,18 +92,21 @@
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>specifies the 'cssBase' value and overwrites the default value derived from the component resource type</description>
             <name>cssBase</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>the 'main' CSS class for the produced tag (hides the 'cssBase' class)</description>
             <name>cssSet</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>additional CSS classes added to the 'main' CSS class specified by the 'cssBase' or 'cssSet' attribute</description>
             <name>cssAdd</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -122,12 +130,16 @@
         <tei-class>com.composum.pages.commons.taglib.ElementTagTEI</tei-class>
         <body-content>JSP</body-content>
         <attribute>
+            <description>
+                the name of the model variable; this name must be unique in the chosen scope
+            </description>
             <name>var</name>
             <required>true</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>the full class name of the models Java class</description>
             <name>type</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -141,6 +153,7 @@
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>if 'true' an existing value of the same type is replaced by a new instance otherwise an existing instance of the chosen type is reused</description>
             <name>replace</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -171,18 +184,21 @@
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>specifies the 'cssBase' value and overwrites the default value derived from the component resource type</description>
             <name>cssBase</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>the 'main' CSS class for the produced tag (hides the 'cssBase' class)</description>
             <name>cssSet</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>additional CSS classes added to the 'main' CSS class specified by the 'cssBase' or 'cssSet' attribute</description>
             <name>cssAdd</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -206,12 +222,16 @@
         <tei-class>com.composum.pages.commons.taglib.ModelTagTEI</tei-class>
         <body-content>JSP</body-content>
         <attribute>
+            <description>
+                the name of the model variable; this name must be unique in the chosen scope
+            </description>
             <name>var</name>
             <required>true</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>the full class name of the models Java class</description>
             <name>type</name>
             <required>true</required>
             <rtexprvalue>true</rtexprvalue>
@@ -225,6 +245,7 @@
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>if 'true' an existing value of the same type is replaced by a new instance otherwise an existing instance of the chosen type is reused</description>
             <name>replace</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -243,6 +264,7 @@
             <type>org.apache.sling.api.resource.Resource</type>
         </attribute>
         <attribute>
+            <description>specifies the 'cssBase' value and overwrites the default value derived from the component resource type</description>
             <name>cssBase</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -266,12 +288,16 @@
         <tei-class>com.composum.pages.commons.taglib.ModelTagTEI</tei-class>
         <body-content>JSP</body-content>
         <attribute>
+            <description>
+                the name of the model variable; this name must be unique in the chosen scope
+            </description>
             <name>var</name>
             <required>true</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>the full class name of the models Java class</description>
             <name>type</name>
             <required>true</required>
             <rtexprvalue>true</rtexprvalue>
@@ -285,6 +311,7 @@
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>if 'true' an existing value of the same type is replaced by a new instance otherwise an existing instance of the chosen type is reused</description>
             <name>replace</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -303,6 +330,7 @@
             <type>java.lang.Boolean</type>
         </attribute>
         <attribute>
+            <description>specifies the 'cssBase' value and overwrites the default value derived from the component resource type</description>
             <name>cssBase</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -392,7 +420,7 @@
         </attribute>
         <attribute>
             <description>
-                the name of an attribute which should be filled with the include content
+                the name of the model variable; this name must be unique in the chosen scope
             </description>
             <name>var</name>
             <required>false</required>
@@ -461,18 +489,21 @@
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>specifies the 'cssBase' value and overwrites the default value derived from the component resource type</description>
             <name>cssBase</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>the 'main' CSS class for the produced tag (hides the 'cssBase' class)</description>
             <name>cssSet</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>additional CSS classes added to the 'main' CSS class specified by the 'cssBase' or 'cssSet' attribute</description>
             <name>cssAdd</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -558,18 +589,21 @@
             <rtexprvalue>true</rtexprvalue>
         </attribute>
         <attribute>
+            <description>specifies the 'cssBase' value and overwrites the default value derived from the component resource type</description>
             <name>cssBase</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>the 'main' CSS class for the produced tag (hides the 'cssBase' class)</description>
             <name>cssSet</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>additional CSS classes added to the 'main' CSS class specified by the 'cssBase' or 'cssSet' attribute</description>
             <name>cssAdd</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -587,12 +621,16 @@
         <tei-class>com.composum.pages.commons.taglib.WidgetFormTagTEI</tei-class>
         <body-content>JSP</body-content>
         <attribute>
+            <description>
+                the name of the model variable; this name must be unique in the chosen scope
+            </description>
             <name>var</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>the full class name of the models Java class</description>
             <name>type</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -606,6 +644,7 @@
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>if 'true' an existing value of the same type is replaced by a new instance otherwise an existing instance of the chosen type is reused</description>
             <name>replace</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -655,18 +694,21 @@
             <type>java.lang.Object</type>
         </attribute>
         <attribute>
+            <description>specifies the 'cssBase' value and overwrites the default value derived from the component resource type</description>
             <name>cssBase</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>the 'main' CSS class for the produced tag (hides the 'cssBase' class)</description>
             <name>cssSet</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>additional CSS classes added to the 'main' CSS class specified by the 'cssBase' or 'cssSet' attribute</description>
             <name>cssAdd</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -684,12 +726,16 @@
         <tei-class>com.composum.pages.commons.taglib.EditDialogTagTEI</tei-class>
         <body-content>JSP</body-content>
         <attribute>
+            <description>
+                the name of the model variable; this name must be unique in the chosen scope
+            </description>
             <name>var</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>the full class name of the models Java class</description>
             <name>type</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -703,6 +749,7 @@
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>if 'true' an existing value of the same type is replaced by a new instance otherwise an existing instance of the chosen type is reused</description>
             <name>replace</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -757,18 +804,21 @@
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>specifies the 'cssBase' value and overwrites the default value derived from the component resource type</description>
             <name>cssBase</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>the 'main' CSS class for the produced tag (hides the 'cssBase' class)</description>
             <name>cssSet</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>additional CSS classes added to the 'main' CSS class specified by the 'cssBase' or 'cssSet' attribute</description>
             <name>cssAdd</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -888,6 +938,7 @@
         <tei-class>com.composum.pages.commons.taglib.EditWidgetTagTEI</tei-class>
         <body-content>empty</body-content>
         <attribute>
+            <description>the full class name of the models Java class</description>
             <name>type</name>
             <required>true</required>
             <rtexprvalue>true</rtexprvalue>
@@ -1003,6 +1054,9 @@
             <type>java.lang.Boolean</type>
         </attribute>
         <attribute>
+            <description>
+                the name of the model variable; this name must be unique in the chosen scope
+            </description>
             <name>var</name>
             <required>true</required>
             <rtexprvalue>true</rtexprvalue>
@@ -1015,18 +1069,21 @@
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>specifies the 'cssBase' value and overwrites the default value derived from the component resource type</description>
             <name>cssBase</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>the 'main' CSS class for the produced tag (hides the 'cssBase' class)</description>
             <name>cssSet</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>additional CSS classes added to the 'main' CSS class specified by the 'cssBase' or 'cssSet' attribute</description>
             <name>cssAdd</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -1044,12 +1101,16 @@
         <tei-class>com.composum.pages.commons.taglib.EditToolbarTagTEI</tei-class>
         <body-content>JSP</body-content>
         <attribute>
+            <description>
+                the name of the model variable; this name must be unique in the chosen scope
+            </description>
             <name>var</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>the full class name of the models Java class</description>
             <name>type</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -1063,6 +1124,7 @@
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>if 'true' an existing value of the same type is replaced by a new instance otherwise an existing instance of the chosen type is reused</description>
             <name>replace</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -1075,18 +1137,21 @@
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>specifies the 'cssBase' value and overwrites the default value derived from the component resource type</description>
             <name>cssBase</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>the 'main' CSS class for the produced tag (hides the 'cssBase' class)</description>
             <name>cssSet</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>additional CSS classes added to the 'main' CSS class specified by the 'cssBase' or 'cssSet' attribute</description>
             <name>cssAdd</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -1327,12 +1392,14 @@
             <type>java.lang.Boolean</type>
         </attribute>
         <attribute>
+            <description>the 'main' CSS class for the produced tag (hides the 'cssBase' class)</description>
             <name>cssSet</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>additional CSS classes added to the 'main' CSS class specified by the 'cssBase' or 'cssSet' attribute</description>
             <name>cssAdd</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
