@@ -13,7 +13,7 @@ import static com.composum.pages.commons.taglib.EditDialogTag.DIALOG_PATH;
 import static com.composum.pages.commons.taglib.EditDialogTag.DIALOG_VAR;
 
 /**
- * the PageBodyTag creates the HTML body tag and the EDIT elements around the page content
+ * Creates a group within an edit dialog.
  */
 public class EditDialogGroupTag extends AbstractFormTag {
 

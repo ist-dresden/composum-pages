@@ -500,7 +500,7 @@
 
     <tag>
         <description>
-            the wrapper for the HTML BODY tag
+            The PageBodyTag creates the HTML body tag and the EDIT elements around the page content.
         </description>
         <name>body</name>
         <tag-class>com.composum.pages.commons.taglib.PageBodyTag</tag-class>
@@ -541,7 +541,7 @@
 
     <tag>
         <description>
-            The wrapper for the HTML HEAD tag.
+            The PageBodyTag creates the HTML body tag and the EDIT elements around the page content.
         </description>
         <name>head</name>
         <tag-class>com.composum.pages.commons.taglib.PageHeadTag</tag-class>
@@ -551,7 +551,7 @@
 
     <tag>
         <description>
-            The wrapper for a drop target on editing.
+            A  tag to declare a drop zone to change a property by dropping an asset or component (edit mode only).
         </description>
         <name>dropZone</name>
         <tag-class>com.composum.pages.commons.taglib.DropZoneTag</tag-class>
@@ -641,7 +641,7 @@
 
     <tag>
         <description>
-            the form tag to use edit widgets in a normal HTML form
+            The form tag to use edit widgets in a normal HTML form.
         </description>
         <name>widgetForm</name>
         <tag-class>com.composum.pages.commons.taglib.WidgetFormTag</tag-class>
@@ -747,7 +747,7 @@
 
     <tag>
         <description>
-            the wrapper for the edit dialog tag
+            The EditDialogTag creates the HTML code for an edit dialog of a component.
         </description>
         <name>editDialog</name>
         <tag-class>com.composum.pages.commons.taglib.EditDialogTag</tag-class>
@@ -884,7 +884,7 @@
 
     <tag>
         <description>
-            the wrapper for an edit dialog tab
+            Creates a tab witin an edit dialog.
         </description>
         <name>editDialogTab</name>
         <tag-class>com.composum.pages.commons.taglib.EditDialogTabTag</tag-class>
@@ -920,7 +920,7 @@
 
     <tag>
         <description>
-            the wrapper for an edit dialog group
+            Creates a group within an edit dialog.
         </description>
         <name>editDialogGroup</name>
         <tag-class>com.composum.pages.commons.taglib.EditDialogGroupTag</tag-class>
@@ -1126,7 +1126,7 @@
 
     <tag>
         <description>
-            the wrapper for the edit toolbar tag
+            Creates the html markup for an edit toolbar.
         </description>
         <name>editToolbar</name>
         <tag-class>com.composum.pages.commons.taglib.EditToolbarTag</tag-class>

@@ -54,7 +54,7 @@ jobs:
       run: |
           echo '${{ toJSON(github) }}'
 
-    - name: Try to set a master password
+    - name: Set a master password
       run: |
         MASTERPWD=$(openssl rand -base64 25)
         echo "<settingsSecurity> <master>$(mvn --encrypt-master-password "$MASTERPWD")</master></settingsSecurity>" > $HOME/.m2/settings-security.xml
