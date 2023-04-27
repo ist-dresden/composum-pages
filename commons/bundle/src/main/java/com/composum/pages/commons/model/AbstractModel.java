@@ -10,6 +10,7 @@ import com.composum.pages.commons.model.properties.Language;
 import com.composum.pages.commons.model.properties.Languages;
 import com.composum.pages.commons.request.DisplayMode;
 import com.composum.pages.commons.service.PageManager;
+import com.composum.pages.commons.service.PagesPluginService;
 import com.composum.pages.commons.service.ResourceManager;
 import com.composum.pages.commons.service.SiteManager;
 import com.composum.pages.commons.service.VersionsService;
@@ -105,6 +106,7 @@ public abstract class AbstractModel implements SlingBean, Model {
      */
     private transient ResourceManager resourceManager;
     private transient VersionsService versionsService;
+    private transient PagesPluginService pagesPluginService;
 
     // instance attributes
 
@@ -830,6 +832,14 @@ public abstract class AbstractModel implements SlingBean, Model {
             versionsService = Objects.requireNonNull(context.getService(VersionsService.class));
         }
         return versionsService;
+    }
+
+    @Nonnull
+    public PagesPluginService getPagesPluginService() {
+        if (pagesPluginService == null) {
+            pagesPluginService = Objects.requireNonNull(context.getService(PagesPluginService.class));
+        }
+        return pagesPluginService;
     }
 
     // Object
