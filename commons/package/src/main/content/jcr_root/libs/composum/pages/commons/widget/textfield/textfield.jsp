@@ -5,6 +5,7 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <cpp:defineFrameObjects/>
 <div class="${widgetCSS}_${widget.widgetType} ${widgetCSS}_${widget.cssName}${widget.required?' required':''} form-group">
+    <%--@elvariable id="widget" type="com.composum.pages.commons.taglib.EditWidgetTag"--%>
     <sling:call script="label.jsp"/>
     <c:if test="${!widget.blankAllowed&&widget.slingPost}">
         <input type="hidden" class="sling-post-hint" name="${widget.name}@Delete" value="true"/>

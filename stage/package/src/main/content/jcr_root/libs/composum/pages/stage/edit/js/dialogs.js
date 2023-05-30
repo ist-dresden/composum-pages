@@ -146,8 +146,19 @@
                 }
             }
         });
+        /** List where plugins can register themselves. Each should offer the method dialogInitializeView(dialog, element). */
+        dialogs.const.dialogplugins = dialogs.const.dialogplugins || [];
 
         dialogs.ElementDialog = core.components.FormDialog.extend({
+
+            initView: function () {
+                core.components.FormDialog.prototype.initView.apply(this);
+                for (const plugin of dialogs.const.dialogplugins) {
+                    if (_.isFunction(plugin.dialogInitializeView)) {
+                        plugin.dialogInitializeView(this, this.$el);
+                    }
+                }
+            },
 
             initSubmit: function () {
                 var c = dialogs.const.edit.css;
@@ -394,6 +405,7 @@
         dialogs.CreateDialog = dialogs.EditDialog.extend({
 
             initView: function () {
+                dialogs.ElementDialog.prototype.initView.apply(this);
                 this.initTabs();
             },
 
@@ -441,6 +453,7 @@
         dialogs.NewElementDialog = dialogs.ElementDialog.extend({
 
             initView: function () {
+                dialogs.ElementDialog.prototype.initView.apply(this);
                 this.elementType = core.getWidget(this.el, '.element-type-select-widget',
                     pages.widgets.ElementTypeSelectWidget, {
                         callback: _.bind(this.showOrDefault, this)
@@ -708,6 +721,7 @@
         dialogs.EditSourceFileDialog = dialogs.EditDialog.extend({
 
             initView: function () {
+                dialogs.EditDialog.extend.prototype.initView.apply(this);
                 var c = dialogs.const.edit.css;
                 dialogs.EditDialog.prototype.initView.apply(this);
                 this.$title = this.$('.modal-title');

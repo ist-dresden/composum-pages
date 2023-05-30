@@ -791,6 +791,7 @@
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>The title of the item.</description>
             <name>title</name>
             <required>true</required>
             <rtexprvalue>true</rtexprvalue>
@@ -803,12 +804,14 @@
             <type>java.lang.Boolean</type>
         </attribute>
         <attribute>
+            <description>The rendered resource.</description>
             <name>resource</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>org.apache.sling.api.resource.Resource</type>
         </attribute>
         <attribute>
+            <description>The path of the resource to edit; if it ends with * then the dialog is meant to create a new resource.</description>
             <name>resourcePath</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -891,18 +894,21 @@
         <tei-class>com.composum.pages.commons.taglib.EditDialogTabTagTEI</tei-class>
         <body-content>JSP</body-content>
         <attribute>
+            <description>identifier of the tab</description>
             <name>tabId</name>
             <required>true</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>the label of the tab</description>
             <name>label</name>
             <required>true</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>can be used to disable the tab</description>
             <name>disabled</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -927,12 +933,14 @@
         <tei-class>com.composum.pages.commons.taglib.EditDialogGroupTagTEI</tei-class>
         <body-content>JSP</body-content>
         <attribute>
+            <description>an identifier for the group</description>
             <name>groupId</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>the label of the group</description>
             <name>label</name>
             <required>true</required>
             <rtexprvalue>true</rtexprvalue>
@@ -945,6 +953,7 @@
             <type>java.lang.Boolean</type>
         </attribute>
         <attribute>
+            <description>can be used to disable the group</description>
             <name>disabled</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -1226,6 +1235,7 @@
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>The title of the item.</description>
             <name>title</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -1267,6 +1277,7 @@
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>The title of the item.</description>
             <name>title</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -1315,6 +1326,7 @@
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>The title of the item.</description>
             <name>title</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -1356,6 +1368,7 @@
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>The title of the item.</description>
             <name>title</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
