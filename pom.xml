@@ -12,7 +12,7 @@
     <groupId>com.composum.pages</groupId>
     <artifactId>composum-pages</artifactId>
     <packaging>pom</packaging>
-    <version>1.5.1-SNAPSHOT</version>
+    <version>1.5.1</version>
 
     <name>Composum Pages</name>
     <description>Maven parent for Composum Pages packages</description>
@@ -30,7 +30,7 @@
         <connection>scm:git:https://github.com/ist-dresden/composum-pages.git</connection>
         <developerConnection>scm:git:https://github.com/ist-dresden/composum-pages.git</developerConnection>
         <url>https://github.com/ist-dresden/composum-pages.git</url>
-      <tag>HEAD</tag>
+      <tag>composum-pages-1.5.1</tag>
   </scm>
 
     <modules>
