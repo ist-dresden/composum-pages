@@ -18,7 +18,10 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Finds all tools represented as {@link ToolsCollection.Component} from collections (with resource type <code>composum/pages/tools/collection</code>) that have a {@value #CATEGORIES} attribute that has all categories from our categories, as given in the constructor {@link #ToolsCollection(BeanContext, Resource, List)}.
+ * Finds all tools represented as {@link ToolsCollection.Component} from collections
+ * (with resource type <code>composum/pages/tools/collection</code>) that have
+ * a {@value #CATEGORIES} attribute that has all categories from our categories,
+ * as given in the constructor {@link #ToolsCollection(BeanContext, Resource, List)}.
  * The tool can also impose {@value #CONDITION} site or page that have to be met by the targetResource.
  */
 public class ToolsCollection {
@@ -80,6 +83,13 @@ public class ToolsCollection {
 
         public int getOrder() {
             return values.get("order", 1);
+        }
+
+        /**
+         * If set, the current resource should be rendered with this resourceType, as opposed to rendering resource at our {@link #getPath()} with our sling:resourceType.
+         */
+        public String getResourceType() {
+            return values.get("resourceType", null);
         }
 
         @Override

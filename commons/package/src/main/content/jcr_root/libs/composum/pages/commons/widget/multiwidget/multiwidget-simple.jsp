@@ -5,6 +5,6 @@
 <cpp:defineFrameObjects/>
 <div class="composum-pages-edit-multiwidget multiwidget-simple widget multi-form-widget form-group"
      data-name="${multiwidget.propertyName}">
-    <label class="control-label composum-pages-edit-multiwidget_label"><span class="label-text">${cpn:text(widget.label)}</span><sling:call script="hint.jsp"/></label>
+    <label class="control-label composum-pages-edit-multiwidget_label"><span class="label-text">${cpn:text(widget.label)}</span><sling:call script="labelextensions.jsp"/><sling:call script="hint.jsp"/></label>
     <div class="multi-form-content">
         <div class="multi-form-item">
