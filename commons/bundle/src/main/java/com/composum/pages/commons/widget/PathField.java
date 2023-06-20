@@ -17,7 +17,6 @@ public class PathField extends PropertyEditHandle<String> implements WidgetModel
         super(String.class);
     }
 
-    @Nonnull
     public String getPath() {
         return getValue();
     }

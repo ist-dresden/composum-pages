@@ -10,12 +10,13 @@
 
     <tag>
         <description>
-            the tag to reder a token request (image)
+            The tag to render a token request (image).
         </description>
         <name>token</name>
         <tag-class>com.composum.pages.commons.taglib.TokenTag</tag-class>
         <body-content>empty</body-content>
         <attribute>
+            <description>nothing is rendered if the test attribute value is "false' (general condition)</description>
             <name>test</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -32,12 +33,16 @@
         <tei-class>com.composum.pages.commons.taglib.ContainerTagTEI</tei-class>
         <body-content>JSP</body-content>
         <attribute>
+            <description>
+                the name of the model variable; this name must be unique in the chosen scope
+            </description>
             <name>var</name>
             <required>true</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>the full class name of the models Java class</description>
             <name>type</name>
             <required>true</required>
             <rtexprvalue>true</rtexprvalue>
@@ -51,60 +56,75 @@
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>if 'true' an existing value of the same type is replaced by a new instance otherwise an existing instance of the chosen type is reused</description>
             <name>replace</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.Boolean</type>
         </attribute>
         <attribute>
+            <description>nothing is rendered if the test attribute value is "false' (general condition)</description>
             <name>test</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.Object</type>
         </attribute>
         <attribute>
+            <description>The edit mode for this render step and all included components</description>
             <name>mode</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>If false, the decoration div will not be written.</description>
             <name>decoration</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.Boolean</type>
         </attribute>
         <attribute>
+            <description>the optional DOM tree id for the HTML tag</description>
             <name>tagId</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>the tag name to render the wrapping tag (default: 'div')</description>
             <name>tagName</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>specifies the 'cssBase' value and overwrites the default value derived from the component resource type</description>
             <name>cssBase</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>the 'main' CSS class for the produced tag (hides the 'cssBase' class)</description>
             <name>cssSet</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>additional CSS classes added to the 'main' CSS class specified by the 'cssBase' or 'cssSet' attribute</description>
             <name>cssAdd</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>
+                a string of tag attributes embedded 'as is' in the rendered HTML tag; this is useful if tag
+                attributes are calculated by the model implementation and used in the tag which declares the model
+                instance variable - with the @{...} JSP-EL expression declaration such a set of dynamic tag attributes
+                can be embedded
+            </description>
             <name>tagAttributes</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -122,12 +142,16 @@
         <tei-class>com.composum.pages.commons.taglib.ElementTagTEI</tei-class>
         <body-content>JSP</body-content>
         <attribute>
+            <description>
+                the name of the model variable; this name must be unique in the chosen scope
+            </description>
             <name>var</name>
             <required>true</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>the full class name of the models Java class</description>
             <name>type</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -141,54 +165,68 @@
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>if 'true' an existing value of the same type is replaced by a new instance otherwise an existing instance of the chosen type is reused</description>
             <name>replace</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.Boolean</type>
         </attribute>
         <attribute>
+            <description>nothing is rendered if the test attribute value is "false' (general condition)</description>
             <name>test</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.Object</type>
         </attribute>
         <attribute>
+            <description>The edit mode for this render step and all included components</description>
             <name>mode</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>the optional DOM tree id for the HTML tag</description>
             <name>tagId</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>the tag name to render the wrapping tag (default: 'div')</description>
             <name>tagName</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>specifies the 'cssBase' value and overwrites the default value derived from the component resource type</description>
             <name>cssBase</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>the 'main' CSS class for the produced tag (hides the 'cssBase' class)</description>
             <name>cssSet</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>additional CSS classes added to the 'main' CSS class specified by the 'cssBase' or 'cssSet' attribute</description>
             <name>cssAdd</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>
+                a string of tag attributes embedded 'as is' in the rendered HTML tag; this is useful if tag
+                attributes are calculated by the model implementation and used in the tag which declares the model
+                instance variable - with the @{...} JSP-EL expression declaration such a set of dynamic tag attributes
+                can be embedded
+            </description>
             <name>tagAttributes</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -199,19 +237,23 @@
 
     <tag>
         <description>
-            a tag to instantiate a model object
+            A tag to instantiate a model object.
         </description>
         <name>model</name>
         <tag-class>com.composum.pages.commons.taglib.ModelTag</tag-class>
         <tei-class>com.composum.pages.commons.taglib.ModelTagTEI</tei-class>
         <body-content>JSP</body-content>
         <attribute>
+            <description>
+                the name of the model variable; this name must be unique in the chosen scope
+            </description>
             <name>var</name>
             <required>true</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>the full class name of the models Java class</description>
             <name>type</name>
             <required>true</required>
             <rtexprvalue>true</rtexprvalue>
@@ -225,30 +267,35 @@
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>if 'true' an existing value of the same type is replaced by a new instance otherwise an existing instance of the chosen type is reused</description>
             <name>replace</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.Boolean</type>
         </attribute>
         <attribute>
+            <description>The resource path to create the model from, if it isn't the currently rendered resource.</description>
             <name>path</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>The resource to create the model from. if it isn't the currently rendered resource.</description>
             <name>resource</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>org.apache.sling.api.resource.Resource</type>
         </attribute>
         <attribute>
+            <description>specifies the 'cssBase' value and overwrites the default value derived from the component resource type</description>
             <name>cssBase</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>nothing is rendered if the test attribute value is "false' (general condition)</description>
             <name>test</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -259,19 +306,23 @@
 
     <tag>
         <description>
-            a tag to instantiate a property model object
+            A tag to instantiate a property model object.
         </description>
         <name>property</name>
         <tag-class>com.composum.pages.commons.taglib.PropertyTag</tag-class>
         <tei-class>com.composum.pages.commons.taglib.ModelTagTEI</tei-class>
         <body-content>JSP</body-content>
         <attribute>
+            <description>
+                the name of the model variable; this name must be unique in the chosen scope
+            </description>
             <name>var</name>
             <required>true</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>the full class name of the models Java class</description>
             <name>type</name>
             <required>true</required>
             <rtexprvalue>true</rtexprvalue>
@@ -285,24 +336,28 @@
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>if 'true' an existing value of the same type is replaced by a new instance otherwise an existing instance of the chosen type is reused</description>
             <name>replace</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.Boolean</type>
         </attribute>
         <attribute>
+            <description>The name of the property of the resource from which we create the model.</description>
             <name>property</name>
             <required>true</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>If true, i18n is observed - the model is instantiated from the i18nized property.</description>
             <name>i18n</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.Boolean</type>
         </attribute>
         <attribute>
+            <description>specifies the 'cssBase' value and overwrites the default value derived from the component resource type</description>
             <name>cssBase</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -392,7 +447,7 @@
         </attribute>
         <attribute>
             <description>
-                the name of an attribute which should be filled with the include content
+                the name of the model variable; this name must be unique in the chosen scope
             </description>
             <name>var</name>
             <required>false</required>
@@ -445,7 +500,7 @@
 
     <tag>
         <description>
-            the wrapper for the HTML BODY tag
+            The PageBodyTag creates the HTML body tag and the EDIT elements around the page content.
         </description>
         <name>body</name>
         <tag-class>com.composum.pages.commons.taglib.PageBodyTag</tag-class>
@@ -461,18 +516,21 @@
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>specifies the 'cssBase' value and overwrites the default value derived from the component resource type</description>
             <name>cssBase</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>the 'main' CSS class for the produced tag (hides the 'cssBase' class)</description>
             <name>cssSet</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>additional CSS classes added to the 'main' CSS class specified by the 'cssBase' or 'cssSet' attribute</description>
             <name>cssAdd</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -483,7 +541,7 @@
 
     <tag>
         <description>
-            the wrapper for the HTML HEAD tag
+            The PageBodyTag creates the HTML body tag and the EDIT elements around the page content.
         </description>
         <name>head</name>
         <tag-class>com.composum.pages.commons.taglib.PageHeadTag</tag-class>
@@ -493,7 +551,7 @@
 
     <tag>
         <description>
-            the wrapper for a drop target on editing
+            A  tag to declare a drop zone to change a property by dropping an asset or component (edit mode only).
         </description>
         <name>dropZone</name>
         <tag-class>com.composum.pages.commons.taglib.DropZoneTag</tag-class>
@@ -558,18 +616,21 @@
             <rtexprvalue>true</rtexprvalue>
         </attribute>
         <attribute>
+            <description>specifies the 'cssBase' value and overwrites the default value derived from the component resource type</description>
             <name>cssBase</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>the 'main' CSS class for the produced tag (hides the 'cssBase' class)</description>
             <name>cssSet</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>additional CSS classes added to the 'main' CSS class specified by the 'cssBase' or 'cssSet' attribute</description>
             <name>cssAdd</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -580,19 +641,23 @@
 
     <tag>
         <description>
-            the form tag to use edit widgets in a normal HTML form
+            The form tag to use edit widgets in a normal HTML form.
         </description>
         <name>widgetForm</name>
         <tag-class>com.composum.pages.commons.taglib.WidgetFormTag</tag-class>
         <tei-class>com.composum.pages.commons.taglib.WidgetFormTagTEI</tei-class>
         <body-content>JSP</body-content>
         <attribute>
+            <description>
+                the name of the model variable; this name must be unique in the chosen scope
+            </description>
             <name>var</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>the full class name of the models Java class</description>
             <name>type</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -606,12 +671,14 @@
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>if 'true' an existing value of the same type is replaced by a new instance otherwise an existing instance of the chosen type is reused</description>
             <name>replace</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.Boolean</type>
         </attribute>
         <attribute>
+            <description>the optional DOM tree id for the HTML tag</description>
             <name>tagId</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -655,18 +722,21 @@
             <type>java.lang.Object</type>
         </attribute>
         <attribute>
+            <description>specifies the 'cssBase' value and overwrites the default value derived from the component resource type</description>
             <name>cssBase</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>the 'main' CSS class for the produced tag (hides the 'cssBase' class)</description>
             <name>cssSet</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>additional CSS classes added to the 'main' CSS class specified by the 'cssBase' or 'cssSet' attribute</description>
             <name>cssAdd</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -677,19 +747,23 @@
 
     <tag>
         <description>
-            the wrapper for the edit dialog tag
+            The EditDialogTag creates the HTML code for an edit dialog of a component.
         </description>
         <name>editDialog</name>
         <tag-class>com.composum.pages.commons.taglib.EditDialogTag</tag-class>
         <tei-class>com.composum.pages.commons.taglib.EditDialogTagTEI</tei-class>
         <body-content>JSP</body-content>
         <attribute>
+            <description>
+                the name of the model variable; this name must be unique in the chosen scope
+            </description>
             <name>var</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>the full class name of the models Java class</description>
             <name>type</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -703,18 +777,21 @@
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>if 'true' an existing value of the same type is replaced by a new instance otherwise an existing instance of the chosen type is reused</description>
             <name>replace</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.Boolean</type>
         </attribute>
         <attribute>
+            <description>the optional DOM tree id for the HTML tag</description>
             <name>tagId</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>The title of the item.</description>
             <name>title</name>
             <required>true</required>
             <rtexprvalue>true</rtexprvalue>
@@ -727,12 +804,14 @@
             <type>java.lang.Boolean</type>
         </attribute>
         <attribute>
+            <description>The rendered resource.</description>
             <name>resource</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>org.apache.sling.api.resource.Resource</type>
         </attribute>
         <attribute>
+            <description>The path of the resource to edit; if it ends with * then the dialog is meant to create a new resource.</description>
             <name>resourcePath</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -757,18 +836,21 @@
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>specifies the 'cssBase' value and overwrites the default value derived from the component resource type</description>
             <name>cssBase</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>the 'main' CSS class for the produced tag (hides the 'cssBase' class)</description>
             <name>cssSet</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>additional CSS classes added to the 'main' CSS class specified by the 'cssBase' or 'cssSet' attribute</description>
             <name>cssAdd</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -805,31 +887,35 @@
 
     <tag>
         <description>
-            the wrapper for an edit dialog tab
+            Creates a tab witin an edit dialog.
         </description>
         <name>editDialogTab</name>
         <tag-class>com.composum.pages.commons.taglib.EditDialogTabTag</tag-class>
         <tei-class>com.composum.pages.commons.taglib.EditDialogTabTagTEI</tei-class>
         <body-content>JSP</body-content>
         <attribute>
+            <description>identifier of the tab</description>
             <name>tabId</name>
             <required>true</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>the label of the tab</description>
             <name>label</name>
             <required>true</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>can be used to disable the tab</description>
             <name>disabled</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.Object</type>
         </attribute>
         <attribute>
+            <description>nothing is rendered if the test attribute value is "false' (general condition)</description>
             <name>test</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -840,19 +926,21 @@
 
     <tag>
         <description>
-            the wrapper for an edit dialog group
+            Creates a group within an edit dialog.
         </description>
         <name>editDialogGroup</name>
         <tag-class>com.composum.pages.commons.taglib.EditDialogGroupTag</tag-class>
         <tei-class>com.composum.pages.commons.taglib.EditDialogGroupTagTEI</tei-class>
         <body-content>JSP</body-content>
         <attribute>
+            <description>an identifier for the group</description>
             <name>groupId</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>the label of the group</description>
             <name>label</name>
             <required>true</required>
             <rtexprvalue>true</rtexprvalue>
@@ -865,12 +953,14 @@
             <type>java.lang.Boolean</type>
         </attribute>
         <attribute>
+            <description>can be used to disable the group</description>
             <name>disabled</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.Object</type>
         </attribute>
         <attribute>
+            <description>nothing is rendered if the test attribute value is "false' (general condition)</description>
             <name>test</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -888,6 +978,7 @@
         <tei-class>com.composum.pages.commons.taglib.EditWidgetTagTEI</tei-class>
         <body-content>empty</body-content>
         <attribute>
+            <description>the full class name of the models Java class</description>
             <name>type</name>
             <required>true</required>
             <rtexprvalue>true</rtexprvalue>
@@ -962,6 +1053,7 @@
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>nothing is rendered if the test attribute value is "false' (general condition)</description>
             <name>test</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -1003,6 +1095,9 @@
             <type>java.lang.Boolean</type>
         </attribute>
         <attribute>
+            <description>
+                the name of the model variable; this name must be unique in the chosen scope
+            </description>
             <name>var</name>
             <required>true</required>
             <rtexprvalue>true</rtexprvalue>
@@ -1015,18 +1110,21 @@
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>specifies the 'cssBase' value and overwrites the default value derived from the component resource type</description>
             <name>cssBase</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>the 'main' CSS class for the produced tag (hides the 'cssBase' class)</description>
             <name>cssSet</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>additional CSS classes added to the 'main' CSS class specified by the 'cssBase' or 'cssSet' attribute</description>
             <name>cssAdd</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -1037,19 +1135,23 @@
 
     <tag>
         <description>
-            the wrapper for the edit toolbar tag
+            Creates the html markup for an edit toolbar.
         </description>
         <name>editToolbar</name>
         <tag-class>com.composum.pages.commons.taglib.EditToolbarTag</tag-class>
         <tei-class>com.composum.pages.commons.taglib.EditToolbarTagTEI</tei-class>
         <body-content>JSP</body-content>
         <attribute>
+            <description>
+                the name of the model variable; this name must be unique in the chosen scope
+            </description>
             <name>var</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>the full class name of the models Java class</description>
             <name>type</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -1063,30 +1165,35 @@
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>if 'true' an existing value of the same type is replaced by a new instance otherwise an existing instance of the chosen type is reused</description>
             <name>replace</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.Boolean</type>
         </attribute>
         <attribute>
+            <description>the optional DOM tree id for the HTML tag</description>
             <name>tagId</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>specifies the 'cssBase' value and overwrites the default value derived from the component resource type</description>
             <name>cssBase</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>the 'main' CSS class for the produced tag (hides the 'cssBase' class)</description>
             <name>cssSet</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>additional CSS classes added to the 'main' CSS class specified by the 'cssBase' or 'cssSet' attribute</description>
             <name>cssAdd</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -1128,6 +1235,7 @@
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>The title of the item.</description>
             <name>title</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -1169,12 +1277,14 @@
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>The title of the item.</description>
             <name>title</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>nothing is rendered if the test attribute value is "false' (general condition)</description>
             <name>test</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -1216,6 +1326,7 @@
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>The title of the item.</description>
             <name>title</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -1257,12 +1368,14 @@
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>The title of the item.</description>
             <name>title</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>nothing is rendered if the test attribute value is "false' (general condition)</description>
             <name>test</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -1279,6 +1392,7 @@
         <tag-class>com.composum.pages.commons.taglib.InvokeTag</tag-class>
         <body-content>JSP</body-content>
         <attribute>
+            <description>the tag name to render the wrapping tag (default: 'div')</description>
             <name>tagName</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -1321,18 +1435,21 @@
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>nothing is rendered if the test attribute value is "false' (general condition)</description>
             <name>test</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.Boolean</type>
         </attribute>
         <attribute>
+            <description>the 'main' CSS class for the produced tag (hides the 'cssBase' class)</description>
             <name>cssSet</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>additional CSS classes added to the 'main' CSS class specified by the 'cssBase' or 'cssSet' attribute</description>
             <name>cssAdd</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>

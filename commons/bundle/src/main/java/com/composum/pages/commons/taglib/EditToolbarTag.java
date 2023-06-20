@@ -7,7 +7,7 @@ import javax.servlet.jsp.PageContext;
 import java.io.IOException;
 
 /**
- * the PageBodyTag creates the HTML body tag and the EDIT elements around the page content
+ * Creates the html markup for an edit toolbar.
  */
 public class EditToolbarTag extends AbstractEditTag {
 

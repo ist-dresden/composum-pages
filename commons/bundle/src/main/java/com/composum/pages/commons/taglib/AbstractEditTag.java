@@ -49,7 +49,7 @@ public abstract class AbstractEditTag extends AbstractFormTag {
      * Determines the resource to edit by the form of the dialog to create by this tag. This resource is mainly
      * determined by a 'EDIT_RESOURCE_KEY' request attribute which is declared by the edit servlet during the dialog
      * load request; if the dialog is loaded by a dialog component URL the edit resource is expected as the URLs suffix.
-     * Dialogs to ceate a new resourceshould be marked with a '*' resourcePath attribute to avoid copying of
+     * Dialogs to create a new resource should be marked with a '*' resourcePath attribute to avoid copying of
      * parent properties.
      *
      * @param context the current request context
