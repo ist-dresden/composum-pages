@@ -99,6 +99,14 @@ public class ToolsCollection {
             builder.append(getPath(), other.getPath());
             return builder.toComparison();
         }
+
+        @Override
+        public String toString() {
+            return "Component{" +
+                    "resource=" + resource.getPath() +
+                    ", values=" + values +
+                    '}';
+        }
     }
 
     private transient List<Component> componentList;
