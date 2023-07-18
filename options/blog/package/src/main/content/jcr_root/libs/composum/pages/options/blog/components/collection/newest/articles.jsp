@@ -9,7 +9,7 @@
                 <a href="${article.url}" class="${modelCSS}_link">
                     <cpp:include path="${article.content.path}" mode="none"
                                  resourceType="composum/pages/options/blog/components/static/intro"
-                                 replaceSelectors="teaser"/>
+                                 replaceSelectors="blogteaser"/>
                 </a>
             </li>
         </c:forEach>
