@@ -7,7 +7,7 @@
     <jcr:content
             jcr:primaryType="cpp:SiteConfiguration"
             jcr:title="A Pages Example Site"
-            jcr:description="A Pages Components site template to start expirience with Composum Pages."
+            jcr:description="A Pages Components site template to start experience with Composum Pages."
             sling:resourceType="composum/pages/stage/edit/site"
             siteComponentSettings="composum/pages/components/site/settings"
             allowedChildTemplates="[

@@ -18,7 +18,7 @@
         </div>
     </div>
     <cpp:widget type="static"
-                value="A section ca be decorated by a symbol and a 'warning' level to produce more attention for the sections content:"/>
+                value="A section can be decorated by a symbol and a 'warning' level to produce more attention for the sections content:"/>
     <div class="row">
         <div class="col col-xs-6">
             <cpp:widget label="Warning Level" property="level" type="select"
