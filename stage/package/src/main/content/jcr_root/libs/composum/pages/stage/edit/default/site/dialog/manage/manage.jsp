@@ -29,6 +29,9 @@
         <button type="button" class="${dialogCssBase}_button-open ${dialogCssBase}_button btn btn-default has-icon"
                 data-dismiss="modal" title="${cpn:i18n(slingRequest,'Open Site')}"><i
                 class="${dialogCssBase}_icon fa fa-bullseye"></i>${cpn:i18n(slingRequest,'Open')}</button>
+        <button type="button" class="${dialogCssBase}_button-clone ${dialogCssBase}_button btn btn-default has-icon"
+                data-dismiss="modal" title="${cpn:i18n(slingRequest,'Clone Site')}"><i
+                class="${dialogCssBase}_icon fa fa-clone"></i>${cpn:i18n(slingRequest,'Clone')}</button>
         <div class="${dialogCssBase}_hints"></div>
         <button type="button" class="${dialogCssBase}_button-cancel ${dialogCssBase}_button btn btn-default"
                 data-dismiss="modal">${cpn:i18n(slingRequest,'Close')}</button>

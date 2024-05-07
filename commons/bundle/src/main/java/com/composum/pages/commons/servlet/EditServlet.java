@@ -177,7 +177,7 @@ public class EditServlet extends PagesContentServlet {
         pageComponents, elementTypes, targetContainers, isAllowedElement, filterDropZones, componentCategories,
         refreshElement, insertElement, moveElement, copyElement,
         createPage, deletePage, moveContent, renameContent, copyContent,
-        createSite, deleteSite,
+        createSite, cloneSite, deleteSite,
         standaloneStaticTools, standaloneContextTools, contextTools, context
     }
 
@@ -259,6 +259,8 @@ public class EditServlet extends PagesContentServlet {
                 Operation.copyContent, new CopyContentOperation());
         operations.setOperation(ServletOperationSet.Method.POST, Extension.json,
                 Operation.createSite, new CreateSite());
+        operations.setOperation(ServletOperationSet.Method.POST, Extension.json,
+                Operation.cloneSite, new CloneSite());
         operations.setOperation(ServletOperationSet.Method.POST, Extension.json,
                 Operation.deleteSite, new DeleteSite());
 
@@ -1128,6 +1130,48 @@ public class EditServlet extends PagesContentServlet {
                 response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ex.getMessage());
             }
         }
+    }
+
+    protected class CloneSite implements ServletOperation {
+
+        @Override
+        public void doIt(@Nonnull SlingHttpServletRequest request,
+                         @Nonnull SlingHttpServletResponse response,
+                         ResourceHandle resource)
+                throws IOException {
+
+            BeanContext context = new BeanContext.Servlet(getServletContext(), bundleContext, request, response);
+            try {
+
+                if (Site.isSiteConfiguration(resource)) {
+                    resource = resource.getParent();
+                }
+                if (Site.isSite(resource)) {
+                    String tenant = request.getParameter("tenant");
+                    String name = request.getParameter("name");
+                    String title = request.getParameter(ResourceUtil.JCR_TITLE);
+                    String description = request.getParameter(ResourceUtil.JCR_DESCRIPTION);
+                    Site site = siteManager.cloneSite(context, tenant, name, title, description, resource, true);
+
+                    JsonWriter jsonWriter = ResponseUtil.getJsonWriter(response);
+                    response.setStatus(HttpServletResponse.SC_OK);
+                    jsonWriter.beginObject();
+                    jsonWriter.name("name").value(site.getName());
+                    jsonWriter.name("path").value(site.getPath());
+                    jsonWriter.name("url").value(site.getUrl());
+                    jsonWriter.name("editUrl").value(site.getEditUrl());
+                    jsonWriter.endObject();
+
+                } else {
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "resource is not a site");
+                }
+
+            } catch (RepositoryException | PersistenceException ex) {
+                LOG.error(ex.getMessage(), ex);
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ex.getMessage());
+            }
+        }
+
     }
 
     protected class DeleteSite implements ServletOperation {

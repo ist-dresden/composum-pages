@@ -386,6 +386,10 @@
                 actions.content.copy(path);
             },
 
+            clone: function (event, name, path, type) {
+                pages.dialogs.openCloneSiteDialog(name, path, type);
+            },
+
             paste: function (event, name, path, type) {
                 actions.content.paste(path);
             },

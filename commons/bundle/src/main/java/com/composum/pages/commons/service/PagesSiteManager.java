@@ -22,6 +22,7 @@ import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.tenant.Tenant;
+import org.jetbrains.annotations.NotNull;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -361,6 +362,47 @@ public class PagesSiteManager extends PagesContentManager<Site> implements SiteM
         return instanceCreated(context, siteResource, Site.class);
     }
 
+    @Override
+    public Site cloneSite(@Nonnull BeanContext context, @Nullable String tenant, @Nonnull String siteName,
+                          @Nullable String siteTitle, @Nullable String description, @Nonnull Resource clonedSite, boolean commit) throws RepositoryException, PersistenceException {
+        return cloneSite(context, getSitesRoot(context, tenant), siteName, siteTitle, description, clonedSite, commit);
+    }
+
+    @Override
+    public Site cloneSite(@Nonnull BeanContext context, @Nonnull Resource siteBase, @Nonnull String siteName,
+                          @Nullable String siteTitle, @Nullable String description, @Nonnull Resource clonedSite, boolean commit) throws RepositoryException, PersistenceException {
+
+        Resource siteResource;
+        String siteParentPath = siteBase.getPath();
+        final String sitePath = siteParentPath + "/" + siteName;
+
+        final ResourceResolver resolver = context.getResolver();
+        if (LOG.isInfoEnabled()) {
+            LOG.info("cloneSite({},{})", sitePath, siteName);
+        }
+        checkExistence(resolver, siteBase, siteName);
+
+        if (clonedSite != null) {
+            siteResource = resourceManager.copyContentResource(resolver, clonedSite, siteBase, siteName, null);
+        } else {
+            throw new IllegalArgumentException("clonedSite must not be null");
+        }
+
+        Resource content = Objects.requireNonNull(siteResource.getChild(JcrConstants.JCR_CONTENT));
+        ModifiableValueMap values = Objects.requireNonNull(content.adaptTo(ModifiableValueMap.class));
+        if (StringUtils.isNotBlank(siteTitle)) {
+            values.put(ResourceUtil.PROP_TITLE, siteTitle);
+        }
+        if (StringUtils.isNotBlank(description)) {
+            values.put(ResourceUtil.PROP_DESCRIPTION, description);
+        }
+
+        if (commit) {
+            resolver.commit();
+        }
+        return instanceCreated(context, siteResource, Site.class);
+    }
+    
     @Override
     public boolean deleteSite(@Nonnull BeanContext context, @Nonnull String sitePath, boolean commit)
             throws PersistenceException {
