@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.composum.pages</groupId>
         <artifactId>composum-pages-stage</artifactId>
-        <version>1.5.2</version>
+        <version>1.5.3-SNAPSHOT</version>
     </parent>
 
     <artifactId>composum-pages-stage-package</artifactId>
