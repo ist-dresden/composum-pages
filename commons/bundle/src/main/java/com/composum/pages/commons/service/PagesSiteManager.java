@@ -10,6 +10,7 @@ import com.composum.pages.commons.model.Site;
 import com.composum.pages.commons.util.LinkUtil;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.filter.ResourceFilter;
+import com.composum.sling.core.filter.StringFilter;
 import com.composum.sling.core.util.ResourceUtil;
 import com.composum.platform.commons.request.AccessMode;
 import com.composum.sling.platform.staging.StagingReleaseManager;
@@ -31,6 +32,8 @@ import org.osgi.service.component.annotations.ReferenceCardinality;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.jcr.RepositoryException;
+
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -384,6 +387,10 @@ public class PagesSiteManager extends PagesContentManager<Site> implements SiteM
 
         if (clonedSite != null) {
             siteResource = resourceManager.copyContentResource(resolver, clonedSite, siteBase, siteName, null);
+            ArrayList<Resource> foundReferrers = new ArrayList<>();
+            resourceManager.changeReferences(ResourceFilter.ALL, StringFilter.ALL, siteResource,
+                    foundReferrers, false, clonedSite.getPath(), sitePath);
+            LOG.debug("Found {} referrers", foundReferrers.size());
         } else {
             throw new IllegalArgumentException("clonedSite must not be null");
         }
