@@ -10,6 +10,7 @@ import com.composum.pages.commons.model.Site;
 import com.composum.pages.commons.util.LinkUtil;
 import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.filter.ResourceFilter;
+import com.composum.sling.core.filter.StringFilter;
 import com.composum.sling.core.util.ResourceUtil;
 import com.composum.platform.commons.request.AccessMode;
 import com.composum.sling.platform.staging.StagingReleaseManager;
@@ -22,6 +23,7 @@ import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.tenant.Tenant;
+import org.jetbrains.annotations.NotNull;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -30,6 +32,8 @@ import org.osgi.service.component.annotations.ReferenceCardinality;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.jcr.RepositoryException;
+
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -361,6 +365,51 @@ public class PagesSiteManager extends PagesContentManager<Site> implements SiteM
         return instanceCreated(context, siteResource, Site.class);
     }
 
+    @Override
+    public Site cloneSite(@Nonnull BeanContext context, @Nullable String tenant, @Nonnull String siteName,
+                          @Nullable String siteTitle, @Nullable String description, @Nonnull Resource clonedSite, boolean commit) throws RepositoryException, PersistenceException {
+        return cloneSite(context, getSitesRoot(context, tenant), siteName, siteTitle, description, clonedSite, commit);
+    }
+
+    @Override
+    public Site cloneSite(@Nonnull BeanContext context, @Nonnull Resource siteBase, @Nonnull String siteName,
+                          @Nullable String siteTitle, @Nullable String description, @Nonnull Resource clonedSite, boolean commit) throws RepositoryException, PersistenceException {
+
+        Resource siteResource;
+        String siteParentPath = siteBase.getPath();
+        final String sitePath = siteParentPath + "/" + siteName;
+
+        final ResourceResolver resolver = context.getResolver();
+        if (LOG.isInfoEnabled()) {
+            LOG.info("cloneSite({},{})", sitePath, siteName);
+        }
+        checkExistence(resolver, siteBase, siteName);
+
+        if (clonedSite != null) {
+            siteResource = resourceManager.copyContentResource(resolver, clonedSite, siteBase, siteName, null);
+            ArrayList<Resource> foundReferrers = new ArrayList<>();
+            resourceManager.changeReferences(ResourceFilter.ALL, StringFilter.ALL, siteResource,
+                    foundReferrers, false, clonedSite.getPath(), sitePath);
+            LOG.debug("Found {} referrers", foundReferrers.size());
+        } else {
+            throw new IllegalArgumentException("clonedSite must not be null");
+        }
+
+        Resource content = Objects.requireNonNull(siteResource.getChild(JcrConstants.JCR_CONTENT));
+        ModifiableValueMap values = Objects.requireNonNull(content.adaptTo(ModifiableValueMap.class));
+        if (StringUtils.isNotBlank(siteTitle)) {
+            values.put(ResourceUtil.PROP_TITLE, siteTitle);
+        }
+        if (StringUtils.isNotBlank(description)) {
+            values.put(ResourceUtil.PROP_DESCRIPTION, description);
+        }
+
+        if (commit) {
+            resolver.commit();
+        }
+        return instanceCreated(context, siteResource, Site.class);
+    }
+    
     @Override
     public boolean deleteSite(@Nonnull BeanContext context, @Nonnull String sitePath, boolean commit)
             throws PersistenceException {

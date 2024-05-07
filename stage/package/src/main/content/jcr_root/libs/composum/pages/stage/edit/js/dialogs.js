@@ -60,6 +60,7 @@
                         load: '.editDialog',
                         new: '.newDialog',
                         create: '.editDialog.create',
+                        clone: '.editDialog.clone',
                         delete: '.editDialog.delete',
                         manage: '.editDialog.manage'
                     },
@@ -112,6 +113,7 @@
                     _pathField: '_path',
                     _addButton: '_button-add',
                     _removeButton: '_button-remove',
+                    _cloneButton: '_button-clone',
                     _openButton: '_button-open',
                     _deleteButton: '_button-delete',
                     _submitButton: '_button-submit',
@@ -1167,6 +1169,24 @@
         };
 
         /**
+         * Clone Site
+         */
+        dialogs.CloneSiteDialog = dialogs.EditDialog.extend({
+
+            doSubmit: function () {
+                this.submitForm(_.bind(function (result) {
+                    pages.trigger('dialog.site.create', pages.const.event.site.created,
+                        [new pages.Reference(result.name, result.path)]);
+                }, this));
+            }
+        });
+
+        dialogs.openCloneSiteDialog = function (name, path, type) {
+            pages.dialogHandler.openEditDialog(dialogs.getEditDialogUrl('clone'),
+                dialogs.CloneSiteDialog, name, path, type);
+        };
+
+        /**
          * Manage Sites
          */
         dialogs.ManageSitesDialog = core.components.Dialog.extend({
@@ -1178,6 +1198,7 @@
                 this.$('.' + c.base + c._addButton).click(_.bind(this.onCreate, this));
                 this.$('.' + c.base + c._removeButton).click(_.bind(this.onDelete, this));
                 this.$('.' + c.base + c._openButton).click(_.bind(this.onOpen, this));
+                this.$('.' + c.base + c._cloneButton).click(_.bind(this.onClone, this));
                 this.initContent();
                 var id = '.SiteManager';
                 var e = pages.const.event;
@@ -1219,6 +1240,14 @@
                 event.preventDefault();
                 if (this.selectedSite) {
                     pages.actions.site.delete(event, undefined, this.selectedSite);
+                }
+                return false;
+            },
+
+            onClone: function (event) {
+                event.preventDefault();
+                if (this.selectedSite) {
+                    pages.actions.site.clone(event, undefined, this.selectedSite);
                 }
                 return false;
             },

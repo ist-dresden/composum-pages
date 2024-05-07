@@ -167,6 +167,16 @@ public interface SiteManager extends ContentManager<Site> {
                     @Nullable Resource siteTemplate, boolean commit)
             throws RepositoryException, PersistenceException;
 
+    Site cloneSite(@Nonnull BeanContext context, @Nullable String tenant, @Nonnull String siteName,
+                    @Nullable String siteTitle, @Nullable String description,
+                    @Nonnull Resource clonedSite, boolean commit)
+            throws RepositoryException, PersistenceException;
+
+    Site cloneSite(@Nonnull BeanContext context, @Nonnull Resource siteBase, @Nonnull String siteName,
+                    @Nullable String siteTitle, @Nullable String description,
+                    @Nonnull Resource clonedSite, boolean commit)
+            throws RepositoryException, PersistenceException;
+
     boolean deleteSite(@Nonnull BeanContext context, @Nonnull String sitePath, boolean commit)
             throws RepositoryException, PersistenceException;
 
