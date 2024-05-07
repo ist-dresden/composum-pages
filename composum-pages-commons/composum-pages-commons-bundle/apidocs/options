@@ -10,7 +10,7 @@
 '/home/runner/work/composum-pages/composum-pages/commons/bundle/src/main/java:/home/runner/work/composum-pages/composum-pages/commons/bundle/target/generated-sources/annotations'
 -author
 -bottom
-'Copyright &#169; 2023. All rights reserved.'
+'Copyright &#169; 2024. All rights reserved.'
 -charset
 'UTF-8'
 -d
@@ -18,11 +18,11 @@
 -docencoding
 'UTF-8'
 -doctitle
-'Composum Pages Commons Bundle 1.5.1 API'
+'Composum Pages Commons Bundle 1.5.2 API'
 -linkoffline
 'https://docs.oracle.com/en/java/javase/11/docs/api' '/home/runner/work/composum-pages/composum-pages/commons/bundle/target/javadoc-bundle-options'
 -notimestamp
 -use
 -version
 -windowtitle
-'Composum Pages Commons Bundle 1.5.1 API'
+'Composum Pages Commons Bundle 1.5.2 API'
