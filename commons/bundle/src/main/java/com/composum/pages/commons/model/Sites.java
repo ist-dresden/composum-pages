@@ -10,6 +10,8 @@ import java.util.Map;
 
 public class Sites extends AbstractModel {
 
+    public static final String PARAM_ALLSITES = "allSites";
+
     private transient Map<String, String> tenants;
     private transient Collection<Site> sites;
     private transient Collection<Site> templates;
@@ -37,7 +39,11 @@ public class Sites extends AbstractModel {
 
     public Collection<Site> getSites() {
         if (sites == null) {
-            sites = getSiteManager().getSites(context);
+            if (Boolean.TRUE.equals(Boolean.valueOf(getContext().getRequest().getParameter(PARAM_ALLSITES)))) {
+                sites = getSiteManager().getAllSites(context);
+            } else {
+                sites = getSiteManager().getSites(context);
+            }
         }
         return sites;
     }

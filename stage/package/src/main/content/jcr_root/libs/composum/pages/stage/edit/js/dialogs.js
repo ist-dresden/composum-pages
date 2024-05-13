@@ -119,6 +119,7 @@
                     _submitButton: '_button-submit',
                     _prevButton: '_button-prev',
                     _nextButton: '_button-next',
+                    _allsitesCheckbox: '_checkbox_allsites',
                     site: {
                         base: 'composum-pages-stage-site',
                         _tile: '_tile'
@@ -1199,6 +1200,8 @@
                 this.$('.' + c.base + c._removeButton).click(_.bind(this.onDelete, this));
                 this.$('.' + c.base + c._openButton).click(_.bind(this.onOpen, this));
                 this.$('.' + c.base + c._cloneButton).click(_.bind(this.onClone, this));
+                this.$allsitesCheckbox = this.$('.' + c.base + c._allsitesCheckbox);
+                this.$allsitesCheckbox.bind('change', _.bind(this.reloadContent, this));
                 this.initContent();
                 var id = '.SiteManager';
                 var e = pages.const.event;
@@ -1214,7 +1217,11 @@
             },
 
             reloadContent: function () {
-                core.ajaxGet(dialogs.const.edit.url.sites.list, {}, _.bind(function (content) {
+                let url = dialogs.const.edit.url.sites.list;
+                if (this.$allsitesCheckbox.is(':checked')) {
+                    url = url + "?allSites=true";
+                }
+                core.ajaxGet(url, {}, _.bind(function (content) {
                     this.$list.html(content);
                     this.initContent();
                 }, this));
