@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.composum.pages</groupId>
         <artifactId>composum-pages</artifactId>
-        <version>1.5.3-SNAPSHOT</version>
+        <version>1.5.3</version>
     </parent>
 
     <groupId>com.composum.pages.options</groupId>
