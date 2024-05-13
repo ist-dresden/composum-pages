@@ -1141,6 +1141,7 @@
                 this.submitForm(_.bind(function (result) {
                     pages.trigger('dialog.site.create', pages.const.event.site.created,
                         [new pages.Reference(result.name, result.path)]);
+                    pages.trigger('dialog.site.create', pages.const.event.site.select, [result.path]);
                 }, this));
             }
         });
@@ -1176,8 +1177,9 @@
 
             doSubmit: function () {
                 this.submitForm(_.bind(function (result) {
-                    pages.trigger('dialog.site.create', pages.const.event.site.created,
+                    pages.trigger('dialog.site.clone', pages.const.event.site.created,
                         [new pages.Reference(result.name, result.path)]);
+                    pages.trigger('dialog.site.clone', pages.const.event.site.select, [result.path]);
                 }, this));
             }
         });
