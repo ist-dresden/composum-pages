@@ -1352,7 +1352,8 @@ public class PagesResourceManager extends CacheServiceImpl<ResourceManager.Templ
         @Override
         public boolean accept(Resource resource) {
             String name = resource.getName();
-            return !NODE_NAME_DESIGN.equals(name) && !META_NODE_NAME.equals(name);
+            return !NODE_NAME_DESIGN.equals(name) && !META_NODE_NAME.equals(name) &&
+                    !resource.getValueMap().get(JcrConstants.JCR_PRIMARYTYPE, "").startsWith("rep:");
         }
 
         @Override
