@@ -242,6 +242,12 @@ public class PagesSiteManager extends PagesContentManager<Site> implements SiteM
         return sites;
     }
 
+    @NotNull
+    @Override
+    public Collection<Site> getAllSites(@NotNull BeanContext context) {
+        return getSites(context, getContentRoot(context.getResolver()), ResourceFilter.ALL);
+    }
+
     @Override
     public Collection<Site> getSiteTemplates(@Nonnull BeanContext context, String tenant) {
         UniqueSiteList result = new UniqueSiteList();

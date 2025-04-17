@@ -250,6 +250,18 @@
                 }
             }
         }
+
+        &_label_allsites {
+            display: flex;
+            align-items: center;
+            margin-left: $bootstrap-spacing-h;
+
+            span {
+                padding-top: 2px;
+                margin-left: 10px;
+            }
+        }
+
     }
 }
 

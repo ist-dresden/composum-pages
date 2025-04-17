@@ -138,6 +138,18 @@ public interface SiteManager extends ContentManager<Site> {
     @Nonnull
     Collection<Site> getSites(@Nonnull BeanContext context, @Nullable Resource searchRoot, @Nonnull ResourceFilter filter);
 
+
+    /**
+     * Determines all sites readable for the user, no matter what tenant.
+     *
+     * @param context the current request context
+     * @return the collection of all sites readable for the user
+     */
+    @Nonnull
+    default Collection<Site> getAllSites(@Nonnull BeanContext context) {
+        return getSites(context);
+    }
+
     /**
      * Determines all usable site templates in the context of a specific tenant.
      * This implementation uses the resolvers search path to find all site resources in a tenants application context.
