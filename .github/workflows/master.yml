@@ -1,7 +1,6 @@
 #
 # Will build a Java project with Maven, but NOT cache/restore any dependencies to check with central repo
 name: Master - Test public build and generate and deploy site
-run-name: Master - Test public build and generate and deploy site on ${{ github.ref_name }}
 
 on:
   push:
@@ -14,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      MVNCMD: mvn -B -ntp -s ${{ github.workspace }}/.github/settings-istrepo.xml 
+      MVNCMD: mvn -B -ntp -s ${{ github.workspace }}/.github/settings.xml
 
     steps:
     - uses: actions/checkout@v3

@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.composum.meta.ist</groupId>
         <artifactId>parent-2-public</artifactId>
-        <version>1.8.1-SNAPSHOT</version>
+        <version>1.8.2</version>
         <relativePath />
     </parent>
 
@@ -22,8 +22,8 @@
         <package.group>com/composum/pages</package.group>
         <package.company>IST GmbH Dresden</package.company>
         <bundle.category>composum,pages</bundle.category>
-        <composum.nodes.version>4.2.1</composum.nodes.version>
-        <composum.platform.version>1.7.0</composum.platform.version>
+        <composum.nodes.version>4.3.5</composum.nodes.version>
+        <composum.platform.version>1.7.2</composum.platform.version>
     </properties>
 
     <scm>
